@@ -1,1 +1,3 @@
-#Tutkintojen tunnistamisen hakemusten käsittelypalvelu
+# Tutkintojen tunnistamisen hakemusten käsittelypalvelu
+
+Palvelu tutu-hakemusten käsittelyyn.
