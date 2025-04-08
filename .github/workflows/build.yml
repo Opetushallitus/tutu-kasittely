@@ -1,0 +1,19 @@
+name: TUTU-käsittely build workflow
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  # Backend
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prepare-scala-env
+      - name: Run unit tests
+        working-directory: ./tutu-backend
+        run: mvn test
+  # Frontend

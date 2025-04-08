@@ -1,0 +1,14 @@
+name: prepare-next-env
+description: 'Prepare next env'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up npm
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: 'npm'
+        cache-dependency-path: tutu-frontend/package-lock.json
+    - name: Install dependencies
+      working-directory: ./tutu-frontend
+      run: npm ci
