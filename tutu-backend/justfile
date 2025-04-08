@@ -1,0 +1,2 @@
+start-postgresql:
+    docker compose up

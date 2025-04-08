@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: "tutu-postgres"
+    image: "postgres:15.12"
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=tutu
