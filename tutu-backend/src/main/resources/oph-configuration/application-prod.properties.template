@@ -1,0 +1,19 @@
+# ENVIRONMENT SPECIFIC CONFIG
+# DB CONNECTION
+spring.datasource.url={{host_postgresql_tutu}}
+spring.datasource.username={{tutu_backend_postgresql_username}}
+spring.datasource.password={{tutu_backend_postgresql_password}}
+session.schema.name={{tutu_backend_session_schema}}
+flyway.locations=classpath:db/migration
+flyway.schemas=tutu_virkailija
+
+# CAS
+opintopolku.virkailija.domain={{host_virkailija}}
+opintopolku.virkailija.url=https://${opintopolku.virkailija.domain}
+tutu.backend.url=${opintopolku.virkailija.url}/tutu-backend
+tutu.ui.url=${opintopolku.virkailija.url}/tutu
+cas.url=${opintopolku.virkailija.url}/cas
+tutu-backend.cas.username={{tutu_backend_cas_username}}
+tutu-backend.cas.password={{tutu_backend_cas_password}}
+
+tutu_backend.uses-ssl-proxy
