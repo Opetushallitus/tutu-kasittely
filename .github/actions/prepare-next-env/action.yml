@@ -11,4 +11,5 @@ runs:
         cache-dependency-path: tutu-frontend/package-lock.json
     - name: Install dependencies
       working-directory: ./tutu-frontend
+      shell: bash
       run: npm ci

@@ -12,4 +12,5 @@ runs:
         cache-dependency-path: 'tutu-backend/pom.xml'
     - name: Install dependencies
       working-directory: './tutu-backend'
+      shell: bash
       run: mvn install
