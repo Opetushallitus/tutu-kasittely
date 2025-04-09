@@ -13,4 +13,7 @@ runs:
     - name: Install dependencies
       working-directory: './tutu-backend'
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: ./mvnw install
