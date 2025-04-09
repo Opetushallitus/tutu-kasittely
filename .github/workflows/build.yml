@@ -8,6 +8,8 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ github.token }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 permissions:
   id-token: write
