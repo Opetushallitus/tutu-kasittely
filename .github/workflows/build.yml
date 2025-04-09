@@ -6,6 +6,14 @@ on:
     paths-ignore:
       - '**.md'
 
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  id-token: write
+  contents: read
+  packages: read
+
 jobs:
   # Backend
   test-backend:
@@ -15,5 +23,13 @@ jobs:
       - uses: ./.github/actions/prepare-scala-env
       - name: Run unit tests
         working-directory: ./tutu-backend
-        run: mvn test
+        run: ./mvnw test
   # Frontend
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prepare-next-env
+      - name: Run linter
+        working-directory: ./tutu-frontend
+        run: npm run lint

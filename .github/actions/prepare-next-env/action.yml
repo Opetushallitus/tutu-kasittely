@@ -9,6 +9,8 @@ runs:
         node-version: 22
         cache: 'npm'
         cache-dependency-path: tutu-frontend/package-lock.json
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@opetushallitus'
     - name: Install dependencies
       working-directory: ./tutu-frontend
       shell: bash
