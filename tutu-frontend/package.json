@@ -3,23 +3,44 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --max-warnings=0",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier -u -c *",
+    "prettier:fix": "prettier --write -u *"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.7",
+    "@mui/material": "^6.4.7",
+    "@mui/material-nextjs": "^6.4.3",
+    "@opetushallitus/oph-design-system": "^1.0.0-beta.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "next": "15.2.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@axe-core/react": "^4.10.1",
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-playwright": "^2.2.0",
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.51.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "3.5.3",
+    "vitest": "^3.0.8"
   }
 }
