@@ -2,6 +2,10 @@
 start-postgresql:
     docker compose up
 
+[working-directory: 'tutu-backend']
+start-dev-backend:
+    mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev --spring.config.additional-location=classpath:/oph-configuration/application.properties"
+
 [working-directory: 'tutu-frontend']
 start-dev-frontend:
     npm run dev
