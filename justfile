@@ -25,3 +25,8 @@ _playwright-in-docker:
     --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
     mcr.microsoft.com/playwright:v$PLAYWRIGHT_VERSION \
     npx playwright test
+
+start-all:
+    just start-postgresql &
+    just start-dev-frontend &
+    just start-dev-backend
