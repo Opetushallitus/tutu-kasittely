@@ -47,9 +47,6 @@ class SecurityConfig  {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  @Value("${session.schema.name}")
-  private val schema = null
-
   @Bean
   def auditLog(): AuditLog = AuditLog
 
@@ -68,13 +65,11 @@ class SecurityConfig  {
   @SpringSessionDataSource
   def sessionDatasource(@Value("${spring.datasource.url}") url: String,
                         @Value("${spring.datasource.username}") username: String,
-                        @Value("${spring.datasource.password}") password: String,
-                        @Value("${session.schema.name}") schema: String): HikariDataSource = {
+                        @Value("${spring.datasource.password}") password: String): HikariDataSource = {
     val config = new HikariDataSource()
     config.setJdbcUrl(url)
     config.setUsername(username)
     config.setPassword(password)
-    config.addDataSourceProperty("currentSchema", schema)
     config.setMaximumPoolSize(2)
     config
   }

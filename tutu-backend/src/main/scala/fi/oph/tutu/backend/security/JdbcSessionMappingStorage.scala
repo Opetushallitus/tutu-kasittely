@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.session.{Session, SessionRepository}
 import slick.jdbc.PostgresProfile.api.*
 
-class JdbcSessionMappingStorage(sessionRepository: SessionRepository[Session], serviceName: String, tutuDatabase: TutuDatabase, @Value("${session.schema.name}") schema: String) extends OphSessionMappingStorage {
+class JdbcSessionMappingStorage(sessionRepository: SessionRepository[Session], serviceName: String, tutuDatabase: TutuDatabase) extends OphSessionMappingStorage {
 
   val LOG = LoggerFactory.getLogger(classOf[JdbcSessionMappingStorage])
 
-  val mappingTableName = s"${schema}.virkailija_cas_client_session"
-  val sessionTableName = s"${schema}.virkailija_session"
+  val mappingTableName = "virkailija_cas_client_session"
+  val sessionTableName = "virkailija_session"
   @Override
   def removeSessionByMappingId(mappingId: String): HttpSession = {
     LOG.debug(s"Poistetaan sessiomappaus cas tiketillä $mappingId")

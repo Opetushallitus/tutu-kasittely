@@ -15,12 +15,9 @@ class SessionConfig {
   @Autowired
   val db: TutuDatabase = null
 
-  @Value("${session.schema.name}")
-  val schema: String = null
-
   @Bean
   def sessionMappingStorage(sessionRepository: JdbcIndexedSessionRepository): SessionMappingStorage = {
-    val jdbcSessionMappingStorage = new JdbcSessionMappingStorage(sessionRepository.asInstanceOf[SessionRepository[Session]], "tutu", db, schema)
+    val jdbcSessionMappingStorage = new JdbcSessionMappingStorage(sessionRepository.asInstanceOf[SessionRepository[Session]], "tutu", db)
     jdbcSessionMappingStorage
   }
 }

@@ -3,7 +3,7 @@
 spring.datasource.url={{host_postgresql_tutu}}
 spring.datasource.username={{tutu_backend_postgresql_username}}
 spring.datasource.password={{tutu_backend_postgresql_password}}
-session.schema.name={{tutu_backend_session_schema}}
+
 flyway.locations=classpath:db/migration
 
 # CAS
