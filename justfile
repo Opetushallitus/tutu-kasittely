@@ -1,6 +1,7 @@
 [working-directory: 'tutu-backend']
 start-postgresql:
-    docker compose up
+    docker compose up -d
+    ./wait-for-postgres.sh
 
 [working-directory: 'tutu-backend']
 start-dev-backend:
@@ -27,6 +28,13 @@ _playwright-in-docker:
     npx playwright test
 
 start-all:
-    just start-postgresql &
-    just start-dev-frontend &
-    just start-dev-backend
+    echo "Starting tutu, hit CTRL+C few times to quit."
+    just start-postgresql
+    just start-dev-backend &
+    echo "Waiting for tutu-backend to get up..."; \
+    until curl -s http://localhost:8443/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
+        echo "Waiting for backend to get up..."; \
+        sleep 1; \
+    done; \
+    echo "Backend running!"
+    just start-dev-frontend
