@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare": "cd .. && husky frontend/.husky",
+    "prepare": "cd .. && husky tutu-frontend/.husky",
     "dev": "touch .env.development.local && node --env-file=.env.development --env-file=.env.development.local dev-server.mjs",
     "build": "next build",
     "start": "next start",
