@@ -1,4 +1,4 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import path from 'node:path';
@@ -31,4 +31,5 @@ export default defineConfig([
       parser: tsParser,
     },
   },
+  globalIgnores(['.next', 'node_modules', 'certificates', 'test-results']),
 ]);

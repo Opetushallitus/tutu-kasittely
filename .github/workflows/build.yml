@@ -10,6 +10,7 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ github.token }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  HUSKY: 0
 
 permissions:
   id-token: write
@@ -49,6 +50,7 @@ jobs:
       - uses: extractions/setup-just@v3
       - uses: ./.github/actions/prepare-next-env
       - name: Create self-signed dev certificates
+        working-directory: ./tutu-frontend
         run: npm run create-self-signed-dev-certs
       - name: Run playwright
         working-directory: ./tutu-frontend

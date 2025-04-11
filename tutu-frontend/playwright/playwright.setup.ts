@@ -24,13 +24,13 @@ export default async function playwrightSetup() {
       return modifyResponse(response, {
         organisaatiot: [
           {
-            organisaatioOid: "OPH_ORGANIZATION_OID",
+            organisaatioOid: 'OPH_ORGANIZATION_OID',
             kayttooikeudet: [{ palvelu: 'SERVICE_KEY', oikeus: 'CRUD' }],
           },
         ],
       });
     } else if (request.url?.endsWith('/parentoids')) {
-      return modifyResponse(response, ["OPH_ORGANIZATION_OID"]);
+      return modifyResponse(response, ['OPH_ORGANIZATION_OID']);
     } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('content-type', 'text/plain');
       response.write('fi');
