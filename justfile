@@ -1,15 +1,28 @@
 [working-directory: 'tutu-backend']
 start-postgresql:
-    docker compose up -d
-    ./wait-for-postgres.sh
+    @echo "🚀 Starting PostgreSQL..."
+    @docker compose up -d tutu-postgres
+
+[working-directory: 'tutu-backend']
+wait-for-db:
+    @echo "⏳ Waiting for PostgreSQL to be ready..."
+    @until docker exec tutu-postgres pg_isready -U app -d tutu > /dev/null 2>&1; do \
+        echo "🕐 Still waiting..."; \
+        sleep 1; \
+    done
+    @echo "✅ PostgreSQL is ready!"
+
+start-db-and-wait: start-postgresql wait-for-db
 
 [working-directory: 'tutu-backend']
 start-dev-backend:
     mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev --spring.config.additional-location=classpath:/oph-configuration/application.properties"
+    echo "✅ Backend running!"
 
 [working-directory: 'tutu-frontend']
 start-dev-frontend:
     npm run dev
+    echo "✅ Frontend running!"
 
 install-local:
     cd tutu-backend && ./mvnw install
@@ -28,13 +41,13 @@ _playwright-in-docker:
     npx playwright test
 
 start-all:
-    echo "Starting tutu, hit CTRL+C few times to quit."
-    just start-postgresql
+    echo "🚀 Starting tutu, hit CTRL+C few times to quit."
+    just start-db-and-wait
     just start-dev-backend &
-    echo "Waiting for tutu-backend to get up..."; \
+    echo "⏳ Waiting for tutu-backend to get up..."; \
     until curl -s http://localhost:8443/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
-        echo "Waiting for backend to get up..."; \
+        echo "🕐 Waiting for backend to get up..."; \
         sleep 1; \
     done; \
-    echo "Backend running!"
+    
     just start-dev-frontend

@@ -1,5 +1,5 @@
 services:
-  postgres:
+  tutu-postgres:
     container_name: "tutu-postgres"
     image: "postgres:15.12"
     ports:
@@ -8,8 +8,3 @@ services:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=app
       - POSTGRES_DB=tutu
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-d", "tutu", "-U", "app" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
