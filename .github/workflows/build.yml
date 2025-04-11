@@ -26,6 +26,7 @@ jobs:
       - name: Run unit tests
         working-directory: ./tutu-backend
         run: ./mvnw test
+
   # Frontend
   lint-frontend:
     runs-on: ubuntu-latest
@@ -34,4 +35,17 @@ jobs:
       - uses: ./.github/actions/prepare-next-env
       - name: Run linter
         working-directory: ./tutu-frontend
-        run: npm run lint
+        run: |
+          npm run lint
+          npm run prettier
+
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v3
+      - uses: ./.github/actions/prepare-next-env
+      - name: Run playwright
+        working-directory: ./tutu-frontend
+        run: |
+          npm run start-server-and-test-playwright

@@ -2,11 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 import nextConfig from './next.config.mjs';
 
 export default defineConfig({
-  testDir: './tests/e2e',
-  globalSetup: './tests/e2e/playwright.setup.ts',
-  expect: {
-    timeout: 8000,
-  },
+  testDir: './playwright',
+  globalSetup: './playwright/playwright.setup.ts',
+  expect: { timeout: 10 * 1000 },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -18,7 +16,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: `https://localhost:3404${nextConfig.basePath}`,
+    baseURL: `https://${process.env.DOCKER ? 'host.docker.internal' : '127.0.0.1'}:3123${nextConfig.basePath}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,

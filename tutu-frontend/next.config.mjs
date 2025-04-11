@@ -18,7 +18,7 @@ const cspHeaders = {
 
 const isStandalone = process.env.STANDALONE === 'true';
 
-const basePath = '/valintojen-toteuttaminen';
+const basePath = '/tutu';
 
 const nextConfig = {
   basePath,
@@ -26,6 +26,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  allowedDevOrigins: ['host.docker.internal'],
   typescript: {
     ignoreBuildErrors: Boolean(process.env.CI),
   },
