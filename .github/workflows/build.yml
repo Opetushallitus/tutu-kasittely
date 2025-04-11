@@ -41,11 +41,24 @@ jobs:
 
   playwright:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [ chromium, firefox, webkit ]
     steps:
       - uses: actions/checkout@v4
       - uses: extractions/setup-just@v3
       - uses: ./.github/actions/prepare-next-env
+      - name: Create self-signed dev certificates
+        run: npm run create-self-signed-dev-certs
       - name: Run playwright
         working-directory: ./tutu-frontend
-        run: |
-          npm run start-server-and-test-playwright
+        env:
+          PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}
+        run: npm run start-server-and-test-playwright
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 10
+          if-no-files-found: ignore
