@@ -14,7 +14,7 @@ install-local:
 
 # CI
 [working-directory: 'tutu-frontend']
-playwright-in-docker:
+_playwright-in-docker:
     #!/usr/bin/env bash
     PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")
     docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
