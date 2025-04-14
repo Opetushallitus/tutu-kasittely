@@ -44,9 +44,8 @@ start-all:
     echo "🚀 Starting tutu, hit CTRL+C few times to quit."
     just start-db-and-wait
     just start-dev-backend &
-    echo "⏳ Waiting for tutu-backend to get up..."; \
     until curl -s http://localhost:8443/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
-        echo "🕐 Waiting for backend to get up..."; \
+        echo "⏳ Waiting for tutu-backend to get up..."; \
         sleep 1; \
     done; \
     

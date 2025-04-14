@@ -1,4 +1,4 @@
-# Tutkintojen tunnistamisen hakemusten käsittelypalvelu
+# Tutkintojen tunnustamisen hakemusten käsittelypalvelu
 
 Palvelu tutu-hakemusten käsittelyyn.
 
@@ -37,17 +37,15 @@ Backendiä voi ajaa lokaalia dockeriin käynnistettävää postgresia vasten.
 `justfile`:stä löytyy komento tietokannan pystyttämiseen. 
 
 [just](https://github.com/casey/just) on
-komentorivityökalu komentojen dokumentoimiseen ja ajamiseen. Esimerkiksi `just start-postgresql` käynnistää lokaalin kannan docker-konttiin. `just`:in asentaminen ei ole välttämätöntä backendin ajamiseksi,
+komentorivityökalu komentojen dokumentoimiseen ja ajamiseen. Esimerkiksi `just start-postgresql` käynnistää lokaalin kannan docker-konttiin ja `just start-all` käynnistää tietokannan, backendin ja frontendin.
+
+`just`:in asentaminen ei ole välttämätöntä backendin ajamiseksi,
 vaan voit katsoa tarvittavat komennot `justfile`:stä ja ajaa ne sellaisinaan komentoriviltä.
 
-Lokaalisti backendia ajaessa lisää `spring.profiles.active=dev`-rivi `application.properties`-tiedostoon
+Lokaalisti Ideassa backendia ajaessa lisää `spring.profiles.active=dev`-rivi `application.properties`-tiedostoon
 tai anna käynnistysparametri `--spring.profiles.active=dev`.
 Jotta properties-tiedostot luetaan hakemiston oph-configuration alta, tulee antaa käynnistysparametri `spring.config.additional-location=classpath:/oph-configuration/application.properties`
 
-# TODO SWAGGER:
+# Swagger
 
-Tutu-backendin rajapinta on dokumentoitu Swaggeriä käyttäen ja se löytyy osoitteesta: `http://localhost:8080/tutu-backend/swagger-ui/index.html`.
-Rajapintojen kutsuminen edellyttää kirjautumista. Kehitysympäristössä tämä tapahtuu helpoiten siten, että myös tutu-ui on
-lokaalisti käynnissä ja kirjaudut sen kautta sisään ennen swaggerin rajapintojen käyttämistä.
-
-
+Tutu-backendin rajapinnat on dokumentoitu Swaggeriä käyttäen ja se löytyy osoitteesta: `http://localhost:8443/tutu-backend/swagger-ui/index.html`.

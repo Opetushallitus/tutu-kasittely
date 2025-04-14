@@ -135,6 +135,7 @@ class SecurityConfig  {
       "/swagger-resources",
       "/swagger-resources/**",
       "/swagger-ui.html",
+      "/v3/api-docs/**",
       "/swagger-ui/**"
     )
 
