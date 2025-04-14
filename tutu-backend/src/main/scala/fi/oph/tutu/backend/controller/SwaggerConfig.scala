@@ -18,7 +18,7 @@ class SwaggerConfig {
   }
 
   @Bean
-  def ovaraOpenApi(): OpenAPI = {
+  def tutuOpenApi(): OpenAPI = {
     OpenAPI()
       .info(Info().title("Tutu API").version("1"))
       .components(
