@@ -1,5 +1,5 @@
 services:
-  postgres:
+  tutu-postgres:
     container_name: "tutu-postgres"
     image: "postgres:15.12"
     ports:
