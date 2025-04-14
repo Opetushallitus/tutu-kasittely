@@ -8,4 +8,13 @@ class KayttooikeusService(httpService: HttpService) {
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
+
+  def getEsittelijat: Either[Throwable, String] = {
+    val id = "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
+    httpService.get(s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$id/henkilot") match {
+      case Left(error: Throwable) => Left(error)
+      case Right(response: String) => Right(response)
+    }
+  }
+
 }
