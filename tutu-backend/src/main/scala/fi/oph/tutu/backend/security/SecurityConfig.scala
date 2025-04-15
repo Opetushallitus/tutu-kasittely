@@ -41,25 +41,14 @@ class SecurityConfig  {
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
 
-  @Value("${tutu-backend.cas.username}")
-  val cas_username: String = null
-
-  @Value("${tutu-backend.cas.password}")
-  val cas_password: String = null
+//  @Value("${tutu-backend.cas.username}")
+//  val cas_username: String = null
+//
+//  @Value("${tutu-backend.cas.password}")
+//  val cas_password: String = null
 
   @Bean
   def auditLog(): AuditLog = AuditLog
-
-  @Bean
-  def createCasClient(): CasClient = CasClientBuilder.build(CasConfig.CasConfigBuilder(
-    cas_username,
-    cas_password,
-    s"$opintopolku_virkailija_domain/cas",
-    s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service",
-    CALLER_ID,
-    CALLER_ID,
-    "/j_spring_cas_security_check"
-  ).setJsessionName("JSESSIONID").build())
 
   @Bean
   @SpringSessionDataSource
