@@ -4,9 +4,10 @@ import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.{Component, Service}
 
 @Component
+@Service
 class HakemuspalveluService(httpService: HttpService) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
 
@@ -19,7 +20,7 @@ class HakemuspalveluService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  private val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
+  lazy private val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -28,9 +29,9 @@ class HakemuspalveluService(httpService: HttpService) {
         s"$opintopolku_virkailija_domain/lomake-editori",
         CALLER_ID,
         CALLER_ID,
-        "/j_spring_cas_security_check"
+        "/auth/cas"
       )
-      .setJsessionName("JSESSIONID")
+      .setJsessionName("ring-session")
       .build()
   )
 
