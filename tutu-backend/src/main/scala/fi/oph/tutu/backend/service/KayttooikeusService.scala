@@ -4,7 +4,10 @@ import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.{Component, Service}
 
+@Component
+@Service
 class KayttooikeusService(httpService: HttpService) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[KayttooikeusService])
 
@@ -17,7 +20,7 @@ class KayttooikeusService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  private val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
+  lazy private val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -33,10 +36,10 @@ class KayttooikeusService(httpService: HttpService) {
   )
 
   def getEsittelijat: Either[Throwable, String] = {
-    val id = "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
+    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID = "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
     httpService.get(
       kayttooikeusCasClient,
-      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$id/henkilot"
+      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
