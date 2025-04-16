@@ -41,12 +41,6 @@ class SecurityConfig  {
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
 
-//  @Value("${tutu-backend.cas.username}")
-//  val cas_username: String = null
-//
-//  @Value("${tutu-backend.cas.password}")
-//  val cas_password: String = null
-
   @Bean
   def auditLog(): AuditLog = AuditLog
 
@@ -131,7 +125,7 @@ class SecurityConfig  {
     http
       .securityMatcher("/**")
       .authorizeHttpRequests(requests => requests
-        .requestMatchers("/api/healthcheck", "/api/csrf").permitAll()
+        .requestMatchers("/api/healthcheck", "/api/test", "/api/csrf").permitAll()
         .requestMatchers(SWAGGER_WHITELIST*).permitAll()
         .anyRequest().fullyAuthenticated()
       )

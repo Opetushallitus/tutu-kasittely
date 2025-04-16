@@ -4,7 +4,10 @@ import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.{Component, Service}
 
+@Component
+@Service
 class KoodistoService(httpService: HttpService) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[KoodistoService])
 
@@ -17,7 +20,7 @@ class KoodistoService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  private val koodistoCasClient: CasClient = CasClientBuilder.build(
+  lazy private val koodistoCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -28,7 +31,7 @@ class KoodistoService(httpService: HttpService) {
         CALLER_ID,
         "/j_spring_cas_security_check"
       )
-      .setJsessionName("JSESSIONID")
+      .setJsessionName("SESSION")
       .build()
   )
 
