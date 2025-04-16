@@ -8,8 +8,8 @@ import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class HakemuspalveluService(httpService: HttpService) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
+class KoodistoService(httpService: HttpService) {
+  val LOG: Logger = LoggerFactory.getLogger(classOf[KoodistoService])
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
@@ -20,26 +20,23 @@ class HakemuspalveluService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  lazy private val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
+  lazy private val koodistoCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
         cas_password,
         s"$opintopolku_virkailija_domain/cas",
-        s"$opintopolku_virkailija_domain/lomake-editori",
+        s"$opintopolku_virkailija_domain/koodisto-service",
         CALLER_ID,
         CALLER_ID,
-        "/auth/cas"
+        "/j_spring_cas_security_check"
       )
-      .setJsessionName("ring-session")
+      .setJsessionName("SESSION")
       .build()
   )
 
-  def getHakemus(hakemusOid: String): Either[Throwable, String] = {
-    httpService.get(
-      hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/applications/$hakemusOid"
-    ) match {
+  def getKoodisto(koodisto: String): Either[Throwable, String] = {
+    httpService.get(koodistoCasClient, s"$opintopolku_virkailija_domain/koodisto-service/rest/codes/$koodisto") match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
