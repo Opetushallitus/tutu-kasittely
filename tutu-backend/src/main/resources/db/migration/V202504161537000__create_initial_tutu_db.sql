@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS hakemus (
     luotu TIMESTAMPTZ DEFAULT now(),
     luoja VARCHAR(255) NOT NULL,
     muokattu TIMESTAMPTZ,
-    muokkaaja VARCHAR(255)
+    muokkaaja VARCHAR(255),
+    CONSTRAINT fk_hakemus_esittelija FOREIGN KEY (esittelija_id) REFERENCES esittelija(id)
 );
 
 COMMENT ON TABLE hakemus IS 'Tutu-hakemuksen tiedot';
@@ -64,10 +65,6 @@ COMMENT ON COLUMN hakemus.muokkaaja IS 'Taulun rivin viimeisin muokkaaja';
 CREATE INDEX idx_hakemus_oid ON hakemus(hakemus_oid);
 CREATE INDEX idx_hakemus_esittelija ON hakemus(esittelija_id);
 
-ALTER TABLE hakemus
-    ADD CONSTRAINT fk_hakemus_esittelija
-    FOREIGN KEY (esittelija_id) REFERENCES esittelija(id);
-
 CREATE OR REPLACE TRIGGER trg_hakemus_update_muokattu_timestamp
     BEFORE UPDATE ON hakemus
     FOR EACH ROW
@@ -81,7 +78,8 @@ CREATE TABLE IF NOT EXISTS muistio (
     luotu TIMESTAMPTZ DEFAULT now(),
     luoja VARCHAR(255) NOT NULL,
     muokattu TIMESTAMPTZ,
-    muokkaaja VARCHAR(255)
+    muokkaaja VARCHAR(255),
+    CONSTRAINT fk_muistio_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus(id)
 );
 
 COMMENT ON TABLE muistio IS 'Tutu-hakemuksen muistiot';
@@ -95,10 +93,6 @@ COMMENT ON COLUMN muistio.muokkaaja IS 'Taulun rivin viimeisin muokkaaja';
 
 CREATE INDEX idx_muistio_hakemus_id ON muistio(hakemus_id);
 
-ALTER TABLE muistio
-    ADD CONSTRAINT fk_muistio_hakemus
-    FOREIGN KEY (hakemus_id) REFERENCES hakemus(id);
-
 CREATE OR REPLACE TRIGGER trg_muistio_update_muokattu_timestamp
     BEFORE UPDATE ON muistio
     FOR EACH ROW
@@ -107,13 +101,13 @@ CREATE OR REPLACE TRIGGER trg_muistio_update_muokattu_timestamp
 -- PAATOS
 CREATE TABLE IF NOT EXISTS paatos (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-
     hakemus_id uuid NOT NULL,
     sisalto TEXT NOT NULL,
     luotu TIMESTAMPTZ DEFAULT now(),
     luoja VARCHAR(255) NOT NULL,
     muokattu TIMESTAMPTZ,
-    muokkaaja VARCHAR(255)
+    muokkaaja VARCHAR(255),
+    CONSTRAINT fk_paatos_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus(id)
 );
 
 COMMENT ON TABLE paatos IS 'Tutu-hakemuksen päätökset';
@@ -126,9 +120,6 @@ COMMENT ON COLUMN paatos.muokattu IS 'Taulun rivin viimeisin muokkausaika';
 COMMENT ON COLUMN paatos.muokkaaja IS 'Taulun rivin viimeisin muokkaaja';
 
 CREATE INDEX idx_paatos_hakemus ON paatos(hakemus_id);
-ALTER TABLE paatos
-    ADD CONSTRAINT fk_paatos_hakemus
-    FOREIGN KEY (hakemus_id) REFERENCES hakemus(id);
 
 CREATE OR REPLACE TRIGGER trg_paatos_update_muokattu_timestamp
     BEFORE UPDATE ON paatos
