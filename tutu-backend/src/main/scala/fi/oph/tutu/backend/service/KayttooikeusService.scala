@@ -8,8 +8,8 @@ import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class HakemuspalveluService(httpService: HttpService) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
+class KayttooikeusService(httpService: HttpService) {
+  val LOG: Logger = LoggerFactory.getLogger(classOf[KayttooikeusService])
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
@@ -20,28 +20,30 @@ class HakemuspalveluService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  lazy private val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
+  lazy private val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
         cas_password,
         s"$opintopolku_virkailija_domain/cas",
-        s"$opintopolku_virkailija_domain/lomake-editori",
+        s"$opintopolku_virkailija_domain/kayttooikeus-service",
         CALLER_ID,
         CALLER_ID,
-        "/auth/cas"
+        "/j_spring_cas_security_check"
       )
-      .setJsessionName("ring-session")
+      .setJsessionName("JSESSIONID")
       .build()
   )
 
-  def getHakemus(hakemusOid: String): Either[Throwable, String] = {
+  def getEsittelijat: Either[Throwable, String] = {
+    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID = "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
     httpService.get(
-      hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/applications/$hakemusOid"
+      kayttooikeusCasClient,
+      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
   }
+
 }
