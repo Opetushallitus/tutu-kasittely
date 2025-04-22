@@ -3,7 +3,10 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
 @Component
@@ -20,6 +23,9 @@ class KoodistoService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
+  @Autowired
+  val cacheManager: CacheManager = null
+
   lazy private val koodistoCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
@@ -35,10 +41,25 @@ class KoodistoService(httpService: HttpService) {
       .build()
   )
 
+  @Cacheable(value = Array("koodisto"))
   def getKoodisto(koodisto: String): Either[Throwable, String] = {
-    httpService.get(koodistoCasClient, s"$opintopolku_virkailija_domain/koodisto-service/rest/codes/$koodisto") match {
+    httpService.get(koodistoCasClient, s"$opintopolku_virkailija_domain/koodisto-service/rest/json/$koodisto/koodi") match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
   }
+
+  @CacheEvict(value = Array("koodisto"), allEntries = true)
+  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
+  def emptyKoodistoCache(): Unit = {
+    LOG.info("Emptying koodisto-cache")
+  }
+
+  @CachePut(Array("koodisto"))
+  private def updateCached(koodisto: String, value: String): Unit = {
+    val koodistoCache = cacheManager.getCache("koodisto")
+    koodistoCache.put(koodisto, value)
+  }
 }
+
+
