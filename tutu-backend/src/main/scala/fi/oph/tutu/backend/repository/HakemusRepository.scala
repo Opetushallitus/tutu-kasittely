@@ -28,17 +28,17 @@ class HakemusRepository {
    * @param hakemusOid hakemuspalvelun hakemuksen oid
    * @return tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: String, luoja: String): Option[UUID] = {
+  def tallennaHakemus(hakemusOid: String, luoja: String): UUID = {
     try {
       db.run(sql"""
       INSERT INTO hakemus (hakemus_oid, luoja)
       VALUES ($hakemusOid, $luoja)
       RETURNING id
-    """.as[UUID].headOption, "tallennaHakemus")
+    """.as[UUID].head, "tallennaHakemus")
     } catch {
       case e: Exception =>
-        LOG.error(s"Failed to save hakemus: ${e.getMessage}", e)
-        None
+        throw new RuntimeException(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e
+        )
     }
   }
 }

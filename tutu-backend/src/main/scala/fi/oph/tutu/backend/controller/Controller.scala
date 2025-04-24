@@ -49,6 +49,7 @@ class Controller(
   final val RESPONSE_200_DESCRIPTION = "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
   final val RESPONSE_400_DESCRIPTION = "Pyyntö virheellinen"
   final val RESPONSE_403_DESCRIPTION = "Käyttäjällä ei ole tarvittavia oikeuksia hakemusten luontiin"
+  final val RESPONSE_500_DESCRIPTION = "Palvelinvirhe"
 
   @PostMapping(
     path = Array("hakemus"),
@@ -63,26 +64,17 @@ class Controller(
     responses = Array(
       new ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION, content = Array(new Content(schema = new Schema(implementation = classOf[UUID])))),
       new ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-      new ApiResponse(responseCode = "403", description = RESPONSE_403_DESCRIPTION)
+      new ApiResponse(responseCode = "403", description = RESPONSE_403_DESCRIPTION),
+      new ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION)
     ))
   def luoHakemus(@RequestBody hakemusBytes: Array[Byte]) =
       try
-        try
           val hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
-          hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu") match {
-            case Some(id) => id
-            case _ =>
-              LOG.error("Hakemuksen luonti epäonnistui, puuttuva hakemusOid")
-              ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Hakemuksen luonti epäonnistui, puuttuva hakemusOid")
-          }
-        catch
-          case e: Exception =>
-            LOG.warn("Hakemuksen deserialisointi epäonnistui", e)
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hakemuksen deserialisointi epäonnistui")
+          hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
       catch
         case e: Exception =>
-          LOG.error("Hakemuksen luonti epäonnistui", e)
-          ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getCause)
+          LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+          ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage)
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))
