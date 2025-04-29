@@ -1,4 +1,8 @@
-import { localTranslations, LOKALISOINTI_URL } from '../configuration';
+import {
+  isTesting,
+  localTranslations,
+  LOKALISOINTI_URL,
+} from '../configuration';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
 
@@ -17,7 +21,7 @@ export function TolgeeBase() {
       defaultLanguage: 'fi',
     });
 
-  if (localTranslations) {
+  if (localTranslations || isTesting) {
     return tg.updateDefaults({
       staticData: {
         fi: () => import('./messages/fi.json'),

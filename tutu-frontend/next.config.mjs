@@ -45,7 +45,12 @@ const nextConfig = {
       },
     ];
   },
-  env: {},
+  env: {
+    VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
+    APP_URL: process.env.APP_URL,
+    TEST: process.env.TEST,
+    LOCAL_TRANSLATIONS: process.env.LOCAL_TRANSLATIONS,
+  },
   output: isStandalone ? 'standalone' : undefined,
   images: {
     unoptimized: true,

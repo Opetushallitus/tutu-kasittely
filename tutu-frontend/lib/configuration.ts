@@ -2,7 +2,7 @@ export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
-export const localTranslations = process.env.LOCAL_TRANSLATIONS === 'true';
+export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
 export const isTesting = Boolean(process.env.TEST);
 
