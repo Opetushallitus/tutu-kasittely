@@ -1,8 +1,10 @@
 'use client';
+
 import { changeLanguage, tolgee } from '@/lib/localization/localizations';
 import { Language } from '@/lib/localization/localization-types';
 import { useEffect } from 'react';
 import { TolgeeProvider } from '@tolgee/react';
+import { FullSpinner } from '@/components/full-spinner';
 
 const LocalizationContent = ({
   lng,
@@ -22,7 +24,7 @@ const LocalizationContent = ({
 
 export function MyTolgeeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <TolgeeProvider tolgee={tolgee} fallback={<></>}>
+    <TolgeeProvider tolgee={tolgee} fallback={<FullSpinner></FullSpinner>}>
       {children}
     </TolgeeProvider>
   );

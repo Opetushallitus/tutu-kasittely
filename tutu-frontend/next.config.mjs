@@ -18,7 +18,7 @@ const cspHeaders = {
 
 const isStandalone = process.env.STANDALONE === 'true';
 
-const basePath = '/tutu';
+const basePath = '/tutu-frontend';
 
 const nextConfig = {
   basePath,

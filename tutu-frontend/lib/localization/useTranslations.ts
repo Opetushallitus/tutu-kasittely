@@ -1,4 +1,5 @@
 'use client';
+
 import { Language, TranslatedName } from './localization-types';
 import { useCallback } from 'react';
 import { translateName } from './translation-utils';

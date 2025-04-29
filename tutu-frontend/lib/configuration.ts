@@ -11,4 +11,12 @@ export const localTranslations = process.env.LOCAL_TRANSLATIONS === 'true';
 
 export const RAAMIT_URL = `${DOMAIN}/virkailija-raamit/apply-raamit.js`;
 
-export const LOKALISOINTI_URL = `${DOMAIN}/virkailija-raamit`;
+export const LOKALISOINTI_URL = `${isLocalhost ? 'https://virkailija.testiopintopolku.fi' : DOMAIN}/lokalisointi/tolgee`;
+
+export const API_URL = `${isLocalhost ? 'https://localhost:8443' : DOMAIN}/tutu-backend/api`;
+
+export const LOGIN_URL = `${API_URL}/login`;
+
+export const ASIOINTIKIELI_URL = `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`;
+
+export const cookieName = process.env.COOKIE_NAME ?? 'JSESSIONID';

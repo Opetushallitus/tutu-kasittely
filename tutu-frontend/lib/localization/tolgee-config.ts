@@ -7,7 +7,7 @@ const REVALIDATE_TIME_SECONDS = 10 * 60;
 const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 
-const NAMESPACE = 'valintojen-toteuttaminen';
+const NAMESPACE = 'tutu-kasittely';
 
 export function TolgeeBase() {
   const tg = Tolgee()

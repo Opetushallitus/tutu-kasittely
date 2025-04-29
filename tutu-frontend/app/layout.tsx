@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import './globals.css';
 import Script from 'next/script';
 import { RAAMIT_URL } from '@/lib/configuration';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -8,7 +7,9 @@ import {
   LocalizationProvider,
   MyTolgeeProvider,
 } from '@/components/providers/localization-provider';
+import { ophColors, THEME_OVERRIDES } from '@/lib/theme';
 import { LocalizedThemeProvider } from '@/components/providers/localized-theme-provider';
+import ReactQueryClientProvider from '@/components/providers/react-query-client-provider';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',
@@ -23,15 +24,21 @@ export default function RootLayout({
   return (
     <html lang="fi">
       <Script src={RAAMIT_URL} />
-      <body>
+      <body
+        style={{
+          backgroundColor: ophColors.grey50,
+        }}
+      >
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-          <OphNextJsThemeProvider variant="oph">
-            <MyTolgeeProvider>
-              <LocalizationProvider>
-                <LocalizedThemeProvider>{children}</LocalizedThemeProvider>
-              </LocalizationProvider>
-            </MyTolgeeProvider>
+          <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
+            <ReactQueryClientProvider>
+              <MyTolgeeProvider>
+                <LocalizationProvider>
+                  <LocalizedThemeProvider>{children}</LocalizedThemeProvider>
+                </LocalizationProvider>
+              </MyTolgeeProvider>
+            </ReactQueryClientProvider>
           </OphNextJsThemeProvider>
         </AppRouterCacheProvider>
       </body>
