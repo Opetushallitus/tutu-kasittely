@@ -26,7 +26,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  allowedDevOrigins: ['host.docker.internal'],
+  allowedDevOrigins: ['host.docker.internal', '127.0.0.1'],
   typescript: {
     ignoreBuildErrors: Boolean(process.env.CI),
   },

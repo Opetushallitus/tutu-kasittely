@@ -29,18 +29,20 @@ export default function RootLayout({
           backgroundColor: ophColors.grey50,
         }}
       >
-        <AppRouterCacheProvider>
-          {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-          <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
-            <ReactQueryClientProvider>
-              <MyTolgeeProvider>
-                <LocalizationProvider>
-                  <LocalizedThemeProvider>{children}</LocalizedThemeProvider>
-                </LocalizationProvider>
-              </MyTolgeeProvider>
-            </ReactQueryClientProvider>
-          </OphNextJsThemeProvider>
-        </AppRouterCacheProvider>
+        <main>
+          <AppRouterCacheProvider>
+            {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
+            <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
+              <ReactQueryClientProvider>
+                <MyTolgeeProvider>
+                  <LocalizationProvider>
+                    <LocalizedThemeProvider>{children}</LocalizedThemeProvider>
+                  </LocalizationProvider>
+                </MyTolgeeProvider>
+              </ReactQueryClientProvider>
+            </OphNextJsThemeProvider>
+          </AppRouterCacheProvider>
+        </main>
       </body>
     </html>
   );
