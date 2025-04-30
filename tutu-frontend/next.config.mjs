@@ -18,7 +18,7 @@ const cspHeaders = {
 
 const isStandalone = process.env.STANDALONE === 'true';
 
-const basePath = '/tutu';
+const basePath = '/tutu-frontend';
 
 const nextConfig = {
   basePath,
@@ -26,7 +26,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  allowedDevOrigins: ['host.docker.internal'],
+  allowedDevOrigins: ['host.docker.internal', '127.0.0.1'],
   typescript: {
     ignoreBuildErrors: Boolean(process.env.CI),
   },
@@ -45,7 +45,12 @@ const nextConfig = {
       },
     ];
   },
-  env: {},
+  env: {
+    VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
+    APP_URL: process.env.APP_URL,
+    TEST: process.env.TEST,
+    LOCAL_TRANSLATIONS: process.env.LOCAL_TRANSLATIONS,
+  },
   output: isStandalone ? 'standalone' : undefined,
   images: {
     unoptimized: true,
