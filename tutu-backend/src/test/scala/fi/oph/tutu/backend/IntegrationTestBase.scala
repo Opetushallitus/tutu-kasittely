@@ -59,6 +59,7 @@ class IntegrationTestBase {
 
   @AfterAll
   def teardown(): Unit = {
+    LOG.info("Shutting PostgreSQL container down")
     postgres.stop()
   }
 }
