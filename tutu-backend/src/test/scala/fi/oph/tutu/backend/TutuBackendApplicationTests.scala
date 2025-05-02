@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{conten
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
-class TutuBackendApplicationTests {
+class TutuBackendApplicationTests extends IntegrationTestBase {
   @Autowired
   private val mvc: MockMvc = null
 
