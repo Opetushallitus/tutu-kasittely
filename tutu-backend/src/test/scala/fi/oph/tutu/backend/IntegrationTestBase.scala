@@ -53,7 +53,6 @@ class IntegrationTestBase {
       postgres.start()
       flyway.clean()
       flyway.migrate()
-
     }
   }
 

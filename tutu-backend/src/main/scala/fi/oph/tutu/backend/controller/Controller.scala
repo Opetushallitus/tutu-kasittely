@@ -3,8 +3,8 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.service.HakemuspalveluService
-import fi.oph.tutu.backend.utils.AuditLog
+import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
+import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
@@ -22,15 +22,20 @@ import scala.jdk.OptionConverters.*
 
 @Schema(name = "Hakemus")
 case class Hakemus(
-                      @(Schema @field)(example = "1.2.246.562.00.00000000000000006666", requiredMode = RequiredMode.REQUIRED, maxLength = 40)
-                      @BeanProperty hakemusOid: String,
-                      )
+    @(Schema @field)(
+      example = "1.2.246.562.00.00000000000000006666",
+      requiredMode = RequiredMode.REQUIRED,
+      maxLength = 40
+    )
+    @BeanProperty hakemusOid: String
+)
 
 @RestController
 @RequestMapping(path = Array("api"))
 class Controller(
     hakemuspalveluService: HakemuspalveluService,
     hakemusRepository: HakemusRepository,
+    userService: UserService,
     val auditLog: AuditLog = AuditLog
 ) {
   val LOG = LoggerFactory.getLogger(classOf[Controller])
@@ -60,21 +65,35 @@ class Controller(
     summary = "Luo uuden hakemuspalvelun hakemuksen",
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
-      content = Array(new Content(schema = new Schema(implementation = classOf[Hakemus])))),
+      content = Array(new Content(schema = new Schema(implementation = classOf[Hakemus])))
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION, content = Array(new Content(schema = new Schema(implementation = classOf[UUID])))),
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION,
+        content = Array(new Content(schema = new Schema(implementation = classOf[UUID])))
+      ),
       new ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
       new ApiResponse(responseCode = "403", description = RESPONSE_403_DESCRIPTION),
       new ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION)
-    ))
+    )
+  )
   def luoHakemus(@RequestBody hakemusBytes: Array[Byte]) =
-      try
-          val hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
-          hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
-      catch
-        case e: Exception =>
-          LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-          ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage)
+    try {
+      val user        = userService.getEnrichedUserDetails
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        ResponseEntity.status(HttpStatus.FORBIDDEN).body(RESPONSE_403_DESCRIPTION)
+      } else {
+        val hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
+        hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage)
+    }
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))

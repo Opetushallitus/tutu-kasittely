@@ -147,9 +147,9 @@ class SecurityConfig {
       .authorizeHttpRequests(requests =>
         requests
           .requestMatchers(
-            "/api/hakemus",
             "/api/healthcheck",
-            // TODO: remove /api/test when not needed
+            // TODO: remove /api/test & /api/hakemus when not needed
+            //            "/api/hakemus",
             "/api/test",
             "/api/csrf"
           )
