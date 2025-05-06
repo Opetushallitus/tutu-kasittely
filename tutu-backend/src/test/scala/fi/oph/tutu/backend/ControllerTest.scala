@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.controller.Hakemus
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.OnrService
-import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -60,7 +59,6 @@ class ControllerTest extends IntegrationTestBase {
           .content(requestJson)
       )
       .andExpect(status().isOk)
-
   }
 
   @Test
@@ -77,15 +75,6 @@ class ControllerTest extends IntegrationTestBase {
           .content(requestJson)
       )
       .andExpect(status().isInternalServerError)
-      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(
-        content().string(
-          containsString(
-            "Hakemuksen tallennus epäonnistui: " +
-              "ERROR: duplicate key value violates unique constraint \"hakemus_hakemus_oid_key\""
-          )
-        )
-      )
   }
 
   @Test

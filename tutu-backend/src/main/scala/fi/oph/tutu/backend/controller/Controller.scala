@@ -101,7 +101,7 @@ class Controller(
     } catch {
       case e: Exception =>
         LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
     }
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ

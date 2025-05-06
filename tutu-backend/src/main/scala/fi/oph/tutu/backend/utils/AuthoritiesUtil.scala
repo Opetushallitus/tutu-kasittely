@@ -15,7 +15,6 @@ object AuthoritiesUtil {
   }
   
   def hasTutuAuthorities(allAuthorities: List[String]): Boolean = {
-    System.out.println(allAuthorities)
     allAuthorities.exists(role => role.startsWith(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   }
 }
