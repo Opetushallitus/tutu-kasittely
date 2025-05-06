@@ -78,7 +78,7 @@ class Controller(
       new ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION)
     )
   )
-  def luoHakemus(@RequestBody hakemusBytes: Array[Byte]) =
+  def luoHakemus(@RequestBody hakemusBytes: Array[Byte]): ResponseEntity[Any] =
     try {
       val user        = userService.getEnrichedUserDetails
       val authorities = user.authorities
@@ -86,8 +86,17 @@ class Controller(
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
         ResponseEntity.status(HttpStatus.FORBIDDEN).body(RESPONSE_403_DESCRIPTION)
       } else {
-        val hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
-        hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
+        var hakemus: Hakemus = null
+        try {
+          hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
+        } catch {
+          case e: Exception =>
+            LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(RESPONSE_400_DESCRIPTION)
+        }
+
+        val hakemusOid = hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
+        ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
       }
     } catch {
       case e: Exception =>

@@ -91,14 +91,14 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(3)
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def luoHakemusInvalidRequestReturns500(): Unit = {
+  def luoHakemusInvalidRequestReturns400(): Unit = {
     mockMvc
       .perform(
         post("/api/hakemus")
           .contentType(MediaType.APPLICATION_JSON)
           .content("Eipä ollu oid")
       )
-      .andExpect(status().isInternalServerError)
+      .andExpect(status().isBadRequest)
   }
 
   @Test
