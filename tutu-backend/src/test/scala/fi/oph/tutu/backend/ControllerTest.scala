@@ -16,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -30,14 +31,18 @@ class ControllerTest extends IntegrationTestBase {
   @Autowired
   private val context: WebApplicationContext = null
   private var mockMvc: MockMvc               = null
-  var mockOnrService: OnrService             = _
+
+  @MockitoBean
+  var mockOnrService: OnrService = _
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer       = SecurityMockMvcConfigurers.springSecurity()
     val intermediate: DefaultMockMvcBuilder = MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    mockOnrService = mock(classOf[OnrService])
+  }
 
+  @BeforeEach
+  def setupTest(): Unit = {
     when(mockOnrService.getAsiointikieli(any[String]))
       .thenReturn(Right("fi"))
   }
