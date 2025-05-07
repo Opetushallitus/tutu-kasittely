@@ -88,6 +88,7 @@ export const doApiFetch = async (
   options?: Options,
   cache?: string,
 ) => {
+  console.log('fetch user');
   try {
     const response = await apiFetch(resource, options, cache);
     const responseUrl = new URL(response.url);

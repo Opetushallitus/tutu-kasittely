@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import fi.oph.tutu.backend.domain.UserResponse
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}

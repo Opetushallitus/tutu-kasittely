@@ -29,7 +29,7 @@ class TutuBackendApplication {
   @Bean
   def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
     override def addCorsMappings(registry: CorsRegistry): Unit = {
-      registry.addMapping("/**").allowedOrigins("https://localhost:3405")
+      registry.addMapping("/**").allowedOrigins("https://localhost:3123")
     }
   }
 }
