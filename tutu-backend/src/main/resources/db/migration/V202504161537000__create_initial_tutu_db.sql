@@ -40,7 +40,7 @@ CREATE OR REPLACE TRIGGER trg_esittelija_update_muokattu_timestamp
 -- HAKEMUS
 CREATE TABLE IF NOT EXISTS hakemus (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    hakemus_oid VARCHAR(255) NOT NULL,
+    hakemus_oid VARCHAR(255) UNIQUE NOT NULL,
     esittelija_id uuid,
     esitelty TIMESTAMPTZ,
     paatos TIMESTAMPTZ,

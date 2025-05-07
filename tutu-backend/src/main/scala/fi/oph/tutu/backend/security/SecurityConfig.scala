@@ -148,7 +148,8 @@ class SecurityConfig {
         requests
           .requestMatchers(
             "/api/healthcheck",
-            // TODO: remove /api/test when not needed
+            // TODO: remove /api/test & /api/hakemus when not needed
+            //            "/api/hakemus",
             "/api/test",
             "/api/csrf"
           )
@@ -160,7 +161,12 @@ class SecurityConfig {
       )
       .csrf(csrf =>
         csrf
-          .ignoringRequestMatchers("/api/healthcheck", "/api/csrf")
+          .ignoringRequestMatchers(
+            //TODO: tarviiko CSRF:n?
+            "/api/hakemus",
+            "/api/healthcheck",
+            "/api/csrf"
+          )
       )
       .exceptionHandling(exceptionHandling =>
         // corsin takia suoran cas uudelleenohjauksen sijaan palautetaan http 401 ja käli hoitaa forwardoinnin login apiin
