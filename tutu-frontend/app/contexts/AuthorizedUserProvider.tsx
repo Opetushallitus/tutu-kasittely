@@ -11,7 +11,7 @@ const AuthorizedUserContext = createContext<User | null>(null);
 
 export function AuthorizedUserProvider({ children }: { children: ReactNode }) {
   const user = useFetchUser();
-
+  console.log({ user });
   const { isLoading } = useQuery({
     queryKey: ['session'],
     queryFn: async () => {
