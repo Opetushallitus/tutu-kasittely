@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Hakemus } from '@/lib/types';
+import { Hakemus } from '@/lib/types/hakemus';
 
 export const getHakemukset = async (): Promise<Hakemus[]> => {
   return [

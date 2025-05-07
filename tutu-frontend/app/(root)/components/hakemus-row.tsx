@@ -1,4 +1,4 @@
-import { Hakemus } from '@/lib/types';
+import { Hakemus } from '@/lib/types/hakemus';
 import { styled, TableCell, TableRow } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)({
