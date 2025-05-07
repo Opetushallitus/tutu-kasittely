@@ -22,4 +22,7 @@ export const RAAMIT_URL = isTesting
 
 export const LOKALISOINTI_URL = `${VIRKAILIJA_URL}/lokalisointi/tolgee`;
 
-export const ASIOINTIKIELI_URL = `${VIRKAILIJA_URL}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`;
+export const TUTU_BACKEND =
+  process.env.TUTU_BACKEND ?? process.env.VIRKAILIJA_URL;
+
+export const TUTU_BACKEND_API_URL = `${TUTU_BACKEND}/tutu-backend/api`;
