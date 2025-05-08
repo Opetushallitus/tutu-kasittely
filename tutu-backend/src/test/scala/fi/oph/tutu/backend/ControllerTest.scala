@@ -20,11 +20,7 @@ import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.springframework.test.web.servlet.setup.{
-  DefaultMockMvcBuilder,
-  MockMvcBuilders,
-  MockMvcConfigurer
-}
+import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
 @AutoConfigureMockMvc
@@ -35,7 +31,7 @@ class ControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc = null
+  private var mockMvc: MockMvc               = null
 
   @MockitoBean
   var mockOnrService: OnrService = _
@@ -63,7 +59,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200(): Unit = {
-    val hakemus = Hakemus("1.2.246.562.00.00000000000000006666")
+    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -82,7 +78,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus = Hakemus("1.2.246.562.00.00000000000000006666")
+    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -113,7 +109,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus = Hakemus("1.2.246.562.00.00000000000000006667")
+    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006667")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -128,7 +124,7 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(5)
   def luoHakemusValidRequestReturns401WithoutLoggedinUser(): Unit = {
-    val hakemus = Hakemus("1.2.246.562.00.00000000000000006667")
+    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006667")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc

@@ -361,6 +361,7 @@
                     <scala>
                         <scalafmt>
                             <version>3.9.6</version>
+                            <file>.scalafmt.conf</file>
                         </scalafmt>
                     </scala>
                 </configuration>

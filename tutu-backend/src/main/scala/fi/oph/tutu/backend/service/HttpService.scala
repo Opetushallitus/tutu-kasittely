@@ -41,9 +41,9 @@ class HttpService {
   }
 
   def post(
-      client: CasClient,
-      url: String,
-      body: String
+    client: CasClient,
+    url: String,
+    body: String
   ): Either[Throwable, String] = {
     val req = new RequestBuilder()
       .setMethod("POST")

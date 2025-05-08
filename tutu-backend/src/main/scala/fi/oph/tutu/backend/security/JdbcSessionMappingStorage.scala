@@ -8,9 +8,9 @@ import org.springframework.session.{Session, SessionRepository}
 import slick.jdbc.PostgresProfile.api.*
 
 class JdbcSessionMappingStorage(
-    sessionRepository: SessionRepository[Session],
-    serviceName: String,
-    tutuDatabase: TutuDatabase
+  sessionRepository: SessionRepository[Session],
+  serviceName: String,
+  tutuDatabase: TutuDatabase
 ) extends OphSessionMappingStorage {
 
   val LOG = LoggerFactory.getLogger(classOf[JdbcSessionMappingStorage])

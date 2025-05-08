@@ -9,8 +9,8 @@ import org.springframework.stereotype.{Component, Service}
 @Component
 @Service
 class UserService(
-    onrService: OnrService,
-    authenticationFacade: AuthenticationFacade
+  onrService: OnrService,
+  authenticationFacade: AuthenticationFacade
 ) {
 
   def getEnrichedUserDetails: User = {
@@ -27,8 +27,7 @@ class UserService(
 
       User(
         userOid = username,
-        authorities =
-          AuthoritiesUtil.getTutuAuthorities(principal.getAuthorities),
+        authorities = AuthoritiesUtil.getTutuAuthorities(principal.getAuthorities),
         asiointikieli = asiointikieli
       )
     }
