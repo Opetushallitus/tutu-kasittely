@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
 import org.springframework.web.servlet.view.RedirectView
 
 import java.util
@@ -62,17 +62,29 @@ class Controller(
   def healthcheck = "Tutu is alive and kicking!"
 
   @GetMapping(path = Array("login"))
-  def login = RedirectView(tutuUiUrl)
+  def login = {
+    LOG.info("API: Login")
+    RedirectView(tutuUiUrl)
+  }
 
   @GetMapping(path = Array("session"))
-  def response: ResponseEntity[Map[String, String]] = {
+  def session: ResponseEntity[Map[String, String]] = {
+    LOG.info("API: session")
     // Palautetaan jokin paluuarvo koska client-kirjasto sellaisen haluaa
     ResponseEntity.ok(Map("status" -> "ok"))
+  }
+
+  @GetMapping(path = Array("csrf"))
+  def csrf(csrfToken: CsrfToken): String = {
+    LOG.info("API: csrf")
+
+    mapper.writeValueAsString(csrfToken)
   }
 
   @GetMapping(path = Array("user"))
   def user(): String = {
     val enrichedUserDetails = userService.getEnrichedUserDetails
+    LOG.info("API: user")
     mapper.writeValueAsString(
       UserResponse(
         user =
