@@ -2,7 +2,7 @@
 
 # Step 1: Navigate to Tutu UI directory and create certificates
 echo "Creating certificates using mkcert..."
-mkdir -p tutu-ui/certificates
+mkdir -p tutu-frontend/certificates
 cd tutu-ui/certificates || exit
 
 mkcert localhost
@@ -15,8 +15,8 @@ cd ../..
 echo "Creating the keystore for localhost..."
 
 openssl pkcs12 -export \
-    -in tutu-ui/certificates/localhost.pem \
-    -inkey tutu-ui/certificates/localhost-key.pem \
+    -in tutu-frontend/certificates/localhost.pem \
+    -inkey tutu-frontend/certificates/localhost-key.pem \
     -out tutu-backend/src/main/resources/localhost-keystore.p12 \
     -name tutu-backend \
     -passout pass:tutubackendkey

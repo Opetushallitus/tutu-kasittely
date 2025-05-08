@@ -26,7 +26,7 @@ tutu-backend.cas.password=<CAS-SALASANA>
 
 server.port=8443
 #self-signed SSL-sertifikaatti lokaalia kayttoa varten - ota pois kommenteista jos olet ajanut generate_certs.sh
-#server.ssl.key-store=classpath:keystore.p12
+#server.ssl.key-store=classpath:localhost-keystore.p12
 #server.ssl.key-store-password=tutubackendkey
 #server.ssl.key-store-type=PKCS12
 #server.ssl.key-alias=tutu-backend
