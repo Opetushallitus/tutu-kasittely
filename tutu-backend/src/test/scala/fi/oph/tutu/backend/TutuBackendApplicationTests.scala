@@ -10,7 +10,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, status}
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{
+  content,
+  status
+}
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -23,7 +26,11 @@ class TutuBackendApplicationTests extends IntegrationTestBase {
   @throws[Exception]
   def get200ResponseFromHealthcheckUnautheticated(): Unit =
     mvc
-      .perform(MockMvcRequestBuilders.get("/api/healthcheck").accept(MediaType.APPLICATION_JSON))
+      .perform(
+        MockMvcRequestBuilders
+          .get("/api/healthcheck")
+          .accept(MediaType.APPLICATION_JSON)
+      )
       .andExpect(status.isOk)
       .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
 }

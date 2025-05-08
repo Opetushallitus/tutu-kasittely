@@ -19,14 +19,16 @@ class HakemusRepository {
   final val DB_TIMEOUT = 30.seconds
   val LOG = LoggerFactory.getLogger(classOf[HakemusRepository])
 
-  implicit val getUUIDResult: GetResult[UUID] = GetResult(r => UUID.fromString(r.nextString()))
+  implicit val getUUIDResult: GetResult[UUID] =
+    GetResult(r => UUID.fromString(r.nextString()))
 
-  /**
-   * Tallentaa uuden hakemuksen
-   *
-   * @param hakemusOid hakemuspalvelun hakemuksen oid
-   * @return tallennetun hakemuksen id
-   */
+  /** Tallentaa uuden hakemuksen
+    *
+    * @param hakemusOid
+    *   hakemuspalvelun hakemuksen oid
+    * @return
+    *   tallennetun hakemuksen id
+    */
   def tallennaHakemus(hakemusOid: String, luoja: String): UUID =
     try
       db.run(
@@ -39,6 +41,9 @@ class HakemusRepository {
       )
     catch {
       case e: Exception =>
-        throw new RuntimeException(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
+        throw new RuntimeException(
+          s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
     }
 }

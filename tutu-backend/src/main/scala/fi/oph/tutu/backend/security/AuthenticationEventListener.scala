@@ -8,11 +8,18 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.stereotype.Component
-import org.springframework.web.context.request.{RequestContextHolder, ServletRequestAttributes}
+import org.springframework.web.context.request.{
+  RequestContextHolder,
+  ServletRequestAttributes
+}
 
 @Component class AuthenticationEventListener(auditLog: AuditLog) {
-  @EventListener def onAuthenticationSuccess(event: AuthenticationSuccessEvent): Unit = {
-    val target = new Target.Builder().setField("userOid", event.getAuthentication.getName).build()
+  @EventListener def onAuthenticationSuccess(
+      event: AuthenticationSuccessEvent
+  ): Unit = {
+    val target = new Target.Builder()
+      .setField("userOid", event.getAuthentication.getName)
+      .build()
     val request = getCurrentHttpRequest
     audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
@@ -20,7 +27,8 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
 
   private def getCurrentHttpRequest: HttpServletRequest = {
     val requestAttributes =
-      RequestContextHolder.getRequestAttributes.asInstanceOf[ServletRequestAttributes]
+      RequestContextHolder.getRequestAttributes
+        .asInstanceOf[ServletRequestAttributes]
     requestAttributes.getRequest
   }
 }

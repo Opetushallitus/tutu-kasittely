@@ -1,6 +1,10 @@
 package fi.oph.tutu.backend.controller
 
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.databind.{
+  DeserializationFeature,
+  ObjectMapper,
+  SerializationFeature
+}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
@@ -22,21 +26,21 @@ import scala.jdk.OptionConverters.*
 
 @Schema(name = "Hakemus")
 case class Hakemus(
-  @(Schema @field)(
-    example = "1.2.246.562.00.00000000000000006666",
-    requiredMode = RequiredMode.REQUIRED,
-    maxLength = 40
-  )
-  @BeanProperty hakemusOid: String
+    @(Schema @field)(
+      example = "1.2.246.562.00.00000000000000006666",
+      requiredMode = RequiredMode.REQUIRED,
+      maxLength = 40
+    )
+    @BeanProperty hakemusOid: String
 )
 
 @RestController
 @RequestMapping(path = Array("api"))
 class Controller(
-  hakemuspalveluService: HakemuspalveluService,
-  hakemusRepository: HakemusRepository,
-  userService: UserService,
-  val auditLog: AuditLog = AuditLog
+    hakemuspalveluService: HakemuspalveluService,
+    hakemusRepository: HakemusRepository,
+    userService: UserService,
+    val auditLog: AuditLog = AuditLog
 ) {
   val LOG = LoggerFactory.getLogger(classOf[Controller])
 
@@ -51,7 +55,8 @@ class Controller(
   @GetMapping(path = Array("healthcheck"))
   def healthcheck = "Tutu is alive and kicking!"
 
-  final val RESPONSE_200_DESCRIPTION = "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
+  final val RESPONSE_200_DESCRIPTION =
+    "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
   final val RESPONSE_400_DESCRIPTION = "Pyyntö virheellinen"
   final val RESPONSE_403_DESCRIPTION =
     "Käyttäjällä ei ole tarvittavia oikeuksia hakemusten luontiin"
@@ -66,17 +71,30 @@ class Controller(
     summary = "Luo uuden hakemuspalvelun hakemuksen",
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
-      content = Array(new Content(schema = new Schema(implementation = classOf[Hakemus])))
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[Hakemus]))
+      )
     ),
     responses = Array(
       new ApiResponse(
         responseCode = "200",
         description = RESPONSE_200_DESCRIPTION,
-        content = Array(new Content(schema = new Schema(implementation = classOf[UUID])))
+        content = Array(
+          new Content(schema = new Schema(implementation = classOf[UUID]))
+        )
       ),
-      new ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION),
-      new ApiResponse(responseCode = "403", description = RESPONSE_403_DESCRIPTION),
-      new ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION)
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
     )
   )
   def luoHakemus(@RequestBody hakemusBytes: Array[Byte]): ResponseEntity[Any] =
@@ -85,7 +103,9 @@ class Controller(
       val authorities = user.authorities
 
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        ResponseEntity.status(HttpStatus.FORBIDDEN).body(RESPONSE_403_DESCRIPTION)
+        ResponseEntity
+          .status(HttpStatus.FORBIDDEN)
+          .body(RESPONSE_403_DESCRIPTION)
       } else {
         var hakemus: Hakemus = null
         try
@@ -93,22 +113,31 @@ class Controller(
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(RESPONSE_400_DESCRIPTION)
+            return ResponseEntity
+              .status(HttpStatus.BAD_REQUEST)
+              .body(RESPONSE_400_DESCRIPTION)
         }
 
-        val hakemusOid = hakemusRepository.tallennaHakemus(hakemus.hakemusOid, "hakemuspalvelu")
+        val hakemusOid = hakemusRepository.tallennaHakemus(
+          hakemus.hakemusOid,
+          "hakemuspalvelu"
+        )
         ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
       }
     } catch {
       case e: Exception =>
         LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
+        ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(RESPONSE_500_DESCRIPTION)
     }
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))
   def testi: Unit =
-    hakemuspalveluService.getHakemus("1.2.246.562.11.00000000000002349688") match {
+    hakemuspalveluService.getHakemus(
+      "1.2.246.562.11.00000000000002349688"
+    ) match {
       case Left(error: Throwable)  => LOG.error("Error fetching: ", error)
       case Right(response: String) => LOG.info(s"Response: $response")
     }

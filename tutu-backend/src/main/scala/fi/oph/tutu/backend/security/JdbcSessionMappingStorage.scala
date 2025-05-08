@@ -8,9 +8,9 @@ import org.springframework.session.{Session, SessionRepository}
 import slick.jdbc.PostgresProfile.api.*
 
 class JdbcSessionMappingStorage(
-  sessionRepository: SessionRepository[Session],
-  serviceName: String,
-  tutuDatabase: TutuDatabase
+    sessionRepository: SessionRepository[Session],
+    serviceName: String,
+    tutuDatabase: TutuDatabase
 ) extends OphSessionMappingStorage {
 
   val LOG = LoggerFactory.getLogger(classOf[JdbcSessionMappingStorage])
@@ -36,13 +36,16 @@ class JdbcSessionMappingStorage(
   @Override
   def removeBySessionById(sessionId: String): Unit = {
     LOG.debug(s"Poistetaan sessiomappaus session id:llä $sessionId")
-    val sql = sqlu"""DELETE FROM #$mappingTableName WHERE virkailija_session_id = $sessionId"""
+    val sql =
+      sqlu"""DELETE FROM #$mappingTableName WHERE virkailija_session_id = $sessionId"""
     tutuDatabase.run(sql, "removeBySessionById")
   }
 
   @Override
   def addSessionById(mappingId: String, session: HttpSession): Unit = {
-    LOG.debug(s"Lisätään sessiomappaus, mappingId: $mappingId, sessionId: ${session.getId}")
+    LOG.debug(
+      s"Lisätään sessiomappaus, mappingId: $mappingId, sessionId: ${session.getId}"
+    )
     val sql =
       sqlu"""INSERT INTO #$mappingTableName (mapped_ticket_id, virkailija_session_id) VALUES ($mappingId, ${session.getId}) ON CONFLICT (mapped_ticket_id) DO NOTHING"""
     tutuDatabase.run(sql, "addSessionById")

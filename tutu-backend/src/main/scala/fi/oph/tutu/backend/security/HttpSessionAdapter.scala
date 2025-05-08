@@ -7,7 +7,10 @@ import org.springframework.session.{Session, SessionRepository}
 import java.time.Duration
 import java.util.{Collections, Enumeration}
 
-class HttpSessionAdapter(sessionRepository: SessionRepository[Session], session: Session) extends HttpSession {
+class HttpSessionAdapter(
+    sessionRepository: SessionRepository[Session],
+    session: Session
+) extends HttpSession {
 
   @Override
   def getCreationTime() =

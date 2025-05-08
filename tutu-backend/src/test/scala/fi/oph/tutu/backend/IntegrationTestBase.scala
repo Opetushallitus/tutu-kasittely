@@ -6,8 +6,14 @@ import org.junit.jupiter.api.{AfterAll, BeforeAll, TestInstance}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
-import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
+import org.springframework.boot.test.context.SpringBootTest.{
+  UseMainMethod,
+  WebEnvironment
+}
+import org.springframework.test.context.{
+  DynamicPropertyRegistry,
+  DynamicPropertySource
+}
 import org.testcontainers.containers.PostgreSQLContainer
 
 class OphPostgresContainer(dockerImageName: String)
@@ -23,8 +29,14 @@ object IntegrationTestBase extends Object {
   def configureProperties(registry: DynamicPropertyRegistry): Unit = {
     postgresContainer.start()
     registry.add("spring.datasource.url", () => postgresContainer.getJdbcUrl)
-    registry.add("spring.datasource.username", () => postgresContainer.getUsername)
-    registry.add("spring.datasource.password", () => postgresContainer.getPassword)
+    registry.add(
+      "spring.datasource.username",
+      () => postgresContainer.getUsername
+    )
+    registry.add(
+      "spring.datasource.password",
+      () => postgresContainer.getPassword
+    )
   }
 }
 

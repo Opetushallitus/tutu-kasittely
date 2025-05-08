@@ -2,9 +2,16 @@ package fi.oph.tutu.backend
 
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.{ApplicationArguments, ApplicationRunner, SpringApplication}
+import org.springframework.boot.{
+  ApplicationArguments,
+  ApplicationRunner,
+  SpringApplication
+}
 import org.springframework.context.annotation.{Bean, Profile}
-import org.springframework.web.servlet.config.annotation.{CorsRegistry, WebMvcConfigurer}
+import org.springframework.web.servlet.config.annotation.{
+  CorsRegistry,
+  WebMvcConfigurer
+}
 
 object TutuBackendApplication {
   val CALLER_ID = "1.2.246.562.10.00000000001.tutu-virkailija"

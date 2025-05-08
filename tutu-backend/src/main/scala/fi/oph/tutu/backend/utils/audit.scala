@@ -4,7 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.vm.sade.auditlog.{ApplicationType, Audit, Changes, Logger, Operation, Target, User}
+import fi.vm.sade.auditlog.{
+  ApplicationType,
+  Audit,
+  Changes,
+  Logger,
+  Operation,
+  Target,
+  User
+}
 import org.ietf.jgss.Oid
 import org.slf4j.LoggerFactory
 import fi.vm.sade.javautils.http.HttpServletRequestUtils
@@ -27,10 +35,15 @@ class AuditLog(val logger: Logger) {
   val audit = new Audit(logger, "tutu", ApplicationType.VIRKAILIJA)
   private val errorLogger = LoggerFactory.getLogger(classOf[AuditLog])
 
-  def logWithParams(request: HttpServletRequest, operation: Operation, raporttiParams: Map[String, Any]): Unit = {
+  def logWithParams(
+      request: HttpServletRequest,
+      operation: Operation,
+      raporttiParams: Map[String, Any]
+  ): Unit = {
     try {
       val paramsJson = toJson(raporttiParams)
-      val target = new Target.Builder().setField("parametrit", paramsJson).build()
+      val target =
+        new Target.Builder().setField("parametrit", paramsJson).build()
       audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {
       case e: Exception =>
@@ -61,17 +74,25 @@ class AuditLog(val logger: Logger) {
   def getUser(request: HttpServletRequest): User = {
     val userOid = getCurrentPersonOid()
     val ip = getInetAddress(request)
-    new User(userOid, ip, request.getSession(false).getId(), Option(request.getHeader("User-Agent")).getOrElse("Tuntematon user agent"))
+    new User(
+      userOid,
+      ip,
+      request.getSession(false).getId(),
+      Option(request.getHeader("User-Agent")).getOrElse("Tuntematon user agent")
+    )
   }
 
   def getCurrentPersonOid(): Oid = {
-    val authentication: Authentication = SecurityContextHolder.getContext().getAuthentication()
+    val authentication: Authentication =
+      SecurityContextHolder.getContext().getAuthentication()
     if (authentication != null) {
       try {
         new Oid(authentication.getName())
       } catch {
         case e: Exception =>
-          errorLogger.error(s"Käyttäjän oidin luonti epäonnistui: ${authentication.getName}")
+          errorLogger.error(
+            s"Käyttäjän oidin luonti epäonnistui: ${authentication.getName}"
+          )
           throw AuditException(e.getMessage)
       }
     } else {
