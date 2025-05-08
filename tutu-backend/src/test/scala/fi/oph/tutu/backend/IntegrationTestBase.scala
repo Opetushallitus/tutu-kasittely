@@ -41,8 +41,8 @@ class IntegrationTestBase {
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   val POSTGRES_DATABASENAME = "tutu"
-  val POSTGRES_USERNAME     = "app"
-  val POSTGRES_PASSWORD     = "app"
+  val POSTGRES_USERNAME = "app"
+  val POSTGRES_PASSWORD = "app"
 
   val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
 

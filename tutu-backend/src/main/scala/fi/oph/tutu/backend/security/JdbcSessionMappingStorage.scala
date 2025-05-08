@@ -7,16 +7,24 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.session.{Session, SessionRepository}
 import slick.jdbc.PostgresProfile.api.*
 
-class JdbcSessionMappingStorage(sessionRepository: SessionRepository[Session], serviceName: String, tutuDatabase: TutuDatabase) extends OphSessionMappingStorage {
+class JdbcSessionMappingStorage(
+  sessionRepository: SessionRepository[Session],
+  serviceName: String,
+  tutuDatabase: TutuDatabase
+) extends OphSessionMappingStorage {
 
   val LOG = LoggerFactory.getLogger(classOf[JdbcSessionMappingStorage])
 
   val mappingTableName = "virkailija_cas_client_session"
   val sessionTableName = "virkailija_session"
+
   @Override
   def removeSessionByMappingId(mappingId: String): HttpSession = {
     LOG.debug(s"Poistetaan sessiomappaus cas tiketillä $mappingId")
-    val query = sql"""SELECT virkailija_session_id FROM #$mappingTableName WHERE mapped_ticket_id = $mappingId""".as[String].headOption
+    val query =
+      sql"""SELECT virkailija_session_id FROM #$mappingTableName WHERE mapped_ticket_id = $mappingId"""
+        .as[String]
+        .headOption
     val sessionIdOpt = tutuDatabase.run(query, "selectSessionIdByMappingId")
 
     sessionIdOpt
@@ -35,14 +43,16 @@ class JdbcSessionMappingStorage(sessionRepository: SessionRepository[Session], s
   @Override
   def addSessionById(mappingId: String, session: HttpSession): Unit = {
     LOG.debug(s"Lisätään sessiomappaus, mappingId: $mappingId, sessionId: ${session.getId}")
-    val sql = sqlu"""INSERT INTO #$mappingTableName (mapped_ticket_id, virkailija_session_id) VALUES ($mappingId, ${session.getId}) ON CONFLICT (mapped_ticket_id) DO NOTHING"""
+    val sql =
+      sqlu"""INSERT INTO #$mappingTableName (mapped_ticket_id, virkailija_session_id) VALUES ($mappingId, ${session.getId}) ON CONFLICT (mapped_ticket_id) DO NOTHING"""
     tutuDatabase.run(sql, "addSessionById")
   }
 
   @Override
   def clean(): Unit = {
     LOG.debug("Siivotaan sessiomappaukset joille ei löydy sessiota")
-    val sql = sqlu"""DELETE FROM #$mappingTableName WHERE virkailija_session_id NOT IN (SELECT session_id FROM #$sessionTableName)"""
+    val sql =
+      sqlu"""DELETE FROM #$mappingTableName WHERE virkailija_session_id NOT IN (SELECT session_id FROM #$sessionTableName)"""
     tutuDatabase.run(sql, "clean")
   }
 

@@ -21,10 +21,9 @@ class TutuBackendApplicationTests extends IntegrationTestBase {
 
   @Test
   @throws[Exception]
-  def get200ResponseFromHealthcheckUnautheticated(): Unit = {
+  def get200ResponseFromHealthcheckUnautheticated(): Unit =
     mvc
       .perform(MockMvcRequestBuilders.get("/api/healthcheck").accept(MediaType.APPLICATION_JSON))
       .andExpect(status.isOk)
       .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
-  }
 }

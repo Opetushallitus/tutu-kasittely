@@ -10,64 +10,50 @@ import java.util.{Collections, Enumeration}
 class HttpSessionAdapter(sessionRepository: SessionRepository[Session], session: Session) extends HttpSession {
 
   @Override
-  def getCreationTime() = {
+  def getCreationTime() =
     session.getCreationTime().toEpochMilli();
-  }
 
   @Override
-  def getId(): String = {
+  def getId(): String =
     session.getId();
-  }
 
   @Override
-  def getLastAccessedTime() = {
+  def getLastAccessedTime() =
     session.getLastAccessedTime().toEpochMilli();
-  }
 
   @Override
-  def getServletContext(): ServletContext = {
+  def getServletContext(): ServletContext =
     throw new UnsupportedOperationException("Not implemented");
-  }
 
   @Override
-  def setMaxInactiveInterval(interval: Int) = {
+  def setMaxInactiveInterval(interval: Int) =
     session.setMaxInactiveInterval(Duration.ofSeconds(interval));
-  }
 
   @Override
-  def getMaxInactiveInterval(): Int = {
+  def getMaxInactiveInterval(): Int =
     session.getMaxInactiveInterval().getSeconds().toInt;
-  }
 
   @Override
-  def getAttribute(name: String): Object = {
+  def getAttribute(name: String): Object =
     session.getAttribute(name);
-  }
 
   @Override
-  def getAttributeNames(): Enumeration[String] = {
+  def getAttributeNames(): Enumeration[String] =
     Collections.enumeration(session.getAttributeNames());
-  }
 
   @Override
-  def setAttribute(name: String, value: Object): Unit = {
+  def setAttribute(name: String, value: Object): Unit =
     session.setAttribute(name, value);
-  }
 
   @Override
-  def removeAttribute(name: String): Unit = {
+  def removeAttribute(name: String): Unit =
     session.removeAttribute(name);
-  }
 
   @Override
-  def invalidate(): Unit = {
+  def invalidate(): Unit =
     sessionRepository.deleteById(session.getId());
-  }
 
   @Override
-  def isNew(): Boolean = {
+  def isNew(): Boolean =
     false;
-  }
 }
-
-
