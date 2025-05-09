@@ -1,14 +1,14 @@
-import { redirect } from 'next/navigation';
+import { configuration } from '../configuration';
 import { FetchError, PermissionError } from '@/lib/common';
-import { TUTU_BACKEND_API_URL } from '@/lib/configuration';
+import { redirect } from 'next/navigation';
 
 let _csrfToken: string;
-const loginUrl = `${TUTU_BACKEND_API_URL}/login`;
+const loginUrl = `${configuration.tutuBackendApiUrl}/login`;
 const isServer = typeof window === 'undefined';
 
 async function csrfToken() {
   if (!_csrfToken) {
-    const response = await fetch(`${TUTU_BACKEND_API_URL}/csrf`, {
+    const response = await fetch(`${configuration.tutuBackendApiUrl}/csrf`, {
       credentials: 'include',
     });
     const data = await response.json();
@@ -31,7 +31,7 @@ export async function apiFetch(
   try {
     const queryParams = options?.queryParams ? options.queryParams : '';
     const response = await fetch(
-      `${TUTU_BACKEND_API_URL}/${resource}${queryParams}`,
+      `${configuration.tutuBackendApiUrl}/${resource}${queryParams}`,
       {
         ...options,
         credentials: 'include',
@@ -88,7 +88,6 @@ export const doApiFetch = async (
   options?: Options,
   cache?: string,
 ) => {
-  console.log('fetch user');
   try {
     const response = await apiFetch(resource, options, cache);
     const responseUrl = new URL(response.url);
