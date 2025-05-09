@@ -6,9 +6,9 @@ start-postgresql:
 [working-directory: 'tutu-backend']
 wait-for-db:
     @echo "🕐 Waiting for PostgreSQL to be ready..."
-    until docker exec tutu-postgres pg_isready -U app -d tutu > /dev/null 2>&1; do \
-        echo "🕐 Still waiting..."; \
-        sleep 5; \
+    @until docker exec tutu-postgres pg_isready -U app -d tutu > /dev/null 2>&1; do \
+        @echo "🕐 Still waiting..."; \
+        @sleep 5; \
     done
     @echo "✅ PostgreSQL is ready!"
 
@@ -44,8 +44,8 @@ start-all:
     @echo "🚀 Starting tutu, hit CTRL+C few times to quit."
     just start-db-and-wait
     just start-dev-backend &
-    until curl -s http://localhost:8443/tutu-backend/api/healthcheck | grep -q 'Tutu' || curl -s https://localhost:8443/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
-        echo "⏳ Waiting for tutu-backend to get up..."; \
+    @until curl -s http://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu' || curl -s https://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
+        echo "🕐 Waiting for tutu-backend to get up..."; \
         sleep 5; \
     done; \
     

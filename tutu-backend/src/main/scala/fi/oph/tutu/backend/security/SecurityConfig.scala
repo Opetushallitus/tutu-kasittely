@@ -147,11 +147,11 @@ class SecurityConfig {
       .authorizeHttpRequests(requests =>
         requests
           .requestMatchers(
+            "/api/csrf",
             "/api/healthcheck",
             // TODO: remove /api/test & /api/hakemus when not needed
             //            "/api/hakemus",
-            "/api/test",
-            "/api/csrf"
+            "/api/test"
           )
           .permitAll()
           .requestMatchers(SWAGGER_WHITELIST *)
@@ -162,8 +162,6 @@ class SecurityConfig {
       .csrf(csrf =>
         csrf
           .ignoringRequestMatchers(
-            //TODO: tarviiko CSRF:n?
-            "/api/hakemus",
             "/api/healthcheck",
             "/api/csrf"
           )

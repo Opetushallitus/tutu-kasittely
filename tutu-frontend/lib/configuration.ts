@@ -1,18 +1,19 @@
+export const DOMAIN =
+  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
+
 export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
 export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
+export const isLocalhost = DOMAIN.includes('localhost');
+
 export const isTesting = Boolean(process.env.TEST);
 
 export const cookieName = process.env.COOKIE_NAME ?? 'JSESSIONID';
 
 export const APP_URL = process.env.APP_URL;
-
-export const API_URL = process.env.API_URL;
-
-export const LOGIN_URL = `${API_URL}/login`;
 
 export const VIRKAILIJA_URL = process.env.VIRKAILIJA_URL;
 
@@ -26,3 +27,10 @@ export const TUTU_BACKEND =
   process.env.TUTU_BACKEND ?? process.env.VIRKAILIJA_URL;
 
 export const TUTU_BACKEND_API_URL = `${TUTU_BACKEND}/tutu-backend/api`;
+
+export const configuration = {
+  raamitUrl: `${DOMAIN}/virkailija-raamit/apply-raamit.js`,
+  tutuBackendApiUrl: `${TUTU_BACKEND}/tutu-backend/api`,
+  virkailijaUrl: DOMAIN,
+  lokalisointiPrefix: `${DOMAIN}/lokalisointi/tolgee`,
+} as const;

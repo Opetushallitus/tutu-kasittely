@@ -19,12 +19,12 @@ flyway.locations=classpath:db/migration
 opintopolku.virkailija.url=https://virkailija.hahtuvaopintopolku.fi
 cas.url=${opintopolku.virkailija.url}/cas
 tutu.ui.url=https://localhost:3123
-tutu.backend.url=https://localhost:8443/tutu-backend
+tutu.backend.url=https://localhost:8444/tutu-backend
 tutu-backend.cas.username=<CAS-KAYTTAJATUNNUS>
 tutu-backend.cas.password=<CAS-SALASANA>
 #logging.level.org.springframework.cache=TRACE
 
-server.port=8443
+server.port=8444
 #self-signed SSL-sertifikaatti lokaalia kayttoa varten - ota pois kommenteista jos olet ajanut generate_certs.sh
 #server.ssl.key-store=classpath:localhost-keystore.p12
 #server.ssl.key-store-password=tutubackendkey
@@ -53,4 +53,4 @@ Nämä saa luotua ajamalla projektin juuressa skriptin `generate_certs.sh`.
 
 # Swagger
 
-Tutu-backendin rajapinnat on dokumentoitu Swaggeriä käyttäen ja se löytyy osoitteesta: `http://localhost:8443/tutu-backend/swagger-ui/index.html`.
+Tutu-backendin rajapinnat on dokumentoitu Swaggeriä käyttäen ja se löytyy osoitteesta: `http://localhost:8444/tutu-backend/swagger-ui/index.html`.

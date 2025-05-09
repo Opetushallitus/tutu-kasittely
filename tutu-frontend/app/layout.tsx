@@ -10,6 +10,7 @@ import {
 import { ophColors, THEME_OVERRIDES } from '@/lib/theme';
 import { LocalizedThemeProvider } from '@/components/providers/localized-theme-provider';
 import ReactQueryClientProvider from '@/components/providers/react-query-client-provider';
+import { AuthorizedUserProvider } from '@/app/contexts/AuthorizedUserProvider';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',
@@ -35,9 +36,13 @@ export default function RootLayout({
             <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
               <ReactQueryClientProvider>
                 <MyTolgeeProvider>
-                  <LocalizationProvider>
-                    <LocalizedThemeProvider>{children}</LocalizedThemeProvider>
-                  </LocalizationProvider>
+                  <AuthorizedUserProvider>
+                    <LocalizationProvider>
+                      <LocalizedThemeProvider>
+                        {children}
+                      </LocalizedThemeProvider>
+                    </LocalizationProvider>
+                  </AuthorizedUserProvider>
                 </MyTolgeeProvider>
               </ReactQueryClientProvider>
             </OphNextJsThemeProvider>
