@@ -26,7 +26,7 @@ class OnrService(httpService: HttpService) {
   @Autowired
   val cacheManager: CacheManager = null
 
-  lazy private val onrCasClient: CasClient = CasClientBuilder.build(
+  private lazy val onrCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -55,9 +55,8 @@ class OnrService(httpService: HttpService) {
 
   @CacheEvict(value = Array("asiointikieli"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyAsiointikieliCache(): Unit = {
+  def emptyAsiointikieliCache(): Unit =
     LOG.info("Emptying asiointikieli cache")
-  }
 
   @CachePut(Array("asiointikieli"))
   private def updateCached(personOid: String, value: String): Unit = {

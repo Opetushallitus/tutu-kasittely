@@ -26,7 +26,7 @@ class KoodistoService(httpService: HttpService) {
   @Autowired
   val cacheManager: CacheManager = null
 
-  lazy private val koodistoCasClient: CasClient = CasClientBuilder.build(
+  private lazy val koodistoCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -42,18 +42,19 @@ class KoodistoService(httpService: HttpService) {
   )
 
   @Cacheable(value = Array("koodisto"))
-  def getKoodisto(koodisto: String): Either[Throwable, String] = {
-    httpService.get(koodistoCasClient, s"$opintopolku_virkailija_domain/koodisto-service/rest/json/$koodisto/koodi") match {
+  def getKoodisto(koodisto: String): Either[Throwable, String] =
+    httpService.get(
+      koodistoCasClient,
+      s"$opintopolku_virkailija_domain/koodisto-service/rest/json/$koodisto/koodi"
+    ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
-  }
 
   @CacheEvict(value = Array("koodisto"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyKoodistoCache(): Unit = {
+  def emptyKoodistoCache(): Unit =
     LOG.info("Emptying koodisto-cache")
-  }
 
   @CachePut(Array("koodisto"))
   private def updateCached(koodisto: String, value: String): Unit = {
@@ -61,5 +62,3 @@ class KoodistoService(httpService: HttpService) {
     koodistoCache.put(koodisto, value)
   }
 }
-
-

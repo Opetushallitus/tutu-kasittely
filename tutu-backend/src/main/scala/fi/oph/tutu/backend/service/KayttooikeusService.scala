@@ -20,7 +20,7 @@ class KayttooikeusService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  lazy private val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
+  private lazy val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -36,7 +36,8 @@ class KayttooikeusService(httpService: HttpService) {
   )
 
   def getEsittelijat: Either[Throwable, String] = {
-    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID = "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
+    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID =
+      "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
     httpService.get(
       kayttooikeusCasClient,
       s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"

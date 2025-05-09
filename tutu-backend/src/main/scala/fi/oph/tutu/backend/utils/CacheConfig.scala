@@ -14,11 +14,10 @@ import java.util.concurrent.TimeUnit
 class CacheConfig {
 
   @Bean
-  def caffeineConfig(): Caffeine[AnyRef, AnyRef] = {
+  def caffeineConfig(): Caffeine[AnyRef, AnyRef] =
     Caffeine
       .newBuilder()
       .expireAfterWrite(60, TimeUnit.MINUTES);
-  }
 
   @Bean
   def cacheManager(caffeine: Caffeine[AnyRef, AnyRef]): CaffeineCacheManager = {

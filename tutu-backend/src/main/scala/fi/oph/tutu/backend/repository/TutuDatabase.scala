@@ -15,9 +15,9 @@ import scala.concurrent.duration.Duration
 
 @Component
 class TutuDatabase(
-    @Value("${spring.datasource.url}") url: String,
-    @Value("${spring.datasource.username}") username: String,
-    @Value("${spring.datasource.password}") password: String
+  @Value("${spring.datasource.url}") url: String,
+  @Value("${spring.datasource.username}") username: String,
+  @Value("${spring.datasource.password}") password: String
 ) {
 
   val LOG = LoggerFactory.getLogger(classOf[TutuDatabase]);

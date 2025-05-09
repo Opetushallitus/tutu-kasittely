@@ -8,9 +8,14 @@ import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class UserService(onrService: OnrService, authenticationFacade: AuthenticationFacade) {
+class UserService(
+  onrService: OnrService,
+  authenticationFacade: AuthenticationFacade
+) {
+
   def getEnrichedUserDetails: User = {
-    val principal = authenticationFacade.getAuthentication.getPrincipal.asInstanceOf[UserDetails]
+    val principal = authenticationFacade.getAuthentication.getPrincipal
+      .asInstanceOf[UserDetails]
     if (principal == null) {
       null
     } else {

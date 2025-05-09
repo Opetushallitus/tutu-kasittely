@@ -28,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
 class ControllerTest extends IntegrationTestBase {
+
   @Autowired
   private val context: WebApplicationContext = null
   private var mockMvc: MockMvc               = null
@@ -36,23 +37,27 @@ class ControllerTest extends IntegrationTestBase {
   var mockOnrService: OnrService = _
 
   @BeforeAll def setup(): Unit = {
-    val configurer: MockMvcConfigurer       = SecurityMockMvcConfigurers.springSecurity()
-    val intermediate: DefaultMockMvcBuilder = MockMvcBuilders.webAppContextSetup(context).apply(configurer)
+    val configurer: MockMvcConfigurer =
+      SecurityMockMvcConfigurers.springSecurity()
+    val intermediate: DefaultMockMvcBuilder =
+      MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
   }
 
   @BeforeEach
-  def setupTest(): Unit = {
+  def setupTest(): Unit =
     when(mockOnrService.getAsiointikieli(any[String]))
       .thenReturn(Right("fi"))
-  }
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
 
   @Test
   @Order(1)
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(
+    value = "kayttaja",
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
   def luoHakemusValidRequestReturns200(): Unit = {
     val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
     val requestJson = mapper.writeValueAsString(hakemus)
@@ -68,7 +73,10 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(2)
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(
+    value = "kayttaja",
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
     val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
     val requestJson = mapper.writeValueAsString(hakemus)
@@ -84,8 +92,11 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(3)
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def luoHakemusInvalidRequestReturns400(): Unit = {
+  @WithMockUser(
+    value = "kayttaja",
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoHakemusInvalidRequestReturns400(): Unit =
     mockMvc
       .perform(
         post("/api/hakemus")
@@ -93,7 +104,6 @@ class ControllerTest extends IntegrationTestBase {
           .content("Eipä ollu oid")
       )
       .andExpect(status().isBadRequest)
-  }
 
   @Test
   @Order(4)

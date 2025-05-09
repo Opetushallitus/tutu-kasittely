@@ -24,20 +24,24 @@ object AuditLog extends AuditLog(AuditLogger)
 
 class AuditLog(val logger: Logger) {
 
-  val audit = new Audit(logger, "tutu", ApplicationType.VIRKAILIJA)
+  val audit               = new Audit(logger, "tutu", ApplicationType.VIRKAILIJA)
   private val errorLogger = LoggerFactory.getLogger(classOf[AuditLog])
 
-  def logWithParams(request: HttpServletRequest, operation: Operation, raporttiParams: Map[String, Any]): Unit = {
+  def logWithParams(
+    request: HttpServletRequest,
+    operation: Operation,
+    raporttiParams: Map[String, Any]
+  ): Unit =
     try {
       val paramsJson = toJson(raporttiParams)
-      val target = new Target.Builder().setField("parametrit", paramsJson).build()
+      val target =
+        new Target.Builder().setField("parametrit", paramsJson).build()
       audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {
       case e: Exception =>
         errorLogger.error(s"Auditlokitus epäonnistui: ${e.getMessage}")
         throw AuditException(e.getMessage)
     }
-  }
 
   val mapper = {
     // luodaan objectmapper jonka pitäisi pystyä serialisoimaan "kaikki mahdollinen"
@@ -48,30 +52,37 @@ class AuditLog(val logger: Logger) {
     mapper
   }
 
-  def toJson(value: Any): String = {
-    try {
+  def toJson(value: Any): String =
+    try
       mapper.writeValueAsString(value)
-    } catch {
+    catch {
       case e: Exception =>
         errorLogger.error("JSON-konversio epäonnistui: " + e.getMessage)
         throw AuditException(e.getMessage)
     }
-  }
 
   def getUser(request: HttpServletRequest): User = {
     val userOid = getCurrentPersonOid()
-    val ip = getInetAddress(request)
-    new User(userOid, ip, request.getSession(false).getId(), Option(request.getHeader("User-Agent")).getOrElse("Tuntematon user agent"))
+    val ip      = getInetAddress(request)
+    new User(
+      userOid,
+      ip,
+      request.getSession(false).getId(),
+      Option(request.getHeader("User-Agent")).getOrElse("Tuntematon user agent")
+    )
   }
 
   def getCurrentPersonOid(): Oid = {
-    val authentication: Authentication = SecurityContextHolder.getContext().getAuthentication()
+    val authentication: Authentication =
+      SecurityContextHolder.getContext().getAuthentication()
     if (authentication != null) {
-      try {
+      try
         new Oid(authentication.getName())
-      } catch {
+      catch {
         case e: Exception =>
-          errorLogger.error(s"Käyttäjän oidin luonti epäonnistui: ${authentication.getName}")
+          errorLogger.error(
+            s"Käyttäjän oidin luonti epäonnistui: ${authentication.getName}"
+          )
           throw AuditException(e.getMessage)
       }
     } else {
@@ -79,9 +90,8 @@ class AuditLog(val logger: Logger) {
     }
   }
 
-  def getInetAddress(request: HttpServletRequest): InetAddress = {
+  def getInetAddress(request: HttpServletRequest): InetAddress =
     InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
-  }
 }
 
 trait AuditOperation extends Operation {
