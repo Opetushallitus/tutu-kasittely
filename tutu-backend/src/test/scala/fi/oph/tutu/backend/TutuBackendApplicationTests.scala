@@ -31,19 +31,18 @@ class TutuBackendApplicationTests extends IntegrationTestBase {
       )
       .andExpect(status.isOk)
       .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
-  }
 
   @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
-  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit = {
-    mvc.perform(MockMvcRequestBuilders.get("/api/session"))
+  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit =
+    mvc
+      .perform(MockMvcRequestBuilders.get("/api/session"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-  }
 
   @Test
-  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit = {
-    mvc.perform(MockMvcRequestBuilders.get("/api/session"))
+  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit =
+    mvc
+      .perform(MockMvcRequestBuilders.get("/api/session"))
       .andExpect(status().isUnauthorized)
-  }
 }

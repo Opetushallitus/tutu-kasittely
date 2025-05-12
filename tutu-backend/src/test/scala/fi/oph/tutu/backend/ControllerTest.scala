@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
@@ -65,6 +66,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         post("/api/hakemus")
+          .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
       )
@@ -84,6 +86,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         post("/api/hakemus")
+          .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
       )
@@ -100,6 +103,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         post("/api/hakemus")
+          .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content("Eipä ollu oid")
       )
@@ -115,6 +119,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         post("/api/hakemus")
+          .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
       )
@@ -130,6 +135,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         post("/api/hakemus")
+          .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
       )
