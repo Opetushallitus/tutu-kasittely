@@ -1,12 +1,6 @@
-import { ServerResponse, createServer } from 'http';
+import { createServer } from 'http';
 
 const port = 3104;
-
-const modifyResponse = (response: ServerResponse, body: unknown) => {
-  response.setHeader('content-type', 'application/json');
-  response.write(JSON.stringify(body));
-  response.end();
-};
 
 export default async function playwrightSetup() {
   const server = createServer(async (request, response) => {
@@ -16,24 +10,6 @@ export default async function playwrightSetup() {
       return;
     } else if (request.url?.endsWith(`favicon.ico`)) {
       response.writeHead(404);
-      response.end();
-      return;
-    } else if (
-      request.url?.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
-    ) {
-      return modifyResponse(response, {
-        organisaatiot: [
-          {
-            organisaatioOid: 'OPH_ORGANIZATION_OID',
-            kayttooikeudet: [{ palvelu: 'SERVICE_KEY', oikeus: 'CRUD' }],
-          },
-        ],
-      });
-    } else if (request.url?.endsWith('/parentoids')) {
-      return modifyResponse(response, ['OPH_ORGANIZATION_OID']);
-    } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
-      response.setHeader('content-type', 'text/plain');
-      response.write('fi');
       response.end();
       return;
     } else {
