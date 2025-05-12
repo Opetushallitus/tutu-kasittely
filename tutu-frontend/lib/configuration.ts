@@ -26,10 +26,8 @@ export const LOKALISOINTI_URL = `${VIRKAILIJA_URL}/lokalisointi/tolgee`;
 export const TUTU_BACKEND =
   process.env.TUTU_BACKEND ?? process.env.VIRKAILIJA_URL;
 
-export const TUTU_BACKEND_API_URL = `${TUTU_BACKEND}/tutu-backend/api`;
-
 export const configuration = {
-  raamitUrl: `${DOMAIN}/virkailija-raamit/apply-raamit.js`,
+  raamitUrl: RAAMIT_URL,
   tutuBackendApiUrl: `${TUTU_BACKEND}/tutu-backend/api`,
   virkailijaUrl: DOMAIN,
   lokalisointiPrefix: `${DOMAIN}/lokalisointi/tolgee`,
