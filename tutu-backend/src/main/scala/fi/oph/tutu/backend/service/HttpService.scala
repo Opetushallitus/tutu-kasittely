@@ -13,7 +13,6 @@ import scala.jdk.javaapi.FutureConverters.asScala
 
 @Component
 class HttpService {
-
   private val LOG: Logger = LoggerFactory.getLogger(classOf[HttpService])
 
   def get(client: CasClient, url: String): Either[Throwable, String] = {
@@ -29,7 +28,9 @@ class HttpService {
           LOG.error(
             s"GET request to ${url} failed with: ${r.getStatusCode} ${r.getStatusText} ${r.getResponseBody()}"
           )
-          Left(new RuntimeException("GET request failed: " + r.getResponseBody()))
+          Left(
+            new RuntimeException("GET request failed: " + r.getResponseBody())
+          )
       }
 
       Await.result(result, Duration(10, TimeUnit.SECONDS))
@@ -39,7 +40,11 @@ class HttpService {
     }
   }
 
-  def post(client: CasClient, url: String, body: String): Either[Throwable, String] = {
+  def post(
+    client: CasClient,
+    url: String,
+    body: String
+  ): Either[Throwable, String] = {
     val req = new RequestBuilder()
       .setMethod("POST")
       .setUrl(url)
@@ -53,7 +58,9 @@ class HttpService {
           LOG.error(
             s"POST request to ${url} failed with: ${r.getStatusCode} ${r.getStatusText} ${r.getResponseBody()}"
           )
-          Left(new RuntimeException("POST request failed: " + r.getResponseBody()))
+          Left(
+            new RuntimeException("POST request failed: " + r.getResponseBody())
+          )
       }
 
       Await.result(result, Duration(10, TimeUnit.SECONDS))
