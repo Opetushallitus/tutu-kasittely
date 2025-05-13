@@ -2,9 +2,10 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.controller.Hakemus
+import fi.oph.tutu.backend.domain.{Hakemus, HakemusOid}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.OnrService
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -13,7 +14,7 @@ import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.context.support.{WithAnonymousUser, WithMockUser}
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
@@ -54,13 +55,38 @@ class ControllerTest extends IntegrationTestBase {
   mapper.registerModule(DefaultScalaModule)
 
   @Test
+  def get200ResponseFromHealthcheckUnautheticated(): Unit =
+    mockMvc
+      .perform(
+        get("/api/healthcheck")
+          .accept(MediaType.APPLICATION_JSON)
+      )
+      .andExpect(status.isOk)
+      .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
+
+  @Test
+  @WithMockUser(username = "testuser", roles = Array("USER"))
+  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi: Unit =
+    mockMvc
+      .perform(get("/api/session"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+  @Test
+  @WithAnonymousUser
+  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi: Unit =
+    mockMvc
+      .perform(get("/api/session"))
+      .andExpect(status().isUnauthorized)
+
+  @Test
   @Order(1)
   @WithMockUser(
     value = "kayttaja",
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200(): Unit = {
-    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -80,7 +106,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006666")
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -100,12 +126,15 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusInvalidRequestReturns400(): Unit =
+    val hakemus =
+      "1.2.246.562.XX"
+    val requestJson = mapper.writeValueAsString(hakemus)
     mockMvc
       .perform(
         post("/api/hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
-          .content("Eipä ollu oid")
+          .content(requestJson)
       )
       .andExpect(status().isBadRequest)
 
@@ -113,7 +142,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006667")
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -128,8 +157,9 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(5)
-  def luoHakemusValidRequestReturns401WithoutLoggedinUser(): Unit = {
-    val hakemus     = Hakemus("1.2.246.562.00.00000000000000006667")
+  @WithAnonymousUser
+  def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc

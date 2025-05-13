@@ -2,15 +2,14 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.UserResponse
+import fi.oph.tutu.backend.domain.{Hakemus, UserResponse}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.security.web.csrf.CsrfToken
@@ -19,19 +18,6 @@ import org.springframework.web.servlet.view.RedirectView
 
 import java.util
 import java.util.UUID
-import scala.annotation.meta.field
-import scala.beans.BeanProperty
-import scala.jdk.OptionConverters.*
-
-@Schema(name = "Hakemus")
-case class Hakemus(
-  @(Schema @field)(
-    example = "1.2.246.562.00.00000000000000006666",
-    requiredMode = RequiredMode.REQUIRED,
-    maxLength = 40
-  )
-  @BeanProperty hakemusOid: String
-)
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -41,7 +27,7 @@ class Controller(
   userService: UserService,
   val auditLog: AuditLog = AuditLog
 ) {
-  val LOG = LoggerFactory.getLogger(classOf[Controller])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -143,12 +129,18 @@ class Controller(
               .status(HttpStatus.BAD_REQUEST)
               .body(RESPONSE_400_DESCRIPTION)
         }
-
-        val hakemusOid = hakemusRepository.tallennaHakemus(
-          hakemus.hakemusOid,
-          "hakemuspalvelu"
-        )
-        ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
+        if (!hakemus.hakemusOid.isValid) {
+          LOG.error(s"Hakemuksen luonti epäonnistui, virheellinen hakemusOid: ${hakemus.hakemusOid}")
+          ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(RESPONSE_400_DESCRIPTION)
+        } else {
+          val hakemusOid = hakemusRepository.tallennaHakemus(
+            hakemus.hakemusOid,
+            "hakemuspalvelu"
+          )
+          ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
+        }
       }
     } catch {
       case e: Exception =>
@@ -160,7 +152,7 @@ class Controller(
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))
-  def testi: Unit =
+  def testi(): Unit =
     hakemuspalveluService.getHakemus(
       "1.2.246.562.11.00000000000002349688"
     ) match {
