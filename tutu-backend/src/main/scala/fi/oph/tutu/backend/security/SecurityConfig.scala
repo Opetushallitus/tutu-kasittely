@@ -151,7 +151,8 @@ class SecurityConfig {
             // TODO: remove /api/test & /api/hakemus when not needed
             //            "/api/hakemus",
             "/api/test",
-            "/api/csrf"
+            "/api/csrf",
+            "/api/ataru-hakemus/*"
           )
           .permitAll()
           .requestMatchers(SWAGGER_WHITELIST *)
@@ -165,7 +166,8 @@ class SecurityConfig {
             //TODO: tarviiko CSRF:n?
             "/api/hakemus",
             "/api/healthcheck",
-            "/api/csrf"
+            "/api/csrf",
+            "/api/ataru-hakemus/*"
           )
       )
       .exceptionHandling(exceptionHandling =>
