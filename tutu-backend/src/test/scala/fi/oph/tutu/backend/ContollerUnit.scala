@@ -27,29 +27,28 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 
 import java.util.UUID
 
-
 // TODO: Mockito Qualifiers!
 
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
 
   @MockitoBean
-  private val hakemuspalveluService : HakemuspalveluService = null
+  private val hakemuspalveluService: HakemuspalveluService = null
 
   @MockitoBean
-  private val userService : UserService = null
+  private val userService: UserService = null
 
   @MockitoBean
-  private val hakemusRepository : HakemusRepository = null
+  private val hakemusRepository: HakemusRepository = null
 
   @MockitoBean
-  private val auditLog : AuditLog = null
+  private val auditLog: AuditLog = null
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def haeAtaruHakemusValidRequestReturns200(@Autowired mvc : MockMvc): Unit = {
+  def haeAtaruHakemusValidRequestReturns200(@Autowired mvc: MockMvc): Unit = {
 
-    val hakemusResult : String = """{
+    val hakemusResult: String = """{
       "haku": null,
       "key": "1.2.246.562.11.00000000000002354669",
       "content": {
@@ -103,14 +102,16 @@ class ControllerUnitTest {
 
     when(auditLog.toJson("")).thenReturn("")
 
-    mvc.perform(
-      get("/api/ataru-hakemus/1")
-    ).andExpect(status().isOk)
+    mvc
+      .perform(
+        get("/api/ataru-hakemus/1")
+      )
+      .andExpect(status().isOk)
   }
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def haeAtaruHakemusValidRequestReturns404(@Autowired mvc : MockMvc): Unit = {
+  def haeAtaruHakemusValidRequestReturns404(@Autowired mvc: MockMvc): Unit = {
 
     when(
       hakemuspalveluService.getAtaruHakemus("2")
@@ -126,8 +127,10 @@ class ControllerUnitTest {
 
     when(auditLog.toJson("")).thenReturn("")
 
-    mvc.perform(
-      get("/api/ataru-hakemus/2")
-    ).andExpect(status().isNotFound)
+    mvc
+      .perform(
+        get("/api/ataru-hakemus/2")
+      )
+      .andExpect(status().isNotFound)
   }
 }

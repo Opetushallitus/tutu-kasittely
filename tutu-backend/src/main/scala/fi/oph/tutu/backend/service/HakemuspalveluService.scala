@@ -20,7 +20,7 @@ class HakemuspalveluService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  lazy private val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
+  private lazy val hakemuspalveluCasClient: CasClient = CasClientBuilder.build(
     CasConfig
       .CasConfigBuilder(
         cas_username,
@@ -35,7 +35,7 @@ class HakemuspalveluService(httpService: HttpService) {
       .build()
   )
 
-  def getHakemus(hakemusOid: String): Either[Throwable, String] = {
+  def getHakemus(hakemusOid: String): Either[Throwable, String] =
     httpService.get(
       hakemuspalveluCasClient,
       s"$opintopolku_virkailija_domain/lomake-editori/api/applications/$hakemusOid"
@@ -43,9 +43,9 @@ class HakemuspalveluService(httpService: HttpService) {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
-  }
 
-  def getAtaruHakemus(hakemusOid: String): Either[Throwable, String] = {
+
+  def getAtaruHakemus(hakemusOid: String): Either[Throwable, String] =
     httpService.get(
       hakemuspalveluCasClient,
       s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu-hakemus/$hakemusOid"
@@ -53,5 +53,4 @@ class HakemuspalveluService(httpService: HttpService) {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
-  }
 }
