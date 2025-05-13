@@ -44,7 +44,6 @@ class HakemuspalveluService(httpService: HttpService) {
       case Right(response: String) => Right(response)
     }
 
-
   def getAtaruHakemus(hakemusOid: String): Either[Throwable, String] =
     httpService.get(
       hakemuspalveluCasClient,
