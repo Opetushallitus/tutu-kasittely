@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { User } from '@/lib/types/common';
+
 import { doApiFetch } from '@/lib/tutu-backend/api';
+import { User } from '@/lib/types/user';
 
 export type UserResponse = {
   user: User;

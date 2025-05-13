@@ -62,29 +62,21 @@ class Controller(
   def healthcheck = "Tutu is alive and kicking!"
 
   @GetMapping(path = Array("login"))
-  def login = {
-    LOG.info("API: Login")
+  def login =
     RedirectView(tutuUiUrl)
-  }
 
   @GetMapping(path = Array("session"))
-  def session: ResponseEntity[Map[String, String]] = {
-    LOG.info("API: session")
+  def session: ResponseEntity[Map[String, String]] =
     // Palautetaan jokin paluuarvo koska client-kirjasto sellaisen haluaa
     ResponseEntity.ok(Map("status" -> "ok"))
-  }
 
   @GetMapping(path = Array("csrf"))
-  def csrf(csrfToken: CsrfToken): String = {
-    LOG.info("API: csrf")
-
+  def csrf(csrfToken: CsrfToken): String =
     mapper.writeValueAsString(csrfToken)
-  }
 
   @GetMapping(path = Array("user"))
   def user(): String = {
     val enrichedUserDetails = userService.getEnrichedUserDetails
-    LOG.info("API: user")
     mapper.writeValueAsString(
       UserResponse(
         user =

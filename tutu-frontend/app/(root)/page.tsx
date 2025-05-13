@@ -13,7 +13,6 @@ export default function ListViewPage() {
   const userRoles = user?.authorities;
   const hasTutuUserRights = hasTutuRole(userRoles);
 
-  console.log({ user });
   return (
     <PageLayout
       header={
@@ -22,7 +21,13 @@ export default function ListViewPage() {
         </OphTypography>
       }
     >
-      {hasTutuUserRights ? <ListView></ListView> : null}
+      {hasTutuUserRights ? (
+        <ListView></ListView>
+      ) : (
+        <OphTypography variant={'body1'} component={'p'}>
+          {t('hakemuslista.eiOikeuksia')}
+        </OphTypography>
+      )}
     </PageLayout>
   );
 }

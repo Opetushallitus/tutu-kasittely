@@ -7,13 +7,7 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
-export const isLocalhost = DOMAIN.includes('localhost');
-
 export const isTesting = Boolean(process.env.TEST);
-
-export const cookieName = process.env.COOKIE_NAME ?? 'JSESSIONID';
-
-export const APP_URL = process.env.APP_URL;
 
 export const VIRKAILIJA_URL = process.env.VIRKAILIJA_URL;
 
