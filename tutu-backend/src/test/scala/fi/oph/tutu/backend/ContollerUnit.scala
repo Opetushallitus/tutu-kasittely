@@ -2,7 +2,6 @@ package fi.oph.tutu.backend
 
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.controller.Controller
-import fi.oph.tutu.backend.controller.Hakemus
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -93,7 +92,7 @@ class ControllerUnitTest {
       hakemuspalveluService.getHakemus("1")
     ).thenReturn(Right(hakemusResult))
 
-    when(hakemusRepository.tallennaHakemus("", "")).thenAnswer(throwingAnswer)
+    when(hakemusRepository.tallennaHakemus(HakemusOid(""), "")).thenAnswer(throwingAnswer)
     when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
     when(auditLog.toJson("")).thenAnswer(throwingAnswer)
 
@@ -112,7 +111,7 @@ class ControllerUnitTest {
       hakemuspalveluService.getHakemus("2")
     ).thenReturn(Left(new Exception()))
 
-    when(hakemusRepository.tallennaHakemus("", "")).thenAnswer(throwingAnswer)
+    when(hakemusRepository.tallennaHakemus(HakemusOid(""), "")).thenAnswer(throwingAnswer)
     when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
     when(auditLog.toJson("")).thenAnswer(throwingAnswer)
 
