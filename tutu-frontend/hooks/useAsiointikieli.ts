@@ -1,16 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchAsiointikieli } from '@/lib/data';
-import { Language } from '@/lib/localization/localization-types';
+import { useAuthorizedUser } from '@/app/contexts/AuthorizedUserProvider';
+import { LanguageCode } from '@/lib/types/common';
 
-export const getAsiointiKieli = async (): Promise<Language> => {
-  const data = await fetchAsiointikieli();
-  return data ?? 'fi';
+export const useAsiointiKieli = () => {
+  const user = useAuthorizedUser();
+  return (user?.asiointikieli as LanguageCode) ?? 'fi';
 };
-
-export const useAsiointiKieli = () =>
-  useQuery({
-    queryKey: ['getAsiointiKieli'],
-    queryFn: getAsiointiKieli,
-
-    staleTime: Infinity,
-  });

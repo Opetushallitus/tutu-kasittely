@@ -6,15 +6,8 @@ export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
 export const isTesting = Boolean(process.env.TEST);
 
-export const cookieName = process.env.COOKIE_NAME ?? 'JSESSIONID';
-
-export const APP_URL = process.env.APP_URL;
-
-export const API_URL = process.env.API_URL;
-
-export const LOGIN_URL = `${API_URL}/login`;
-
-export const VIRKAILIJA_URL = process.env.VIRKAILIJA_URL;
+export const VIRKAILIJA_URL =
+  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
 
 export const RAAMIT_URL = isTesting
   ? ''
@@ -22,4 +15,7 @@ export const RAAMIT_URL = isTesting
 
 export const LOKALISOINTI_URL = `${VIRKAILIJA_URL}/lokalisointi/tolgee`;
 
-export const ASIOINTIKIELI_URL = `${VIRKAILIJA_URL}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`;
+export const TUTU_BACKEND =
+  process.env.TUTU_BACKEND ?? process.env.VIRKAILIJA_URL;
+
+export const TUTU_BACKEND_API_URL = `${TUTU_BACKEND}/tutu-backend/api`;

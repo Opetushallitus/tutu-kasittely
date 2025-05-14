@@ -48,6 +48,7 @@ const nextConfig = {
   env: {
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
     APP_URL: process.env.APP_URL,
+    TUTU_BACKEND: process.env.APP_URL ?? process.env.VIRKAILIJA_URL,
     TEST: process.env.TEST,
     LOCAL_TRANSLATIONS: process.env.LOCAL_TRANSLATIONS,
   },

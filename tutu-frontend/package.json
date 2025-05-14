@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prepare": "cd .. && husky tutu-frontend/.husky",
-    "dev": "touch .env.development.local && node --env-file=.env.development --env-file=.env.development.local dev-server.mjs",
+    "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env.development.local dev-server.mjs",
     "test-server": "node --env-file=.env.test dev-server.mjs",
     "build": "next build",
     "start": "next start",
@@ -58,6 +58,6 @@
     "prettier": "3.5.3",
     "start-server-and-test": "^2.0.11",
     "typescript": "^5",
-    "vitest": "^3.0.8"
+    "vitest": "^3.1.3"
   }
 }
