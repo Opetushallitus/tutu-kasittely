@@ -31,9 +31,7 @@ import java.util.UUID
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
 
-  private def throwingAnswer: Answer[Nothing] = invocation => {
-    throw new Exception("Throwing answer")
-  }
+  private def throwingAnswer: Answer[Nothing] = invocation => throw new Exception("Throwing answer")
 
   @MockitoBean
   private var hakemuspalveluService: HakemuspalveluService = _
