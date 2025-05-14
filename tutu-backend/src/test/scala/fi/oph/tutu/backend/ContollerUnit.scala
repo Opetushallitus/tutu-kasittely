@@ -4,33 +4,21 @@ import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.controller.Controller
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
+import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.security.SecurityConstants
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
-import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
-import org.mockito.stubbing.Answer
-import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.http.HttpStatus
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.assertj.*
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
-
-import java.util.UUID
 
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
-
-  private def throwingAnswer: Answer[Nothing] = invocation => throw new Exception("Throwing answer")
 
   @MockitoBean
   private var hakemuspalveluService: HakemuspalveluService = _
@@ -92,9 +80,9 @@ class ControllerUnitTest {
       hakemuspalveluService.getHakemus("1")
     ).thenReturn(Right(hakemusResult))
 
-    when(hakemusRepository.tallennaHakemus(HakemusOid(""), "")).thenAnswer(throwingAnswer)
-    when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
-    when(auditLog.toJson("")).thenAnswer(throwingAnswer)
+    when(hakemusRepository.toString).thenCallRealMethod()
+    when(userService.toString).thenCallRealMethod()
+    when(auditLog.toString).thenCallRealMethod()
 
     mvc
       .perform(
@@ -111,9 +99,9 @@ class ControllerUnitTest {
       hakemuspalveluService.getHakemus("2")
     ).thenReturn(Left(new Exception()))
 
-    when(hakemusRepository.tallennaHakemus(HakemusOid(""), "")).thenAnswer(throwingAnswer)
-    when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
-    when(auditLog.toJson("")).thenAnswer(throwingAnswer)
+    when(hakemusRepository.toString).thenCallRealMethod()
+    when(userService.toString).thenCallRealMethod()
+    when(auditLog.toString).thenCallRealMethod()
 
     mvc
       .perform(
