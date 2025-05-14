@@ -150,6 +150,19 @@ class Controller(
           .body(RESPONSE_500_DESCRIPTION)
     }
 
+  @GetMapping(path = Array("hakemus/{hakemusOid}"))
+  def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] =
+    try
+      hakemuspalveluService.getHakemus(hakemusOid) match {
+        case Left(error: Throwable)  => ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
+        case Right(response: String) => ResponseEntity.status(HttpStatus.OK).body(response)
+      }
+    catch {
+      case e: Exception =>
+        LOG.error("Ataru-hakemuksen haku epäonnistui", e.getMessage)
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
+    }
+
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))
   def testi(): Unit =
