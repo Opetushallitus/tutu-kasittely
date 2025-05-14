@@ -12,6 +12,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
+import org.mockito.stubbing.Answer
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
@@ -27,22 +28,24 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 
 import java.util.UUID
 
-// TODO: Mockito Qualifiers!
-
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
 
-  @MockitoBean
-  private val hakemuspalveluService: HakemuspalveluService = null
+  private def throwingAnswer: Answer[Nothing] = invocation => {
+    throw new Exception("Throwing answer")
+  }
 
   @MockitoBean
-  private val userService: UserService = null
+  private var hakemuspalveluService: HakemuspalveluService = _
 
   @MockitoBean
-  private val hakemusRepository: HakemusRepository = null
+  private var userService: UserService = _
 
   @MockitoBean
-  private val auditLog: AuditLog = null
+  private var hakemusRepository: HakemusRepository = _
+
+  @MockitoBean
+  private var auditLog: AuditLog = _
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
@@ -89,18 +92,12 @@ class ControllerUnitTest {
     }"""
 
     when(
-      hakemuspalveluService.getAtaruHakemus("1")
+      hakemuspalveluService.getHakemus("1")
     ).thenReturn(Right(hakemusResult))
 
-    when(
-      hakemusRepository.tallennaHakemus("", "")
-    ).thenReturn(UUID.randomUUID())
-
-    when(
-      userService.getEnrichedUserDetails
-    ).thenReturn(User("", List()))
-
-    when(auditLog.toJson("")).thenReturn("")
+    when(hakemusRepository.tallennaHakemus("", "")).thenAnswer(throwingAnswer)
+    when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
+    when(auditLog.toJson("")).thenAnswer(throwingAnswer)
 
     mvc
       .perform(
@@ -114,18 +111,12 @@ class ControllerUnitTest {
   def haeAtaruHakemusValidRequestReturns404(@Autowired mvc: MockMvc): Unit = {
 
     when(
-      hakemuspalveluService.getAtaruHakemus("2")
+      hakemuspalveluService.getHakemus("2")
     ).thenReturn(Left(new Exception()))
 
-    when(
-      hakemusRepository.tallennaHakemus("", "")
-    ).thenReturn(UUID.randomUUID())
-
-    when(
-      userService.getEnrichedUserDetails
-    ).thenReturn(User("", List()))
-
-    when(auditLog.toJson("")).thenReturn("")
+    when(hakemusRepository.tallennaHakemus("", "")).thenAnswer(throwingAnswer)
+    when(userService.getEnrichedUserDetails).thenAnswer(throwingAnswer)
+    when(auditLog.toJson("")).thenAnswer(throwingAnswer)
 
     mvc
       .perform(
