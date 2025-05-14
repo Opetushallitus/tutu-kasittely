@@ -1,6 +1,3 @@
-export const DOMAIN =
-  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
-
 export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
@@ -9,7 +6,8 @@ export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
 export const isTesting = Boolean(process.env.TEST);
 
-export const VIRKAILIJA_URL = process.env.VIRKAILIJA_URL;
+export const VIRKAILIJA_URL =
+  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
 
 export const RAAMIT_URL = isTesting
   ? ''
@@ -20,9 +18,4 @@ export const LOKALISOINTI_URL = `${VIRKAILIJA_URL}/lokalisointi/tolgee`;
 export const TUTU_BACKEND =
   process.env.TUTU_BACKEND ?? process.env.VIRKAILIJA_URL;
 
-export const configuration = {
-  raamitUrl: RAAMIT_URL,
-  tutuBackendApiUrl: `${TUTU_BACKEND}/tutu-backend/api`,
-  virkailijaUrl: DOMAIN,
-  lokalisointiPrefix: `${DOMAIN}/lokalisointi/tolgee`,
-} as const;
+export const TUTU_BACKEND_API_URL = `${TUTU_BACKEND}/tutu-backend/api`;
