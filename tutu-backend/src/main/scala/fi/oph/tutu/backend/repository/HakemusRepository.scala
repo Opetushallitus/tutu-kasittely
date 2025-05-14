@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.repository
 
-import org.slf4j.LoggerFactory
+import fi.oph.tutu.backend.domain.HakemusOid
+import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.GetResult
@@ -16,7 +17,7 @@ class HakemusRepository {
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
-  val LOG              = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
   implicit val getUUIDResult: GetResult[UUID] =
     GetResult(r => UUID.fromString(r.nextString()))
@@ -29,12 +30,13 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: String, luoja: String): UUID =
+  def tallennaHakemus(hakemusOid: HakemusOid, luoja: String): UUID =
+    val hakemusOidString = hakemusOid.toString
     try
       db.run(
         sql"""
       INSERT INTO hakemus (hakemus_oid, luoja)
-      VALUES ($hakemusOid, $luoja)
+      VALUES ($hakemusOidString, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
