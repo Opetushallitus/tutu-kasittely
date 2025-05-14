@@ -155,7 +155,6 @@ class SecurityConfig {
       .authorizeHttpRequests(requests =>
         requests
           .requestMatchers(
-            "/api/ataru-hakemus/*",
             "/api/csrf",
             "/api/healthcheck",
             // TODO: remove /api/test & /api/hakemus when not needed
@@ -171,7 +170,6 @@ class SecurityConfig {
       .csrf(csrf =>
         csrf
           .ignoringRequestMatchers(
-            "/api/ataru-hakemus/*",
             "/api/healthcheck",
             "/api/csrf"
           )

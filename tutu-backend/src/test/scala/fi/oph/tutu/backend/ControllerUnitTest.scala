@@ -86,7 +86,7 @@ class ControllerUnitTest {
 
     mvc
       .perform(
-        get("/api/ataru-hakemus/1")
+        get("/api/hakemus/1")
       )
       .andExpect(status().isOk)
   }
@@ -105,7 +105,7 @@ class ControllerUnitTest {
 
     mvc
       .perform(
-        get("/api/ataru-hakemus/2")
+        get("/api/hakemus/2")
       )
       .andExpect(status().isNotFound)
   }

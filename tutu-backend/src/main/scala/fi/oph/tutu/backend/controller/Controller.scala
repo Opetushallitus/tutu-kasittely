@@ -150,8 +150,8 @@ class Controller(
           .body(RESPONSE_500_DESCRIPTION)
     }
 
-  @GetMapping(path = Array("ataru-hakemus/{hakemusOid}"))
-  def haeAtaruHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] =
+  @GetMapping(path = Array("hakemus/{hakemusOid}"))
+  def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] =
     try
       hakemuspalveluService.getHakemus(hakemusOid) match {
         case Left(error: Throwable)  => ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
