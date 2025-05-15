@@ -3,7 +3,7 @@
 # Step 1: Navigate to Tutu UI directory and create certificates
 echo "Creating certificates using mkcert..."
 mkdir -p tutu-frontend/certificates
-cd tutu-ui/certificates || exit
+cd tutu-frontend/certificates || exit
 
 mkcert localhost
 
