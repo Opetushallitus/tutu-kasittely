@@ -35,7 +35,7 @@ class Controller(
   mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
 
   final val RESPONSE_200_DESCRIPTION =
-    "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
+    "Pyyntö OK"
   final val RESPONSE_400_DESCRIPTION = "Pyyntö virheellinen"
   final val RESPONSE_403_DESCRIPTION =
     "Käyttäjällä ei ole tarvittavia oikeuksia hakemusten luontiin"
@@ -137,6 +137,8 @@ class Controller(
         } else {
           val hakemusOid = hakemusRepository.tallennaHakemus(
             hakemus.hakemusOid,
+            hakemus.firstName,
+            hakemus.lastName,
             "hakemuspalvelu"
           )
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)

@@ -86,7 +86,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "Jaska", "Jakoavain")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -106,7 +106,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "Jaska", "Jakoavain")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -142,7 +142,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "Jeppe", "Jeesusteippi")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -159,7 +159,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
+    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "Jeppe", "Jeesusteippi")
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc

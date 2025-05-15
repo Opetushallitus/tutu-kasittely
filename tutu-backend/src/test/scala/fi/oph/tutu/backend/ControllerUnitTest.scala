@@ -1,13 +1,11 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.controller.Controller
-import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.AuditLog
+import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.security.SecurityConstants
+import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest

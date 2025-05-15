@@ -13,5 +13,17 @@ case class Hakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
   )
-  @BeanProperty hakemusOid: HakemusOid
+  @BeanProperty hakemusOid: HakemusOid,
+  @(Schema @field)(
+    example = "Teuvo",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 255
+  )
+  @BeanProperty firstName: String,
+  @(Schema @field)(
+    example = "Tulppu",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 255
+  )
+  @BeanProperty lastName: String
 )

@@ -30,13 +30,13 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, luoja: String): UUID =
+  def tallennaHakemus(hakemusOid: HakemusOid, firstName: String, lastName: String, luoja: String): UUID =
     val hakemusOidString = hakemusOid.toString
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, luoja)
-      VALUES ($hakemusOidString, $luoja)
+      INSERT INTO hakemus (hakemus_oid, first_name, last_name, luoja)
+      VALUES ($hakemusOidString, $firstName, $lastName, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
