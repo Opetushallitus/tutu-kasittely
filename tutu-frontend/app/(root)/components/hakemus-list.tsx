@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Stack,
   styled,
   Table,
   TableBody,
@@ -10,8 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { BoxWrapper } from '@/components/box-wrapper';
-import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/hooks/useHakemukset';
 import { FullSpinner } from '@/components/full-spinner';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -38,7 +36,7 @@ const StyledTableBody = styled(TableBody)({
   },
 });
 
-export function ListView() {
+export function HakemusList() {
   const { t } = useTranslations();
   const { isLoading, data } = useHakemukset();
 
@@ -53,29 +51,19 @@ export function ListView() {
     : [];
 
   return (
-    <Stack>
-      <BoxWrapper sx={{ borderBottom: 'none' }}>
-        <OphTypography variant={'h2'}>
-          {t('hakemuslista.hakemukset')}
-        </OphTypography>
-      </BoxWrapper>
-      <BoxWrapper>
-        <div>filtterit & haku</div>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t('hakemuslista.hakijannimi')}</TableCell>
-                <TableCell>{t('hakemuslista.asiatunnus')}</TableCell>
-                <TableCell>{t('hakemuslista.kasittelyvaihe')}</TableCell>
-                <TableCell>{t('hakemuslista.paatostyyppi')}</TableCell>
-                <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
-              </TableRow>
-            </TableHead>
-            <StyledTableBody>{hakemusRows}</StyledTableBody>
-          </Table>
-        </TableContainer>
-      </BoxWrapper>
-    </Stack>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{t('hakemuslista.hakijannimi')}</TableCell>
+            <TableCell>{t('hakemuslista.asiatunnus')}</TableCell>
+            <TableCell>{t('hakemuslista.kasittelyvaihe')}</TableCell>
+            <TableCell>{t('hakemuslista.paatostyyppi')}</TableCell>
+            <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
+          </TableRow>
+        </TableHead>
+        <StyledTableBody>{hakemusRows}</StyledTableBody>
+      </Table>
+    </TableContainer>
   );
 }

@@ -10,6 +10,8 @@ import {
 import { ophColors, THEME_OVERRIDES } from '@/lib/theme';
 import { LocalizedThemeProvider } from '@/components/providers/localized-theme-provider';
 import ReactQueryClientProvider from '@/components/providers/react-query-client-provider';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ReactNode } from 'react';
 import { AuthorizedUserProvider } from '@/app/contexts/AuthorizedUserProvider';
 
 export const metadata: Metadata = {
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="fi">
@@ -31,22 +33,24 @@ export default function RootLayout({
         }}
       >
         <main>
-          <AppRouterCacheProvider>
-            {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-            <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
-              <ReactQueryClientProvider>
-                <MyTolgeeProvider>
-                  <AuthorizedUserProvider>
-                    <LocalizationProvider>
-                      <LocalizedThemeProvider>
-                        {children}
-                      </LocalizedThemeProvider>
-                    </LocalizationProvider>
-                  </AuthorizedUserProvider>
-                </MyTolgeeProvider>
-              </ReactQueryClientProvider>
-            </OphNextJsThemeProvider>
-          </AppRouterCacheProvider>
+          <NuqsAdapter>
+            <AppRouterCacheProvider>
+              {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
+              <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
+                <ReactQueryClientProvider>
+                  <MyTolgeeProvider>
+                    <AuthorizedUserProvider>
+                      <LocalizationProvider>
+                        <LocalizedThemeProvider>
+                          {children}
+                        </LocalizedThemeProvider>
+                      </LocalizationProvider>
+                    </AuthorizedUserProvider>
+                  </MyTolgeeProvider>
+                </ReactQueryClientProvider>
+              </OphNextJsThemeProvider>
+            </AppRouterCacheProvider>
+          </NuqsAdapter>
         </main>
       </body>
     </html>
