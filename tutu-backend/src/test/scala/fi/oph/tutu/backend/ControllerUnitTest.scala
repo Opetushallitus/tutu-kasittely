@@ -109,4 +109,42 @@ class ControllerUnitTest {
       )
       .andExpect(status().isNotFound)
   }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemuslistaReturns200AndArrayOfItems(@Autowired mvc: MockMvc): Unit = {
+
+    when(
+      hakemusRepository.mockHaeHakemusIdt()
+    ).thenReturn(
+      Seq(
+        HakemusOid("1"),
+        HakemusOid("2"),
+        HakemusOid("3")
+      )
+    )
+
+    when(
+      hakemusRepository.haeHakemukset(any)
+    ).thenReturn(
+      Seq(
+        Hakemus(HakemusOid("1")),
+        Hakemus(HakemusOid("2")),
+        Hakemus(HakemusOid("3"))
+      )
+    )
+
+    when(hakemuspalveluService.toString).thenCallRealMethod()
+    when(userService.toString).thenCallRealMethod()
+    when(auditLog.toString).thenCallRealMethod()
+
+    mvc
+      .perform(
+        get("/api/hakemus")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$[0].hakemusOid.s").value("1"))
+      .andExpect(jsonPath("$[1].hakemusOid.s").value("2"))
+      .andExpect(jsonPath("$[2].hakemusOid.s").value("3"))
+  }
 }
