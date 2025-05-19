@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, UserResponse}
+import fi.oph.tutu.backend.domain.{Hakemus, UserResponse, HakemusOid}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -162,6 +162,21 @@ class Controller(
         LOG.error("Ataru-hakemuksen haku epäonnistui", e.getMessage)
         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
     }
+
+  @GetMapping(path = Array("hakemus"))
+  def listaaHakemukset(): String = {
+    // ElasticSearch-haku => palauttaa hakemusten ID:t
+    val hakemusIdt: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
+
+    // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
+    val ataruHakemukset: Seq[Any] = Seq[Any]()
+    val tutuHakemukset: Seq[Hakemus] = hakemusRepository.haeHakemukset(hakemusIdt)
+
+    // Yhdistetään tietolähteiden datat
+    val yhdistetytHakemukset = tutuHakemukset
+
+    mapper.writeValueAsString(yhdistetytHakemukset)
+  }
 
   // TODO: FOR TESTING, TO BE REMOVED LATERZ
   @GetMapping(path = Array("test"))
