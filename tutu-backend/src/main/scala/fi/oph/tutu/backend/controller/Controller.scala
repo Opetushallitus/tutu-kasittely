@@ -2,15 +2,15 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusOid, UserResponse}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, Hakemus, HakemusOid, UserResponse}
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.service.{HakemuspalveluService, UserService}
+import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.*
@@ -23,6 +23,7 @@ import java.util.UUID
 @RequestMapping(path = Array("api"))
 class Controller(
   hakemuspalveluService: HakemuspalveluService,
+  hakemusService: HakemusService,
   hakemusRepository: HakemusRepository,
   userService: UserService,
   val auditLog: AuditLog = AuditLog
@@ -84,7 +85,7 @@ class Controller(
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = Array(
-        new Content(schema = new Schema(implementation = classOf[Hakemus]))
+        new Content(schema = new Schema(implementation = classOf[AtaruHakemus]))
       )
     ),
     responses = Array(
@@ -119,9 +120,9 @@ class Controller(
           .status(HttpStatus.FORBIDDEN)
           .body(RESPONSE_403_DESCRIPTION)
       } else {
-        var hakemus: Hakemus = null
+        var hakemus: AtaruHakemus = null
         try
-          hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
+          hakemus = mapper.readValue(hakemusBytes, classOf[AtaruHakemus])
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
@@ -135,10 +136,7 @@ class Controller(
             .status(HttpStatus.BAD_REQUEST)
             .body(RESPONSE_400_DESCRIPTION)
         } else {
-          val hakemusOid = hakemusRepository.tallennaHakemus(
-            hakemus.hakemusOid,
-            "hakemuspalvelu"
-          )
+          val hakemusOid = hakemusService.tallennaHakemus(hakemus)
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
         }
       }

@@ -1,11 +1,11 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.controller.Controller
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.AuditLog
+import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.security.SecurityConstants
+import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
@@ -24,10 +24,13 @@ class ControllerUnitTest {
   private var hakemuspalveluService: HakemuspalveluService = _
 
   @MockitoBean
-  private var userService: UserService = _
+  private var hakemusRepository: HakemusRepository = _
 
   @MockitoBean
-  private var hakemusRepository: HakemusRepository = _
+  val hakemusService: HakemusService = null
+
+  @MockitoBean
+  private var userService: UserService = _
 
   @MockitoBean
   private var auditLog: AuditLog = _
@@ -128,9 +131,9 @@ class ControllerUnitTest {
       hakemusRepository.haeHakemukset(any)
     ).thenReturn(
       Seq(
-        Hakemus(HakemusOid("1")),
-        Hakemus(HakemusOid("2")),
-        Hakemus(HakemusOid("3"))
+        Hakemus(HakemusOid("1"), 0),
+        Hakemus(HakemusOid("2"), 0),
+        Hakemus(HakemusOid("3"), 0)
       )
     )
 

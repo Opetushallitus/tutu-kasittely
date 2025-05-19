@@ -26,7 +26,7 @@ class HakemusRepository {
     GetResult(r => HakemusOid(r.nextString()))
 
   implicit val getHakemusResult: GetResult[Hakemus] =
-    GetResult(r => Hakemus(HakemusOid(r.nextString())))
+    GetResult(r => Hakemus(HakemusOid(r.nextString()), 0))
 
   /**
    * Tallentaa uuden hakemuksen
@@ -36,13 +36,13 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, luoja: String): UUID =
+  def tallennaHakemus(hakemusOid: HakemusOid, syykoodi: Int, luoja: String): UUID =
     val hakemusOidString = hakemusOid.toString
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, luoja)
-      VALUES ($hakemusOidString, $luoja)
+      INSERT INTO hakemus (hakemus_oid, syykoodi, luoja)
+      VALUES ($hakemusOidString, $syykoodi, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
