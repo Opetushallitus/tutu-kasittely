@@ -8,8 +8,8 @@ import {
   useTheme,
 } from '@mui/material';
 import {
-  OphInput,
-  OphSelect,
+  OphFormFieldWrapper,
+  OphInputFormField,
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import {
@@ -20,74 +20,138 @@ import {
 } from 'nuqs';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import * as R from 'remeda';
-import { kasittelyTilat } from '@/app/(root)/components/types';
-
-const hakemuksetQueryStates = ['kaikki', 'omat'] as const;
+import {
+  hakemusKoskeeQueryStates,
+  kasittelyTilat,
+  naytaQueryStates,
+} from '@/app/(root)/components/types';
+import { redirect, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { setQueryStateAndLocalStorage } from '@/lib/utils';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
-  const [hakemukset, setHakemukset] = useQueryState(
-    'hakemukset',
-    parseAsStringLiteral(hakemuksetQueryStates).withDefault('kaikki'),
+  const { t } = useTranslations();
+
+  const [nayta, setNayta] = useQueryState(
+    'nayta',
+    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
+
+  const naytaKaikki = nayta === 'kaikki';
+
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
+
   const [tilat, setTilat] = useQueryState(
     'tilat',
-    parseAsArrayOf(parseAsString).withDefault([]),
+    parseAsArrayOf(parseAsStringLiteral(kasittelyTilat)).withDefault([]),
   );
-  const { t } = useTranslations();
+
+  const [hakemusKoskee, setHakemusKoskee] = useQueryState(
+    'hakemuskoskee',
+    parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
+  );
+
+  const [esittelija, setEsittelija] = useQueryState(
+    'esittelija',
+    parseAsString.withDefault(''),
+  );
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.toString() === '') {
+      const localStorageSearchParams =
+        localStorage.getItem('tutu-search-params');
+      if (localStorageSearchParams && localStorageSearchParams !== '') {
+        redirect(`?${localStorageSearchParams}`);
+      }
+    }
+  }, [searchParams]);
 
   return (
     <Grid container spacing={theme.spacing(2)}>
       <Grid container spacing={theme.spacing(2)} size={12}>
-        <Grid size={'auto'}>
-          <ToggleButtonGroup sx={{ width: '100%' }}>
-            <ToggleButton
-              selected={hakemukset === 'omat'}
-              value={'omat'}
-              onClick={() => setHakemukset('omat')}
-            >
-              {t('hakemusListFilters.omat')}
-            </ToggleButton>
-            <ToggleButton
-              selected={hakemukset === 'kaikki'}
-              value={'kaikki'}
-              onClick={() => setHakemukset('kaikki')}
-            >
-              {t('hakemusListFilters.kaikki')}
-            </ToggleButton>
-          </ToggleButtonGroup>
+        <Grid size={2}>
+          <OphFormFieldWrapper
+            renderInput={() => {
+              return (
+                <ToggleButtonGroup>
+                  <ToggleButton
+                    selected={!naytaKaikki}
+                    value={'omat'}
+                    onClick={() =>
+                      setQueryStateAndLocalStorage(setNayta, 'omat')
+                    }
+                  >
+                    {t('hakemuslista.omat')}
+                  </ToggleButton>
+                  <ToggleButton
+                    selected={naytaKaikki}
+                    value={'kaikki'}
+                    onClick={() =>
+                      setQueryStateAndLocalStorage(setNayta, 'kaikki')
+                    }
+                  >
+                    {t('hakemuslista.kaikki')}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              );
+            }}
+            label={t('hakemuslista.nayta')}
+          ></OphFormFieldWrapper>
         </Grid>
-        <Grid size={'auto'}>
-          <OphInput
+        <Grid size={10}>
+          <OphInputFormField
+            label={t('hakemuslista.haeHakemuksia')}
             sx={{ width: '100%' }}
             value={haku}
-            onChange={(event) => setHaku(event.target.value)}
-          ></OphInput>
+            onChange={(event) =>
+              setQueryStateAndLocalStorage(setHaku, event.target.value)
+            }
+          ></OphInputFormField>
         </Grid>
       </Grid>
       <Grid container spacing={theme.spacing(2)} size={12}>
-        <Grid size={6}>
-          <OphSelect
+        <Grid size={naytaKaikki ? 6 : 9}>
+          <OphSelectFormField
+            label={t('hakemuslista.kasittelytila')}
             multiple
-            sx={{ width: '100%' }}
-            value={tilat}
-            onChange={(event: SelectChangeEvent) =>
-              setTilat(event.target.value)
-            }
             options={R.map(kasittelyTilat, (tila) => ({
               label: tila,
               value: tila,
             }))}
-          ></OphSelect>
+            value={tilat}
+            onChange={(event: SelectChangeEvent) =>
+              setQueryStateAndLocalStorage(setTilat, event.target.value)
+            }
+            sx={{ width: '100%' }}
+          ></OphSelectFormField>
         </Grid>
         <Grid size={3}>
           <OphSelectFormField
-            label={'hakemus koskee'}
+            label={t('hakemuslista.hakemusKoskee')}
             options={[]}
+            value={hakemusKoskee}
+            onChange={(event: SelectChangeEvent) =>
+              setQueryStateAndLocalStorage(setHakemusKoskee, event.target.value)
+            }
+            sx={{ width: '100%' }}
           ></OphSelectFormField>
         </Grid>
-        <Grid size={3}>Esittelijä</Grid>
+        {naytaKaikki && (
+          <Grid size={3}>
+            <OphSelectFormField
+              label={t('hakemuslista.esittelija')}
+              options={[]}
+              value={esittelija}
+              onChange={(event: SelectChangeEvent) =>
+                setQueryStateAndLocalStorage(setEsittelija, event.target.value)
+              }
+              sx={{ width: '100%' }}
+            ></OphSelectFormField>
+          </Grid>
+        )}
       </Grid>
       <Grid
         size={12}

@@ -1,5 +1,13 @@
 {
   "hakemuslista": {
-    "otsikko": "Tutkintojen tunnustaminen"
+    "otsikko": "Tutkintojen tunnustaminen",
+    "hakemukset": "Hakemukset",
+    "esittelija": "Esittelijä",
+    "hakemusKoskee": "Hakemus koskee",
+    "kasittelytila": "Käsittelytila",
+    "nayta": "Näytä",
+    "haeHakemuksia": "Hae hakemuksia",
+    "omat": "Minulle osoitetut",
+    "kaikki": "Kaikki"
   }
 }
