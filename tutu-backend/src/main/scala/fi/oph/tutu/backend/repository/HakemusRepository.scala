@@ -95,14 +95,14 @@ class HakemusRepository {
    *   hakuehtojen mukaisten hakemusten Oid:t
    */
   def mockHaeHakemusIdt(): Seq[HakemusOid] =
-    try {
+    try
       db.run(
         sql"""
         SELECT hakemus_oid FROM hakemus
         """.as[HakemusOid],
         "mock_hae_hakemus_idt"
       )
-    } catch {
+    catch {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksien listaus epäonnistui: ${e.getMessage}",
