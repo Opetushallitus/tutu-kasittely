@@ -26,7 +26,7 @@ class HakemusRepository {
     GetResult(r => HakemusOid(r.nextString()))
 
   implicit val getHakemusResult: GetResult[Hakemus] =
-    GetResult(r => Hakemus(HakemusOid(r.nextString()), 0))
+    GetResult(r => Hakemus(HakemusOid(r.nextString()), r.nextInt()))
 
   /**
    * Tallentaa uuden hakemuksen
@@ -36,19 +36,21 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, syykoodi: Int, luoja: String): UUID =
-    val hakemusOidString = hakemusOid.toString
+  def tallennaHakemus(hakemusOid: HakemusOid, syykoodi: Int, esittelijaId: Option[UUID], luoja: String): UUID =
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, syykoodi, luoja)
-      VALUES ($hakemusOidString, $syykoodi, $luoja)
+      INSERT INTO hakemus (hakemus_oid, syykoodi, esittelija_id, luoja)
+      VALUES ($hakemusOidString, $syykoodi, ${esittelijaIdOrNull}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
       )
     catch {
       case e: Exception =>
+        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
           e

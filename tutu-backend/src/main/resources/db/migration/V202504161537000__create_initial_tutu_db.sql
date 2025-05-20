@@ -13,7 +13,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS esittelija (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     maatjavaltiot_koodi_uri VARCHAR(255) NOT NULL,
-    esittelija_oid VARCHAR(255) NOT NULL,
+    esittelija_oid VARCHAR(255),
     luotu TIMESTAMPTZ DEFAULT now(),
     luoja VARCHAR(255) NOT NULL,
     muokattu TIMESTAMPTZ,
