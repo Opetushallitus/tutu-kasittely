@@ -6,13 +6,13 @@ import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/t
 import {
   LocalizationProvider,
   MyTolgeeProvider,
-} from '@/components/providers/localization-provider';
+} from '@/components/providers/LocalizationProvider';
 import { ophColors, THEME_OVERRIDES } from '@/lib/theme';
-import { LocalizedThemeProvider } from '@/components/providers/localized-theme-provider';
-import ReactQueryClientProvider from '@/components/providers/react-query-client-provider';
+import { LocalizedThemeProvider } from '@/components/providers/LocalizedThemeProvider';
+import ReactQueryClientProvider from '@/components/providers/ReactQueryClientProvider';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactNode } from 'react';
-import { AuthorizedUserProvider } from '@/app/contexts/AuthorizedUserProvider';
+import { AuthorizedUserProvider } from '@/components/providers/AuthorizedUserProvider';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',

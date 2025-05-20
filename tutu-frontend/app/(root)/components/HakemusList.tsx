@@ -11,10 +11,10 @@ import {
 } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/hooks/useHakemukset';
-import { FullSpinner } from '@/components/full-spinner';
+import { FullSpinner } from '@/components/FullSpinner';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import * as R from 'remeda';
-import HakemusRow from '@/app/(root)/components/hakemus-row';
+import HakemusRow from '@/app/(root)/components/HakemusRow';
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {

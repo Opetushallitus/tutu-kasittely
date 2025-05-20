@@ -7,7 +7,7 @@ const StyledTableCell = styled(TableCell)({
 
 export default function HakemusRow({ hakemus }: { hakemus: Hakemus }) {
   return (
-    <TableRow>
+    <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>{hakemus.hakija}</StyledTableCell>
       <StyledTableCell>{hakemus.asiatunnus}</StyledTableCell>
       <StyledTableCell>{hakemus.vaihe}</StyledTableCell>

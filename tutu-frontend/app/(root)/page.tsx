@@ -1,13 +1,13 @@
 'use client';
 
-import { PageLayout } from '@/components/page-layout';
+import { PageLayout } from '@/components/PageLayout';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { HakemusList } from '@/app/(root)/components/hakemus-list';
+import { HakemusList } from '@/app/(root)/components/HakemusList';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useAuthorizedUser } from '@/app/contexts/AuthorizedUserProvider';
 import { hasTutuRole } from '@/lib/utils';
-import HakemusListFilters from '@/app/(root)/components/hakemus-list-filters';
-import { BoxWrapper } from '@/components/box-wrapper';
+import HakemusListFilters from '@/app/(root)/components/HakemusListFilters';
+import { BoxWrapper } from '@/components/BoxWrapper';
+import { useAuthorizedUser } from '@/components/providers/AuthorizedUserProvider';
 
 export default function ListViewPage() {
   const { t } = useTranslations();

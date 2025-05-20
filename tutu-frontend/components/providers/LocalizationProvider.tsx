@@ -1,10 +1,10 @@
 'use client';
 
 import { changeLanguage, tolgee } from '@/lib/localization/localizations';
-import { Language } from '@/lib/localization/localization-types';
+import { Language } from '@/lib/localization/localizationTypes';
 import { useEffect } from 'react';
 import { TolgeeProvider } from '@tolgee/react';
-import { FullSpinner } from '@/components/full-spinner';
+import { FullSpinner } from '@/components/FullSpinner';
 
 const LocalizationContent = ({
   lng,

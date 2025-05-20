@@ -7,5 +7,5 @@ export async function setQueryStateAndLocalStorage<T>(
   value: unknown,
 ) {
   const newSearchParams = await setQueryState(value as T);
-  localStorage.setItem('tutu-search-params', newSearchParams.toString());
+  localStorage.setItem('tutu-query-string', newSearchParams.toString());
 }

@@ -26,7 +26,6 @@ import {
   naytaQueryStates,
 } from '@/app/(root)/components/types';
 import { redirect, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
 import { setQueryStateAndLocalStorage } from '@/lib/utils';
 
 export default function HakemusListFilters() {
@@ -59,15 +58,12 @@ export default function HakemusListFilters() {
 
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    if (searchParams.toString() === '') {
-      const localStorageSearchParams =
-        localStorage.getItem('tutu-search-params');
-      if (localStorageSearchParams && localStorageSearchParams !== '') {
-        redirect(`?${localStorageSearchParams}`);
-      }
+  if (searchParams.toString() === '') {
+    const localStorageSearchParams = localStorage.getItem('tutu-query-string');
+    if (localStorageSearchParams && localStorageSearchParams !== '') {
+      redirect(`?${localStorageSearchParams}`);
     }
-  }, [searchParams]);
+  }
 
   return (
     <Grid container spacing={theme.spacing(2)}>
@@ -83,6 +79,7 @@ export default function HakemusListFilters() {
                     onClick={() =>
                       setQueryStateAndLocalStorage(setNayta, 'omat')
                     }
+                    data-testid={'nayta-omat'}
                   >
                     {t('hakemuslista.omat')}
                   </ToggleButton>
@@ -109,6 +106,7 @@ export default function HakemusListFilters() {
             onChange={(event) =>
               setQueryStateAndLocalStorage(setHaku, event.target.value)
             }
+            data-testid={'hakukentta'}
           ></OphInputFormField>
         </Grid>
       </Grid>
@@ -126,17 +124,22 @@ export default function HakemusListFilters() {
               setQueryStateAndLocalStorage(setTilat, event.target.value)
             }
             sx={{ width: '100%' }}
+            data-testid={'kasittelytila'}
           ></OphSelectFormField>
         </Grid>
         <Grid size={3}>
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
-            options={[]}
+            options={R.map(hakemusKoskeeQueryStates, (val) => ({
+              label: t(`hakemuslista.hakemusKoskee.${val}`),
+              value: val,
+            }))}
             value={hakemusKoskee}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(setHakemusKoskee, event.target.value)
             }
             sx={{ width: '100%' }}
+            data-testid={'hakemus-koskee'}
           ></OphSelectFormField>
         </Grid>
         {naytaKaikki && (
