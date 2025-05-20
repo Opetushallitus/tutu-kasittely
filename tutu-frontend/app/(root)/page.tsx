@@ -1,11 +1,13 @@
 'use client';
 
-import { PageLayout } from '@/components/page-layout';
+import { PageLayout } from '@/components/PageLayout';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { ListView } from '@/app/(root)/components/list-view';
+import { HakemusList } from '@/app/(root)/components/HakemusList';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useAuthorizedUser } from '@/app/contexts/AuthorizedUserProvider';
 import { hasTutuRole } from '@/lib/utils';
+import HakemusListFilters from '@/app/(root)/components/HakemusListFilters';
+import { BoxWrapper } from '@/components/BoxWrapper';
+import { useAuthorizedUser } from '@/components/providers/AuthorizedUserProvider';
 
 export default function ListViewPage() {
   const { t } = useTranslations();
@@ -22,7 +24,17 @@ export default function ListViewPage() {
       }
     >
       {hasTutuUserRights ? (
-        <ListView></ListView>
+        <>
+          <BoxWrapper sx={{ borderBottom: 'none' }}>
+            <OphTypography variant={'h2'}>
+              {t('hakemuslista.hakemukset')}
+            </OphTypography>
+          </BoxWrapper>
+          <BoxWrapper>
+            <HakemusListFilters></HakemusListFilters>
+            <HakemusList></HakemusList>
+          </BoxWrapper>
+        </>
       ) : (
         <OphTypography variant={'body1'} component={'p'}>
           {t('hakemuslista.eiOikeuksia')}

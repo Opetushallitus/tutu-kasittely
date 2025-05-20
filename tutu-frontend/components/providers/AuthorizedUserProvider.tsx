@@ -2,9 +2,9 @@
 import React, { useContext, createContext, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { FullSpinner } from '@/components/full-spinner';
+import { FullSpinner } from '@/components/FullSpinner';
 import { useFetchUser } from '@/hooks/useFetchUser';
-import { User } from '@/lib/types/common';
+import { User } from '@/lib/types/user';
 import { doApiFetch } from '@/lib/tutu-backend/api';
 
 const AuthorizedUserContext = createContext<User | null>(null);
