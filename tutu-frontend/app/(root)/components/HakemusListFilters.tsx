@@ -1,6 +1,8 @@
 'use client';
 
 import {
+  Box,
+  Chip,
   Grid2 as Grid,
   SelectChangeEvent,
   ToggleButton,
@@ -125,6 +127,26 @@ export default function HakemusListFilters() {
             }
             sx={{ width: '100%' }}
             data-testid={'kasittelytila'}
+            renderValue={() => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {R.map(tilat, (value) => (
+                  <Chip
+                    key={value}
+                    label={value}
+                    sx={{ borderRadius: '0px' }}
+                    onDelete={() =>
+                      setQueryStateAndLocalStorage(
+                        setTilat,
+                        R.filter(tilat, (val) => val !== value),
+                      )
+                    }
+                    onMouseDown={(event) => {
+                      event.stopPropagation();
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
           ></OphSelectFormField>
         </Grid>
         <Grid size={3}>
