@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.domain
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
+import java.util.UUID
 import scala.annotation.meta.field
 import scala.beans.BeanProperty
 
@@ -15,8 +16,15 @@ case class Hakemus(
   )
   @BeanProperty hakemusOid: HakemusOid,
   @(Schema @field)(
-    example = "0",
-    requiredMode = RequiredMode.REQUIRED
+    example = "0008",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 4
   )
-  @BeanProperty syykoodi: Int
+  @BeanProperty syykoodi: Int,
+  @(Schema @field)(
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 16
+  )
+  @BeanProperty esittelijaId: UUID
 )

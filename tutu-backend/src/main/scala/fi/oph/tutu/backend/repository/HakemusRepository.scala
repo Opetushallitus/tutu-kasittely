@@ -26,7 +26,7 @@ class HakemusRepository {
     GetResult(r => HakemusOid(r.nextString()))
 
   implicit val getHakemusResult: GetResult[Hakemus] =
-    GetResult(r => Hakemus(HakemusOid(r.nextString()), r.nextInt()))
+    GetResult(r => Hakemus(HakemusOid(r.nextString()), r.nextInt(), UUID.fromString(r.nextString())))
 
   /**
    * Tallentaa uuden hakemuksen
@@ -72,7 +72,7 @@ class HakemusRepository {
       db.run(
         sql"""
         SELECT
-          hakemus_oid
+          hakemus_oid, syykoodi, esittelija_id
         FROM
           hakemus
         WHERE

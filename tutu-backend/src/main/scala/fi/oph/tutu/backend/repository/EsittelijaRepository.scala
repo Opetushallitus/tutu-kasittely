@@ -45,4 +45,35 @@ class EsittelijaRepository {
         LOG.warn(s"Esittelijän haku epäonnistui maakoodilla : $maakoodi")
         None
     }
+
+  /**
+   * Luo tai päivittää esittelijän maakoodin perusteella
+   *
+   * @param maakoodi
+   * hakemuksen maakoodi
+   * @return
+   * Esittelija
+   */
+  def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[Esittelija] =
+    try {
+      val esittelijaOidString = esittelijaOid.toString
+      val esittelija: Esittelija = db.run(
+        sql"""
+        INSERT INTO esittelija (maatjavaltiot_koodi_uri, esittelija_oid, luoja)
+        VALUES ($maakoodi, $esittelijaOidString, $luoja)
+        ON CONFLICT (maatjavaltiot_koodi_uri) DO
+        UPDATE SET
+        esittelija_oid = $esittelijaOidString,
+        muokkaaja = $luoja
+        returning id, esittelija_oid
+        """.as[Esittelija].head,
+        "haeEsittelijaMaakoodilla"
+      )
+      Some(esittelija)
+    } catch {
+      case e: Exception =>
+        LOG.warn(s"Esittelijän haku epäonnistui maakoodilla : $maakoodi")
+        None
+    }
+
 }

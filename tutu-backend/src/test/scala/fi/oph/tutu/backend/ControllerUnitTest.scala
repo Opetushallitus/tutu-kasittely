@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
+import java.util.UUID
+
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
 
@@ -131,9 +133,9 @@ class ControllerUnitTest {
       hakemusRepository.haeHakemukset(any)
     ).thenReturn(
       Seq(
-        Hakemus(HakemusOid("1"), 0),
-        Hakemus(HakemusOid("2"), 0),
-        Hakemus(HakemusOid("3"), 0)
+        Hakemus(HakemusOid("1"), 0, UUID.randomUUID()),
+        Hakemus(HakemusOid("2"), 0, UUID.randomUUID()),
+        Hakemus(HakemusOid("3"), 0, UUID.randomUUID())
       )
     )
 
