@@ -2,11 +2,13 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusOid}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid, UserOid}
+import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.OnrService
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
@@ -37,6 +39,12 @@ class ControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   var mockOnrService: OnrService = _
+
+  @Autowired
+  var esittelijaRepository: EsittelijaRepository = _
+
+  @Autowired
+  var hakemusRepository: HakemusRepository = _
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -80,13 +88,40 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isUnauthorized)
 
   @Test
+  @WithMockUser(
+    value = "kayttaja",
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
+    val esittelija =
+      esittelijaRepository.upsertEsittelija("0008", UserOid("1.2.246.562.24.00000000000000006666"), "testi")
+
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
+    val requestJson = mapper.writeValueAsString(hakemus)
+
+    mockMvc
+      .perform(
+        post("/api/hakemus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+    val insertedHakemus = hakemusRepository
+      .haeHakemukset(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
+      .headOption
+      .getOrElse(fail("Hakemusta ei löytynyt"))
+    assert(insertedHakemus.esittelijaId == esittelija.get.esittelijaId)
+  }
+
+  @Test
   @Order(1)
   @WithMockUser(
     value = "kayttaja",
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
-  def luoHakemusValidRequestReturns200(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
+  def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -106,7 +141,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -142,7 +177,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -159,7 +194,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = Hakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
