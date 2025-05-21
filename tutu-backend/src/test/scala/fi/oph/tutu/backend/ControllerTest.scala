@@ -101,7 +101,7 @@ class ControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -126,7 +126,7 @@ class ControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -146,7 +146,7 @@ class ControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -166,7 +166,7 @@ class ControllerTest extends IntegrationTestBase {
     val requestJson = mapper.writeValueAsString(hakemus)
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -182,7 +182,7 @@ class ControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -199,7 +199,7 @@ class ControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/hakemus")
+        post("/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
