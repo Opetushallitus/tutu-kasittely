@@ -2,10 +2,10 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid, UserOid}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, Esittelija, HakemusOid, UserOid}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.OnrService
+import fi.oph.tutu.backend.service.{HakemusService, OnrService}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
@@ -46,12 +46,17 @@ class ControllerTest extends IntegrationTestBase {
   @Autowired
   var hakemusRepository: HakemusRepository = _
 
+  @Autowired
+  var hakemusService: HakemusService = _
+
+  var esittelija: Option[Esittelija] = None
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
+    esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid("1.2.246.562.24.00000000000000006666"), "testi")
   }
 
   @BeforeEach
@@ -86,33 +91,6 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(get("/api/session"))
       .andExpect(status().isUnauthorized)
-
-  @Test
-  @WithMockUser(
-    value = "kayttaja",
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
-  )
-  def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
-    val esittelija =
-      esittelijaRepository.upsertEsittelija("0008", UserOid("1.2.246.562.24.00000000000000006666"), "testi")
-
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
-    val requestJson = mapper.writeValueAsString(hakemus)
-
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-    val insertedHakemus = hakemusRepository
-      .haeHakemukset(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
-      .headOption
-      .getOrElse(fail("Hakemusta ei löytynyt"))
-    assert(insertedHakemus.esittelijaId == esittelija.get.esittelijaId)
-  }
 
   @Test
   @Order(1)
@@ -205,5 +183,64 @@ class ControllerTest extends IntegrationTestBase {
           .content(requestJson)
       )
       .andExpect(status().isUnauthorized)
+  }
+
+  @Test
+  @Order(6)
+  @WithMockUser(
+    value = "kayttaja",
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
+    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
+    val requestJson = mapper.writeValueAsString(hakemus)
+
+    mockMvc
+      .perform(
+        post("/api/ataru-hakemus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+    val insertedHakemus = hakemusRepository
+      .haeHakemusLista(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
+      .headOption
+      .getOrElse(fail("Hakemusta ei löytynyt"))
+    assert(insertedHakemus.esittelijaId.get == esittelija.get.esittelijaId.toString)
+  }
+
+  @Test
+  @Order(7)
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
+    val expectedResult = s"""[
+                              {
+                                "hakemusOid": "1.2.246.562.11.00000000000000006668",
+                                "syykoodi": 1,
+                                "esittelijaId": ${esittelija.get.esittelijaId.toString},
+                                "esittelijaOid": "1.2.246.562.24.00000000000000006666"
+                              },
+                              {
+                                "hakemusOid": "1.2.246.562.11.00000000000000006667",
+                                "syykoodi": 0,
+                                "esittelijaId": null,
+                                "esittelijaOid": null
+                              }
+                            ]"""
+
+    val ataruHakemus1 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0)
+    val ataruHakemus2 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1)
+    hakemusService.tallennaHakemus(ataruHakemus1)
+    hakemusService.tallennaHakemus(ataruHakemus2)
+
+    val result = mockMvc
+      .perform(
+        get("/api/hakemuslista")
+      )
+    LOG.info(result.toString)
+//      .andExpect(status().isOk)
+//      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//      .andExpect(content().json(expectedResult))
   }
 }

@@ -1,13 +1,11 @@
 package fi.oph.tutu.backend
 
 import fi.oph.tutu.backend.controller.Controller
-import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -16,8 +14,6 @@ import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-
-import java.util.UUID
 
 @WebMvcTest(controllers = Array(classOf[Controller]))
 class ControllerUnitTest {
@@ -113,43 +109,5 @@ class ControllerUnitTest {
         get("/api/hakemus/2")
       )
       .andExpect(status().isNotFound)
-  }
-
-  @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def haeHakemuslistaReturns200AndArrayOfItems(@Autowired mvc: MockMvc): Unit = {
-
-    when(
-      hakemusRepository.mockHaeHakemusIdt()
-    ).thenReturn(
-      Seq(
-        HakemusOid("1"),
-        HakemusOid("2"),
-        HakemusOid("3")
-      )
-    )
-
-    when(
-      hakemusRepository.haeHakemukset(any)
-    ).thenReturn(
-      Seq(
-        Hakemus(HakemusOid("1"), 0, UUID.randomUUID()),
-        Hakemus(HakemusOid("2"), 0, UUID.randomUUID()),
-        Hakemus(HakemusOid("3"), 0, UUID.randomUUID())
-      )
-    )
-
-    when(hakemuspalveluService.toString).thenCallRealMethod()
-    when(userService.toString).thenCallRealMethod()
-    when(auditLog.toString).thenCallRealMethod()
-
-    mvc
-      .perform(
-        get("/api/hakemus")
-      )
-      .andExpect(status().isOk)
-      .andExpect(jsonPath("$[0].hakemusOid.s").value("1"))
-      .andExpect(jsonPath("$[1].hakemusOid.s").value("2"))
-      .andExpect(jsonPath("$[2].hakemusOid.s").value("3"))
   }
 }

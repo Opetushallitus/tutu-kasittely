@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{AtaruHakemus, Hakemus, HakemusOid, UserResponse}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusListItem, HakemusOid, UserResponse}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -161,28 +161,18 @@ class Controller(
         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
     }
 
-  @GetMapping(path = Array("hakemus"))
+  @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def listaaHakemukset(): String = {
     // ElasticSearch-haku => palauttaa hakemusten ID:t
-    val hakemusIdt: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
+    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
 
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
-    val ataruHakemukset: Seq[Any]    = Seq[Any]()
-    val tutuHakemukset: Seq[Hakemus] = hakemusRepository.haeHakemukset(hakemusIdt)
+    val ataruHakemukset: Seq[Any]            = Seq[Any]()
+    val tutuHakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(hakemusOidit)
 
     // Yhdistetään tietolähteiden datat
     val yhdistetytHakemukset = tutuHakemukset
 
     mapper.writeValueAsString(yhdistetytHakemukset)
   }
-
-  // TODO: FOR TESTING, TO BE REMOVED LATERZ
-  @GetMapping(path = Array("test"))
-  def testi(): Unit =
-    hakemuspalveluService.getHakemus(
-      "1.2.246.562.11.00000000000002349688"
-    ) match {
-      case Left(error: Throwable)  => LOG.error("Error fetching: ", error)
-      case Right(response: String) => LOG.info(s"Response: $response")
-    }
 }
