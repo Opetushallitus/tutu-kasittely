@@ -38,6 +38,11 @@ class HakemusRepository {
   implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
     GetResult(r =>
       HakemusListItem(
+        null,
+        null,
+        null,
+        null,
+        null,
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),

@@ -4,4 +4,8 @@ export type Hakemus = {
   vaihe: string;
   paatostyyppi: string;
   aika: string;
+  hakemusOid: string;
+  syykoodi: string;
+  esittelijaId: string;
+  esittelijaOid: string;
 };

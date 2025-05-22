@@ -214,20 +214,47 @@ class ControllerTest extends IntegrationTestBase {
   @Order(7)
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
-    val expectedResult = s"""[
-                              {
-                                "hakemusOid": "1.2.246.562.11.00000000000000006668",
-                                "syykoodi": 1,
-                                "esittelijaId": ${esittelija.get.esittelijaId.toString},
-                                "esittelijaOid": "1.2.246.562.24.00000000000000006666"
-                              },
-                              {
-                                "hakemusOid": "1.2.246.562.11.00000000000000006667",
-                                "syykoodi": 0,
-                                "esittelijaId": null,
-                                "esittelijaOid": null
-                              }
-                            ]"""
+    val expectedResult = s"""[{
+  "asiatunnus" : "TestiAsiaTunnus",
+  "hakija" : "Testi Hakija",
+  "vaihe" : "Testi Vaihe",
+  "paatostyyppi" : "Testi Paatostyyppi",
+  "aika" : "2 kk",
+  "hakemusOid" : "1.2.246.562.11.00000000000000006668",
+  "syykoodi" : 1,
+  "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
+  "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+}, {
+  "asiatunnus" : "TestiAsiaTunnus",
+  "hakija" : "Testi Hakija",
+  "vaihe" : "Testi Vaihe",
+  "paatostyyppi" : "Testi Paatostyyppi",
+  "aika" : "2 kk",
+  "hakemusOid" : "1.2.246.562.11.00000000000000006665",
+  "syykoodi" : 0,
+  "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
+  "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+}, {
+  "asiatunnus" : "TestiAsiaTunnus",
+  "hakija" : "Testi Hakija",
+  "vaihe" : "Testi Vaihe",
+  "paatostyyppi" : "Testi Paatostyyppi",
+  "aika" : "2 kk",
+  "hakemusOid" : "1.2.246.562.11.00000000000000006666",
+  "syykoodi" : 1,
+  "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
+  "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+}, {
+  "asiatunnus" : "TestiAsiaTunnus",
+  "hakija" : "Testi Hakija",
+  "vaihe" : "Testi Vaihe",
+  "paatostyyppi" : "Testi Paatostyyppi",
+  "aika" : "2 kk",
+  "hakemusOid" : "1.2.246.562.11.00000000000000006667",
+  "syykoodi" : 0,
+  "esittelijaId" : null,
+  "esittelijaOid" : null
+} ]"""
 
     val ataruHakemus1 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0)
     val ataruHakemus2 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1)
@@ -238,9 +265,8 @@ class ControllerTest extends IntegrationTestBase {
       .perform(
         get("/api/hakemuslista")
       )
-    LOG.info(result.toString)
-//      .andExpect(status().isOk)
-//      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//      .andExpect(content().json(expectedResult))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
   }
 }

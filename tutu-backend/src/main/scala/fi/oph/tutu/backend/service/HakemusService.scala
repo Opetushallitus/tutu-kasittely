@@ -26,7 +26,21 @@ class HakemusService(hakemusRepository: HakemusRepository, esittelijaRepository:
   }
 
   def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] = {
-    val hakemukset = hakemusRepository.haeHakemusLista(hakemusOidt)
-    hakemukset
+    // TODO: haetaan hakemuslistaus atarun hakemuksista ja yhdistetään data
+    hakemusRepository
+      .haeHakemusLista(hakemusOidt)
+      .map(item =>
+        HakemusListItem(
+          asiatunnus = "TestiAsiaTunnus",
+          hakija = "Testi Hakija",
+          vaihe = "Testi Vaihe",
+          paatostyyppi = "Testi Paatostyyppi",
+          aika = "2 kk",
+          hakemusOid = item.hakemusOid,
+          syykoodi = item.syykoodi,
+          esittelijaId = item.esittelijaId,
+          esittelijaOid = item.esittelijaOid
+        )
+      )
   }
 }

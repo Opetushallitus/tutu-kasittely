@@ -45,6 +45,35 @@ test.beforeEach(async ({ page }) => {
       }),
     });
   });
+  await page.route('**/tutu-backend/api/hakemuslista', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          asiatunnus: '123456',
+          hakija: 'Heikki Heittotähti',
+          vaihe: 'Hakemus käsittelyssä',
+          paatostyyppi: 'päätös',
+          aika: '3 kk',
+          hakemusOid: '1.2.246.562.10.00000000001',
+          syykoodi: '2',
+          esittelijaId: '1212-3333-DDDD-4444-5555-6666',
+          esittelijaOid: '1.2.246.562.24.999999999999',
+        },
+        {
+          hakija: 'Kalle Katana',
+          vaihe: 'Hakemus käsittelyssä',
+          paatostyyppi: 'päätös',
+          aika: '3 kk',
+          hakemusOid: '1.2.246.562.10.00000000002',
+          syykoodi: '2',
+          esittelijaId: '1212-3333-DDDD-4444-5555-6668',
+          esittelijaOid: '1.2.246.562.24.999999999998',
+        },
+      ]),
+    });
+  });
 });
 
 test('Saavutettavuus ok', async ({ page }) => {
