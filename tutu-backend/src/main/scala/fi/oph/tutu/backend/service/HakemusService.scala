@@ -31,14 +31,13 @@ class HakemusService(hakemusRepository: HakemusRepository, esittelijaRepository:
       .haeHakemusLista(hakemusOidt)
       .map(item =>
         HakemusListItem(
-          asiatunnus = "TestiAsiaTunnus",
+          asiatunnus = item.asiatunnus,
           hakija = "Testi Hakija",
           vaihe = "Testi Vaihe",
           paatostyyppi = "Testi Paatostyyppi",
           aika = "2 kk",
           hakemusOid = item.hakemusOid,
           syykoodi = item.syykoodi,
-          esittelijaId = item.esittelijaId,
           esittelijaOid = item.esittelijaOid
         )
       )

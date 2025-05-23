@@ -1,4 +1,4 @@
-export type Hakemus = {
+export type HakemusListItem = {
   asiatunnus: string;
   hakija: string;
   vaihe: string;
@@ -6,6 +6,5 @@ export type Hakemus = {
   aika: string;
   hakemusOid: string;
   syykoodi: string;
-  esittelijaId: string;
   esittelijaOid: string;
 };

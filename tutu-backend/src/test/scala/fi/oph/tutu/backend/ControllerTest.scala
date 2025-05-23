@@ -207,7 +207,7 @@ class ControllerTest extends IntegrationTestBase {
       .haeHakemusLista(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
       .headOption
       .getOrElse(fail("Hakemusta ei löytynyt"))
-    assert(insertedHakemus.esittelijaId.get == esittelija.get.esittelijaId.toString)
+    assert(insertedHakemus.esittelijaOid.get == esittelija.get.esittelijaOid.toString)
   }
 
   @Test
@@ -215,44 +215,40 @@ class ControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
     val expectedResult = s"""[{
-                                "asiatunnus" : "TestiAsiaTunnus",
+                                "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "syykoodi" : 1,
-                                "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
-                                "asiatunnus" : "TestiAsiaTunnus",
+                                "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "syykoodi" : 0,
-                                "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
-                                "asiatunnus" : "TestiAsiaTunnus",
+                                "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "syykoodi" : 1,
-                                "esittelijaId" : "${esittelija.get.esittelijaId.toString}",
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
-                                "asiatunnus" : "TestiAsiaTunnus",
+                                "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "syykoodi" : 0,
-                                "esittelijaId" : null,
                                 "esittelijaOid" : null
                               } ]"""
 

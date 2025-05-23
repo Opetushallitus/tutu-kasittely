@@ -1,8 +1,8 @@
-import { Hakemus } from '@/lib/types/hakemus';
+import { HakemusListItem } from '@/lib/types/hakemusListItem';
 import { doApiFetch } from '@/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 
-export const getHakemukset = async (): Promise<Hakemus[]> => {
+export const getHakemukset = async (): Promise<HakemusListItem[]> => {
   return await doApiFetch('hakemuslista', undefined, 'no-store');
 };
 
