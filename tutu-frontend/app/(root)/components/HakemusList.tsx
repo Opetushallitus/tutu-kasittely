@@ -15,6 +15,9 @@ import { FullSpinner } from '@/components/FullSpinner';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/app/(root)/components/HakemusRow';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { naytaQueryStates } from '@/app/(root)/components/types';
+import { User } from '@/lib/types/user';
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
@@ -36,16 +39,29 @@ const StyledTableBody = styled(TableBody)({
   },
 });
 
-export function HakemusList() {
+interface HakemusListProps {
+  user: User | null;
+}
+
+export function HakemusList({ user }: HakemusListProps) {
   const { t } = useTranslations();
   const { isLoading, data } = useHakemukset();
+  const [nayta] = useQueryState(
+    'nayta',
+    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
+  );
 
   if (isLoading) return <FullSpinner></FullSpinner>;
 
-  const hakemusRows = data
-    ? R.map(data, (hakemus) => {
+  const hakemukset =
+    nayta === 'kaikki' && user
+      ? data
+      : data?.filter((hakemus) => user!.userOid === hakemus.esittelijaOid);
+
+  const hakemusRows = hakemukset
+    ? R.map(hakemukset, (hakemus) => {
         return (
-          <HakemusRow hakemus={hakemus} key={hakemus.asiatunnus}></HakemusRow>
+          <HakemusRow hakemus={hakemus} key={hakemus.hakemusOid}></HakemusRow>
         );
       })
     : [];
