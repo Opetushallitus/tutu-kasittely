@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusListItem, HakemusOid, UserResponse}
+import fi.oph.tutu.backend.domain.{HakemusListItem, UserResponse, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -85,7 +85,7 @@ class Controller(
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = Array(
-        new Content(schema = new Schema(implementation = classOf[AtaruHakemus]))
+        new Content(schema = new Schema(implementation = classOf[UusiAtaruHakemus]))
       )
     ),
     responses = Array(
@@ -120,9 +120,9 @@ class Controller(
           .status(HttpStatus.FORBIDDEN)
           .body(RESPONSE_403_DESCRIPTION)
       } else {
-        var hakemus: AtaruHakemus = null
+        var hakemus: UusiAtaruHakemus = null
         try
-          hakemus = mapper.readValue(hakemusBytes, classOf[AtaruHakemus])
+          hakemus = mapper.readValue(hakemusBytes, classOf[UusiAtaruHakemus])
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
@@ -151,7 +151,7 @@ class Controller(
   @GetMapping(path = Array("hakemus/{hakemusOid}"))
   def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] =
     try
-      hakemuspalveluService.getHakemus(hakemusOid) match {
+      hakemuspalveluService.haeHakemus(hakemusOid) match {
         case Left(error: Throwable)  => ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
         case Right(response: String) => ResponseEntity.status(HttpStatus.OK).body(response)
       }
@@ -162,17 +162,9 @@ class Controller(
     }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def listaaHakemukset(): String = {
-    // ElasticSearch-haku => palauttaa hakemusten ID:t
-    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
-
-    // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
-    val ataruHakemukset: Seq[Any]            = Seq[Any]()
-    val tutuHakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(hakemusOidit)
-
-    // Yhdistetään tietolähteiden datat
-    val yhdistetytHakemukset = tutuHakemukset
-
-    mapper.writeValueAsString(yhdistetytHakemukset)
+  def listaaHakemukset(): ResponseEntity[Any] = {
+    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista()
+    val response                         = mapper.writeValueAsString(hakemukset)
+    ResponseEntity.status(HttpStatus.OK).body(response)
   }
 }

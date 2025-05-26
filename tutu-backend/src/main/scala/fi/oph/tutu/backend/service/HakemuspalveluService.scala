@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.HakemusOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
@@ -35,12 +36,27 @@ class HakemuspalveluService(httpService: HttpService) {
       .build()
   )
 
-  def getHakemus(hakemusOid: String): Either[Throwable, String] =
+  def haeHakemus(hakemusOid: String): Either[Throwable, String] = {
     httpService.get(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/tutu/hakemus/$hakemusOid"
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemus/$hakemusOid"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
+  }
+
+  def haeHakemukset(hakemusOidit: Seq[HakemusOid]): Either[Throwable, String] = {
+    val oidit =
+      org.json4s.JsonAST.JArray(hakemusOidit.map(oid => org.json4s.JsonAST.JString(oid.toString)).toList).toString
+
+    httpService.post(
+      hakemuspalveluCasClient,
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemukset",
+      oidit
+    ) match {
+      case Left(error: Throwable)  => Left(error)
+      case Right(response: String) => Right(response)
+    }
+  }
 }

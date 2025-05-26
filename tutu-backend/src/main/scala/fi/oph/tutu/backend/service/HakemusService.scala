@@ -1,18 +1,26 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{AtaruHakemus, Esittelija, HakemusListItem, HakemusOid}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
+import org.json4s.*
+import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
+
+implicit val formats: Formats = DefaultFormats
 
 import java.util.UUID
 
 @Component
 @Service
-class HakemusService(hakemusRepository: HakemusRepository, esittelijaRepository: EsittelijaRepository) {
+class HakemusService(
+  hakemusRepository: HakemusRepository,
+  esittelijaRepository: EsittelijaRepository,
+  hakemuspalveluService: HakemuspalveluService
+) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
-  def tallennaHakemus(hakemus: AtaruHakemus): UUID = {
+  def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
     esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
@@ -25,21 +33,41 @@ class HakemusService(hakemusRepository: HakemusRepository, esittelijaRepository:
     }
   }
 
-  def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] = {
-    // TODO: haetaan hakemuslistaus atarun hakemuksista ja yhdistetään data
+  def haeHakemusLista(): Seq[HakemusListItem] = {
+    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
+
+    // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
+    val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
+      case Left(error) => LOG.error(error.getMessage); Seq.empty[AtaruHakemus]
+      case Right(response) => {
+        parse(response).extract[Seq[AtaruHakemus]]
+      }
+    }
+
     hakemusRepository
-      .haeHakemusLista(hakemusOidt)
+      .haeHakemusLista(hakemusOidit)
       .map(item =>
-        HakemusListItem(
-          asiatunnus = item.asiatunnus,
-          hakija = "Testi Hakija",
-          vaihe = "Testi Vaihe",
-          paatostyyppi = "Testi Paatostyyppi",
-          aika = "2 kk",
-          hakemusOid = item.hakemusOid,
-          syykoodi = item.syykoodi,
-          esittelijaOid = item.esittelijaOid
-        )
+        val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid).orNull
+
+        if (ataruHakemus == null) {
+          LOG.warn(
+            s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${item.hakemusOid}, ei näytetä hakemusta listassa."
+          )
+          // todo: pitää testata?
+          null
+        } else {
+          HakemusListItem(
+            asiatunnus = item.asiatunnus,
+            hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
+            vaihe = "Testi Vaihe",
+            paatostyyppi = "Testi Paatostyyppi",
+            aika = "2 kk",
+            hakemusOid = item.hakemusOid,
+            syykoodi = item.syykoodi,
+            esittelijaOid = item.esittelijaOid
+          )
+
+        }
       )
   }
 }

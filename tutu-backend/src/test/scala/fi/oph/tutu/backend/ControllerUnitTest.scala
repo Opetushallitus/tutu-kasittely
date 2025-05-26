@@ -78,7 +78,7 @@ class ControllerUnitTest {
     }"""
 
     when(
-      hakemuspalveluService.getHakemus("1")
+      hakemuspalveluService.haeHakemus("1")
     ).thenReturn(Right(hakemusResult))
 
     when(hakemusRepository.toString).thenCallRealMethod()
@@ -97,7 +97,7 @@ class ControllerUnitTest {
   def haeAtaruHakemusValidRequestReturns404(@Autowired mvc: MockMvc): Unit = {
 
     when(
-      hakemuspalveluService.getHakemus("2")
+      hakemuspalveluService.haeHakemus("2")
     ).thenReturn(Left(new Exception()))
 
     when(hakemusRepository.toString).thenCallRealMethod()

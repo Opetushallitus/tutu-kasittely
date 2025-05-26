@@ -2,10 +2,10 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{AtaruHakemus, Esittelija, HakemusOid, UserOid}
+import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, OnrService}
+import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, OnrService}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
@@ -26,6 +26,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+
+import scala.io.Source
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -48,6 +50,9 @@ class ControllerTest extends IntegrationTestBase {
 
   @Autowired
   var hakemusService: HakemusService = _
+
+  @MockitoBean
+  var hakemuspalveluService: HakemuspalveluService = _
 
   var esittelija: Option[Esittelija] = None
   @BeforeAll def setup(): Unit = {
@@ -99,7 +104,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -119,7 +124,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -155,7 +160,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -172,7 +177,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -192,7 +197,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
-    val hakemus     = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -214,9 +219,17 @@ class ControllerTest extends IntegrationTestBase {
   @Order(7)
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
+    val ataruData = Source.fromResource("ataruHakemukset.json")
+    val ataruJson =
+      try ataruData.mkString
+      finally ataruData.close()
+
+    when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
+      .thenReturn(Right(ataruJson))
+
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Hakija",
+                                "hakija" : "Testi Neljäs Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
@@ -234,7 +247,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Hakija",
+                                "hakija" : "Testi Toka Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
@@ -243,7 +256,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Hakija",
+                                "hakija" : "Testi Kolmas Hakija",
                                 "vaihe" : "Testi Vaihe",
                                 "paatostyyppi" : "Testi Paatostyyppi",
                                 "aika" : "2 kk",
@@ -252,10 +265,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : null
                               } ]"""
 
-    val ataruHakemus1 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0)
-    val ataruHakemus2 = AtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1)
-    hakemusService.tallennaHakemus(ataruHakemus1)
-    hakemusService.tallennaHakemus(ataruHakemus2)
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1))
 
     val result = mockMvc
       .perform(
