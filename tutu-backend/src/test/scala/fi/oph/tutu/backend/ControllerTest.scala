@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
+import java.io.FileNotFoundException
 import scala.io.Source
 
 @AutoConfigureMockMvc
@@ -219,10 +220,10 @@ class ControllerTest extends IntegrationTestBase {
   @Order(7)
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
-    val ataruData = Source.fromResource("ataruHakemukset.json")
-    val ataruJson =
-      try ataruData.mkString
-      finally ataruData.close()
+    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemukset.json"))
+      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
+
+    val ataruJson = Source.fromInputStream(stream).mkString
 
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(ataruJson))
