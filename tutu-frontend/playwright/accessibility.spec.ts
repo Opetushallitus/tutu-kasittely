@@ -70,6 +70,16 @@ test.beforeEach(async ({ page }) => {
           esittelijaOid: '1.2.246.562.24.999999999998',
           asiatunnus: 'OPH-123-2025',
         },
+        {
+          hakija: 'Simo Samurai',
+          vaihe: 'Hakemus käsittelyssä',
+          paatostyyppi: 'päätös',
+          aika: '3 kk',
+          hakemusOid: '1.2.246.562.10.00000000003',
+          syykoodi: '2',
+          esittelijaOid: null,
+          asiatunnus: 'OPH-123-2025',
+        },
       ]),
     });
   });

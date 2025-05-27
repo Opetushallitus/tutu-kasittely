@@ -42,6 +42,7 @@ object AnswerValueSerializer
         }
       )
     )
+
 implicit val formats: Formats = DefaultFormats + AnswerValueSerializer
 
 case class AtaruHakemus(

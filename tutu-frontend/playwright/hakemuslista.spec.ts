@@ -64,6 +64,16 @@ test.beforeEach(async ({ page }) => {
           esittelijaOid: '1.2.246.562.24.999999999998',
           asiatunnus: 'OPH-123-2025',
         },
+        {
+          hakija: 'Simo Samurai',
+          vaihe: 'Hakemus käsittelyssä',
+          paatostyyppi: 'päätös',
+          aika: '3 kk',
+          hakemusOid: '1.2.246.562.10.00000000003',
+          syykoodi: '2',
+          esittelijaOid: null,
+          asiatunnus: 'OPH-123-2025',
+        },
       ]),
     });
   });
@@ -75,10 +85,12 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await expect(page.locator('h1')).toBeVisible();
 
   // varmistaa että spinneristä on siirrytty eteenpäin ennen seuraavaa expectiä
+
+  // odotetaan että hakemuslista on ladattu
+  await expect(page.getByTestId('hakemus-list')).toBeVisible();
   const hakemusRow = page.getByTestId('hakemus-row');
 
-  // parempi testi kun haetaan oikeaa dataa
-  expect(await hakemusRow.count()).toBeGreaterThan(0);
+  expect(await hakemusRow.count()).toBe(3);
 });
 
 test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({

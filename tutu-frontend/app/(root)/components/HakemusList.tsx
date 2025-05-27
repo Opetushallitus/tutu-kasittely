@@ -78,7 +78,9 @@ export function HakemusList({ user }: HakemusListProps) {
             <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
           </TableRow>
         </TableHead>
-        <StyledTableBody>{hakemusRows}</StyledTableBody>
+        <StyledTableBody data-testid={'hakemus-list'}>
+          {hakemusRows}
+        </StyledTableBody>
       </Table>
     </TableContainer>
   );
