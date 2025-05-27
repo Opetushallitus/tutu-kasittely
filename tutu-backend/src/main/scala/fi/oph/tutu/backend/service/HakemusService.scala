@@ -46,28 +46,29 @@ class HakemusService(
 
     hakemusRepository
       .haeHakemusLista(hakemusOidit)
-      .map(item =>
-        val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid).orNull
+      .flatMap { item =>
+        val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid)
 
-        if (ataruHakemus == null) {
-          LOG.warn(
-            s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${item.hakemusOid}, ei näytetä hakemusta listassa."
-          )
-          // todo: pitää testata?
-          null
-        } else {
-          HakemusListItem(
-            asiatunnus = item.asiatunnus,
-            hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
-            vaihe = "Testi Vaihe",
-            paatostyyppi = "Testi Paatostyyppi",
-            aika = "2 kk",
-            hakemusOid = item.hakemusOid,
-            syykoodi = item.syykoodi,
-            esittelijaOid = item.esittelijaOid
-          )
-
+        ataruHakemus match {
+          case None =>
+            LOG.warn(
+              s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${item.hakemusOid}, ei näytetä hakemusta listassa."
+            )
+            None
+          case Some(ataruHakemus) =>
+            Some(
+              HakemusListItem(
+                asiatunnus = item.asiatunnus,
+                hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
+                vaihe = "Testi Vaihe",
+                paatostyyppi = "Testi Paatostyyppi",
+                aika = "2 kk",
+                hakemusOid = item.hakemusOid,
+                syykoodi = item.syykoodi,
+                esittelijaOid = item.esittelijaOid
+              )
+            )
         }
-      )
+      }
   }
 }
