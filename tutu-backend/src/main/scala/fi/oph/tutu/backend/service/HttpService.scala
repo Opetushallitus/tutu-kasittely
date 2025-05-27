@@ -48,6 +48,7 @@ class HttpService {
     val req = new RequestBuilder()
       .setMethod("POST")
       .setUrl(url)
+      .setHeader("Content-Type", "application/json")
       .setBody(body)
       .build()
     try {
