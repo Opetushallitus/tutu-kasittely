@@ -1,7 +1,10 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.HakemusOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
+import org.json4s.native.JsonMethods.{compact, render}
+import org.json4s.{DefaultFormats, Extraction, JObject, JValue}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
@@ -9,7 +12,8 @@ import org.springframework.stereotype.{Component, Service}
 @Component
 @Service
 class HakemuspalveluService(httpService: HttpService) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
+  val LOG: Logger                           = LoggerFactory.getLogger(classOf[HakemuspalveluService])
+  implicit val formats: DefaultFormats.type = DefaultFormats
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
@@ -35,12 +39,27 @@ class HakemuspalveluService(httpService: HttpService) {
       .build()
   )
 
-  def getHakemus(hakemusOid: String): Either[Throwable, String] =
+  def haeHakemus(hakemusOid: String): Either[Throwable, String] = {
     httpService.get(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/tutu/hakemus/$hakemusOid"
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemus/$hakemusOid"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
+  }
+
+  def haeHakemukset(hakemusOidit: Seq[HakemusOid]): Either[Throwable, String] = {
+    val jsonObj: JValue  = JObject("hakemusOids" -> Extraction.decompose(hakemusOidit.map(_.toString)))
+    val jsonBody: String = compact(render(jsonObj))
+
+    httpService.post(
+      hakemuspalveluCasClient,
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemukset",
+      jsonBody
+    ) match {
+      case Left(error: Throwable)  => Left(error)
+      case Right(response: String) => Right(response)
+    }
+  }
 }

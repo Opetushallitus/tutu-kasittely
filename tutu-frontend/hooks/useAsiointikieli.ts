@@ -1,4 +1,4 @@
-import { useAuthorizedUser } from '@/app/contexts/AuthorizedUserProvider';
+import { useAuthorizedUser } from '@/components/providers/AuthorizedUserProvider';
 import { LanguageCode } from '@/lib/types/common';
 
 export const useAsiointiKieli = () => {

@@ -156,10 +156,7 @@ class SecurityConfig {
         requests
           .requestMatchers(
             "/api/csrf",
-            "/api/healthcheck",
-            // TODO: remove /api/test & /api/hakemus when not needed
-            //            "/api/hakemus",
-            "/api/test"
+            "/api/healthcheck"
           )
           .permitAll()
           .requestMatchers(SWAGGER_WHITELIST*)
