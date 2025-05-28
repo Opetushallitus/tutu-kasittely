@@ -16,7 +16,6 @@ export default function HakemusRow({ hakemus }: { hakemus: HakemusListItem }) {
       </StyledTableCell>
       <StyledTableCell>{hakemus.asiatunnus}</StyledTableCell>
       <StyledTableCell>{hakemus.vaihe}</StyledTableCell>
-      <StyledTableCell>{hakemus.paatostyyppi}</StyledTableCell>
       <StyledTableCell>{hakemus.aika}</StyledTableCell>
     </TableRow>
   );

@@ -47,7 +47,6 @@ test.beforeEach(async ({ page }) => {
         {
           hakija: 'Heikki Heittotähti',
           vaihe: 'Hakemus käsittelyssä',
-          paatostyyppi: 'päätös',
           aika: '3 kk',
           hakemusOid: '1.2.246.562.10.00000000001',
           syykoodi: '2',
@@ -57,7 +56,6 @@ test.beforeEach(async ({ page }) => {
         {
           hakija: 'Kalle Katana',
           vaihe: 'Hakemus käsittelyssä',
-          paatostyyppi: 'päätös',
           aika: '3 kk',
           hakemusOid: '1.2.246.562.10.00000000002',
           syykoodi: '2',
@@ -67,7 +65,6 @@ test.beforeEach(async ({ page }) => {
         {
           hakija: 'Simo Samurai',
           vaihe: 'Hakemus käsittelyssä',
-          paatostyyppi: 'päätös',
           aika: '3 kk',
           hakemusOid: '1.2.246.562.10.00000000003',
           syykoodi: '2',

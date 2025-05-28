@@ -74,7 +74,6 @@ export function HakemusList({ user }: HakemusListProps) {
             <TableCell>{t('hakemuslista.hakijannimi')}</TableCell>
             <TableCell>{t('hakemuslista.asiatunnus')}</TableCell>
             <TableCell>{t('hakemuslista.kasittelyvaihe')}</TableCell>
-            <TableCell>{t('hakemuslista.paatostyyppi')}</TableCell>
             <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
           </TableRow>
         </TableHead>

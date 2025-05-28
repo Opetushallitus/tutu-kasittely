@@ -61,7 +61,6 @@ class HakemusService(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 vaihe = "Testi Vaihe",
-                paatostyyppi = "Testi Paatostyyppi",
                 aika = "2 kk",
                 hakemusOid = item.hakemusOid,
                 syykoodi = item.syykoodi,

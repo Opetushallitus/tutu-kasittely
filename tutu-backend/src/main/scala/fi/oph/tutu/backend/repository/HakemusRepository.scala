@@ -41,7 +41,6 @@ class HakemusRepository {
         null,
         null,
         null,
-        null,
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
