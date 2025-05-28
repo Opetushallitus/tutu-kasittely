@@ -23,5 +23,5 @@ case class UusiAtaruHakemus(
     example = "0",
     requiredMode = RequiredMode.REQUIRED
   )
-  @BeanProperty syykoodi: Int
+  @BeanProperty hakemusKoskee: Int
 )

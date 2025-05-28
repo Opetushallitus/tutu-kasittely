@@ -56,14 +56,14 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, syykoodi: Int, esittelijaId: Option[UUID], luoja: String): UUID =
+  def tallennaHakemus(hakemusOid: HakemusOid, hakemusKoskee: Int, esittelijaId: Option[UUID], luoja: String): UUID =
     val hakemusOidString   = hakemusOid.toString
     val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, syykoodi, esittelija_id, luoja)
-      VALUES ($hakemusOidString, $syykoodi, ${esittelijaIdOrNull}::uuid, $luoja)
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
@@ -91,7 +91,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.syykoodi, e.esittelija_oid, h.asiatunnus
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id

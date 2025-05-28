@@ -7,7 +7,7 @@ case class HakemusListItem(
   @BeanProperty vaihe: String,
   @BeanProperty aika: String,
   @BeanProperty hakemusOid: String,
-  @BeanProperty syykoodi: Int,
+  @BeanProperty hakemusKoskee: Int,
   @BeanProperty esittelijaOid: Option[String],
   @BeanProperty asiatunnus: Option[String]
 )

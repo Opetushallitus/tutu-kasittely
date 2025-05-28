@@ -20,7 +20,7 @@ case class Hakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 4
   )
-  @BeanProperty syykoodi: Int,
+  @BeanProperty hakemusKoskee: Int,
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,

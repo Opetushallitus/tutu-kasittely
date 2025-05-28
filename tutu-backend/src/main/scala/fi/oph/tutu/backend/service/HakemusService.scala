@@ -25,11 +25,11 @@ class HakemusService(
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
-          hakemus.syykoodi,
+          hakemus.hakemusKoskee,
           Some(esittelija.esittelijaId),
           "Hakemuspalvelu"
         )
-      case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.syykoodi, None, "Hakemuspalvelu")
+      case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
     }
   }
 
@@ -63,7 +63,7 @@ class HakemusService(
                 vaihe = "Testi Vaihe",
                 aika = "2 kk",
                 hakemusOid = item.hakemusOid,
-                syykoodi = item.syykoodi,
+                hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid
               )
             )

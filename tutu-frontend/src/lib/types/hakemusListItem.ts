@@ -4,6 +4,6 @@ export type HakemusListItem = {
   vaihe: string;
   aika: string;
   hakemusOid: string;
-  syykoodi: string;
+  hakemusKoskee: string;
   esittelijaOid: string;
 };

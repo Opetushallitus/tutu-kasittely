@@ -234,7 +234,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "vaihe" : "Testi Vaihe",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
-                                "syykoodi" : 1,
+                                "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
                                 "asiatunnus" : null,
@@ -242,7 +242,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "vaihe" : "Testi Vaihe",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
-                                "syykoodi" : 0,
+                                "hakemusKoskee" : 0,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
                                 "asiatunnus" : null,
@@ -250,7 +250,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "vaihe" : "Testi Vaihe",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
-                                "syykoodi" : 1,
+                                "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
                               }, {
                                 "asiatunnus" : null,
@@ -258,7 +258,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "vaihe" : "Testi Vaihe",
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
-                                "syykoodi" : 0,
+                                "hakemusKoskee" : 0,
                                 "esittelijaOid" : null
                               } ]"""
 
