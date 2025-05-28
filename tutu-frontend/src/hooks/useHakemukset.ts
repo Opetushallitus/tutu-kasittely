@@ -3,7 +3,12 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 
 export const getHakemukset = async (): Promise<HakemusListItem[]> => {
-  return await doApiFetch('hakemuslista', undefined, 'no-store');
+  const localStorageSearchParams = localStorage.getItem('tutu-query-string');
+  return await doApiFetch(
+    `hakemuslista?${localStorageSearchParams}`,
+    undefined,
+    'no-store',
+  );
 };
 
 export const useHakemukset = () =>

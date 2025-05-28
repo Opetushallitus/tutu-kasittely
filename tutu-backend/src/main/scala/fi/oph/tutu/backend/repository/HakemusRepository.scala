@@ -116,19 +116,25 @@ class HakemusRepository {
    * @return
    *   hakuehtojen mukaisten hakemusten Oid:t
    */
-  def mockHaeHakemusIdt(): Seq[HakemusOid] =
-    try
+  def haeHakemusOidit(nayta: Option[String], hakemuskoskee: Option[String]): Seq[HakemusOid] = {
+    try {
+      val baseQuery = "SELECT hakemus_oid FROM hakemus"
+      val whereClause = hakemuskoskee match {
+        case None    => ""
+        case Some(s) => s" WHERE hakemus_koskee = ${s.toInt}"
+      }
+      val fullQuery = baseQuery + whereClause
+      LOG.info(fullQuery)
       db.run(
-        sql"""
-        SELECT hakemus_oid FROM hakemus
-        """.as[HakemusOid],
-        "mock_hae_hakemus_idt"
+        sql"""#$fullQuery""".as[HakemusOid],
+        "hae_hakemus_oidt"
       )
-    catch {
+    } catch {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }
+  }
 }

@@ -6,11 +6,11 @@ export const kasittelyTilat = ['kasittelyssa', 'kasitelty'] as const;
 export type KasittelyTila = (typeof kasittelyTilat)[number];
 
 export const hakemusKoskeeQueryStates = [
-  '',
-  'kelpoisuus',
-  'kelpoisuus-ap',
-  'tutkinto-rinnakkaistaminen',
-  'tutkinto-suoritus-rinnakkaistaminen',
+  { key: null, value: '' },
+  { key: 0, value: 'tutkinnon-tason-rinnakkaistaminen' },
+  { key: 1, value: 'kelpoisuus-ammattiin' },
+  { key: 2, value: 'tutkinto-suoritus-rinnakkaistaminen' },
+  { key: 3, value: 'riittavat-opinnot' },
 ] as const;
 
 export type HakemusKoskeeQueryState = (typeof hakemusKoskeeQueryStates)[number];

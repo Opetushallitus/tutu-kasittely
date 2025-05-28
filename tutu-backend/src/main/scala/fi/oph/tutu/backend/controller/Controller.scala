@@ -162,8 +162,11 @@ class Controller(
     }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def listaaHakemukset(): ResponseEntity[Any] = {
-    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista()
+  def listaaHakemukset(
+    @RequestParam(required = false) nayta: String,
+    @RequestParam(required = false) hakemuskoskee: String
+  ): ResponseEntity[Any] = {
+    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(Option(nayta), Option(hakemuskoskee))
     val response                         = mapper.writeValueAsString(hakemukset)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }
