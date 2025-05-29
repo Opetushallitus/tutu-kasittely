@@ -33,8 +33,8 @@ class HakemusService(
     }
   }
 
-  def haeHakemusLista(nayta: Option[String], hakemuskoskee: Option[String]): Seq[HakemusListItem] = {
-    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(nayta, hakemuskoskee)
+  def haeHakemusLista(userOid: Option[String], hakemuskoskee: Option[String]): Seq[HakemusListItem] = {
+    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee)
 
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {

@@ -166,7 +166,12 @@ class Controller(
     @RequestParam(required = false) nayta: String,
     @RequestParam(required = false) hakemuskoskee: String
   ): ResponseEntity[Any] = {
-    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(Option(nayta), Option(hakemuskoskee))
+    val user = userService.getEnrichedUserDetails
+    val userOid = nayta match {
+      case null   => None
+      case "omat" => Option(user.userOid)
+    }
+    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee))
     val response                         = mapper.writeValueAsString(hakemukset)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }

@@ -23,6 +23,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import {
+  hakemusKoskeeOptions,
   hakemusKoskeeQueryStates,
   kasittelyTilat,
   naytaQueryStates,
@@ -53,7 +54,7 @@ export default function HakemusListFilters() {
     'hakemuskoskee',
     parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
   );
-
+  console.log('hakemusKoskee ' + hakemusKoskee);
   const [esittelija, setEsittelija] = useQueryState(
     'esittelija',
     parseAsString.withDefault(''),
@@ -94,7 +95,11 @@ export default function HakemusListFilters() {
                     selected={naytaKaikki}
                     value={'kaikki'}
                     onClick={() =>
-                      setQueryStateAndLocalStorage(queryClient, 'kaikki')
+                      setQueryStateAndLocalStorage(
+                        queryClient,
+                        setNayta,
+                        'kaikki',
+                      )
                     }
                   >
                     {t('hakemuslista.kaikki')}
@@ -166,9 +171,9 @@ export default function HakemusListFilters() {
         <Grid size={3}>
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
-            options={R.map(hakemusKoskeeQueryStates, (val) => ({
-              label: t(`hakemuslista.hakemusKoskee.${val.value}`),
-              value: val.key,
+            options={R.map(hakemusKoskeeOptions, (option) => ({
+              label: t(`hakemuslista.hakemusKoskee.${option.label}`),
+              value: option.value,
             }))}
             value={hakemusKoskee}
             onChange={(event: SelectChangeEvent) =>

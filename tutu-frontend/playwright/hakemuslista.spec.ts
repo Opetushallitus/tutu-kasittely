@@ -39,7 +39,7 @@ test.beforeEach(async ({ page }) => {
       }),
     });
   });
-  await page.route('**/tutu-backend/api/hakemuslista', async (route) => {
+  await page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -110,7 +110,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
-      'tilat=kasittelyssa,kasitelty&hakemuskoskee=kelpoisuus',
+      'tilat=kasittelyssa,kasitelty&hakemuskoskee=1',
     );
   });
 
@@ -121,6 +121,6 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   const hakemusKoskee = page.getByTestId('hakemus-koskee').locator('input');
 
   await expect(kasittelytila).toHaveValue('kasittelyssa,kasitelty');
-
-  await expect(hakemusKoskee).toHaveValue('kelpoisuus');
+  //TODO TESTI SILLE ETTÄ HAKEMUKSET FILTTERÖITYY
+  await expect(hakemusKoskee).toHaveValue('1');
 });

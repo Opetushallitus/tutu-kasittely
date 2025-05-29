@@ -45,7 +45,7 @@ test.beforeEach(async ({ page }) => {
       }),
     });
   });
-  await page.route('**/tutu-backend/api/hakemuslista', async (route) => {
+  await page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

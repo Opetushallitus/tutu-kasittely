@@ -82,6 +82,9 @@ class HakemusRepository {
    * - Palautettavien kenttien listaa täydennettävä sitä mukaa
    *   kun domain-luokka kasvaa
    *
+   * @param hakemusOidit
+   *   hakemuspalvelun hakemusten oidit
+   *
    * @return
    *   HakemusOid-listan mukaiset hakemukset tietoineen
    */
@@ -111,20 +114,31 @@ class HakemusRepository {
   /**
    * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
    *
-   * Placeholder-toteutus ei käsittele hakuehtoja, vaan palauttaa kaikki hakemukset
+   * @param userOid
+   *   esittelijän oid
    *
+   * @param hakemusKoskee
+   *   hakemuspalvelun hakemuksen syy
    * @return
    *   hakuehtojen mukaisten hakemusten Oid:t
    */
-  def haeHakemusOidit(nayta: Option[String], hakemuskoskee: Option[String]): Seq[HakemusOid] = {
+  def haeHakemusOidit(userOid: Option[String], hakemusKoskee: Option[String]): Seq[HakemusOid] = {
     try {
-      val baseQuery = "SELECT hakemus_oid FROM hakemus"
-      val whereClause = hakemuskoskee match {
-        case None    => ""
-        case Some(s) => s" WHERE hakemus_koskee = ${s.toInt}"
+      val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
+
+      val joinClause = userOid match {
+        case None      => ""
+        case Some(oid) => s" INNER JOIN esittelija e on h.esittelija_id = e.id and e.esittelija_oid = '${oid}'"
       }
-      val fullQuery = baseQuery + whereClause
-      LOG.info(fullQuery)
+
+      val whereClause = hakemusKoskee match {
+        case None    => ""
+        case Some(s) => s" WHERE h.hakemus_koskee = ${s.toInt}"
+      }
+      val fullQuery = baseQuery + joinClause + whereClause
+
+      LOG.debug(fullQuery)
+
       db.run(
         sql"""#$fullQuery""".as[HakemusOid],
         "hae_hakemus_oidt"
