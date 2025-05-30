@@ -41,7 +41,6 @@ class HakemusRepository {
         null,
         null,
         null,
-        null,
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
@@ -57,14 +56,14 @@ class HakemusRepository {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, syykoodi: Int, esittelijaId: Option[UUID], luoja: String): UUID =
+  def tallennaHakemus(hakemusOid: HakemusOid, hakemusKoskee: Int, esittelijaId: Option[UUID], luoja: String): UUID =
     val hakemusOidString   = hakemusOid.toString
     val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, syykoodi, esittelija_id, luoja)
-      VALUES ($hakemusOidString, $syykoodi, ${esittelijaIdOrNull}::uuid, $luoja)
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallennaHakemus"
@@ -83,6 +82,9 @@ class HakemusRepository {
    * - Palautettavien kenttien listaa täydennettävä sitä mukaa
    *   kun domain-luokka kasvaa
    *
+   * @param hakemusOidit
+   *   hakemuspalvelun hakemusten oidit
+   *
    * @return
    *   HakemusOid-listan mukaiset hakemukset tietoineen
    */
@@ -92,7 +94,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.syykoodi, e.esittelija_oid, h.asiatunnus
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -112,24 +114,41 @@ class HakemusRepository {
   /**
    * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
    *
-   * Placeholder-toteutus ei käsittele hakuehtoja, vaan palauttaa kaikki hakemukset
+   * @param userOid
+   *   esittelijän oid
    *
+   * @param hakemusKoskee
+   *   hakemuspalvelun hakemuksen syy
    * @return
    *   hakuehtojen mukaisten hakemusten Oid:t
    */
-  def mockHaeHakemusIdt(): Seq[HakemusOid] =
-    try
+  def haeHakemusOidit(userOid: Option[String], hakemusKoskee: Option[String]): Seq[HakemusOid] = {
+    try {
+      val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
+
+      val joinClause = userOid match {
+        case None      => ""
+        case Some(oid) => s" INNER JOIN esittelija e on h.esittelija_id = e.id and e.esittelija_oid = '${oid}'"
+      }
+
+      val whereClause = hakemusKoskee match {
+        case None    => ""
+        case Some(s) => s" WHERE h.hakemus_koskee = ${s.toInt}"
+      }
+      val fullQuery = baseQuery + joinClause + whereClause
+
+      LOG.debug(fullQuery)
+
       db.run(
-        sql"""
-        SELECT hakemus_oid FROM hakemus
-        """.as[HakemusOid],
-        "mock_hae_hakemus_idt"
+        sql"""#$fullQuery""".as[HakemusOid],
+        "hae_hakemus_oidt"
       )
-    catch {
+    } catch {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }
+  }
 }

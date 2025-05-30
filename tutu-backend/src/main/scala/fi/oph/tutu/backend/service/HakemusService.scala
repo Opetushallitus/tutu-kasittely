@@ -25,16 +25,16 @@ class HakemusService(
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
-          hakemus.syykoodi,
+          hakemus.hakemusKoskee,
           Some(esittelija.esittelijaId),
           "Hakemuspalvelu"
         )
-      case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.syykoodi, None, "Hakemuspalvelu")
+      case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
     }
   }
 
-  def haeHakemusLista(): Seq[HakemusListItem] = {
-    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.mockHaeHakemusIdt()
+  def haeHakemusLista(userOid: Option[String], hakemuskoskee: Option[String]): Seq[HakemusListItem] = {
+    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee)
 
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
@@ -61,10 +61,9 @@ class HakemusService(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 vaihe = "Testi Vaihe",
-                paatostyyppi = "Testi Paatostyyppi",
                 aika = "2 kk",
                 hakemusOid = item.hakemusOid,
-                syykoodi = item.syykoodi,
+                hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid
               )
             )

@@ -29,11 +29,13 @@ import {
 } from '@/src/app/(root)/components/types';
 import { redirect, useSearchParams } from 'next/navigation';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
-
+  const queryClient = useQueryClient();
   const [nayta, setNayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
@@ -79,7 +81,11 @@ export default function HakemusListFilters() {
                     selected={!naytaKaikki}
                     value={'omat'}
                     onClick={() =>
-                      setQueryStateAndLocalStorage(setNayta, 'omat')
+                      setQueryStateAndLocalStorage(
+                        queryClient,
+                        setNayta,
+                        'omat',
+                      )
                     }
                     data-testid={'nayta-omat'}
                   >
@@ -89,7 +95,11 @@ export default function HakemusListFilters() {
                     selected={naytaKaikki}
                     value={'kaikki'}
                     onClick={() =>
-                      setQueryStateAndLocalStorage(setNayta, 'kaikki')
+                      setQueryStateAndLocalStorage(
+                        queryClient,
+                        setNayta,
+                        'kaikki',
+                      )
                     }
                   >
                     {t('hakemuslista.kaikki')}
@@ -106,7 +116,11 @@ export default function HakemusListFilters() {
             sx={{ width: '100%' }}
             value={haku}
             onChange={(event) =>
-              setQueryStateAndLocalStorage(setHaku, event.target.value)
+              setQueryStateAndLocalStorage(
+                queryClient,
+                setHaku,
+                event.target.value,
+              )
             }
             data-testid={'hakukentta'}
           ></OphInputFormField>
@@ -123,7 +137,11 @@ export default function HakemusListFilters() {
             }))}
             value={tilat}
             onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(setTilat, event.target.value)
+              setQueryStateAndLocalStorage(
+                queryClient,
+                setTilat,
+                event.target.value,
+              )
             }
             sx={{ width: '100%' }}
             data-testid={'kasittelytila'}
@@ -136,6 +154,7 @@ export default function HakemusListFilters() {
                     sx={{ borderRadius: '0px' }}
                     onDelete={() =>
                       setQueryStateAndLocalStorage(
+                        queryClient,
                         setTilat,
                         R.filter(tilat, (val) => val !== value),
                       )
@@ -152,13 +171,17 @@ export default function HakemusListFilters() {
         <Grid size={3}>
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
-            options={R.map(hakemusKoskeeQueryStates, (val) => ({
-              label: t(`hakemuslista.hakemusKoskee.${val}`),
-              value: val,
+            options={R.map(hakemusKoskeeOptions, (option) => ({
+              label: t(`hakemuslista.hakemusKoskeeValinta.${option.label}`),
+              value: option.value,
             }))}
             value={hakemusKoskee}
             onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(setHakemusKoskee, event.target.value)
+              setQueryStateAndLocalStorage(
+                queryClient,
+                setHakemusKoskee,
+                event.target.value,
+              )
             }
             sx={{ width: '100%' }}
             data-testid={'hakemus-koskee'}
@@ -171,7 +194,11 @@ export default function HakemusListFilters() {
               options={[]}
               value={esittelija}
               onChange={(event: SelectChangeEvent) =>
-                setQueryStateAndLocalStorage(setEsittelija, event.target.value)
+                setQueryStateAndLocalStorage(
+                  queryClient,
+                  setEsittelija,
+                  event.target.value,
+                )
               }
               sx={{ width: '100%' }}
             ></OphSelectFormField>

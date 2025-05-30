@@ -162,8 +162,16 @@ class Controller(
     }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def listaaHakemukset(): ResponseEntity[Any] = {
-    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista()
+  def listaaHakemukset(
+    @RequestParam(required = false) nayta: String,
+    @RequestParam(required = false) hakemuskoskee: String
+  ): ResponseEntity[Any] = {
+    val user = userService.getEnrichedUserDetails
+    val userOid = nayta match {
+      case null   => None
+      case "omat" => Option(user.userOid)
+    }
+    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee))
     val response                         = mapper.writeValueAsString(hakemukset)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }

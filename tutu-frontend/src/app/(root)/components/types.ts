@@ -5,13 +5,7 @@ export const kasittelyTilat = ['kasittelyssa', 'kasitelty'] as const;
 
 export type KasittelyTila = (typeof kasittelyTilat)[number];
 
-export const hakemusKoskeeQueryStates = [
-  '',
-  'kelpoisuus',
-  'kelpoisuus-ap',
-  'tutkinto-rinnakkaistaminen',
-  'tutkinto-suoritus-rinnakkaistaminen',
-] as const;
+export const hakemusKoskeeQueryStates = ['', '0', '1', '2', '3'] as const;
 
 export type HakemusKoskeeQueryState = (typeof hakemusKoskeeQueryStates)[number];
 

@@ -15,8 +15,6 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { naytaQueryStates } from '@/src/app/(root)/components/types';
 import { User } from '@/src/lib/types/user';
 
 const StyledTableBody = styled(TableBody)({
@@ -46,25 +44,17 @@ interface HakemusListProps {
 export function HakemusList({ user }: HakemusListProps) {
   const { t } = useTranslations();
   const { isLoading, data } = useHakemukset();
-  const [nayta] = useQueryState(
-    'nayta',
-    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
-  );
 
   if (isLoading) return <FullSpinner></FullSpinner>;
 
-  const hakemukset =
-    nayta === 'kaikki' && user
-      ? data
-      : data?.filter((hakemus) => user!.userOid === hakemus.esittelijaOid);
-
-  const hakemusRows = hakemukset
-    ? R.map(hakemukset, (hakemus) => {
-        return (
-          <HakemusRow hakemus={hakemus} key={hakemus.hakemusOid}></HakemusRow>
-        );
-      })
-    : [];
+  const hakemusRows =
+    data && user
+      ? R.map(data, (hakemus) => {
+          return (
+            <HakemusRow hakemus={hakemus} key={hakemus.hakemusOid}></HakemusRow>
+          );
+        })
+      : [];
 
   return (
     <TableContainer>
@@ -74,11 +64,11 @@ export function HakemusList({ user }: HakemusListProps) {
             <TableCell>{t('hakemuslista.hakijannimi')}</TableCell>
             <TableCell>{t('hakemuslista.asiatunnus')}</TableCell>
             <TableCell>{t('hakemuslista.kasittelyvaihe')}</TableCell>
-            <TableCell>{t('hakemuslista.paatostyyppi')}</TableCell>
+            <TableCell>{t('hakemuslista.hakemusKoskee')}</TableCell>
             <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
           </TableRow>
         </TableHead>
-        <StyledTableBody data-testid={'hakemus-list'}>
+        <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
           {hakemusRows}
         </StyledTableBody>
       </Table>
