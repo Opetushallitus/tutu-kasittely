@@ -55,6 +55,8 @@ class ControllerTest extends IntegrationTestBase {
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
 
+  final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
+
   var esittelija: Option[Esittelija] = None
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -62,7 +64,7 @@ class ControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid("1.2.246.562.24.00000000000000006666"), "testi")
+    esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
   }
 
   @BeforeEach
@@ -101,7 +103,7 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(1)
   @WithMockUser(
-    value = "kayttaja",
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
@@ -121,7 +123,7 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(2)
   @WithMockUser(
-    value = "kayttaja",
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
@@ -141,7 +143,7 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(3)
   @WithMockUser(
-    value = "kayttaja",
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusInvalidRequestReturns400(): Unit =
@@ -194,7 +196,7 @@ class ControllerTest extends IntegrationTestBase {
   @Test
   @Order(6)
   @WithMockUser(
-    value = "kayttaja",
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
@@ -218,7 +220,10 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(7)
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
     val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemukset.json"))
       .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
@@ -268,6 +273,46 @@ class ControllerTest extends IntegrationTestBase {
     val result = mockMvc
       .perform(
         get("/api/hakemuslista")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
+  }
+
+  @Test
+  @Order(8)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
+    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemukset.json"))
+      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
+
+    val ataruJson = Source.fromInputStream(stream).mkString
+
+    when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
+      .thenReturn(Right(ataruJson))
+
+    val expectedResult =
+      s"""[{
+                                "asiatunnus" : null,
+                                "hakija" : "Testi Neljäs Hakija",
+                                "vaihe" : "Testi Vaihe",
+                                "aika" : "2 kk",
+                                "hakemusOid" : "1.2.246.562.11.00000000000000006668",
+                                "hakemusKoskee" : 1,
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                              }, {
+                                "asiatunnus" : null,
+                                "hakija" : "Testi Toka Hakija",
+                                "vaihe" : "Testi Vaihe",
+                                "aika" : "2 kk",
+                                "hakemusOid" : "1.2.246.562.11.00000000000000006666",
+                                "hakemusKoskee" : 1,
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                              } ]"""
+
+    val result = mockMvc
+      .perform(
+        get("/api/hakemuslista?nayta=omat&hakemuskoskee=1")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
