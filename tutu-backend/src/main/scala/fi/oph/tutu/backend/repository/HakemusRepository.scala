@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusOid}
+import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, UserOid}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -26,7 +26,28 @@ class HakemusRepository {
     GetResult(r => HakemusOid(r.nextString()))
 
   implicit val getHakemusResult: GetResult[Hakemus] =
-    GetResult(r => Hakemus(HakemusOid(r.nextString()), r.nextInt(), UUID.fromString(r.nextString())))
+    GetResult(r =>
+      Hakemus(
+        HakemusOid(r.nextString()),
+        r.nextInt(),
+        Option(r.nextString()).map(UUID.fromString),
+        Option(r.nextString()).map(UserOid.apply)
+      )
+    )
+
+  implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
+    GetResult(r =>
+      HakemusListItem(
+        null,
+        null,
+        null,
+        null,
+        r.nextString(),
+        r.nextInt(),
+        Option(r.nextString()),
+        Option(r.nextString())
+      )
+    )
 
   /**
    * Tallentaa uuden hakemuksen
@@ -65,19 +86,19 @@ class HakemusRepository {
    * @return
    *   HakemusOid-listan mukaiset hakemukset tietoineen
    */
-  def haeHakemukset(hakemusOidt: Seq[HakemusOid]): Seq[Hakemus] =
+  def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] =
     try {
-      val oidt = hakemusOidt.map(oid => oid.s).mkString(",")
-
+      val oidt = hakemusOidt.map(oid => s"'${oid.s}'").mkString(", ")
       db.run(
         sql"""
-        SELECT
-          hakemus_oid, syykoodi, esittelija_id
-        FROM
-          hakemus
-        WHERE
-          hakemus_oid IN ($oidt)
-        """.as[Hakemus],
+            SELECT
+              h.hakemus_oid, h.syykoodi, e.esittelija_oid, h.asiatunnus
+            FROM
+              hakemus h
+            LEFT JOIN public.esittelija e on e.id = h.esittelija_id
+            WHERE
+              h.hakemus_oid IN (#$oidt)
+            """.as[HakemusListItem],
         "hae_hakemukset"
       )
     } catch {

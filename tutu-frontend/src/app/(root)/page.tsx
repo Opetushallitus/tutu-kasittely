@@ -32,7 +32,7 @@ export default function ListViewPage() {
           </BoxWrapper>
           <BoxWrapper>
             <HakemusListFilters></HakemusListFilters>
-            <HakemusList></HakemusList>
+            <HakemusList user={user}></HakemusList>
           </BoxWrapper>
         </>
       ) : (

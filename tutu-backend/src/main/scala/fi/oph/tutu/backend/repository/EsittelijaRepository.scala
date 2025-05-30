@@ -26,7 +26,7 @@ class EsittelijaRepository {
    * Hakee esittelijän maakoodin perusteella
    *
    * @param maakoodi
-   * hakemuksen maakoodi
+   * esittelijän maakoodi
    * @return
    * Esittelija
    */
@@ -72,7 +72,7 @@ class EsittelijaRepository {
       Some(esittelija)
     } catch {
       case e: Exception =>
-        LOG.warn(s"Esittelijän haku epäonnistui maakoodilla : $maakoodi")
+        LOG.warn(s"Esittelijän haku tietokannasta epäonnistui maakoodilla : $maakoodi")
         None
     }
 
