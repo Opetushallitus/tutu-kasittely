@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 
 export const getHakemukset = async (): Promise<HakemusListItem[]> => {
   const localStorageSearchParams = localStorage.getItem('tutu-query-string');
-  return await doApiFetch(
-    `hakemuslista?${localStorageSearchParams}`,
-    undefined,
-    'no-store',
-  );
+  const url = localStorageSearchParams
+    ? `hakemuslista?${localStorageSearchParams}`
+    : 'hakemuslista';
+
+  return await doApiFetch(url, undefined, 'no-store');
 };
 
 export const useHakemukset = () =>

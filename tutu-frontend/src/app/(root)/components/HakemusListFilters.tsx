@@ -23,7 +23,6 @@ import {
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import {
-  hakemusKoskeeOptions,
   hakemusKoskeeQueryStates,
   kasittelyTilat,
   naytaQueryStates,
@@ -31,6 +30,7 @@ import {
 import { redirect, useSearchParams } from 'next/navigation';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
@@ -172,7 +172,7 @@ export default function HakemusListFilters() {
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
             options={R.map(hakemusKoskeeOptions, (option) => ({
-              label: t(`hakemuslista.hakemusKoskee.${option.label}`),
+              label: t(`hakemuslista.hakemusKoskeeValinta.${option.label}`),
               value: option.value,
             }))}
             value={hakemusKoskee}

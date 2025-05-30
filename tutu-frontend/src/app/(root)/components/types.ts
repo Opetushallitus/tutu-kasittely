@@ -12,14 +12,3 @@ export type HakemusKoskeeQueryState = (typeof hakemusKoskeeQueryStates)[number];
 export const naytaQueryStates = ['kaikki', 'omat'] as const;
 
 export type NaytaQueryState = (typeof naytaQueryStates)[number];
-
-export const hakemusKoskeeOptions: Array<{
-  value: string;
-  label: string;
-}> = [
-  { value: '', label: '' },
-  { value: '0', label: 'tutkinnon-tason-rinnakkaistaminen' },
-  { value: '1', label: 'kelpoisuus-ammattiin' },
-  { value: '2', label: 'tutkinto-suoritus-rinnakkaistaminen' },
-  { value: '3', label: 'riittavat-opinnot' },
-];

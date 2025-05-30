@@ -121,6 +121,6 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   const hakemusKoskee = page.getByTestId('hakemus-koskee').locator('input');
 
   await expect(kasittelytila).toHaveValue('kasittelyssa,kasitelty');
-  //TODO TESTI SILLE ETTÄ HAKEMUKSET FILTTERÖITYY
+
   await expect(hakemusKoskee).toHaveValue('1');
 });

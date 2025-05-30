@@ -5,6 +5,13 @@
     "hakemus": "Hakemus",
     "esittelija": "Esittelijä",
     "hakemusKoskee": "Hakemus koskee",
+    "hakemusKoskeeValinta": {
+      "tyhja": "",
+      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
+      "riittavatOpinnot": "Päätös riittävistä opinnoista"
+    },
     "kasittelytila": "Käsittelytila",
     "nayta": "Näytä",
     "haeHakemuksia": "Hae hakemuksia",

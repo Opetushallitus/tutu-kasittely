@@ -9,7 +9,6 @@ export async function setQueryStateAndLocalStorage<T>(
   setQueryState: (val: T) => Promise<URLSearchParams>,
   value: unknown,
 ) {
-  console.log(value);
   const newSearchParams = await setQueryState(value as T);
   localStorage.setItem('tutu-query-string', newSearchParams.toString());
   await queryClient.invalidateQueries({ queryKey: ['getHakemukset'] });
