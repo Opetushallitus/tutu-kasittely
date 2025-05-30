@@ -15,8 +15,7 @@ export default function HakemusRow({ hakemus }: { hakemus: HakemusListItem }) {
       (option) => option.value === String(hakemus.hakemusKoskee),
     )?.label || ''
   }`;
-  console.log(hakemusKoskee);
-  console.log(hakemus.hakemusKoskee);
+
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>

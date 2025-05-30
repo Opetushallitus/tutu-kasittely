@@ -54,7 +54,7 @@ export default function HakemusListFilters() {
     'hakemuskoskee',
     parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
   );
-  console.log('hakemusKoskee ' + hakemusKoskee);
+
   const [esittelija, setEsittelija] = useQueryState(
     'esittelija',
     parseAsString.withDefault(''),
