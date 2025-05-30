@@ -1,0 +1,26 @@
+{
+  "hakemuslista": {
+    "otsikko": "Tutkintojen tunnustaminen",
+    "hakemukset": "Hakemukset",
+    "hakemus": "Hakemus",
+    "esittelija": "Esittelijä",
+    "hakemusKoskee": "Hakemus koskee",
+    "kasittelytila": "Käsittelytila",
+    "nayta": "Näytä",
+    "haeHakemuksia": "Hae hakemuksia",
+    "omat": "Minulle osoitetut",
+    "kaikki": "Kaikki"
+  },
+  "hakemus": {
+    "otsikko": "Hakemus"
+  },
+  "hakemus-tabs": {
+    "navigaatio": "Hakemuksen näkymävalitsin",
+    "perustiedot": "Hakijan ja hakemuksen tiedot",
+    "asiakirjat": "Asiakirjat",
+    "paatostiedot": "Päätöstiedot",
+    "perustelu": "Perustelu",
+    "tutkinnot": "Tutkinnot",
+    "valitustiedot": "Valitustiedot"
+  }
+}
