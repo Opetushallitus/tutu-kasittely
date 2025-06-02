@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   styled,
   Table,
@@ -11,6 +10,7 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
@@ -19,6 +19,14 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
+
+const FIELD_KEYS = {
+  hakijannimi: 'hakemuslista.hakijannimi',
+  asiatunnus: 'hakemuslista.asiatunnus',
+  kasittelyvaihe: 'hakemuslista.kasittelyvaihe',
+  hakemusKoskee: 'hakemuslista.hakemusKoskee',
+  hakijanaika: 'hakemuslista.hakijanaika',
+};
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
@@ -45,8 +53,14 @@ interface HakemusListProps {
 }
 
 export function HakemusList({ user }: HakemusListProps) {
-  const [sortField, setSortField] = useState();
-  const [sortOrder, setSortOrder] = useState();
+  const [sortField, setSortField] = useQueryState(
+    'hakemuslista.sortfield',
+    parseAsStringLiteral([...Object.values(FIELD_KEYS), '']).withDefault(''),
+  );
+  const [sortOrder, setSortOrder] = useQueryState(
+    'hakemuslista.sortorder',
+    parseAsStringLiteral(['', 'asc', 'desc']).withDefault(''),
+  );
   const { isLoading, data } = useHakemukset();
 
   const handleSort = (field) => () => {
@@ -73,7 +87,7 @@ export function HakemusList({ user }: HakemusListProps) {
           <TableRow>
             <TableCell>
               <TutuTableSortLabel
-                fieldKey={'hakemuslista.hakijannimi'}
+                fieldKey={FIELD_KEYS.hakijannimi}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 handleSort={handleSort}
@@ -81,7 +95,7 @@ export function HakemusList({ user }: HakemusListProps) {
             </TableCell>
             <TableCell>
               <TutuTableSortLabel
-                fieldKey={'hakemuslista.asiatunnus'}
+                fieldKey={FIELD_KEYS.asiatunnus}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 handleSort={handleSort}
@@ -89,7 +103,7 @@ export function HakemusList({ user }: HakemusListProps) {
             </TableCell>
             <TableCell>
               <TutuTableSortLabel
-                fieldKey={'hakemuslista.kasittelyvaihe'}
+                fieldKey={FIELD_KEYS.kasittelyvaihe}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 handleSort={handleSort}
@@ -97,7 +111,7 @@ export function HakemusList({ user }: HakemusListProps) {
             </TableCell>
             <TableCell>
               <TutuTableSortLabel
-                fieldKey={'hakemuslista.hakemusKoskee'}
+                fieldKey={FIELD_KEYS.hakemusKoskee}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 handleSort={handleSort}
@@ -105,7 +119,7 @@ export function HakemusList({ user }: HakemusListProps) {
             </TableCell>
             <TableCell>
               <TutuTableSortLabel
-                fieldKey={'hakemuslista.hakijanaika'}
+                fieldKey={FIELD_KEYS.hakijanaika}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 handleSort={handleSort}
