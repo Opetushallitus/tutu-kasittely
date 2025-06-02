@@ -1,5 +1,5 @@
 export type Esittelija = {
-  oid: string;
+  esittelijaOid: string;
   etunimi: string;
   sukunimi: string;
 };

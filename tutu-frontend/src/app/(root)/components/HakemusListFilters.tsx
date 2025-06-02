@@ -53,7 +53,7 @@ export default function HakemusListFilters() {
     : emptyOption.concat(
         R.map(esittelijat!, (esittelija) => {
           return {
-            value: esittelija.oid,
+            value: esittelija.esittelijaOid,
             label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
           };
         }),
@@ -220,6 +220,7 @@ export default function HakemusListFilters() {
                 )
               }
               sx={{ width: '100%' }}
+              data-testid={'esittelija'}
             ></OphSelectFormField>
           </Grid>
         )}
