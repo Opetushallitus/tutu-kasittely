@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, OnrHenkilo, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, OnrService}
+import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, KayttooikeusService, OnrService, UserService}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
@@ -54,6 +54,15 @@ class ControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
+
+  @MockitoBean
+  var kayttooikeusService: KayttooikeusService = _
+
+  @Autowired
+  var userService: UserService = _
+
+  @MockitoBean
+  var onrService: OnrService = _
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
@@ -328,6 +337,39 @@ class ControllerTest extends IntegrationTestBase {
     val result = mockMvc
       .perform(
         get("/api/hakemuslista?nayta=omat&hakemuskoskee=1")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
+    val expectedResult =
+      """[
+        |  {
+        |    "oid": "1.2.246.562.24.00000000001",
+        |    "etunimi": "Roope",
+        |    "sukunimi": "Roihuvuori"
+        |  },
+        |  {
+        |    "oid": "1.2.246.562.24.00000000002",
+        |    "etunimi": "Jarmo",
+        |    "sukunimi": "Jakomäki"
+        |  }
+        |]""".stripMargin
+    when(
+      kayttooikeusService.haeEsittelijat
+    ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
+      .thenReturn(Right(OnrHenkilo("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
+      .thenReturn(Right(OnrHenkilo("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+
+    mockMvc
+      .perform(
+        get("/api/esittelijat")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))

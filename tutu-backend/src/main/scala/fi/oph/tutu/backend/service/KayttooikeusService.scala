@@ -1,5 +1,7 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.UserOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
@@ -9,6 +11,8 @@ import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.{CacheEvict, CachePut}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
+
+case class PersonOids(personOids: Seq[String])
 
 @Component
 @Service
@@ -42,15 +46,21 @@ class KayttooikeusService(httpService: HttpService) {
       .build()
   )
 
-  def haeEsittelijat: Either[Throwable, String] = {
-    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID =
-      "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
+  private val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+
+  def haeEsittelijat: Either[Throwable, Seq[String]] = {
+    // TODO PARAMETRISOINTI: TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID
+    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID = 71713274
     httpService.get(
       kayttooikeusCasClient,
       s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"
     ) match {
-      case Left(error: Throwable)  => Left(error)
-      case Right(response: String) => Right(response)
+      case Left(error: Throwable) => Left(error)
+      case Right(response: String) => {
+        val oidit = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
+        Right(oidit)
+      }
     }
   }
 
