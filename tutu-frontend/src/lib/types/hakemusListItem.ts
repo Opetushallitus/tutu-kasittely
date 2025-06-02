@@ -6,4 +6,6 @@ export type HakemusListItem = {
   hakemusOid: string;
   hakemusKoskee: number;
   esittelijaOid: string;
+  esittelijaKutsumanimi: string;
+  esittelijaSukunimi: string;
 };

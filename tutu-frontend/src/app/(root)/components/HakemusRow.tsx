@@ -8,7 +8,13 @@ const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
 });
 
-export default function HakemusRow({ hakemus }: { hakemus: HakemusListItem }) {
+export default function HakemusRow({
+  hakemus,
+  nayta,
+}: {
+  hakemus: HakemusListItem;
+  nayta: string;
+}) {
   const { t } = useTranslations();
   const hakemusKoskee = `hakemuslista.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
@@ -24,6 +30,11 @@ export default function HakemusRow({ hakemus }: { hakemus: HakemusListItem }) {
         </Link>
       </StyledTableCell>
       <StyledTableCell>{hakemus.asiatunnus}</StyledTableCell>
+      {nayta === 'kaikki' && (
+        <StyledTableCell>
+          {hakemus.esittelijaKutsumanimi} {hakemus.esittelijaSukunimi}
+        </StyledTableCell>
+      )}
       <StyledTableCell>{hakemus.vaihe}</StyledTableCell>
       <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
       <StyledTableCell>{hakemus.aika}</StyledTableCell>

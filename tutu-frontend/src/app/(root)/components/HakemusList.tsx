@@ -10,7 +10,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { TableHeaderCell } from './TableHeaderCell';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
+import { naytaQueryStates } from '@/src/app/(root)/components/types';
+import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -18,12 +21,11 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
-import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
   asiatunnus: 'hakemuslista.asiatunnus',
+  esittelija: 'hakemuslista.esittelija',
   kasittelyvaihe: 'hakemuslista.kasittelyvaihe',
   hakemusKoskee: 'hakemuslista.hakemusKoskee',
   hakijanaika: 'hakemuslista.hakijanaika',
@@ -60,6 +62,10 @@ export function HakemusList({ user }: HakemusListProps) {
     parseAsString.withDefault(''),
   );
   const { isLoading, data } = useHakemukset();
+  const [nayta] = useQueryState(
+    'nayta',
+    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
+  );
 
   const handleSort = (sortDef) => {
     setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
@@ -71,7 +77,11 @@ export function HakemusList({ user }: HakemusListProps) {
     data && user
       ? R.map(data, (hakemus) => {
           return (
-            <HakemusRow hakemus={hakemus} key={hakemus.hakemusOid}></HakemusRow>
+            <HakemusRow
+              hakemus={hakemus}
+              nayta={nayta}
+              key={hakemus.hakemusOid}
+            ></HakemusRow>
           );
         })
       : [];
