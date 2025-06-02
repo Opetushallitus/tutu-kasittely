@@ -2,7 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, OnrHenkilo, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrHenkilo, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, KayttooikeusService, OnrService, UserService}
@@ -63,7 +63,7 @@ class ControllerTest extends IntegrationTestBase {
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
-  var esittelija: Option[Esittelija] = None
+  var esittelija: Option[DbEsittelija] = None
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
@@ -346,12 +346,12 @@ class ControllerTest extends IntegrationTestBase {
     val expectedResult =
       """[
         |  {
-        |    "oid": "1.2.246.562.24.00000000001",
+        |    "esittelijaOid": "1.2.246.562.24.00000000001",
         |    "etunimi": "Roope",
         |    "sukunimi": "Roihuvuori"
         |  },
         |  {
-        |    "oid": "1.2.246.562.24.00000000002",
+        |    "esittelijaOid": "1.2.246.562.24.00000000002",
         |    "etunimi": "Jarmo",
         |    "sukunimi": "Jakomäki"
         |  }

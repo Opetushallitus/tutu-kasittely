@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Henkilo, OnrHenkilo, User}
+import fi.oph.tutu.backend.domain.{Esittelija, OnrHenkilo, User}
 import fi.oph.tutu.backend.security.AuthenticationFacade
 import fi.oph.tutu.backend.utils.AuthoritiesUtil
 import org.springframework.security.core.userdetails.UserDetails
@@ -34,7 +34,7 @@ class UserService(
     }
   }
 
-  def getEsittelijat: Seq[Henkilo] = {
+  def getEsittelijat: Seq[Esittelija] = {
     kayttooikeusService.haeEsittelijat match {
       case Left(error) =>
         throw new RuntimeException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error)
@@ -43,7 +43,7 @@ class UserService(
           onrService.haeHenkilo(oid) match {
             case Left(error) =>
               throw new RuntimeException(s"Henkilön tietojen haku epäonnistui OID:llä $oid", error)
-            case Right(esittelija) => Henkilo(esittelija.oidHenkilo, esittelija.kutsumanimi, esittelija.sukunimi)
+            case Right(esittelija) => Esittelija(esittelija.oidHenkilo, esittelija.kutsumanimi, esittelija.sukunimi)
           }
         )
         esittelijat

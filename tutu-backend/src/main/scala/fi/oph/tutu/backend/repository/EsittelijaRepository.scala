@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Esittelija, UserOid}
+import fi.oph.tutu.backend.domain.{DbEsittelija, UserOid}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -19,8 +19,8 @@ class EsittelijaRepository {
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
-  implicit val getEsittelijaResult: GetResult[Esittelija] =
-    GetResult(r => Esittelija(UUID.fromString(r.nextString()), UserOid(r.nextString())))
+  implicit val getEsittelijaResult: GetResult[DbEsittelija] =
+    GetResult(r => DbEsittelija(UUID.fromString(r.nextString()), UserOid(r.nextString())))
 
   /**
    * Hakee esittelijän maakoodin perusteella
@@ -30,13 +30,13 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def haeEsittelijaMaakoodilla(maakoodi: String): Option[Esittelija] =
+  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] =
     try {
-      val esittelija: Esittelija = db.run(
+      val esittelija: DbEsittelija = db.run(
         sql"""
         SELECT id, esittelija_oid from esittelija 
         WHERE maatjavaltiot_koodi_uri = $maakoodi AND esittelija_oid IS NOT NULL
-        """.as[Esittelija].head,
+        """.as[DbEsittelija].head,
         "haeEsittelijaMaakoodilla"
       )
       Some(esittelija)
@@ -54,10 +54,10 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[Esittelija] =
+  def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
     try {
       val esittelijaOidString = esittelijaOid.toString
-      val esittelija: Esittelija = db.run(
+      val esittelija: DbEsittelija = db.run(
         sql"""
         INSERT INTO esittelija (maatjavaltiot_koodi_uri, esittelija_oid, luoja)
         VALUES ($maakoodi, $esittelijaOidString, $luoja)
@@ -66,7 +66,7 @@ class EsittelijaRepository {
         esittelija_oid = $esittelijaOidString,
         muokkaaja = $luoja
         returning id, esittelija_oid
-        """.as[Esittelija].head,
+        """.as[DbEsittelija].head,
         "haeEsittelijaMaakoodilla"
       )
       Some(esittelija)

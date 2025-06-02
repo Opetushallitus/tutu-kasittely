@@ -5,9 +5,3 @@ case class OnrHenkilo(
   kutsumanimi: String,
   sukunimi: String
 )
-
-case class Henkilo(
-  oid: String,
-  etunimi: String,
-  sukunimi: String
-)
