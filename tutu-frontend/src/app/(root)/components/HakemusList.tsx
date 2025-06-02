@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   styled,
   Table,
@@ -8,7 +9,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
 } from '@mui/material';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -42,8 +45,15 @@ interface HakemusListProps {
 }
 
 export function HakemusList({ user }: HakemusListProps) {
-  const { t } = useTranslations();
+  const [sortField, setSortField] = useState();
+  const [sortOrder, setSortOrder] = useState();
   const { isLoading, data } = useHakemukset();
+
+  const handleSort = (field) => () => {
+    const isAsc = sortField === field && sortOrder === 'asc';
+    setSortOrder(isAsc ? 'desc' : 'asc');
+    setSortField(field);
+  };
 
   if (isLoading) return <FullSpinner></FullSpinner>;
 
@@ -61,11 +71,46 @@ export function HakemusList({ user }: HakemusListProps) {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{t('hakemuslista.hakijannimi')}</TableCell>
-            <TableCell>{t('hakemuslista.asiatunnus')}</TableCell>
-            <TableCell>{t('hakemuslista.kasittelyvaihe')}</TableCell>
-            <TableCell>{t('hakemuslista.hakemusKoskee')}</TableCell>
-            <TableCell>{t('hakemuslista.hakijanaika')}</TableCell>
+            <TableCell>
+              <TutuTableSortLabel
+                fieldKey={'hakemuslista.hakijannimi'}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                handleSort={handleSort}
+              />
+            </TableCell>
+            <TableCell>
+              <TutuTableSortLabel
+                fieldKey={'hakemuslista.asiatunnus'}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                handleSort={handleSort}
+              />
+            </TableCell>
+            <TableCell>
+              <TutuTableSortLabel
+                fieldKey={'hakemuslista.kasittelyvaihe'}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                handleSort={handleSort}
+              />
+            </TableCell>
+            <TableCell>
+              <TutuTableSortLabel
+                fieldKey={'hakemuslista.hakemusKoskee'}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                handleSort={handleSort}
+              />
+            </TableCell>
+            <TableCell>
+              <TutuTableSortLabel
+                fieldKey={'hakemuslista.hakijanaika'}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                handleSort={handleSort}
+              />
+            </TableCell>
           </TableRow>
         </TableHead>
         <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
@@ -75,3 +120,18 @@ export function HakemusList({ user }: HakemusListProps) {
     </TableContainer>
   );
 }
+
+const TutuTableSortLabel = (props) => {
+  const { fieldKey, sortField, sortOrder, handleSort } = props;
+  const { t } = useTranslations();
+  return (
+    <TableSortLabel
+      active={sortField === fieldKey}
+      direction={sortField === fieldKey ? sortOrder : 'asc'}
+      onClick={handleSort(fieldKey)}
+      IconComponent={ExpandMore}
+    >
+      {t(fieldKey)}
+    </TableSortLabel>
+  );
+};
