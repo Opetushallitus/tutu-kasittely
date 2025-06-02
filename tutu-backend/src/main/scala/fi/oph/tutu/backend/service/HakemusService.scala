@@ -16,7 +16,8 @@ import java.util.UUID
 class HakemusService(
   hakemusRepository: HakemusRepository,
   esittelijaRepository: EsittelijaRepository,
-  hakemuspalveluService: HakemuspalveluService
+  hakemuspalveluService: HakemuspalveluService,
+  onrService: OnrService
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
@@ -49,6 +50,15 @@ class HakemusService(
       .flatMap { item =>
         val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid)
 
+        val esittelija = item.esittelijaOid match {
+          case None => (null, null)
+          case Some(esittelijaOid) =>
+            onrService.haeHenkilo(item.esittelijaOid.get) match {
+              case Left(error)    => (null, null)
+              case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
+            }
+        }
+
         ataruHakemus match {
           case None =>
             LOG.warn(
@@ -64,7 +74,9 @@ class HakemusService(
                 aika = "2 kk",
                 hakemusOid = item.hakemusOid,
                 hakemusKoskee = item.hakemusKoskee,
-                esittelijaOid = item.esittelijaOid
+                esittelijaOid = item.esittelijaOid,
+                esittelijaKutsumanimi = esittelija(0),
+                esittelijaSukunimi = esittelija(1)
               )
             )
         }

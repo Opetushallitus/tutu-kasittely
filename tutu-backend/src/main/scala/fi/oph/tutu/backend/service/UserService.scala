@@ -20,7 +20,7 @@ class UserService(
       null
     } else {
       val username = principal.getUsername
-      val asiointikieli = onrService.getAsiointikieli(username) match {
+      val asiointikieli = onrService.haeAsiointikieli(username) match {
         case Left(e)  => None
         case Right(v) => Some(v)
       }

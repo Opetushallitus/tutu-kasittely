@@ -35,7 +35,7 @@ class KayttooikeusService(httpService: HttpService) {
       .build()
   )
 
-  def getEsittelijat: Either[Throwable, String] = {
+  def haeEsittelijat: Either[Throwable, String] = {
     val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID =
       "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
     httpService.get(

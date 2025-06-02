@@ -2,7 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, OnrHenkilo, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, OnrService}
@@ -69,8 +69,11 @@ class ControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit =
-    when(mockOnrService.getAsiointikieli(any[String]))
+    when(mockOnrService.haeAsiointikieli(any[String]))
       .thenReturn(Right("fi"))
+
+    when(mockOnrService.haeHenkilo(esittelijaOidString))
+      .thenReturn(Right(OnrHenkilo(esittelijaOidString, "Esko", "Esittelijä")))
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -240,7 +243,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
@@ -248,7 +253,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -256,7 +263,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
@@ -264,7 +273,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : null
+                                "esittelijaOid" : null,
+                                "esittelijaKutsumanimi": null,
+                                "esittelijaSukunimi": null
                               } ]"""
 
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
@@ -299,7 +310,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -307,7 +320,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               } ]"""
 
     val result = mockMvc

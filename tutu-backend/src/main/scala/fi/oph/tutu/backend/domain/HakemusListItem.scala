@@ -9,5 +9,7 @@ case class HakemusListItem(
   @BeanProperty hakemusOid: String,
   @BeanProperty hakemusKoskee: Int,
   @BeanProperty esittelijaOid: Option[String],
-  @BeanProperty asiatunnus: Option[String]
+  @BeanProperty asiatunnus: Option[String],
+  @BeanProperty esittelijaKutsumanimi: String,
+  @BeanProperty esittelijaSukunimi: String
 )
