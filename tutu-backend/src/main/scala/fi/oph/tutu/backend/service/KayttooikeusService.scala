@@ -1,9 +1,13 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.UserOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.{CacheEvict, CachePut}
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
 @Component
@@ -19,6 +23,9 @@ class KayttooikeusService(httpService: HttpService) {
 
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
+
+  @Autowired
+  val cacheManager: CacheManager = null
 
   private lazy val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
     CasConfig
@@ -47,4 +54,14 @@ class KayttooikeusService(httpService: HttpService) {
     }
   }
 
+  @CacheEvict(value = Array("esittelijat"), allEntries = true)
+  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
+  def emptyEsittelijatCache(): Unit =
+    LOG.info("Emptying esittelijat cache")
+
+  @CachePut(Array("esittelijat"))
+  private def updateCached(kayttooikeusRyhmaId: String, value: Seq[UserOid]): Unit = {
+    val esittelijatCache = cacheManager.getCache("esittelijat")
+    esittelijatCache.put(kayttooikeusRyhmaId, value)
+  }
 }
