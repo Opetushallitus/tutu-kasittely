@@ -30,17 +30,34 @@ import {
 import { redirect, useSearchParams } from 'next/navigation';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
-import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import {
+  emptyOption,
+  hakemusKoskeeOptions,
+} from '@/src/constants/dropdownOptions';
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
+  const { isLoading: isLoadingEsittelijat, data: esittelijat } =
+    useEsittelijat();
+
   const [nayta, setNayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
+  const esittelijaOptions = isLoadingEsittelijat
+    ? []
+    : emptyOption.concat(
+        R.map(esittelijat!, (esittelija) => {
+          return {
+            value: esittelija.oid,
+            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+          };
+        }),
+      );
   const naytaKaikki = nayta === 'kaikki';
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
@@ -171,10 +188,12 @@ export default function HakemusListFilters() {
         <Grid size={3}>
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
-            options={R.map(hakemusKoskeeOptions, (option) => ({
-              label: t(`hakemuslista.hakemusKoskeeValinta.${option.label}`),
-              value: option.value,
-            }))}
+            options={emptyOption.concat(
+              R.map(hakemusKoskeeOptions, (option) => ({
+                label: t(`hakemuslista.hakemusKoskeeValinta.${option.label}`),
+                value: option.value,
+              })),
+            )}
             value={hakemusKoskee}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
@@ -191,7 +210,7 @@ export default function HakemusListFilters() {
           <Grid size={3}>
             <OphSelectFormField
               label={t('hakemuslista.esittelija')}
-              options={[]}
+              options={esittelijaOptions}
               value={esittelija}
               onChange={(event: SelectChangeEvent) =>
                 setQueryStateAndLocalStorage(

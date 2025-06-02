@@ -61,9 +61,6 @@ class ControllerTest extends IntegrationTestBase {
   @Autowired
   var userService: UserService = _
 
-  @MockitoBean
-  var onrService: OnrService = _
-
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
   var esittelija: Option[Esittelija] = None
