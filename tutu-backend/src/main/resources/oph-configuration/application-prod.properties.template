@@ -14,5 +14,6 @@ tutu.ui.url=${opintopolku.virkailija.url}/tutu
 cas.url=${opintopolku.virkailija.url}/cas
 tutu-backend.cas.username={{tutu_backend_cas_username}}
 tutu-backend.cas.password={{tutu_backend_cas_password}}
+tutu-backend.esittelija.kayttooikeusryhma.ids={{tutkintojen_tunnustaminen_esittelija_kayttooikeusryhma_ids}}
 
 tutu_backend.uses-ssl-proxy

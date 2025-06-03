@@ -28,6 +28,9 @@ class KayttooikeusService(httpService: HttpService) {
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
+  @Value("${tutu-backend.esittelija.kayttooikeusryhma.ids}")
+  val esittelija_kayttooikeusryhma_ids: String = null
+
   @Autowired
   val cacheManager: CacheManager = null
 
@@ -50,18 +53,22 @@ class KayttooikeusService(httpService: HttpService) {
   mapper.registerModule(DefaultScalaModule)
 
   def haeEsittelijat: Either[Throwable, Seq[String]] = {
-    // TODO PARAMETRISOINTI: TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID
-    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID = 71713274
-    httpService.get(
-      kayttooikeusCasClient,
-      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"
-    ) match {
-      case Left(error: Throwable) => Left(error)
-      case Right(response: String) => {
-        val oidit = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
-        Right(oidit)
+    val ids: Seq[String] = esittelija_kayttooikeusryhma_ids.split(",").toSeq
+    var esittelija_oidit = Seq.empty[String]
+
+    ids.foreach { kayttooikeusRyhmaId =>
+      httpService.get(
+        kayttooikeusCasClient,
+        s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$kayttooikeusRyhmaId/henkilot"
+      ) match {
+        case Left(error: Throwable) => return Left(error)
+        case Right(response: String) => {
+          val oids = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
+          esittelija_oidit ++= oids
+        }
       }
     }
+    Right(esittelija_oidit)
   }
 
   @CacheEvict(value = Array("esittelijat"), allEntries = true)

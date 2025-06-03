@@ -39,7 +39,7 @@ class HakemusService(
 
     // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
     if (hakemusOidit.isEmpty) {
-      LOG.info(
+      LOG.warn(
         "Hakemuksia ei löytynyt parametreillä: " + userOid.getOrElse("None") + ", " + hakemuskoskee.getOrElse("None")
       )
       return Seq.empty[HakemusListItem]
