@@ -8,10 +8,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TableSortLabel,
 } from '@mui/material';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { TableHeaderCell } from './TableHeaderCell';
+import { parseAsString, useQueryState } from 'nuqs';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -56,21 +55,14 @@ interface HakemusListProps {
 
 export function HakemusList({ user }: HakemusListProps) {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useQueryState(
-    'hakemuslista.sortfield',
-    parseAsStringLiteral([...Object.values(FIELD_KEYS), '']).withDefault(''),
-  );
-  const [sortOrder, setSortOrder] = useQueryState(
-    'hakemuslista.sortorder',
-    parseAsStringLiteral(['', 'asc', 'desc']).withDefault(''),
+  const [sortDef, setSortDef] = useQueryState(
+    'hakemuslista.sort',
+    parseAsString.withDefault(''),
   );
   const { isLoading, data } = useHakemukset();
 
-  const handleSort = (field) => () => {
-    const isAsc = sortField === field && sortOrder === 'asc';
-    const newSortOrder = isAsc ? 'desc' : 'asc';
-    setQueryStateAndLocalStorage(queryClient, setSortOrder, newSortOrder);
-    setQueryStateAndLocalStorage(queryClient, setSortField, field);
+  const handleSort = (sortDef) => {
+    setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;
@@ -89,46 +81,15 @@ export function HakemusList({ user }: HakemusListProps) {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>
-              <TutuTableSortLabel
-                fieldKey={FIELD_KEYS.hakijannimi}
-                sortField={sortField}
-                sortOrder={sortOrder}
-                handleSort={handleSort}
-              />
-            </TableCell>
-            <TableCell>
-              <TutuTableSortLabel
-                fieldKey={FIELD_KEYS.asiatunnus}
-                sortField={sortField}
-                sortOrder={sortOrder}
-                handleSort={handleSort}
-              />
-            </TableCell>
-            <TableCell>
-              <TutuTableSortLabel
-                fieldKey={FIELD_KEYS.kasittelyvaihe}
-                sortField={sortField}
-                sortOrder={sortOrder}
-                handleSort={handleSort}
-              />
-            </TableCell>
-            <TableCell>
-              <TutuTableSortLabel
-                fieldKey={FIELD_KEYS.hakemusKoskee}
-                sortField={sortField}
-                sortOrder={sortOrder}
-                handleSort={handleSort}
-              />
-            </TableCell>
-            <TableCell>
-              <TutuTableSortLabel
-                fieldKey={FIELD_KEYS.hakijanaika}
-                sortField={sortField}
-                sortOrder={sortOrder}
-                handleSort={handleSort}
-              />
-            </TableCell>
+            {Object.values(FIELD_KEYS).map((fieldKey) => (
+              <TableCell key={fieldKey}>
+                <TutuTableSortLabel
+                  fieldKey={fieldKey}
+                  sortDef={sortDef}
+                  handleSort={handleSort}
+                />
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
@@ -140,16 +101,15 @@ export function HakemusList({ user }: HakemusListProps) {
 }
 
 const TutuTableSortLabel = (props) => {
-  const { fieldKey, sortField, sortOrder, handleSort } = props;
+  const { fieldKey, sortDef, handleSort } = props;
   const { t } = useTranslations();
   return (
-    <TableSortLabel
-      active={sortField === fieldKey}
-      direction={sortField === fieldKey ? sortOrder : 'asc'}
-      onClick={handleSort(fieldKey)}
-      IconComponent={ExpandMore}
-    >
-      {t(fieldKey)}
-    </TableSortLabel>
+    <TableHeaderCell
+      colId={fieldKey}
+      sort={sortDef}
+      title={t(fieldKey)}
+      setSort={handleSort}
+      sortable={true}
+    />
   );
 };

@@ -124,3 +124,67 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
 
   await expect(hakemusKoskee).toHaveValue('1');
 });
+
+test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', async ({
+  page,
+}) => {
+  await page.goto(
+    '/tutu-frontend?hakemuslista.sort=hakemuslista.asiatunnus:desc',
+  );
+
+  const jarjestyskentta = page.getByTestId(
+    'sortlabel--hakemuslista.asiatunnus',
+  );
+
+  await expect(jarjestyskentta).toHaveAttribute('data-active');
+  await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
+
+  const epajarjestystestit = [
+    'hakemuslista.hakijannimi',
+    // 'hakemuslista.kasittelyvaihe',
+    // 'hakemuslista.hakemusKoskee',
+    // 'hakemuslista.hakijanaika',
+  ].map(async (fieldKey) => {
+    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+
+    await expect(epajarjestyskentta).not.toHaveAttribute(
+      'data-active',
+      'false',
+    );
+  });
+
+  await Promise.all(epajarjestystestit);
+});
+
+test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      'tutu-query-string',
+      'hakemuslista.sort=hakemuslista.kasittelyvaihe:asc',
+    );
+  });
+
+  await page.goto('/');
+
+  const jarjestyskentta = page.getByTestId(
+    'sortlabel--hakemuslista.kasittelyvaihe',
+  );
+
+  await expect(jarjestyskentta).toHaveAttribute('data-active');
+  await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
+
+  const epajarjestystestit = [
+    'hakemuslista.hakijannimi',
+    // 'hakemuslista.asiatunnus',
+    // 'hakemuslista.hakemusKoskee',
+    // 'hakemuslista.hakijanaika',
+  ].map(async (fieldKey) => {
+    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+
+    await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
+  });
+
+  await Promise.all(epajarjestystestit);
+});
