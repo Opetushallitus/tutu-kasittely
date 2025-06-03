@@ -10,7 +10,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { TableHeaderCell } from './TableHeaderCell';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
+import { naytaQueryStates } from '@/src/app/(root)/components/types';
+import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -18,12 +21,34 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
-import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
+
+const TutuTableSortLabel = (props: {
+  fieldKey: string;
+  sortDef: string;
+  handleSort: (sortDef: string) => void;
+}) => {
+  const { fieldKey, sortDef, handleSort } = props;
+  const { t } = useTranslations();
+  return (
+    <TableHeaderCell
+      colId={fieldKey}
+      sort={sortDef}
+      title={t(fieldKey)}
+      setSort={handleSort}
+      sortable={true}
+    />
+  );
+};
+const StyledTableCell = styled(TableCell)(() => ({
+  '& .MuiTableCell-root': {
+    borderBottom: 0,
+  },
+}));
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
   asiatunnus: 'hakemuslista.asiatunnus',
+  esittelija: 'hakemuslista.esittelija',
   kasittelyvaihe: 'hakemuslista.kasittelyvaihe',
   hakemusKoskee: 'hakemuslista.hakemusKoskee',
   hakijanaika: 'hakemuslista.hakijanaika',
@@ -60,8 +85,12 @@ export function HakemusList({ user }: HakemusListProps) {
     parseAsString.withDefault(''),
   );
   const { isLoading, data } = useHakemukset();
+  const [nayta] = useQueryState(
+    'nayta',
+    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
+  );
 
-  const handleSort = (sortDef) => {
+  const handleSort = (sortDef: unknown) => {
     setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
@@ -71,7 +100,11 @@ export function HakemusList({ user }: HakemusListProps) {
     data && user
       ? R.map(data, (hakemus) => {
           return (
-            <HakemusRow hakemus={hakemus} key={hakemus.hakemusOid}></HakemusRow>
+            <HakemusRow
+              hakemus={hakemus}
+              nayta={nayta}
+              key={hakemus.hakemusOid}
+            ></HakemusRow>
           );
         })
       : [];
@@ -81,15 +114,17 @@ export function HakemusList({ user }: HakemusListProps) {
       <Table>
         <TableHead>
           <TableRow>
-            {Object.values(FIELD_KEYS).map((fieldKey) => (
-              <TableCell key={fieldKey}>
-                <TutuTableSortLabel
-                  fieldKey={fieldKey}
-                  sortDef={sortDef}
-                  handleSort={handleSort}
-                />
-              </TableCell>
-            ))}
+            {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
+              nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
+                <StyledTableCell key={fieldKey}>
+                  <TutuTableSortLabel
+                    fieldKey={fieldKey}
+                    sortDef={sortDef}
+                    handleSort={handleSort}
+                  />
+                </StyledTableCell>
+              ),
+            )}
           </TableRow>
         </TableHead>
         <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
@@ -99,17 +134,3 @@ export function HakemusList({ user }: HakemusListProps) {
     </TableContainer>
   );
 }
-
-const TutuTableSortLabel = (props) => {
-  const { fieldKey, sortDef, handleSort } = props;
-  const { t } = useTranslations();
-  return (
-    <TableHeaderCell
-      colId={fieldKey}
-      sort={sortDef}
-      title={t(fieldKey)}
-      setSort={handleSort}
-      sortable={true}
-    />
-  );
-};

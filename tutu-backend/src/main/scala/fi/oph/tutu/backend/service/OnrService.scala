@@ -1,6 +1,9 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.OnrUser
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -41,8 +44,12 @@ class OnrService(httpService: HttpService) {
       .build()
   )
 
+  private val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+  mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
   @Cacheable(value = Array("asiointikieli"))
-  def getAsiointikieli(personOid: String): Either[Throwable, String] = {
+  def haeAsiointikieli(personOid: String): Either[Throwable, String] = {
     LOG.info("Fetching asiointikieli from oppijanumerorekisteri")
     httpService.get(
       onrCasClient,
@@ -50,6 +57,21 @@ class OnrService(httpService: HttpService) {
     ) match {
       case Left(e)  => Left(e)
       case Right(o) => Right(o)
+    }
+  }
+
+  @Cacheable(value = Array("henkilo"))
+  def haeHenkilo(personOid: String): Either[Throwable, OnrUser] = {
+    LOG.info("Fetching henkilö from oppijanumerorekisteri")
+    httpService.get(
+      onrCasClient,
+      s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/henkilo/$personOid"
+    ) match {
+      case Left(e) => {
+        LOG.error(s"Error fetching henkilo with OID: $personOid from oppijanumerorekisteri: ${e.getMessage}")
+        Left(e)
+      }
+      case Right(response) => Right(mapper.readValue(response, classOf[OnrUser]))
     }
   }
 
@@ -62,5 +84,16 @@ class OnrService(httpService: HttpService) {
   private def updateCached(personOid: String, value: String): Unit = {
     val asiointikieliCache = cacheManager.getCache("asiointikieli")
     asiointikieliCache.put(personOid, value)
+  }
+
+  @CacheEvict(value = Array("henkilo"), allEntries = true)
+  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
+  def emptyHenkiloCache(): Unit =
+    LOG.info("Emptying henkilo cache")
+
+  @CachePut(Array("henkilo"))
+  private def updateCached(personOid: String, value: OnrUser): Unit = {
+    val henkiloCache = cacheManager.getCache("henkilo")
+    henkiloCache.put(personOid, value)
   }
 }

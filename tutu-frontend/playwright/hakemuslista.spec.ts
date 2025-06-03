@@ -39,6 +39,24 @@ test.beforeEach(async ({ page }) => {
       }),
     });
   });
+  await page.route('**/tutu-backend/api/esittelijat*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          esittelijaOid: '1.2.246.562.24.999999999998',
+          etunimi: 'Kari',
+          sukunimi: 'Karibia',
+        },
+        {
+          esittelijaOid: '1.2.246.562.24.999999999999',
+          etunimi: 'Janne',
+          sukunimi: 'Jamaika',
+        },
+      ]),
+    });
+  });
   await page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
     await route.fulfill({
       status: 200,
@@ -104,13 +122,27 @@ test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({
   await expect(omatButton).toHaveClass(/Mui-selected/);
 });
 
+test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', async ({
+  page,
+}) => {
+  await page.goto('/tutu-frontend?esittelija=1.2.246.562.24.999999999999');
+
+  const esittelija = page.getByTestId('esittelija').locator('input');
+
+  const omatButton = page.getByTestId('nayta-omat');
+
+  await expect(esittelija).toHaveValue('1.2.246.562.24.999999999999');
+
+  await expect(omatButton).not.toHaveClass(/Mui-selected/);
+});
+
 test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   page,
 }) => {
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
-      'tilat=kasittelyssa,kasitelty&hakemuskoskee=1',
+      'tilat=kasittelyssa,kasitelty&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
     );
   });
 
@@ -120,9 +152,13 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
 
   const hakemusKoskee = page.getByTestId('hakemus-koskee').locator('input');
 
+  const esittelija = page.getByTestId('esittelija').locator('input');
+
   await expect(kasittelytila).toHaveValue('kasittelyssa,kasitelty');
 
   await expect(hakemusKoskee).toHaveValue('1');
+
+  await expect(esittelija).toHaveValue('1.2.246.562.24.999999999999');
 });
 
 test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', async ({
@@ -139,19 +175,16 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
 
-  const epajarjestystestit = [
-    'hakemuslista.hakijannimi',
-    // 'hakemuslista.kasittelyvaihe',
-    // 'hakemuslista.hakemusKoskee',
-    // 'hakemuslista.hakijanaika',
-  ].map(async (fieldKey) => {
-    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
+    async (fieldKey) => {
+      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-    await expect(epajarjestyskentta).not.toHaveAttribute(
-      'data-active',
-      'false',
-    );
-  });
+      await expect(epajarjestyskentta).not.toHaveAttribute(
+        'data-active',
+        'false',
+      );
+    },
+  );
 
   await Promise.all(epajarjestystestit);
 });
@@ -175,16 +208,13 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
 
-  const epajarjestystestit = [
-    'hakemuslista.hakijannimi',
-    // 'hakemuslista.asiatunnus',
-    // 'hakemuslista.hakemusKoskee',
-    // 'hakemuslista.hakijanaika',
-  ].map(async (fieldKey) => {
-    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
+    async (fieldKey) => {
+      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-    await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
-  });
+      await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
+    },
+  );
 
   await Promise.all(epajarjestystestit);
 });

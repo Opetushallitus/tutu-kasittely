@@ -2,10 +2,10 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, OnrService}
+import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, KayttooikeusService, OnrService, UserService}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
@@ -55,9 +55,15 @@ class ControllerTest extends IntegrationTestBase {
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
 
+  @MockitoBean
+  var kayttooikeusService: KayttooikeusService = _
+
+  @Autowired
+  var userService: UserService = _
+
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
-  var esittelija: Option[Esittelija] = None
+  var esittelija: Option[DbEsittelija] = None
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
@@ -69,8 +75,11 @@ class ControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit =
-    when(mockOnrService.getAsiointikieli(any[String]))
+    when(mockOnrService.haeAsiointikieli(any[String]))
       .thenReturn(Right("fi"))
+
+    when(mockOnrService.haeHenkilo(esittelijaOidString))
+      .thenReturn(Right(OnrUser(esittelijaOidString, "Esko", "Esittelijä")))
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -240,7 +249,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
@@ -248,7 +259,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -256,7 +269,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
@@ -264,7 +279,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : null
+                                "esittelijaOid" : null,
+                                "esittelijaKutsumanimi": null,
+                                "esittelijaSukunimi": null
                               } ]"""
 
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
@@ -299,7 +316,9 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -307,12 +326,47 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2 kk",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666"
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä"
                               } ]"""
 
     val result = mockMvc
       .perform(
         get("/api/hakemuslista?nayta=omat&hakemuskoskee=1")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
+    val expectedResult =
+      """[
+        |  {
+        |    "esittelijaOid": "1.2.246.562.24.00000000001",
+        |    "etunimi": "Roope",
+        |    "sukunimi": "Roihuvuori"
+        |  },
+        |  {
+        |    "esittelijaOid": "1.2.246.562.24.00000000002",
+        |    "etunimi": "Jarmo",
+        |    "sukunimi": "Jakomäki"
+        |  }
+        |]""".stripMargin
+    when(
+      kayttooikeusService.haeEsittelijat
+    ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+
+    mockMvc
+      .perform(
+        get("/api/esittelijat")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))

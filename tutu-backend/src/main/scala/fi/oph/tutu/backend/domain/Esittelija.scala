@@ -8,7 +8,7 @@ import scala.annotation.meta.field
 import scala.beans.BeanProperty
 
 @Schema(name = "Esittelija")
-case class Esittelija(
+case class DbEsittelija(
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.REQUIRED,
@@ -20,4 +20,10 @@ case class Esittelija(
     requiredMode = RequiredMode.REQUIRED
   )
   @BeanProperty esittelijaOid: UserOid
+)
+
+case class Esittelija(
+  esittelijaOid: String,
+  etunimi: String,
+  sukunimi: String
 )

@@ -9,3 +9,9 @@ case class User(
 )
 
 case class UserResponse(@BeanProperty user: User)
+
+case class OnrUser(
+  oidHenkilo: String,
+  kutsumanimi: String,
+  sukunimi: String
+)

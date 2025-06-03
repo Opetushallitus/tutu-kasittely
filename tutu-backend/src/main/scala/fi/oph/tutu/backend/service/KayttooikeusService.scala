@@ -1,10 +1,18 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.UserOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.{CacheEvict, CachePut}
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
+
+case class PersonOids(personOids: Seq[String])
 
 @Component
 @Service
@@ -19,6 +27,12 @@ class KayttooikeusService(httpService: HttpService) {
 
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
+
+  @Value("${tutu-backend.esittelija.kayttooikeusryhma.ids}")
+  val esittelija_kayttooikeusryhma_ids: String = null
+
+  @Autowired
+  val cacheManager: CacheManager = null
 
   private lazy val kayttooikeusCasClient: CasClient = CasClientBuilder.build(
     CasConfig
@@ -35,16 +49,36 @@ class KayttooikeusService(httpService: HttpService) {
       .build()
   )
 
-  def getEsittelijat: Either[Throwable, String] = {
-    val TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID =
-      "TODO TUTUKASITTELIJAKAYTTOOIKEUSRYHMA ID"
-    httpService.get(
-      kayttooikeusCasClient,
-      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$TUTU_ESITTELIJA_KAYTTOOIKEUSRYHMA_ID/henkilot"
-    ) match {
-      case Left(error: Throwable)  => Left(error)
-      case Right(response: String) => Right(response)
+  private val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+
+  def haeEsittelijat: Either[Throwable, Seq[String]] = {
+    val ids: Seq[String] = esittelija_kayttooikeusryhma_ids.split(",").toSeq
+    var esittelija_oidit = Seq.empty[String]
+
+    ids.foreach { kayttooikeusRyhmaId =>
+      httpService.get(
+        kayttooikeusCasClient,
+        s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$kayttooikeusRyhmaId/henkilot"
+      ) match {
+        case Left(error: Throwable) => return Left(error)
+        case Right(response: String) => {
+          val oids = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
+          esittelija_oidit ++= oids
+        }
+      }
     }
+    Right(esittelija_oidit)
   }
 
+  @CacheEvict(value = Array("esittelijat"), allEntries = true)
+  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
+  def emptyEsittelijatCache(): Unit =
+    LOG.info("Emptying esittelijat cache")
+
+  @CachePut(Array("esittelijat"))
+  private def updateCached(kayttooikeusRyhmaId: String, value: Seq[UserOid]): Unit = {
+    val esittelijatCache = cacheManager.getCache("esittelijat")
+    esittelijatCache.put(kayttooikeusRyhmaId, value)
+  }
 }
