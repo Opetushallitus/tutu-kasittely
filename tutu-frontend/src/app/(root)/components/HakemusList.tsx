@@ -19,6 +19,8 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
+import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
@@ -53,6 +55,7 @@ interface HakemusListProps {
 }
 
 export function HakemusList({ user }: HakemusListProps) {
+  const queryClient = useQueryClient();
   const [sortField, setSortField] = useQueryState(
     'hakemuslista.sortfield',
     parseAsStringLiteral([...Object.values(FIELD_KEYS), '']).withDefault(''),
@@ -65,8 +68,9 @@ export function HakemusList({ user }: HakemusListProps) {
 
   const handleSort = (field) => () => {
     const isAsc = sortField === field && sortOrder === 'asc';
-    setSortOrder(isAsc ? 'desc' : 'asc');
-    setSortField(field);
+    const newSortOrder = isAsc ? 'desc' : 'asc';
+    setQueryStateAndLocalStorage(queryClient, setSortOrder, newSortOrder);
+    setQueryStateAndLocalStorage(queryClient, setSortField, field);
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;
