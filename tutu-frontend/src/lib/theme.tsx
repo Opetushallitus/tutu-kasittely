@@ -23,7 +23,9 @@ export const styled: typeof muiStyled = (
 };
 
 export const DEFAULT_BOX_BORDER = `1px solid ${ophColors.grey200}`;
+export const THIN_BOX_BORDER = `1px solid ${ophColors.grey50}`;
 
+export const SMALL_FONT = { fontSize: '14px', fontWeight: 400 };
 export const MAX_WIDTH = '1920px';
 
 export const notLarge = (theme: Theme) => theme.breakpoints.down('lg');
