@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Esittelija, OnrHenkilo, User}
+import fi.oph.tutu.backend.domain.{Esittelija, User}
 import fi.oph.tutu.backend.security.AuthenticationFacade
 import fi.oph.tutu.backend.utils.AuthoritiesUtil
 import org.springframework.security.core.userdetails.UserDetails

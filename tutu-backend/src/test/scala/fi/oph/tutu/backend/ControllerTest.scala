@@ -2,7 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrHenkilo, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, KayttooikeusService, OnrService, UserService}
@@ -79,7 +79,7 @@ class ControllerTest extends IntegrationTestBase {
       .thenReturn(Right("fi"))
 
     when(mockOnrService.haeHenkilo(esittelijaOidString))
-      .thenReturn(Right(OnrHenkilo(esittelijaOidString, "Esko", "Esittelijä")))
+      .thenReturn(Right(OnrUser(esittelijaOidString, "Esko", "Esittelijä")))
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -360,9 +360,9 @@ class ControllerTest extends IntegrationTestBase {
       kayttooikeusService.haeEsittelijat
     ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
     when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
-      .thenReturn(Right(OnrHenkilo("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
     when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
-      .thenReturn(Right(OnrHenkilo("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
 
     mockMvc
       .perform(

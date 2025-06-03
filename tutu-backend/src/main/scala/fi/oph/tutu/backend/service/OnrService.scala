@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
-import fi.oph.tutu.backend.domain.OnrHenkilo
+import fi.oph.tutu.backend.domain.OnrUser
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -61,7 +61,7 @@ class OnrService(httpService: HttpService) {
   }
 
   @Cacheable(value = Array("henkilo"))
-  def haeHenkilo(personOid: String): Either[Throwable, OnrHenkilo] = {
+  def haeHenkilo(personOid: String): Either[Throwable, OnrUser] = {
     LOG.info("Fetching henkilö from oppijanumerorekisteri")
     httpService.get(
       onrCasClient,
@@ -71,7 +71,7 @@ class OnrService(httpService: HttpService) {
         LOG.error(s"Error fetching henkilo with OID: $personOid from oppijanumerorekisteri: ${e.getMessage}")
         Left(e)
       }
-      case Right(response) => Right(mapper.readValue(response, classOf[OnrHenkilo]))
+      case Right(response) => Right(mapper.readValue(response, classOf[OnrUser]))
     }
   }
 
@@ -92,7 +92,7 @@ class OnrService(httpService: HttpService) {
     LOG.info("Emptying henkilo cache")
 
   @CachePut(Array("henkilo"))
-  private def updateCached(personOid: String, value: OnrHenkilo): Unit = {
+  private def updateCached(personOid: String, value: OnrUser): Unit = {
     val henkiloCache = cacheManager.getCache("henkilo")
     henkiloCache.put(personOid, value)
   }
