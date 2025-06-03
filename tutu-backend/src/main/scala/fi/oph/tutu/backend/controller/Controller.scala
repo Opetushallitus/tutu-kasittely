@@ -183,7 +183,7 @@ class Controller(
 
   @GetMapping(path = Array("esittelijat"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeEsittelijat(): ResponseEntity[Any] = {
-    val users    = userService.getEsittelijat
+    val users    = userService.haeEsittelijat
     val response = mapper.writeValueAsString(users)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }

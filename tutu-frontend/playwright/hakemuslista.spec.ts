@@ -175,19 +175,16 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
 
-  const epajarjestystestit = [
-    'hakemuslista.hakijannimi',
-    // 'hakemuslista.kasittelyvaihe',
-    // 'hakemuslista.hakemusKoskee',
-    // 'hakemuslista.hakijanaika',
-  ].map(async (fieldKey) => {
-    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
+    async (fieldKey) => {
+      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-    await expect(epajarjestyskentta).not.toHaveAttribute(
-      'data-active',
-      'false',
-    );
-  });
+      await expect(epajarjestyskentta).not.toHaveAttribute(
+        'data-active',
+        'false',
+      );
+    },
+  );
 
   await Promise.all(epajarjestystestit);
 });
@@ -211,16 +208,13 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
 
-  const epajarjestystestit = [
-    'hakemuslista.hakijannimi',
-    // 'hakemuslista.asiatunnus',
-    // 'hakemuslista.hakemusKoskee',
-    // 'hakemuslista.hakijanaika',
-  ].map(async (fieldKey) => {
-    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
+    async (fieldKey) => {
+      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-    await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
-  });
+      await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
+    },
+  );
 
   await Promise.all(epajarjestystestit);
 });

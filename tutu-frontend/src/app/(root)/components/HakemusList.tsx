@@ -22,6 +22,29 @@ import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
 
+const TutuTableSortLabel = (props: {
+  fieldKey: string;
+  sortDef: string;
+  handleSort: (sortDef: string) => void;
+}) => {
+  const { fieldKey, sortDef, handleSort } = props;
+  const { t } = useTranslations();
+  return (
+    <TableHeaderCell
+      colId={fieldKey}
+      sort={sortDef}
+      title={t(fieldKey)}
+      setSort={handleSort}
+      sortable={true}
+    />
+  );
+};
+const StyledTableCell = styled(TableCell)(() => ({
+  '& .MuiTableCell-root': {
+    borderBottom: 0,
+  },
+}));
+
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
   asiatunnus: 'hakemuslista.asiatunnus',
@@ -67,7 +90,7 @@ export function HakemusList({ user }: HakemusListProps) {
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
-  const handleSort = (sortDef) => {
+  const handleSort = (sortDef: unknown) => {
     setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
@@ -91,15 +114,17 @@ export function HakemusList({ user }: HakemusListProps) {
       <Table>
         <TableHead>
           <TableRow>
-            {Object.values(FIELD_KEYS).map((fieldKey) => (
-              <TableCell key={fieldKey}>
-                <TutuTableSortLabel
-                  fieldKey={fieldKey}
-                  sortDef={sortDef}
-                  handleSort={handleSort}
-                />
-              </TableCell>
-            ))}
+            {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
+              nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
+                <StyledTableCell key={fieldKey}>
+                  <TutuTableSortLabel
+                    fieldKey={fieldKey}
+                    sortDef={sortDef}
+                    handleSort={handleSort}
+                  />
+                </StyledTableCell>
+              ),
+            )}
           </TableRow>
         </TableHead>
         <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
@@ -109,17 +134,3 @@ export function HakemusList({ user }: HakemusListProps) {
     </TableContainer>
   );
 }
-
-const TutuTableSortLabel = (props) => {
-  const { fieldKey, sortDef, handleSort } = props;
-  const { t } = useTranslations();
-  return (
-    <TableHeaderCell
-      colId={fieldKey}
-      sort={sortDef}
-      title={t(fieldKey)}
-      setSort={handleSort}
-      sortable={true}
-    />
-  );
-};

@@ -34,7 +34,7 @@ class UserService(
     }
   }
 
-  def getEsittelijat: Seq[Esittelija] = {
+  def haeEsittelijat: Seq[Esittelija] = {
     kayttooikeusService.haeEsittelijat match {
       case Left(error) =>
         throw new RuntimeException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error)
