@@ -37,6 +37,14 @@ class HakemusService(
   def haeHakemusLista(userOid: Option[String], hakemuskoskee: Option[String]): Seq[HakemusListItem] = {
     val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee)
 
+    // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
+    if (hakemusOidit.isEmpty) {
+      LOG.info(
+        "Hakemuksia ei löytynyt parametreillä: " + userOid.getOrElse("None") + ", " + hakemuskoskee.getOrElse("None")
+      )
+      return Seq.empty[HakemusListItem]
+    }
+
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
       case Left(error) => LOG.error(error.getMessage); Seq.empty[AtaruHakemus]
