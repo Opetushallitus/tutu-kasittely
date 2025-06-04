@@ -7,8 +7,8 @@ import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-implicit val formats: Formats = DefaultFormats
-
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Component
@@ -31,6 +31,41 @@ class HakemusService(
           "Hakemuspalvelu"
         )
       case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
+    }
+  }
+
+  def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
+      case Left(error: Throwable) =>
+        LOG.warn(s"Ataru-hakemuksen haku epäonnistui hakemusOidille $hakemusOid: ", error.getMessage)
+        return None
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case Some(dbHakemus) =>
+        Some(
+          Hakemus(
+            hakemusOid = dbHakemus.hakemusOid.toString,
+            hakijanEtunimet = ataruHakemus.etunimet,
+            hakijanSukunimi = ataruHakemus.sukunimi,
+            hakijanHetu = ataruHakemus.henkilotunnus.getOrElse("Puuttuva henkilötunnus"),
+            asiatunnus = dbHakemus.asiatunnus,
+            // TODO: kirjausPvm, esittelyPvm, paatosPvm.
+            kirjausPvm = Some(
+              LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+            ),
+            esittelyPvm = None,
+            paatosPvm = None,
+            esittelijaOid = dbHakemus.esittelijaOid match {
+              case None                => None
+              case Some(esittelijaOid) => Some(esittelijaOid.toString)
+            }
+          )
+        )
+      case None =>
+        LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        None
     }
   }
 

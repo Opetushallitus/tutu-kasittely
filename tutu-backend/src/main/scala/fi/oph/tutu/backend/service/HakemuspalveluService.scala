@@ -39,10 +39,10 @@ class HakemuspalveluService(httpService: HttpService) {
       .build()
   )
 
-  def haeHakemus(hakemusOid: String): Either[Throwable, String] = {
+  def haeHakemus(hakemusOid: HakemusOid): Either[Throwable, String] = {
     httpService.get(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemus/$hakemusOid"
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemus/${hakemusOid.toString}"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)

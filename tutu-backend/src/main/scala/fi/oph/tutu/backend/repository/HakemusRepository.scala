@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, UserOid}
+import fi.oph.tutu.backend.domain.{DbHakemus, HakemusListItem, HakemusOid, UserOid}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -25,13 +25,14 @@ class HakemusRepository {
   implicit val getHakemusOidResult: GetResult[HakemusOid] =
     GetResult(r => HakemusOid(r.nextString()))
 
-  implicit val getHakemusResult: GetResult[Hakemus] =
+  implicit val getHakemusResult: GetResult[DbHakemus] =
     GetResult(r =>
-      Hakemus(
+      DbHakemus(
         HakemusOid(r.nextString()),
         r.nextInt(),
         Option(r.nextString()).map(UUID.fromString),
-        Option(r.nextString()).map(UserOid.apply)
+        Option(r.nextString()).map(UserOid.apply),
+        Option(r.nextString())
       )
     )
 
@@ -68,7 +69,7 @@ class HakemusRepository {
       VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head,
-        "tallennaHakemus"
+        "tallenna_hakemus"
       )
     catch {
       case e: Exception =>
@@ -90,7 +91,7 @@ class HakemusRepository {
    * @return
    *   HakemusOid-listan mukaiset hakemukset tietoineen
    */
-  def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] =
+  def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] = {
     try {
       val oidt = hakemusOidt.map(oid => s"'${oid.s}'").mkString(", ")
       db.run(
@@ -112,6 +113,38 @@ class HakemusRepository {
           e
         )
     }
+  }
+
+  /**
+   * Palauttaa yksittäisen hakemuksen
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @return
+   * hakemuksen
+   */
+  def haeHakemus(hakemusOid: HakemusOid): Option[DbHakemus] = {
+    try {
+      db.run(
+        sql"""
+            SELECT
+              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus
+            FROM
+              hakemus h
+            LEFT JOIN public.esittelija e on e.id = h.esittelija_id
+            WHERE
+              h.hakemus_oid = ${hakemusOid.s}
+          """.as[DbHakemus].headOption,
+        "hae_hakemus"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Hakemuksen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 
   /**
    * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
@@ -148,7 +181,7 @@ class HakemusRepository {
     } catch {
       case e: Exception =>
         throw new RuntimeException(
-          s"Hakemuksien listaus epäonnistui: ${e.getMessage}",
+          s"HakemusOidien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }

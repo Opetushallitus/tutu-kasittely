@@ -1,8 +1,9 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{HakemusListItem, UserResponse, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{HakemusListItem, HakemusOid, UserResponse, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -32,8 +33,10 @@ class Controller(
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
+  mapper.registerModule(new JavaTimeModule)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   final val RESPONSE_200_DESCRIPTION =
     "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
@@ -148,18 +151,16 @@ class Controller(
           .body(RESPONSE_500_DESCRIPTION)
     }
 
-  @GetMapping(path = Array("hakemus/{hakemusOid}"))
-  def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] =
-    try
-      hakemuspalveluService.haeHakemus(hakemusOid) match {
-        case Left(error: Throwable)  => ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
-        case Right(response: String) => ResponseEntity.status(HttpStatus.OK).body(response)
-      }
-    catch {
-      case e: Exception =>
-        LOG.error("Ataru-hakemuksen haku epäonnistui", e.getMessage)
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(RESPONSE_500_DESCRIPTION)
+  @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
+  def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] = {
+    hakemusService.haeHakemus(HakemusOid(hakemusOid)) match {
+      case None =>
+        LOG.warn(s"Hakemusta ei löytynyt hakemusOid: $hakemusOid")
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hakemusta ei löytynyt")
+      case Some(hakemus) => ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
     }
+
+  }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def listaaHakemukset(
