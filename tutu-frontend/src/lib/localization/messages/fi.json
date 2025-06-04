@@ -15,7 +15,9 @@
     "nayta": "Näytä",
     "haeHakemuksia": "Hae hakemuksia",
     "omat": "Minulle osoitetut",
-    "kaikki": "Kaikki"
+    "kaikki": "Kaikki",
+    "kokonaisaika": "Kokonaisaika",
+    "kokonaisaika.arvo": "{aika, number} kk"
   },
   "hakemus": {
     "otsikko": "Hakemus"
