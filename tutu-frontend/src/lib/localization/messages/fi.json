@@ -25,7 +25,12 @@
     "perustiedot": "Hakijan ja hakemuksen tiedot",
     "asiakirjat": "Asiakirjat",
     "paatostiedot": "Päätöstiedot",
-    "perustelu": "Perustelu",
+    "perustelu": {
+      "ylataso": "Perustelu",
+      "yleiset": "Yleiset perustelut / Lausuntotiedot",
+      "uoro": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
+      "ar": "AR -päätöksen perustelut"
+    },
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"
   }
