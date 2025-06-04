@@ -4,7 +4,6 @@ import {
   styled,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
@@ -39,11 +38,6 @@ const TutuTableSortLabel = (props: {
     />
   );
 };
-const StyledTableCell = styled(TableCell)(() => ({
-  '& .MuiTableCell-root': {
-    borderBottom: 0,
-  },
-}));
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
@@ -116,13 +110,12 @@ export function HakemusList({ user }: HakemusListProps) {
           <TableRow>
             {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
               nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
-                <StyledTableCell key={fieldKey}>
-                  <TutuTableSortLabel
-                    fieldKey={fieldKey}
-                    sortDef={sortDef}
-                    handleSort={handleSort}
-                  />
-                </StyledTableCell>
+                <TutuTableSortLabel
+                  key={fieldKey}
+                  fieldKey={fieldKey}
+                  sortDef={sortDef}
+                  handleSort={handleSort}
+                />
               ),
             )}
           </TableRow>

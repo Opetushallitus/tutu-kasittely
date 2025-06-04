@@ -23,7 +23,7 @@ const SortIcon = ({
 };
 
 const StyledHeaderCell = styled(TableCell)(({ theme }) => ({
-  padding: theme.spacing(0, 0, 0, 0),
+  padding: theme.spacing(0, 0, 1, 2),
   '&:last-child': {
     paddingRight: theme.spacing(2),
   },
