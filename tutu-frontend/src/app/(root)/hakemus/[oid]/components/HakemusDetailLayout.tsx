@@ -15,7 +15,10 @@ export const HakemusDetailLayout = ({
   return (
     <Stack direction="row" spacing={theme.spacing(3, 3)}>
       <HakemusTabs hakemusOid={hakemusOid}></HakemusTabs>
-      <BoxWrapper>{children}</BoxWrapper>
+      <Stack direction={'column'} spacing={theme.spacing(0, 3)} width={'100%'}>
+        <BoxWrapper>OTSIKKO</BoxWrapper>
+        <BoxWrapper>{children}</BoxWrapper>
+      </Stack>
     </Stack>
   );
 };

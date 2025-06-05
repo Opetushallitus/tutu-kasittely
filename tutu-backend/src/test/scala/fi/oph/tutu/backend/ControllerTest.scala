@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, KayttooikeusService, OnrService, UserService}
+import fi.oph.tutu.backend.service.*
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
@@ -308,8 +308,7 @@ class ControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(ataruJson))
 
-    val expectedResult =
-      s"""[{
+    val expectedResult = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
                                 "vaihe" : "Testi Vaihe",
@@ -338,6 +337,57 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+  }
+
+  @Test
+  @Order(9)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemusValidRequestReturns200(): Unit = {
+    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemus.json"))
+      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
+
+    val ataruJson = Source.fromInputStream(stream).mkString
+
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(ataruJson))
+
+    val expectedResult = s"""{
+                                "hakemusOid": "1.2.246.562.11.00000000000000006667",
+                                "hakijanEtunimet": "Testi Kolmas",
+                                "hakijanSukunimi": "Hakija",
+                                "hakijanHetu": "131280-123Q",
+                                "asiatunnus": null,
+                                "kirjausPvm": "2025-05-14T10:59:47.597",
+                                "esittelyPvm": null,
+                                "paatosPvm": null,
+                                "esittelijaOid": null
+                              }"""
+
+    val result = mockMvc
+      .perform(
+        get("/api/hakemus/1.2.246.562.11.00000000000000006667")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
+  }
+
+  @Test
+  @Order(9)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemusValidRequestReturns404WhenAtaruHakemusNotFound(): Unit = {
+
+    when(
+      hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000002354670"))
+    ).thenReturn(Left(new Exception()))
+
+    val result = mockMvc
+      .perform(
+        get("/api/hakemus/1.2.246.562.11.00000000000002354670")
+      )
+      .andExpect(status().isNotFound)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().string(equalTo("Hakemusta ei löytynyt")))
   }
 
   @Test
@@ -372,4 +422,5 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
   }
+
 }
