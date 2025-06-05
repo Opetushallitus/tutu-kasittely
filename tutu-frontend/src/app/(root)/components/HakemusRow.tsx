@@ -10,7 +10,7 @@ const StyledTableCell = styled(TableCell)({
 });
 
 export const muotoileKokonaisaikaPure = (nyt: Date, luotu: Date) => {
-  const kuukausiYlitetty = nyt.getDate() - luotu.getDate() < 0;
+  const kuukausiYlitetty = luotu.getDate() > nyt.getDate();
 
   const jaksonAlku = new Date(
     dateFns.subMonths(nyt, kuukausiYlitetty ? 1 : 0).setDate(luotu.getDate()),
