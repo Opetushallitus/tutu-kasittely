@@ -79,7 +79,7 @@ class HakemusService(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 vaihe = "Testi Vaihe",
-                aika = "2 kk",
+                aika = ataruHakemus.created,
                 hakemusOid = item.hakemusOid,
                 hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid,
