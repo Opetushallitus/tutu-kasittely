@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.utils.Constants.*
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
@@ -55,7 +56,7 @@ class HakemusService(
             },
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
-              LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+              LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
             ),
             // TODO: esittelyPvm, paatosPvm.
             esittelyPvm = None,
