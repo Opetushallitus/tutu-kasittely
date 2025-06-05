@@ -46,7 +46,7 @@ case class Hakemus(
   @BeanProperty hakemusOid: String,
   @BeanProperty hakijanEtunimet: String,
   @BeanProperty hakijanSukunimi: String,
-  @BeanProperty hakijanHetu: String,
+  @BeanProperty hakijanHetu: Option[String] = None,
   @BeanProperty asiatunnus: Option[String] = None,
   @BeanProperty kirjausPvm: Option[LocalDateTime] = None,
   @BeanProperty esittelyPvm: Option[LocalDateTime] = None,

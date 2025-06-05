@@ -1,5 +1,6 @@
 import { PageLayout } from '@/src/components/PageLayout';
 import { HakemusDetailLayout } from '@/src/app/(root)/hakemus/[oid]/components/HakemusDetailLayout';
+import { HakemusProvider } from '@/src/context/HakemusContext';
 
 export default async function HakemusLayout(props: {
   children: React.ReactNode;
@@ -11,10 +12,12 @@ export default async function HakemusLayout(props: {
   const { children, header } = props;
 
   return (
-    <PageLayout header={header}>
-      <HakemusDetailLayout hakemusOid={params.oid}>
-        {children}
-      </HakemusDetailLayout>
-    </PageLayout>
+    <HakemusProvider hakemusOid={params.oid}>
+      <PageLayout header={header}>
+        <HakemusDetailLayout hakemusOid={params.oid}>
+          {children}
+        </HakemusDetailLayout>
+      </PageLayout>
+    </HakemusProvider>
   );
 }

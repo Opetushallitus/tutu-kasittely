@@ -49,12 +49,15 @@ class HakemusService(
             hakemusOid = dbHakemus.hakemusOid.toString,
             hakijanEtunimet = ataruHakemus.etunimet,
             hakijanSukunimi = ataruHakemus.sukunimi,
-            hakijanHetu = ataruHakemus.henkilotunnus.getOrElse("Puuttuva henkilötunnus"),
+            hakijanHetu = ataruHakemus.henkilotunnus match {
+              case None       => None
+              case Some(hetu) => Some(hetu)
+            },
             asiatunnus = dbHakemus.asiatunnus,
-            // TODO: kirjausPvm, esittelyPvm, paatosPvm.
             kirjausPvm = Some(
               LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
             ),
+            // TODO: esittelyPvm, paatosPvm.
             esittelyPvm = None,
             paatosPvm = None,
             esittelijaOid = dbHakemus.esittelijaOid match {
