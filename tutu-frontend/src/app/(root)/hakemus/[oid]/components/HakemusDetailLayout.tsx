@@ -1,5 +1,5 @@
 'use client';
-import { Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { HakemusTabs } from '@/src/app/(root)/hakemus/[oid]/components/HakemusTabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { HakemusHeader } from '@/src/app/(root)/hakemus/[oid]/components/HakemusHeader';
@@ -18,10 +18,11 @@ export const HakemusDetailLayout = ({
     <Stack direction="row" spacing={theme.spacing(3, 3)}>
       <HakemusTabs hakemusOid={hakemusOid}></HakemusTabs>
       <Stack direction="column" spacing={theme.spacing(0, 3)} width={'100%'}>
-        <BoxWrapper>
+        <BoxWrapper sx={{ borderBottom: 0, paddingBottom: 0 }}>
           <HakemusHeader />
         </BoxWrapper>
-        <BoxWrapper>
+        <BoxWrapper sx={{ borderTop: 0 }}>
+          <Divider orientation="horizontal" flexItem />
           <Stack direction="row" justifyContent="space-between">
             {children}
             <SideBar />
