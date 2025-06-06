@@ -38,29 +38,31 @@ export const HakemusHeader = () => {
         spacing={5}
       >
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
-          <OphTypography variant="label">
+          <OphTypography variant="label" data-testid="hakemusotsikko-hakija">
             {hakemus?.hakijanSukunimi}, {hakemus?.hakijanEtunimet} -{' '}
             {hakemus?.hakijanHetu || t('hakemusotsikko.hetuPuuttuu')}
           </OphTypography>
-          <OphTypography>
+          <OphTypography data-testid="hakemusotsikko-asiatunnus">
             {hakemus?.asiatunnus || t('hakemusotsikko.asiatunnusPuuttuu')}
           </OphTypography>
         </Stack>
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
-          <OphTypography>
+          <OphTypography data-testid="hakemusotsikko-kirjauspvm">
             {t('hakemusotsikko.kirjausPvm')}{' '}
             {dateFns.format(Date.parse(hakemus?.kirjausPvm), 'dd.MM.yyyy') ||
               t('hakemusotsikko.kirjausPvmPuuttuu')}
           </OphTypography>
-          <OphTypography>
+          <OphTypography data-testid="hakemusotsikko-esittelypvm">
             {t('hakemusotsikko.esittelyPvm')}{' '}
-            {hakemus?.esittelyPvm || t('puuttuu')}
+            {dateFns.format(Date.parse(hakemus?.esittelyPvm), 'dd.MM.yyyy') ||
+              t('puuttuu')}
           </OphTypography>
         </Stack>
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
-          <OphTypography>
+          <OphTypography data-testid="hakemusotsikko-lopullinenpaatospvm">
             {t('hakemusotsikko.lopullinenPaatosPvm')}{' '}
-            {hakemus?.paatosPvm || t('puuttuu')}
+            {dateFns.format(Date.parse(hakemus?.paatosPvm), 'dd.MM.yyyy') ||
+              t('puuttuu')}
           </OphTypography>
           <OphTypography
             sx={{
@@ -75,7 +77,7 @@ export const HakemusHeader = () => {
               options={esittelijaOptions}
               value={hakemus?.esittelijaOid}
               sx={{ width: '50%', paddingLeft: theme.spacing(2) }}
-              data-testid={'esittelija'}
+              data-testid={'hakemusotsikko-esittelija'}
             />
           </OphTypography>
         </Stack>

@@ -2,7 +2,7 @@
 
 const cspHeaders = {
   'default-src': "'self'",
-  'connect-src': "'self' https://app.tolgee.io",
+  'connect-src': "'self' https://app.tolgee.io https://localhost:33123",
   'script-src':
     "'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
   'style-src': "'self' 'unsafe-inline'",

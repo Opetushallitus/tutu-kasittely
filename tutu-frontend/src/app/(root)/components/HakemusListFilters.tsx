@@ -152,7 +152,7 @@ export default function HakemusListFilters() {
               label: tila,
               value: tila,
             }))}
-            value={tilat}
+            value={tilat as never}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
                 queryClient,
