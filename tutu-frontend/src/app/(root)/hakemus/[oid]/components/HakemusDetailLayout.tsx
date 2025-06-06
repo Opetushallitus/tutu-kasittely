@@ -14,7 +14,11 @@ export const HakemusDetailLayout = ({
   const theme = useTheme();
 
   return (
-    <Stack direction="row" spacing={theme.spacing(3, 3)}>
+    <Stack
+      direction="row"
+      spacing={theme.spacing(3, 3)}
+      test-id="hakemus-detail-layout"
+    >
       <HakemusTabs hakemusOid={hakemusOid}></HakemusTabs>
       <Stack direction="column" spacing={theme.spacing(0, 3)} width={'100%'}>
         <BoxWrapper sx={{ borderBottom: 0, paddingBottom: 0 }}>
