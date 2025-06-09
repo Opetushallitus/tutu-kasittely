@@ -48,7 +48,7 @@ class EsittelijaRepository {
   }
 
   /**
-   * Hakee esittelijän maakoodin perusteella
+   * Hakee esittelijän oidin perusteella
    *
    * @param oid
    * esittelijän oid

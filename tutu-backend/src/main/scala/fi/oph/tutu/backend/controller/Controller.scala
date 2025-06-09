@@ -236,7 +236,7 @@ class Controller(
           hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
         catch {
           case e: Exception =>
-            LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+            LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
             return ResponseEntity
               .status(HttpStatus.BAD_REQUEST)
               .body(RESPONSE_400_DESCRIPTION)

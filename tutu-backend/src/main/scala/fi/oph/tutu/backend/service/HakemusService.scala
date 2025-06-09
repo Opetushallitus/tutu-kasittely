@@ -132,11 +132,16 @@ class HakemusService(
   }
 
   def paivitaHakemus(hakemus: Hakemus, userOid: UserOid): HakemusOid = {
-    val esittelijaId = esittelijaRepository.haeEsittelijaOidilla(hakemus.esittelijaOid.toString) match {
-      case Some(esittelija) => Some(esittelija.esittelijaId)
-      case None =>
-        LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
-        None
+    val esittelijaId = hakemus.esittelijaOid match {
+      case None => None
+      case Some(esittelijaOid) =>
+        esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
+          case Some(esittelija) => Some(esittelija.esittelijaId)
+          case None =>
+            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
+            None
+        }
+
     }
 
     hakemusRepository.paivitaHakemus(

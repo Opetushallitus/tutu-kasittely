@@ -188,10 +188,18 @@ class HakemusRepository {
   }
 
   /**
-   * Tallentaa uuden hakemuksen
+   * Päivittää hakemuksen
    *
    * @param hakemusOid
-   * hakemuspalvelun hakemuksen oid
+   * hakemuksen oid
+   * @param hakemusKoskee
+   * hakemus koskee -koodi
+   * @param esittelijaId
+   * esittelijän id
+   * @param asiatunnus
+   * asiatunnus
+   * @param muokkaaja
+   * muokkaajan oid
    * @return
    * tallennetun hakemuksen id
    */
@@ -208,19 +216,19 @@ class HakemusRepository {
     try
       db.run(
         sql"""
-        UPDATE hakemus (hakemus_oid, esittelija_id, asiatunnus, muokkaaja)
-        VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $asiatunnusOrNull, $muokkaaja)
+        UPDATE hakemus
+        SET hakemus_koskee = $hakemusKoskee, esittelija_id = ${esittelijaIdOrNull}::uuid, asiatunnus = $asiatunnusOrNull, muokkaaja = $muokkaaja
         WHERE hakemus_oid = $hakemusOidString
         RETURNING 
           hakemus_oid
       """.as[HakemusOid].head,
-        "tallenna_hakemus"
+        "paivita_hakemus"
       )
     catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e}")
+        LOG.error(s"Hakemuksen päivitus epäonnistui: ${e}")
         throw new RuntimeException(
-          s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
+          s"Hakemuksen päivitys epäonnistui: ${e.getMessage}",
           e
         )
     }
