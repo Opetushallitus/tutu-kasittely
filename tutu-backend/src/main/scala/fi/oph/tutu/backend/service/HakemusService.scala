@@ -54,6 +54,7 @@ class HakemusService(
               case None       => None
               case Some(hetu) => Some(hetu)
             },
+            hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
               LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
@@ -128,5 +129,22 @@ class HakemusService(
             )
         }
       }
+  }
+
+  def paivitaHakemus(hakemus: Hakemus, userOid: UserOid): HakemusOid = {
+    val esittelijaId = esittelijaRepository.haeEsittelijaOidilla(hakemus.esittelijaOid.toString) match {
+      case Some(esittelija) => Some(esittelija.esittelijaId)
+      case None =>
+        LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
+        None
+    }
+
+    hakemusRepository.paivitaHakemus(
+      HakemusOid(hakemus.hakemusOid),
+      hakemus.hakemusKoskee,
+      esittelijaId,
+      hakemus.asiatunnus,
+      userOid.toString
+    )
   }
 }

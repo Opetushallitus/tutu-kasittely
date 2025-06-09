@@ -34,9 +34,9 @@ object AnswerValueSerializer
           case SingleValue(value) =>
             JString(value)
           case MultiValue(values) =>
-            JArray(values.map(JString).toList)
+            JArray(values.map(org.json4s.JString.apply).toList)
           case NestedValues(values) =>
-            JArray(values.map(nested => JArray(nested.map(JString).toList)).toList)
+            JArray(values.map(nested => JArray(nested.map(org.json4s.JString.apply).toList)).toList)
           case EmptyValue =>
             JArray(Nil)
         }

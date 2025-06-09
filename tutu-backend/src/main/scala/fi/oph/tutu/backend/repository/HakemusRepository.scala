@@ -186,4 +186,43 @@ class HakemusRepository {
         )
     }
   }
+
+  /**
+   * Tallentaa uuden hakemuksen
+   *
+   * @param hakemusOid
+   * hakemuspalvelun hakemuksen oid
+   * @return
+   * tallennetun hakemuksen id
+   */
+  def paivitaHakemus(
+    hakemusOid: HakemusOid,
+    hakemusKoskee: Int,
+    esittelijaId: Option[UUID],
+    asiatunnus: Option[String],
+    muokkaaja: String
+  ): HakemusOid = {
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
+    val asiatunnusOrNull   = asiatunnus.map(_.toString).orNull
+    try
+      db.run(
+        sql"""
+        UPDATE hakemus (hakemus_oid, esittelija_id, asiatunnus, muokkaaja)
+        VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $asiatunnusOrNull, $muokkaaja)
+        WHERE hakemus_oid = $hakemusOidString
+        RETURNING 
+          hakemus_oid
+      """.as[HakemusOid].head,
+        "tallenna_hakemus"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 }
