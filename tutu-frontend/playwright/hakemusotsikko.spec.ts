@@ -79,28 +79,26 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('Hakemusotsikko displays correct data', async ({ page }) => {
+test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
 
-  const hakija = await page.getByTestId('hakemusotsikko-hakija');
+  const hakija = page.getByTestId('hakemusotsikko-hakija');
   await expect(hakija).toHaveText('Heittotähti, Heikki Hemuli - 121280-123A');
 
-  const asiatunnus = await page.getByTestId('hakemusotsikko-asiatunnus');
+  const asiatunnus = page.getByTestId('hakemusotsikko-asiatunnus');
   await expect(asiatunnus).toHaveText('OPH-111-2025');
 
-  const kirjausPvm = await page.getByTestId('hakemusotsikko-kirjauspvm');
+  const kirjausPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
   await expect(kirjausPvm).toContainText('14.05.2025');
 
-  const esittelyPvm = await page.getByTestId('hakemusotsikko-esittelypvm');
+  const esittelyPvm = page.getByTestId('hakemusotsikko-esittelypvm');
   await expect(esittelyPvm).toContainText('28.05.2025');
 
-  const paatosPvm = await page.getByTestId(
-    'hakemusotsikko-lopullinenpaatospvm',
-  );
+  const paatosPvm = page.getByTestId('hakemusotsikko-lopullinenpaatospvm');
   await expect(paatosPvm).toContainText('28.05.2025');
 
-  const esittelija = await page.getByTestId('hakemusotsikko-esittelija');
+  const esittelija = page.getByTestId('hakemusotsikko-esittelija');
   await expect(esittelija).toContainText('Janne Jamaika');
 });
