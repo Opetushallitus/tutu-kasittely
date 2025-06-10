@@ -2,7 +2,7 @@
 import { Stack, useTheme } from '@mui/material';
 import { HakemusTabs } from '@/src/app/(root)/hakemus/[oid]/components/HakemusTabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { SideBar } from '@/src/app/(root)/hakemus/[oid]/components/SideBar';
+import { SideBar } from '@/src/app/(root)/hakemus/[oid]/components/sidebar/SideBar';
 
 export const HakemusDetailLayout = ({
   hakemusOid,
