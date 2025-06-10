@@ -188,7 +188,7 @@ class HakemusRepository {
   }
 
   /**
-   * Päivittää hakemuksen
+   * Päivittää osan hakemuksesta
    *
    * @param hakemusOid
    * hakemuksen oid
@@ -203,16 +203,15 @@ class HakemusRepository {
    * @return
    * tallennetun hakemuksen id
    */
-  def paivitaHakemus(
+  def paivitaPartialHakemus(
     hakemusOid: HakemusOid,
-    hakemusKoskee: Int,
-    esittelijaId: Option[UUID],
-    asiatunnus: Option[String],
+    partialHakemus: DbHakemus,
     muokkaaja: String
   ): HakemusOid = {
     val hakemusOidString   = hakemusOid.toString
-    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
-    val asiatunnusOrNull   = asiatunnus.map(_.toString).orNull
+    val esittelijaIdOrNull = partialHakemus.esittelijaId.map(_.toString).orNull
+    val asiatunnusOrNull   = partialHakemus.asiatunnus.map(_.toString).orNull
+    val hakemusKoskee      = partialHakemus.hakemusKoskee
     try
       db.run(
         sql"""

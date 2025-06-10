@@ -54,3 +54,12 @@ case class Hakemus(
   @BeanProperty paatosPvm: Option[LocalDateTime] = None,
   @BeanProperty esittelijaOid: Option[String] = None
 )
+
+case class PartialHakemus(
+  @BeanProperty hakemusKoskee: Option[Int] = None,
+  @BeanProperty asiatunnus: Option[String] = None,
+  @BeanProperty kirjausPvm: Option[LocalDateTime] = None,
+  @BeanProperty esittelyPvm: Option[LocalDateTime] = None,
+  @BeanProperty paatosPvm: Option[LocalDateTime] = None,
+  @BeanProperty esittelijaOid: Option[String] = None
+)

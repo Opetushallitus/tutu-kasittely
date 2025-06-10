@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, UserOid, UserResponse, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, PartialHakemus, UserOid, UserResponse, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -189,17 +189,17 @@ class Controller(
     ResponseEntity.status(HttpStatus.OK).body(response)
   }
 
-  @PutMapping(
+  @PatchMapping(
     path = Array("hakemus/{hakemusOid}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Päivittää hakemuksen",
+    summary = "Päivittää hakemuksen osan",
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = Array(
-        new Content(schema = new Schema(implementation = classOf[Hakemus]))
+        new Content(schema = new Schema(implementation = classOf[PartialHakemus]))
       )
     ),
     responses = Array(
@@ -221,7 +221,10 @@ class Controller(
       )
     )
   )
-  def paivitaHakemus(@RequestBody hakemusBytes: Array[Byte]): ResponseEntity[Any] =
+  def paivitaHakemus(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody hakemusBytes: Array[Byte]
+  ): ResponseEntity[Any] =
     try {
       val user        = userService.getEnrichedUserDetails
       val authorities = user.authorities
@@ -231,9 +234,9 @@ class Controller(
           .status(HttpStatus.FORBIDDEN)
           .body(RESPONSE_403_DESCRIPTION)
       } else {
-        var hakemus: Hakemus = null
+        var partialHakemus: PartialHakemus = null
         try
-          hakemus = mapper.readValue(hakemusBytes, classOf[Hakemus])
+          partialHakemus = mapper.readValue(hakemusBytes, classOf[PartialHakemus])
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
@@ -241,8 +244,8 @@ class Controller(
               .status(HttpStatus.BAD_REQUEST)
               .body(RESPONSE_400_DESCRIPTION)
         }
-        val hakemusOid        = hakemusService.paivitaHakemus(hakemus, UserOid(user.userOid))
-        val paivitettuHakemus = hakemusService.haeHakemus(hakemusOid)
+        hakemusService.paivitaHakemus(HakemusOid(hakemusOid), partialHakemus, UserOid(user.userOid))
+        val paivitettuHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
         ResponseEntity.status(HttpStatus.OK).body(paivitettuHakemus)
       }
     } catch {

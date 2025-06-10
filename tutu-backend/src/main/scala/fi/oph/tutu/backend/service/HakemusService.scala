@@ -131,7 +131,7 @@ class HakemusService(
       }
   }
 
-  def paivitaHakemus(hakemus: Hakemus, userOid: UserOid): HakemusOid = {
+  def paivitaHakemus(hakemusOid: HakemusOid, hakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
     val esittelijaId = hakemus.esittelijaOid match {
       case None => None
       case Some(esittelijaOid) =>
@@ -144,12 +144,21 @@ class HakemusService(
 
     }
 
-    hakemusRepository.paivitaHakemus(
-      HakemusOid(hakemus.hakemusOid),
-      hakemus.hakemusKoskee,
-      esittelijaId,
-      hakemus.asiatunnus,
-      userOid.toString
-    )
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case None => {
+        LOG.warn(s"Hakemuksen päivitys epäonnistui, kakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        throw new RuntimeException(
+          s"Hakemuksen päivitys epäonnistui, kakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+        )
+      }
+      case Some(dbHakemus) => {
+        val updatedHakemus = dbHakemus.copy(
+          hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
+          asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+          esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
+        )
+        hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)
+      }
+    }
   }
 }
