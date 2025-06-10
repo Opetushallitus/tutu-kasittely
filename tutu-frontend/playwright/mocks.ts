@@ -64,7 +64,6 @@ export async function mockRoute({ page }: { page: Page }) {
   await page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const oid = url.split('/').pop();
-    console.log('!!!!!!!!!!!!! route ', url, ' oid ', oid);
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
