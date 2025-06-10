@@ -2,6 +2,7 @@
 import { Stack, useTheme } from '@mui/material';
 import { HakemusTabs } from '@/src/app/(root)/hakemus/[oid]/components/HakemusTabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
+import { SideBar } from '@/src/app/(root)/hakemus/[oid]/components/SideBar';
 
 export const HakemusDetailLayout = ({
   hakemusOid,
@@ -17,7 +18,12 @@ export const HakemusDetailLayout = ({
       <HakemusTabs hakemusOid={hakemusOid}></HakemusTabs>
       <Stack direction={'column'} spacing={theme.spacing(0, 3)} width={'100%'}>
         <BoxWrapper>OTSIKKO</BoxWrapper>
-        <BoxWrapper>{children}</BoxWrapper>
+        <BoxWrapper>
+          <Stack direction="row" justifyContent="space-between">
+            {children}
+            <SideBar />
+          </Stack>
+        </BoxWrapper>
       </Stack>
     </Stack>
   );

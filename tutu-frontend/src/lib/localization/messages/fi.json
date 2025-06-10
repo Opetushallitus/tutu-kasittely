@@ -20,7 +20,25 @@
     "kokonaisaika.arvo": "{aika, number} kk"
   },
   "hakemus": {
-    "otsikko": "Hakemus"
+    "otsikko": "Hakemus",
+    "sivupalkki": {
+      "kasittelyvaihe": "Käsittelyvaihe",
+      "hakemuspalvelunvaihe": "Hakemuspalvelun vaihe",
+      "muokkaa": "Muokkaa hakemusta",
+      "paatos": {
+        "otsikko": "Päätös {numero, number}",
+        "otsikkoAikaisempi": "Aikaisempi päätös",
+        "seliteAikaisempi": "Hakijalla on ehdollinen päätös samasta kokonaisuudesta:"
+      },
+      "taydennysPyynto": {
+        "otsikko": "Täydennyspyyntö",
+        "lahetetty": "Täydennyspyyntö lähetetty",
+        "maaraaika": "Täydennyksen määräaika"
+      },
+      "kirjoitaViesti": "Kirjoita viesti",
+      "perustelumuistio": "Perustelumuistio",
+      "kirjoitaPaatos": "Kirjoita päätös"
+    }
   },
   "hakemus-tabs": {
     "navigaatio": "Hakemuksen näkymävalitsin",

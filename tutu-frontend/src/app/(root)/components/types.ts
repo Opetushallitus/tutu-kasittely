@@ -1,7 +1,11 @@
 export type SortOrder = 'asc' | 'desc';
 
 //placeholder, oikeat tilat pitää määrittää fiksummin
-export const kasittelyTilat = ['kasittelyssa', 'kasitelty'] as const;
+export const kasittelyTilat = [
+  'alkukäsittely kesken',
+  'käsittelyssä',
+  'käsitelty',
+] as const;
 
 export type KasittelyTila = (typeof kasittelyTilat)[number];
 
