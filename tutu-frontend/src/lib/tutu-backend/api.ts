@@ -25,7 +25,11 @@ type Options = {
 
 export async function apiFetch(
   resource: string,
-  options?: Options,
+  options?: Options & {
+    method?: string;
+    body?: string;
+    headers?: { 'Content-Type'?: string };
+  },
   cache?: string,
 ) {
   try {
@@ -34,12 +38,16 @@ export async function apiFetch(
       `${TUTU_BACKEND_API_URL}/${resource}${queryParams}`,
       {
         ...options,
+        method: options?.method ?? 'GET',
         credentials: 'include',
         headers: {
           ...options?.headers,
           'X-CSRF-TOKEN': await csrfToken(),
           cache: cache ?? 'force-cache',
+          'Content-Type':
+            options?.headers?.['Content-Type'] ?? 'application/json',
         },
+        body: options?.body,
       },
     );
     return response.status >= 400
@@ -110,3 +118,24 @@ export const doApiFetch = async (
     return Promise.reject(error);
   }
 };
+
+export async function doApiPatch(
+  resource: string,
+  body: object,
+  options?: Options,
+  cache?: string,
+) {
+  return apiFetch(
+    resource,
+    {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        ...options?.headers,
+        'Content-Type': 'application/json',
+      },
+    },
+    cache,
+  );
+}

@@ -47,17 +47,20 @@ export default function HakemusListFilters() {
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
+  const uniqueEsittelijat = R.uniqueBy(
+    esittelijat ?? [],
+    (e) => e.esittelijaOid,
+  );
 
   const esittelijaOptions = isLoadingEsittelijat
     ? []
     : emptyOption.concat(
-        R.map(esittelijat!, (esittelija) => {
-          return {
-            value: esittelija.esittelijaOid,
-            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-          };
-        }),
+        R.map(uniqueEsittelijat, (esittelija) => ({
+          value: esittelija.esittelijaOid,
+          label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+        })),
       );
+
   const naytaKaikki = nayta === 'kaikki';
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));

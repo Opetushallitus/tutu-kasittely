@@ -3,7 +3,15 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, PartialHakemus, UserOid, UserResponse, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{
+  Hakemus,
+  HakemusListItem,
+  HakemusOid,
+  PartialHakemus,
+  UserOid,
+  UserResponse,
+  UusiAtaruHakemus
+}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -245,8 +253,7 @@ class Controller(
               .body(RESPONSE_400_DESCRIPTION)
         }
         hakemusService.paivitaHakemus(HakemusOid(hakemusOid), partialHakemus, UserOid(user.userOid))
-        val paivitettuHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
-        ResponseEntity.status(HttpStatus.OK).body(paivitettuHakemus)
+        haeHakemus(hakemusOid)
       }
     } catch {
       case e: Exception =>
