@@ -146,9 +146,9 @@ class HakemusService(
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case None => {
-        LOG.warn(s"Hakemuksen päivitys epäonnistui, kakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        LOG.warn(s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         throw new RuntimeException(
-          s"Hakemuksen päivitys epäonnistui, kakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+          s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
       }
       case Some(dbHakemus) => {

@@ -9,29 +9,12 @@ import {
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as dateFns from 'date-fns';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
-import { emptyOption } from '@/src/constants/dropdownOptions';
-import * as R from 'remeda';
 
 export const HakemusHeader = () => {
   const { hakemus, updateHakemus } = useHakemus();
   const theme = useTheme();
   const { t } = useTranslations();
-  const { isLoading: isLoadingEsittelijat, data: esittelijat } =
-    useEsittelijat();
-
-  const uniqueEsittelijat = R.uniqueBy(
-    esittelijat ?? [],
-    (e) => e.esittelijaOid,
-  );
-
-  const esittelijaOptions = isLoadingEsittelijat
-    ? []
-    : emptyOption.concat(
-        R.map(uniqueEsittelijat, (esittelija) => ({
-          value: esittelija.esittelijaOid,
-          label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-        })),
-      );
+  const { options: esittelijaOptions } = useEsittelijat();
 
   return (
     hakemus && (

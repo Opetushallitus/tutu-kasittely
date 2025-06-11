@@ -99,6 +99,8 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   const paatosPvm = page.getByTestId('hakemusotsikko-lopullinenpaatospvm');
   await expect(paatosPvm).toContainText('28.05.2025');
 
-  const esittelija = page.getByTestId('hakemusotsikko-esittelija');
-  await expect(esittelija).toContainText('Janne Jamaika');
+  const esittelija = page
+    .getByTestId('hakemusotsikko-esittelija')
+    .locator('input');
+  await expect(esittelija).toHaveValue('1.2.246.562.24.999999999999');
 });

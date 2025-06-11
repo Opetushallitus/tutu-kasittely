@@ -40,26 +40,12 @@ export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const { isLoading: isLoadingEsittelijat, data: esittelijat } =
-    useEsittelijat();
+  const { options: esittelijaOptions } = useEsittelijat();
 
   const [nayta, setNayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
-  const uniqueEsittelijat = R.uniqueBy(
-    esittelijat ?? [],
-    (e) => e.esittelijaOid,
-  );
-
-  const esittelijaOptions = isLoadingEsittelijat
-    ? []
-    : emptyOption.concat(
-        R.map(uniqueEsittelijat, (esittelija) => ({
-          value: esittelija.esittelijaOid,
-          label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-        })),
-      );
 
   const naytaKaikki = nayta === 'kaikki';
 

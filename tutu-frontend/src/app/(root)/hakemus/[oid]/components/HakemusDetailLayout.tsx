@@ -23,7 +23,11 @@ export const HakemusDetailLayout = ({
         </BoxWrapper>
         <BoxWrapper sx={{ borderTop: 0 }}>
           <Divider orientation="horizontal" flexItem />
-          <Stack direction="row" justifyContent="space-between">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{ paddingTop: 2 }}
+          >
             {children}
             <SideBar />
           </Stack>
