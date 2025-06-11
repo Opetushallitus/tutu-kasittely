@@ -9,6 +9,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as dateFns from 'date-fns';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 
 export const HakemusHeader = () => {
   const { hakemus, updateHakemus } = useHakemus();
@@ -36,13 +37,19 @@ export const HakemusHeader = () => {
           <OphTypography data-testid="hakemusotsikko-kirjauspvm">
             {t('hakemusotsikko.kirjausPvm')}{' '}
             {hakemus.kirjausPvm
-              ? dateFns.format(Date.parse(hakemus?.kirjausPvm), 'dd.MM.yyyy')
+              ? dateFns.format(
+                  Date.parse(hakemus?.kirjausPvm),
+                  DATE_PLACEHOLDER,
+                )
               : t('puuttuu')}
           </OphTypography>
           <OphTypography data-testid="hakemusotsikko-esittelypvm">
             {t('hakemusotsikko.esittelyPvm')}{' '}
             {hakemus.esittelyPvm
-              ? dateFns.format(Date.parse(hakemus?.esittelyPvm), 'dd.MM.yyyy')
+              ? dateFns.format(
+                  Date.parse(hakemus?.esittelyPvm),
+                  DATE_PLACEHOLDER,
+                )
               : t('puuttuu')}
           </OphTypography>
         </Stack>
@@ -50,7 +57,7 @@ export const HakemusHeader = () => {
           <OphTypography data-testid="hakemusotsikko-lopullinenpaatospvm">
             {t('hakemusotsikko.lopullinenPaatosPvm')}{' '}
             {hakemus.paatosPvm
-              ? dateFns.format(Date.parse(hakemus?.paatosPvm), 'dd.MM.yyyy')
+              ? dateFns.format(Date.parse(hakemus?.paatosPvm), DATE_PLACEHOLDER)
               : t('puuttuu')}
           </OphTypography>
           <OphTypography
