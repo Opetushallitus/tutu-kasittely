@@ -3,7 +3,15 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{HakemusListItem, HakemusOid, UserResponse, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{
+  Hakemus,
+  HakemusListItem,
+  HakemusOid,
+  PartialHakemus,
+  UserOid,
+  UserResponse,
+  UusiAtaruHakemus
+}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
@@ -39,7 +47,7 @@ class Controller(
   mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   final val RESPONSE_200_DESCRIPTION =
-    "Pyyntö vastaanotettu, palauttaa hakemuksen id:n"
+    "Pyyntö vastaanotettu"
   final val RESPONSE_400_DESCRIPTION = "Pyyntö virheellinen"
   final val RESPONSE_403_DESCRIPTION =
     "Käyttäjällä ei ole tarvittavia oikeuksia hakemusten luontiin"
@@ -188,4 +196,70 @@ class Controller(
     val response = mapper.writeValueAsString(users)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }
+
+  @PatchMapping(
+    path = Array("hakemus/{hakemusOid}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää hakemuksen osan",
+    description = "",
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[PartialHakemus]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def paivitaHakemus(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody hakemusBytes: Array[Byte]
+  ): ResponseEntity[Any] =
+    try {
+      val user        = userService.getEnrichedUserDetails
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        ResponseEntity
+          .status(HttpStatus.FORBIDDEN)
+          .body(RESPONSE_403_DESCRIPTION)
+      } else {
+        var partialHakemus: PartialHakemus = null
+        try
+          partialHakemus = mapper.readValue(hakemusBytes, classOf[PartialHakemus])
+        catch {
+          case e: Exception =>
+            LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
+            return ResponseEntity
+              .status(HttpStatus.BAD_REQUEST)
+              .body(RESPONSE_400_DESCRIPTION)
+        }
+        hakemusService.paivitaHakemus(HakemusOid(hakemusOid), partialHakemus, UserOid(user.userOid))
+        haeHakemus(hakemusOid)
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
+        ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(RESPONSE_500_DESCRIPTION)
+    }
 }

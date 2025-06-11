@@ -30,7 +30,7 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] =
+  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] = {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
@@ -45,6 +45,32 @@ class EsittelijaRepository {
         LOG.warn(s"Esittelijän haku epäonnistui maakoodilla : $maakoodi")
         None
     }
+  }
+
+  /**
+   * Hakee esittelijän oidin perusteella
+   *
+   * @param oid
+   * esittelijän oid
+   * @return
+   * Esittelija
+   */
+  def haeEsittelijaOidilla(oid: String): Option[DbEsittelija] = {
+    try {
+      val esittelija: DbEsittelija = db.run(
+        sql"""
+        SELECT id, esittelija_oid from esittelija
+        WHERE esittelija_oid = $oid
+        """.as[DbEsittelija].head,
+        "haeEsittelijaOidilla"
+      )
+      Some(esittelija)
+    } catch {
+      case e: Exception =>
+        LOG.warn(s"Esittelijän haku epäonnistui oidilla: $oid")
+        None
+    }
+  }
 
   /**
    * Luo tai päivittää esittelijän maakoodin perusteella
@@ -75,5 +101,4 @@ class EsittelijaRepository {
         LOG.warn(s"Esittelijän haku tietokannasta epäonnistui maakoodilla : $maakoodi")
         None
     }
-
 }

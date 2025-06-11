@@ -186,4 +186,50 @@ class HakemusRepository {
         )
     }
   }
+
+  /**
+   * Päivittää osan hakemuksesta
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @param hakemusKoskee
+   * hakemus koskee -koodi
+   * @param esittelijaId
+   * esittelijän id
+   * @param asiatunnus
+   * asiatunnus
+   * @param muokkaaja
+   * muokkaajan oid
+   * @return
+   * tallennetun hakemuksen id
+   */
+  def paivitaPartialHakemus(
+    hakemusOid: HakemusOid,
+    partialHakemus: DbHakemus,
+    muokkaaja: String
+  ): HakemusOid = {
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = partialHakemus.esittelijaId.map(_.toString).orNull
+    val asiatunnusOrNull   = partialHakemus.asiatunnus.map(_.toString).orNull
+    val hakemusKoskee      = partialHakemus.hakemusKoskee
+    try
+      db.run(
+        sql"""
+        UPDATE hakemus
+        SET hakemus_koskee = $hakemusKoskee, esittelija_id = ${esittelijaIdOrNull}::uuid, asiatunnus = $asiatunnusOrNull, muokkaaja = $muokkaaja
+        WHERE hakemus_oid = $hakemusOidString
+        RETURNING 
+          hakemus_oid
+      """.as[HakemusOid].head,
+        "paivita_hakemus"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen päivitus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 }

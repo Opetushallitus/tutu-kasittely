@@ -40,6 +40,15 @@
       "kirjoitaPaatos": "Kirjoita päätös"
     }
   },
+  "hakemusotsikko": {
+    "hetuPuuttuu": "Henkilötunnus puuttuu",
+    "asiatunnusPuuttuu": "Asiatunnus puuttuu",
+    "kirjausPvm": "Kirjauspäivämäärä:",
+    "paatosPvm": "Lopullinen päätös:",
+    "esittelyPvm": "Esittelypäivämäärä:",
+    "esittelija": "Esittelijä:",
+    "lopullinenPaatosPvm": "Lopullinen päätös:"
+  },
   "hakemus-tabs": {
     "navigaatio": "Hakemuksen näkymävalitsin",
     "perustiedot": "Hakijan ja hakemuksen tiedot",
@@ -53,5 +62,6 @@
     },
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"
-  }
+  },
+  "puuttuu": "Puuttuu"
 }

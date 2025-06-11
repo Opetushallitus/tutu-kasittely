@@ -2,7 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, PartialHakemus, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -373,7 +373,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns404WhenAtaruHakemusNotFound(): Unit = {
 
@@ -381,13 +381,87 @@ class ControllerTest extends IntegrationTestBase {
       hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000002354670"))
     ).thenReturn(Left(new Exception()))
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000002354670")
       )
       .andExpect(status().isNotFound)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().string(equalTo("Hakemusta ei löytynyt")))
+  }
+
+  @Test
+  @Order(11)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaHakemusValidRequestReturns200WithChangedEsittelijaOid(): Unit = {
+    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemus.json"))
+      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
+
+    val ataruJson = Source.fromInputStream(stream).mkString
+
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(ataruJson))
+
+    // maakoodi 0000 -> esittelijaOid = null
+    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), "0000", 0)
+    hakemusService.tallennaHakemus(originalHakemus)
+
+    // Päivitetään esittelijaOid
+    var updatedHakemus = PartialHakemus(
+      esittelijaOid = Some(esittelijaOidString)
+    )
+    var requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.esittelijaOid.contains(esittelijaOidString))
+
+    // Päivitetään hakemuskoskee 1 -> 0
+    updatedHakemus = PartialHakemus(
+      hakemusKoskee = Some(0)
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.hakemusKoskee == 0)
+
+    // Päivitetään asiatunnus
+    updatedHakemus = PartialHakemus(
+      asiatunnus = Some("OPH-122-2025")
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.hakemusKoskee == 0)
   }
 
   @Test

@@ -1,13 +1,14 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { Hakemus } from '@/src/lib/types/hakemus';
-import { doApiFetch } from '@/src/lib/tutu-backend/api';
+import { doApiFetch, doApiPatch } from '@/src/lib/tutu-backend/api';
 
 type HakemusContextValue = {
   hakemus: Hakemus | undefined;
+  updateHakemus: (patch: Partial<Hakemus>) => void;
   isLoading: boolean;
   error: unknown;
 };
@@ -31,6 +32,7 @@ export const HakemusProvider = ({
   hakemusOid: string;
   children: React.ReactNode;
 }) => {
+  const queryClient = useQueryClient();
   const {
     data: hakemus,
     isLoading,
@@ -41,8 +43,27 @@ export const HakemusProvider = ({
     enabled: !!hakemusOid,
   });
 
+  const mutation = useMutation({
+    mutationFn: (patchHakemus: Partial<Hakemus>) =>
+      doApiPatch(`hakemus/${hakemus?.hakemusOid}`, patchHakemus),
+    onSuccess: async (response) => {
+      const paivitettyHakemus = await response.json();
+
+      queryClient.setQueryData(
+        ['getHakemus', hakemus?.hakemusOid],
+        paivitettyHakemus,
+      );
+    },
+  });
+
+  const updateHakemus = (patchHakemus: Partial<Hakemus>) => {
+    mutation.mutate(patchHakemus);
+  };
+
   return (
-    <HakemusContext.Provider value={{ hakemus, isLoading, error }}>
+    <HakemusContext.Provider
+      value={{ hakemus, updateHakemus, isLoading, error }}
+    >
       {children}
     </HakemusContext.Provider>
   );

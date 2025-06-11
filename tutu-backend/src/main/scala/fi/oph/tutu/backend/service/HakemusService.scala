@@ -54,6 +54,7 @@ class HakemusService(
               case None       => None
               case Some(hetu) => Some(hetu)
             },
+            hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
               LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
@@ -128,5 +129,36 @@ class HakemusService(
             )
         }
       }
+  }
+
+  def paivitaHakemus(hakemusOid: HakemusOid, hakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
+    val esittelijaId = hakemus.esittelijaOid match {
+      case None => None
+      case Some(esittelijaOid) =>
+        esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
+          case Some(esittelija) => Some(esittelija.esittelijaId)
+          case None =>
+            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
+            None
+        }
+
+    }
+
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case None => {
+        LOG.warn(s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        throw new RuntimeException(
+          s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+        )
+      }
+      case Some(dbHakemus) => {
+        val updatedHakemus = dbHakemus.copy(
+          hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
+          asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+          esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
+        )
+        hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)
+      }
+    }
   }
 }

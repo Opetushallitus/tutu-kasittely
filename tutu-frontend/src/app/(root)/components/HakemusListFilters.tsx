@@ -40,24 +40,13 @@ export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const { isLoading: isLoadingEsittelijat, data: esittelijat } =
-    useEsittelijat();
+  const { options: esittelijaOptions } = useEsittelijat();
 
   const [nayta, setNayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
-  const esittelijaOptions = isLoadingEsittelijat
-    ? []
-    : emptyOption.concat(
-        R.map(esittelijat!, (esittelija) => {
-          return {
-            value: esittelija.esittelijaOid,
-            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-          };
-        }),
-      );
   const naytaKaikki = nayta === 'kaikki';
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
@@ -152,7 +141,7 @@ export default function HakemusListFilters() {
               label: tila,
               value: tila,
             }))}
-            value={tilat}
+            value={tilat as never}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
                 queryClient,
