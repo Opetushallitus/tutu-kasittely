@@ -18,30 +18,22 @@ import { EcsServiceStack } from '../lib/ecs-service'
 import { FrontendBucketStack } from '../lib/front-end-bucket-stack'
 import { FrontendStaticContentDeploymentStack } from '../lib/front-end-content-deployment-stack'
 import { EcrStack } from '../lib/ecr-stack'
-import { ElasticacheServerlessStack } from '../lib/redis-stack'
 import { CpuArchitecture } from 'aws-cdk-lib/aws-ecs'
 import { BastionStack } from '../lib/bastion-stack'
 import { SecretManagerStack } from '../lib/secrets-manager-stack'
-import { OpenSearchServerlessStack } from '../lib/opensearch-stack'
 import { HostedZoneStack } from '../lib/hosted-zone-stack'
-import { S3Stack } from '../lib/S3Stack'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
-import * as iam from 'aws-cdk-lib/aws-iam'
 import { NamespaceStack } from '../lib/namespaceStack'
-import { EfsStack } from '../lib/efs-stack'
-import { DocumentdbStack } from '../lib/documentdb-stack'
-import { MskStack } from '../lib/msk-stack'
 import { GithubActionsStack } from '../lib/githubActionsStack'
 import { UtilityStack } from '../lib/utility-stack'
 import { SesStack } from "../lib/ses-stack";
 import { MonitorStack } from '../lib/monitor-stack'
-import { GuardDutyS3Stack } from "../lib/quard-duty-stack";
 
 const app = new cdk.App()
 
 // Load up configuration for the environment
 const environmentName: string = app.node.tryGetContext('environment')
-const utilityAccountId: string = "xxxxxxxxxxx"
+const utilityAccountId: string = "413507233297"
 const envEU = { region: 'eu-west-1' }
 const envEUAccount = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-west-1' }
 const envUS = { region: 'us-east-1' }
@@ -83,7 +75,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const GithubAction = new GithubActionsStack(app, 'GithubActionsStack', {
     env: envEU,
     environment: environmentName,
-    repositoryRegex: "example-*",
+    repositoryRegex: "tutu-kasittely",
     oidcThumbprint1: "xxxxxxxxxxxxxxx",
     oidcThumbprint2: "yyyyyyyyyyyyyyy"
   })
@@ -165,35 +157,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     alarmSnsTopic: Monitor.topic,
   })
 
-  const OpenSearch = new OpenSearchServerlessStack(app, 'OpenSearchStack', {
-    env: envEU,
-    stackName: `${environmentName}-open-search`,
-    collectionName: environmentConfig.open_search.collectionName,
-    description: environmentConfig.open_search.collectionDescription,
-    securityGroupIds: [SecurityGroups.openSearchSecurityGroup.securityGroupId],
-    vpc: Network.vpc,
-    kmsKey: Kms.openSearchKmsKey,
-    environment: environmentName,
-    standbyReplicas: environmentConfig.open_search.standbyReplicas
-  })
-
-  const SemanticApisRedis = new ElasticacheServerlessStack(app, 'SemanticApisRedis', {
-    env: envEU,
-    stackName: `${environmentName}-semantic-apis-redis`,
-    elasticacheName: 'semantic-apis',
-    consumingServiceName: 'semantic-apis',
-    secret: Secrets.semanticApisPassword,
-    vpc: Network.vpc,
-    securityGroupId: SecurityGroups.semanticApisRedisSecurityGroup.securityGroupId,
-    redisKmsKeyId: Kms.redisKmsKey.keyId,
-    secretsManagerKmsKeyId: Kms.secretsManagerKey,
-    redisMajorVersion: environmentConfig.redis_serverless.semantic_apis.redis_major_version,
-    storageMin: environmentConfig.redis_serverless.semantic_apis.storage_min,
-    storageMax: environmentConfig.redis_serverless.semantic_apis.storage_max,
-    minEcpuPerSecond: environmentConfig.redis_serverless.semantic_apis.min_ecpu_per_second,
-    maxEcpuPerSecond: environmentConfig.redis_serverless.semantic_apis.max_ecpu_per_second
-  })
-
   const Alb = new AlbStack(app, 'AlbStack', {
     env: envEU,
     environment: environmentName,
@@ -239,14 +202,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     cloudFrontDistribution: Cloudfront.distribution
   })
 
-  const s3BucketStack = new S3Stack(app, 'S3BucketStack', {
-    env: envEU,
-    environment: environmentName,
-    exampleBucketName: environmentConfig.S3.exampleBucketName,
-    examplePdfBucketName: environmentConfig.S3.examplePdfBucketName,
-    exampleThumbnailBucketName: environmentConfig.S3.exampleThumbnailBucketName
-  })
-
   const namespace = new NamespaceStack(app, 'NameSpaceStack', Network.vpc, {
     env: envEU,
     environment: environmentName,
@@ -271,63 +226,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     logGroupKmsKey: Kms.cloudwatchLogsKmsKey
   })
 
-  const buckets = s3BucketStack.allBuckets()
-
-  new GuardDutyS3Stack(app, 'GuardDutyStack', {
-    env: envEUAccount,
-    buckets: buckets,
-    alarmSnsTopic: Monitor.topic
-  })
-
-  const s3PolicyStatement = new PolicyStatement({
-    actions: ['s3:ListBucket', 's3:PutObject', 's3:DeleteObject'],
-    resources: buckets.flatMap((bucket) => [bucket.bucketArn, `${bucket.bucketArn}/*`])
-  })
-
-  const s3GetObjectPolicyStatement = new PolicyStatement({
-    actions: [ 's3:GetObject', 's3:GetObjectVersion' ],
-    resources: buckets.flatMap((bucket) => [ `${bucket.bucketArn}/*` ]),
-    conditions: {
-      StringNotEqualsIfExists: {
-        "s3:ExistingObjectTag/GuardDutyMalwareScanStatus": "THREATS_FOUND"
-      }
-    }
-  });
-
-  const efs = new EfsStack(app, 'EfsStack', {
-    env: envEU,
-    vpc: Network.vpc,
-    securityGroup: SecurityGroups.efsSecurityGroup,
-    accessPointPath: '/data',
-    throughputMode: environmentConfig.EFS.throughputMode
-  })
-
-  const docDb = new DocumentdbStack(app, 'DocumentDB', {
-    environment : environmentName,
-    instances: environmentConfig.document_db.instances,
-    instanceType: environmentConfig.document_db.instanceType,
-    env: envEU,
-    vpc: Network.vpc,
-    securityGroup: SecurityGroups.documentDbSecurityGroup,
-    engineVersion: environmentConfig.document_db.engineVersion,
-    user: Secrets.documentDbPassword,
-    kmsKey: Kms.documentDbKmsKey
-  })
-
-  const mskKafka = new MskStack(app, 'MskKafka', {
-    env: envEU,
-    clusterName: environmentConfig.msk.clusterName,
-    instanceType: environmentConfig.msk.instanceType,
-    kmsKey: Kms.mskKmsKey,
-    numberOfBrokerNodes: environmentConfig.msk.numberOfBrokerNodes,
-    securityGroup: SecurityGroups.mskSecurityGroup,
-    version: environmentConfig.msk.version,
-    volumeSize: environmentConfig.msk.volumeSize,
-    vpc: Network.vpc,
-    alarmSnsTopic: Monitor.topic
-  })
-
-
   new EcsServiceStack(app, 'DataAnalyticsEcsService', {
     env: envEU,
     stackName: `${environmentName}-data-analytics-service`,
@@ -346,11 +244,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     env_vars: {
       ...environmentConfig.services.data_analytics.env_vars,
       ...{
-        MONGODB_PRIMARY_HOST: docDb.clusterEndpoint.hostname,
-        MONGODB_PRIMARY_PORT: docDb.clusterEndpoint.port,
         SPRING_DATASOURCE_PRIMARY_URL: `jdbc:postgresql://${WebBackendAurora.endPoint.hostname}:${WebBackendAurora.endPoint.port}/example`,
-        SPRING_KAFKA_CONSUMER_BOOTSTRAPSERVERS: mskKafka.bootstrapBrokers,
-        SPRING_KAFKA_PRODUCER_BOOTSTRAPSERVERS: mskKafka.bootstrapBrokers
       }
     },
     parameter_store_secrets: [],
@@ -368,7 +262,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     healthCheckTimeout: 2,
     albPriority: 140,
     privateDnsNamespace: namespace.privateDnsNamespace,
-    iAmPolicyStatements: [mskKafka.kafkaClusterIamPolicy, mskKafka.kafkaTopicIamPolicy, mskKafka.kafkaGroupIamPolicy],
+    iAmPolicyStatements: [],
     alarmSnsTopic: Monitor.topic
   })
 
@@ -398,7 +292,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     healthCheckInterval: 5,
     healthCheckTimeout: 2,
     albPriority: 110,
-    iAmPolicyStatements: [s3PolicyStatement, s3GetObjectPolicyStatement],
     privateDnsNamespace: namespace.privateDnsNamespace,
     alarmSnsTopic: Monitor.topic,
   })
@@ -458,12 +351,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     env_vars: {
       ...environmentConfig.services.web_backend.env_vars,
       ...{
-        REDIS_HOST: SemanticApisRedis.endpointAddress,
-        REDIS_PORT: SemanticApisRedis.endpointPort,
-        ES_NODE: OpenSearch.collectionEndpoint,
         POSTGRESQL_HOST: WebBackendAurora.endPoint.hostname,
-        POSTGRESQL_PORT: WebBackendAurora.endPoint.port,
-        KAFKA_BROKER_SERVERS: mskKafka.bootstrapBrokers
+        POSTGRESQL_PORT: WebBackendAurora.endPoint.port
       }
     },
     parameter_store_secrets: [],
@@ -486,34 +375,10 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     healthCheckTimeout: 2,
     albPriority: 120,
     iAmPolicyStatements: [
-      OpenSearch.aossPolicyStatement,
-      s3PolicyStatement,
-      s3GetObjectPolicyStatement,
-      efs.efsPolicyStatement,
-      mskKafka.kafkaClusterIamPolicy,
-      mskKafka.kafkaTopicIamPolicy,
       SES.sesIamPolicy,
     ],
     privateDnsNamespace: namespace.privateDnsNamespace,
     alarmSnsTopic: Monitor.topic,
-    efs: {
-      volume: {
-        name: 'data',
-        efsVolumeConfiguration: {
-          fileSystemId: efs.fileSystemId,
-          transitEncryption: 'ENABLED',
-          authorizationConfig: {
-            accessPointId: efs.accessPoint.accessPointId,
-            iam: 'ENABLED'
-          }
-        }
-      },
-      mountPoint: {
-        sourceVolume: 'data',
-        containerPath: '/mnt/data', // how to mount from bastion: sudo mount -t efs -o tls,iam fs-02c2d5a3ca0064690:/ /mnt/
-        readOnly: false
-      }
-    }
   })
 
   new EcsServiceStack(app, 'WebFrontendEcsService', {
@@ -564,8 +429,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     cpuArchitecture: CpuArchitecture.X86_64,
     env_vars: {
       ...environmentConfig.services.semantic_apis.env_vars,
-      ...{ REDIS_HOST: SemanticApisRedis.endpointAddress },
-      REDIS_PORT: SemanticApisRedis.endpointPort
     },
     parameter_store_secrets: [],
     secrets_manager_secrets: [Secrets.secrets.REDIS_PASS],
