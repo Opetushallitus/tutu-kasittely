@@ -76,8 +76,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     env: envEU,
     environment: environmentName,
     repositoryRegex: "tutu-kasittely",
-    oidcThumbprint1: "xxxxxxxxxxxxxxx",
-    oidcThumbprint2: "yyyyyyyyyyyyyyy"
+    oidcThumbprint1: "6938fd4d98bab03faadb97b34396831e3780aea1",
+    oidcThumbprint2: "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
   })
 
   const Monitor = new MonitorStack(app, 'MonitorStack', {
@@ -447,9 +447,9 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const Utility = new UtilityStack(app, 'UtilityStack', {
     env: envEU,
     stackName: `${environmentName}-utility`,
-    repositoryRegex: "example-*",
-    oidcThumbprint1: "xxxxxxxxxxxxxxx",
-    oidcThumbprint2: "yyyyyyyyyyyyyyy"
+    repositoryRegex: "tutu-kasittely",
+    oidcThumbprint1: "6938fd4d98bab03faadb97b34396831e3780aea1",
+    oidcThumbprint2: "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
   })
 
 // ECR stacks use AWS Organizations Organizational Unit for sharing the ECR
