@@ -1,6 +1,6 @@
 { 
     "aws": {
-        "vpc_cidr": "10.5.192.0/18",
+        "vpc_cidr": "10.6.192.0/18",
         "availability_zones": 2
     }
 

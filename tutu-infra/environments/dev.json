@@ -1,8 +1,8 @@
 { 
     "aws": {
-        "vpc_cidr": "10.5.64.0/18",
+        "vpc_cidr": "10.6.0.0/18",
         "availability_zones": 2,
-        "domain": "qa.example.fi"
+        "domain": "dev.example.fi"
     },
     "services": {
         "data_analytics": {
@@ -54,9 +54,9 @@
             "env_vars": {
                 "SPRING_PROFILES_ACTIVE": "prod",
                 "SERVER_PORT": "8080",
-                "EXAMPLE_OAIIDENTIFIER_REPOSITORYIDENTIFIER": "qa.example.fi",
+                "EXAMPLE_OAIIDENTIFIER_REPOSITORYIDENTIFIER": "dev.example.fi",
                 "EXAMPLE_REQUEST_PERPAGE": "20",
-                "EXAMPLE_REQUEST_URL": "http://web-backend.qa.example.local:8080/api/v1/oaipmh/metadata"
+                "EXAMPLE_REQUEST_URL": "http://web-backend.dev.example.local:8080/api/v1/oaipmh/metadata"
             }
         },
         "web_frontend": {
@@ -76,14 +76,14 @@
                 "NODE_ENV": "production",
                 "LOG_LEVEL": "error",
                 "PORT_LISTEN": "8080",
-                "MATERIAL_VERSION_URL": "https://qa.example.fi/#/materiaali/",
+                "MATERIAL_VERSION_URL": "https://dev.example.fi/#/materiaali/",
                 "HTTP_OPTIONS_TIMEOUT": "5000",
                 "HTTP_OPTIONS_RETRY": "2",
                 "HTTP_OPTIONS_CLOCK_TOLERANCE":"5",
 
                 "POSTGRESQL_DATA": "example",
                 "PG_USER": "example_admin",
-                "SERVER_CONFIG_OAIPMH_ANALYTICS_URL": "http://data-analytics.qa.example.local:8080",
+                "SERVER_CONFIG_OAIPMH_ANALYTICS_URL": "http://data-analytics.dev.example.local:8080",
                 "KAFKA_EXCLUDED_AGENT_IDENTIFIERS": "oersi",
                 "KAFKA_BROKER_TOPIC_MATERIAL_ACTIVITY": "prod_material_activity",
                 "KAFKA_BROKER_TOPIC_SEARCH_REQUESTS": "prod_search_requests",
@@ -103,15 +103,15 @@
                 "SESSION_OPTION_SAVE_UNINITIALIZED": "false",
 
                 "CLOUD_STORAGE_REGION": "eu-west-1",
-                "CLOUD_STORAGE_BUCKET": "example-qa",
-                "CLOUD_STORAGE_BUCKET_PDF": "examplepdf-qa",
-                "CLOUD_STORAGE_BUCKET_THUMBNAIL": "examplethumbnail-qa",
+                "CLOUD_STORAGE_BUCKET": "example-dev",
+                "CLOUD_STORAGE_BUCKET_PDF": "examplepdf-dev",
+                "CLOUD_STORAGE_BUCKET_THUMBNAIL": "examplethumbnail-dev",
 
                 "THUMBNAIL_END_POINT": "/app/thumbnail/",
                 "FILE_SIZE_LIMIT": "10737418240",
                 "THUMBNAIL_FILE_SIZE_LIMIT": "10485760",
 
-                "REDIRECT_URI": "https://qa.example.fi/api/secure/redirect",
+                "REDIRECT_URI": "https://dev.example.fi/api/secure/redirect",
                 "SUCCESS_REDIRECT_URI": "/",
                 "FAILURE_REDIRECT_URI": "/api/login",
 
@@ -123,29 +123,30 @@
                 "ES_SIZE_DEFAULT": "1000",
                 "ES_FROM_DEFAULT": "0",
 
-                "HTML_BASE_URL": "https://qa.example.fi",
+                "HTML_BASE_URL": "https://dev.example.fi",
                 "HTML_FOLDER": "/mnt/data/webdata/htmlfolder",
 
                 "H5P_USER_EMAIL": "oppimateriaalivaranto@example.fi",
 
                 "MATERIAL_FILE_UPLOAD_FOLDER": "/mnt/data/uploads",
 
-                "CONVERSION_TO_PDF_API": "https://qa.example.fi/api/v1/pdf/content/",
+                "CONVERSION_TO_PDF_API": "https://dev.example.fi/api/v1/pdf/content/",
                 "CONVERSION_TO_PDF_ENABLED": "1",
 
-                "FILE_DOWNLOAD_URL": "https://qa.example.fi/api/v1/download/file/",
-                "THUMBNAIL_DOWNLOAD_URL": "https://qa.example.fi/api/v1/thumbnail/",
-                "COLLECTION_THUMBNAIL_DOWNLOAD_URL": "https://qa.example.fi/api/v1/collection/thumbnail/",
+                "FILE_DOWNLOAD_URL": "https://dev.example.fi/api/v1/download/file/",
+                "THUMBNAIL_DOWNLOAD_URL": "https://dev.example.fi/api/v1/thumbnail/",
+                "COLLECTION_THUMBNAIL_DOWNLOAD_URL": "https://dev.example.fi/api/v1/collection/thumbnail/",
 
                 "REDIS_USERNAME": "app",
                 "REDIS_USE_TLS": "true",
-                "BASE_URL": "https://qa.example.fi/api/v1/",
+                "BASE_URL": "https://dev.example.fi/api/v1/",
+                "EMAIL_FROM": "oppimateriaalivaranto@dev.example.fi",
 
-                "EMAIL_FROM": "oppimateriaalivaranto@qa.example.fi",
                 "SEND_SYSTEM_NOTIFICATION_EMAIL" : "0",
                 "SEND_EXPIRATION_NOTIFICATION_EMAIL" : "0",
                 "SEND_RATING_NOTIFICATION_EMAIL": "0",
-                "SEND_VERIFICATION_EMAIL": "1",
+                "SEND_VERIFICATION_EMAIL": "0",
+
                 "VERIFY_EMAIL_REDIRECT_URL": "/",
 
                 "CLOUD_STORAGE_ENABLED": "1",
@@ -157,8 +158,8 @@
 
                 "STREAM_ENABLED": "1",
                 "STREAM_FILESIZE_MIN": "100000",
-                "STREAM_REDIRECT_URI": "https://qa.example.fi/stream/api/v1/material/",
-                "STREAM_STATUS_HOST": "streaming-app.qa.example.local",
+                "STREAM_REDIRECT_URI": "https://dev.example.fi/stream/api/v1/material/",
+                "STREAM_STATUS_HOST": "streaming-app.dev.example.local",
                 "STREAM_STATUS_PORT": "8080",
                 "STREAM_STATUS_PATH": "/stream/api/v1/material/",
                 "STREAM_STATUS_HOST_HTTPS_ENABLED": "0"
@@ -174,7 +175,7 @@
                 "LOG_LEVEL": "error",
                 "PORT": "8080",
                 "NODE_ENV": "production",
-                "STORAGE_BUCKET": "example-qa",
+                "STORAGE_BUCKET": "example-dev",
                 "STORAGE_REGION": "eu-west-1",
                 "STORAGE_MAX_RANGE": "10000000"
             }
@@ -214,7 +215,6 @@
         "collectionName": "examplecollection",
         "collectionDescription": "Collection for example"
     },
-
     "aurora_databases": {
       "web_backend": {
         "version": "16.4",
