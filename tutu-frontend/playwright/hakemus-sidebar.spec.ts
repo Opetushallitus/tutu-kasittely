@@ -9,4 +9,10 @@ test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
   );
 
   await expect(page.getByTestId('hakemus-sidebar')).toBeVisible();
+
+  const ataruHakemuksenTila = page.getByTestId(
+    'hakemus-sidebar-ataruhakemus-tila',
+  );
+
+  await expect(ataruHakemuksenTila).toHaveText('Käsittely maksamatta');
 });

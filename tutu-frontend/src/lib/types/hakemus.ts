@@ -8,4 +8,5 @@ export type Hakemus = {
   esittelyPvm: string;
   paatosPvm: string;
   esittelijaOid: string;
+  ataruHakemuksenTila: string;
 };

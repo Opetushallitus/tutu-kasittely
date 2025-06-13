@@ -43,23 +43,24 @@ case class DbHakemus(
 )
 
 case class Hakemus(
-  @BeanProperty hakemusOid: String,
-  @BeanProperty hakijanEtunimet: String,
-  @BeanProperty hakijanSukunimi: String,
-  @BeanProperty hakijanHetu: Option[String] = None,
-  @BeanProperty hakemusKoskee: Int,
-  @BeanProperty asiatunnus: Option[String] = None,
-  @BeanProperty kirjausPvm: Option[LocalDateTime] = None,
-  @BeanProperty esittelyPvm: Option[LocalDateTime] = None,
-  @BeanProperty paatosPvm: Option[LocalDateTime] = None,
-  @BeanProperty esittelijaOid: Option[String] = None
+  hakemusOid: String,
+  hakijanEtunimet: String,
+  hakijanSukunimi: String,
+  hakijanHetu: Option[String] = None,
+  hakemusKoskee: Int,
+  asiatunnus: Option[String] = None,
+  kirjausPvm: Option[LocalDateTime] = None,
+  esittelyPvm: Option[LocalDateTime] = None,
+  paatosPvm: Option[LocalDateTime] = None,
+  esittelijaOid: Option[String] = None,
+  ataruHakemuksenTila: AtaruHakemuksenTila
 )
 
 case class PartialHakemus(
-  @BeanProperty hakemusKoskee: Option[Int] = None,
-  @BeanProperty asiatunnus: Option[String] = None,
-  @BeanProperty kirjausPvm: Option[LocalDateTime] = None,
-  @BeanProperty esittelyPvm: Option[LocalDateTime] = None,
-  @BeanProperty paatosPvm: Option[LocalDateTime] = None,
-  @BeanProperty esittelijaOid: Option[String] = None
+  hakemusKoskee: Option[Int] = None,
+  asiatunnus: Option[String] = None,
+  kirjausPvm: Option[LocalDateTime] = None,
+  esittelyPvm: Option[LocalDateTime] = None,
+  paatosPvm: Option[LocalDateTime] = None,
+  esittelijaOid: Option[String] = None
 )

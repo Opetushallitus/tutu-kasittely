@@ -65,7 +65,10 @@ class HakemusService(
             esittelijaOid = dbHakemus.esittelijaOid match {
               case None                => None
               case Some(esittelijaOid) => Some(esittelijaOid.toString)
-            }
+            },
+            ataruHakemuksenTila = AtaruHakemuksenTila.fromString(
+              ataruHakemus.`application-hakukohde-reviews`.collectFirst(review => review.state).get
+            )
           )
         )
       case None =>

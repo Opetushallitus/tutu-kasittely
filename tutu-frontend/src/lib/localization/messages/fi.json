@@ -20,6 +20,22 @@
     "kokonaisaika.arvo": "{aika, number} kk"
   },
   "hakemus": {
+    "ataruhakemuksentila": {
+      "kasittelematta": "Käsittelemättä",
+      "kasittelyssa": "Käsittelyssä",
+      "kutsuttuhaastatteluun": "Kutsuttu haastatteluun",
+      "kutsuttuvalintaKokeeseen": "Kutsuttu valintakokeeseen",
+      "arvioinnissa": "Arvioinnissa",
+      "valintaesitys": "Valintaesitys",
+      "kasitelty": "Käsitelty",
+      "taydennyspyynto": "Täydennyspyyntö",
+      "kasittelymaksamatta": "Käsittely maksamatta",
+      "kasittelymaksettu": "Käsittely maksettu",
+      "paatosmaksuavoin": "Päätösmaksu avoin",
+      "paatosmaksamatta": "Päätösmaksu maksamatta",
+      "paatosmaksettu": "Päätösmaksu maksettu",
+      "laskutuksessa": "Laskutuksessa"
+    },
     "otsikko": "Hakemus",
     "sivupalkki": {
       "kasittelyvaihe": "Käsittelyvaihe",
