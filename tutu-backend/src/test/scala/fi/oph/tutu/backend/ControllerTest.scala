@@ -360,7 +360,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
-                                "esittelijaOid": null
+                                "esittelijaOid": null,
+                                "ataruHakemuksenTila": "KasittelyMaksettu"
                               }"""
 
     val result = mockMvc
