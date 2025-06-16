@@ -24,7 +24,7 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import {
   hakemusKoskeeQueryStates,
-  kasittelyTilat,
+  kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
 import { redirect, useSearchParams } from 'next/navigation';
@@ -53,7 +53,7 @@ export default function HakemusListFilters() {
 
   const [tilat, setTilat] = useQueryState(
     'tilat',
-    parseAsArrayOf(parseAsStringLiteral(kasittelyTilat)).withDefault([]),
+    parseAsArrayOf(parseAsStringLiteral(kasittelyVaiheet)).withDefault([]),
   );
 
   const [hakemusKoskee, setHakemusKoskee] = useQueryState(
@@ -137,9 +137,9 @@ export default function HakemusListFilters() {
           <OphSelectFormField
             label={t('hakemuslista.kasittelyvaihe')}
             multiple
-            options={R.map(kasittelyTilat, (tila) => ({
-              label: tila,
-              value: tila,
+            options={R.map(kasittelyVaiheet, (vaihe) => ({
+              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+              value: vaihe,
             }))}
             value={tilat as never}
             onChange={(event: SelectChangeEvent) =>
@@ -150,13 +150,13 @@ export default function HakemusListFilters() {
               )
             }
             sx={{ width: '100%' }}
-            data-testid={'kasittelytila'}
+            data-testid={'kasittelyvaihe'}
             renderValue={() => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {R.map(tilat, (value) => (
                   <Chip
                     key={value}
-                    label={value}
+                    label={t(`hakemus.kasittelyvaihe.${value.toLowerCase()}`)}
                     sx={{ borderRadius: '0px' }}
                     onDelete={() =>
                       setQueryStateAndLocalStorage(

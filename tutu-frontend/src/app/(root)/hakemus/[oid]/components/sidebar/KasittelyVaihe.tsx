@@ -6,7 +6,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import * as R from 'remeda';
-import { kasittelyTilat } from '@/src/app/(root)/components/types';
+import { kasittelyVaiheet } from '@/src/app/(root)/components/types';
 import React from 'react';
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
@@ -39,11 +39,11 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
         </OphTypography>
         {showExtended ? (
           <OphSelectFormField
-            options={R.map(kasittelyTilat, (tila) => ({
-              label: tila,
-              value: tila,
+            options={R.map(kasittelyVaiheet, (vaihe) => ({
+              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+              value: vaihe,
             }))}
-            defaultValue={kasittelyTilat[0]}
+            defaultValue={kasittelyVaiheet[0]}
           ></OphSelectFormField>
         ) : (
           <OphTypography

@@ -51,20 +51,20 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
-      'tilat=alkukäsittely kesken,käsittelyssä,käsitelty&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
+      'tilat=AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
     );
   });
 
   await page.goto('/');
 
-  const kasittelytila = page.getByTestId('kasittelytila').locator('input');
+  const kasittelyvaihe = page.getByTestId('kasittelyvaihe').locator('input');
 
   const hakemusKoskee = page.getByTestId('hakemus-koskee').locator('input');
 
   const esittelija = page.getByTestId('esittelija').locator('input');
 
-  await expect(kasittelytila).toHaveValue(
-    'alkukäsittely kesken,käsittelyssä,käsitelty',
+  await expect(kasittelyvaihe).toHaveValue(
+    'AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis',
   );
 
   await expect(hakemusKoskee).toHaveValue('1');
