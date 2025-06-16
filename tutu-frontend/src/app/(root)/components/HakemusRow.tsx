@@ -59,7 +59,9 @@ export default function HakemusRow({
           {hakemus.esittelijaKutsumanimi} {hakemus.esittelijaSukunimi}
         </StyledTableCell>
       )}
-      <StyledTableCell>{hakemus.vaihe}</StyledTableCell>
+      <StyledTableCell>
+        {t(`hakemus.kasittelyvaihe.${hakemus.kasittelyVaihe.toLowerCase()}`)}
+      </StyledTableCell>
       <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaika.arvo', '', {

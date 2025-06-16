@@ -2,8 +2,8 @@ package fi.oph.tutu.backend.domain
 
 enum KasittelyVaihe:
   case AlkukasittelyKesken, OdottaaTaydennysta, OdottaaIMIVastausta,
-    OdottaaVahvistusta, OdottaaLausuntoa, ValmisKasiteltävaksi,
-    HakemustaTäydennetty, HyvaksynnassaTaiLoppukasittelyssa,
+    OdottaaVahvistusta, OdottaaLausuntoa, ValmisKasiteltavaksi,
+    HakemustaTaydennetty, HyvaksynnassaTaiLoppukasittelyssa,
     HyvaksyttyEiLahetetty, LoppukasittelyValmis
 
 object KasittelyVaihe:
@@ -13,9 +13,9 @@ object KasittelyVaihe:
     case "OdottaaIMIVastausta"               => OdottaaIMIVastausta
     case "OdottaaVahvistusta"                => OdottaaVahvistusta
     case "OdottaaLausuntoa"                  => OdottaaLausuntoa
-    case "ValmisKasiteltävaksi"              => ValmisKasiteltävaksi
-    case "HakemustaTäydennetty"              => HakemustaTäydennetty
+    case "ValmisKasiteltavaksi"              => ValmisKasiteltavaksi
+    case "HakemustaTaydennetty"              => HakemustaTaydennetty
     case "HyvaksynnassaTaiLoppukasittelyssa" => HyvaksynnassaTaiLoppukasittelyssa
     case "HyvaksyttyEiLahetetty"             => HyvaksyttyEiLahetetty
     case "LoppukasittelyValmis"              => LoppukasittelyValmis
-    case _                                   => throw new IllegalArgumentException(s"Tuntematon päätöstyyppi: $value")
+    case _                                   => throw new IllegalArgumentException(s"Tuntematon käsittelyvaihe: $value")

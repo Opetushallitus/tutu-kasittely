@@ -44,7 +44,12 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
             defaultValue={kasittelyTilat[0]}
           ></OphSelectFormField>
         ) : (
-          <OphTypography variant={'label'}>Alkukäsittely kesken</OphTypography>
+          <OphTypography variant={'label'}>
+            {' '}
+            {t(
+              `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
+            )}
+          </OphTypography>
         )}
       </Stack>
       <Stack direction="column" gap={theme.spacing(1)}>

@@ -9,4 +9,5 @@ export type Hakemus = {
   paatosPvm: string;
   esittelijaOid: string;
   ataruHakemuksenTila: string;
+  kasittelyVaihe: string;
 };
