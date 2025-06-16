@@ -1,15 +1,13 @@
 package fi.oph.tutu.backend.domain
 
-import scala.beans.BeanProperty
-
 case class HakemusListItem(
-  @BeanProperty hakija: String,
-  @BeanProperty vaihe: String,
-  @BeanProperty aika: String,
-  @BeanProperty hakemusOid: String,
-  @BeanProperty hakemusKoskee: Int,
-  @BeanProperty esittelijaOid: Option[String],
-  @BeanProperty asiatunnus: Option[String],
-  @BeanProperty esittelijaKutsumanimi: String,
-  @BeanProperty esittelijaSukunimi: String
+  hakija: String,
+  aika: String,
+  hakemusOid: String,
+  hakemusKoskee: Int,
+  esittelijaOid: Option[String],
+  asiatunnus: Option[String],
+  esittelijaKutsumanimi: String,
+  esittelijaSukunimi: String,
+  kasittelyVaihe: String
 )

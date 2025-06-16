@@ -15,19 +15,19 @@ case class DbHakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
   )
-  @BeanProperty hakemusOid: HakemusOid,
+  hakemusOid: HakemusOid,
   @(Schema @field)(
     example = "1",
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 4
   )
-  @BeanProperty hakemusKoskee: Int,
+  hakemusKoskee: Int,
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 16
   )
-  @BeanProperty esittelijaId: Option[UUID],
+  esittelijaId: Option[UUID],
   @(Schema @field)(
     example = "1.2.246.562.24.00000000000000006666",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -39,7 +39,13 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 40
   )
-  @BeanProperty asiatunnus: Option[String]
+  asiatunnus: Option[String],
+  @(Schema @field)(
+    example = "AlkukasittelyKesken",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 50
+  )
+  kasittelyVaihe: KasittelyVaihe
 )
 
 case class Hakemus(
@@ -53,7 +59,8 @@ case class Hakemus(
   esittelyPvm: Option[LocalDateTime] = None,
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
-  ataruHakemuksenTila: AtaruHakemuksenTila
+  ataruHakemuksenTila: AtaruHakemuksenTila,
+  kasittelyVaihe: KasittelyVaihe
 )
 
 case class PartialHakemus(
@@ -62,5 +69,6 @@ case class PartialHakemus(
   kirjausPvm: Option[LocalDateTime] = None,
   esittelyPvm: Option[LocalDateTime] = None,
   paatosPvm: Option[LocalDateTime] = None,
-  esittelijaOid: Option[String] = None
+  esittelijaOid: Option[String] = None,
+  kasittelyVaihe: Option[KasittelyVaihe] = None
 )

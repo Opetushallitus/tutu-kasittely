@@ -68,7 +68,8 @@ class HakemusService(
             },
             ataruHakemuksenTila = AtaruHakemuksenTila.fromString(
               ataruHakemus.`application-hakukohde-reviews`.collectFirst(review => review.state).get
-            )
+            ),
+            kasittelyVaihe = dbHakemus.kasittelyVaihe
           )
         )
       case None =>
@@ -121,13 +122,13 @@ class HakemusService(
               HakemusListItem(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
-                vaihe = "Testi Vaihe",
                 aika = ataruHakemus.created,
                 hakemusOid = item.hakemusOid,
                 hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid,
                 esittelijaKutsumanimi = esittelija(0),
-                esittelijaSukunimi = esittelija(1)
+                esittelijaSukunimi = esittelija(1),
+                kasittelyVaihe = item.kasittelyVaihe
               )
             )
         }

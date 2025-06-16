@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{DbHakemus, HakemusListItem, HakemusOid, UserOid}
+import fi.oph.tutu.backend.domain.{DbHakemus, HakemusListItem, HakemusOid, KasittelyVaihe, UserOid}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -32,7 +32,8 @@ class HakemusRepository {
         r.nextInt(),
         Option(r.nextString()).map(UUID.fromString),
         Option(r.nextString()).map(UserOid.apply),
-        Option(r.nextString())
+        Option(r.nextString()),
+        KasittelyVaihe.fromString(r.nextString())
       )
     )
 
@@ -41,13 +42,13 @@ class HakemusRepository {
       HakemusListItem(
         null,
         null,
-        null,
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
         Option(r.nextString()),
         null,
-        null
+        null,
+        r.nextString()
       )
     )
 
@@ -97,7 +98,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -128,7 +129,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus
+              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
