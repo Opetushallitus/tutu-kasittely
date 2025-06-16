@@ -7,9 +7,9 @@
     "hakemusKoskee": "Hakemus koskee",
     "kasittelyvaihe": "Käsittelyvaihe",
     "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
-      "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
+      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
       "riittavatOpinnot": "Päätös riittävistä opinnoista"
     },
     "kasittelytila": "Käsittelytila",

@@ -153,26 +153,46 @@ class HakemusRepository {
    * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
    *
    * @param userOid
-   *   esittelijän oid
-   *
+   * esittelijän oid
    * @param hakemusKoskee
-   *   hakemuspalvelun hakemuksen syy
+   * hakemuspalvelun hakemuksen syy
+   * @param vaiheet
+   * tutu-hakemuksen käsittelyvaiheet
    * @return
-   *   hakuehtojen mukaisten hakemusten Oid:t
+   * hakuehtojen mukaisten hakemusten Oid:t
    */
-  def haeHakemusOidit(userOid: Option[String], hakemusKoskee: Option[String]): Seq[HakemusOid] = {
+  def haeHakemusOidit(
+    userOid: Option[String],
+    hakemusKoskee: Option[String],
+    vaiheet: Option[Seq[String]]
+  ): Seq[HakemusOid] = {
     try {
       val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
 
       val joinClause = userOid match {
         case None      => ""
-        case Some(oid) => s" INNER JOIN esittelija e on h.esittelija_id = e.id and e.esittelija_oid = '${oid}'"
+        case Some(oid) => s" INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid = '${oid}'"
       }
 
-      val whereClause = hakemusKoskee match {
-        case None    => ""
-        case Some(s) => s" WHERE h.hakemus_koskee = ${s.toInt}"
+      val whereClauses = Seq.newBuilder[String]
+
+      hakemusKoskee.foreach { s =>
+        whereClauses += s"h.hakemus_koskee = ${s.toInt}"
       }
+
+      vaiheet.foreach { v =>
+        if (v.nonEmpty) {
+          val vaiheList = v.map(vaihe => s"'${vaihe}'").mkString(", ")
+          whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
+        }
+      }
+
+      val whereClause = {
+        val clauses = whereClauses.result()
+        if (clauses.isEmpty) ""
+        else " WHERE " + clauses.mkString(" AND ")
+      }
+
       val fullQuery = baseQuery + joinClause + whereClause
 
       LOG.debug(fullQuery)

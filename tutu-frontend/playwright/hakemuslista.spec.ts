@@ -51,7 +51,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
-      'tilat=AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
+      'vaihe=AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
     );
   });
 

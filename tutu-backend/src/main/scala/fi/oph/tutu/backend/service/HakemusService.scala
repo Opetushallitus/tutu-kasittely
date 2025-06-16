@@ -79,8 +79,16 @@ class HakemusService(
     }
   }
 
-  def haeHakemusLista(userOid: Option[String], hakemuskoskee: Option[String]): Seq[HakemusListItem] = {
-    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee)
+  def haeHakemusLista(
+    userOid: Option[String],
+    hakemuskoskee: Option[String],
+    vaihe: Option[String]
+  ): Seq[HakemusListItem] = {
+    val vaiheet: Option[Seq[String]] = vaihe match {
+      case None        => None
+      case Some(vaihe) => Some(vaihe.split(",").map(_.trim).toSeq)
+    }
+    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee, vaiheet)
 
     // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
     if (hakemusOidit.isEmpty) {

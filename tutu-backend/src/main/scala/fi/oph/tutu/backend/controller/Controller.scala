@@ -174,7 +174,8 @@ class Controller(
   def listaaHakemukset(
     @RequestParam(required = false) nayta: String,
     @RequestParam(required = false) hakemuskoskee: String,
-    @RequestParam(required = false) esittelija: String
+    @RequestParam(required = false) esittelija: String,
+    @RequestParam(required = false) vaihe: String
   ): ResponseEntity[Any] = {
     val user = userService.getEnrichedUserDetails
     val userOid = nayta match {
@@ -185,8 +186,9 @@ class Controller(
           case _    => Option(esittelija)
         }
     }
-    val hakemukset: Seq[HakemusListItem] = hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee))
-    val response                         = mapper.writeValueAsString(hakemukset)
+    val hakemukset: Seq[HakemusListItem] =
+      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
+    val response = mapper.writeValueAsString(hakemukset)
     ResponseEntity.status(HttpStatus.OK).body(response)
   }
 

@@ -51,8 +51,8 @@ export default function HakemusListFilters() {
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
 
-  const [tilat, setTilat] = useQueryState(
-    'tilat',
+  const [vaiheet, setVaiheet] = useQueryState(
+    'vaihe',
     parseAsArrayOf(parseAsStringLiteral(kasittelyVaiheet)).withDefault([]),
   );
 
@@ -141,11 +141,11 @@ export default function HakemusListFilters() {
               label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
               value: vaihe,
             }))}
-            value={tilat as never}
+            value={vaiheet as never}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
                 queryClient,
-                setTilat,
+                setVaiheet,
                 event.target.value,
               )
             }
@@ -153,7 +153,7 @@ export default function HakemusListFilters() {
             data-testid={'kasittelyvaihe'}
             renderValue={() => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {R.map(tilat, (value) => (
+                {R.map(vaiheet, (value) => (
                   <Chip
                     key={value}
                     label={t(`hakemus.kasittelyvaihe.${value.toLowerCase()}`)}
@@ -161,8 +161,8 @@ export default function HakemusListFilters() {
                     onDelete={() =>
                       setQueryStateAndLocalStorage(
                         queryClient,
-                        setTilat,
-                        R.filter(tilat, (val) => val !== value),
+                        setVaiheet,
+                        R.filter(vaiheet, (val) => val !== value),
                       )
                     }
                     onMouseDown={(event) => {
