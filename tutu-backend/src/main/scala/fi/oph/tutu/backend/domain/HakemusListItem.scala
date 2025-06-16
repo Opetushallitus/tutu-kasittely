@@ -9,5 +9,6 @@ case class HakemusListItem(
   asiatunnus: Option[String],
   esittelijaKutsumanimi: String,
   esittelijaSukunimi: String,
-  kasittelyVaihe: String
+  kasittelyVaihe: String,
+  muokattu: Option[String]
 )

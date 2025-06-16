@@ -15,4 +15,8 @@ test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
   );
 
   await expect(ataruHakemuksenTila).toHaveText('Käsittely maksamatta');
+
+  const kasittelyVaihe = page.getByTestId('hakemus-sidebar-kasittelyvaihe');
+
+  await expect(kasittelyVaihe).toHaveText('Hakemusta täydennetty 28.06.2025');
 });

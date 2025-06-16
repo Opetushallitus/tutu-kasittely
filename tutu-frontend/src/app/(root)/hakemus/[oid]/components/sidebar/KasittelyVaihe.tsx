@@ -13,6 +13,8 @@ import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useHakemus } from '@/src/context/HakemusContext';
+import * as dateFns from 'date-fns';
+import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 
 const OpenInNewIconBlue = styled(OpenInNewIcon)({
   color: ophColors.blue2,
@@ -44,11 +46,17 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
             defaultValue={kasittelyTilat[0]}
           ></OphSelectFormField>
         ) : (
-          <OphTypography variant={'label'}>
-            {' '}
-            {t(
-              `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
-            )}
+          <OphTypography
+            variant={'label'}
+            data-testid={'hakemus-sidebar-kasittelyvaihe'}
+          >
+            {hakemus?.kasittelyVaihe === 'HakemustaTaydennetty'
+              ? t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
+                ' ' +
+                dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
+              : t(
+                  `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
+                )}
           </OphTypography>
         )}
       </Stack>

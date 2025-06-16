@@ -129,7 +129,8 @@ class HakemusService(
                 esittelijaOid = item.esittelijaOid,
                 esittelijaKutsumanimi = esittelija(0),
                 esittelijaSukunimi = esittelija(1),
-                kasittelyVaihe = item.kasittelyVaihe
+                kasittelyVaihe = item.kasittelyVaihe,
+                muokattu = item.muokattu
               )
             )
         }

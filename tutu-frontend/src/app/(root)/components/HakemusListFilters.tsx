@@ -135,7 +135,7 @@ export default function HakemusListFilters() {
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
           <OphSelectFormField
-            label={t('hakemuslista.kasittelytila')}
+            label={t('hakemuslista.kasittelyvaihe')}
             multiple
             options={R.map(kasittelyTilat, (tila) => ({
               label: tila,

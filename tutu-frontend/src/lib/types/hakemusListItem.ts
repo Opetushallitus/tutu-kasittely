@@ -9,4 +9,5 @@ export type HakemusListItem = {
   esittelijaKutsumanimi: string;
   esittelijaSukunimi: string;
   kasittelyVaihe: string;
+  muokattu: string;
 };

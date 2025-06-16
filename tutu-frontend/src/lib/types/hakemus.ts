@@ -10,4 +10,5 @@ export type Hakemus = {
   esittelijaOid: string;
   ataruHakemuksenTila: string;
   kasittelyVaihe: string;
+  muokattu: string;
 };
