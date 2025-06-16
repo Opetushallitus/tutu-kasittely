@@ -33,7 +33,8 @@ class HakemusRepository {
         Option(r.nextString()).map(UUID.fromString),
         Option(r.nextString()).map(UserOid.apply),
         Option(r.nextString()),
-        KasittelyVaihe.fromString(r.nextString())
+        KasittelyVaihe.fromString(r.nextString()),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -129,7 +130,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe
+              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id

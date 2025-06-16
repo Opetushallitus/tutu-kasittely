@@ -45,7 +45,13 @@ case class DbHakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 50
   )
-  kasittelyVaihe: KasittelyVaihe
+  kasittelyVaihe: KasittelyVaihe,
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  muokattu: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -60,7 +66,8 @@ case class Hakemus(
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
   ataruHakemuksenTila: AtaruHakemuksenTila,
-  kasittelyVaihe: KasittelyVaihe
+  kasittelyVaihe: KasittelyVaihe,
+  muokattu: Option[LocalDateTime] = None
 )
 
 case class PartialHakemus(
