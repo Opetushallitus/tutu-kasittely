@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.utils.Constants.*
+import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
@@ -18,8 +19,9 @@ class HakemusService(
   hakemusRepository: HakemusRepository,
   esittelijaRepository: EsittelijaRepository,
   hakemuspalveluService: HakemuspalveluService,
-  onrService: OnrService
-) {
+  onrService: OnrService,
+  ataruHakemusParser: AtaruHakemusParser
+) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
@@ -48,12 +50,7 @@ class HakemusService(
         Some(
           Hakemus(
             hakemusOid = dbHakemus.hakemusOid.toString,
-            hakijanEtunimet = ataruHakemus.etunimet,
-            hakijanSukunimi = ataruHakemus.sukunimi,
-            hakijanHetu = ataruHakemus.henkilotunnus match {
-              case None       => None
-              case Some(hetu) => Some(hetu)
-            },
+            hakija = ataruHakemusParser.parseHakija(ataruHakemus),
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(

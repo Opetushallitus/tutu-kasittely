@@ -1,5 +1,6 @@
 export type Hakemus = {
   hakemusOid: string;
+  hakemusKoskee: number;
   hakijanEtunimet: string;
   hakijanSukunimi: string;
   hakijanHetu: string;

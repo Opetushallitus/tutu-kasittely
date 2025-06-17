@@ -1291,7 +1291,7 @@
         },
         {
           "key": "email",
-          "value": "tatu.honkanen@rebase.fi",
+          "value": "patu.kuusinen@riibasu.fi",
           "fieldType": "textField",
           "original-followup": null,
           "original-question": null,
@@ -1381,7 +1381,7 @@
         },
         {
           "key": "ssn",
-          "value": "180462-9981",
+          "value": "210281-9988",
           "fieldType": "textField",
           "original-followup": null,
           "original-question": null,
@@ -1470,7 +1470,7 @@
     "lang": "fi",
     "sukunimi": "Hakija",
     "application-review-notes": null,
-    "henkilotunnus": null,
+    "henkilotunnus": "210281-9988",
     "person-oid": "1.2.246.562.24.82970555881",
     "application-hakukohde-attachment-reviews": [
       {

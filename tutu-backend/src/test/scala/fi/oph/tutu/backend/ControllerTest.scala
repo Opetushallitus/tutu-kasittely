@@ -2,7 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, OnrUser, PartialHakemus, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, Kieli, KoodistoItem, OnrUser, PartialHakemus, UserOid, UusiAtaruHakemus}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -58,6 +58,9 @@ class ControllerTest extends IntegrationTestBase {
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
 
+  @MockitoBean
+  var koodistoService: KoodistoService = _
+
   @Autowired
   var userService: UserService = _
 
@@ -71,8 +74,9 @@ class ControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
+    when(koodistoService.getKoodisto("maatjavaltiot2"))
+      .thenReturn(Seq[KoodistoItem](KoodistoItem("maatjavaltiot2_246", "246", Map(Kieli.valueOf("fi") -> "Suomi", Kieli.valueOf("sv") -> "Finland", Kieli.valueOf("en") -> "Finland"))))
   }
-
   @BeforeEach
   def setupTest(): Unit =
     when(mockOnrService.haeAsiointikieli(any[String]))
@@ -234,11 +238,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
-    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemukset.json"))
-      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
-
-    val ataruJson = Source.fromInputStream(stream).mkString
-
+    val ataruJson = loadJson("ataruHakemukset.json")
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(ataruJson))
 
@@ -353,9 +353,23 @@ class ControllerTest extends IntegrationTestBase {
 
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
-                                "hakijanEtunimet": "Testi Kolmas",
-                                "hakijanSukunimi": "Hakija",
-                                "hakijanHetu": "131280-123Q",
+                                "hakija": {
+                                  "etunimet": "Testi Kolmas",
+                                  "kutsumanimi": "tatu",
+                                  "sukunimi": "Hakija",
+                                  "kansalaisuus": {
+                                    "fi": "Suomi",
+                                    "sv": "Finland",
+                                    "en": "Finland"
+                                  },
+                                  "hetu": "180462-9981",
+                                  "syntymaaika": "18.04.1962",
+                                  "matkapuhelin": "+3584411222333",
+                                  "katuosoite": "Sillitie 1",
+                                  "postinumero": "00800",
+                                  "postitoimipaikka": "HELSINKI",
+                                  "sahkopostiosoite": "patu.kuusinen@riibasu.fi"
+                                },
                                 "asiatunnus": null,
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,

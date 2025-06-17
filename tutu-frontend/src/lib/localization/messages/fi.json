@@ -1,4 +1,12 @@
 {
+  "valinnat": {
+    "hakemusKoskeeValinta": {
+      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
+      "riittavatOpinnot": "Päätös riittävistä opinnoista"
+    }
+  },
   "hakemuslista": {
     "otsikko": "Tutkintojen tunnustaminen",
     "hakemukset": "Hakemukset",
@@ -67,6 +75,24 @@
       "kirjoitaViesti": "Kirjoita viesti",
       "perustelumuistio": "Perustelumuistio",
       "kirjoitaPaatos": "Kirjoita päätös"
+    },
+    "perustiedot": {
+      "otsikko": "Hakemuksen ja hakijan tiedot",
+      "hakemusKoskee": "Hakemus koskee",
+      "mitaHakee": "Mitä hakee",
+      "esittelijanHuomioita": "Esittelijan huomioita (ei näy muistiossa)",
+      "muutoshistoria": {
+        "otsikko": "Hakemuksen muutoshistoria",
+        "muokattu": "Muokattu",
+        "muokkaaja": "Muokkaaja"
+      },
+      "henkilotiedot": {
+        "otsikko": "Henkilötiedot",
+        "huomautus": "Hakijan henkilötiedot on haettu väestötietojärjestelmistä."
+      },
+      "kielet": "Päätös- ja asiointikieli",
+      "paatoskieli": "Päätöskieli",
+      "asiointikieli": "Asiointikieli"
     }
   },
   "hakemusotsikko": {

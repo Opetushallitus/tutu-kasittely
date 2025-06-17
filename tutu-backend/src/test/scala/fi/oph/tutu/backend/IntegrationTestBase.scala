@@ -9,6 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.containers.wait.strategy.Wait
+
+import java.io.FileNotFoundException
+import java.time.Duration
+import scala.io.Source
 
 class OphPostgresContainer(dockerImageName: String)
     extends PostgreSQLContainer[OphPostgresContainer](dockerImageName) {}
@@ -17,7 +22,8 @@ object IntegrationTestBase extends Object {
   private val postgresContainer = new OphPostgresContainer("postgres:15")
     .withDatabaseName("tutu")
     .withUsername("app")
-    .withPassword("app")
+    .withPassword("app").waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
+
 
   @DynamicPropertySource
   def configureProperties(registry: DynamicPropertyRegistry): Unit = {
@@ -41,6 +47,12 @@ object IntegrationTestBase extends Object {
 )
 @TestInstance(Lifecycle.PER_CLASS)
 class IntegrationTestBase {
+  def loadJson(fileName: String): String = {
+    val stream = Option(getClass.getClassLoader.getResourceAsStream(fileName))
+      .getOrElse(throw new FileNotFoundException(s"$fileName not found in classpath"))
+
+    Source.fromInputStream(stream).mkString
+  }
   @Autowired
   private val flyway: Flyway = null
 
