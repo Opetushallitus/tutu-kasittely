@@ -28,7 +28,7 @@ const CheckCircleIconBlue = styled(CheckCircleOutlineRoundedIcon)({
   paddingTop: '3px',
 });
 
-const SHOW_EXTENDED_KASITTELYVAIHE_PATHS = ['asiakirjat'];
+const SHOW_EXTENDED_KASITTELYVAIHE_PATHS: string[] | [] = [];
 const SHOW_TAYDENNYSPYYNTO_PATHS = ['/asiakirjat', '/tutkinnot'];
 
 const LinkBox = styled(Box)(({ theme }) => ({
