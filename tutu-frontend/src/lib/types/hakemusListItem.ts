@@ -8,4 +8,6 @@ export type HakemusListItem = {
   esittelijaOid: string;
   esittelijaKutsumanimi: string;
   esittelijaSukunimi: string;
+  kasittelyVaihe: string;
+  muokattu: string;
 };

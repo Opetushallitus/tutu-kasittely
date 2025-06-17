@@ -5,10 +5,11 @@
     "hakemus": "Hakemus",
     "esittelija": "Esittelijä",
     "hakemusKoskee": "Hakemus koskee",
+    "kasittelyvaihe": "Käsittelyvaihe",
     "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
-      "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
+      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
       "riittavatOpinnot": "Päätös riittävistä opinnoista"
     },
     "kasittelytila": "Käsittelytila",
@@ -35,6 +36,18 @@
       "paatosmaksamatta": "Päätösmaksu maksamatta",
       "paatosmaksettu": "Päätösmaksu maksettu",
       "laskutuksessa": "Laskutuksessa"
+    },
+    "kasittelyvaihe": {
+      "alkukasittelykesken": "Alkukäsittely kesken",
+      "odottaataydennysta": "Odottaa täydennystä",
+      "odottaaimivastausta": "Odottaa IMI-vastausta",
+      "odottaavahvistusta": "Odottaa vahvistusta",
+      "odottaalausuntoa": "Odottaa lausuntoa",
+      "valmiskasiteltavaksi": "Valmis käsiteltäväksi",
+      "hakemustataydennetty": "Hakemusta täydennetty",
+      "hyvaksynnassatailoppukasittelyssa": "Hyväksynnässä tai loppukäsittelyssä",
+      "hyvaksyttyeilahetetty": "Hyväksytty, ei lähetetty",
+      "loppukasittelyvalmis": "Loppukäsittely valmis"
     },
     "otsikko": "Hakemus",
     "sivupalkki": {

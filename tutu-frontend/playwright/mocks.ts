@@ -78,6 +78,8 @@ export async function mockRoute({ page }: { page: Page }) {
         paatosPvm: '2025-05-28T10:59:47.597',
         esittelijaOid: '1.2.246.562.24.999999999999',
         ataruHakemuksenTila: 'kasittelymaksamatta',
+        kasittelyVaihe: 'HakemustaTaydennetty',
+        muokattu: '2025-06-28T10:59:47.597',
       }),
     });
   });

@@ -6,13 +6,15 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import * as R from 'remeda';
-import { kasittelyTilat } from '@/src/app/(root)/components/types';
+import { kasittelyVaiheet } from '@/src/app/(root)/components/types';
 import React from 'react';
 import { useTranslations } from '@/src/lib/localization/useTranslations';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useHakemus } from '@/src/context/HakemusContext';
+import * as dateFns from 'date-fns';
+import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 
 const OpenInNewIconBlue = styled(OpenInNewIcon)({
   color: ophColors.blue2,
@@ -37,14 +39,25 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
         </OphTypography>
         {showExtended ? (
           <OphSelectFormField
-            options={R.map(kasittelyTilat, (tila) => ({
-              label: tila,
-              value: tila,
+            options={R.map(kasittelyVaiheet, (vaihe) => ({
+              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+              value: vaihe,
             }))}
-            defaultValue={kasittelyTilat[0]}
+            defaultValue={kasittelyVaiheet[0]}
           ></OphSelectFormField>
         ) : (
-          <OphTypography variant={'label'}>Alkukäsittely kesken</OphTypography>
+          <OphTypography
+            variant={'label'}
+            data-testid={'hakemus-sidebar-kasittelyvaihe'}
+          >
+            {hakemus?.kasittelyVaihe === 'HakemustaTaydennetty'
+              ? t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
+                ' ' +
+                dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
+              : t(
+                  `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
+                )}
+          </OphTypography>
         )}
       </Stack>
       <Stack direction="column" gap={theme.spacing(1)}>

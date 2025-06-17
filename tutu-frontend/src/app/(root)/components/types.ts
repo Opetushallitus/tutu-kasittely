@@ -1,13 +1,19 @@
 export type SortOrder = 'asc' | 'desc';
 
-//placeholder, oikeat tilat pitää määrittää fiksummin
-export const kasittelyTilat = [
-  'alkukäsittely kesken',
-  'käsittelyssä',
-  'käsitelty',
+export const kasittelyVaiheet = [
+  'AlkukasittelyKesken',
+  'OdottaaTaydennysta',
+  'OdottaaIMIVastausta',
+  'OdottaaVahvistusta',
+  'OdottaaLausuntoa',
+  'ValmisKasiteltavaksi',
+  'HakemustaTaydennetty',
+  'HyvaksynnassaTaiLoppukasittelyssa',
+  'HyvaksyttyEiLahetetty',
+  'LoppukasittelyValmis',
 ] as const;
 
-export type KasittelyTila = (typeof kasittelyTilat)[number];
+export type KasittelyVaihe = (typeof kasittelyVaiheet)[number];
 
 export const hakemusKoskeeQueryStates = ['', '0', '1', '2', '3'] as const;
 

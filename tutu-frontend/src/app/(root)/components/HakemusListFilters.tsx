@@ -24,7 +24,7 @@ import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import {
   hakemusKoskeeQueryStates,
-  kasittelyTilat,
+  kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
 import { redirect, useSearchParams } from 'next/navigation';
@@ -51,9 +51,9 @@ export default function HakemusListFilters() {
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
 
-  const [tilat, setTilat] = useQueryState(
-    'tilat',
-    parseAsArrayOf(parseAsStringLiteral(kasittelyTilat)).withDefault([]),
+  const [vaiheet, setVaiheet] = useQueryState(
+    'vaihe',
+    parseAsArrayOf(parseAsStringLiteral(kasittelyVaiheet)).withDefault([]),
   );
 
   const [hakemusKoskee, setHakemusKoskee] = useQueryState(
@@ -135,34 +135,34 @@ export default function HakemusListFilters() {
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
           <OphSelectFormField
-            label={t('hakemuslista.kasittelytila')}
+            label={t('hakemuslista.kasittelyvaihe')}
             multiple
-            options={R.map(kasittelyTilat, (tila) => ({
-              label: tila,
-              value: tila,
+            options={R.map(kasittelyVaiheet, (vaihe) => ({
+              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+              value: vaihe,
             }))}
-            value={tilat as never}
+            value={vaiheet as never}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
                 queryClient,
-                setTilat,
+                setVaiheet,
                 event.target.value,
               )
             }
             sx={{ width: '100%' }}
-            data-testid={'kasittelytila'}
+            data-testid={'kasittelyvaihe'}
             renderValue={() => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {R.map(tilat, (value) => (
+                {R.map(vaiheet, (value) => (
                   <Chip
                     key={value}
-                    label={value}
+                    label={t(`hakemus.kasittelyvaihe.${value.toLowerCase()}`)}
                     sx={{ borderRadius: '0px' }}
                     onDelete={() =>
                       setQueryStateAndLocalStorage(
                         queryClient,
-                        setTilat,
-                        R.filter(tilat, (val) => val !== value),
+                        setVaiheet,
+                        R.filter(vaiheet, (val) => val !== value),
                       )
                     }
                     onMouseDown={(event) => {

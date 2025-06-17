@@ -245,43 +245,43 @@ class ControllerTest extends IntegrationTestBase {
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä"
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T11:06:38.273Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä"
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä"
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 0,
                                 "esittelijaOid" : null,
                                 "esittelijaKutsumanimi": null,
-                                "esittelijaSukunimi": null
+                                "esittelijaSukunimi": null,
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
@@ -311,23 +311,23 @@ class ControllerTest extends IntegrationTestBase {
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä"
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
-                                "vaihe" : "Testi Vaihe",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä"
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
     val result = mockMvc
@@ -361,7 +361,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
                                 "esittelijaOid": null,
-                                "ataruHakemuksenTila": "KasittelyMaksettu"
+                                "ataruHakemuksenTila": "KasittelyMaksettu",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }"""
 
     val result = mockMvc
