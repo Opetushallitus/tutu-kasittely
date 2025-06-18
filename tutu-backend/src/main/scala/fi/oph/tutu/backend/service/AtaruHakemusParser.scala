@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Answer, AnswerValue, AtaruHakemus, Content, Hakija, Kielistetty, MultiValue, NestedValues, SingleValue}
+import fi.oph.tutu.backend.domain.{Answer, AnswerValue, AtaruHakemus, Hakija, Kielistetty, MultiValue, NestedValues, SingleValue}
 import org.springframework.stereotype.{Component, Service}
 
 @Component
@@ -24,7 +24,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   private def countryCode2Name(code: Option[String]): Option[Kielistetty] = {
-    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! koodistoService " + koodistoService.getKoodisto(""))
     val country = koodistoService.getKoodisto("maatjavaltiot2").find(c => c.koodiArvo == code.getOrElse(""))
     country.map(_.nimi)
   }

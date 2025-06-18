@@ -2,7 +2,17 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{DbEsittelija, HakemusOid, Kieli, KoodistoItem, OnrUser, PartialHakemus, UserOid, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{
+  AtaruHakemus,
+  DbEsittelija,
+  HakemusOid,
+  Hakija,
+  Kieli,
+  OnrUser,
+  PartialHakemus,
+  UserOid,
+  UusiAtaruHakemus
+}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -58,13 +68,23 @@ class ControllerTest extends IntegrationTestBase {
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
 
-  @MockitoBean
-  var koodistoService: KoodistoService = _
-
   @Autowired
   var userService: UserService = _
 
+  @MockitoBean
+  var ataruHakemusParser: AtaruHakemusParser = _
+
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
+  final val suomi = Map(
+    Kieli.valueOf("fi") -> "Suomi",
+    Kieli.valueOf("sv") -> "Finland",
+    Kieli.valueOf("en") -> "Finland"
+  )
+  final val kajaani = Map(
+    Kieli.valueOf("fi") -> "Kajaani",
+    Kieli.valueOf("sv") -> "Kajana",
+    Kieli.valueOf("en") -> "Kanada"
+  )
 
   var esittelija: Option[DbEsittelija] = None
   @BeforeAll def setup(): Unit = {
@@ -74,8 +94,6 @@ class ControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
-    when(koodistoService.getKoodisto("maatjavaltiot2"))
-      .thenReturn(Seq[KoodistoItem](KoodistoItem("maatjavaltiot2_246", "246", Map(Kieli.valueOf("fi") -> "Suomi", Kieli.valueOf("sv") -> "Finland", Kieli.valueOf("en") -> "Finland"))))
   }
   @BeforeEach
   def setupTest(): Unit =
@@ -343,13 +361,28 @@ class ControllerTest extends IntegrationTestBase {
   @Order(9)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
-    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemus.json"))
-      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
 
-    val ataruJson = Source.fromInputStream(stream).mkString
+    val ataruJson = loadJson("ataruHakemus.json")
 
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(ataruJson))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(
+      Hakija(
+        "Testi Kolmas",
+        "tatu",
+        "Hakija",
+        suomi,
+        Some("180462-9981"),
+        "18.04.1962",
+        Some("+3584411222333"),
+        suomi,
+        "Sillitie 1",
+        "00800",
+        "HELSINKI",
+        kajaani,
+        Some("patu.kuusinen@riibasu.fi")
+      )
+    )
 
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
@@ -361,6 +394,12 @@ class ControllerTest extends IntegrationTestBase {
                                     "fi": "Suomi",
                                     "sv": "Finland",
                                     "en": "Finland"
+                                  },
+                                  "asuinmaa": {"fi": "Suomi", "sv": "Finland", "en": "Finland"},
+                                  "kotikunta": {
+                                    "fi": "Kajaani",
+                                    "sv": "Kajana",
+                                    "en": "Kanada"
                                   },
                                   "hetu": "180462-9981",
                                   "syntymaaika": "18.04.1962",

@@ -58,17 +58,19 @@ object KoodistoItemSerializer
     extends CustomSerializer[KoodistoItem](_ =>
       (
         {
-          case JObject(List(JField("koodiUri", JString(koodiUri)), 
-          JField("koodiArvo", JString(koodiArvo)),
-          JField("metadata", JArray(mItems)))) =>
-            implicit val formats: Formats = DefaultFormats
-            //val kielistetty = mItems.map {
-            //  case JObject(List(JField("kieli", JString(kieli)), JField("nimi", JString(nimi)))) =>
-            //    Kieli.valueOf(kieli.toLowerCase()) -> nimi
-            //  case _ =>
-            //    throw new MappingException("Invalid koodisto metadata item")
-            //}.toMap
-            KoodistoItem(koodiUri, koodiArvo, Map())
+          case JObject(fields) =>
+            val koodiUri  = fields.collectFirst { case ("koodiUri", JString(koodiUri)) => koodiUri }.getOrElse("")
+            val koodiArvo = fields.collectFirst { case ("koodiArvo", JString(koodiArvo)) => koodiArvo }.getOrElse("")
+            val metadata  = fields.collectFirst { case ("metadata", JArray(metadata)) => metadata }.getOrElse(List())
+            val kielistetty = metadata.map {
+              case JObject(mDataItem) =>
+                val kieli = mDataItem.collectFirst{ case ("kieli", JString(kieli)) => kieli }.getOrElse("")
+                val nimi = mDataItem.collectFirst{ case ("nimi", JString(nimi)) => nimi }.getOrElse("")
+                Kieli.valueOf(kieli.toLowerCase()) -> nimi
+              case _ =>
+                throw new MappingException("Invalid koodisto metadata item")
+            }.toMap
+            KoodistoItem(koodiUri, koodiArvo, kielistetty)
           case unexpected =>
             throw new MappingException(s"Cannot deserialize KooodistoItem from $unexpected")
         },

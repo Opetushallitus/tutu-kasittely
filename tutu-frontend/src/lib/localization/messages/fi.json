@@ -88,7 +88,20 @@
       },
       "henkilotiedot": {
         "otsikko": "Henkilötiedot",
-        "huomautus": "Hakijan henkilötiedot on haettu väestötietojärjestelmistä."
+        "huomautus": "Hakijan henkilötiedot on haettu väestötietojärjestelmistä.",
+        "etunimet": "Etunimet",
+        "kutsumanimi": "Kutsumanimi",
+        "sukunimi": "Sukunimi",
+        "kansalaisuus": "Kansalaisuus",
+        "hetu": "Henkilötunnus",
+        "syntymaaika": "Syntymäaika",
+        "matkapuhelin": "Matkapuhelin",
+        "asuinmaa": "Asuinmaa",
+        "katuosoite": "Katuosoite",
+        "postinumero": "Postinumero",
+        "postitoimipaikka": "Postitoimipaikka",
+        "kotikunta": "Kotikunta",
+        "sahkopostiosoite": "Sähköpostiosoite"
       },
       "kielet": "Päätös- ja asiointikieli",
       "paatoskieli": "Päätöskieli",

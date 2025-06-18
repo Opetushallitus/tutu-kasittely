@@ -1,0 +1,131 @@
+[
+  {
+    "koodiUri": "kunta_009",
+    "resourceUri": "https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/kunta_009",
+    "version": 1,
+    "versio": 2,
+    "koodisto": {
+      "koodistoUri": "kunta",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        2
+      ]
+    },
+    "koodiArvo": "009",
+    "paivitysPvm": "2018-02-08",
+    "paivittajaOid": null,
+    "voimassaAlkuPvm": "1990-01-01",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Alavieska",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Alavieska",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "kunta_743",
+    "resourceUri": "https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/kunta_743",
+    "version": 2,
+    "versio": 2,
+    "koodisto": {
+      "koodistoUri": "kunta",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        2
+      ]
+    },
+    "koodiArvo": "743",
+    "paivitysPvm": "2018-02-08",
+    "paivittajaOid": null,
+    "voimassaAlkuPvm": "1990-01-01",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Seinäjoki",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Seinäjoki",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "kunta_505",
+    "resourceUri": "https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/kunta_505",
+    "version": 1,
+    "versio": 2,
+    "koodisto": {
+      "koodistoUri": "kunta",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        2
+      ]
+    },
+    "koodiArvo": "505",
+    "paivitysPvm": "2018-02-08",
+    "paivittajaOid": null,
+    "voimassaAlkuPvm": "1990-01-01",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Mäntsälä",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Mäntsälä",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  }
+]

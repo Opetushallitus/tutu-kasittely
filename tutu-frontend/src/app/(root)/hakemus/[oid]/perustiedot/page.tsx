@@ -8,16 +8,21 @@ import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { LabeledValue } from '@/src/app/(root)/hakemus/[oid]/components/LabeledValue';
 import { Muutoshistoria } from '@/src/app/(root)/hakemus/[oid]/perustiedot/Muutoshistoria';
 import { Henkilotiedot } from '@/src/app/(root)/hakemus/[oid]/perustiedot/Henkilotiedot';
+import { FullSpinner } from '@/src/components/FullSpinner';
 
 export default function PerustietoPage() {
   const theme = useTheme();
   const { t } = useTranslations();
-  const hakemus = useHakemus().hakemus;
+  const { isLoading, hakemus } = useHakemus();
+
+  if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
+
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus?.hakemusKoskee),
     )?.label || ''
   }`;
+
   return (
     <Stack gap={theme.spacing(2)}>
       <OphTypography variant={'h2'}>
@@ -31,7 +36,7 @@ export default function PerustietoPage() {
         value={t(hakemusKoskee)}
       ></LabeledValue>
       <Muutoshistoria />
-      <Henkilotiedot />
+      <Henkilotiedot hakija={hakemus.hakija} />
     </Stack>
   );
 }

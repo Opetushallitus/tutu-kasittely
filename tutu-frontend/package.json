@@ -34,7 +34,8 @@
     "nuqs": "^2.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "remeda": "^2.21.3"
+    "remeda": "^2.21.3",
+    "ts-pattern": "^5.7.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
