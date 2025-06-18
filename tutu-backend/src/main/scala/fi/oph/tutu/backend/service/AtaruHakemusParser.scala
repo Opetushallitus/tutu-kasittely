@@ -1,6 +1,15 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Answer, AnswerValue, AtaruHakemus, Hakija, Kielistetty, MultiValue, NestedValues, SingleValue}
+import fi.oph.tutu.backend.domain.{
+  Answer,
+  AnswerValue,
+  AtaruHakemus,
+  Hakija,
+  Kielistetty,
+  MultiValue,
+  NestedValues,
+  SingleValue
+}
 import org.springframework.stereotype.{Component, Service}
 
 @Component
@@ -11,11 +20,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
   private def findSingleStringAnswer(key: String, allAnswers: Seq[Answer]): Option[String] = {
     findAnswer(key, allAnswers) match {
-      case Some(singleValue: SingleValue) => Some(singleValue.value)
+      case Some(singleValue: SingleValue)                   => Some(singleValue.value)
       case Some(multi: MultiValue) if multi.value.size == 1 => Some(multi.value.head)
-      case Some(nested: NestedValues) if nested.value.size == 1 && nested.value.head.size == 1 => 
+      case Some(nested: NestedValues) if nested.value.size == 1 && nested.value.head.size == 1 =>
         Some(nested.value.head.head)
-      case _                              => None
+      case _ => None
     }
   }
 
@@ -34,10 +43,10 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def parseHakija(hakemus: AtaruHakemus): Hakija = {
-    val answers = hakemus.content.answers
-    val nationalityCode = findSingleStringAnswer("nationality", answers)
+    val answers                 = hakemus.content.answers
+    val nationalityCode         = findSingleStringAnswer("nationality", answers)
     val countryCodeForResidence = findSingleStringAnswer("country-of-residence", answers)
-    val homeTownCode = findSingleStringAnswer("home-town", answers)
+    val homeTownCode            = findSingleStringAnswer("home-town", answers)
     Hakija(
       hakemus.etunimet,
       findRequiredSingleStringAnswer("preferred-name", answers),

@@ -64,8 +64,8 @@ object KoodistoItemSerializer
             val metadata  = fields.collectFirst { case ("metadata", JArray(metadata)) => metadata }.getOrElse(List())
             val kielistetty = metadata.map {
               case JObject(mDataItem) =>
-                val kieli = mDataItem.collectFirst{ case ("kieli", JString(kieli)) => kieli }.getOrElse("")
-                val nimi = mDataItem.collectFirst{ case ("nimi", JString(nimi)) => nimi }.getOrElse("")
+                val kieli = mDataItem.collectFirst { case ("kieli", JString(kieli)) => kieli }.getOrElse("")
+                val nimi  = mDataItem.collectFirst { case ("nimi", JString(nimi)) => nimi }.getOrElse("")
                 Kieli.valueOf(kieli.toLowerCase()) -> nimi
               case _ =>
                 throw new MappingException("Invalid koodisto metadata item")

@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.domain
 
-case class Hakija (
+case class Hakija(
   etunimet: String,
   kutsumanimi: String,
   sukunimi: String,
@@ -13,5 +13,5 @@ case class Hakija (
   postinumero: String,
   postitoimipaikka: String,
   kotikunta: Kielistetty,
-  sahkopostiosoite: Option[String],
+  sahkopostiosoite: Option[String]
 )

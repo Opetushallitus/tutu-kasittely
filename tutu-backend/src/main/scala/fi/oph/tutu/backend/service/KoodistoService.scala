@@ -57,7 +57,7 @@ class KoodistoService(httpService: HttpService) extends TutuJsonFormats {
         Seq.empty[KoodistoItem]
       case Right(response: String) =>
         parse(response) match {
-          case JArray(values) => 
+          case JArray(values) =>
             values.map(item => extract[KoodistoItem](item))
           case _ => throw new MappingException(s"Cannot deserialize koodisto response")
         }

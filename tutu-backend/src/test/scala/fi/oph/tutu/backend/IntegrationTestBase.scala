@@ -22,8 +22,8 @@ object IntegrationTestBase extends Object {
   private val postgresContainer = new OphPostgresContainer("postgres:15")
     .withDatabaseName("tutu")
     .withUsername("app")
-    .withPassword("app").waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
-
+    .withPassword("app")
+    .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
 
   @DynamicPropertySource
   def configureProperties(registry: DynamicPropertyRegistry): Unit = {
