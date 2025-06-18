@@ -1,7 +1,6 @@
 import { Box, styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import InfoIcon from '@mui/icons-material/Info';
-import PreviewIcon from '@mui/icons-material/Preview';
 
 const InfoIconBlue = styled(InfoIcon)({
   color: ophColors.blue2,
