@@ -1,8 +1,9 @@
+import { Hakija } from '@/src/lib/types/hakija';
+
 export type Hakemus = {
   hakemusOid: string;
-  hakijanEtunimet: string;
-  hakijanSukunimi: string;
-  hakijanHetu: string;
+  hakemusKoskee: number;
+  readonly hakija: Hakija;
   asiatunnus: string;
   kirjausPvm: string;
   esittelyPvm: string;

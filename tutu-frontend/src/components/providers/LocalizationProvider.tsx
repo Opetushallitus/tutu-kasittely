@@ -5,6 +5,7 @@ import { Language } from '@/src/lib/localization/localizationTypes';
 import { useEffect } from 'react';
 import { TolgeeProvider } from '@tolgee/react';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 
 const LocalizationContent = ({
   lng,
@@ -35,5 +36,6 @@ export function LocalizationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  return <LocalizationContent lng={'fi'}>{children}</LocalizationContent>;
+  const lng = useAsiointiKieli();
+  return <LocalizationContent lng={lng}>{children}</LocalizationContent>;
 }

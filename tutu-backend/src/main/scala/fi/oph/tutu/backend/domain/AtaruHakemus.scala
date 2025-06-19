@@ -9,42 +9,6 @@ case class MultiValue(value: Seq[String])        extends AnswerValue
 case class NestedValues(value: Seq[Seq[String]]) extends AnswerValue
 case object EmptyValue                           extends AnswerValue
 
-object AnswerValueSerializer
-    extends CustomSerializer[AnswerValue](_ =>
-      (
-        {
-          case JString(value) =>
-            SingleValue(value)
-          case JArray(values) if values.forall(_.isInstanceOf[JString]) =>
-            MultiValue(values.map(_.extract[String]))
-          case JArray(values) if values.forall {
-                case JArray(innerValues) => innerValues.forall(_.isInstanceOf[JString])
-                case _                   => false
-              } =>
-            NestedValues(values.map {
-              case JArray(innerValues) => innerValues.map(_.extract[String])
-              case _                   => throw new MappingException("Invalid nested structure")
-            })
-          case JArray(Nil) =>
-            EmptyValue
-          case unexpected =>
-            throw new MappingException(s"Cannot deserialize AnswerValue from $unexpected")
-        },
-        {
-          case SingleValue(value) =>
-            JString(value)
-          case MultiValue(values) =>
-            JArray(values.map(org.json4s.JString.apply).toList)
-          case NestedValues(values) =>
-            JArray(values.map(nested => JArray(nested.map(org.json4s.JString.apply).toList)).toList)
-          case EmptyValue =>
-            JArray(Nil)
-        }
-      )
-    )
-
-implicit val formats: Formats = DefaultFormats + AnswerValueSerializer
-
 case class AtaruHakemus(
   haku: Option[String],
   etunimet: String,

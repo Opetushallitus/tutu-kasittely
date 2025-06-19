@@ -41,7 +41,7 @@ export default function HakemusRow({
   nayta: string;
 }) {
   const { t } = useTranslations();
-  const hakemusKoskee = `hakemuslista.hakemusKoskeeValinta.${
+  const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus.hakemusKoskee),
     )?.label || ''

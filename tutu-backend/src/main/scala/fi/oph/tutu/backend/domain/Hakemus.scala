@@ -33,7 +33,7 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 40
   )
-  @BeanProperty esittelijaOid: Option[UserOid],
+  esittelijaOid: Option[UserOid],
   @(Schema @field)(
     example = "OPH-197-2025",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -56,9 +56,7 @@ case class DbHakemus(
 
 case class Hakemus(
   hakemusOid: String,
-  hakijanEtunimet: String,
-  hakijanSukunimi: String,
-  hakijanHetu: Option[String] = None,
+  hakija: Hakija,
   hakemusKoskee: Int,
   asiatunnus: Option[String] = None,
   kirjausPvm: Option[LocalDateTime] = None,
