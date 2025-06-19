@@ -1,32 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockRoute } from '@/playwright/mocks';
+import { mockAll } from '@/playwright/mocks';
 
-test.beforeEach(mockRoute);
+test.beforeEach(mockAll);
 
 test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
-  await page.route(
-    '**/tutu-backend/api/hakemus/1.2.246.562.10.00000000001',
-    async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          hakemusOid: '1.2.246.562.10.00000000001',
-          hakijanEtunimet: 'Heikki Hemuli',
-          hakijanSukunimi: 'Heittotähti',
-          hakijanHetu: '121280-123A',
-          asiatunnus: 'OPH-111-2025',
-          kirjausPvm: '2025-05-14T10:59:47.597',
-          esittelyPvm: '2025-05-28T10:59:47.597',
-          paatosPvm: '2025-05-28T10:59:47.597',
-          esittelijaOid: '1.2.246.562.24.999999999999',
-          ataruHakemuksenTila: 'kasittelymaksamatta',
-          kasittelyVaihe: 'AlkukasittelyKesken',
-        }),
-      });
-    },
-  );
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );

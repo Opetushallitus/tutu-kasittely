@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { mockRoute } from '@/playwright/mocks';
+import { mockAll } from '@/playwright/mocks';
 
-test.beforeEach(mockRoute);
+test.beforeEach(mockAll);
 
 test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
   await page.goto(

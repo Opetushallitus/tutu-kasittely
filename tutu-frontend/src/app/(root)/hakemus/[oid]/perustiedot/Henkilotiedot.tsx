@@ -1,6 +1,9 @@
 import { Stack, useTheme } from '@mui/material';
 import { OphInput, OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/useTranslations';
 import { InfoBox } from '@/src/app/(root)/hakemus/[oid]/components/InfoBox';
 import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
 import { Grid } from '@mui/system';
@@ -8,14 +11,26 @@ import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import { Kielistetty } from '@/src/lib/types/common';
 
-const HenkilotietoRivi = ({ nimi, arvo }: { nimi: string; arvo: string }) => {
+const HenkilotietoRivi = ({
+  nimi,
+  arvo,
+  t,
+}: {
+  nimi: string;
+  arvo: string;
+  t: TFunction;
+}) => {
   return (
     <>
       <Grid size={1}>
-        <OphTypography variant={'label'}>{nimi}</OphTypography>
+        <OphTypography variant={'label'}>
+          {t(`hakemus.perustiedot.henkilotiedot.${nimi}`)}
+        </OphTypography>
       </Grid>
       <Grid size={5}>
-        <OphTypography variant={'body1'}>{arvo}</OphTypography>
+        <OphTypography data-testid={nimi} variant={'body1'}>
+          {arvo}
+        </OphTypography>
       </Grid>
     </>
   );
@@ -25,9 +40,6 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
   const theme = useTheme();
 
   const lan = getLanguage();
-  const htKey = (key: string) => {
-    return `hakemus.perustiedot.henkilotiedot.${key}`;
-  };
 
   const containsKielistettyArvo = (fieldValue: Kielistetty) => {
     return Object.keys(fieldValue).includes(lan);
@@ -54,16 +66,18 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
         {R.map(Object.values(HAKIJA_FIELDS_WO_SAHKOPOSTI), (fieldKey) => (
           <HenkilotietoRivi
             key={fieldKey}
-            nimi={t(htKey(fieldKey))}
+            t={t}
+            nimi={fieldKey}
             arvo={arvo(hakija[fieldKey as keyof Hakija])}
           ></HenkilotietoRivi>
         ))}
       </Grid>
       <Stack>
         <OphTypography variant={'label'}>
-          {t(htKey('sahkopostiosoite'))}
+          {t('hakemus.perustiedot.henkilotiedot.sahkopostiosoite')}
         </OphTypography>
         <OphInput
+          inputProps={{ 'data-testid': 'sahkopostiosoite' }}
           sx={{ width: '50%' }}
           readOnly={true}
           value={hakija.sahkopostiosoite || ''}
