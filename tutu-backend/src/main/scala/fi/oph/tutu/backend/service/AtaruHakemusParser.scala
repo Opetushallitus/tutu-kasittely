@@ -38,8 +38,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   private def municipalityCode2Name(code: Option[String]): Option[Kielistetty] = {
-    val country = koodistoService.getKoodisto("kunta").find(c => c.koodiArvo == code.getOrElse(""))
-    country.map(_.nimi)
+    val municipality = koodistoService.getKoodisto("kunta").find(c => c.koodiArvo == code.getOrElse(""))
+    municipality.map(_.nimi)
   }
 
   def parseHakija(hakemus: AtaruHakemus): Hakija = {
