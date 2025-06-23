@@ -26,8 +26,8 @@ export const HakemusHeader = () => {
       >
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
           <OphTypography variant="label" data-testid="hakemusotsikko-hakija">
-            {hakemus?.hakijanSukunimi}, {hakemus?.hakijanEtunimet} -{' '}
-            {hakemus?.hakijanHetu || t('hakemusotsikko.hetuPuuttuu')}
+            {hakemus?.hakija?.sukunimi}, {hakemus?.hakija?.etunimet} -{' '}
+            {hakemus?.hakija.hetu || t('hakemusotsikko.hetuPuuttuu')}
           </OphTypography>
           <OphTypography data-testid="hakemusotsikko-asiatunnus">
             {hakemus?.asiatunnus || t('hakemusotsikko.asiatunnusPuuttuu')}

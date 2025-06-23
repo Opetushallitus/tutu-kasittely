@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { mockRoute } from '@/playwright/mocks';
+import { mockAll } from '@/playwright/mocks';
 
-test.beforeEach(mockRoute);
+test.beforeEach(mockAll);
 
 test('Hakemuslistaus latautuu', async ({ page }) => {
   await page.goto('/tutu-frontend');

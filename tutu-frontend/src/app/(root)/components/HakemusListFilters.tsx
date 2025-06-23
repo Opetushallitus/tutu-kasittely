@@ -179,7 +179,7 @@ export default function HakemusListFilters() {
             label={t('hakemuslista.hakemusKoskee')}
             options={emptyOption.concat(
               R.map(hakemusKoskeeOptions, (option) => ({
-                label: t(`hakemuslista.hakemusKoskeeValinta.${option.label}`),
+                label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
                 value: option.value,
               })),
             )}
