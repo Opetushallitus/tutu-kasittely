@@ -1,0 +1,30 @@
+name: Deploy TUTU-käsittely
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment
+        options:
+          - dev
+          - qa
+          - prod
+        required: true
+      stack:
+        type: choice
+        description: Environment
+        options:
+          - frontend
+          - backend
+          - aurora
+          - all
+        required: true
+      revision:
+        description: Version to deploy
+        required: true
+
+jobs:
+  deploy:
+
+
+
