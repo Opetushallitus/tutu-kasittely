@@ -1,5 +1,5 @@
-FROM amazoncorretto:21 as builder
-ARG JAR_FILE=tutu-backend/target/*.jar
+FROM amazoncorretto:21 AS builder
+ARG JAR_FILE=tutu-backend/target/tutu-backend-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
