@@ -3,9 +3,9 @@ name: TUTU-käsittely frontend build workflow
 on:
   workflow_dispatch:
   push:
-#    paths:
-#      - 'tutu-frontend/**'
-#      - '!**.md'
+    paths:
+      - 'tutu-frontend/**'
+      - '!**.md'
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
