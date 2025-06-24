@@ -1,7 +1,10 @@
 { 
     "aws": {
         "vpc_cidr": "10.6.192.0/18",
-        "availability_zones": 2
-    }
-
+        "availability_zones": 2,
+        "project_organizational_unit": "ou-itpx-pgicvfdb"
+    },
+    "backend_service_name": "tutu-backend",
+    "frontend_service_name": "tutu-frontend",
+    "repository_regex": "tutu-kasittely"
 }

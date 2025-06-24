@@ -21,7 +21,6 @@ interface CloudfrontStackProps extends StackProps {
 
 export class CloudfrontStack extends Stack {
   readonly distribution: cloudfront.Distribution;
-  readonly certificate: acm.Certificate;
   constructor(scope: Construct, id: string, props: CloudfrontStackProps) {
     super(scope, id, props);
 
@@ -98,13 +97,5 @@ export class CloudfrontStack extends Stack {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(this.distribution)),
     });
 
-
-    // this.distribution.addBehavior('/static/*', s3origin, { viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS});
-
-
-    // Add s3 bucket as a new origin for the CloudFront distribution
-    // this.distribution.addBehavior('/static/*', new origins.S3Origin(props.bucket ),{
-    //   viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    // })
   }
 }

@@ -2,7 +2,7 @@
     "aws": {
         "vpc_cidr": "10.6.0.0/18",
         "availability_zones": 2,
-        "domain": "dev.example.fi"
+        "domain": "tutu-dev..fi"
     },
     "services": {
         "data_analytics": {
