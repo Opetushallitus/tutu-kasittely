@@ -13,6 +13,7 @@ case class AtaruHakemus(
   haku: Option[String],
   etunimet: String,
   key: String,
+  form_id: Long = 1527182,
   content: Content,
   created: String,
   state: String,
