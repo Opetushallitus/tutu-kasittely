@@ -45,7 +45,7 @@ jobs:
         working-directory: ./tutu-backend
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
-          docker buildx -t ${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/tutu-backend:ga-${{github.run_number}} \
+          docker buildx build -t ${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/tutu-backend:ga-${{github.run_number}} \
           --cache-to mode=max,image-manifest=true,oci-mediatypes=true,type=registry,ref=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/tutu-backend:cache \
           --cache-from type=registry,ref=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/tutu-backend:cache .
           docker push ${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/tutu-backend:ga-${{github.run_number}}
