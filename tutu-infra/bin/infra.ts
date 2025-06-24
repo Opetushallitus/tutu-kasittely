@@ -56,7 +56,7 @@ if (environmentName === 'dev') {
   environmentConfig = qa
 } else if (environmentName === 'prod') {
   environmentConfig = prod
-} else {
+} else if (environmentName !== 'utility') {
   console.error(
     'You must define a valid environment name in CDK context! Valid environment names are dev, qa, prod and utility'
   )
@@ -80,7 +80,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
 
   const Monitor = new MonitorStack(app, 'MonitorStack', {
     env: envEUAccount,
-
     slackChannelName: `valvonta-tutu-${environmentName}`,
     environment: environmentName,
   })
@@ -255,7 +254,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
     env: envEU,
-    stackName: `${environmentName}-utility`,
+    stackName: `utility`,
     repositoryRegex: utilityConfig.repository_regex,
     oidcThumbprint1: '6938fd4d98bab03faadb97b34396831e3780aea1',
     oidcThumbprint2: '1c58a3a8518e8759bf075b76b750d4f2df264fcd'
