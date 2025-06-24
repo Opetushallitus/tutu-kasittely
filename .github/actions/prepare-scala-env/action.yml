@@ -13,4 +13,4 @@ runs:
     - name: Install dependencies
       working-directory: './tutu-backend'
       shell: bash
-      run: ./mvnw install
+      run: ./mvnw install -DskipTests
