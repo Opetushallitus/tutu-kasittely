@@ -40,7 +40,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_TUTU_UTILITY_ROLE_ARN }}
           role-session-name: tutu-frontend-upload-zip
           aws-region: ${{ env.AWS_REGION }}
-      - uses: actions/setup-buildx-action
+      - uses: docker/setup-buildx-action@v3
       - name: Build and upload image to ECR
         working-directory: ./tutu-backend
         run: |
