@@ -4,17 +4,16 @@ import fi.oph.tutu.backend.domain.{
   Answer,
   AnswerValue,
   AtaruHakemus,
+  AtaruLomake,
+  EmptyValue,
   Hakija,
   Kielistetty,
+  LomakeContentItem,
   MultiValue,
   NestedValues,
   SingleValue,
-  EmptyValue,
-
-  AtaruLomake,
   SisaltoItem,
-  LomakeContentItem,
-  Valinta,
+  Valinta
 }
 import org.springframework.stereotype.{Component, Service}
 
@@ -71,18 +70,21 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def parseSisalto(hakemus: AtaruHakemus, lomake: AtaruLomake): Seq[SisaltoItem] = {
-    val answers = hakemus.content.answers
-    val formContent = lomake.content
-    val transformedContent = traverseContent(formContent, (item) => transformItem(answers, item))
+    val answers            = hakemus.content.answers
+    val formContent        = lomake.content
+    val transformedContent = traverseContent(formContent, item => transformItem(answers, item))
 
     transformedContent match {
       case Some(items) => items
-      case None => Seq()
+      case None        => Seq()
     }
   }
 }
 
-def traverseContent(contentMaybe: Option[Seq[LomakeContentItem]], handleItem: (LomakeContentItem) => SisaltoItem): Option[Seq[SisaltoItem]] = {
+def traverseContent(
+  contentMaybe: Option[Seq[LomakeContentItem]],
+  handleItem: (LomakeContentItem) => SisaltoItem
+): Option[Seq[SisaltoItem]] = {
   contentMaybe match {
     case None => None
     case Some(content) => {
@@ -90,7 +92,7 @@ def traverseContent(contentMaybe: Option[Seq[LomakeContentItem]], handleItem: (L
       val newItems = content.map((item: LomakeContentItem) => {
 
         // traverse children (followups, children)
-        val newChildren = traverseContent(getChildren(item), handleItem)
+        val newChildren  = traverseContent(getChildren(item), handleItem)
         val newFollowups = traverseContent(getFollowups(item), handleItem)
 
         // handle this
@@ -98,7 +100,7 @@ def traverseContent(contentMaybe: Option[Seq[LomakeContentItem]], handleItem: (L
 
         newItem.copy(
           children = newChildren,
-          followups = newFollowups,
+          followups = newFollowups
         )
       })
 
@@ -110,13 +112,13 @@ def traverseContent(contentMaybe: Option[Seq[LomakeContentItem]], handleItem: (L
 def getChildren(item: LomakeContentItem | Valinta): Option[Seq[LomakeContentItem]] = {
   item match {
     case lomakeContentItem: LomakeContentItem => lomakeContentItem.children
-    case _: Valinta => None
+    case _: Valinta                           => None
   }
 }
 
 def getFollowups(item: LomakeContentItem | Valinta): Option[Seq[LomakeContentItem]] = {
   item match {
-    case valinta: Valinta => valinta.followups
+    case valinta: Valinta     => valinta.followups
     case _: LomakeContentItem => None
   }
 }
@@ -130,12 +132,12 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
   val readableValues = values.map((value: String) => {
     val optionMaybe = item.options match {
       case Some(opts) => opts.find((option: Valinta) => option.value == value)
-      case None => None
+      case None       => None
     }
 
     optionMaybe match {
       case Some(option) => option.label
-      case None => "-"
+      case None         => "-"
     }
   })
 
@@ -145,21 +147,21 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
     value = readableValues,
     label = itemLabel,
     children = None,
-    followups = None,
+    followups = None
   )
 }
 
 def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
   val value = answerMaybe match {
     case Some(answer) => answer.value
-    case None => null
+    case None         => null
   }
 
   value match {
-    case SingleValue(value) => Seq(value)
-    case MultiValue(values) => values
+    case SingleValue(value)   => Seq(value)
+    case MultiValue(values)   => values
     case NestedValues(values) => values.flatten()
-    case EmptyValue => Seq()
-    case null => Seq()
+    case EmptyValue           => Seq()
+    case null                 => Seq()
   }
 }

@@ -4,7 +4,7 @@ case class AtaruLomake(
   id: Long,
   key: String,
   name: String, // fi
-  content: Option[Seq[LomakeContentItem]],
+  content: Option[Seq[LomakeContentItem]]
 )
 
 case class LomakeContentItem(
@@ -13,13 +13,13 @@ case class LomakeContentItem(
   fieldType: String,
   label: String, // fi
   children: Option[Seq[LomakeContentItem]],
-  options: Option[Seq[Valinta]],
+  options: Option[Seq[Valinta]]
 )
 
 case class Valinta(
   label: String, // fi
   value: String,
-  followups: Option[Seq[LomakeContentItem]],
+  followups: Option[Seq[LomakeContentItem]]
 )
 
 case class SisaltoItem(
@@ -28,7 +28,7 @@ case class SisaltoItem(
   value: Seq[String],
   label: String,
   children: Option[Seq[SisaltoItem]],
-  followups: Option[Seq[SisaltoItem]],
+  followups: Option[Seq[SisaltoItem]]
 )
 
 /*
@@ -39,4 +39,4 @@ label
 fieldClass
 id
 fieldType
-*/
+ */
