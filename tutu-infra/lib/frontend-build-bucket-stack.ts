@@ -2,7 +2,6 @@ import { Stack, StackProps } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import { Role } from 'aws-cdk-lib/aws-iam'
 import * as s3 from 'aws-cdk-lib/aws-s3'
-import * as iam from 'aws-cdk-lib/aws-iam'
 
 interface FrontendBuildBucketStackProps extends StackProps {
   githubActionsDeploymentRole: Role
@@ -16,20 +15,8 @@ export class FrontendBuildBucketStack extends Stack {
   constructor(scope: Construct, id: string, props: FrontendBuildBucketStackProps) {
     super(scope, id, props);
 
-    this.bucket = new s3.Bucket(this, 'BuildArtifactBucket', {bucketName: props.serviceName})
+    this.bucket = new s3.Bucket(this, 'BuildArtifactBucket', {bucketName: `${props.serviceName}-builds`})
 
-    this.bucket.addToResourcePolicy(
-      new iam.PolicyStatement({
-        principals: [new iam.AnyPrincipal()],
-        actions: ['s3:GetObject'],
-        conditions: {
-          "ForAnyValue:StringLike": {
-            "aws:PrincipalOrgPaths": [`o-cj0uasj87s/*/${props.projectAwsOrgOrganizationalUnit}/*`],
-          },
-        },
-      })
-    );
-
-    this.bucket.grantPut(props.githubActionsDeploymentRole)
+    this.bucket.grantReadWrite(props.githubActionsDeploymentRole)
   }
 }

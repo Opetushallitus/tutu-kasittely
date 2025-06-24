@@ -49,6 +49,5 @@ export class GithubActionsStack extends cdk.Stack {
       ]
     })
     this.githubActionsRole.addToPolicy(cdkPolicyStatement)
-
   }
 }
