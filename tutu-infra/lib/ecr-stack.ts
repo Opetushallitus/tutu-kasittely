@@ -38,6 +38,13 @@ export class EcrStack extends Stack {
               },
             })
           );
-        this.repository.grantPush(props.githubActionsDeploymentRole); 
+        this.repository.grantPush(props.githubActionsDeploymentRole);
+
+        const cacheRepository = new Repository(this, "CacheRepository", {
+          repositoryName: `${props.serviceName}-cache`,
+          removalPolicy: RemovalPolicy.DESTROY,
+          imageTagMutability: TagMutability.MUTABLE
+        });
+        cacheRepository.grantPullPush(props.githubActionsDeploymentRole);
     }
 }
