@@ -1,44 +1,41 @@
-import * as cdk from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { IVpc, SecurityGroup } from "aws-cdk-lib/aws-ec2";
-import * as msk from "aws-cdk-lib/aws-msk";
-import { Key } from "aws-cdk-lib/aws-kms";
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cr from 'aws-cdk-lib/custom-resources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { aws_cloudwatch_actions, Duration } from "aws-cdk-lib";
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cdk from 'aws-cdk-lib'
+import { Construct } from 'constructs'
+import { IVpc, SecurityGroup } from 'aws-cdk-lib/aws-ec2'
+import * as msk from 'aws-cdk-lib/aws-msk'
+import { Key } from 'aws-cdk-lib/aws-kms'
+import * as iam from 'aws-cdk-lib/aws-iam'
+import * as cr from 'aws-cdk-lib/custom-resources'
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import { aws_cloudwatch_actions, Duration } from 'aws-cdk-lib'
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
 
 interface MskStackProps extends cdk.StackProps {
-  volumeSize: number;
-  instanceType: string;
-  numberOfBrokerNodes: number;
-  vpc: IVpc;
-  securityGroup: SecurityGroup;
-  env: { region: string };
-  kmsKey: Key,
-  clusterName: string,
-  version: string,
+  volumeSize: number
+  instanceType: string
+  numberOfBrokerNodes: number
+  vpc: IVpc
+  securityGroup: SecurityGroup
+  env: { region: string }
+  kmsKey: Key
+  clusterName: string
+  version: string
   alarmSnsTopic: cdk.aws_sns.Topic
 }
 
 export class MskStack extends cdk.Stack {
-
-  public readonly kafkaCluster: msk.CfnCluster;
-  public readonly bootstrapBrokers: string;
-  public readonly kafkaClusterIamPolicy:  iam.PolicyStatement;
-  public readonly kafkaTopicIamPolicy: iam.PolicyStatement;
-  public readonly kafkaGroupIamPolicy: iam.PolicyStatement;
-
+  public readonly kafkaCluster: msk.CfnCluster
+  public readonly bootstrapBrokers: string
+  public readonly kafkaClusterIamPolicy: iam.PolicyStatement
+  public readonly kafkaTopicIamPolicy: iam.PolicyStatement
+  public readonly kafkaGroupIamPolicy: iam.PolicyStatement
 
   constructor(scope: Construct, id: string, props: MskStackProps) {
-    super(scope, id, props);
+    super(scope, id, props)
 
-    this.kafkaCluster = new msk.CfnCluster(this, "KafkaCluster", {
-
+    this.kafkaCluster = new msk.CfnCluster(this, 'KafkaCluster', {
       brokerNodeGroupInfo: {
-        securityGroups: [ props.securityGroup.securityGroupId ],
-        clientSubnets: props.vpc.privateSubnets.map(subnet => subnet.subnetId),
+        securityGroups: [props.securityGroup.securityGroupId],
+        clientSubnets: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
         instanceType: props.instanceType,
         storageInfo: {
           ebsStorageInfo: {
@@ -59,13 +56,13 @@ export class MskStack extends cdk.Stack {
       encryptionInfo: {
         encryptionInTransit: {
           inCluster: true,
-          clientBroker: "TLS",
+          clientBroker: 'TLS'
         },
         encryptionAtRest: {
-          dataVolumeKmsKeyId: props.kmsKey.keyId,
-        },
-      },
-    });
+          dataVolumeKmsKeyId: props.kmsKey.keyId
+        }
+      }
+    })
 
     const getBootstrapBrokersLambda = new lambda.Function(this, 'GetBootstrapBrokersLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
@@ -100,21 +97,21 @@ export class MskStack extends cdk.Stack {
       initialPolicy: [
         new iam.PolicyStatement({
           actions: ['kafka:GetBootstrapBrokers'],
-          resources: [this.kafkaCluster.attrArn],
-        }),
-      ],
-    });
+          resources: [this.kafkaCluster.attrArn]
+        })
+      ]
+    })
 
     const customResourceProvider = new cr.Provider(this, 'CustomResourceProvider', {
-      onEventHandler: getBootstrapBrokersLambda,
-    });
+      onEventHandler: getBootstrapBrokersLambda
+    })
 
     const bootstrapBrokersResource = new cdk.CustomResource(this, 'BootstrapBrokersResource', {
       serviceToken: customResourceProvider.serviceToken,
       properties: {
-        ClusterArn: this.kafkaCluster.attrArn,
-      },
-    });
+        ClusterArn: this.kafkaCluster.attrArn
+      }
+    })
 
     this.bootstrapBrokers = bootstrapBrokersResource.getAttString('BootstrapBrokerStringSaslIam')
 
@@ -128,7 +125,7 @@ export class MskStack extends cdk.Stack {
       ],
       resources: [this.kafkaCluster.attrArn]
     })
-  
+
     this.kafkaTopicIamPolicy = new iam.PolicyStatement({
       actions: ['kafka-cluster:*Topic*', 'kafka-cluster:WriteData', 'kafka-cluster:ReadData'],
       resources: [
@@ -136,7 +133,7 @@ export class MskStack extends cdk.Stack {
         `arn:aws:kafka:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:topic/${this.kafkaCluster.clusterName}/${cdk.Fn.select(2, cdk.Fn.split('/', this.kafkaCluster.attrArn))}/prod_search_requests`
       ]
     })
-  
+
     this.kafkaGroupIamPolicy = new iam.PolicyStatement({
       actions: ['kafka-cluster:AlterGroup', 'kafka-cluster:DescribeGroup'],
       resources: [
@@ -146,14 +143,14 @@ export class MskStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'BootstrapServers', {
-      value: this.bootstrapBrokers,
-    });
+      value: this.bootstrapBrokers
+    })
 
     const alarmSnsAction = new aws_cloudwatch_actions.SnsAction(props.alarmSnsTopic)
 
     const topics = ['prod_material_activity', 'prod_search_requests']
 
-    topics.forEach(t => {
+    topics.forEach((t) => {
       const lagAlarm = new cloudwatch.Alarm(this, `KafkaConsumerLagAlarm-${t}`, {
         alarmName: `KafkaConsumerLag-${t}`,
         metric: new cloudwatch.Metric({
@@ -162,17 +159,17 @@ export class MskStack extends cdk.Stack {
           dimensionsMap: {
             'Consumer Group': `group-${t.replace(/_/g, '-')}`,
             'Cluster Name': this.kafkaCluster.clusterName,
-            Topic: t,
+            Topic: t
           },
           statistic: 'Average',
-          period: cdk.Duration.minutes(5),
+          period: cdk.Duration.minutes(5)
         }),
         threshold: 10,
         evaluationPeriods: 2,
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
         alarmDescription: `Topic ${t} consumer lag is too high, messages are not being processed quickly enough!`,
-        actionsEnabled: true,
-      });
+        actionsEnabled: true
+      })
 
       lagAlarm.addAlarmAction(alarmSnsAction)
       lagAlarm.addOkAction(alarmSnsAction)

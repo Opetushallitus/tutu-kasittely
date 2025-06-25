@@ -1,16 +1,16 @@
 name: prepare-next-env
-description: 'Prepare next env'
+description: "Prepare next env"
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Set up npm
       uses: actions/setup-node@v4
       with:
-        node-version-file: 'tutu-frontend/.nvmrc'
-        cache: 'npm'
+        node-version-file: "tutu-frontend/.nvmrc"
+        cache: "npm"
         cache-dependency-path: tutu-frontend/package-lock.json
-        registry-url: 'https://npm.pkg.github.com'
-        scope: '@opetushallitus'
+        registry-url: "https://npm.pkg.github.com"
+        scope: "@opetushallitus"
     - name: node_modules-cache
       uses: actions/cache@v4
       with:

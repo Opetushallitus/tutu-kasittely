@@ -7,9 +7,7 @@
     "koodisto": {
       "koodistoUri": "kunta",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "009",
     "paivitysPvm": "2018-02-08",
@@ -50,9 +48,7 @@
     "koodisto": {
       "koodistoUri": "kunta",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "743",
     "paivitysPvm": "2018-02-08",
@@ -93,9 +89,7 @@
     "koodisto": {
       "koodistoUri": "kunta",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "505",
     "paivitysPvm": "2018-02-08",
