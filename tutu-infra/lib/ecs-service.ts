@@ -1,8 +1,8 @@
-import * as _ from "lodash"
-import * as cdk from "aws-cdk-lib"
-import { aws_cloudwatch_actions, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib"
-import { Construct } from "constructs"
-import { LogGroup } from "aws-cdk-lib/aws-logs"
+import * as _ from 'lodash'
+import * as cdk from 'aws-cdk-lib'
+import { aws_cloudwatch_actions, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
+import { LogGroup } from 'aws-cdk-lib/aws-logs'
 import {
   AwsLogDriver,
   Compatibility,
@@ -15,9 +15,9 @@ import {
   Secret,
   TaskDefinition,
   UlimitName
-} from "aws-cdk-lib/aws-ecs"
-import { ISecurityGroup, IVpc } from "aws-cdk-lib/aws-ec2"
-import * as elbv2 from "aws-cdk-lib/aws-elasticloadbalancingv2"
+} from 'aws-cdk-lib/aws-ecs'
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2'
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import {
   ApplicationListenerRule,
   ApplicationProtocol,
@@ -25,20 +25,20 @@ import {
   IApplicationListener,
   ListenerCondition,
   TargetGroupLoadBalancingAlgorithmType
-} from "aws-cdk-lib/aws-elasticloadbalancingv2"
-import { Repository } from "aws-cdk-lib/aws-ecr"
-import { AdjustmentType } from "aws-cdk-lib/aws-autoscaling"
-import * as ssm from "aws-cdk-lib/aws-ssm"
-import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager"
-import * as iam from "aws-cdk-lib/aws-iam";
-import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
-import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
-import * as sns from "aws-cdk-lib/aws-sns";
-import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
-import { Unit } from "aws-cdk-lib/aws-cloudwatch";
-import { Volume } from "aws-cdk-lib/aws-ecs/lib/base/task-definition";
-import { MountPoint } from "aws-cdk-lib/aws-ecs/lib/container-definition";
-import { SecretEntry } from "./secrets-manager-stack";
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2'
+import { Repository } from 'aws-cdk-lib/aws-ecr'
+import { AdjustmentType } from 'aws-cdk-lib/aws-autoscaling'
+import * as ssm from 'aws-cdk-lib/aws-ssm'
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
+import * as iam from 'aws-cdk-lib/aws-iam'
+import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery'
+import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery'
+import * as sns from 'aws-cdk-lib/aws-sns'
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
+import { Unit } from 'aws-cdk-lib/aws-cloudwatch'
+import { Volume } from 'aws-cdk-lib/aws-ecs/lib/base/task-definition'
+import { MountPoint } from 'aws-cdk-lib/aws-ecs/lib/container-definition'
+import { SecretEntry } from './secrets-manager-stack'
 
 interface EcsServiceStackProps extends StackProps {
   environment: string
@@ -79,17 +79,14 @@ export class EcsServiceStack extends Stack {
   constructor(scope: Construct, id: string, props: EcsServiceStackProps) {
     super(scope, id, props)
 
-    const ImageRepository = Repository.fromRepositoryAttributes(
-      this,
-      "EcrRepository", {
+    const ImageRepository = Repository.fromRepositoryAttributes(this, 'EcrRepository', {
       repositoryName: `${props.serviceName}`,
       repositoryArn: `arn:aws:ecr:${Stack.of(this).region}:${props.utilityAccountId}:repository/${props.serviceName}`
     })
 
-
-    const ServiceLogGroup = new LogGroup(this, "LogGroup", {
+    const ServiceLogGroup = new LogGroup(this, 'LogGroup', {
       logGroupName: `/service/${props.serviceName}`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY
     })
 
     const secrets = {
@@ -100,26 +97,25 @@ export class EcsServiceStack extends Stack {
           `${_.upperFirst(_.camelCase(secretName))}Parameter`,
           {
             version: 0,
-            parameterName: `/service/${props.serviceName}/${secretName}`,
+            parameterName: `/service/${props.serviceName}/${secretName}`
           }
-        );
+        )
         return Object.assign(secretsAcc, {
-          [secretName]: Secret.fromSsmParameter(ssmParameter),
-        });
+          [secretName]: Secret.fromSsmParameter(ssmParameter)
+        })
       }, {}),
       ...(props.secrets_manager_secrets || []).reduce((secretsAcc, se) => {
-
         const secret = secretsmanager.Secret.fromSecretNameV2(
           this,
           `${_.upperFirst(_.camelCase(se.path))}Secret`,
           se.path
-        );
+        )
 
         return Object.assign(secretsAcc, {
-          [se.envVarName]: Secret.fromSecretsManager(secret, se.secretKey),
-        });
+          [se.envVarName]: Secret.fromSecretsManager(secret, se.secretKey)
+        })
       }, {})
-    };
+    }
 
     const taskDefinition = new TaskDefinition(this, `${props.serviceName}`, {
       cpu: props.taskCpu,
@@ -132,20 +128,16 @@ export class EcsServiceStack extends Stack {
     })
 
     if (props.iAmPolicyStatements && Array.isArray(props.iAmPolicyStatements)) {
-      props.iAmPolicyStatements.forEach(statement => {
-        taskDefinition.addToTaskRolePolicy(statement);
-      });
+      props.iAmPolicyStatements.forEach((statement) => {
+        taskDefinition.addToTaskRolePolicy(statement)
+      })
     }
 
     const container = taskDefinition.addContainer(`${props.serviceName}`, {
-
-      image: ContainerImage.fromEcrRepository(
-        ImageRepository,
-        props.revision
-      ),
+      image: ContainerImage.fromEcrRepository(ImageRepository, props.revision),
       logging: new AwsLogDriver({
         logGroup: ServiceLogGroup,
-        streamPrefix: `${props.serviceName}`,
+        streamPrefix: `${props.serviceName}`
       }),
       portMappings: [{ containerPort: 8080 }],
       containerName: `${props.serviceName}`,
@@ -174,32 +166,27 @@ export class EcsServiceStack extends Stack {
     //   }),
     // })
 
-
     if (props.efs) {
-      taskDefinition.addVolume(props.efs.volume);
-      container.addMountPoints(props.efs.mountPoint);
+      taskDefinition.addVolume(props.efs.volume)
+      container.addMountPoints(props.efs.mountPoint)
     }
 
-    const ecsService = new FargateService(
-      this,
-      "EcsFargateService",
-      {
-        cluster: props.cluster,
-        minHealthyPercent: 100,
-        taskDefinition,
-        platformVersion: FargatePlatformVersion.LATEST,
-        healthCheckGracePeriod: Duration.seconds(props.healthCheckGracePeriod),
-        enableExecuteCommand: props.allowEcsExec,
-        circuitBreaker: { rollback: true },
-        securityGroups: [props.securityGroup],
-        cloudMapOptions: {
-          name: props.serviceName,
-          cloudMapNamespace: props.privateDnsNamespace,
-          dnsRecordType: servicediscovery.DnsRecordType.A,
-          dnsTtl: Duration.seconds(15),
-        },
+    const ecsService = new FargateService(this, 'EcsFargateService', {
+      cluster: props.cluster,
+      minHealthyPercent: 100,
+      taskDefinition,
+      platformVersion: FargatePlatformVersion.LATEST,
+      healthCheckGracePeriod: Duration.seconds(props.healthCheckGracePeriod),
+      enableExecuteCommand: props.allowEcsExec,
+      circuitBreaker: { rollback: true },
+      securityGroups: [props.securityGroup],
+      cloudMapOptions: {
+        name: props.serviceName,
+        cloudMapNamespace: props.privateDnsNamespace,
+        dnsRecordType: servicediscovery.DnsRecordType.A,
+        dnsTtl: Duration.seconds(15)
       }
-    )
+    })
 
     const targetGroup = new ApplicationTargetGroup(this, `${props.serviceName}TargetGroup`, {
       targets: [ecsService],
@@ -219,18 +206,16 @@ export class EcsServiceStack extends Stack {
     new ApplicationListenerRule(this, 'serviceDefaultRule', {
       listener: props.listener,
       priority: props.albPriority,
-      conditions: [
-        ListenerCondition.pathPatterns(props.listenerPathPatterns)
-      ],
+      conditions: [ListenerCondition.pathPatterns(props.listenerPathPatterns)],
       targetGroups: [targetGroup]
     })
 
     const scalingTarget = ecsService.autoScaleTaskCount({
       minCapacity: props.minimumCount,
-      maxCapacity: props.maximumCount,
+      maxCapacity: props.maximumCount
     })
 
-    scalingTarget.scaleOnMetric("CpuStepAutoscaling", {
+    scalingTarget.scaleOnMetric('CpuStepAutoscaling', {
       metric: ecsService.metricCpuUtilization(),
       scalingSteps: [
         { upper: 5, change: -2 },
@@ -239,7 +224,7 @@ export class EcsServiceStack extends Stack {
         { lower: 85, change: +2 }
       ],
       adjustmentType: AdjustmentType.CHANGE_IN_CAPACITY,
-      cooldown: Duration.minutes(3),
+      cooldown: Duration.minutes(3)
     })
 
     // Cloudwatch alarms for ECS services
@@ -287,77 +272,59 @@ export class EcsServiceStack extends Stack {
     memoryUtilizationAlarm.addAlarmAction(alarmSnsAction)
     memoryUtilizationAlarm.addOkAction(alarmSnsAction)
 
-
     const dashboard = new cloudwatch.Dashboard(this, `EcsDashboard-${props.serviceName}`, {
-      dashboardName: `ECS-${props.serviceName}-Monitoring`,
-    });
+      dashboardName: `ECS-${props.serviceName}-Monitoring`
+    })
 
     const totalRequestsWidget = new cloudwatch.GraphWidget({
       title: `Total API Requests - ${props.serviceName}`,
       left: [
         targetGroup.metrics.requestCountPerTarget({
           unit: Unit.COUNT
-        }),
-      ],
-    });
+        })
+      ]
+    })
 
     const okWidget = new cloudwatch.GraphWidget({
       title: `2XX Count - ${props.serviceName}`,
-      left: [
-        targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_2XX_COUNT)
-      ],
-    });
+      left: [targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_2XX_COUNT)]
+    })
 
     const ok3xxWidget = new cloudwatch.GraphWidget({
       title: `3XX Count - ${props.serviceName}`,
-      left: [
-        targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT)
-      ],
-    });
+      left: [targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT)]
+    })
 
     const error4xxWidget = new cloudwatch.GraphWidget({
       title: `4XX Errors - ${props.serviceName}`,
-      left: [
-        targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_4XX_COUNT)
-      ],
-    });
+      left: [targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_4XX_COUNT)]
+    })
 
     const error5xxWidget = new cloudwatch.GraphWidget({
       title: `5XX Errors - ${props.serviceName}`,
-      left: [
-        targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_5XX_COUNT)
-      ],
-    });
+      left: [targetGroup.metrics.httpCodeTarget(elbv2.HttpCodeTarget.TARGET_5XX_COUNT)]
+    })
 
-    const targetResponseTimeMetric = targetGroup.metricTargetResponseTime({
+    const targetResponseTimeMetric = targetGroup.metrics.targetResponseTime({
       statistic: 'Average',
-      period: cdk.Duration.minutes(5),
-    });
+      period: cdk.Duration.minutes(5)
+    })
 
     const responseTimeInMs = new cloudwatch.MathExpression({
       expression: 'm1 * 1000',
-      usingMetrics: { m1: targetResponseTimeMetric },
-    });
+      usingMetrics: { m1: targetResponseTimeMetric }
+    })
 
     const responseTimeWidget = new cloudwatch.GraphWidget({
       title: `ResponseTime AVG- ${props.serviceName}`,
-      left: [
-        responseTimeInMs
-      ],
-    });
+      left: [responseTimeInMs]
+    })
 
     // Add widgets to the dashboard
-    dashboard.addWidgets(
-      totalRequestsWidget,
-      okWidget,
-      ok3xxWidget,
-      error4xxWidget,
-      error5xxWidget,
-      responseTimeWidget
-    );
+    dashboard.addWidgets(totalRequestsWidget, okWidget, ok3xxWidget, error4xxWidget, error5xxWidget, responseTimeWidget)
 
     new CfnOutput(this, 'ServiceDiscoveryName', {
-      value: `${props.serviceName}.${props.privateDnsNamespace.namespaceName}`,
-    });
+      value: `${props.serviceName}.${props.privateDnsNamespace.namespaceName}`
+    })
   }
 }

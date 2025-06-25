@@ -7,9 +7,7 @@
     "koodisto": {
       "koodistoUri": "maatjavaltiot2",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "246",
     "paivitysPvm": "2019-01-18",
@@ -64,9 +62,7 @@
     "koodisto": {
       "koodistoUri": "maatjavaltiot2",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "702",
     "paivitysPvm": "2019-01-18",
@@ -121,9 +117,7 @@
     "koodisto": {
       "koodistoUri": "maatjavaltiot2",
       "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        2
-      ]
+      "koodistoVersios": [2]
     },
     "koodiArvo": "752",
     "paivitysPvm": "2019-01-18",

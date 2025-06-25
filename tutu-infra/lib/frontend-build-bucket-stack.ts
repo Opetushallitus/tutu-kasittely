@@ -13,9 +13,9 @@ export class FrontendBuildBucketStack extends Stack {
   public readonly bucket: s3.Bucket
 
   constructor(scope: Construct, id: string, props: FrontendBuildBucketStackProps) {
-    super(scope, id, props);
+    super(scope, id, props)
 
-    this.bucket = new s3.Bucket(this, 'BuildArtifactBucket', {bucketName: `${props.serviceName}-builds`})
+    this.bucket = new s3.Bucket(this, 'BuildArtifactBucket', { bucketName: `${props.serviceName}-builds` })
 
     this.bucket.grantReadWrite(props.githubActionsDeploymentRole)
   }

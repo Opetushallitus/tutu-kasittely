@@ -43,7 +43,6 @@ function getRevisionFromEnv() {
   throw new Error('Missing revision env variable')
 }
 
-
 // Allow any in this case, since we don't want to explicitely type json data
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 let environmentConfig: any
@@ -65,7 +64,6 @@ if (environmentName === 'dev') {
 
 // dev, qa & prod account resources..
 if (environmentName === 'dev' || environmentName === 'qa' || environmentName === 'prod') {
-
   const revision = getRevisionFromEnv()
 
   const domain = environmentConfig.aws.domain
@@ -81,7 +79,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const Monitor = new MonitorStack(app, 'MonitorStack', {
     env: envEUAccount,
     slackChannelName: `valvonta-tutu-${environmentName}`,
-    environment: environmentName,
+    environment: environmentName
   })
 
   // Remember to update KMS key removal policy
@@ -146,7 +144,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     kmsKey: Kms.rdsKmsKey,
     auroraDbPassword: Secrets.webBackendAuroraPassword,
     subnetGroup: AuroraCommons.auroraSubnetGroup,
-    alarmSnsTopic: Monitor.topic,
+    alarmSnsTopic: Monitor.topic
   })
 
   const Alb = new AlbStack(app, 'AlbStack', {
@@ -161,7 +159,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     alarmSnsTopic: Monitor.topic
   })
 
-// CloudFront certificates must be deployed to us-east-1
+  // CloudFront certificates must be deployed to us-east-1
   const CloudfrontCertificate = new CloudFrontCertificateStack(app, 'CloudFrontCertificateStack', {
     env: envUS,
     stackName: `${environmentName}-cloudfront-certificate`,
@@ -184,7 +182,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const namespace = new NamespaceStack(app, 'NameSpaceStack', Network.vpc, {
     env: envEU,
     environment: environmentName,
-    projectName: utilityConfig.repository_regex,
+    projectName: utilityConfig.repository_regex
   })
 
   const FargateCluster = new FargateClusterStack(app, 'FargateClusterStack', {
@@ -237,19 +235,20 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     healthCheckTimeout: 2,
     albPriority: 120,
     privateDnsNamespace: namespace.privateDnsNamespace,
-    alarmSnsTopic: Monitor.topic,
+    alarmSnsTopic: Monitor.topic
   })
 
   new FrontendNextjsStack(app, 'FrontendNextjsStack', {
     basePath: '/tutu-frontend',
     revision: revision,
     serviceName: utilityConfig.frontend_service_name,
-    cloudFrontDistribution: Cloudfront.distribution,
     domainName: domain,
     hostedZone: HostedZones.publicHostedZone,
     environment: environmentConfig.services.web_frontend.env_vars,
-    nextjsPath: '/tutu-frontend',
-    certificate: CloudfrontCertificate.certificate
+    nextjsPath: '../tutu-frontend',
+    certificate: CloudfrontCertificate.certificate,
+    env: envEU,
+    crossRegionReferences: true
   })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
@@ -260,8 +259,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     oidcThumbprint2: '1c58a3a8518e8759bf075b76b750d4f2df264fcd'
   })
 
-// ECR stacks use AWS Organizations Organizational Unit for sharing the ECR
-// repositories between stacks. Ask the OU ID from Infratiimi.
+  // ECR stacks use AWS Organizations Organizational Unit for sharing the ECR
+  // repositories between stacks. Ask the OU ID from Infratiimi.
   new EcrStack(app, 'BackendEcrStack', {
     env: envEU,
     stackName: 'tutu-backend-ecr',
@@ -271,8 +270,9 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   })
 
   new FrontendBuildBucketStack(app, 'FrontendBuildBucketStack', {
+    env: envEU,
     githubActionsDeploymentRole: Utility.githubActionsDeploymentRole,
     serviceName: utilityConfig.frontend_service_name,
-    projectAwsOrgOrganizationalUnit: utilityConfig.aws.project_organizational_unit,
+    projectAwsOrgOrganizationalUnit: utilityConfig.aws.project_organizational_unit
   })
 }
