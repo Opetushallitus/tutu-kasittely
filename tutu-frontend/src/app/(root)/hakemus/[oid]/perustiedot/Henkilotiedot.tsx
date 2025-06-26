@@ -22,12 +22,12 @@ const HenkilotietoRivi = ({
 }) => {
   return (
     <>
-      <Grid size={1}>
+      <Grid size={2}>
         <OphTypography variant={'label'}>
           {t(`hakemus.perustiedot.henkilotiedot.${nimi}`)}
         </OphTypography>
       </Grid>
-      <Grid size={5}>
+      <Grid size={4}>
         <OphTypography data-testid={nimi} variant={'body1'}>
           {arvo}
         </OphTypography>
@@ -78,7 +78,6 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
         </OphTypography>
         <OphInput
           inputProps={{ 'data-testid': 'sahkopostiosoite' }}
-          sx={{ width: '50%' }}
           readOnly={true}
           value={hakija.sahkopostiosoite || ''}
         ></OphInput>

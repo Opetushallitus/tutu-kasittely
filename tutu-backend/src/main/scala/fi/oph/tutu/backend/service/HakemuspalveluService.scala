@@ -62,4 +62,14 @@ class HakemuspalveluService(httpService: HttpService) {
       case Right(response: String) => Right(response)
     }
   }
+  
+  def haeMuutoshistoria(hakemusOid: HakemusOid): Either[Throwable, String] = {
+    httpService.get(
+      hakemuspalveluCasClient,
+      s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/${hakemusOid.toString}/changes"
+    ) match {
+      case Left(error: Throwable)  => Left(error)
+      case Right(response: String) => Right(response)
+    }
+  }
 }

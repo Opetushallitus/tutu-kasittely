@@ -1,5 +1,11 @@
 import { Hakija } from '@/src/lib/types/hakija';
 
+export type MuutosHistoriaItem = {
+  role: 'Esittelija' | 'Hakija' | 'Irrelevant';
+  time: string;
+  modifiedBy: string;
+};
+
 export type Hakemus = {
   hakemusOid: string;
   hakemusKoskee: number;
@@ -12,4 +18,5 @@ export type Hakemus = {
   ataruHakemuksenTila: string;
   kasittelyVaihe: string;
   muokattu: string;
+  muutosHistoria: MuutosHistoriaItem[];
 };

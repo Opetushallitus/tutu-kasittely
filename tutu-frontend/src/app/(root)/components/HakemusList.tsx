@@ -8,7 +8,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { TableHeaderCell } from './TableHeaderCell';
+import TableSortLabel from './TableSortLabel';
 import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
 import { naytaQueryStates } from '@/src/app/(root)/components/types';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
@@ -16,28 +16,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
-
-const TutuTableSortLabel = (props: {
-  fieldKey: string;
-  sortDef: string;
-  handleSort: (sortDef: string) => void;
-}) => {
-  const { fieldKey, sortDef, handleSort } = props;
-  const { t } = useTranslations();
-  return (
-    <TableHeaderCell
-      colId={fieldKey}
-      sort={sortDef}
-      title={t(fieldKey)}
-      setSort={handleSort}
-      sortable={true}
-    />
-  );
-};
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
@@ -111,7 +92,7 @@ export function HakemusList({ user }: HakemusListProps) {
           <TableRow>
             {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
               nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
-                <TutuTableSortLabel
+                <TableSortLabel
                   key={fieldKey}
                   fieldKey={fieldKey}
                   sortDef={sortDef}

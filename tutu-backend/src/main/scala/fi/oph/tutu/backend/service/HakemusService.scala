@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -37,7 +38,7 @@ class HakemusService(
     }
   }
 
-  def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
+  def haeHakemus(hakemusOid: HakemusOid, muutosHistoriaSortDef: SortDef = Undefined): Option[Hakemus] = {
     val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
       case Left(error: Throwable) =>
         LOG.warn(s"Ataru-hakemuksen haku epäonnistui hakemusOidille $hakemusOid: ", error.getMessage)
@@ -45,12 +46,26 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruHakemus]
     }
 
+    val hakija = ataruHakemusParser.parseHakija(ataruHakemus)
+    var muutosHistoria = hakemuspalveluService.haeMuutoshistoria(hakemusOid) match {
+      case Left(error: Throwable) =>
+        LOG.warn(s"Ataru-hakemuksen muutoshistorian haku epäonnistui hakemusOidille $hakemusOid: {}", error.getMessage)
+        Seq()
+      case Right(response: String) =>
+        resolveMuutoshistoria(response, hakija)
+    }
+    muutosHistoria = muutosHistoriaSortDef match {
+      case Desc => muutosHistoria.sortBy(_.time)(Ordering[LocalDateTime].reverse)
+      case Asc => muutosHistoria.sortBy(_.time)
+      case _ => muutosHistoria
+    }
+
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
         Some(
           Hakemus(
             hakemusOid = dbHakemus.hakemusOid.toString,
-            hakija = ataruHakemusParser.parseHakija(ataruHakemus),
+            hakija = hakija,
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
@@ -64,15 +79,44 @@ class HakemusService(
               case Some(esittelijaOid) => Some(esittelijaOid.toString)
             },
             ataruHakemuksenTila = AtaruHakemuksenTila.fromString(
-              ataruHakemus.`application-hakukohde-reviews`.collectFirst(review => review.state).get
+              ataruHakemus.`application-hakukohde-reviews`.collectFirst(review => review.state).getOrElse(AtaruHakemuksenTila.Kasittelematta.toString)
             ),
             kasittelyVaihe = dbHakemus.kasittelyVaihe,
-            muokattu = dbHakemus.muokattu
+            muokattu = dbHakemus.muokattu,
+            muutosHistoria = muutosHistoria
           )
         )
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
+    }
+  }
+
+  private def resolveMuutoshistoria(jsonString: String, hakija: Hakija): Seq[MuutosHistoriaItem] = {
+    parse(jsonString) match {
+      case JArray(rawItems) =>
+        val relevant = rawItems.filter { item =>
+          MuutosHistoriaRoleType.isRelevant((item \ "type").extract[String])
+        }
+        relevant.map(item => {
+          val roleType = (item \ "type").extract[String]
+          val time = LocalDateTime.parse((item \ "time").extract[String], DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+          val esittelijaOid = (item \ "virkailijaOid").extractOpt[String]
+          val (etunimi: String, sukunimi: String) = esittelijaOid match {
+            case None => (hakija.kutsumanimi, hakija.sukunimi)
+            case Some(esittelijaOid) =>
+              onrService.haeHenkilo(esittelijaOid) match {
+                case Left(error) =>
+                  LOG.warn(s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}", error.getMessage)
+                  ("", "")
+                case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
+              }
+
+          }
+          val editoija = s"$etunimi $sukunimi".trim
+          MuutosHistoriaItem(MuutosHistoriaRoleType.fromString(roleType), time, editoija)
+        })
+      case _ => throw new MappingException(s"Cannot deserialize muutoshistoria response")
     }
   }
 

@@ -1,11 +1,114 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { MuutosHistoriaItem } from '@/src/lib/types/hakemus';
+import {
+  Stack,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  useTheme,
+} from '@mui/material';
+import * as R from 'remeda';
+import TableSortLabel from '@/src/app/(root)/components/TableSortLabel';
+import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
+import { useQueryClient } from '@tanstack/react-query';
+import { setLocalStorageAndLaunchHakemusQuery } from '@/src/lib/utils';
+import { useState } from 'react';
+import { HAKEMUS_MUUTOSHISTORIA_SORT_KEY } from '@/src/context/HakemusContext';
+import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
+import { format } from 'date-fns';
+import { match } from 'ts-pattern';
 
-export const Muutoshistoria = () => {
+const FIELD_KEYS_ARRAY = [
+  'hakemus.perustiedot.muutoshistoria.muokattu',
+  'hakemus.perustiedot.muutoshistoria.muokkaaja',
+];
+
+const SORTABLE_FIELDS = ['muokattu'];
+
+const StyledTableRow = styled(TableRow)({
+  '&:last-child td, &:last-child th': {
+    borderBottom: 'none',
+  },
+});
+
+export const Muutoshistoria = ({
+  muutosHistoria,
+}: {
+  muutosHistoria: MuutosHistoriaItem[];
+}) => {
   const { t } = useTranslations();
+  const theme = useTheme();
+  const queryClient = useQueryClient();
+  const [sortDef, setSortDef] = useState('');
+
+  const handleSort = (sortDef: string) => {
+    setSortDef(sortDef);
+    setLocalStorageAndLaunchHakemusQuery(
+      queryClient,
+      HAKEMUS_MUUTOSHISTORIA_SORT_KEY,
+      sortDef,
+    );
+  };
+
+  const muokkaajaTieto = (muutos: MuutosHistoriaItem) => {
+    return match(muutos.role)
+      .with(
+        'Esittelija',
+        () =>
+          `${muutos.modifiedBy} (${t('hakemus.perustiedot.muutoshistoria.esittelija')})`,
+      )
+      .with(
+        'Hakija',
+        () =>
+          `${muutos.modifiedBy} (${t('hakemus.perustiedot.muutoshistoria.hakija')})`,
+      )
+      .otherwise(() => muutos.modifiedBy);
+  };
+
   return (
-    <OphTypography variant={'h3'}>
-      {t('hakemus.perustiedot.muutoshistoria.otsikko')}
-    </OphTypography>
+    <Stack gap={theme.spacing(3)}>
+      <OphTypography variant={'h3'}>
+        {t('hakemus.perustiedot.muutoshistoria.otsikko')}
+      </OphTypography>
+      <TableContainer>
+        <Table data-testid={'muutoshistoria-table'}>
+          <TableHead>
+            <TableRow>
+              {R.map(FIELD_KEYS_ARRAY, (fieldKey) =>
+                SORTABLE_FIELDS.includes(fieldKey.split('.').at(-1)!) ? (
+                  <TableSortLabel
+                    key={fieldKey}
+                    fieldKey={fieldKey}
+                    sortDef={sortDef}
+                    handleSort={handleSort}
+                  />
+                ) : (
+                  <TableHeaderCell
+                    key={fieldKey}
+                    title={t(fieldKey)}
+                    sortable={false}
+                  ></TableHeaderCell>
+                ),
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {R.map(muutosHistoria, (muutos) => (
+              <StyledTableRow key={muutos.time}>
+                <TableCell>
+                  {format(Date.parse(muutos.time), DATE_TIME_PLACEHOLDER)}
+                </TableCell>
+                <TableCell>{muokkaajaTieto(muutos)}</TableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Stack>
   );
 };

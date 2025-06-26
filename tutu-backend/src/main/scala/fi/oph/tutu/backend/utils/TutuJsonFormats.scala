@@ -1,18 +1,9 @@
 package fi.oph.tutu.backend.utils
 
-import fi.oph.tutu.backend.domain.{
-  AnswerValue,
-  EmptyValue,
-  Kieli,
-  Kielistetty,
-  KoodistoItem,
-  MultiValue,
-  NestedValues,
-  SingleValue
-}
+import fi.oph.tutu.backend.domain.{AnswerValue, EmptyValue, Kieli, KoodistoItem, MultiValue, NestedValues, SingleValue}
 import org.json4s.*
 
-import scala.collection.mutable
+import java.text.SimpleDateFormat
 
 trait TutuJsonFormats {
   implicit val formats: Formats = DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer
@@ -37,6 +28,8 @@ object AnswerValueSerializer
               case _                   => throw new MappingException("Invalid nested structure")
             })
           case JArray(Nil) =>
+            EmptyValue
+          case JNull =>
             EmptyValue
           case unexpected =>
             throw new MappingException(s"Cannot deserialize AnswerValue from $unexpected")

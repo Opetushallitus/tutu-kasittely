@@ -35,4 +35,46 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
   await expect(page.getByTestId('kotikunta')).toHaveText('Helsingfors');
 });
 
-// TODO Testejä ainakin hakemuksen sisällölle sen mukaan mitä hakemus koskee, sekä muutoshistorialle
+test('Muutoshistoriassa näkyy oikeat tiedot', async ({ page }) => {
+  mockUser(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
+  );
+  const tableRows = page
+    .getByTestId('muutoshistoria-table')
+    .locator('tbody tr');
+  await expect(tableRows).toHaveCount(2);
+  await expect(tableRows.first().locator('td').last()).toHaveText(
+    'Esittelija Testi (esittelijä)',
+  );
+  await expect(tableRows.last().locator('td').last()).toHaveText(
+    'Hakija Testi (hakija)',
+  );
+});
+
+test('Muutoshistoriassa näkyy oikeat tiedot, sortattuna laskevassa järjestyksessä', async ({
+  page,
+}) => {
+  mockUser(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
+  );
+  const sortableHeader = page
+    .getByTestId('muutoshistoria-table')
+    .locator('thead tr th')
+    .first();
+  await sortableHeader.click();
+  await sortableHeader.click();
+  const tableRows = page
+    .getByTestId('muutoshistoria-table')
+    .locator('tbody tr');
+  await expect(tableRows).toHaveCount(2);
+  await expect(tableRows.first().locator('td').last()).toHaveText(
+    'Hakija Testi (hakija)',
+  );
+  await expect(tableRows.last().locator('td').last()).toHaveText(
+    'Esittelija Testi (esittelijä)',
+  );
+});
+
+// TODO Testejä ainakin hakemuksen sisällölle sen mukaan mitä hakemus koskee

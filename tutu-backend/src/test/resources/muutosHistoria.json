@@ -1,0 +1,69 @@
+[
+  {
+    "type": "updated-by-virkailija",
+    "virkailijaOid": "1.2.246.562.24.00000000000000006666",
+    "time": "2025-06-17T10:02:20.473Z",
+    "address": {
+      "label": "Katuosoite",
+      "old": "Vallintie 10 C 35",
+      "new": "Vallintie 10 C 34"
+    },
+    "nationality": {
+      "label": "Kansalaisuus",
+      "old": [
+        [
+          "Suomi"
+        ]
+      ],
+      "new": [
+        [
+          "Saudi-Arabia"
+        ]
+      ]
+    },
+    "language": {
+      "label": "Äidinkieli",
+      "old": "",
+      "new": "suomi"
+    },
+    "tutu-first-degree-country": {
+      "label": "Korkeakoulun tai oppilaitoksen sijaintimaa",
+      "old": "Kiina",
+      "new": "Kanada"
+    },
+    "gender": {
+      "label": "Sukupuoli",
+      "old": "",
+      "new": "nainen"
+    }
+  },
+  {
+    "type": "updated-by-applicant",
+    "time": "2025-06-17T15:19:44.230Z",
+    "f79acf0e-d410-4948-9e0a-84596b092d32": {
+      "label": "Korkeakoulun tai oppilaitoksen nimi",
+      "old": "tutu academy",
+      "new": "tutu koulu"
+    }
+  },
+  {
+    "type": "updated-by-virkailija",
+    "virkailijaOid": "1.2.246.562.24.00000000000000006666",
+    "time": "2025-06-18T05:57:18.866Z",
+    "9b5f4057-0b3e-45ae-827d-12d877822d4a": {
+      "label": "Millä kielellä haluat asioida Opetushallituksen kanssa?",
+      "old": "0",
+      "new": "2"
+    },
+    "c20bb2dc-fc8c-41a9-8897-b08fbfc3c705": {
+      "label": "Saako Opetushallitus kysyä todistusten antajilta, ovatko todistukset aitoja?",
+      "old": "0",
+      "new": "1"
+    }
+  },
+  {
+    "type": "attachment-review-state-change",
+    "virkailijaOid": "1.2.246.562.24.00000000000000006666",
+    "time": "2025-06-19T05:57:18.866Z"
+  }
+]

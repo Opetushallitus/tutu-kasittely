@@ -13,3 +13,12 @@ export async function setQueryStateAndLocalStorage<T>(
   localStorage.setItem('tutu-query-string', newSearchParams.toString());
   await queryClient.invalidateQueries({ queryKey: ['getHakemukset'] });
 }
+
+export const setLocalStorageAndLaunchHakemusQuery = async (
+  queryClient: QueryClient,
+  storageKey: string,
+  storageValue: string,
+) => {
+  localStorage.setItem(storageKey, storageValue);
+  await queryClient.invalidateQueries({ queryKey: ['getHakemus'] });
+};
