@@ -13,8 +13,14 @@ type HakemusContextValue = {
   error: unknown;
 };
 
+export const HAKEMUS_MUUTOSHISTORIA_SORT_KEY = 'hakemus-muutoshistoria-sort';
+
 const getHakemus = async (hakemusOid: string): Promise<Hakemus> => {
-  return await doApiFetch(`hakemus/${hakemusOid}`, undefined, 'no-store');
+  const sortParam = localStorage.getItem(HAKEMUS_MUUTOSHISTORIA_SORT_KEY);
+  const resource = sortParam
+    ? `hakemus/${hakemusOid}?hakemusMuutoshistoriaSort=${sortParam.split(':').at(-1)}`
+    : `hakemus/${hakemusOid}`;
+  return await doApiFetch(resource, undefined, 'no-store');
 };
 
 const HakemusContext = createContext<HakemusContextValue | null>(null);

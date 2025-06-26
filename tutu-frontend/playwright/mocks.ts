@@ -1,6 +1,7 @@
 import { Route, Page } from '@playwright/test';
 import { readFile } from 'fs/promises';
 import path from 'path';
+import { sortBy } from 'remeda';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   mockBasic(page);
@@ -74,7 +75,28 @@ export const mockUser = (page: Page, kieli: string = 'fi') => {
 const mockHakemus = (page: Page) => {
   page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
-    const oid = url.split('/').pop();
+    const params = url.split('/').pop()?.split('?') || [];
+    const oid = params[0];
+    const isDescMuutoshistoriaSortOrder = (params[1] || '').includes(
+      'hakemusMuutoshistoriaSort=desc',
+    );
+    const muutosHistoriaRaw = [
+      {
+        role: 'Esittelija',
+        time: '2025-05-28T10:59:47.597',
+        modifiedBy: 'Esittelija Testi',
+      },
+      {
+        role: 'Hakija',
+        time: '2025-06-15T15:14:47.597',
+        modifiedBy: 'Hakija Testi',
+      },
+    ];
+
+    const muutoshistoria = isDescMuutoshistoriaSortOrder
+      ? sortBy(muutosHistoriaRaw, (mh) => mh.time).reverse()
+      : muutosHistoriaRaw;
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -114,6 +136,7 @@ const mockHakemus = (page: Page) => {
         ataruHakemuksenTila: 'kasittelymaksamatta',
         kasittelyVaihe: 'HakemustaTaydennetty',
         muokattu: '2025-06-28T10:59:47.597',
+        muutosHistoria: muutoshistoria,
       }),
     });
   });

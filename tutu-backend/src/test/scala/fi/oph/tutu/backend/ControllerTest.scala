@@ -13,6 +13,7 @@ import fi.oph.tutu.backend.domain.{
   UserOid,
   UusiAtaruHakemus
 }
+import fi.oph.tutu.backend.fixture.hakijaFixture
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -75,16 +76,6 @@ class ControllerTest extends IntegrationTestBase {
   var ataruHakemusParser: AtaruHakemusParser = _
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
-  final val suomi = Map(
-    Kieli.valueOf("fi") -> "Suomi",
-    Kieli.valueOf("sv") -> "Finland",
-    Kieli.valueOf("en") -> "Finland"
-  )
-  final val kajaani = Map(
-    Kieli.valueOf("fi") -> "Kajaani",
-    Kieli.valueOf("sv") -> "Kajana",
-    Kieli.valueOf("en") -> "Kanada"
-  )
 
   var esittelija: Option[DbEsittelija] = None
   @BeforeAll def setup(): Unit = {
@@ -256,9 +247,8 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
-    val ataruJson = loadJson("ataruHakemukset.json")
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
-      .thenReturn(Right(ataruJson))
+      .thenReturn(Right(loadJson("ataruHakemukset.json")))
 
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
@@ -318,13 +308,8 @@ class ControllerTest extends IntegrationTestBase {
   @Order(8)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
-    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemukset.json"))
-      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
-
-    val ataruJson = Source.fromInputStream(stream).mkString
-
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
-      .thenReturn(Right(ataruJson))
+      .thenReturn(Right(loadJson("ataruHakemukset.json")))
 
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
@@ -362,33 +347,18 @@ class ControllerTest extends IntegrationTestBase {
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
 
-    val ataruJson = loadJson("ataruHakemus.json")
-
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(ataruJson))
-    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(
-      Hakija(
-        "Testi Kolmas",
-        "tatu",
-        "Hakija",
-        suomi,
-        Some("180462-9981"),
-        "18.04.1962",
-        Some("+3584411222333"),
-        suomi,
-        "Sillitie 1",
-        "00800",
-        "HELSINKI",
-        kajaani,
-        Some("patu.kuusinen@riibasu.fi")
-      )
+      .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
+      Right(loadJson("muutosHistoria.json"))
     )
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
 
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
                                 "hakija": {
                                   "etunimet": "Testi Kolmas",
-                                  "kutsumanimi": "tatu",
+                                  "kutsumanimi": "Tatu",
                                   "sukunimi": "Hakija",
                                   "kansalaisuus": {
                                     "fi": "Suomi",
@@ -415,7 +385,19 @@ class ControllerTest extends IntegrationTestBase {
                                 "paatosPvm": null,
                                 "esittelijaOid": null,
                                 "ataruHakemuksenTila": "KasittelyMaksettu",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "muutosHistoria": [{
+                                  "role": "Esittelija",
+                                  "time": "2025-06-17T10:02:20.473",
+                                  "modifiedBy": "Esko Esittelijä"
+                                  }, {
+                                  "role": "Hakija",
+                                  "time": "2025-06-17T15:19:44.23",
+                                  "modifiedBy": "Tatu Hakija"
+                                  }, {
+                                  "role": "Esittelija",
+                                  "time": "2025-06-18T05:57:18.866",
+                                  "modifiedBy": "Esko Esittelijä"}]
                               }"""
 
     val result = mockMvc
@@ -452,13 +434,12 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def paivitaHakemusValidRequestReturns200WithChangedEsittelijaOid(): Unit = {
-    val stream = Option(getClass.getClassLoader.getResourceAsStream("ataruHakemus.json"))
-      .getOrElse(throw new FileNotFoundException("ataruHakemukset.json not found"))
-
-    val ataruJson = Source.fromInputStream(stream).mkString
-
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(ataruJson))
+      .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
+      Right(loadJson("muutosHistoria.json"))
+    )
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
 
     // maakoodi 0000 -> esittelijaOid = null
     val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), "0000", 0)

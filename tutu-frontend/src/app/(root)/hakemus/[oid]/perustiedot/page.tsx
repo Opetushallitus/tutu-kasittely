@@ -22,9 +22,8 @@ export default function PerustietoPage() {
       (option) => option.value === String(hakemus?.hakemusKoskee),
     )?.label || ''
   }`;
-
   return (
-    <Stack gap={theme.spacing(2)}>
+    <Stack gap={theme.spacing(3)}>
       <OphTypography variant={'h2'}>
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>
@@ -35,8 +34,10 @@ export default function PerustietoPage() {
         label={t('hakemus.perustiedot.mitaHakee')}
         value={t(hakemusKoskee)}
       ></LabeledValue>
-      <Muutoshistoria />
-      <Henkilotiedot hakija={hakemus.hakija} />
+      <Stack gap={theme.spacing(3)} width={'60%'}>
+        <Muutoshistoria muutosHistoria={hakemus.muutosHistoria} />
+        <Henkilotiedot hakija={hakemus.hakija} />
+      </Stack>
     </Stack>
   );
 }

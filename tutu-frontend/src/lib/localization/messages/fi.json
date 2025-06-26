@@ -14,12 +14,6 @@
     "esittelija": "Esittelijä",
     "hakemusKoskee": "Hakemus koskee",
     "kasittelyvaihe": "Käsittelyvaihe",
-    "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
-      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
-      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
-      "riittavatOpinnot": "Päätös riittävistä opinnoista"
-    },
     "kasittelytila": "Käsittelytila",
     "nayta": "Näytä",
     "haeHakemuksia": "Hae hakemuksia",
@@ -84,7 +78,9 @@
       "muutoshistoria": {
         "otsikko": "Hakemuksen muutoshistoria",
         "muokattu": "Muokattu",
-        "muokkaaja": "Muokkaaja"
+        "muokkaaja": "Muokkaaja",
+        "esittelija": "esittelijä",
+        "hakija": "hakija"
       },
       "henkilotiedot": {
         "otsikko": "Henkilötiedot",

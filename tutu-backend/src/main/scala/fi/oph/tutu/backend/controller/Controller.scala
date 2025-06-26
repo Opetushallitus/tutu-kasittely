@@ -8,6 +8,7 @@ import fi.oph.tutu.backend.domain.{
   HakemusListItem,
   HakemusOid,
   PartialHakemus,
+  SortDef,
   UserOid,
   UserResponse,
   UusiAtaruHakemus
@@ -160,12 +161,16 @@ class Controller(
     }
 
   @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def haeHakemus(@PathVariable("hakemusOid") hakemusOid: String): ResponseEntity[Any] = {
-    hakemusService.haeHakemus(HakemusOid(hakemusOid)) match {
+  def haeHakemus(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestParam(required = false) hakemusMuutoshistoriaSort: String = SortDef.Undefined.toString
+  ): ResponseEntity[Any] = {
+    hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort)) match {
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt hakemusOid: $hakemusOid")
         ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hakemusta ei löytynyt")
-      case Some(hakemus) => ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
+      case Some(hakemus) =>
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
     }
 
   }

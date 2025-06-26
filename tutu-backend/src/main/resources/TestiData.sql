@@ -12,4 +12,5 @@ insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values (
 insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.00000000000002354835', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 2, 'test');
 insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.00000000000002354867', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 3, 'test');
 insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.00000000000002354702', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 0, 'test');
+insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.00000000000002355032', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 0, 'test');
 insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.99999999999999999999', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 1, 'test');

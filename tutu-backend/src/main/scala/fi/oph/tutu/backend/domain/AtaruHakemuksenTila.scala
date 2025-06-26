@@ -6,7 +6,8 @@ enum AtaruHakemuksenTila:
     TaydennysPyynto, KasittelyMaksamatta, KasittelyMaksettu, PaatosMaksuAvoin, PaatosMaksamatta,
     PaatosMaksettu, Laskutuksessa
 
-object AtaruHakemuksenTila:
+object AtaruHakemuksenTila {
+  val UNDEFINED = "unprocessed"
   def fromString(value: String): AtaruHakemuksenTila = value match
     case "unprocessed"              => Kasittelematta
     case "processing"               => Kasittelyssa
@@ -23,3 +24,4 @@ object AtaruHakemuksenTila:
     case "decision-fee-paid"        => PaatosMaksettu
     case "invoiced"                 => Laskutuksessa
     case _ => throw new IllegalArgumentException(s"Tuntematon hakemuspalveluhakemuksen tila: $value")
+}
