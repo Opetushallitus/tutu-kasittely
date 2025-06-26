@@ -352,6 +352,8 @@ class ControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
       Right(loadJson("muutosHistoria.json"))
     )
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
 
     val expectedResult = s"""{
@@ -439,6 +441,8 @@ class ControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
       Right(loadJson("muutosHistoria.json"))
     )
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
 
     // maakoodi 0000 -> esittelijaOid = null
