@@ -13,7 +13,6 @@ import {
   useTheme,
 } from '@mui/material';
 import * as R from 'remeda';
-import TableSortLabel from '@/src/app/(root)/components/TableSortLabel';
 import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
 import { useQueryClient } from '@tanstack/react-query';
 import { setLocalStorageAndLaunchHakemusQuery } from '@/src/lib/utils';
@@ -29,6 +28,9 @@ const FIELD_KEYS_ARRAY = [
 ];
 
 const SORTABLE_FIELDS = ['muokattu'];
+
+const isSortableField = (fieldKey: string) =>
+  SORTABLE_FIELDS.includes(fieldKey.split('.').at(-1)!);
 
 const StyledTableRow = styled(TableRow)({
   '&:last-child td, &:last-child th': {
@@ -79,22 +81,16 @@ export const Muutoshistoria = ({
         <Table data-testid={'muutoshistoria-table'}>
           <TableHead>
             <TableRow>
-              {R.map(FIELD_KEYS_ARRAY, (fieldKey) =>
-                SORTABLE_FIELDS.includes(fieldKey.split('.').at(-1)!) ? (
-                  <TableSortLabel
-                    key={fieldKey}
-                    fieldKey={fieldKey}
-                    sortDef={sortDef}
-                    handleSort={handleSort}
-                  />
-                ) : (
-                  <TableHeaderCell
-                    key={fieldKey}
-                    title={t(fieldKey)}
-                    sortable={false}
-                  ></TableHeaderCell>
-                ),
-              )}
+              {R.map(FIELD_KEYS_ARRAY, (fieldKey) => (
+                <TableHeaderCell
+                  key={fieldKey}
+                  colId={fieldKey}
+                  title={t(fieldKey)}
+                  sort={sortDef}
+                  setSort={handleSort}
+                  sortable={isSortableField(fieldKey)}
+                ></TableHeaderCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>

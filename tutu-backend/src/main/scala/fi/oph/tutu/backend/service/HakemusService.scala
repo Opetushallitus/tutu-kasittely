@@ -81,7 +81,7 @@ class HakemusService(
             ataruHakemuksenTila = AtaruHakemuksenTila.fromString(
               ataruHakemus.`application-hakukohde-reviews`
                 .collectFirst(review => review.state)
-                .getOrElse(AtaruHakemuksenTila.Kasittelematta.toString)
+                .getOrElse(AtaruHakemuksenTila.UNDEFINED)
             ),
             kasittelyVaihe = dbHakemus.kasittelyVaihe,
             muokattu = dbHakemus.muokattu,
