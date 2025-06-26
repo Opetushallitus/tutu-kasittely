@@ -7,14 +7,14 @@ import fi.oph.tutu.backend.domain.{
   AtaruLomake,
   EmptyValue,
   Hakija,
+  Kaannokset,
   Kielistetty,
   LomakeContentItem,
   MultiValue,
   NestedValues,
   SingleValue,
   SisaltoItem,
-  Valinta,
-  Kaannokset,
+  Valinta
 }
 import org.springframework.stereotype.{Component, Service}
 
