@@ -28,4 +28,3 @@ val hakijaFixture = Hakija(
   kajaani,
   Some("patu.kuusinen@riibasu.fi")
 )
-

@@ -56,8 +56,8 @@ class HakemusService(
     }
     muutosHistoria = muutosHistoriaSortDef match {
       case Desc => muutosHistoria.sortBy(_.time)(Ordering[LocalDateTime].reverse)
-      case Asc => muutosHistoria.sortBy(_.time)
-      case _ => muutosHistoria
+      case Asc  => muutosHistoria.sortBy(_.time)
+      case _    => muutosHistoria
     }
 
     hakemusRepository.haeHakemus(hakemusOid) match {
@@ -79,7 +79,9 @@ class HakemusService(
               case Some(esittelijaOid) => Some(esittelijaOid.toString)
             },
             ataruHakemuksenTila = AtaruHakemuksenTila.fromString(
-              ataruHakemus.`application-hakukohde-reviews`.collectFirst(review => review.state).getOrElse(AtaruHakemuksenTila.Kasittelematta.toString)
+              ataruHakemus.`application-hakukohde-reviews`
+                .collectFirst(review => review.state)
+                .getOrElse(AtaruHakemuksenTila.Kasittelematta.toString)
             ),
             kasittelyVaihe = dbHakemus.kasittelyVaihe,
             muokattu = dbHakemus.muokattu,
@@ -107,7 +109,10 @@ class HakemusService(
             case Some(esittelijaOid) =>
               onrService.haeHenkilo(esittelijaOid) match {
                 case Left(error) =>
-                  LOG.warn(s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}", error.getMessage)
+                  LOG.warn(
+                    s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}",
+                    error.getMessage
+                  )
                   ("", "")
                 case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
               }

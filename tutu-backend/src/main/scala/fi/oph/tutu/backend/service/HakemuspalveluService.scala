@@ -62,7 +62,7 @@ class HakemuspalveluService(httpService: HttpService) {
       case Right(response: String) => Right(response)
     }
   }
-  
+
   def haeMuutoshistoria(hakemusOid: HakemusOid): Either[Throwable, String] = {
     httpService.get(
       hakemuspalveluCasClient,

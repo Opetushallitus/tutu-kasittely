@@ -10,4 +10,5 @@ val dbHakemusFixture = DbHakemus(
   esittelijaOid = Some(UserOid("1.2.246.562.24.00000000000000006666")),
   asiatunnus = Some("OPH-123-2025"),
   kasittelyVaihe = AlkukasittelyKesken,
-  muokattu = None)
+  muokattu = None
+)

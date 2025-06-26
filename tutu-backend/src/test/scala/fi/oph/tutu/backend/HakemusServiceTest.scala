@@ -47,7 +47,7 @@ class HakemusServiceTest extends UnitTestBase {
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))
-      .thenReturn(Right(loadJson("muutoshistoria.json")))
+      .thenReturn(Right(loadJson("muutosHistoria.json")))
     when(onrService.haeHenkilo(any[String])).thenReturn(Right(onrUserFixture))
     val muutosHistoria = hakemusService.haeHakemus(defaultHakemusOid, Desc).get.muutosHistoria.toList
     assertEquals("2025-06-18T05:57:18.866", muutosHistoria.head.time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
@@ -73,7 +73,7 @@ class HakemusServiceTest extends UnitTestBase {
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))
-      .thenReturn(Right(loadJson("muutoshistoria.json")))
+      .thenReturn(Right(loadJson("muutosHistoria.json")))
     when(onrService.haeHenkilo(any[String])).thenReturn(Left(new RuntimeException("Kävi niinkuin Kälviällä")))
     val muutoshistoria = hakemusService.haeHakemus(defaultHakemusOid).get.muutosHistoria.toList
     assertEquals("", muutoshistoria.head.modifiedBy)

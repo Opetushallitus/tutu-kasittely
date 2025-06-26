@@ -8,4 +8,3 @@ object SortDef:
     case "asc"  => Asc
     case "desc" => Desc
     case _      => Undefined
-
