@@ -18,6 +18,7 @@ interface AlbStackProps extends cdk.StackProps {
   publicHostedZone: route53.IHostedZone
   environment: 'dev' | 'qa' | 'prod'
   alarmSnsTopic: Topic
+  projectName: string
 }
 
 export class AlbStack extends cdk.Stack {
@@ -42,7 +43,7 @@ export class AlbStack extends cdk.Stack {
     })
 
     const logBucket = new s3.Bucket(this, `albLogBucket`, {
-      bucketName: `alb-logs-${props.environment}`,
+      bucketName: `${props.projectName}-alb-logs-${props.environment}`,
       accessControl: s3.BucketAccessControl.PRIVATE,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,

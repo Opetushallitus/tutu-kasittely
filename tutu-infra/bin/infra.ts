@@ -156,7 +156,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     securityGroupId: SecurityGroups.albSecurityGroup.securityGroupId,
     domain: domain,
     publicHostedZone: HostedZones.publicHostedZone,
-    alarmSnsTopic: Monitor.topic
+    alarmSnsTopic: Monitor.topic,
+    projectName: utilityConfig.repository_regex
   })
 
   // CloudFront certificates must be deployed to us-east-1
@@ -168,7 +169,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     crossRegionReferences: true
   })
 
-  const Cloudfront = new CloudfrontStack(app, 'CloudFrontStack', {
+  // const Cloudfront =
+  new CloudfrontStack(app, 'CloudFrontStack', {
     env: envEU,
     stackName: `${environmentName}-cloudfront`,
     alb: Alb.alb,
