@@ -13,7 +13,8 @@ import fi.oph.tutu.backend.domain.{
   NestedValues,
   SingleValue,
   SisaltoItem,
-  Valinta
+  Valinta,
+  Kaannokset,
 }
 import org.springframework.stereotype.{Component, Service}
 
@@ -137,7 +138,7 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
 
     optionMaybe match {
       case Some(option) => option.label
-      case None         => "-"
+      case None         => Kaannokset(Some(value), Some(value), Some(value))
     }
   })
 
