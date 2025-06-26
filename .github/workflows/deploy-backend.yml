@@ -1,0 +1,22 @@
+name: Deploy TUTU-käsittely
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment
+        options:
+          - dev
+          - qa
+        required: true
+      revision:
+        description: Backend build GH Actions number
+        required: true
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy backend
+        run: echo "TODO"

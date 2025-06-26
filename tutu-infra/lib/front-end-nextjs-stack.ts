@@ -22,7 +22,7 @@ export class FrontendNextjsStack extends Stack {
     new Nextjs(this, 'FrontendNextjsStack', {
       nextjsPath: props.nextjsPath,
       basePath: props.basePath,
-      environment: props.environment,
+      environment: { STANDALONE: 'true', ...props.environment },
       domainProps: {
         domainName: props.domainName,
         certificate: props.certificate,

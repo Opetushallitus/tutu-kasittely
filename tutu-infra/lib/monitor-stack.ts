@@ -4,7 +4,6 @@ import * as sns from 'aws-cdk-lib/aws-sns'
 import * as chatbot from 'aws-cdk-lib/aws-chatbot'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
 import * as logs from 'aws-cdk-lib/aws-logs'
-import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
 import * as iam from 'aws-cdk-lib/aws-iam'
 
 export interface MonitorStackProps extends cdk.StackProps {
