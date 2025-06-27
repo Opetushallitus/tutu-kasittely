@@ -13,6 +13,11 @@ on:
         description: Backend build GH Actions number
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+  packages: read
+
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
