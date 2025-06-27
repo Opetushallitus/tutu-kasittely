@@ -87,34 +87,35 @@ def traverseContent(
     case None => Seq()
     case Some(content) => {
       // map content
-      val newItems = content.map((item: LomakeContentItem) => {
+      val newItems = content
+        .map((item: LomakeContentItem) => {
 
-        // handle this
-        val (newItem, followups) = handleItem(item)
+          // handle this
+          val (newItem, followups) = handleItem(item)
 
-        // traverse children (children, followups)
-        val newChildren = traverseContent(item.children, handleItem)
-        val newFollowups = traverseContent(Some(followups), handleItem)
+          // traverse children (children, followups)
+          val newChildren  = traverseContent(item.children, handleItem)
+          val newFollowups = traverseContent(Some(followups), handleItem)
 
-        val resultItem = newItem.copy(
-          children = Some(newChildren),
-          followups = Some(newFollowups),
-        )
+          val resultItem = newItem.copy(
+            children = Some(newChildren),
+            followups = Some(newFollowups)
+          )
 
-        // omit form nodes with no answer content
-        val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
+          // omit form nodes with no answer content
+          val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
 
-        resultIsEmpty match {
-          case true => None
-          case false => Some(resultItem)
-        }
-      }).flatten
+          resultIsEmpty match {
+            case true  => None
+            case false => Some(resultItem)
+          }
+        })
+        .flatten
 
       newItems
     }
   }
 }
-
 
 def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, Seq[LomakeContentItem]) = {
   val itemLabel = item.label
@@ -122,36 +123,34 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
   val answer = answers.find(a => a.key == item.id)
   val values = extractValues(answer)
 
-  val valinnat = values.map(
-    (value: String) => {
-      val emptyOption = Valinta(
-        label = Kaannokset(
-          Some(value),
-          Some(value),
-          Some(value)
-        ),
-        value = ""
-      )
-      val valinta = item.options match {
-        case Some(opts) => opts.find(
-          (option: Valinta) => option.value == value
-        ).getOrElse(
-          emptyOption
-        )
-        case None       => emptyOption
-      }
-      valinta
+  val valinnat = values.map((value: String) => {
+    val emptyOption = Valinta(
+      label = Kaannokset(
+        Some(value),
+        Some(value),
+        Some(value)
+      ),
+      value = ""
+    )
+    val valinta = item.options match {
+      case Some(opts) =>
+        opts
+          .find((option: Valinta) => option.value == value)
+          .getOrElse(
+            emptyOption
+          )
+      case None => emptyOption
     }
-  )
+    valinta
+  })
 
   val readableValues = valinnat.map((valinta: Valinta) => {
     valinta.label
   })
 
-  val collectedFollowups = valinnat.flatMap((option) => {
+  val collectedFollowups = valinnat.flatMap(option => {
     option.followups.getOrElse(Seq())
   })
-
 
   (
     SisaltoItem(
@@ -160,7 +159,7 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
       value = readableValues,
       label = itemLabel,
       children = None,
-      followups = None,
+      followups = None
     ),
     collectedFollowups
   )

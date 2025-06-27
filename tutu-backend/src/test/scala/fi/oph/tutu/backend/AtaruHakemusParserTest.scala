@@ -1,23 +1,23 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.service.{AtaruHakemusParser, KoodistoService, traverseContent, transformItem, extractValues}
-import org.junit.jupiter.api.{BeforeEach, Test, Nested, DisplayName}
+import fi.oph.tutu.backend.service.{extractValues, transformItem, traverseContent, AtaruHakemusParser, KoodistoService}
+import org.junit.jupiter.api.{BeforeEach, DisplayName, Nested, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import fi.oph.tutu.backend.domain.{
+  Answer,
   AtaruHakemus,
+  AtaruLomake,
+  EmptyValue,
+  Kaannokset,
   Kieli,
   KoodistoItem,
-  AtaruLomake,
-  Answer,
-  EmptyValue,
-  SingleValue,
+  LomakeContentItem,
   MultiValue,
   NestedValues,
-  Kaannokset,
-  Valinta,
+  SingleValue,
   SisaltoItem,
-  LomakeContentItem,
+  Valinta
 }
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.native.JsonMethods
@@ -151,13 +151,17 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
     @Test
     def extractValuesWithMultiValueAnswer(): Unit = {
-      val result = extractValues(Some(Answer(value = MultiValue(Seq("firstValue", "secondValue")), key = "", fieldType = "")))
+      val result = extractValues(
+        Some(Answer(value = MultiValue(Seq("firstValue", "secondValue")), key = "", fieldType = ""))
+      )
       assertEquals(result, Seq("firstValue", "secondValue"))
     }
 
     @Test
     def extractValuesWithNestedValuesAnswer(): Unit = {
-      val result = extractValues(Some(Answer(value = NestedValues(Seq(Seq("firstValue"), Seq("secondValue"))), key = "", fieldType = "")))
+      val result = extractValues(
+        Some(Answer(value = NestedValues(Seq(Seq("firstValue"), Seq("secondValue"))), key = "", fieldType = ""))
+      )
       assertEquals(result, Seq("firstValue", "secondValue"))
     }
 
@@ -167,18 +171,18 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         Answer(
           key = "1",
           value = SingleValue("singleAnswer1"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "2",
           value = SingleValue("singleAnswer2"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "3",
           value = SingleValue("singleAnswer3"),
-          fieldType = "testField",
-        ),
+          fieldType = "testField"
+        )
       )
 
       val item = LomakeContentItem(
@@ -186,12 +190,14 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         fieldClass = "",
         fieldType = "",
         label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
-        options = Some(Seq(
-          Valinta(
-            value = "singleAnswer2",
-            label = Kaannokset(fi = Some("valinta2"))
+        options = Some(
+          Seq(
+            Valinta(
+              value = "singleAnswer2",
+              label = Kaannokset(fi = Some("valinta2"))
+            )
           )
-        ))
+        )
       )
 
       val (result, _) = transformItem(answers, item)
@@ -199,7 +205,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         key = "2",
         fieldType = "",
         value = Seq(Kaannokset(fi = Some("valinta2"))),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
       )
 
       assertEquals(result, expected)
@@ -211,18 +217,18 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         Answer(
           key = "1",
           value = SingleValue("singleAnswer1"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "2",
           value = SingleValue("singleAnswer2"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "3",
           value = SingleValue("singleAnswer3"),
-          fieldType = "testField",
-        ),
+          fieldType = "testField"
+        )
       )
 
       val item = LomakeContentItem(
@@ -230,12 +236,14 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         fieldClass = "",
         fieldType = "",
         label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
-        options = Some(Seq(
-          Valinta(
-            value = "singleAnswer2",
-            label = Kaannokset(fi = Some("valinta2"))
+        options = Some(
+          Seq(
+            Valinta(
+              value = "singleAnswer2",
+              label = Kaannokset(fi = Some("valinta2"))
+            )
           )
-        ))
+        )
       )
 
       val (result, _) = transformItem(answers, item)
@@ -243,7 +251,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         key = "4",
         fieldType = "",
         value = Seq(),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
       )
 
       assertEquals(result, expected)
@@ -255,25 +263,25 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         Answer(
           key = "1",
           value = SingleValue("singleAnswer1"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "2",
           value = SingleValue("singleAnswer2"),
-          fieldType = "testField",
+          fieldType = "testField"
         ),
         Answer(
           key = "3",
           value = SingleValue("singleAnswer3"),
-          fieldType = "testField",
-        ),
+          fieldType = "testField"
+        )
       )
 
       val item = LomakeContentItem(
         id = "2",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
       )
 
       val (result, _) = transformItem(answers, item)
@@ -281,7 +289,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         key = "2",
         fieldType = "",
         value = Seq(Kaannokset(Some("singleAnswer2"), Some("singleAnswer2"), Some("singleAnswer2"))),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
       )
 
       assertEquals(result, expected)
@@ -289,81 +297,87 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
     @Test
     def traverseContentProducesConcensedDataStructure(): Unit = {
+
       /**
-        Item101
-        - Item201
-        - Item202
-          - Valinta301
-          - Valinta302
-            - Item401
-            - Item402
-        - Item203
-          - Valinta303
-
-        =>
-
-        Sisalto101
-        - Sisalto201
-        - Sisalto202
-          - Sisalto401
-          - Sisalto402
-        - Sisalto203
-
-      */
+       *        Item101
+       *        - Item201
+       *        - Item202
+       *          - Valinta301
+       *          - Valinta302
+       *            - Item401
+       *            - Item402
+       *        - Item203
+       *          - Valinta303
+       *
+       *        =>
+       *
+       *        Sisalto101
+       *        - Sisalto201
+       *        - Sisalto202
+       *          - Sisalto401
+       *          - Sisalto402
+       *        - Sisalto203
+       */
       val item401 = LomakeContentItem(
         id = "401",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Kaannokset()
       )
       val item402 = LomakeContentItem(
         id = "402",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Kaannokset()
       )
 
       val valinta301 = Valinta(
         value = "301",
-        label = Kaannokset(),
+        label = Kaannokset()
       )
       val valinta302 = Valinta(
         value = "302",
         label = Kaannokset(),
-        followups = Some(Seq(
-          item401,
-          item402,
-        ))
+        followups = Some(
+          Seq(
+            item401,
+            item402
+          )
+        )
       )
       val valinta303 = Valinta(
         value = "303",
-        label = Kaannokset(),
+        label = Kaannokset()
       )
 
       val item201 = LomakeContentItem(
         id = "201",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Kaannokset()
       )
       val item202 = LomakeContentItem(
         id = "202",
         fieldClass = "",
         fieldType = "",
         label = Kaannokset(),
-        options = Some(Seq(
-          valinta301,
-          valinta302,
-        ))
+        options = Some(
+          Seq(
+            valinta301,
+            valinta302
+          )
+        )
       )
       val item203 = LomakeContentItem(
         id = "203",
         fieldClass = "",
         fieldType = "",
         label = Kaannokset(),
-        options = Some(Seq(
-          valinta303
-        ))
+        options = Some(
+          Seq(
+            valinta303
+          )
+        )
       )
 
       val item101 = LomakeContentItem(
@@ -371,27 +385,32 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         fieldClass = "",
         fieldType = "",
         label = Kaannokset(),
-        children = Some(Seq(
-          item201,
-          item202,
-          item203,
-        ))
+        children = Some(
+          Seq(
+            item201,
+            item202,
+            item203
+          )
+        )
       )
 
-      val rootItems = traverseContent(Some(Seq(item101)), (item) => {
-        (
-          SisaltoItem(
-            key = item.id,
-            fieldType = "",
-            value = Seq(Kaannokset()),
-            label = Kaannokset(),
-          ),
-          item.options
-            .map((opts) => opts.map((opt) => opt.followups.getOrElse(Seq())))
-            .getOrElse(Seq(Seq()))
-            .flatten()
+      val rootItems = traverseContent(
+        Some(Seq(item101)),
+        item => {
+          (
+            SisaltoItem(
+              key = item.id,
+              fieldType = "",
+              value = Seq(Kaannokset()),
+              label = Kaannokset()
+            ),
+            item.options
+              .map(opts => opts.map(opt => opt.followups.getOrElse(Seq())))
+              .getOrElse(Seq(Seq()))
+              .flatten()
           )
-      })
+        }
+      )
 
       assertEquals(rootItems.size, 1)
 
