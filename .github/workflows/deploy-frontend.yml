@@ -36,6 +36,7 @@ jobs:
           role-session-name: tutu-frontend-download-build-zip
           aws-region: eu-west-1
       - name: Download build from s3
+        working-directory: ./tutu-frontend
         env:
           bucket: ${{ secrets.CDK_FRONTEND_BUILDS_BUCKET_NAME }}
         run: |
