@@ -46,6 +46,13 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruHakemus]
     }
 
+    val lomake = hakemuspalveluService.haeLomake(ataruHakemus.form_id) match {
+      case Left(error: Throwable) =>
+        LOG.warn(s"Ataru-lomakkeen haku epäonnistui lomake-id:llä ${ataruHakemus.form_id}: ", error.getMessage)
+        return None
+      case Right(response: String) => parse(response).extract[AtaruLomake]
+    }
+
     val hakija = ataruHakemusParser.parseHakija(ataruHakemus)
     var muutosHistoria = hakemuspalveluService.haeMuutoshistoria(hakemusOid) match {
       case Left(error: Throwable) =>
@@ -66,6 +73,7 @@ class HakemusService(
           Hakemus(
             hakemusOid = dbHakemus.hakemusOid.toString,
             hakija = hakija,
+            sisalto = ataruHakemusParser.parseSisalto(ataruHakemus, lomake),
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(

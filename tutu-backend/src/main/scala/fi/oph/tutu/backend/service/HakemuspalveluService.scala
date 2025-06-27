@@ -72,4 +72,14 @@ class HakemuspalveluService(httpService: HttpService) {
       case Right(response: String) => Right(response)
     }
   }
+
+  def haeLomake(form_id: Long): Either[Throwable, String] = {
+    httpService.get(
+      hakemuspalveluCasClient,
+      s"$opintopolku_virkailija_domain/lomake-editori/api/forms/${form_id}"
+    ) match {
+      case Left(error: Throwable)  => Left(error)
+      case Right(response: String) => Right(response)
+    }
+  }
 }

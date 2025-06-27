@@ -4,11 +4,17 @@ import fi.oph.tutu.backend.domain.{
   Answer,
   AnswerValue,
   AtaruHakemus,
+  AtaruLomake,
+  EmptyValue,
   Hakija,
+  Kaannokset,
   Kielistetty,
+  LomakeContentItem,
   MultiValue,
   NestedValues,
-  SingleValue
+  SingleValue,
+  SisaltoItem,
+  Valinta
 }
 import org.springframework.stereotype.{Component, Service}
 
@@ -62,5 +68,114 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       municipalityCode2Name(homeTownCode).getOrElse(Map()),
       findSingleStringAnswer("email", answers)
     )
+  }
+
+  def parseSisalto(hakemus: AtaruHakemus, lomake: AtaruLomake): Seq[SisaltoItem] = {
+    val answers            = hakemus.content.answers
+    val formContent        = lomake.content
+    val transformedContent = traverseContent(formContent, item => transformItem(answers, item))
+
+    transformedContent
+  }
+}
+
+def traverseContent(
+  contentMaybe: Option[Seq[LomakeContentItem]],
+  handleItem: (LomakeContentItem) => (SisaltoItem, Seq[LomakeContentItem])
+): Seq[SisaltoItem] = {
+  contentMaybe match {
+    case None => Seq()
+    case Some(content) => {
+      // map content
+      val newItems = content
+        .map((item: LomakeContentItem) => {
+
+          // handle this
+          val (newItem, followups) = handleItem(item)
+
+          // traverse children (children, followups)
+          val newChildren  = traverseContent(item.children, handleItem)
+          val newFollowups = traverseContent(Some(followups), handleItem)
+
+          val resultItem = newItem.copy(
+            children = Some(newChildren),
+            followups = Some(newFollowups)
+          )
+
+          // omit form nodes with no answer content
+          val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
+
+          resultIsEmpty match {
+            case true  => None
+            case false => Some(resultItem)
+          }
+        })
+        .flatten
+
+      newItems
+    }
+  }
+}
+
+def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, Seq[LomakeContentItem]) = {
+  val itemLabel = item.label
+
+  val answer = answers.find(a => a.key == item.id)
+  val values = extractValues(answer)
+
+  val valinnat = values.map((value: String) => {
+    val emptyOption = Valinta(
+      label = Kaannokset(
+        Some(value),
+        Some(value),
+        Some(value)
+      ),
+      value = ""
+    )
+    val valinta = item.options match {
+      case Some(opts) =>
+        opts
+          .find((option: Valinta) => option.value == value)
+          .getOrElse(
+            emptyOption
+          )
+      case None => emptyOption
+    }
+    valinta
+  })
+
+  val readableValues = valinnat.map((valinta: Valinta) => {
+    valinta.label
+  })
+
+  val collectedFollowups = valinnat.flatMap(option => {
+    option.followups.getOrElse(Seq())
+  })
+
+  (
+    SisaltoItem(
+      key = item.id,
+      fieldType = item.fieldType,
+      value = readableValues,
+      label = itemLabel,
+      children = None,
+      followups = None
+    ),
+    collectedFollowups
+  )
+}
+
+def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
+  val value = answerMaybe match {
+    case Some(answer) => answer.value
+    case None         => null
+  }
+
+  value match {
+    case SingleValue(value)   => Seq(value)
+    case MultiValue(values)   => values
+    case NestedValues(values) => values.flatten()
+    case EmptyValue           => Seq()
+    case null                 => Seq()
   }
 }

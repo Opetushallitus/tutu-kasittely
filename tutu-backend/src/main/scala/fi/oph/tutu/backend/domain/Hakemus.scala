@@ -57,6 +57,7 @@ case class DbHakemus(
 case class Hakemus(
   hakemusOid: String,
   hakija: Hakija,
+  sisalto: Seq[SisaltoItem],
   hakemusKoskee: Int,
   asiatunnus: Option[String] = None,
   kirjausPvm: Option[LocalDateTime] = None,
