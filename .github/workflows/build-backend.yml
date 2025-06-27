@@ -3,9 +3,9 @@ name: TUTU-käsittely backend build workflow
 on:
   workflow_dispatch:
   push:
-#    paths:
-#      - 'tutu-backend/**'
-#      - '!**.md'
+    paths:
+      - 'tutu-backend/**'
+      - '!**.md'
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
