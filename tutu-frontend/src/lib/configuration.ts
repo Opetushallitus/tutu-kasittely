@@ -6,11 +6,10 @@ export const localTranslations = Boolean(process.env.LOCAL_TRANSLATIONS);
 
 export const isTesting = Boolean(process.env.TEST);
 
-export const VIRKAILIJA_URL =
-  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
+export const APP_URL = process.env.APP_URL ?? 'https://localhost:3123';
 
-export const API_URL =
-  process.env.API_URL ?? `${VIRKAILIJA_URL}/tutu-backend/api`;
+export const VIRKAILIJA_URL =
+  process.env.VIRKAILIJA_URL ?? 'https://localhost:3123';
 
 export const RAAMIT_URL = isTesting
   ? ''
