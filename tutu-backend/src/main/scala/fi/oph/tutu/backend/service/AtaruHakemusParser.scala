@@ -75,80 +75,94 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val formContent        = lomake.content
     val transformedContent = traverseContent(formContent, item => transformItem(answers, item))
 
-    transformedContent match {
-      case Some(items) => items
-      case None        => Seq()
-    }
+    transformedContent
   }
 }
 
 def traverseContent(
   contentMaybe: Option[Seq[LomakeContentItem]],
-  handleItem: (LomakeContentItem) => SisaltoItem
-): Option[Seq[SisaltoItem]] = {
+  handleItem: (LomakeContentItem) => (SisaltoItem, Seq[LomakeContentItem])
+): Seq[SisaltoItem] = {
   contentMaybe match {
-    case None => None
+    case None => Seq()
     case Some(content) => {
       // map content
       val newItems = content.map((item: LomakeContentItem) => {
 
-        // traverse children (followups, children)
-        val newChildren  = traverseContent(getChildren(item), handleItem)
-        val newFollowups = traverseContent(getFollowups(item), handleItem)
-
         // handle this
-        val newItem = handleItem(item)
+        val (newItem, followups) = handleItem(item)
 
-        newItem.copy(
-          children = newChildren,
-          followups = newFollowups
+        // traverse children (children, followups)
+        val newChildren = traverseContent(item.children, handleItem)
+        val newFollowups = traverseContent(Some(followups), handleItem)
+
+        val resultItem = newItem.copy(
+          children = Some(newChildren),
+          followups = Some(newFollowups),
         )
-      })
 
-      Some(newItems)
+        // omit form nodes with no answer content
+        val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
+
+        resultIsEmpty match {
+          case true => None
+          case false => Some(resultItem)
+        }
+      }).flatten
+
+      newItems
     }
   }
 }
 
-def getChildren(item: LomakeContentItem | Valinta): Option[Seq[LomakeContentItem]] = {
-  item match {
-    case lomakeContentItem: LomakeContentItem => lomakeContentItem.children
-    case _: Valinta                           => None
-  }
-}
 
-def getFollowups(item: LomakeContentItem | Valinta): Option[Seq[LomakeContentItem]] = {
-  item match {
-    case valinta: Valinta     => valinta.followups
-    case _: LomakeContentItem => None
-  }
-}
-
-def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = {
+def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, Seq[LomakeContentItem]) = {
   val itemLabel = item.label
 
   val answer = answers.find(a => a.key == item.id)
   val values = extractValues(answer)
 
-  val readableValues = values.map((value: String) => {
-    val optionMaybe = item.options match {
-      case Some(opts) => opts.find((option: Valinta) => option.value == value)
-      case None       => None
+  val valinnat = values.map(
+    (value: String) => {
+      val emptyOption = Valinta(
+        label = Kaannokset(
+          Some(value),
+          Some(value),
+          Some(value)
+        ),
+        value = ""
+      )
+      val valinta = item.options match {
+        case Some(opts) => opts.find(
+          (option: Valinta) => option.value == value
+        ).getOrElse(
+          emptyOption
+        )
+        case None       => emptyOption
+      }
+      valinta
     }
+  )
 
-    optionMaybe match {
-      case Some(option) => option.label
-      case None         => Kaannokset(Some(value), Some(value), Some(value))
-    }
+  val readableValues = valinnat.map((valinta: Valinta) => {
+    valinta.label
   })
 
-  SisaltoItem(
-    key = item.id,
-    fieldType = item.fieldType,
-    value = readableValues,
-    label = itemLabel,
-    children = None,
-    followups = None
+  val collectedFollowups = valinnat.flatMap((option) => {
+    option.followups.getOrElse(Seq())
+  })
+
+
+  (
+    SisaltoItem(
+      key = item.id,
+      fieldType = item.fieldType,
+      value = readableValues,
+      label = itemLabel,
+      children = None,
+      followups = None,
+    ),
+    collectedFollowups
   )
 }
 

@@ -37,10 +37,10 @@ case class Answer(
   key: String,
   value: AnswerValue,
   fieldType: String,
-  `original-followup`: Option[String],
-  `original-question`: Option[String],
-  `duplikoitu-kysymys-hakukohde-oid`: Option[String],
-  `duplikoitu-followup-hakukohde-oid`: Option[String]
+  `original-followup`: Option[String] = None,
+  `original-question`: Option[String] = None,
+  `duplikoitu-kysymys-hakukohde-oid`: Option[String] = None,
+  `duplikoitu-followup-hakukohde-oid`: Option[String] = None
 )
 
 case class AttachmentReview(
