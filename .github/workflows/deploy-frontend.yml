@@ -1,4 +1,4 @@
-name: Deploy TUTU-käsittely
+name: Deploy TUTU-frontend
 on:
   workflow_dispatch:
     inputs:
