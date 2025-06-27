@@ -36,13 +36,6 @@ const envEU = { region: 'eu-west-1' }
 const envEUAccount = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-west-1' }
 const envUS = { region: 'us-east-1' }
 
-function getRevisionFromEnv() {
-  if (app.node.tryGetContext('revision')) {
-    return app.node.tryGetContext('revision')
-  }
-  throw new Error('Missing revision env variable')
-}
-
 // Allow any in this case, since we don't want to explicitely type json data
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 let environmentConfig: any
@@ -64,7 +57,7 @@ if (environmentName === 'dev') {
 
 // dev, qa & prod account resources..
 if (environmentName === 'dev' || environmentName === 'qa' || environmentName === 'prod') {
-  const revision = getRevisionFromEnv()
+  const revision = app.node.tryGetContext('revision')
 
   const domain = environmentConfig.aws.domain
 
@@ -195,62 +188,63 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     logGroupKmsKey: Kms.cloudwatchLogsKmsKey
   })
 
-  new EcsServiceStack(app, 'TutuBackendEcsService', {
-    env: envEU,
-    stackName: `${environmentName}-tutu-backend-service`,
-    serviceName: utilityConfig.backend_service_name,
-    environment: environmentName,
-    cluster: FargateCluster.fargateCluster,
-    vpc: Network.vpc,
-    securityGroup: SecurityGroups.webBackendsServiceSecurityGroup,
-    revision,
-    allowEcsExec: environmentConfig.services.web_backend.allow_ecs_exec,
-    taskCpu: environmentConfig.services.web_backend.cpu_limit,
-    taskMemory: environmentConfig.services.web_backend.memory_limit,
-    minimumCount: environmentConfig.services.web_backend.min_count,
-    maximumCount: environmentConfig.services.web_backend.max_count,
-    cpuArchitecture: CpuArchitecture.X86_64,
-    env_vars: {
-      ...environmentConfig.services.web_backend.env_vars,
-      ...{
-        POSTGRESQL_HOST: WebBackendAurora.endPoint.hostname,
-        POSTGRESQL_PORT: WebBackendAurora.endPoint.port
-      }
-    },
-    parameter_store_secrets: [],
-    secrets_manager_secrets: [
-      Secrets.secrets.REDIS_PASS,
-      Secrets.secrets.PG_PASS,
-      Secrets.secrets.SESSION_SECRET,
-      Secrets.secrets.CLIENT_SECRET,
-      Secrets.secrets.JWT_SECRET,
-      Secrets.secrets.PROXY_URI,
-      Secrets.secrets.CLIENT_ID,
-      Secrets.secrets.ADMIN_EMAIL
-    ],
-    utilityAccountId: utilityAccountId,
-    listener: Alb.albListener,
-    listenerPathPatterns: ['/api/*', '/h5p/*', '/embed/*', '/content/*'],
-    healthCheckPath: '/health',
-    healthCheckGracePeriod: 180,
-    healthCheckInterval: 5,
-    healthCheckTimeout: 2,
-    albPriority: 120,
-    privateDnsNamespace: namespace.privateDnsNamespace,
-    alarmSnsTopic: Monitor.topic
-  })
+  if (revision !== undefined) {
+    new EcsServiceStack(app, 'TutuBackendEcsService', {
+      env: envEU,
+      stackName: `${environmentName}-tutu-backend-service`,
+      serviceName: utilityConfig.backend_service_name,
+      environment: environmentName,
+      cluster: FargateCluster.fargateCluster,
+      vpc: Network.vpc,
+      securityGroup: SecurityGroups.webBackendsServiceSecurityGroup,
+      revision,
+      allowEcsExec: environmentConfig.services.web_backend.allow_ecs_exec,
+      taskCpu: environmentConfig.services.web_backend.cpu_limit,
+      taskMemory: environmentConfig.services.web_backend.memory_limit,
+      minimumCount: environmentConfig.services.web_backend.min_count,
+      maximumCount: environmentConfig.services.web_backend.max_count,
+      cpuArchitecture: CpuArchitecture.X86_64,
+      env_vars: {
+        ...environmentConfig.services.web_backend.env_vars,
+        ...{
+          POSTGRESQL_HOST: WebBackendAurora.endPoint.hostname,
+          POSTGRESQL_PORT: WebBackendAurora.endPoint.port
+        }
+      },
+      parameter_store_secrets: [],
+      secrets_manager_secrets: [
+        Secrets.secrets.PG_PASS,
+        Secrets.secrets.SESSION_SECRET,
+        Secrets.secrets.CLIENT_SECRET,
+        Secrets.secrets.JWT_SECRET,
+        Secrets.secrets.PROXY_URI,
+        Secrets.secrets.CLIENT_ID,
+        Secrets.secrets.ADMIN_EMAIL
+      ],
+      utilityAccountId: utilityAccountId,
+      listener: Alb.albListener,
+      listenerPathPatterns: ['/api/*', '/h5p/*', '/embed/*', '/content/*'],
+      healthCheckPath: '/health',
+      healthCheckGracePeriod: 180,
+      healthCheckInterval: 5,
+      healthCheckTimeout: 2,
+      albPriority: 120,
+      privateDnsNamespace: namespace.privateDnsNamespace,
+      alarmSnsTopic: Monitor.topic
+    })
+  }
 
   new FrontendNextjsStack(app, 'FrontendNextjsStack', {
     basePath: '/tutu-frontend',
-    revision: revision,
-    serviceName: utilityConfig.frontend_service_name,
-    domainName: domain,
+    domainName: `frontend.${domain}`,
     hostedZone: HostedZones.publicHostedZone,
-    environment: environmentConfig.services.web_frontend.env_vars,
+    environment: environmentName,
+    envVars: environmentConfig.services.web_frontend.env_vars,
     nextjsPath: '../tutu-frontend',
     certificate: CloudfrontCertificate.certificate,
     env: envEU,
-    crossRegionReferences: true
+    crossRegionReferences: true,
+    serviceName: utilityConfig.frontend_service_name
   })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {

@@ -15,7 +15,8 @@ export class CloudFrontCertificateStack extends cdk.Stack {
 
     this.certificate = new acm.Certificate(this, 'CloudfrontCertificate', {
       domainName: props.domain,
-      validation: acm.CertificateValidation.fromDns(props.hostedZone)
+      validation: acm.CertificateValidation.fromDns(props.hostedZone),
+      subjectAlternativeNames: [`backend.${props.domain}`, `frontend.${props.domain}`],
     })
   }
 }
