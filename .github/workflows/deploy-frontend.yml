@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/prepare-next-env
       - name: Install CDK dependencies
+        working-directory: ./tutu-infra
         run: |
-          cd cdk
           npm ci --prefer-offline
           npm install -g aws-cdk
       - name: Configure AWS utility-role credentials
@@ -52,8 +52,8 @@ jobs:
           role-session-name: tutu-frontend-deploy-qa
           aws-region: eu-west-1
       - name: Deploy Next.js app
+        working-directory: ./tutu-infra
         env:
           SKIP_OPENNEXT_BUILD: true
         run: |
-          cd cdk
           cdk deploy FrontendNextjsStack --require-approval never -c "environment=${{ inputs.environment }}"
