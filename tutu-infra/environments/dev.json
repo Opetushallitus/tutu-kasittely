@@ -63,8 +63,8 @@
       "env_vars": {
         "NEXT_TELEMETRY_DISABLED": "1",
         "VIRKAILIJA_URL": "https://virkailija.untuvaopintopolku.fi",
-        "APP_URL": "tutu-dev.opintopolku.fi/tutu-frontend",
-        "TUTU_BACKEND": "tutu-dev.opintopolku.fi/tutu-backend/api"
+        "APP_URL": "https://frontend.tutu-dev.opintopolku.fi/tutu-frontend",
+        "TUTU_BACKEND": "https://backend.tutu-dev.opintopolku.fi/tutu-backend/api"
       }
     },
     "web_backend": {
@@ -247,6 +247,6 @@
     }
   },
   "cloudfront": {
-    "require_test_authentication": true
+    "require_test_authentication": false
   }
 }
