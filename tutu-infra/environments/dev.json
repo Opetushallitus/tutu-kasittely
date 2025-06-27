@@ -64,7 +64,7 @@
         "NEXT_TELEMETRY_DISABLED": "1",
         "VIRKAILIJA_URL": "https://virkailija.untuvaopintopolku.fi",
         "APP_URL": "https://frontend.tutu-dev.opintopolku.fi/tutu-frontend",
-        "TUTU_BACKEND": "https://backend.tutu-dev.opintopolku.fi/tutu-backend/api"
+        "TUTU_BACKEND": "https://backend.tutu-dev.opintopolku.fi"
       }
     },
     "web_backend": {
