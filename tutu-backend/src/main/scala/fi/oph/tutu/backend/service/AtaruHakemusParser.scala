@@ -44,8 +44,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   private def municipalityCode2Name(code: Option[String]): Option[Kielistetty] = {
-    val municipality = koodistoService.getKoodisto("kunta").find(c => c.koodiArvo == code.getOrElse(""))
-    municipality.map(_.nimi)
+    val country = koodistoService.getKoodisto("kunta").find(c => c.koodiArvo == code.getOrElse(""))
+    country.map(_.nimi)
   }
 
   def parseHakija(hakemus: AtaruHakemus): Hakija = {
@@ -105,9 +105,10 @@ def traverseContent(
           // omit form nodes with no answer content
           val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
 
-          resultIsEmpty match {
-            case true  => None
-            case false => Some(resultItem)
+          if (resultIsEmpty) {
+            None
+          } else {
+            Some(resultItem)
           }
         })
         .flatten

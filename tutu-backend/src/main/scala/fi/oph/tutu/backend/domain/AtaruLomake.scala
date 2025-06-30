@@ -39,13 +39,3 @@ case class SisaltoItem(
   children: Option[Seq[SisaltoItem]] = None,
   followups: Option[Seq[SisaltoItem]] = None
 )
-
-/*
-options
-value
-followups
-label
-fieldClass
-id
-fieldType
- */
