@@ -9,7 +9,6 @@ import fi.oph.tutu.backend.domain.{
   AtaruHakemus,
   AtaruLomake,
   EmptyValue,
-  Kaannokset,
   Kieli,
   KoodistoItem,
   LomakeContentItem,
@@ -189,11 +188,11 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "2",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en"),
         options = Seq(
           Valinta(
             value = "singleAnswer2",
-            label = Kaannokset(fi = Some("valinta2"))
+            label = Map(Kieli.fi -> "valinta2")
           )
         )
       )
@@ -202,8 +201,8 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       val expected = SisaltoItem(
         key = "2",
         fieldType = "",
-        value = Seq(Kaannokset(fi = Some("valinta2"))),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
+        value = Seq(Map(Kieli.fi -> "valinta2")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
       assertEquals(result, expected)
@@ -233,11 +232,11 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "4",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en"),
         options = Seq(
           Valinta(
             value = "singleAnswer2",
-            label = Kaannokset(fi = Some("valinta2"))
+            label = Map(Kieli.fi -> "valinta2")
           )
         )
       )
@@ -247,7 +246,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         key = "4",
         fieldType = "",
         value = Seq(),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
       assertEquals(result, expected)
@@ -277,15 +276,15 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "2",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
       val (result, _) = transformItem(answers, item)
       val expected = SisaltoItem(
         key = "2",
         fieldType = "",
-        value = Seq(Kaannokset(Some("singleAnswer2"), Some("singleAnswer2"), Some("singleAnswer2"))),
-        label = Kaannokset(Some("fi"), Some("sv"), Some("en"))
+        value = Seq(Map(Kieli.fi -> "singleAnswer2", Kieli.sv -> "singleAnswer2", Kieli.en -> "singleAnswer2")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
       assertEquals(result, expected)
@@ -318,22 +317,22 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "401",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset()
+        label = Map()
       )
       val item402 = LomakeContentItem(
         id = "402",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset()
+        label = Map()
       )
 
       val valinta301 = Valinta(
         value = "301",
-        label = Kaannokset()
+        label = Map()
       )
       val valinta302 = Valinta(
         value = "302",
-        label = Kaannokset(),
+        label = Map(),
         followups = Seq(
           item401,
           item402
@@ -341,20 +340,20 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       )
       val valinta303 = Valinta(
         value = "303",
-        label = Kaannokset()
+        label = Map()
       )
 
       val item201 = LomakeContentItem(
         id = "201",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset()
+        label = Map()
       )
       val item202 = LomakeContentItem(
         id = "202",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Map(),
         options = Seq(
           valinta301,
           valinta302
@@ -364,7 +363,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "203",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Map(),
         options = Seq(
           valinta303
         )
@@ -374,7 +373,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         id = "101",
         fieldClass = "",
         fieldType = "",
-        label = Kaannokset(),
+        label = Map(),
         children = Seq(
           item201,
           item202,
@@ -389,8 +388,8 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
             SisaltoItem(
               key = item.id,
               fieldType = "",
-              value = Seq(Kaannokset()),
-              label = Kaannokset()
+              value = Seq(Map()),
+              label = Map()
             ),
             item.options
               .map(opt => opt.followups)

@@ -7,7 +7,7 @@ import fi.oph.tutu.backend.domain.{
   AtaruLomake,
   EmptyValue,
   Hakija,
-  Kaannokset,
+  Kieli,
   Kielistetty,
   LomakeContentItem,
   MultiValue,
@@ -121,10 +121,10 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
 
   val valinnat = values.map((value: String) => {
     val emptyOption = Valinta(
-      label = Kaannokset(
-        Some(value),
-        Some(value),
-        Some(value)
+      label = Map(
+        Kieli.fi -> value,
+        Kieli.en -> value,
+        Kieli.sv -> value
       ),
       value = ""
     )
