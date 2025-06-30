@@ -1,12 +1,22 @@
 package fi.oph.tutu.backend.utils
 
-import fi.oph.tutu.backend.domain.{AnswerValue, EmptyValue, Kieli, KoodistoItem, MultiValue, NestedValues, SingleValue, Kielistetty}
+import fi.oph.tutu.backend.domain.{
+  AnswerValue,
+  EmptyValue,
+  Kieli,
+  Kielistetty,
+  KoodistoItem,
+  MultiValue,
+  NestedValues,
+  SingleValue
+}
 import org.json4s.*
 
 import java.text.SimpleDateFormat
 
 trait TutuJsonFormats {
-  implicit val formats: Formats = DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer
+  implicit val formats: Formats =
+    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer
 }
 
 object AnswerValueSerializer
@@ -80,7 +90,6 @@ object KoodistoItemSerializer
       )
     )
 
-
 object KielistettySerializer
     extends CustomSerializer[Kielistetty](_ =>
       (
@@ -94,9 +103,7 @@ object KielistettySerializer
               .flatten()
               .foldLeft(
                 Map[Kieli, String]()
-              )(
-                (current, entry) => current.++(Map(entry(0) -> entry(1)))
-              )
+              )((current, entry) => current.++(Map(entry(0) -> entry(1))))
 
             map
           }
@@ -113,9 +120,7 @@ object KielistettySerializer
             .flatten()
             .foldLeft(
               JObject()
-            )(
-              (current, entry) => current.merge(JObject(entry(0) -> entry(1)))
-            )
+            )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
 
           obj
         }

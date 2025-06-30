@@ -128,10 +128,11 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
       ),
       value = ""
     )
-    val valinta = item.options.find((option: Valinta) => option.value == value)
-    .getOrElse(
-      emptyOption
-    )
+    val valinta = item.options
+      .find((option: Valinta) => option.value == value)
+      .getOrElse(
+        emptyOption
+      )
     valinta
   })
 
