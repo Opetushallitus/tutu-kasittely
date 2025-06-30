@@ -7,7 +7,7 @@ case class AtaruLomake(
   id: Long,
   key: String,
   name: Kaannokset,
-  content: Option[Seq[LomakeContentItem]] = None
+  content: Seq[LomakeContentItem] = Seq()
 )
 
 case class LomakeContentItem(
@@ -15,14 +15,14 @@ case class LomakeContentItem(
   fieldClass: String,
   fieldType: String,
   label: Kaannokset,
-  children: Option[Seq[LomakeContentItem]] = None,
-  options: Option[Seq[Valinta]] = None
+  children: Seq[LomakeContentItem] = Seq(),
+  options: Seq[Valinta] = Seq()
 )
 
 case class Valinta(
   label: Kaannokset,
   value: String,
-  followups: Option[Seq[LomakeContentItem]] = None
+  followups: Seq[LomakeContentItem] = Seq()
 )
 
 case class Kaannokset(
@@ -36,6 +36,6 @@ case class SisaltoItem(
   fieldType: String,
   value: Seq[Kaannokset],
   label: Kaannokset,
-  children: Option[Seq[SisaltoItem]] = None,
-  followups: Option[Seq[SisaltoItem]] = None
+  children: Seq[SisaltoItem] = Seq(),
+  followups: Seq[SisaltoItem] = Seq()
 )

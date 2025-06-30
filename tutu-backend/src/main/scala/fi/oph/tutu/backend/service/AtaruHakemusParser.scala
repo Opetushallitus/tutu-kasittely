@@ -80,42 +80,37 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
 }
 
 def traverseContent(
-  contentMaybe: Option[Seq[LomakeContentItem]],
+  content: Seq[LomakeContentItem],
   handleItem: (LomakeContentItem) => (SisaltoItem, Seq[LomakeContentItem])
 ): Seq[SisaltoItem] = {
-  contentMaybe match {
-    case None => Seq()
-    case Some(content) => {
-      // map content
-      val newItems = content
-        .map((item: LomakeContentItem) => {
+  // map content
+  val newItems = content
+    .map((item: LomakeContentItem) => {
 
-          // handle this
-          val (newItem, followups) = handleItem(item)
+      // handle this
+      val (newItem, followups) = handleItem(item)
 
-          // traverse children (children, followups)
-          val newChildren  = traverseContent(item.children, handleItem)
-          val newFollowups = traverseContent(Some(followups), handleItem)
+      // traverse children (children, followups)
+      val newChildren  = traverseContent(item.children, handleItem)
+      val newFollowups = traverseContent(followups, handleItem)
 
-          val resultItem = newItem.copy(
-            children = Some(newChildren),
-            followups = Some(newFollowups)
-          )
+      val resultItem = newItem.copy(
+        children = newChildren,
+        followups = newFollowups
+      )
 
-          // omit form nodes with no answer content
-          val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
+      // omit form nodes with no answer content
+      val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
 
-          if (resultIsEmpty) {
-            None
-          } else {
-            Some(resultItem)
-          }
-        })
-        .flatten
+      if (resultIsEmpty) {
+        None
+      } else {
+        Some(resultItem)
+      }
+    })
+    .flatten
 
-      newItems
-    }
-  }
+  newItems
 }
 
 def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, Seq[LomakeContentItem]) = {
@@ -133,15 +128,10 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
       ),
       value = ""
     )
-    val valinta = item.options match {
-      case Some(opts) =>
-        opts
-          .find((option: Valinta) => option.value == value)
-          .getOrElse(
-            emptyOption
-          )
-      case None => emptyOption
-    }
+    val valinta = item.options.find((option: Valinta) => option.value == value)
+    .getOrElse(
+      emptyOption
+    )
     valinta
   })
 
@@ -149,8 +139,8 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
     valinta.label
   })
 
-  val collectedFollowups = valinnat.flatMap(option => {
-    option.followups.getOrElse(Seq())
+  val collectedFollowups = valinnat.flatMap((valinta: Valinta) => {
+    valinta.followups
   })
 
   (
@@ -159,8 +149,8 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
       fieldType = item.fieldType,
       value = readableValues,
       label = itemLabel,
-      children = None,
-      followups = None
+      children = Seq(),
+      followups = Seq()
     ),
     collectedFollowups
   )
