@@ -33,6 +33,8 @@ jobs:
           aws-region: eu-west-1
       - name: Deploy backend to ECS
         working-directory: ./tutu-infra
+        env:
+          SKIP_OPENNEXT_BUILD: true
         run: |
           npm ci --prefer-offline
           npm install -g aws-cdk
