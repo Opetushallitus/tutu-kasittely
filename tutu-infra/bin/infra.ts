@@ -219,7 +219,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
       utilityAccountId: utilityAccountId,
       listener: Alb.albListener,
       listenerPathPatterns: ['/api/*', '/h5p/*', '/embed/*', '/content/*'],
-      healthCheckPath: '/healthcheck',
+      healthCheckPath: '/tutu-backend/api/healthcheck',
       healthCheckGracePeriod: 180,
       healthCheckInterval: 5,
       healthCheckTimeout: 2,
