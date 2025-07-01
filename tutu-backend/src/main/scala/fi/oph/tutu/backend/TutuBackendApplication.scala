@@ -30,6 +30,19 @@ class TutuBackendApplication {
         .addMapping("/**")
         .allowedOrigins("https://localhost:3123")
         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+  }
 
+  @Profile(Array("prod"))
+  @Bean
+  def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
+    override def addCorsMappings(registry: CorsRegistry): Unit =
+      registry
+        .addMapping("/**")
+        .allowedOrigins(
+          "https://virkailija.opintopolku.fi",
+          "https://virkailija.untuvaopintopolku.fi",
+          "https://virkailija.testiopintopolku.fi",
+          "https://tutu-dev.opintopolku.fi"
+        ).allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
   }
 }
