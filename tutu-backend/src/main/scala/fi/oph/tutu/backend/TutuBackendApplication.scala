@@ -24,7 +24,7 @@ class TutuBackendApplication {
 
   @Profile(Array("dev"))
   @Bean
-  def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
+  def devCorsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
     override def addCorsMappings(registry: CorsRegistry): Unit =
       registry
         .addMapping("/**")
@@ -34,7 +34,7 @@ class TutuBackendApplication {
 
   @Profile(Array("prod"))
   @Bean
-  def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
+  def prodCorsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
     override def addCorsMappings(registry: CorsRegistry): Unit =
       registry
         .addMapping("/**")
@@ -43,6 +43,7 @@ class TutuBackendApplication {
           "https://virkailija.untuvaopintopolku.fi",
           "https://virkailija.testiopintopolku.fi",
           "https://tutu-dev.opintopolku.fi"
-        ).allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+        )
+        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
   }
 }
