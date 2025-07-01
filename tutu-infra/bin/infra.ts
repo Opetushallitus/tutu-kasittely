@@ -211,20 +211,15 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
           POSTGRESQL_PORT: WebBackendAurora.endPoint.port
         }
       },
-      parameter_store_secrets: [],
+      parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS'],
       secrets_manager_secrets: [
         Secrets.secrets.PG_PASS,
         Secrets.secrets.SESSION_SECRET,
-        Secrets.secrets.CLIENT_SECRET,
-        Secrets.secrets.JWT_SECRET,
-        Secrets.secrets.PROXY_URI,
-        Secrets.secrets.CLIENT_ID,
-        Secrets.secrets.ADMIN_EMAIL
       ],
       utilityAccountId: utilityAccountId,
       listener: Alb.albListener,
       listenerPathPatterns: ['/api/*', '/h5p/*', '/embed/*', '/content/*'],
-      healthCheckPath: '/health',
+      healthCheckPath: '/healthcheck',
       healthCheckGracePeriod: 180,
       healthCheckInterval: 5,
       healthCheckTimeout: 2,
@@ -234,7 +229,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     })
   }
 
-  new FrontendNextjsStack(app, 'FrontendNextjsStack', {
+  new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
     basePath: '/tutu-frontend',
     domainName: `frontend.${domain}`,
     hostedZone: HostedZones.publicHostedZone,

@@ -19,7 +19,8 @@ permissions:
   packages: read
 
 jobs:
-  deploy-backend:
+  deploy-backend-dev:
+    if: ${{ inputs.environment == 'dev' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,20 +31,12 @@ jobs:
           npm ci --prefer-offline
           npm install -g aws-cdk
       - name: Configure AWS dev-role credentials
-        if: ${{ inputs.environment == 'dev' }}
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: ${{ secrets.AWS_TUTU_DEV_ROLE_ARN }}
           role-session-name: tutu-frontend-deploy-dev
           aws-region: eu-west-1
-      - name: Configure AWS qa-role credentials
-        if: ${{ inputs.environment == 'qa' }}
-        uses: aws-actions/configure-aws-credentials@v4.1.0
-        with:
-          role-to-assume: ${{ secrets.AWS_TUTU_QA_ROLE_ARN }}
-          role-session-name: tutu-frontend-deploy-qa
-          aws-region: eu-west-1
       - name: Deploy backend to ECS
         run: |
           cd cdk
-          cdk deploy EcsServiceStack --require-approval never -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
+          cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
