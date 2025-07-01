@@ -22,23 +22,13 @@ class TutuBackendApplication {
   def applicationRunner(): ApplicationRunner =
     (args: ApplicationArguments) => LOG.info("STARTED TUTU APPLICATION RUNNER")
 
-  @Profile(Array("dev"))
   @Bean
-  def devCorsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
-    override def addCorsMappings(registry: CorsRegistry): Unit =
-      registry
-        .addMapping("/**")
-        .allowedOrigins("https://localhost:3123")
-        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-  }
-
-  @Profile(Array("prod"))
-  @Bean
-  def prodCorsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
+  def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
     override def addCorsMappings(registry: CorsRegistry): Unit =
       registry
         .addMapping("/**")
         .allowedOrigins(
+          "https://localhost:3123",
           "https://virkailija.opintopolku.fi",
           "https://virkailija.untuvaopintopolku.fi",
           "https://virkailija.testiopintopolku.fi",
