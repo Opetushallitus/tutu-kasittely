@@ -12,6 +12,7 @@ on:
       revision:
         description: Frontend build GH Actions number
         required: true
+        type: number
 
 permissions:
   id-token: write

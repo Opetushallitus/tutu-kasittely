@@ -12,6 +12,7 @@ on:
       revision:
         description: Backend build GH Actions number
         required: true
+        type: number
 
 permissions:
   id-token: write
@@ -24,12 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/prepare-next-env
-      - name: Install CDK dependencies
-        run: |
-          cd cdk
-          npm ci --prefer-offline
-          npm install -g aws-cdk
       - name: Configure AWS dev-role credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -37,6 +32,8 @@ jobs:
           role-session-name: tutu-frontend-deploy-dev
           aws-region: eu-west-1
       - name: Deploy backend to ECS
+        working-directory: ./tutu-infra
         run: |
-          cd cdk
+          npm ci --prefer-offline
+          npm install -g aws-cdk
           cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
