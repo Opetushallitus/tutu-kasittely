@@ -229,18 +229,20 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     })
   }
 
-  new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
-    basePath: '/tutu-frontend',
-    domainName: `frontend.${domain}`,
-    hostedZone: HostedZones.publicHostedZone,
-    environment: environmentName,
-    envVars: environmentConfig.services.web_frontend.env_vars,
-    nextjsPath: '../tutu-frontend',
-    certificate: CloudfrontCertificate.certificate,
-    env: envEU,
-    crossRegionReferences: true,
-    serviceName: utilityConfig.frontend_service_name
-  })
+  if (app.node.tryGetContext('no-next') === undefined) {
+    new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
+      basePath: '/tutu-frontend',
+      domainName: `frontend.${domain}`,
+      hostedZone: HostedZones.publicHostedZone,
+      environment: environmentName,
+      envVars: environmentConfig.services.web_frontend.env_vars,
+      nextjsPath: '../tutu-frontend',
+      certificate: CloudfrontCertificate.certificate,
+      env: envEU,
+      crossRegionReferences: true,
+      serviceName: utilityConfig.frontend_service_name
+    })
+  }
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
     env: envEU,

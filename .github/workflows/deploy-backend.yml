@@ -38,4 +38,4 @@ jobs:
         run: |
           npm ci --prefer-offline
           npm install -g aws-cdk
-          cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
+          cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}" -c "no-next=1"
