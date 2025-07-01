@@ -1,10 +1,23 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.service.{AtaruHakemusParser, KoodistoService}
-import org.junit.jupiter.api.{BeforeEach, Test}
+import fi.oph.tutu.backend.service.{extractValues, transformItem, traverseContent, AtaruHakemusParser, KoodistoService}
+import org.junit.jupiter.api.{BeforeEach, DisplayName, Nested, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
-import fi.oph.tutu.backend.domain.{AtaruHakemus, Kieli, KoodistoItem}
+import fi.oph.tutu.backend.domain.{
+  Answer,
+  AtaruHakemus,
+  AtaruLomake,
+  EmptyValue,
+  Kieli,
+  KoodistoItem,
+  LomakeContentItem,
+  MultiValue,
+  NestedValues,
+  SingleValue,
+  SisaltoItem,
+  Valinta
+}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.native.JsonMethods
 import org.json4s.jvalue2extractable
@@ -111,6 +124,300 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       Map(),
       hakija.kotikunta
     )
+
+  }
+
+  @Nested
+  @DisplayName("parseSisalto")
+  class ParseSisalto extends UnitTestBase with TutuJsonFormats {
+    @Test
+    def extractValuesWithNoAnswer(): Unit = {
+      val result = extractValues(None)
+      assertEquals(result, Seq())
+    }
+
+    @Test
+    def extractValuesWithEmptyValueAnswer(): Unit = {
+      val result = extractValues(Some(Answer(value = EmptyValue, key = "", fieldType = "")))
+      assertEquals(result, Seq())
+    }
+
+    @Test
+    def extractValuesWithSingleValueAnswer(): Unit = {
+      val result = extractValues(Some(Answer(value = SingleValue("singleValue"), key = "", fieldType = "")))
+      assertEquals(result, Seq("singleValue"))
+    }
+
+    @Test
+    def extractValuesWithMultiValueAnswer(): Unit = {
+      val result = extractValues(
+        Some(Answer(value = MultiValue(Seq("firstValue", "secondValue")), key = "", fieldType = ""))
+      )
+      assertEquals(result, Seq("firstValue", "secondValue"))
+    }
+
+    @Test
+    def extractValuesWithNestedValuesAnswer(): Unit = {
+      val result = extractValues(
+        Some(Answer(value = NestedValues(Seq(Seq("firstValue"), Seq("secondValue"))), key = "", fieldType = ""))
+      )
+      assertEquals(result, Seq("firstValue", "secondValue"))
+    }
+
+    @Test
+    def transformItemWhenAnswerFound(): Unit = {
+      val answers = Seq(
+        Answer(
+          key = "1",
+          value = SingleValue("singleAnswer1"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "2",
+          value = SingleValue("singleAnswer2"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "3",
+          value = SingleValue("singleAnswer3"),
+          fieldType = "testField"
+        )
+      )
+
+      val item = LomakeContentItem(
+        id = "2",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en"),
+        options = Seq(
+          Valinta(
+            value = "singleAnswer2",
+            label = Map(Kieli.fi -> "valinta2")
+          )
+        )
+      )
+
+      val (result, _) = transformItem(answers, item)
+      val expected = SisaltoItem(
+        key = "2",
+        fieldType = "",
+        value = Seq(Map(Kieli.fi -> "valinta2")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
+      )
+
+      assertEquals(result, expected)
+    }
+
+    @Test
+    def transformItemWhenAnswerNotFound(): Unit = {
+      val answers = Seq(
+        Answer(
+          key = "1",
+          value = SingleValue("singleAnswer1"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "2",
+          value = SingleValue("singleAnswer2"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "3",
+          value = SingleValue("singleAnswer3"),
+          fieldType = "testField"
+        )
+      )
+
+      val item = LomakeContentItem(
+        id = "4",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en"),
+        options = Seq(
+          Valinta(
+            value = "singleAnswer2",
+            label = Map(Kieli.fi -> "valinta2")
+          )
+        )
+      )
+
+      val (result, _) = transformItem(answers, item)
+      val expected = SisaltoItem(
+        key = "4",
+        fieldType = "",
+        value = Seq(),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
+      )
+
+      assertEquals(result, expected)
+    }
+
+    @Test
+    def transformItemWhenAnswerItemHasNoOptions(): Unit = {
+      val answers = Seq(
+        Answer(
+          key = "1",
+          value = SingleValue("singleAnswer1"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "2",
+          value = SingleValue("singleAnswer2"),
+          fieldType = "testField"
+        ),
+        Answer(
+          key = "3",
+          value = SingleValue("singleAnswer3"),
+          fieldType = "testField"
+        )
+      )
+
+      val item = LomakeContentItem(
+        id = "2",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
+      )
+
+      val (result, _) = transformItem(answers, item)
+      val expected = SisaltoItem(
+        key = "2",
+        fieldType = "",
+        value = Seq(Map(Kieli.fi -> "singleAnswer2", Kieli.sv -> "singleAnswer2", Kieli.en -> "singleAnswer2")),
+        label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
+      )
+
+      assertEquals(result, expected)
+    }
+
+    @Test
+    def traverseContentProducesConcensedDataStructure(): Unit = {
+
+      /**
+       *        Item101
+       *        - Item201
+       *        - Item202
+       *          - Valinta301
+       *          - Valinta302
+       *            - Item401
+       *            - Item402
+       *        - Item203
+       *          - Valinta303
+       *
+       *        =>
+       *
+       *        Sisalto101
+       *        - Sisalto201
+       *        - Sisalto202
+       *          - Sisalto401
+       *          - Sisalto402
+       *        - Sisalto203
+       */
+      val item401 = LomakeContentItem(
+        id = "401",
+        fieldClass = "",
+        fieldType = "",
+        label = Map()
+      )
+      val item402 = LomakeContentItem(
+        id = "402",
+        fieldClass = "",
+        fieldType = "",
+        label = Map()
+      )
+
+      val valinta301 = Valinta(
+        value = "301",
+        label = Map()
+      )
+      val valinta302 = Valinta(
+        value = "302",
+        label = Map(),
+        followups = Seq(
+          item401,
+          item402
+        )
+      )
+      val valinta303 = Valinta(
+        value = "303",
+        label = Map()
+      )
+
+      val item201 = LomakeContentItem(
+        id = "201",
+        fieldClass = "",
+        fieldType = "",
+        label = Map()
+      )
+      val item202 = LomakeContentItem(
+        id = "202",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(),
+        options = Seq(
+          valinta301,
+          valinta302
+        )
+      )
+      val item203 = LomakeContentItem(
+        id = "203",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(),
+        options = Seq(
+          valinta303
+        )
+      )
+
+      val item101 = LomakeContentItem(
+        id = "101",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(),
+        children = Seq(
+          item201,
+          item202,
+          item203
+        )
+      )
+
+      val rootItems = traverseContent(
+        Seq(item101),
+        item => {
+          (
+            SisaltoItem(
+              key = item.id,
+              fieldType = "",
+              value = Seq(Map()),
+              label = Map()
+            ),
+            item.options
+              .map(opt => opt.followups)
+              .flatten()
+          )
+        }
+      )
+
+      assertEquals(rootItems.size, 1)
+
+      assertEquals(rootItems(0).key, "101")
+
+      val childrenOf101 = rootItems(0).children
+
+      assertEquals(childrenOf101.size, 3)
+
+      assertEquals(childrenOf101(0).key, "201")
+      assertEquals(childrenOf101(1).key, "202")
+      assertEquals(childrenOf101(2).key, "203")
+
+      val childrenOf202 = childrenOf101(1).followups
+
+      assertEquals(childrenOf202.size, 2)
+
+      assertEquals(childrenOf202(0).key, "401")
+      assertEquals(childrenOf202(1).key, "402")
+
+    }
 
   }
 }

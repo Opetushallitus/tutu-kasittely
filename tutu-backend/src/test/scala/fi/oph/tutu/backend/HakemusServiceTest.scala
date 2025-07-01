@@ -44,6 +44,8 @@ class HakemusServiceTest extends UnitTestBase {
   def testMuutoshistoriaSortDescending(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))
@@ -58,6 +60,8 @@ class HakemusServiceTest extends UnitTestBase {
   def testMuutoshistoriaFetchFailed(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))
@@ -70,6 +74,8 @@ class HakemusServiceTest extends UnitTestBase {
   def testMuutoshistoriaFetchEsittelijaFetchFailed(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))

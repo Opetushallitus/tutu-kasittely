@@ -1,12 +1,22 @@
 package fi.oph.tutu.backend.utils
 
-import fi.oph.tutu.backend.domain.{AnswerValue, EmptyValue, Kieli, KoodistoItem, MultiValue, NestedValues, SingleValue}
+import fi.oph.tutu.backend.domain.{
+  AnswerValue,
+  EmptyValue,
+  Kieli,
+  Kielistetty,
+  KoodistoItem,
+  MultiValue,
+  NestedValues,
+  SingleValue
+}
 import org.json4s.*
 
 import java.text.SimpleDateFormat
 
 trait TutuJsonFormats {
-  implicit val formats: Formats = DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer
+  implicit val formats: Formats =
+    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer
 }
 
 object AnswerValueSerializer
@@ -76,6 +86,43 @@ object KoodistoItemSerializer
           val koodiUri  = JString(k.koodiUri)
           val koodiArvo = JString(k.koodiArvo)
           JObject("koodiUri" -> koodiUri, "koodiArvo" -> koodiArvo, "metadata" -> metadata)
+        }
+      )
+    )
+
+object KielistettySerializer
+    extends CustomSerializer[Kielistetty](_ =>
+      (
+        {
+          case JObject(fields) => {
+            val fiEntry = fields.collectFirst { case ("fi", JString(value)) => Some((Kieli.fi, value)) }.getOrElse(None)
+            val svEntry = fields.collectFirst { case ("sv", JString(value)) => Some((Kieli.sv, value)) }.getOrElse(None)
+            val enEntry = fields.collectFirst { case ("en", JString(value)) => Some((Kieli.en, value)) }.getOrElse(None)
+
+            val map = Seq(fiEntry, svEntry, enEntry)
+              .flatten()
+              .foldLeft(
+                Map[Kieli, String]()
+              )((current, entry) => current.++(Map(entry(0) -> entry(1))))
+
+            map
+          }
+          case JNothing => null
+          case unexpected =>
+            throw new MappingException(s"Cannot deserialize Kielistetty from $unexpected")
+        },
+        { case k: Kielistetty =>
+          val fiEntry = k.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.getOrElse(None)
+          val svEntry = k.collectFirst { case (Kieli.en, value) => Some(("sv", JString(value))) }.getOrElse(None)
+          val enEntry = k.collectFirst { case (Kieli.sv, value) => Some(("en", JString(value))) }.getOrElse(None)
+
+          val obj = Seq(fiEntry, svEntry, enEntry)
+            .flatten()
+            .foldLeft(
+              JObject()
+            )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
+
+          obj
         }
       )
     )
