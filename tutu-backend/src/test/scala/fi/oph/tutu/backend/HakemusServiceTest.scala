@@ -4,7 +4,13 @@ import fi.oph.tutu.backend.domain.SortDef.Desc
 import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.{dbHakemusFixture, hakijaFixture, onrUserFixture}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
-import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemusService, HakemuspalveluService, HakemuspalveluServiceException, OnrService}
+import fi.oph.tutu.backend.service.{
+  AtaruHakemusParser,
+  HakemusService,
+  HakemuspalveluService,
+  HakemuspalveluServiceException,
+  OnrService
+}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.when
