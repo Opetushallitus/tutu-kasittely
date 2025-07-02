@@ -5,13 +5,13 @@ import fi.oph.tutu.backend.domain.ErrorMessage
 import fi.oph.tutu.backend.service.{HakemuspalveluServiceException, KayttooikeusServiceException, OnrServiceException}
 import org.springframework.http.{HttpHeaders, HttpStatus, MediaType, ResponseEntity}
 
-class ErrorMessageMapper (val objectMapper: ObjectMapper) {
+class ErrorMessageMapper(val objectMapper: ObjectMapper) {
   def mapErrorMessage(error: Throwable, status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR): ResponseEntity[Any] = {
     val origin = error match {
       case hse: HakemuspalveluServiceException => "hakemuspalvelu"
-      case onr: OnrServiceException => "oppijanumerorekisteri"
-      case kos: KayttooikeusServiceException => "kayttooikeuspalvelu"
-      case _ => ""
+      case onr: OnrServiceException            => "oppijanumerorekisteri"
+      case kos: KayttooikeusServiceException   => "kayttooikeuspalvelu"
+      case _                                   => ""
     }
     val body = objectMapper.writeValueAsString(ErrorMessage(origin, error.getMessage))
     ResponseEntity
@@ -20,7 +20,10 @@ class ErrorMessageMapper (val objectMapper: ObjectMapper) {
       .body(body)
   }
 
-  def mapPlainErrorMessage(errorMessage: String, status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR): ResponseEntity[Any] = {
+  def mapPlainErrorMessage(
+    errorMessage: String,
+    status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+  ): ResponseEntity[Any] = {
     val body = objectMapper.writeValueAsString(ErrorMessage("", errorMessage))
     ResponseEntity
       .status(status)

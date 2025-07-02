@@ -11,8 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.jdk.javaapi.FutureConverters.asScala
 
-case class NotFoundException(message: String = "", cause: Throwable = null)
-    extends RuntimeException(message, cause)
+case class NotFoundException(message: String = "", cause: Throwable = null) extends RuntimeException(message, cause)
 @Component
 class HttpService {
   private val LOG: Logger = LoggerFactory.getLogger(classOf[HttpService])

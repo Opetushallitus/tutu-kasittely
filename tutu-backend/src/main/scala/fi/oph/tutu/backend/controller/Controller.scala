@@ -3,7 +3,16 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{Hakemus, HakemusListItem, HakemusOid, PartialHakemus, SortDef, UserOid, UserResponse, UusiAtaruHakemus}
+import fi.oph.tutu.backend.domain.{
+  Hakemus,
+  HakemusListItem,
+  HakemusOid,
+  PartialHakemus,
+  SortDef,
+  UserOid,
+  UserResponse,
+  UusiAtaruHakemus
+}
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
@@ -19,7 +28,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import java.util
 import java.util.UUID
-import scala.util.{Try, Success, Failure}
+import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -71,16 +80,15 @@ class Controller(
   def user(): String = {
     val enrichedUserDetails = userService.getEnrichedUserDetails()
     mapper.writeValueAsString(
-          UserResponse(
-            user =
-              if (enrichedUserDetails == null)
-                null
-              else
-                enrichedUserDetails
-          )
-        )
-    }
-
+      UserResponse(
+        user =
+          if (enrichedUserDetails == null)
+            null
+          else
+            enrichedUserDetails
+      )
+    )
+  }
 
   @PostMapping(
     path = Array("ataru-hakemus"),
@@ -155,18 +163,19 @@ class Controller(
     Try {
       hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort))
     } match {
-      case Success(value) => value match {
-        case None =>
-          LOG.warn(s"Hakemusta ei löytynyt hakemusOid:illa: $hakemusOid")
-          errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
-        case Some(hakemus) =>
-          ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
-      }
-        case Failure(exception)  =>
-          LOG.error(s"Hakemuksen haku epäonnistui, hakemusOid: $hakemusOid", exception)
-          errorMessageMapper.mapErrorMessage(exception)
-      }
+      case Success(value) =>
+        value match {
+          case None =>
+            LOG.warn(s"Hakemusta ei löytynyt hakemusOid:illa: $hakemusOid")
+            errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+          case Some(hakemus) =>
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
+        }
+      case Failure(exception) =>
+        LOG.error(s"Hakemuksen haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
+  }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def listaaHakemukset(
@@ -182,11 +191,11 @@ class Controller(
         case null =>
           esittelija match {
             case null => None
-            case _ => Option(esittelija)
+            case _    => Option(esittelija)
           }
       }
 
-       hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
+      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
     } match {
       case Success(hakemukset) =>
         val response = mapper.writeValueAsString(hakemukset)
@@ -196,7 +205,6 @@ class Controller(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
-
 
   @GetMapping(path = Array("esittelijat"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeEsittelijat(): ResponseEntity[Any] = {

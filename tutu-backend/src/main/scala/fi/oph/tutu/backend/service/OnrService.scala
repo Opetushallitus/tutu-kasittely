@@ -12,8 +12,7 @@ import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
-case class OnrServiceException(message: String = "", cause: Throwable = null)
-    extends RuntimeException(message, cause)
+case class OnrServiceException(message: String = "", cause: Throwable = null) extends RuntimeException(message, cause)
 
 @Component
 @Service

@@ -9,8 +9,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
 
-case class HakemuspalveluServiceException(cause: Throwable = null)
-    extends RuntimeException(cause)
+case class HakemuspalveluServiceException(cause: Throwable = null) extends RuntimeException(cause)
 
 @Component
 @Service
@@ -47,7 +46,7 @@ class HakemuspalveluService(httpService: HttpService) {
       hakemuspalveluCasClient,
       s"$opintopolku_virkailija_domain/lomake-editori/api/external/tutu/hakemus/${hakemusOid.toString}"
     ) match {
-      case Left(error: Throwable)  =>
+      case Left(error: Throwable) =>
         error match {
           case e: NotFoundException => Left(e)
           case _                    => Left(HakemuspalveluServiceException(error))

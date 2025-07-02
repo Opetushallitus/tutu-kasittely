@@ -426,9 +426,11 @@ class ControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isNotFound)
       .andExpect(content().contentType(MediaType.valueOf("text/plain; charset=UTF-8")))
-      .andExpect(content().json(
-        """{"message":"Hakemusta ei löytynyt"}"""
-      ))
+      .andExpect(
+        content().json(
+          """{"message":"Hakemusta ei löytynyt"}"""
+        )
+      )
   }
 
   @Test

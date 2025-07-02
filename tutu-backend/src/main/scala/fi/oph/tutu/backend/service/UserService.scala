@@ -22,10 +22,11 @@ class UserService(
     } else {
       val username = principal.getUsername
       val asiointikieli = onrService.haeAsiointikieli(username) match {
-        case Left(e)  => if (throwOnrException)  
-                            throw e
-                         else   
-                            None
+        case Left(e) =>
+          if (throwOnrException)
+            throw e
+          else
+            None
         case Right(v) => Some(v)
       }
 
