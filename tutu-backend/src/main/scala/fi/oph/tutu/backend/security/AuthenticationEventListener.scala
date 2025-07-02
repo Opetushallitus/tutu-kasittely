@@ -18,7 +18,7 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
       .setField("userOid", event.getAuthentication.getName)
       .build()
     val request = getCurrentHttpRequest
-    audit.log(getUser(request), Login, target, Changes.EMPTY)
+//    audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
   }
 

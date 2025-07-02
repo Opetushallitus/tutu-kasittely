@@ -37,7 +37,7 @@ class AuditLog(val logger: Logger) {
       val paramsJson = toJson(raporttiParams)
       val target =
         new Target.Builder().setField("parametrit", paramsJson).build()
-      audit.log(getUser(request), operation, target, Changes.EMPTY)
+//      audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {
       case e: Exception =>
         errorLogger.error(s"Auditlokitus epäonnistui: ${e.getMessage}")
