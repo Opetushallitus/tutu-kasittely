@@ -26,6 +26,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/prepare-next-env
+      - name: Configure AWS utility-role credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_UTILITY_ROLE_ARN }}
+          role-session-name: tutu-frontend-download-build-zip
+          aws-region: eu-west-1
+      - name: Download build from s3
+        working-directory: ./tutu-frontend
+        env:
+          bucket: ${{ secrets.CDK_FRONTEND_BUILDS_BUCKET_NAME }}
+        run: |
+          aws s3 cp --no-progress s3://"$bucket"/ga-${{inputs.revision}}.zip build.zip
+          unzip build.zip
+          cp -R .next/standalone/.next/server .next/server # OpenNext v3 needs server-files also in .next/server
       - name: Configure AWS dev-role credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
