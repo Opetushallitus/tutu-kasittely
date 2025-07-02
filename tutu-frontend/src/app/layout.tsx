@@ -13,6 +13,7 @@ import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClien
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactNode } from 'react';
 import { AuthorizedUserProvider } from '@/src/components/providers/AuthorizedUserProvider';
+import { Toaster } from '@/src/components/Toaster';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',
@@ -42,6 +43,7 @@ export default function RootLayout({
                     <AuthorizedUserProvider>
                       <LocalizationProvider>
                         <LocalizedThemeProvider>
+                          <Toaster />
                           {children}
                         </LocalizedThemeProvider>
                       </LocalizationProvider>

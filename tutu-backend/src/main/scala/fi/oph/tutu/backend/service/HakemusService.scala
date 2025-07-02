@@ -41,8 +41,12 @@ class HakemusService(
   def haeHakemus(hakemusOid: HakemusOid, muutosHistoriaSortDef: SortDef = Undefined): Option[Hakemus] = {
     val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
       case Left(error: Throwable) =>
-        LOG.warn(s"Ataru-hakemuksen haku epäonnistui hakemusOidille $hakemusOid: ", error.getMessage)
-        return None
+        error match {
+          case e: NotFoundException =>
+            return None
+          case _ =>
+            throw error
+        }
       case Right(response: String) => parse(response).extract[AtaruHakemus]
     }
 
@@ -57,7 +61,7 @@ class HakemusService(
     var muutosHistoria = hakemuspalveluService.haeMuutoshistoria(hakemusOid) match {
       case Left(error: Throwable) =>
         LOG.warn(s"Ataru-hakemuksen muutoshistorian haku epäonnistui hakemusOidille $hakemusOid: {}", error.getMessage)
-        Seq()
+        throw error
       case Right(response: String) =>
         resolveMuutoshistoria(response, hakija)
     }
@@ -154,7 +158,7 @@ class HakemusService(
 
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
-      case Left(error) => LOG.error(error.getMessage); Seq.empty[AtaruHakemus]
+      case Left(error) => throw error
       case Right(response) => {
         parse(response).extract[Seq[AtaruHakemus]]
       }

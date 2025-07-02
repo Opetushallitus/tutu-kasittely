@@ -14,6 +14,9 @@ import org.springframework.stereotype.{Component, Service}
 
 case class PersonOids(personOids: Seq[String])
 
+case class KayttooikeusServiceException(message: String = "", cause: Throwable = null)
+    extends RuntimeException(message, cause)
+
 @Component
 @Service
 class KayttooikeusService(httpService: HttpService) {
@@ -61,11 +64,10 @@ class KayttooikeusService(httpService: HttpService) {
         kayttooikeusCasClient,
         s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$kayttooikeusRyhmaId/henkilot"
       ) match {
-        case Left(error: Throwable) => return Left(error)
-        case Right(response: String) => {
+        case Left(error: Throwable) => Left(KayttooikeusServiceException("", error))
+        case Right(response: String) =>
           val oids = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
           esittelija_oidit ++= oids
-        }
       }
     }
     Right(esittelija_oidit)

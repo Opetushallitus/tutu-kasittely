@@ -9,11 +9,23 @@ import { LabeledValue } from '@/src/app/(root)/hakemus/[oid]/components/LabeledV
 import { Muutoshistoria } from '@/src/app/(root)/hakemus/[oid]/perustiedot/Muutoshistoria';
 import { Henkilotiedot } from '@/src/app/(root)/hakemus/[oid]/perustiedot/Henkilotiedot';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import useToaster from '@/src/hooks/useToaster';
+import { useEffect } from 'react';
+import { handleFetchError } from '@/src/lib/utils';
 
 export default function PerustietoPage() {
   const theme = useTheme();
   const { t } = useTranslations();
-  const { isLoading, hakemus } = useHakemus();
+  const { addToast } = useToaster();
+  const { isLoading, hakemus, error } = useHakemus();
+
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.hakemuksen-lataus', t);
+  }, [error, addToast, t]);
+
+  if (error) {
+    return null;
+  }
 
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
 

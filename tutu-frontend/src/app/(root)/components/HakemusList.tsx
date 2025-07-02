@@ -11,7 +11,10 @@ import {
 import TableSortLabel from './TableSortLabel';
 import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
 import { naytaQueryStates } from '@/src/app/(root)/components/types';
-import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import {
+  handleFetchError,
+  setQueryStateAndLocalStorage,
+} from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
@@ -19,6 +22,9 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import * as R from 'remeda';
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
+import useToaster from '@/src/hooks/useToaster';
+import { useEffect } from 'react';
+import { useTranslations } from '@/src/lib/localization/useTranslations';
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',
@@ -56,11 +62,17 @@ interface HakemusListProps {
 
 export function HakemusList({ user }: HakemusListProps) {
   const queryClient = useQueryClient();
+  const { addToast } = useToaster();
+  const { t } = useTranslations();
   const [sortDef, setSortDef] = useQueryState(
     'hakemuslista.sort',
     parseAsString.withDefault(''),
   );
-  const { isLoading, data } = useHakemukset();
+  const { isLoading, data, error } = useHakemukset();
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.hakemus-listan-lataus', t);
+  }, [error, addToast, t]);
+
   const [nayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),

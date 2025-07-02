@@ -15,7 +15,7 @@ import fi.oph.tutu.backend.domain.{
 }
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
-import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil}
+import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -28,6 +28,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import java.util
 import java.util.UUID
+import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -46,6 +47,8 @@ class Controller(
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
   mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+  private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   final val RESPONSE_200_DESCRIPTION =
     "Pyyntö vastaanotettu"
@@ -75,7 +78,7 @@ class Controller(
 
   @GetMapping(path = Array("user"))
   def user(): String = {
-    val enrichedUserDetails = userService.getEnrichedUserDetails
+    val enrichedUserDetails = userService.getEnrichedUserDetails()
     mapper.writeValueAsString(
       UserResponse(
         user =
@@ -124,13 +127,11 @@ class Controller(
   )
   def luoHakemus(@RequestBody hakemusBytes: Array[Byte]): ResponseEntity[Any] =
     try {
-      val user        = userService.getEnrichedUserDetails
+      val user        = userService.getEnrichedUserDetails(true)
       val authorities = user.authorities
 
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        ResponseEntity
-          .status(HttpStatus.FORBIDDEN)
-          .body(RESPONSE_403_DESCRIPTION)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_403_DESCRIPTION, HttpStatus.FORBIDDEN)
       } else {
         var hakemus: UusiAtaruHakemus = null
         try
@@ -138,15 +139,11 @@ class Controller(
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-            return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body(RESPONSE_400_DESCRIPTION)
+            return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
         }
         if (!hakemus.hakemusOid.isValid) {
           LOG.error(s"Hakemuksen luonti epäonnistui, virheellinen hakemusOid: ${hakemus.hakemusOid}")
-          ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(RESPONSE_400_DESCRIPTION)
+          errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
         } else {
           val hakemusOid = hakemusService.tallennaHakemus(hakemus)
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
@@ -155,9 +152,7 @@ class Controller(
     } catch {
       case e: Exception =>
         LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
-        ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(RESPONSE_500_DESCRIPTION)
+        errorMessageMapper.mapErrorMessage(e)
     }
 
   @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
@@ -165,14 +160,21 @@ class Controller(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestParam(required = false) hakemusMuutoshistoriaSort: String = SortDef.Undefined.toString
   ): ResponseEntity[Any] = {
-    hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort)) match {
-      case None =>
-        LOG.warn(s"Hakemusta ei löytynyt hakemusOid: $hakemusOid")
-        ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hakemusta ei löytynyt")
-      case Some(hakemus) =>
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
+    Try {
+      hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort))
+    } match {
+      case Success(value) =>
+        value match {
+          case None =>
+            LOG.warn(s"Hakemusta ei löytynyt hakemusOid:illa: $hakemusOid")
+            errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+          case Some(hakemus) =>
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
+        }
+      case Failure(exception) =>
+        LOG.error(s"Hakemuksen haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
-
   }
 
   @GetMapping(path = Array("hakemuslista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
@@ -182,26 +184,40 @@ class Controller(
     @RequestParam(required = false) esittelija: String,
     @RequestParam(required = false) vaihe: String
   ): ResponseEntity[Any] = {
-    val user = userService.getEnrichedUserDetails
-    val userOid = nayta match {
-      case "omat" => Option(user.userOid)
-      case null =>
-        esittelija match {
-          case null => None
-          case _    => Option(esittelija)
-        }
-    }
-    val hakemukset: Seq[HakemusListItem] =
+    Try {
+      val user = userService.getEnrichedUserDetails(true)
+      val userOid = nayta match {
+        case "omat" => Option(user.userOid)
+        case null =>
+          esittelija match {
+            case null => None
+            case _    => Option(esittelija)
+          }
+      }
+
       hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
-    val response = mapper.writeValueAsString(hakemukset)
-    ResponseEntity.status(HttpStatus.OK).body(response)
+    } match {
+      case Success(hakemukset) =>
+        val response = mapper.writeValueAsString(hakemukset)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Hakemuslistan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
   }
 
   @GetMapping(path = Array("esittelijat"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeEsittelijat(): ResponseEntity[Any] = {
-    val users    = userService.haeEsittelijat
-    val response = mapper.writeValueAsString(users)
-    ResponseEntity.status(HttpStatus.OK).body(response)
+    Try {
+      userService.haeEsittelijat
+    } match {
+      case Success(users) =>
+        val response = mapper.writeValueAsString(users)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Esittelijöiden haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
   }
 
   @PatchMapping(
@@ -241,13 +257,11 @@ class Controller(
     @RequestBody hakemusBytes: Array[Byte]
   ): ResponseEntity[Any] =
     try {
-      val user        = userService.getEnrichedUserDetails
+      val user        = userService.getEnrichedUserDetails(true)
       val authorities = user.authorities
 
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        ResponseEntity
-          .status(HttpStatus.FORBIDDEN)
-          .body(RESPONSE_403_DESCRIPTION)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_403_DESCRIPTION, HttpStatus.FORBIDDEN)
       } else {
         var partialHakemus: PartialHakemus = null
         try
@@ -255,9 +269,7 @@ class Controller(
         catch {
           case e: Exception =>
             LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
-            return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body(RESPONSE_400_DESCRIPTION)
+            return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
         }
         hakemusService.paivitaHakemus(HakemusOid(hakemusOid), partialHakemus, UserOid(user.userOid))
         haeHakemus(hakemusOid)
@@ -265,8 +277,6 @@ class Controller(
     } catch {
       case e: Exception =>
         LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
-        ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(RESPONSE_500_DESCRIPTION)
+        errorMessageMapper.mapErrorMessage(e)
     }
 }

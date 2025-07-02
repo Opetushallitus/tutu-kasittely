@@ -1,9 +1,15 @@
 import { test, expect } from '@playwright/test';
-import { mockAll } from '@/playwright/mocks';
+import {
+  mockBasicForLista,
+  mockEsittelijat,
+  mockSuccessfullLists,
+  mockUser,
+} from '@/playwright/mocks';
 
-test.beforeEach(mockAll);
+test.beforeEach(mockBasicForLista);
 
 test('Hakemuslistaus latautuu', async ({ page }) => {
+  await mockSuccessfullLists({ page });
   await page.goto('/tutu-frontend');
 
   await expect(page.locator('h1')).toBeVisible();
@@ -20,6 +26,7 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
 test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
+  await mockSuccessfullLists({ page });
   await page.goto('/tutu-frontend?haku=testihakusana&nayta=omat');
 
   const hakukentta = page.getByTestId('hakukentta').locator('input');
@@ -34,6 +41,7 @@ test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({
 test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
+  await mockSuccessfullLists({ page });
   await page.goto('/tutu-frontend?esittelija=1.2.246.562.24.999999999999');
 
   const esittelija = page.getByTestId('esittelija').locator('input');
@@ -48,6 +56,7 @@ test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', a
 test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   page,
 }) => {
+  await mockSuccessfullLists({ page });
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
@@ -75,6 +84,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
 test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
+  await mockSuccessfullLists({ page });
   await page.goto(
     '/tutu-frontend?hakemuslista.sort=hakemuslista.asiatunnus:desc',
   );
@@ -103,6 +113,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
 test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', async ({
   page,
 }) => {
+  await mockSuccessfullLists({ page });
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
@@ -128,4 +139,26 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
   );
 
   await Promise.all(epajarjestystestit);
+});
+
+test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
+  mockUser(page);
+  mockEsittelijat(page);
+  page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        origin: 'hakemuspalvelu',
+        message: 'virheilmoitus',
+      }),
+    });
+  });
+
+  await page.goto('/tutu-frontend');
+
+  await expect(page.getByTestId('hakemus-list')).not.toBeVisible();
+
+  // tarkistetaan että virheviesti näkyy
+  await expect(page.getByTestId('toast-message')).toBeVisible();
 });

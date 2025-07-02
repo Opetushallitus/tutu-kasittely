@@ -16,4 +16,5 @@ export const useHakemukset = () =>
     queryKey: ['getHakemukset'],
     queryFn: getHakemukset,
     staleTime: Infinity,
+    throwOnError: false,
   });

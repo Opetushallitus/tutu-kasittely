@@ -14,7 +14,7 @@ class UserService(
   kayttooikeusService: KayttooikeusService
 ) {
 
-  def getEnrichedUserDetails: User = {
+  def getEnrichedUserDetails(throwOnrException: Boolean = false): User = {
     val principal = authenticationFacade.getAuthentication.getPrincipal
       .asInstanceOf[UserDetails]
     if (principal == null) {
@@ -22,7 +22,11 @@ class UserService(
     } else {
       val username = principal.getUsername
       val asiointikieli = onrService.haeAsiointikieli(username) match {
-        case Left(e)  => None
+        case Left(e) =>
+          if (throwOnrException)
+            throw e
+          else
+            None
         case Right(v) => Some(v)
       }
 
@@ -37,12 +41,12 @@ class UserService(
   def haeEsittelijat: Seq[Esittelija] = {
     kayttooikeusService.haeEsittelijat match {
       case Left(error) =>
-        throw new RuntimeException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error)
+        throw KayttooikeusServiceException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error);
       case Right(esittelijaOidit) =>
         val esittelijat = esittelijaOidit.map(oid =>
           onrService.haeHenkilo(oid) match {
             case Left(error) =>
-              throw new RuntimeException(s"Henkilön tietojen haku epäonnistui OID:llä $oid", error)
+              throw OnrServiceException(s"Henkilön tietojen haku epäonnistui OID:lla $oid", error)
             case Right(esittelija) => Esittelija(esittelija.oidHenkilo, esittelija.kutsumanimi, esittelija.sukunimi)
           }
         )

@@ -29,13 +29,15 @@
     "@tanstack/react-query": "^5.74.4",
     "@tolgee/format-icu": "^6.2.2",
     "@tolgee/react": "^6.2.4",
+    "@xstate/react": "^6.0.0",
     "date-fns": "^4.1.0",
     "next": "15.2.5",
     "nuqs": "^2.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "remeda": "^2.21.3",
-    "ts-pattern": "^5.7.1"
+    "ts-pattern": "^5.7.1",
+    "xstate": "^5.20.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",

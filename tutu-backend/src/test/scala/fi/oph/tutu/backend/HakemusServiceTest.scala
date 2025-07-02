@@ -4,13 +4,20 @@ import fi.oph.tutu.backend.domain.SortDef.Desc
 import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.{dbHakemusFixture, hakijaFixture, onrUserFixture}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
-import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemusService, HakemuspalveluService, OnrService}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import fi.oph.tutu.backend.service.{
+  AtaruHakemusParser,
+  HakemusService,
+  HakemuspalveluService,
+  HakemuspalveluServiceException,
+  OnrService
+}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.mockito.ArgumentMatchers.any
 
+import scala.util.{Failure, Success, Try}
 import java.time.format.DateTimeFormatter
 
 class HakemusServiceTest extends UnitTestBase {
@@ -65,9 +72,14 @@ class HakemusServiceTest extends UnitTestBase {
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemusFixture))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid]))
-      .thenReturn(Left(new RuntimeException("Kävi niinkuin Kälviällä")))
-    hakemusService.haeHakemus(defaultHakemusOid)
-    assertTrue(hakemusService.haeHakemus(defaultHakemusOid).get.muutosHistoria.isEmpty)
+      .thenReturn(Left(HakemuspalveluServiceException()))
+    Try {
+      hakemusService.haeHakemus(defaultHakemusOid)
+    } match {
+      case Failure(exception) =>
+        assertTrue(exception.isInstanceOf[HakemuspalveluServiceException])
+      case _ => fail("Expected HakemuspalveluServiceException")
+    }
   }
 
   @Test
