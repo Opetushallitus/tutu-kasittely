@@ -59,6 +59,20 @@ if (environmentName === 'dev') {
 if (environmentName === 'dev' || environmentName === 'qa' || environmentName === 'prod') {
   const revision = app.node.tryGetContext('revision')
 
+  if (utility === undefined) {
+    console.error(
+      'You must define utility account id in CDK context!'
+    )
+    process.exit(1)
+  }
+  
+  if (revision === undefined) {
+    console.error(
+      'You must define a valid revision in CDK context!'
+    )
+    process.exit(1)
+  }
+
   const domain = environmentConfig.aws.domain
 
   new GithubActionsStack(app, 'GithubActionsStack', {
@@ -188,61 +202,57 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     logGroupKmsKey: Kms.cloudwatchLogsKmsKey
   })
 
-  if (revision !== undefined) {
-    new EcsServiceStack(app, 'TutuBackendEcsService', {
-      env: envEU,
-      stackName: `${environmentName}-tutu-backend-service`,
-      serviceName: utilityConfig.backend_service_name,
-      environment: environmentName,
-      cluster: FargateCluster.fargateCluster,
-      vpc: Network.vpc,
-      securityGroup: SecurityGroups.webBackendsServiceSecurityGroup,
-      revision,
-      allowEcsExec: environmentConfig.services.web_backend.allow_ecs_exec,
-      taskCpu: environmentConfig.services.web_backend.cpu_limit,
-      taskMemory: environmentConfig.services.web_backend.memory_limit,
-      minimumCount: environmentConfig.services.web_backend.min_count,
-      maximumCount: environmentConfig.services.web_backend.max_count,
-      cpuArchitecture: CpuArchitecture.X86_64,
-      env_vars: {
-        ...environmentConfig.services.web_backend.env_vars,
-        ...{
-          POSTGRESQL_HOST: WebBackendAurora.endPoint.hostname,
-          POSTGRESQL_PORT: WebBackendAurora.endPoint.port
-        }
-      },
-      parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS'],
-      secrets_manager_secrets: [
-        Secrets.secrets.PG_PASS,
-        Secrets.secrets.SESSION_SECRET,
-      ],
-      utilityAccountId: utilityAccountId,
-      listener: Alb.albListener,
-      listenerPathPatterns: ['/tutu-backend/*'],
-      healthCheckPath: '/tutu-backend/api/healthcheck',
-      healthCheckGracePeriod: 180,
-      healthCheckInterval: 5,
-      healthCheckTimeout: 2,
-      albPriority: 120,
-      privateDnsNamespace: namespace.privateDnsNamespace,
-      alarmSnsTopic: Monitor.topic
-    })
-  }
+  new EcsServiceStack(app, 'TutuBackendEcsService', {
+    env: envEU,
+    stackName: `${environmentName}-tutu-backend-service`,
+    serviceName: utilityConfig.backend_service_name,
+    environment: environmentName,
+    cluster: FargateCluster.fargateCluster,
+    vpc: Network.vpc,
+    securityGroup: SecurityGroups.webBackendsServiceSecurityGroup,
+    revision,
+    allowEcsExec: environmentConfig.services.web_backend.allow_ecs_exec,
+    taskCpu: environmentConfig.services.web_backend.cpu_limit,
+    taskMemory: environmentConfig.services.web_backend.memory_limit,
+    minimumCount: environmentConfig.services.web_backend.min_count,
+    maximumCount: environmentConfig.services.web_backend.max_count,
+    cpuArchitecture: CpuArchitecture.X86_64,
+    env_vars: {
+      ...environmentConfig.services.web_backend.env_vars,
+      ...{
+        POSTGRESQL_HOST: WebBackendAurora.endPoint.hostname,
+        POSTGRESQL_PORT: WebBackendAurora.endPoint.port
+      }
+    },
+    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS'],
+    secrets_manager_secrets: [
+      Secrets.secrets.PG_PASS,
+      Secrets.secrets.SESSION_SECRET,
+    ],
+    utilityAccountId: utilityAccountId,
+    listener: Alb.albListener,
+    listenerPathPatterns: ['/tutu-backend/*'],
+    healthCheckPath: '/tutu-backend/api/healthcheck',
+    healthCheckGracePeriod: 180,
+    healthCheckInterval: 5,
+    healthCheckTimeout: 2,
+    albPriority: 120,
+    privateDnsNamespace: namespace.privateDnsNamespace,
+    alarmSnsTopic: Monitor.topic
+  })
 
-  if (app.node.tryGetContext('no-next') === undefined) {
-    new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
-      basePath: '/tutu-frontend',
-      domainName: `frontend.${domain}`,
-      hostedZone: HostedZones.publicHostedZone,
-      environment: environmentName,
-      envVars: environmentConfig.services.web_frontend.env_vars,
-      nextjsPath: '../tutu-frontend',
-      certificate: CloudfrontCertificate.certificate,
-      env: envEU,
-      crossRegionReferences: true,
-      serviceName: utilityConfig.frontend_service_name
-    })
-  }
+  new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
+    basePath: '/tutu-frontend',
+    domainName: `frontend.${domain}`,
+    hostedZone: HostedZones.publicHostedZone,
+    environment: environmentName,
+    envVars: environmentConfig.services.web_frontend.env_vars,
+    nextjsPath: '../tutu-frontend',
+    certificate: CloudfrontCertificate.certificate,
+    env: envEU,
+    crossRegionReferences: true,
+    serviceName: utilityConfig.frontend_service_name
+  })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
     env: envEU,
