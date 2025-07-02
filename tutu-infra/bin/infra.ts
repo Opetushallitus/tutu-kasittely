@@ -176,7 +176,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     crossRegionReferences: true
   })
 
-  // const Cloudfront =
   new CloudfrontStack(app, 'CloudFrontStack', {
     env: envEU,
     stackName: `${environmentName}-cloudfront`,
