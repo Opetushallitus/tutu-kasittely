@@ -9,6 +9,7 @@ import org.ietf.jgss.Oid
 import org.slf4j.LoggerFactory
 import fi.vm.sade.javautils.http.HttpServletRequestUtils
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 
@@ -91,7 +92,17 @@ class AuditLog(val logger: Logger) {
   }
 
   def getInetAddress(request: HttpServletRequest): InetAddress =
-    InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
+    @Value("${audit.ip.header}")
+    val headerName: String = null
+
+    InetAddress.getByName(
+      HttpServletRequestUtils.getRemoteAddress(
+        request.getHeader(headerName),
+        request.getHeader("X-Forwarded-For"),
+        request.getRemoteAddr,
+        request.getRequestURI
+      )
+    )
 }
 
 trait AuditOperation extends Operation {
