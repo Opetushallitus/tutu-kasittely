@@ -65,7 +65,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     )
     process.exit(1)
   }
-  
+
   if (revision === undefined) {
     console.error(
       'You must define a valid revision in CDK context!'

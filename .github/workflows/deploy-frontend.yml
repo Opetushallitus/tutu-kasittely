@@ -56,4 +56,4 @@ jobs:
         env:
           SKIP_OPENNEXT_BUILD: true
         run: |
-          cdk deploy TutuFrontendNextjsStack --require-approval never -c "environment=${{ inputs.environment }}"
+          cdk deploy TutuFrontendNextjsStack --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
