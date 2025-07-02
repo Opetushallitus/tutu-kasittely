@@ -48,30 +48,31 @@ export class FrontendNextjsStack extends Stack {
   constructor(scope: Construct, id: string, props: FrontendNextjsStackProps) {
     super(scope, id, props)
 
-    new Nextjs(this, 'FrontendNextjsStack', {
-      nextjsPath: props.nextjsPath,
-      basePath: props.basePath,
-      environment: { STANDALONE: 'true', ...props.envVars },
-      domainProps: {
-        domainName: props.domainName,
-        certificate: props.certificate,
-        hostedZone: props.hostedZone
-      },
-      overrides: {
-        nextjsDistribution: {
-          imageBehaviorOptions: {
-            // We don't need image optimization, so doesn't matter what cache policy we use
-            // Using a managed policy so we don't add useless cache policies.
-            cachePolicy: CachePolicy.CACHING_DISABLED
-          },
-          distributionProps: {
-            priceClass: PriceClass.PRICE_CLASS_100,
-            enableIpv6: false
-          }
+    if (!props.skipBuild) {
+      new Nextjs(this, 'FrontendNextjsStack', {
+        nextjsPath: props.nextjsPath,
+        basePath: props.basePath,
+        environment: { STANDALONE: 'true', ...props.envVars },
+        domainProps: {
+          domainName: props.domainName,
+          certificate: props.certificate,
+          hostedZone: props.hostedZone
         },
-        ...nameOverrides(this, props.environment, props.serviceName)
-      },
-      skipBuild: props.skipBuild
-    })
+        overrides: {
+          nextjsDistribution: {
+            imageBehaviorOptions: {
+              // We don't need image optimization, so doesn't matter what cache policy we use
+              // Using a managed policy so we don't add useless cache policies.
+              cachePolicy: CachePolicy.CACHING_DISABLED
+            },
+            distributionProps: {
+              priceClass: PriceClass.PRICE_CLASS_100,
+              enableIpv6: false
+            }
+          },
+          ...nameOverrides(this, props.environment, props.serviceName)
+        }
+      })
+    }
   }
 }
