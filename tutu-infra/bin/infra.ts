@@ -250,7 +250,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     certificate: CloudfrontCertificate.certificate,
     env: envEU,
     crossRegionReferences: true,
-    serviceName: utilityConfig.frontend_service_name
+    serviceName: utilityConfig.frontend_service_name,
+    skipBuild: Boolean(app.node.tryGetContext('skipfrontend'))
   })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {

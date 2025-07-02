@@ -28,14 +28,6 @@ export class CloudfrontStack extends Stack {
       certificate: props.certificate
     }
 
-    const trueClientIpFunction = new cloudfront.Function(this, 'AddTrueClientIp', {
-      functionName: 'AddTrueClientIp',
-      runtime: cloudfront.FunctionRuntime.JS_2_0,
-      code: cloudfront.FunctionCode.fromFile({
-        filePath: './resources/functions/add-true-client-ip.js'
-      })
-    })
-
     // Configure default behaviour
     const defaultBehavior = {
       origin: new origins.LoadBalancerV2Origin(props.alb, {
@@ -45,12 +37,6 @@ export class CloudfrontStack extends Stack {
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
       originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
-      functionAssociations: [
-        {
-          function: trueClientIpFunction,
-          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST
-        }
-      ]
     }
 
     if (props.requireTestAuth) {

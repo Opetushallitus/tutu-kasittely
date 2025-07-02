@@ -4,7 +4,7 @@ import { Nextjs, NextjsOverrides, OptionalFunctionProps } from 'cdk-nextjs-stand
 import { IHostedZone } from 'aws-cdk-lib/aws-route53'
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront'
-import * as logs from 'aws-cdk-lib/aws-logs';
+import * as logs from 'aws-cdk-lib/aws-logs'
 
 interface FrontendNextjsStackProps extends StackProps {
   nextjsPath: string
@@ -15,6 +15,7 @@ interface FrontendNextjsStackProps extends StackProps {
   environment: string
   envVars: Record<string, string>
   serviceName: string
+  skipBuild: boolean
 }
 
 const nameFunctionProps = (
@@ -22,35 +23,26 @@ const nameFunctionProps = (
   environmentName: string,
   appName: string,
   lambdaName: string,
-  logGroupOptions?: logs.LogGroupProps,
+  logGroupOptions?: logs.LogGroupProps
 ): OptionalFunctionProps => {
-  const id = `${environmentName}-${appName}-${lambdaName}`;
+  const id = `${environmentName}-${appName}-${lambdaName}`
   return {
     functionName: id,
     logGroup: new logs.LogGroup(scope, id, {
       logGroupName: `/aws/lambda/${id}`,
       retention: logs.RetentionDays.INFINITE,
-      ...logGroupOptions,
-    }),
-  };
-};
+      ...logGroupOptions
+    })
+  }
+}
 
-const nameOverrides = (
-  scope: Construct,
-  environmentName: string,
-  appName: string,
-): NextjsOverrides => {
+const nameOverrides = (scope: Construct, environmentName: string, appName: string): NextjsOverrides => {
   return {
     nextjsServer: {
-      functionProps: nameFunctionProps(
-        scope,
-        environmentName,
-        appName,
-        'nextjs-server',
-      ),
-    },
-  };
-};
+      functionProps: nameFunctionProps(scope, environmentName, appName, 'nextjs-server')
+    }
+  }
+}
 
 export class FrontendNextjsStack extends Stack {
   constructor(scope: Construct, id: string, props: FrontendNextjsStackProps) {
@@ -70,19 +62,16 @@ export class FrontendNextjsStack extends Stack {
           imageBehaviorOptions: {
             // We don't need image optimization, so doesn't matter what cache policy we use
             // Using a managed policy so we don't add useless cache policies.
-            cachePolicy: CachePolicy.CACHING_DISABLED,
+            cachePolicy: CachePolicy.CACHING_DISABLED
           },
           distributionProps: {
             priceClass: PriceClass.PRICE_CLASS_100,
-            enableIpv6: false,
-          },
+            enableIpv6: false
+          }
         },
-        ...nameOverrides(
-          this,
-          props.environment,
-          props.serviceName,
-        ),
+        ...nameOverrides(this, props.environment, props.serviceName)
       },
+      skipBuild: props.skipBuild
     })
   }
 }
