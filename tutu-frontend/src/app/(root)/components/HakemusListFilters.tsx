@@ -28,19 +28,29 @@ import {
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
 import { redirect, useSearchParams } from 'next/navigation';
-import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import {
+  handleFetchError,
+  setQueryStateAndLocalStorage,
+} from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   emptyOption,
   hakemusKoskeeOptions,
 } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import useToaster from '@/src/hooks/useToaster';
+import { useEffect } from 'react';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const { options: esittelijaOptions } = useEsittelijat();
+  const { options: esittelijaOptions, error } = useEsittelijat();
+  const { addToast } = useToaster();
+
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.esittelijoiden-lataus', t);
+  }, [error, addToast, t]);
 
   const [nayta, setNayta] = useQueryState(
     'nayta',

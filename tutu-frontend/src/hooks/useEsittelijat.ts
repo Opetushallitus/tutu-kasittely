@@ -9,25 +9,31 @@ export const getEsittelijat = async (): Promise<Esittelija[]> => {
 };
 
 export const useEsittelijat = () => {
-  const { data = [], isLoading } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['getEsittelijat'],
     queryFn: getEsittelijat,
     staleTime: Infinity,
+    throwOnError: false,
   });
 
   const uniqueEsittelijat = R.uniqueBy(data ?? [], (e) => e.esittelijaOid);
 
-  const options = isLoading
-    ? []
-    : emptyOption.concat(
-        R.map(
-          R.sortBy(uniqueEsittelijat, (esittelija) => esittelija.etunimi),
-          (esittelija) => ({
-            value: esittelija.esittelijaOid,
-            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-          }),
-        ),
-      );
+  const options =
+    isLoading || error
+      ? []
+      : emptyOption.concat(
+          R.map(
+            R.sortBy(uniqueEsittelijat, (esittelija) => esittelija.etunimi),
+            (esittelija) => ({
+              value: esittelija.esittelijaOid,
+              label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+            }),
+          ),
+        );
 
-  return { data, isLoading, options };
+  return { data, isLoading, options, error };
 };

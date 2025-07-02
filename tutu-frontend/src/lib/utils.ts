@@ -1,4 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
+import { FetchError } from '@/src/lib/common';
+import { TFunction } from '@/src/lib/localization/useTranslations';
+import { Toast } from '@/src/hooks/useToaster';
 
 export const hasTutuRole = (userRoles?: Array<string>) => {
   return userRoles?.includes('ROLE_APP_TUTU_ESITTELIJA');
@@ -21,4 +24,31 @@ export const setLocalStorageAndLaunchHakemusQuery = async (
 ) => {
   localStorage.setItem(storageKey, storageValue);
   await queryClient.invalidateQueries({ queryKey: ['getHakemus'] });
+};
+
+export const handleFetchError = (
+  addToast: (toast: Toast) => void,
+  error: Error | null,
+  baseKey: string,
+  t: TFunction,
+) => {
+  if (error instanceof FetchError) {
+    addToast({
+      key: baseKey,
+      type: 'error',
+      message: LocalizeFetchError(error, baseKey, t),
+    });
+  }
+};
+
+export const LocalizeFetchError = (
+  error: FetchError,
+  baseKey: string,
+  t: TFunction,
+) => {
+  const originTranslated =
+    error.origin !== '' ? t(`virhe.${error.origin}`) : '';
+  return originTranslated !== ''
+    ? `${t(baseKey)} ${originTranslated}`
+    : t(baseKey);
 };

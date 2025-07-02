@@ -127,5 +127,14 @@
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"
   },
-  "puuttuu": "Puuttuu"
+  "puuttuu": "Puuttuu",
+  "virhe": {
+    "ei-tutu-oikeuksia": "Sinulla ei ole oikeuksia TUTU -hakemuksiin.",
+    "esittelijoiden-lataus": "Esittelijöiden lataamisessa tapahtui virhe.",
+    "hakemus-listan-lataus": "Hakemuslistan lataamisessa tapahtui virhe.",
+    "hakemuksen-lataus": "Hakemuksen lataamisessa tapahtui virhe.",
+    "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
+    "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen."
+  }
 }

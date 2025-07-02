@@ -12,6 +12,9 @@ import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
+case class OnrServiceException(message: String = "", cause: Throwable = null)
+    extends RuntimeException(message, cause)
+
 @Component
 @Service
 class OnrService(httpService: HttpService) {
@@ -55,7 +58,7 @@ class OnrService(httpService: HttpService) {
       onrCasClient,
       s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/henkilo/$personOid/asiointiKieli"
     ) match {
-      case Left(e)  => Left(e)
+      case Left(e)  => Left(OnrServiceException("", e))
       case Right(o) => Right(o)
     }
   }
@@ -67,10 +70,9 @@ class OnrService(httpService: HttpService) {
       onrCasClient,
       s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/henkilo/$personOid"
     ) match {
-      case Left(e) => {
+      case Left(e) =>
         LOG.error(s"Error fetching henkilo with OID: $personOid from oppijanumerorekisteri: ${e.getMessage}")
-        Left(e)
-      }
+        Left(OnrServiceException("", e))
       case Right(response) => Right(mapper.readValue(response, classOf[OnrUser]))
     }
   }

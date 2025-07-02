@@ -10,7 +10,8 @@ type HakemusContextValue = {
   hakemus: Hakemus | undefined;
   updateHakemus: (patch: Partial<Hakemus>) => void;
   isLoading: boolean;
-  error: unknown;
+  isError?: boolean;
+  error: Error | null;
 };
 
 export const HAKEMUS_MUUTOSHISTORIA_SORT_KEY = 'hakemus-muutoshistoria-sort';
@@ -47,6 +48,7 @@ export const HakemusProvider = ({
     queryKey: ['getHakemus', hakemusOid],
     queryFn: () => getHakemus(hakemusOid),
     enabled: !!hakemusOid,
+    throwOnError: false,
   });
 
   const mutation = useMutation({

@@ -4,17 +4,29 @@ import path from 'path';
 import { sortBy } from 'remeda';
 
 export const mockAll = async ({ page }: { page: Page }) => {
-  mockBasic(page);
+  mockInit(page);
+  mockEsittelijat(page);
+  mockHakemusLista(page);
   mockUser(page);
   mockHakemus(page);
 };
 
-export const mockBasicAndHakemus = async ({ page }: { page: Page }) => {
-  mockBasic(page);
-  mockHakemus(page);
+export const mockBasicForLista = async ({ page }: { page: Page }) => {
+  mockInit(page);
 };
 
-const mockBasic = (page: Page) => {
+export const mockSuccessfullLists = async ({ page }: { page: Page }) => {
+  mockEsittelijat(page);
+  mockHakemusLista(page);
+  mockUser(page);
+};
+
+export const mockBasicForHakemus = async ({ page }: { page: Page }) => {
+  mockInit(page);
+  mockEsittelijat(page);
+};
+
+export const mockInit = (page: Page) => {
   page.route('**/tutu-backend/api/csrf', async (route: Route) => {
     await route.fulfill({
       status: 200,
@@ -37,6 +49,9 @@ const mockBasic = (page: Page) => {
       }),
     });
   });
+};
+
+export const mockEsittelijat = (page: Page) => {
   page.route('**/tutu-backend/api/esittelijat*', async (route: Route) => {
     await route.fulfill({
       status: 200,
@@ -44,6 +59,9 @@ const mockBasic = (page: Page) => {
       body: await readFile(path.join(__dirname, './fixtures/esittelijat.json')),
     });
   });
+};
+
+export const mockHakemusLista = (page: Page) => {
   page.route('**/tutu-backend/api/hakemuslista*', async (route: Route) => {
     await route.fulfill({
       status: 200,
@@ -72,7 +90,7 @@ export const mockUser = (page: Page, kieli: string = 'fi') => {
   });
 };
 
-const mockHakemus = (page: Page) => {
+export const mockHakemus = (page: Page) => {
   page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];

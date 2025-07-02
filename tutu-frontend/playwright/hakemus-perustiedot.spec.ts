@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, mockBasicAndHakemus } from '@/playwright/mocks';
+import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
 
-test.beforeEach(mockBasicAndHakemus);
+test.beforeEach(mockBasicForHakemus);
 
 test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
   mockUser(page);
+  mockHakemus(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -27,6 +28,7 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
 
 test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => {
   mockUser(page, 'sv');
+  mockHakemus(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -37,6 +39,7 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
 
 test('Muutoshistoriassa näkyy oikeat tiedot', async ({ page }) => {
   mockUser(page);
+  mockHakemus(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -56,6 +59,7 @@ test('Muutoshistoriassa näkyy oikeat tiedot, sortattuna laskevassa järjestykse
   page,
 }) => {
   mockUser(page);
+  mockHakemus(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -77,4 +81,23 @@ test('Muutoshistoriassa näkyy oikeat tiedot, sortattuna laskevassa järjestykse
   );
 });
 
+test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
+  mockUser(page);
+  page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        origin: 'kayttooikeuspalvelu',
+        message: 'virheilmoitus',
+      }),
+    });
+  });
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
+  );
+
+  // tarkistetaan että virheviesti näkyy
+  await expect(page.getByTestId('toast-message')).toBeVisible();
+});
 // TODO Testejä ainakin hakemuksen sisällölle sen mukaan mitä hakemus koskee

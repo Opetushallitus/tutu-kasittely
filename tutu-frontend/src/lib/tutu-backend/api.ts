@@ -50,9 +50,24 @@ export async function apiFetch(
         body: options?.body,
       },
     );
-    return response.status >= 400
-      ? Promise.reject(new FetchError(response, (await response.text()) ?? ''))
-      : Promise.resolve(response);
+    if (response.status >= 400) {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const responseJson = await response.json();
+        return Promise.reject(
+          new FetchError(
+            response,
+            responseJson?.origin?.toString() || '',
+            responseJson?.message?.toString() || '',
+          ),
+        );
+      } else {
+        return Promise.reject(
+          new FetchError(response, '', (await response.text()) ?? ''),
+        );
+      }
+    }
+    return Promise.resolve(response);
   } catch (e) {
     console.error('Fetching data failed!');
     return Promise.reject(e);

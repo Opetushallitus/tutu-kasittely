@@ -418,15 +418,17 @@ class ControllerTest extends IntegrationTestBase {
 
     when(
       hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000002354670"))
-    ).thenReturn(Left(new Exception()))
+    ).thenReturn(Left(NotFoundException()))
 
     mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000002354670")
       )
       .andExpect(status().isNotFound)
-      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(content().string(equalTo("Hakemusta ei löytynyt")))
+      .andExpect(content().contentType(MediaType.valueOf("text/plain; charset=UTF-8")))
+      .andExpect(content().json(
+        """{"message":"Hakemusta ei löytynyt"}"""
+      ))
   }
 
   @Test
