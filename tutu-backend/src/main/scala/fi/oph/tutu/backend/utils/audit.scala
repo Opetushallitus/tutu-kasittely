@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import scala.jdk.javaapi.CollectionConverters
 
 import java.net.InetAddress
 
@@ -91,8 +92,16 @@ class AuditLog(val logger: Logger) {
     }
   }
 
-  def getInetAddress(request: HttpServletRequest): InetAddress =
+  def getInetAddress(request: HttpServletRequest): InetAddress = {
+    val headers = 
+      CollectionConverters
+        .asScala(request.getHeaderNames)
+        .map(name => s"${name}: ${request.getHeader(name)}")
+        .reduce((a, b) => s"${a}\n${b}")
+    
+    logger.log(headers)
     InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
+  }
 }
 
 trait AuditOperation extends Operation {
