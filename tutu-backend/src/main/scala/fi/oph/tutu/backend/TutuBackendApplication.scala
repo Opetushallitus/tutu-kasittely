@@ -31,8 +31,7 @@ class TutuBackendApplication {
           "https://localhost:3123",
           "https://virkailija.opintopolku.fi",
           "https://virkailija.untuvaopintopolku.fi",
-          "https://virkailija.testiopintopolku.fi",
-          "https://tutu-dev.opintopolku.fi"
+          "https://virkailija.testiopintopolku.fi"
         )
         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
   }

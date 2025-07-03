@@ -92,17 +92,7 @@ class AuditLog(val logger: Logger) {
   }
 
   def getInetAddress(request: HttpServletRequest): InetAddress =
-    @Value("${audit.ip.header}")
-    val headerName: String = null
-
-    InetAddress.getByName(
-      HttpServletRequestUtils.getRemoteAddress(
-        request.getHeader(headerName),
-        request.getHeader("X-Forwarded-For"),
-        request.getRemoteAddr,
-        request.getRequestURI
-      )
-    )
+    InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
 }
 
 trait AuditOperation extends Operation {
