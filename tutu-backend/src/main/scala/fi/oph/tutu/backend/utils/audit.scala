@@ -35,7 +35,7 @@ class AuditLog(val logger: Logger) {
   ): Unit =
     try {
       val paramsJson = toJson(raporttiParams)
-      val target =
+      val target     =
         new Target.Builder().setField("parametrit", paramsJson).build()
 //      audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {

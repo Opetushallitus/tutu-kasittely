@@ -62,9 +62,9 @@ object KoodistoItemSerializer
       (
         {
           case JObject(fields) =>
-            val koodiUri  = fields.collectFirst { case ("koodiUri", JString(koodiUri)) => koodiUri }.getOrElse("")
-            val koodiArvo = fields.collectFirst { case ("koodiArvo", JString(koodiArvo)) => koodiArvo }.getOrElse("")
-            val metadata  = fields.collectFirst { case ("metadata", JArray(metadata)) => metadata }.getOrElse(List())
+            val koodiUri    = fields.collectFirst { case ("koodiUri", JString(koodiUri)) => koodiUri }.getOrElse("")
+            val koodiArvo   = fields.collectFirst { case ("koodiArvo", JString(koodiArvo)) => koodiArvo }.getOrElse("")
+            val metadata    = fields.collectFirst { case ("metadata", JArray(metadata)) => metadata }.getOrElse(List())
             val kielistetty = metadata.map {
               case JObject(mDataItem) =>
                 val kieli = mDataItem.collectFirst { case ("kieli", JString(kieli)) => kieli }.getOrElse("")
