@@ -23,13 +23,6 @@ import scala.jdk.javaapi.CollectionConverters
       .setField("userOid", event.getAuthentication.getName)
       .build()
     val request = getCurrentHttpRequest
-    val headers =
-      CollectionConverters
-        .asScala(request.getHeaderNames)
-        .map(name => s"${name}: ${request.getHeader(name)}")
-        .reduce((a, b) => s"${a}\n${b}")
-
-    LOG.info("Request headers:\n" + headers)
 //    audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
   }

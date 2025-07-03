@@ -107,7 +107,7 @@ object KielistettySerializer
 
             map
           }
-          case JNothing => null
+          case JNothing   => null
           case unexpected =>
             throw new MappingException(s"Cannot deserialize Kielistetty from $unexpected")
         },

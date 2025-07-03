@@ -57,7 +57,7 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruLomake]
     }
 
-    val hakija = ataruHakemusParser.parseHakija(ataruHakemus)
+    val hakija         = ataruHakemusParser.parseHakija(ataruHakemus)
     var muutosHistoria = hakemuspalveluService.haeMuutoshistoria(hakemusOid) match {
       case Left(error: Throwable) =>
         LOG.warn(s"Ataru-hakemuksen muutoshistorian haku epäonnistui hakemusOidille $hakemusOid: {}", error.getMessage)
@@ -115,9 +115,9 @@ class HakemusService(
         relevant.map(item => {
           val roleType = (item \ "type").extract[String]
           val time = LocalDateTime.parse((item \ "time").extract[String], DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-          val esittelijaOid = (item \ "virkailijaOid").extractOpt[String]
+          val esittelijaOid                       = (item \ "virkailijaOid").extractOpt[String]
           val (etunimi: String, sukunimi: String) = esittelijaOid match {
-            case None => (hakija.kutsumanimi, hakija.sukunimi)
+            case None                => (hakija.kutsumanimi, hakija.sukunimi)
             case Some(esittelijaOid) =>
               onrService.haeHenkilo(esittelijaOid) match {
                 case Left(error) =>
@@ -158,7 +158,7 @@ class HakemusService(
 
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
-      case Left(error) => throw error
+      case Left(error)     => throw error
       case Right(response) => {
         parse(response).extract[Seq[AtaruHakemus]]
       }
@@ -170,7 +170,7 @@ class HakemusService(
         val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid)
 
         val esittelija = item.esittelijaOid match {
-          case None => (null, null)
+          case None                => (null, null)
           case Some(esittelijaOid) =>
             onrService.haeHenkilo(item.esittelijaOid.get) match {
               case Left(error)    => (null, null)
@@ -205,11 +205,11 @@ class HakemusService(
 
   def paivitaHakemus(hakemusOid: HakemusOid, hakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
     val esittelijaId = hakemus.esittelijaOid match {
-      case None => None
+      case None                => None
       case Some(esittelijaOid) =>
         esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
           case Some(esittelija) => Some(esittelija.esittelijaId)
-          case None =>
+          case None             =>
             LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
             None
         }

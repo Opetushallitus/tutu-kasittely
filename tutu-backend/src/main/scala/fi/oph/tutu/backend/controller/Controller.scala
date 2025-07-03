@@ -185,10 +185,10 @@ class Controller(
     @RequestParam(required = false) vaihe: String
   ): ResponseEntity[Any] = {
     Try {
-      val user = userService.getEnrichedUserDetails(true)
+      val user    = userService.getEnrichedUserDetails(true)
       val userOid = nayta match {
         case "omat" => Option(user.userOid)
-        case null =>
+        case null   =>
           esittelija match {
             case null => None
             case _    => Option(esittelija)

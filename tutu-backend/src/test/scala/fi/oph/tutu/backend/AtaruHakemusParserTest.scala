@@ -198,7 +198,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       )
 
       val (result, _) = transformItem(answers, item)
-      val expected = SisaltoItem(
+      val expected    = SisaltoItem(
         key = "2",
         fieldType = "",
         value = Seq(Map(Kieli.fi -> "valinta2")),
@@ -242,7 +242,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       )
 
       val (result, _) = transformItem(answers, item)
-      val expected = SisaltoItem(
+      val expected    = SisaltoItem(
         key = "4",
         fieldType = "",
         value = Seq(),
@@ -280,7 +280,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       )
 
       val (result, _) = transformItem(answers, item)
-      val expected = SisaltoItem(
+      val expected    = SisaltoItem(
         key = "2",
         fieldType = "",
         value = Seq(Map(Kieli.fi -> "singleAnswer2", Kieli.sv -> "singleAnswer2", Kieli.en -> "singleAnswer2")),
