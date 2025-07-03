@@ -5,12 +5,17 @@ import fi.oph.tutu.backend.utils.AuditLog.{audit, getUser}
 import fi.oph.tutu.backend.utils.AuditOperation.Login
 import fi.vm.sade.auditlog.{Changes, Target}
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.{RequestContextHolder, ServletRequestAttributes}
 
+import scala.jdk.javaapi.CollectionConverters
+
 @Component class AuthenticationEventListener(auditLog: AuditLog) {
+  val LOG: Logger = LoggerFactory.getLogger(classOf[AuthenticationEventListener])
+
   @EventListener def onAuthenticationSuccess(
     event: AuthenticationSuccessEvent
   ): Unit = {
@@ -18,6 +23,13 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
       .setField("userOid", event.getAuthentication.getName)
       .build()
     val request = getCurrentHttpRequest
+    val headers =
+      CollectionConverters
+        .asScala(request.getHeaderNames)
+        .map(name => s"${name}: ${request.getHeader(name)}")
+        .reduce((a, b) => s"${a}\n${b}")
+
+    LOG.info("Request headers:\n" + headers)
 //    audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
   }
