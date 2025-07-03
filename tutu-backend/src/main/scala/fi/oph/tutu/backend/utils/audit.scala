@@ -93,12 +93,12 @@ class AuditLog(val logger: Logger) {
   }
 
   def getInetAddress(request: HttpServletRequest): InetAddress = {
-    val headers = 
+    val headers =
       CollectionConverters
         .asScala(request.getHeaderNames)
         .map(name => s"${name}: ${request.getHeader(name)}")
         .reduce((a, b) => s"${a}\n${b}")
-    
+
     logger.log(headers)
     InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
   }
