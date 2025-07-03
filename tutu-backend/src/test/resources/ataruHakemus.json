@@ -295,9 +295,7 @@
       },
       {
         "key": "582be518-e3ea-4692-8a2c-8370b40213e9",
-        "value": [
-          "1a7bc635-8e17-4877-9929-36479c4982c3"
-        ],
+        "value": ["1a7bc635-8e17-4877-9929-36479c4982c3"],
         "fieldType": "attachment",
         "original-followup": null,
         "original-question": null,
@@ -306,9 +304,7 @@
       },
       {
         "key": "5b179002-91a4-449d-8c4a-d024637a516d",
-        "value": [
-          "b8528c4e-d615-42db-a4e6-1df159d1ff74"
-        ],
+        "value": ["b8528c4e-d615-42db-a4e6-1df159d1ff74"],
         "fieldType": "attachment",
         "original-followup": null,
         "original-question": null,
@@ -317,9 +313,7 @@
       },
       {
         "key": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-        "value": [
-          "0c8bf845-735e-47b9-a351-7ef607be527e"
-        ],
+        "value": ["0c8bf845-735e-47b9-a351-7ef607be527e"],
         "fieldType": "attachment",
         "original-followup": null,
         "original-question": null,
@@ -328,11 +322,7 @@
       },
       {
         "key": "nationality",
-        "value": [
-          [
-            "246"
-          ]
-        ],
+        "value": [["246"]],
         "fieldType": "dropdown",
         "original-followup": null,
         "original-question": null,

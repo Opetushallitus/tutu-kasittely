@@ -20,7 +20,7 @@ class UserService(
     if (principal == null) {
       null
     } else {
-      val username = principal.getUsername
+      val username      = principal.getUsername
       val asiointikieli = onrService.haeAsiointikieli(username) match {
         case Left(e) =>
           if (throwOnrException)

@@ -1,10 +1,11 @@
-name: TUTU-käsittely build workflow
+name: TUTU-käsittely frontend build workflow
 
 on:
   workflow_dispatch:
   push:
-    paths-ignore:
-      - '**.md'
+    paths:
+      - "tutu-frontend/**"
+      - "!**.md"
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -18,17 +19,6 @@ permissions:
   packages: read
 
 jobs:
-  # Backend
-  test-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/prepare-scala-env
-      - name: Run unit tests
-        working-directory: ./tutu-backend
-        run: ./mvnw test
-
-  # Frontend
   lint-frontend:
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [ chromium, firefox, webkit ]
+        browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
       - uses: extractions/setup-just@v3
@@ -64,3 +54,22 @@ jobs:
           path: playwright-report/
           retention-days: 10
           if-no-files-found: ignore
+
+  build-frontend:
+    needs: [lint-frontend, playwright]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prepare-next-env
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_UTILITY_ROLE_ARN }}
+          role-session-name: tutu-frontend-upload-zip
+          aws-region: eu-west-1
+      - name: Build and upload zip to S3
+        working-directory: ./tutu-frontend
+        run: |
+          npm run build
+          zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
+          aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://tutu-frontend-builds/ga-${{github.run_number}}.zip

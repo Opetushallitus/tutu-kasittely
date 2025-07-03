@@ -78,7 +78,7 @@ class ControllerTest extends IntegrationTestBase {
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
   var esittelija: Option[DbEsittelija] = None
-  @BeforeAll def setup(): Unit = {
+  @BeforeAll def setup(): Unit         = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
     val intermediate: DefaultMockMvcBuilder =

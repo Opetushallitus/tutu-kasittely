@@ -82,7 +82,7 @@ class EsittelijaRepository {
    */
   def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
     try {
-      val esittelijaOidString = esittelijaOid.toString
+      val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
         sql"""
         INSERT INTO esittelija (maatjavaltiot_koodi_uri, esittelija_oid, luoja)

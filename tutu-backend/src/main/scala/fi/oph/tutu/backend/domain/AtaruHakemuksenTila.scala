@@ -7,7 +7,7 @@ enum AtaruHakemuksenTila:
     PaatosMaksettu, Laskutuksessa
 
 object AtaruHakemuksenTila {
-  val UNDEFINED = "unprocessed"
+  val UNDEFINED                                      = "unprocessed"
   def fromString(value: String): AtaruHakemuksenTila = value match
     case "unprocessed"              => Kasittelematta
     case "processing"               => Kasittelyssa

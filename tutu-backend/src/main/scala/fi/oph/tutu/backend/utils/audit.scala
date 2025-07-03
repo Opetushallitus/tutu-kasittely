@@ -9,8 +9,10 @@ import org.ietf.jgss.Oid
 import org.slf4j.LoggerFactory
 import fi.vm.sade.javautils.http.HttpServletRequestUtils
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import scala.jdk.javaapi.CollectionConverters
 
 import java.net.InetAddress
 
@@ -34,9 +36,9 @@ class AuditLog(val logger: Logger) {
   ): Unit =
     try {
       val paramsJson = toJson(raporttiParams)
-      val target =
+      val target     =
         new Target.Builder().setField("parametrit", paramsJson).build()
-      audit.log(getUser(request), operation, target, Changes.EMPTY)
+//      audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {
       case e: Exception =>
         errorLogger.error(s"Auditlokitus epäonnistui: ${e.getMessage}")
@@ -90,8 +92,9 @@ class AuditLog(val logger: Logger) {
     }
   }
 
-  def getInetAddress(request: HttpServletRequest): InetAddress =
+  def getInetAddress(request: HttpServletRequest): InetAddress = {
     InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
+  }
 }
 
 trait AuditOperation extends Operation {

@@ -7,8 +7,9 @@ Palvelu tutu-hakemusten käsittelyyn.
 Backend käyttää Java Corretton versiota 21.
 
 Backendiä ajetaan IDEA:ssa. Kehitysympäristön konfiguraatio määritellään `application-dev.properties`-nimisessä tiedostossa
-````
-spring.datasource.url=jdbc:postgresql://localhost:5432/tutu
+
+```
+spring.datasource.url=jdbc:postgresql://localhost:5433/tutu
 spring.datasource.username=app
 spring.datasource.password=app
 
@@ -30,11 +31,11 @@ server.port=8444
 #server.ssl.key-store-password=tutubackendkey
 #server.ssl.key-store-type=PKCS12
 #server.ssl.key-alias=tutu-backend
-````
+```
 
 Backendiä voi ajaa lokaalia dockeriin käynnistettävää postgresia vasten.
 
-`justfile`:stä löytyy komento tietokannan pystyttämiseen. 
+`justfile`:stä löytyy komento tietokannan pystyttämiseen.
 
 [just](https://github.com/casey/just) on
 komentorivityökalu komentojen dokumentoimiseen ja ajamiseen. Esimerkiksi `just start-postgresql` käynnistää lokaalin kannan docker-konttiin ja `just start-all` käynnistää tietokannan, backendin ja frontendin.

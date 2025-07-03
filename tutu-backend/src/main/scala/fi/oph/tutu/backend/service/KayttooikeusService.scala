@@ -64,7 +64,7 @@ class KayttooikeusService(httpService: HttpService) {
         kayttooikeusCasClient,
         s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/$kayttooikeusRyhmaId/henkilot"
       ) match {
-        case Left(error: Throwable) => Left(KayttooikeusServiceException("", error))
+        case Left(error: Throwable)  => Left(KayttooikeusServiceException("", error))
         case Right(response: String) =>
           val oids = mapper.readValue(response, classOf[PersonOids]).personOids.toSeq
           esittelija_oidit ++= oids
