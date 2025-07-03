@@ -2,9 +2,11 @@ import {
   isTesting,
   localTranslations,
   LOKALISOINTI_URL,
+  tolgeeTools,
 } from '../configuration';
-import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
+import { BackendFetch, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
+import { InContextTools } from '@tolgee/web/tools';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
@@ -30,7 +32,8 @@ export function TolgeeBase() {
       },
     });
   } else {
-    return tg
+    const tgWithTools = tolgeeTools ? tg.use(InContextTools()) : tg;
+    return tgWithTools
       .use(
         BackendFetch({
           prefix: LOKALISOINTI_URL,
@@ -39,7 +42,6 @@ export function TolgeeBase() {
           },
         }),
       )
-      .use(DevTools())
       .updateDefaults({
         apiKey,
         apiUrl,
