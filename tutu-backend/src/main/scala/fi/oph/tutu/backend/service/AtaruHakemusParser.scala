@@ -94,7 +94,7 @@ def traverseContent(
       val newChildren = traverseContent(item.children, handleItem)
 
       val resultItem = newItem.copy(
-        children = newChildren,
+        children = newChildren
       )
 
       // omit form nodes with no answer content
@@ -147,7 +147,7 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
     fieldType = item.fieldType,
     value = sisaltoValues,
     label = itemLabel,
-    children = Seq(),
+    children = Seq()
   )
 }
 

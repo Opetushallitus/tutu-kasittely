@@ -30,7 +30,7 @@ case class SisaltoItem(
   fieldType: String,
   value: Seq[SisaltoValue],
   label: Kielistetty,
-  children: Seq[SisaltoItem] = Seq(),
+  children: Seq[SisaltoItem] = Seq()
 )
 
 case class SisaltoValue(
