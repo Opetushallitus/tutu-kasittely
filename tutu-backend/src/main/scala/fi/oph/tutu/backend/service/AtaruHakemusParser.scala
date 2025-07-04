@@ -14,6 +14,7 @@ import fi.oph.tutu.backend.domain.{
   NestedValues,
   SingleValue,
   SisaltoItem,
+  SisaltoValue,
   Valinta
 }
 import org.springframework.stereotype.{Component, Service}
@@ -81,26 +82,23 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
 
 def traverseContent(
   content: Seq[LomakeContentItem],
-  handleItem: (LomakeContentItem) => (SisaltoItem, Seq[LomakeContentItem])
+  handleItem: (LomakeContentItem) => SisaltoItem
 ): Seq[SisaltoItem] = {
   // map content
   val newItems = content
     .map((item: LomakeContentItem) => {
-
       // handle this
-      val (newItem, followups) = handleItem(item)
+      val newItem = handleItem(item)
 
       // traverse children (children, followups)
-      val newChildren  = traverseContent(item.children, handleItem)
-      val newFollowups = traverseContent(followups, handleItem)
+      val newChildren = traverseContent(item.children, handleItem)
 
       val resultItem = newItem.copy(
         children = newChildren,
-        followups = newFollowups
       )
 
       // omit form nodes with no answer content
-      val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty && newFollowups.isEmpty
+      val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
 
       if (resultIsEmpty) {
         None
@@ -113,7 +111,7 @@ def traverseContent(
   newItems
 }
 
-def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, Seq[LomakeContentItem]) = {
+def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = {
   val itemLabel = item.label
 
   val answer = answers.find(a => a.key == item.id)
@@ -136,24 +134,20 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): (SisaltoItem, 
     valinta
   })
 
-  val readableValues = valinnat.map((valinta: Valinta) => {
-    valinta.label
+  val sisaltoValues = valinnat.map((valinta: Valinta) => {
+    SisaltoValue(
+      valinta.label,
+      valinta.value,
+      traverseContent(valinta.followups, item => transformItem(answers, item))
+    )
   })
 
-  val collectedFollowups = valinnat.flatMap((valinta: Valinta) => {
-    valinta.followups
-  })
-
-  (
-    SisaltoItem(
-      key = item.id,
-      fieldType = item.fieldType,
-      value = readableValues,
-      label = itemLabel,
-      children = Seq(),
-      followups = Seq()
-    ),
-    collectedFollowups
+  SisaltoItem(
+    key = item.id,
+    fieldType = item.fieldType,
+    value = sisaltoValues,
+    label = itemLabel,
+    children = Seq(),
   )
 }
 
