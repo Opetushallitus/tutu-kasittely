@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.annotation.Order
 import org.springframework.core.env.Environment
-import org.springframework.http.HttpStatus
+import org.springframework.http.{HttpMethod, HttpStatus}
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.cas.ServiceProperties
 import org.springframework.security.cas.authentication.CasAuthenticationProvider
@@ -23,6 +23,10 @@ import org.springframework.security.web.context.{HttpSessionSecurityContextRepos
 import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
+import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
+
+import scala.collection.mutable
+import scala.jdk.javaapi.CollectionConverters.asJava
 
 @Configuration
 @EnableWebSecurity
@@ -63,6 +67,28 @@ class SecurityConfig {
     val httpSessionSecurityContextRepository =
       new HttpSessionSecurityContextRepository()
     httpSessionSecurityContextRepository
+  }
+
+  @Bean
+  def corsConfigurationSource: UrlBasedCorsConfigurationSource = {
+    val configuration = new CorsConfiguration
+    configuration.setAllowedOrigins(
+      asJava(
+        mutable.Buffer(
+          "https://localhost:3123",
+          "https://localhost:33123",
+          "https://virkailija.opintopolku.fi",
+          "https://virkailija.untuvaopintopolku.fi",
+          "https://virkailija.testiopintopolku.fi"
+        )
+      )
+    )
+    configuration.setAllowedMethods(asJava(mutable.Buffer("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")))
+    configuration.setAllowedHeaders(asJava(mutable.Buffer("*")))
+    configuration.setAllowCredentials(true)
+    val source = new UrlBasedCorsConfigurationSource
+    source.registerCorsConfiguration("/**", configuration)
+    source
   }
 
   @Bean

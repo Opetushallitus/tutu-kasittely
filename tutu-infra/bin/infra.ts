@@ -223,7 +223,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
         POSTGRESQL_PORT: WebBackendAurora.endPoint.port
       }
     },
-    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS'],
+    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS', 'CAS_USER'],
     secrets_manager_secrets: [
       Secrets.secrets.PG_PASS,
       Secrets.secrets.SESSION_SECRET,
