@@ -1,4 +1,5 @@
 import { Hakija } from '@/src/lib/types/hakija';
+import { Kielistetty } from '@/src/lib/types/common';
 
 export type MuutosHistoriaItem = {
   role: 'Esittelija' | 'Hakija' | 'Irrelevant';
@@ -19,4 +20,18 @@ export type Hakemus = {
   kasittelyVaihe: string;
   muokattu: string;
   muutosHistoria: MuutosHistoriaItem[];
+};
+
+export type SisaltoItem = {
+  key: string;
+  fieldType: string;
+  value: SisaltoValue[];
+  label: Kielistetty;
+  children: SisaltoItem[];
+};
+
+export type SisaltoValue = {
+  label: Kielistetty;
+  value: string;
+  followups: SisaltoItem[];
 };
