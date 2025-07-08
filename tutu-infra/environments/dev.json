@@ -82,8 +82,7 @@
         "HTTP_OPTIONS_RETRY": "2",
         "HTTP_OPTIONS_CLOCK_TOLERANCE": "5",
         "PG_USER": "app",
-        "OPINTOPOLKU_DOMAIN": "untuvaopintopolku.fi",
-        "CAS_USER": "tutu-kasittely"
+        "OPINTOPOLKU_DOMAIN": "untuvaopintopolku.fi"
       }
     },
     "streaming": {

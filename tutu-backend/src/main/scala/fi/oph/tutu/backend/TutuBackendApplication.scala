@@ -1,10 +1,10 @@
 package fi.oph.tutu.backend
 
 import org.slf4j.{Logger, LoggerFactory}
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.{ApplicationArguments, ApplicationRunner, SpringApplication}
-import org.springframework.context.annotation.{Bean, Profile}
-import org.springframework.web.servlet.config.annotation.{CorsRegistry, WebMvcConfigurer}
+import org.springframework.context.annotation.Bean
 
 object TutuBackendApplication {
   val CALLER_ID = "1.2.246.562.10.00000000001.tutu-virkailija"
@@ -21,18 +21,4 @@ class TutuBackendApplication {
   @Bean
   def applicationRunner(): ApplicationRunner =
     (args: ApplicationArguments) => LOG.info("STARTED TUTU APPLICATION RUNNER")
-
-  @Bean
-  def corsConfigurer(): WebMvcConfigurer = new WebMvcConfigurer {
-    override def addCorsMappings(registry: CorsRegistry): Unit =
-      registry
-        .addMapping("/**")
-        .allowedOrigins(
-          "https://localhost:3123",
-          "https://virkailija.opintopolku.fi",
-          "https://virkailija.untuvaopintopolku.fi",
-          "https://virkailija.testiopintopolku.fi"
-        )
-        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-  }
 }
