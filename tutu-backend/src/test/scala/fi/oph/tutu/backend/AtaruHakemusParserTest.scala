@@ -16,6 +16,7 @@ import fi.oph.tutu.backend.domain.{
   NestedValues,
   SingleValue,
   SisaltoItem,
+  SisaltoValue,
   Valinta
 }
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -197,11 +198,11 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         )
       )
 
-      val (result, _) = transformItem(answers, item)
-      val expected    = SisaltoItem(
+      val result = transformItem(answers, item)
+      val expected = SisaltoItem(
         key = "2",
         fieldType = "",
-        value = Seq(Map(Kieli.fi -> "valinta2")),
+        value = Seq(SisaltoValue(Map(Kieli.fi -> "valinta2"), "singleAnswer2")),
         label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
@@ -241,8 +242,8 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         )
       )
 
-      val (result, _) = transformItem(answers, item)
-      val expected    = SisaltoItem(
+      val result = transformItem(answers, item)
+      val expected = SisaltoItem(
         key = "4",
         fieldType = "",
         value = Seq(),
@@ -279,11 +280,13 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
-      val (result, _) = transformItem(answers, item)
-      val expected    = SisaltoItem(
+      val result = transformItem(answers, item)
+      val expected = SisaltoItem(
         key = "2",
         fieldType = "",
-        value = Seq(Map(Kieli.fi -> "singleAnswer2", Kieli.sv -> "singleAnswer2", Kieli.en -> "singleAnswer2")),
+        value = Seq(
+          SisaltoValue(Map(Kieli.fi -> "singleAnswer2", Kieli.sv -> "singleAnswer2", Kieli.en -> "singleAnswer2"), "")
+        ),
         label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
@@ -298,44 +301,73 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
        *        - Item201
        *        - Item202
        *          - Valinta301
-       *          - Valinta302
        *            - Item401
+       *              - Valinta 501
+       *          - Valinta302
        *            - Item402
+       *              - Valinta 502
+       *            - Item403
        *        - Item203
        *          - Valinta303
        *
        *        =>
        *
-       *        Sisalto101
-       *        - Sisalto201
-       *        - Sisalto202
-       *          - Sisalto401
-       *          - Sisalto402
-       *        - Sisalto203
+       *        SisaltoItem101
+       *        - SisaltoItem202
+       *          - SisaltoValue301
+       *            - SisaltoItem401
+       *              - SisaltoValue501
+       *          - SisaltoValue302
+       *            - SisaltoItem402
+       *              - SisaltoValue502
+       *        - SisaltoItem203
+       *          - SisaltoValue303
        */
+
+      val valinta501 = Valinta(
+        value = "501",
+        label = Map()
+      )
+      val valinta502 = Valinta(
+        value = "502",
+        label = Map()
+      )
+
       val item401 = LomakeContentItem(
         id = "401",
         fieldClass = "",
         fieldType = "",
-        label = Map()
+        label = Map(),
+        options = Seq(valinta501)
       )
       val item402 = LomakeContentItem(
         id = "402",
         fieldClass = "",
         fieldType = "",
-        label = Map()
+        label = Map(),
+        options = Seq(valinta502)
+      )
+      val item403 = LomakeContentItem(
+        id = "403",
+        fieldClass = "",
+        fieldType = "",
+        label = Map(),
+        options = Seq()
       )
 
       val valinta301 = Valinta(
         value = "301",
-        label = Map()
+        label = Map(),
+        followups = Seq(
+          item401
+        )
       )
       val valinta302 = Valinta(
         value = "302",
         label = Map(),
         followups = Seq(
-          item401,
-          item402
+          item402,
+          item403
         )
       )
       val valinta303 = Valinta(
@@ -381,22 +413,22 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         )
       )
 
-      val rootItems = traverseContent(
-        Seq(item101),
-        item => {
-          (
-            SisaltoItem(
-              key = item.id,
-              fieldType = "",
-              value = Seq(Map()),
-              label = Map()
-            ),
-            item.options
-              .map(opt => opt.followups)
-              .flatten()
-          )
-        }
-      )
+      def handleItem(item: LomakeContentItem): SisaltoItem = {
+        SisaltoItem(
+          key = item.id,
+          fieldType = "",
+          value = item.options.map(opt =>
+            SisaltoValue(
+              opt.label,
+              opt.value,
+              traverseContent(opt.followups, handleItem)
+            )
+          ),
+          label = Map()
+        )
+      }
+
+      val rootItems = traverseContent(Seq(item101), handleItem)
 
       assertEquals(rootItems.size, 1)
 
@@ -404,19 +436,42 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
       val childrenOf101 = rootItems(0).children
 
-      assertEquals(childrenOf101.size, 3)
+      assertEquals(childrenOf101.size, 2)
 
-      assertEquals(childrenOf101(0).key, "201")
-      assertEquals(childrenOf101(1).key, "202")
-      assertEquals(childrenOf101(2).key, "203")
+      assertEquals(childrenOf101(0).key, "202")
+      assertEquals(childrenOf101(1).key, "203")
 
-      val childrenOf202 = childrenOf101(1).followups
+      val valuesOf202 = childrenOf101(0).value
+      val valuesOf203 = childrenOf101(1).value
 
-      assertEquals(childrenOf202.size, 2)
+      assertEquals(valuesOf202.size, 2)
+      assertEquals(valuesOf203.size, 1)
 
-      assertEquals(childrenOf202(0).key, "401")
-      assertEquals(childrenOf202(1).key, "402")
+      assertEquals(valuesOf202(0).value, "301")
+      assertEquals(valuesOf202(1).value, "302")
 
+      assertEquals(valuesOf203(0).value, "303")
+
+      val followupsOf202 = valuesOf202.flatMap(value => value.followups)
+      val followupsOf203 = valuesOf203.flatMap(value => value.followups)
+
+      assertEquals(followupsOf202.size, 2)
+      assertEquals(followupsOf203.size, 0)
+
+      assertEquals(followupsOf202(0).key, "401")
+      assertEquals(followupsOf202(1).key, "402")
+
+      val valuesOf401 = followupsOf202(0).value
+
+      assertEquals(valuesOf401.size, 1)
+
+      assertEquals(valuesOf401(0).value, "501")
+
+      val valuesOf402 = followupsOf202(1).value
+
+      assertEquals(valuesOf402.size, 1)
+
+      assertEquals(valuesOf402(0).value, "502")
     }
 
   }

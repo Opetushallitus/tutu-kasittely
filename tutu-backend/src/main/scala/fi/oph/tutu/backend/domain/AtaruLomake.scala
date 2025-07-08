@@ -28,8 +28,13 @@ case class Valinta(
 case class SisaltoItem(
   key: String,
   fieldType: String,
-  value: Seq[Kielistetty],
+  value: Seq[SisaltoValue],
   label: Kielistetty,
-  children: Seq[SisaltoItem] = Seq(),
+  children: Seq[SisaltoItem] = Seq()
+)
+
+case class SisaltoValue(
+  label: Kielistetty,
+  value: String,
   followups: Seq[SisaltoItem] = Seq()
 )
