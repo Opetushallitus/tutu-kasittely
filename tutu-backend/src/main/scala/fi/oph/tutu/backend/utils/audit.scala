@@ -93,7 +93,13 @@ class AuditLog(val logger: Logger) {
   }
 
   def getInetAddress(request: HttpServletRequest): InetAddress = {
-    InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
+    InetAddress.getByName(
+      HttpServletRequestUtils.getRemoteAddress(
+        request.getHeader("X-Forwarded-For").split(",").head.trim,
+        request.getHeader("X-Forwarded-For"),
+        request.getRemoteAddr,
+        request.getRequestURI)
+    )
   }
 }
 
