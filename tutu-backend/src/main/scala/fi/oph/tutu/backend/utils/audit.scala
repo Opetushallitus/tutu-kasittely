@@ -98,8 +98,7 @@ class AuditLog(val logger: Logger) {
         request.getHeader("X-Forwarded-For").split(",").head.trim,
         request.getHeader("X-Forwarded-For"),
         request.getRemoteAddr,
-        request.getRequestURI)
-    )
+        request.getRequestURI))
   }
 }
 
