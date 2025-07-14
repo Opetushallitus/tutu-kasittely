@@ -198,7 +198,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         )
       )
 
-      val result = transformItem(answers, item)
+      val result   = transformItem(answers, item)
       val expected = SisaltoItem(
         key = "2",
         fieldType = "",
@@ -242,7 +242,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         )
       )
 
-      val result = transformItem(answers, item)
+      val result   = transformItem(answers, item)
       val expected = SisaltoItem(
         key = "4",
         fieldType = "",
@@ -280,7 +280,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         label = Map(Kieli.fi -> "fi", Kieli.sv -> "sv", Kieli.en -> "en")
       )
 
-      val result = transformItem(answers, item)
+      val result   = transformItem(answers, item)
       val expected = SisaltoItem(
         key = "2",
         fieldType = "",

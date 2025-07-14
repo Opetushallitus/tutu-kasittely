@@ -156,10 +156,10 @@ class Controller(
     }
 
   @GetMapping(
-    path = Array("liite/metadata/{avain}"),
+    path = Array("liite/metadata/{avain}")
   )
   def haeLiitteenTiedot(
-    @PathVariable("avain") avain: String,
+    @PathVariable("avain") avain: String
   ): ResponseEntity[Any] = {
     Try {
       hakemuspalveluService.haeLiitteenTiedot(avain)
