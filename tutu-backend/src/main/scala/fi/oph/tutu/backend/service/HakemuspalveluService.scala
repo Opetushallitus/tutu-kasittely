@@ -3,8 +3,8 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.HakemusOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
-import org.json4s.native.JsonMethods.{compact, render}
-import org.json4s.{DefaultFormats, Extraction, JObject, JValue}
+import org.json4s.native.JsonMethods.{compact, render, parse}
+import org.json4s.{DefaultFormats, Extraction, JObject, JValue, JString}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
@@ -86,6 +86,29 @@ class HakemuspalveluService(httpService: HttpService) {
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
+    }
+  }
+
+  def haeLiitteenTiedot(avain: String): Option[String] = {
+    val jsonObj: JValue  = JObject("keys" -> Extraction.decompose(List(avain)))
+    val jsonBody: String = compact(render(jsonObj))
+
+    httpService.post(
+      hakemuspalveluCasClient,
+      s"$opintopolku_virkailija_domain/lomake-editori/api/files/metadata",
+      jsonBody
+    ) match {
+      case Left(error) => throw error
+      case Right(response) => {
+        val downloadLink = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$avain"
+        val downloadLinkValue = JObject("downloadUrl" -> JString(downloadLink))
+
+        val metadata = parse(response)
+
+        val mergedData = downloadLinkValue.merge(metadata(0))
+
+        Some(compact(render(mergedData)))
+      }
     }
   }
 }
