@@ -155,6 +155,29 @@ class Controller(
         errorMessageMapper.mapErrorMessage(e)
     }
 
+  @GetMapping(
+    path = Array("liite/metadata/{avain}")
+  )
+  def haeLiitteenTiedot(
+    @PathVariable("avain") avain: String
+  ): ResponseEntity[Any] = {
+    Try {
+      hakemuspalveluService.haeLiitteenTiedot(avain)
+    } match {
+      case Success(result) =>
+        result match {
+          case None =>
+            LOG.warn(s"Liitettä ei löytynyt avaimella: $avain")
+            errorMessageMapper.mapPlainErrorMessage("Liitettä ei löytynyt", HttpStatus.NOT_FOUND)
+          case Some(metadata) =>
+            ResponseEntity.status(HttpStatus.OK).body(metadata)
+        }
+      case Failure(exception) =>
+        LOG.error(s"Liitten haku epäonnistui, avain: $avain", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
   @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeHakemus(
     @PathVariable("hakemusOid") hakemusOid: String,
