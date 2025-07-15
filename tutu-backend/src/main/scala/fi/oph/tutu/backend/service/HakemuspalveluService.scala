@@ -90,13 +90,9 @@ class HakemuspalveluService(httpService: HttpService) {
   }
 
   def haeLiitteenTiedot(avain: String): Option[String] = {
-    val jsonObj: JValue  = JObject("keys" -> Extraction.decompose(List(avain)))
-    val jsonBody: String = compact(render(jsonObj))
-
-    httpService.post(
+    httpService.get(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/files/metadata",
-      jsonBody
+      s"$opintopolku_virkailija_domain/lomake-editori/api/files/metadata?key=$avain"
     ) match {
       case Left(error)     => throw error
       case Right(response) => {
