@@ -4,7 +4,8 @@ COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --launcher && ls
 
 FROM amazoncorretto:21
-RUN useradd tutu
+RUN yum install -y shadow-utils && yum clean all
+RUN adduser tutu
 RUN mkdir -p /home/tutu/logs && chown tutu:tutu /home/tutu/logs
 USER tutu
 VOLUME ["/home/tutu/logs"]

@@ -158,6 +158,7 @@ export class EcsServiceStack extends Stack {
       readOnly: false
     })
 
+    // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html
     const cwConfig = {
       agent: { debug: true },
       traces: {
