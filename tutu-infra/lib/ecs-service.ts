@@ -127,7 +127,7 @@ export class EcsServiceStack extends Stack {
       }
     })
 
-    taskDefinition.addVolume({name: 'logs'})
+    taskDefinition.addVolume({ name: 'logs' })
 
     if (props.iAmPolicyStatements && Array.isArray(props.iAmPolicyStatements)) {
       props.iAmPolicyStatements.forEach((statement) => {
@@ -163,13 +163,6 @@ export class EcsServiceStack extends Stack {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html
     const cwConfig = {
       agent: { debug: true },
-      traces: {
-        traces_collected: {
-          application_signals: {
-            enabled: true
-          }
-        }
-      },
       logs: {
         logs_collected: {
           files: {
@@ -193,20 +186,13 @@ export class EcsServiceStack extends Stack {
             ]
           }
         }
-      },
-      metrics: {
-        metrics_collected: {
-          application_signals: {
-            enabled: true
-          }
-        }
       }
     }
 
     const cwAgent = taskDefinition.addContainer('ecs-cwagent', {
       image: ContainerImage.fromRegistry('public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest'),
       environment: {
-        CW_CONFIG_CONTENT: JSON.stringify(cwConfig),
+        CW_CONFIG_CONTENT: JSON.stringify(cwConfig)
       },
       logging: new AwsLogDriver({
         streamPrefix: 'cwagent',
@@ -217,7 +203,7 @@ export class EcsServiceStack extends Stack {
     cwAgent.addMountPoints({
       sourceVolume: 'logs',
       containerPath: '/logs/',
-      readOnly: false,
+      readOnly: false
     })
 
     const ecsService = new FargateService(this, 'EcsFargateService', {
