@@ -152,24 +152,70 @@ export class EcsServiceStack extends Stack {
       ]
     })
 
-    // const cwAgentContainer = taskDefinition.addContainer('ecs-cwagent', {
-    //   image: ContainerImage.fromRegistry("public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest"),
-    //   environment: {
-    //     CW_CONFIG_CONTENT: '{"agent": {"debug": true}, \
-    //     "traces": {"traces_collected": {"application_signals": {"enabled": true}}}, \
-    //     "logs": {"metrics_collected": {"application_signals": {"enabled": true}}}, \
-    //     "metrics": {"metrics_collected": {"application_signals": {"enabled": true}}}}'
-    //   },
-    //   logging: new AwsLogDriver({
-    //     streamPrefix: "cwagent",
-    //     logGroup: ServiceLogGroup,
-    //   }),
-    // })
+    container.addMountPoints({
+      sourceVolume: 'logs',
+      containerPath: '/home/tutu/logs/',
+      readOnly: false
+    })
 
-    if (props.efs) {
-      taskDefinition.addVolume(props.efs.volume)
-      container.addMountPoints(props.efs.mountPoint)
+    const cwConfig = {
+      agent: { debug: true },
+      traces: {
+        traces_collected: {
+          application_signals: {
+            enabled: true
+          }
+        }
+      },
+      logs: {
+        logs_collected: {
+          files: {
+            collect_list: [
+              {
+                file_path: `/logs/${props.serviceName}.log`,
+                log_group_name: `${props.serviceName}-app`,
+                log_stream_name: `{hostname}-${props.serviceName}.log`,
+                multi_line_start_pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}'
+              },
+              {
+                file_path: `/logs/auditlog_${props.serviceName}.log`,
+                log_group_name: `${props.serviceName}-audit`,
+                log_stream_name: `{hostname}-auditlog_${props.serviceName}.log`
+              },
+              {
+                file_path: '/logs/*_gc.log*',
+                log_group_name: `${props.serviceName}-debug`,
+                log_stream_name: '{hostname}-gc'
+              }
+            ]
+          }
+        }
+      },
+      metrics: {
+        metrics_collected: {
+          application_signals: {
+            enabled: true
+          }
+        }
+      }
     }
+
+    const cwAgent = taskDefinition.addContainer('ecs-cwagent', {
+      image: ContainerImage.fromRegistry('public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest'),
+      environment: {
+        CW_CONFIG_CONTENT: JSON.stringify(cwConfig),
+      },
+      logging: new AwsLogDriver({
+        streamPrefix: 'cwagent',
+        logGroup: ServiceLogGroup
+      })
+    })
+
+    cwAgent.addMountPoints({
+      sourceVolume: 'logs',
+      containerPath: '/logs/',
+      readOnly: false,
+    })
 
     const ecsService = new FargateService(this, 'EcsFargateService', {
       cluster: props.cluster,

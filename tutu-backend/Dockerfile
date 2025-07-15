@@ -4,6 +4,10 @@ COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --launcher && ls
 
 FROM amazoncorretto:21
+RUN useradd tutu
+RUN mkdir -p /home/tutu/logs && chown tutu:tutu /home/tutu/logs
+USER tutu
+VOLUME ["/home/tutu/logs"]
 COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
