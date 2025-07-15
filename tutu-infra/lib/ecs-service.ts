@@ -127,6 +127,8 @@ export class EcsServiceStack extends Stack {
       }
     })
 
+    taskDefinition.addVolume({name: 'logs'})
+
     if (props.iAmPolicyStatements && Array.isArray(props.iAmPolicyStatements)) {
       props.iAmPolicyStatements.forEach((statement) => {
         taskDefinition.addToTaskRolePolicy(statement)
