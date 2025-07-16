@@ -13,4 +13,5 @@ COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher", "--spring.profiles.active=prod", "--spring.config.additional-location=classpath:/oph-configuration/application.properties"]
+COPY src/main/resources/oph-configuration/logback.xml ./logback.xml
+ENTRYPOINT ["java", "-Dlogback.configurationFile=logback.xml", "org.springframework.boot.loader.launch.JarLauncher", "--spring.profiles.active=prod", "--spring.config.additional-location=classpath:/oph-configuration/application.properties"]
