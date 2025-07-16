@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
+    <property  name="log_dir" value="/var/log/tutu" />
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     {% raw %}
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <append>true</append>
-        <file>${user.home}/logs/tutu-backend.log</file>
+        <file>${log_dir}/tutu-backend.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSX} %-5p {%X{user}} [%t] %-5p %c: %m%n</pattern>
         </encoder>
@@ -14,17 +15,17 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <maxIndex>20</maxIndex>
-            <fileNamePattern>${user.home}/logs/tutu-backend.log.%i</fileNamePattern>
+            <fileNamePattern>${log_dir}/tutu-backend.log.%i</fileNamePattern>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <maxFileSize>10MB</maxFileSize>
         </triggeringPolicy>
     </appender>
     <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${user.home}/logs/auditlog_tutu-backend.log</file>
+        <file>${log_dir}/auditlog_tutu-backend.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${user.home}/logs/auditlog_tutu-backend.%i.log</fileNamePattern>
+            <fileNamePattern>${log_dir}/auditlog_tutu-backend.%i.log</fileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>20</maxIndex>
         </rollingPolicy>

@@ -156,7 +156,7 @@ export class EcsServiceStack extends Stack {
 
     container.addMountPoints({
       sourceVolume: 'logs',
-      containerPath: '/home/tutu/logs/',
+      containerPath: '/var/log/tutu',
       readOnly: false
     })
 

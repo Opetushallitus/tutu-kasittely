@@ -6,9 +6,9 @@ RUN java -Djarmode=tools -jar application.jar extract --layers --launcher && ls
 FROM amazoncorretto:21
 RUN yum install -y shadow-utils && yum clean all
 RUN adduser tutu
-RUN mkdir -p /home/tutu/logs && chown tutu:tutu /home/tutu/logs
+RUN mkdir -p /var/log/tutu && chown tutu:tutu /var/log/tutu
 USER tutu
-VOLUME ["/home/tutu/logs"]
+VOLUME ["/var/log/tutu"]
 COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
