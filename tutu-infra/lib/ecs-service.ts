@@ -189,17 +189,17 @@ export class EcsServiceStack extends Stack {
       }
     }
 
-    const AppLogGroup = new LogGroup(this, 'LogGroup', {
+    const AppLogGroup = new LogGroup(this, 'AppLogGroup', {
       logGroupName: `${props.serviceName}-app`,
       removalPolicy: RemovalPolicy.DESTROY
     })
 
-    const AuditLogGroup = new LogGroup(this, 'LogGroup', {
+    const AuditLogGroup = new LogGroup(this, 'AuditLogGroup', {
       logGroupName: `${props.serviceName}-audit`,
       removalPolicy: RemovalPolicy.DESTROY
     })
 
-    const DebugLogGroup = new LogGroup(this, 'LogGroup', {
+    const DebugLogGroup = new LogGroup(this, 'DebugLogGroup', {
       logGroupName: `${props.serviceName}-debug`,
       removalPolicy: RemovalPolicy.DESTROY
     })
