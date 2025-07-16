@@ -189,6 +189,21 @@ export class EcsServiceStack extends Stack {
       }
     }
 
+    const AppLogGroup = new LogGroup(this, 'LogGroup', {
+      logGroupName: `${props.serviceName}-app`,
+      removalPolicy: RemovalPolicy.DESTROY
+    })
+
+    const AuditLogGroup = new LogGroup(this, 'LogGroup', {
+      logGroupName: `${props.serviceName}-audit`,
+      removalPolicy: RemovalPolicy.DESTROY
+    })
+
+    const DebugLogGroup = new LogGroup(this, 'LogGroup', {
+      logGroupName: `${props.serviceName}-debug`,
+      removalPolicy: RemovalPolicy.DESTROY
+    })
+
     const cwAgent = taskDefinition.addContainer('ecs-cwagent', {
       image: ContainerImage.fromRegistry('public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest'),
       environment: {
@@ -199,6 +214,10 @@ export class EcsServiceStack extends Stack {
         logGroup: ServiceLogGroup
       })
     })
+
+    AppLogGroup.grantWrite(taskDefinition.taskRole)
+    AuditLogGroup.grantWrite(taskDefinition.taskRole)
+    DebugLogGroup.grantWrite(taskDefinition.taskRole)
 
     cwAgent.addMountPoints({
       sourceVolume: 'logs',
