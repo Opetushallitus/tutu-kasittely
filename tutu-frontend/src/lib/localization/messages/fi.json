@@ -102,6 +102,12 @@
       "kielet": "Päätös- ja asiointikieli",
       "paatoskieli": "Päätöskieli",
       "asiointikieli": "Asiointikieli"
+    },
+    "asiakirjat": {
+      "otsikko": "Asiakirjat",
+      "asiakirja": "Asiakirja",
+      "saapunut": "Saapunut",
+      "tarkistuksentila": "Tarkastuksen tila"
     }
   },
   "hakemusotsikko": {
