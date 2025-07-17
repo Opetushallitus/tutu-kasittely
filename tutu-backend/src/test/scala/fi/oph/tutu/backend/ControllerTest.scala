@@ -2,17 +2,7 @@ package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{
-  AtaruHakemus,
-  DbEsittelija,
-  HakemusOid,
-  Hakija,
-  Kieli,
-  OnrUser,
-  PartialHakemus,
-  UserOid,
-  UusiAtaruHakemus
-}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.fixture.hakijaFixture
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
@@ -259,7 +249,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": null
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
@@ -269,7 +260,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": "2025-07-14T11:06:38.273Z"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -279,7 +271,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": "2025-07-21T11:06:38.273Z"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
@@ -289,7 +282,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : null,
                                 "esittelijaKutsumanimi": null,
                                 "esittelijaSukunimi": null,
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": null
                               } ]"""
 
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
@@ -320,7 +314,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": null
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -330,7 +325,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken"
+                                "kasittelyVaihe": "AlkukasittelyKesken",
+                                "taydennyspyyntoLahetetty": "2025-07-21T11:06:38.273Z"
                               } ]"""
 
     val result = mockMvc
@@ -399,7 +395,9 @@ class ControllerTest extends IntegrationTestBase {
                                   }, {
                                   "role": "Esittelija",
                                   "time": "2025-06-18T05:57:18.866",
-                                  "modifiedBy": "Esko Esittelijä"}]
+                                  "modifiedBy": "Esko Esittelijä"}],
+                                  "taydennyspyyntoLahetetty": null,
+                                  "muokattu": null
                               }"""
 
     val result = mockMvc

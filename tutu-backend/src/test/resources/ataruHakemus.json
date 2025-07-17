@@ -340,6 +340,7 @@
   "application-review-notes": null,
   "henkilotunnus": "180462-9981",
   "person-oid": "1.2.246.562.24.82970555881",
+  "information-request-timestamp": null,
   "application-hakukohde-attachment-reviews": [
     {
       "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
