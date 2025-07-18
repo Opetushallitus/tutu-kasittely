@@ -1,4 +1,5 @@
 name: Deploy TUTU-backend
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,6 +14,8 @@ on:
         description: Backend build GH Actions number
         required: true
         type: number
+
+run-name: Deploy TUTU-backend revision ${{ inputs.revision }} to ${{ inputs.environment }}
 
 permissions:
   id-token: write
