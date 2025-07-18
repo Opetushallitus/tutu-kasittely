@@ -26,11 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/prepare-next-env
-      - name: Install CDK dependencies
-        working-directory: ./tutu-infra
-        run: |
-          npm ci --prefer-offline
-          npm install -g aws-cdk
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "tutu-infra/.nvmrc"
       - name: Configure AWS utility-role credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -44,7 +42,7 @@ jobs:
         run: |
           aws s3 cp --no-progress s3://"$bucket"/ga-${{inputs.revision}}.zip build.zip
           unzip build.zip
-          cp -R .next/standalone/.next/server .next/server # OpenNext v3 needs server-files also in .next/server
+          cp -R .next/standalone/.next/server .next/server
       - name: Configure AWS dev-role credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -56,5 +54,7 @@ jobs:
         env:
           SKIP_OPENNEXT_BUILD: true
         run: |
+          npm ci
+          npm install -g aws-cdk
           cdk cli-telemetry --disable
           cdk deploy TutuFrontendNextjsStack --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
