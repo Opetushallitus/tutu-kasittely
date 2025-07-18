@@ -97,7 +97,12 @@ class HakemusService(
             ),
             kasittelyVaihe = dbHakemus.kasittelyVaihe,
             muokattu = dbHakemus.muokattu,
-            muutosHistoria = muutosHistoria
+            muutosHistoria = muutosHistoria,
+            taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
+              case None            => None
+              case Some(timestamp) =>
+                Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
+            }
           )
         )
       case None =>
@@ -196,7 +201,8 @@ class HakemusService(
                 esittelijaKutsumanimi = esittelija(0),
                 esittelijaSukunimi = esittelija(1),
                 kasittelyVaihe = item.kasittelyVaihe,
-                muokattu = item.muokattu
+                muokattu = item.muokattu,
+                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`
               )
             )
         }

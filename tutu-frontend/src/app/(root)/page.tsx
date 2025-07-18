@@ -3,7 +3,7 @@
 import { PageLayout } from '@/src/components/PageLayout';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { HakemusList } from '@/src/app/(root)/components/HakemusList';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 import HakemusListFilters from '@/src/app/(root)/components/HakemusListFilters';
 import { BoxWrapper } from '@/src/components/BoxWrapper';

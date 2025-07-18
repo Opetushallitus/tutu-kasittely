@@ -8,7 +8,7 @@ import {
   Stack,
 } from '@mui/material';
 import { SisaltoItem } from '@/src/lib/types/hakemus';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 
 const NoWrap = styled('div')(() => ({

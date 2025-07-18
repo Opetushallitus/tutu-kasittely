@@ -1,4 +1,4 @@
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
 
 const TableSortLabel = (props: {

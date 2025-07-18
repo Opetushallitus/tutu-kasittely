@@ -3,7 +3,7 @@ import { OphInput, OphTypography } from '@opetushallitus/oph-design-system';
 import {
   TFunction,
   useTranslations,
-} from '@/src/lib/localization/useTranslations';
+} from '@/src/lib/localization/hooks/useTranslations';
 import { InfoBox } from '@/src/app/(root)/hakemus/[oid]/components/InfoBox';
 import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
 import { Grid } from '@mui/system';

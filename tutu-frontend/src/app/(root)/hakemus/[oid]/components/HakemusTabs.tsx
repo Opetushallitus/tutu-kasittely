@@ -8,7 +8,7 @@ import {
   SMALL_FONT,
   THIN_BOX_BORDER,
 } from '@/src/lib/theme';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import React, { useRef } from 'react';
 import Link, { LinkProps } from 'next/link';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

@@ -6,7 +6,7 @@ import {
 import React from 'react';
 import { PaatosTaydennyspyyntoStack } from '@/src/app/(root)/hakemus/[oid]/components/sidebar/PaatosTaydennyspyyntoStack';
 import { useTheme } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 
 export const Taydennyspyynto = () => {

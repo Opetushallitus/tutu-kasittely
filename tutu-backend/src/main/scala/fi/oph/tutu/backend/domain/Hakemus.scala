@@ -67,7 +67,8 @@ case class Hakemus(
   ataruHakemuksenTila: AtaruHakemuksenTila,
   kasittelyVaihe: KasittelyVaihe,
   muokattu: Option[LocalDateTime] = None,
-  muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty
+  muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
+  taydennyspyyntoLahetetty: Option[LocalDateTime] = None
 )
 
 case class PartialHakemus(

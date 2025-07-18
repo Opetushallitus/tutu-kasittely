@@ -8,13 +8,12 @@ import {
 import * as R from 'remeda';
 import { kasittelyVaiheet } from '@/src/app/(root)/components/types';
 import React from 'react';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useHakemus } from '@/src/context/HakemusContext';
-import * as dateFns from 'date-fns';
-import { DATE_PLACEHOLDER } from '@/src/constants/constants';
+import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 
 const OpenInNewIconBlue = styled(OpenInNewIcon)({
   color: ophColors.blue2,
@@ -30,6 +29,7 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
   const theme = useTheme();
   const { t } = useTranslations();
   const { hakemus } = useHakemus();
+  const kasittelyVaiheTranslation = useKasittelyvaiheTranslation(hakemus);
 
   return (
     <KasittelyvaiheStack gap={theme.spacing(2)}>
@@ -50,13 +50,7 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
             variant={'label'}
             data-testid={'hakemus-sidebar-kasittelyvaihe'}
           >
-            {hakemus?.kasittelyVaihe === 'HakemustaTaydennetty'
-              ? t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
-                ' ' +
-                dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
-              : t(
-                  `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
-                )}
+            {kasittelyVaiheTranslation}
           </OphTypography>
         )}
       </Stack>

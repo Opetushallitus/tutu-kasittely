@@ -26,7 +26,8 @@ case class AtaruHakemus(
   `person-oid`: String,
   `application-hakukohde-attachment-reviews`: Seq[AttachmentReview],
   `application-hakukohde-reviews`: Seq[HakukohdeReview],
-  hakutoiveet: Seq[String]
+  hakutoiveet: Seq[String],
+  `information-request-timestamp`: Option[String]
 )
 
 case class Content(

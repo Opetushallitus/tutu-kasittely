@@ -10,5 +10,6 @@ case class HakemusListItem(
   esittelijaKutsumanimi: String,
   esittelijaSukunimi: String,
   kasittelyVaihe: String,
-  muokattu: Option[String]
+  muokattu: Option[String],
+  taydennyspyyntoLahetetty: Option[String]
 )

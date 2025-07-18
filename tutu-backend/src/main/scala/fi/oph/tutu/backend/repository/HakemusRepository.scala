@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{DbHakemus, HakemusListItem, HakemusOid, KasittelyVaihe, UserOid}
+import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -50,7 +50,8 @@ class HakemusRepository {
         null,
         null,
         r.nextString(),
-        Option(r.nextString())
+        Option(r.nextString()),
+        null
       )
     )
 
