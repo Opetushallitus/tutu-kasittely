@@ -20,7 +20,26 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await expect(page.getByTestId('hakemus-list')).toBeVisible();
   const hakemusRow = page.getByTestId('hakemus-row');
 
-  expect(await hakemusRow.count()).toBe(3);
+  expect(await hakemusRow.count()).toBe(4);
+});
+
+test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oikein', async ({
+  page,
+}) => {
+  await mockSuccessfullLists({ page });
+  await page.goto('/tutu-frontend');
+
+  await expect(page.locator('h1')).toBeVisible();
+
+  // varmistaa että spinneristä on siirrytty eteenpäin ennen seuraavaa expectiä
+
+  // odotetaan että hakemuslista on ladattu
+  await expect(page.getByTestId('hakemus-list')).toBeVisible();
+
+  const kasittelyvaiheet = page.getByTestId('hakemus-row-kasittelyvaihe');
+  await expect(kasittelyvaiheet.last()).toHaveText(
+    'Odottaa täydennystä 28.07.2025 mennessä',
+  );
 });
 
 test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({

@@ -60,7 +60,9 @@ export default function HakemusRow({
           {hakemus.esittelijaKutsumanimi} {hakemus.esittelijaSukunimi}
         </StyledTableCell>
       )}
-      <StyledTableCell>{useKasittelyvaiheTranslation(hakemus)}</StyledTableCell>
+      <StyledTableCell data-testid={'hakemus-row-kasittelyvaihe'}>
+        {useKasittelyvaiheTranslation(hakemus)}
+      </StyledTableCell>
       <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaika.arvo', '', {
