@@ -31,5 +31,11 @@ export default defineConfig([
       parser: tsParser,
     },
   },
-  globalIgnores(['.next', 'node_modules', 'certificates', 'test-results']),
+  globalIgnores([
+    '.next',
+    '.open-next',
+    'node_modules',
+    'certificates',
+    'test-results',
+  ]),
 ]);
