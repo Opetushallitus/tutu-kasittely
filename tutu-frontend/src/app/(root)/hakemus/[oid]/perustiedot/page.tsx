@@ -2,7 +2,7 @@
 
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { LabeledValue } from '@/src/app/(root)/hakemus/[oid]/components/LabeledValue';

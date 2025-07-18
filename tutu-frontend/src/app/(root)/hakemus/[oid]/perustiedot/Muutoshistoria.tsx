@@ -1,5 +1,5 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { MuutosHistoriaItem } from '@/src/lib/types/hakemus';
 import {
   Stack,

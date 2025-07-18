@@ -24,7 +24,7 @@ import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { User } from '@/src/lib/types/user';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const FIELD_KEYS = {
   hakijannimi: 'hakemuslista.hakijannimi',

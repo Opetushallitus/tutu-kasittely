@@ -190,7 +190,6 @@ class HakemusService(
             )
             None
           case Some(ataruHakemus) =>
-            LOG.info(ataruHakemus.toString())
             Some(
               HakemusListItem(
                 asiatunnus = item.asiatunnus,

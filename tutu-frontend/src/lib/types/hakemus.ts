@@ -20,6 +20,7 @@ export type Hakemus = {
   kasittelyVaihe: string;
   muokattu: string;
   muutosHistoria: MuutosHistoriaItem[];
+  taydennyspyyntoLahetetty: string;
 };
 
 export type SisaltoItem = {

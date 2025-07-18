@@ -20,7 +20,7 @@ import {
   parseAsStringLiteral,
   useQueryState,
 } from 'nuqs';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import {
   hakemusKoskeeQueryStates,

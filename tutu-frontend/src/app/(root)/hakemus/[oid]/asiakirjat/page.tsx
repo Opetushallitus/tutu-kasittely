@@ -2,7 +2,7 @@
 
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { AsiakirjaTaulukko } from '@/src/app/(root)/hakemus/[oid]/components/AsiakirjaTaulukko';
 import { FullSpinner } from '@/src/components/FullSpinner';

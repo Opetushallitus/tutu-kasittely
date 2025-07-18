@@ -6,7 +6,7 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';

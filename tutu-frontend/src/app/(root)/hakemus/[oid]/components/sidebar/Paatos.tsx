@@ -5,7 +5,7 @@ import { Stack, useTheme } from '@mui/material';
 import {
   TFunction,
   useTranslations,
-} from '@/src/lib/localization/useTranslations';
+} from '@/src/lib/localization/hooks/useTranslations';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 
 const AikaisempiPaatos = ({

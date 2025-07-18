@@ -42,6 +42,7 @@
     "kasittelyvaihe": {
       "alkukasittelykesken": "Alkukäsittely kesken",
       "odottaataydennysta": "Odottaa täydennystä",
+      "odottaataydennystamennessa": "Odottaa täydennystä {date} mennessä",
       "odottaaimivastausta": "Odottaa IMI-vastausta",
       "odottaavahvistusta": "Odottaa vahvistusta",
       "odottaalausuntoa": "Odottaa lausuntoa",

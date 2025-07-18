@@ -4,7 +4,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { KasittelyVaihe } from '@/src/app/(root)/hakemus/[oid]/components/sidebar/KasittelyVaihe';

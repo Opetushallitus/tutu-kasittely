@@ -4,7 +4,7 @@ import HomeIcon from '@mui/icons-material/HomeOutlined';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PageHeaderRow } from '@/src/app/(root)/hakemus/[oid]/components/PageHeaderRow';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import Link from 'next/link';
 import { styled } from '@mui/material';
 

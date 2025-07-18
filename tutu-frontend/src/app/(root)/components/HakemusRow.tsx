@@ -2,9 +2,9 @@ import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { styled, TableCell, TableRow } from '@mui/material';
 import Link from 'next/link';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
-import { DATE_PLACEHOLDER } from '@/src/constants/constants';
+import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
@@ -60,15 +60,7 @@ export default function HakemusRow({
           {hakemus.esittelijaKutsumanimi} {hakemus.esittelijaSukunimi}
         </StyledTableCell>
       )}
-      <StyledTableCell>
-        {hakemus?.kasittelyVaihe === 'HakemustaTaydennetty'
-          ? t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
-            ' ' +
-            dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
-          : t(
-              `hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`,
-            )}
-      </StyledTableCell>
+      <StyledTableCell>{useKasittelyvaiheTranslation(hakemus)}</StyledTableCell>
       <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaika.arvo', '', {
