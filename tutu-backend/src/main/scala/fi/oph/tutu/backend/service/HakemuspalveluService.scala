@@ -4,7 +4,7 @@ import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.HakemusOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.native.JsonMethods.{compact, parse, render}
-import org.json4s.{DefaultFormats, Extraction, JObject, JString, JValue}
+import org.json4s.{DefaultFormats, Extraction, JObject, JArray, JValue}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
@@ -89,21 +89,28 @@ class HakemuspalveluService(httpService: HttpService) {
     }
   }
 
-  def haeLiitteenTiedot(avain: String): Option[String] = {
-    httpService.get(
+  def haeLiitteidenTiedot(avainLista: Array[String]): Option[String] = {
+    val jsonObj: JValue  = JObject("keys" -> Extraction.decompose(avainLista))
+    val jsonBody: String = compact(render(jsonObj))
+
+    httpService.post(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/files/metadata?key=$avain"
+      s"$opintopolku_virkailija_domain/lomake-editori/api/files/metadata",
+      jsonBody
     ) match {
       case Left(error)     => throw error
       case Right(response) => {
-        val downloadLink      = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$avain"
-        val downloadLinkValue = JObject("downloadUrl" -> JString(downloadLink))
+        val liitteidenTiedot = parse(response).values.asInstanceOf[List[Map[String,Any]]]
 
-        val metadata = parse(response)
+        val liitteidenTiedotJaLinkit = liitteidenTiedot.map((tiedot) => {
+          val liitteenAvain     = tiedot("key")
+          val downloadLink      = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$liitteenAvain"
+          val tiedotJaLinkki = tiedot + ("download-url" -> downloadLink)
 
-        val mergedData = downloadLinkValue.merge(metadata(0))
+          tiedotJaLinkki
+        })
 
-        Some(compact(render(mergedData)))
+        Some(compact(render(Extraction.decompose(liitteidenTiedotJaLinkit))))
       }
     }
   }

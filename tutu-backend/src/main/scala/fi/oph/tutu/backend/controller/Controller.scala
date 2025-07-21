@@ -156,24 +156,25 @@ class Controller(
     }
 
   @GetMapping(
-    path = Array("liite/metadata/{avain}")
+    path = Array("liite/metadata/{avaimet}")
   )
-  def haeLiitteenTiedot(
-    @PathVariable("avain") avain: String
+  def haeLiitteidenTiedot(
+    @PathVariable("avaimet") avaimet: String
   ): ResponseEntity[Any] = {
     Try {
-      hakemuspalveluService.haeLiitteenTiedot(avain)
+      val avainLista = avaimet.split(",");
+      hakemuspalveluService.haeLiitteidenTiedot(avainLista)
     } match {
       case Success(result) =>
         result match {
           case None =>
-            LOG.warn(s"Liitettä ei löytynyt avaimella: $avain")
-            errorMessageMapper.mapPlainErrorMessage("Liitettä ei löytynyt", HttpStatus.NOT_FOUND)
+            LOG.warn(s"Liitteitä ei löytynyt avaimilla: $avaimet")
+            errorMessageMapper.mapPlainErrorMessage("Liitteitä ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(metadata) =>
             ResponseEntity.status(HttpStatus.OK).body(metadata)
         }
       case Failure(exception) =>
-        LOG.error(s"Liitten haku epäonnistui, avain: $avain", exception)
+        LOG.error(s"Liitteiden haku epäonnistui, avaimet: $avaimet", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
