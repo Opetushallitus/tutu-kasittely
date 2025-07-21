@@ -107,7 +107,12 @@
       "otsikko": "Asiakirjat",
       "asiakirja": "Asiakirja",
       "saapunut": "Saapunut",
-      "tarkistuksentila": "Tarkastuksen tila"
+      "tarkistuksen_tila": {
+        "otsikko": "Tarkastuksen tila",
+        "not-checked": "Tarkastamatta",
+        "attachment-missing": "Liite puuttuu",
+        "checked": "Tarkistettu"
+      }
     }
   },
   "hakemusotsikko": {

@@ -1,5 +1,6 @@
 import {
   styled,
+  useTheme,
   Table,
   TableCell,
   TableBody,
@@ -7,9 +8,24 @@ import {
   TableRow,
   Stack,
 } from '@mui/material';
-import { SisaltoItem } from '@/src/lib/types/hakemus';
-import { useTranslations } from '@/src/lib/localization/useTranslations';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorIcon from '@mui/icons-material/Error';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import { ophColors } from '@/src/lib/theme';
+import { SisaltoItem, TarkistuksenTila } from '@/src/lib/types/hakemus';
+import { LiiteItem } from '@/src/lib/types/liiteITem';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import {
+  useTranslations,
+  TFunction,
+} from '@/src/lib/localization/useTranslations';
+import { useLiitteet } from '@/src/hooks/useLiitteet';
 import * as R from 'remeda';
+import { handleFetchError } from '@/src/lib/utils';
+import useToaster from '@/src/hooks/useToaster';
+import { useEffect } from 'react';
+import * as dateFns from 'date-fns';
 
 const NoWrap = styled('div')(() => ({
   textWrap: 'nowrap',
@@ -17,20 +33,53 @@ const NoWrap = styled('div')(() => ({
 
 export const AsiakirjaTaulukko = ({
   sisalto = [],
+  liitteidenTilat = [],
   osiot = [],
 }: {
   sisalto: SisaltoItem[];
+  liitteidenTilat: TarkistuksenTila[];
   osiot: string[];
 }) => {
+  /* ------------------------------------------- */
+  /* TODO: refactor -- extract to page.tsx       */
+  /*       - Check for changes / conflicts first */
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
   const rajattuSisalto = sisalto.filter((item) => osiot.includes(item.key));
   const asiakirjat = haeAsiakirjat(rajattuSisalto);
+
+  const { isLoading, data, error } = useLiitteet(
+    asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
+  );
+
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.liitteiden-lataus', t);
+  }, [error, addToast, t]);
+
+  if (error) {
+    return null;
+  }
+
+  if (isLoading || !data) return <FullSpinner></FullSpinner>;
+
+  const completeAsiakirjaData = asiakirjat.map((asiakirja) => {
+    const metadata = data.find(
+      (dataItem) => dataItem.key === asiakirja.label.fi,
+    );
+    const liitteenTila = liitteidenTilat.find(
+      (state) => state.attachment === asiakirja.formId,
+    );
+    return { asiakirja, metadata, liitteenTila, key: asiakirja.label.fi };
+  });
+  /* ODOT */
 
   return (
     <Table>
       <AsiakirjaTableHeader />
       <TableBody>
-        {asiakirjat.map((asiakirja) => (
-          <AsiakirjaTableRow key={asiakirja.label.fi} asiakirja={asiakirja} />
+        {completeAsiakirjaData.map((data) => (
+          <AsiakirjaTableRow key={data.key} data={data} />
         ))}
       </TableBody>
     </Table>
@@ -47,23 +96,33 @@ const AsiakirjaTableHeader = () => {
           {t('hakemus.asiakirjat.asiakirja')}
         </TableCell>
         <TableCell>{t('hakemus.asiakirjat.saapunut')}</TableCell>
-        <TableCell>{t('hakemus.asiakirjat.tarkistuksentila')}</TableCell>
+        <TableCell>
+          {t('hakemus.asiakirjat.tarkistuksen_tila.otsikko')}
+        </TableCell>
       </TableRow>
     </TableHead>
   );
 };
 
-const AsiakirjaTableRow = ({ asiakirja }) => {
+const AsiakirjaTableRow = ({ data }) => {
+  const { t } = useTranslations();
+  const theme = useTheme();
+
   return (
     <TableRow>
       <TableCell>
         <Stack>
-          <NoWrap>{lomakeOtsake(asiakirja)}</NoWrap>
-          <NoWrap>{tiedostoNimi(asiakirja)}</NoWrap>
+          <NoWrap>{lomakeOtsake(data.asiakirja)}</NoWrap>
+          <NoWrap>{tiedostoNimi(data.metadata)}</NoWrap>
         </Stack>
       </TableCell>
-      <TableCell>{saapumisAika(asiakirja)}</TableCell>
-      <TableCell>{tarkistuksenTila(asiakirja)}</TableCell>
+      <TableCell>{saapumisAika(data.metadata)}</TableCell>
+      <TableCell>
+        <Stack direction="row" gap={theme.spacing(1)}>
+          {tarkistuksenTilaIcon(data)}
+          {tarkistuksenTila(t, data)}
+        </Stack>
+      </TableCell>
     </TableRow>
   );
 };
@@ -71,23 +130,42 @@ const AsiakirjaTableRow = ({ asiakirja }) => {
 /* ----------------------------------------- */
 /* Funktiot tietojen hakemiseen asiakirjasta */
 
-const lomakeOtsake = (value: SisaltoValue) => {
-  const lastItems = pathToRoot(value).slice(1, 3);
+const lomakeOtsake = (asiakirja: SisaltoValue) => {
+  const lastItems = pathToRoot(asiakirja).slice(1, 3);
   return R.reverse(lastItems)
     .map((item) => item.label.fi)
     .join(' > ');
 };
 
-const tiedostoNimi = (/*value: SisaltoValue*/) => {
-  return 'liite.txt';
+const saapumisAika = (metadata: LiiteItem) => {
+  const timeStr = metadata?.uploaded;
+  return timeStr ? dateFns.format(timeStr, 'dd.MM.yyyy HH:mm') : '-';
 };
 
-const saapumisAika = (/*value: SisaltoValue*/) => {
-  return '1.1.2025 11:10';
+const tiedostoNimi = (metadata: LiiteItem) => {
+  return metadata?.filename || '-';
 };
 
-const tarkistuksenTila = (/*value: SisaltoValue*/) => {
-  return 'Tarkistamatta';
+const tarkistuksenTila = (t: TFunction, data: LiiteItem) => {
+  const translationKey = `hakemus.asiakirjat.tarkistuksen_tila.${data.liitteenTila?.state}`;
+  const result = t(translationKey);
+
+  return result !== translationKey ? result : '-';
+};
+
+const tarkistuksenTilaIcon = (data: LiiteItem) => {
+  switch (data.liitteenTila?.state) {
+    case 'checked':
+      return <CheckCircleOutlineIcon sx={{ color: ophColors.alias.success }} />;
+    case 'attachment-missing':
+      return <ErrorIcon sx={{ color: ophColors.alias.error }} />;
+    case 'late': // TODO: tarkista tilan arvo -- tulee Atarusta
+      return <AlarmIcon sx={{ color: ophColors.yellow1 }} />;
+    case 'incomplete': // TODO: tarkista tilan arvo -- tulee Atarusta
+      return <ErrorOutlineIcon sx={{ color: ophColors.alias.error }} />;
+    default:
+      return null;
+  }
 };
 
 const pathToRoot = (value: SisaltoValue): (SisaltoItem | SisaltoValue)[] => {
@@ -110,7 +188,11 @@ const haeAsiakirjat = (sisalto: SisaltoItem[]): SisaltoValue[] => {
 
   const handleItem = (item: (SisaltoItem | SisaltoValue)[]) => {
     if (item.previous?.fieldType === 'attachment') {
-      acc.push(item);
+      const newItem = {
+        ...item,
+        formId: item.previous.key,
+      };
+      acc.push(newItem);
     }
   };
 

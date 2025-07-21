@@ -35,3 +35,9 @@ export type SisaltoValue = {
   value: string;
   followups: SisaltoItem[];
 };
+
+export type TarkistuksenTila = {
+  attachment: string;
+  state: string;
+  hakukohde: string;
+};

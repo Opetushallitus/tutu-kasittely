@@ -31,11 +31,15 @@ export default function AsiakirjaPage() {
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack gap={theme.spacing(3)} sx={{ flexGrow: 1 }}>
       <OphTypography variant={'h2'}>
         {t('hakemus.asiakirjat.otsikko')}
       </OphTypography>
-      <AsiakirjaTaulukko osiot={sisallonOsiot} sisalto={hakemus.sisalto} />
+      <AsiakirjaTaulukko
+        osiot={sisallonOsiot}
+        sisalto={hakemus.sisalto}
+        liitteidenTilat={hakemus.liitteidenTilat}
+      />
     </Stack>
   );
 }
