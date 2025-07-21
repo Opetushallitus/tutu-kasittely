@@ -4,7 +4,7 @@ import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.HakemusOid
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.native.JsonMethods.{compact, parse, render}
-import org.json4s.{DefaultFormats, Extraction, JObject, JArray, JValue}
+import org.json4s.{DefaultFormats, Extraction, JArray, JObject, JValue}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
@@ -100,11 +100,11 @@ class HakemuspalveluService(httpService: HttpService) {
     ) match {
       case Left(error)     => throw error
       case Right(response) => {
-        val liitteidenTiedot = parse(response).values.asInstanceOf[List[Map[String,Any]]]
+        val liitteidenTiedot = parse(response).values.asInstanceOf[List[Map[String, Any]]]
 
-        val liitteidenTiedotJaLinkit = liitteidenTiedot.map((tiedot) => {
-          val liitteenAvain     = tiedot("key")
-          val downloadLink      = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$liitteenAvain"
+        val liitteidenTiedotJaLinkit = liitteidenTiedot.map(tiedot => {
+          val liitteenAvain  = tiedot("key")
+          val downloadLink   = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$liitteenAvain"
           val tiedotJaLinkki = tiedot + ("download-url" -> downloadLink)
 
           tiedotJaLinkki
