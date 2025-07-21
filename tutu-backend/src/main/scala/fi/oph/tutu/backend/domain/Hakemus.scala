@@ -58,6 +58,7 @@ case class Hakemus(
   hakemusOid: String,
   hakija: Hakija,
   sisalto: Seq[SisaltoItem],
+  liitteidenTilat: Seq[AttachmentReview],
   hakemusKoskee: Int,
   asiatunnus: Option[String] = None,
   kirjausPvm: Option[LocalDateTime] = None,
