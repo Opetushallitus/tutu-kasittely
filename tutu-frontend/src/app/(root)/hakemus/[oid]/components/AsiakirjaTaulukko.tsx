@@ -7,6 +7,7 @@ import {
   TableHead,
   TableRow,
   Stack,
+  Chip,
 } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -14,7 +15,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import { ophColors } from '@/src/lib/theme';
 import { SisaltoItem } from '@/src/lib/types/hakemus';
-import { LiiteItem } from '@/src/lib/types/liiteITem';
+import { LiiteItem } from '@/src/lib/types/liiteItem';
 import {
   useTranslations,
   TFunction,
@@ -24,6 +25,12 @@ import * as dateFns from 'date-fns';
 
 const NoWrap = styled('div')(() => ({
   textWrap: 'nowrap',
+}));
+
+const UusiBadge = styled(Chip)(() => ({
+  color: ophColors.green1,
+  backgroundColor: ophColors.green5,
+  borderRadius: '2px',
 }));
 
 export const AsiakirjaTaulukko = ({ asiakirjat = [] }) => {
@@ -69,7 +76,12 @@ const AsiakirjaTableRow = ({ data }) => {
           <NoWrap>{tiedostoNimi(data.metadata)}</NoWrap>
         </Stack>
       </TableCell>
-      <TableCell>{saapumisAika(data.metadata)}</TableCell>
+      <TableCell>
+        <Stack direction="row" gap={theme.spacing(1)}>
+          {saapumisAika(data.metadata)}
+          {uusiLiite(t, data)}
+        </Stack>
+      </TableCell>
       <TableCell>
         <Stack direction="row" gap={theme.spacing(1)}>
           {tarkistuksenTilaIcon(data)}
@@ -99,14 +111,14 @@ const tiedostoNimi = (metadata: LiiteItem) => {
   return metadata?.filename || '-';
 };
 
-const tarkistuksenTila = (t: TFunction, data: LiiteItem) => {
+const tarkistuksenTila = (t: TFunction, data) => {
   const translationKey = `hakemus.asiakirjat.tarkistuksen_tila.${data.liitteenTila?.state}`;
   const result = t(translationKey);
 
   return result !== translationKey ? result : '-';
 };
 
-const tarkistuksenTilaIcon = (data: LiiteItem) => {
+const tarkistuksenTilaIcon = (data) => {
   switch (data.liitteenTila?.state) {
     case 'checked':
       return <CheckCircleOutlineIcon sx={{ color: ophColors.alias.success }} />;
@@ -117,6 +129,16 @@ const tarkistuksenTilaIcon = (data: LiiteItem) => {
     case 'incomplete-attachment':
       return <ErrorOutlineIcon sx={{ color: ophColors.alias.error }} />;
     case 'not-checked':
+    default:
+      return null;
+  }
+};
+
+const uusiLiite = (t: TFunction, data) => {
+  console.log(data);
+  switch (data.liitteenTila?.state) {
+    case 'not-checked':
+      return <UusiBadge label={t('hakemus.asiakirjat.uusi')} size="small" />;
     default:
       return null;
   }
