@@ -156,10 +156,10 @@ class Controller(
     }
 
   @GetMapping(
-    path = Array("liite/metadata/{avaimet}")
+    path = Array("liite/metadata")
   )
   def haeLiitteidenTiedot(
-    @PathVariable("avaimet") avaimet: String
+    @RequestParam("avaimet") avaimet: String
   ): ResponseEntity[Any] = {
     Try {
       val avainLista = avaimet.split(",");

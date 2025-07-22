@@ -112,7 +112,9 @@
         "otsikko": "Tarkastuksen tila",
         "not-checked": "Tarkastamatta",
         "attachment-missing": "Liite puuttuu",
-        "checked": "Tarkistettu"
+        "checked": "Tarkistettu",
+        "incomplete-attachment": "Puutteellinen liite",
+        "overdue": "Myöhässä"
       }
     }
   },

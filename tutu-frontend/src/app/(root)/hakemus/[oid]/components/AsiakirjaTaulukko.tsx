@@ -13,72 +13,25 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ErrorIcon from '@mui/icons-material/Error';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import { ophColors } from '@/src/lib/theme';
-import { SisaltoItem, TarkistuksenTila } from '@/src/lib/types/hakemus';
+import { SisaltoItem } from '@/src/lib/types/hakemus';
 import { LiiteItem } from '@/src/lib/types/liiteITem';
-import { FullSpinner } from '@/src/components/FullSpinner';
 import {
   useTranslations,
   TFunction,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { useLiitteet } from '@/src/hooks/useLiitteet';
 import * as R from 'remeda';
-import { handleFetchError } from '@/src/lib/utils';
-import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
 import * as dateFns from 'date-fns';
 
 const NoWrap = styled('div')(() => ({
   textWrap: 'nowrap',
 }));
 
-export const AsiakirjaTaulukko = ({
-  sisalto = [],
-  liitteidenTilat = [],
-  osiot = [],
-}: {
-  sisalto: SisaltoItem[];
-  liitteidenTilat: TarkistuksenTila[];
-  osiot: string[];
-}) => {
-  /* ------------------------------------------- */
-  /* TODO: refactor -- extract to page.tsx       */
-  /*       - Check for changes / conflicts first */
-  const { t } = useTranslations();
-  const { addToast } = useToaster();
-
-  const rajattuSisalto = sisalto.filter((item) => osiot.includes(item.key));
-  const asiakirjat = haeAsiakirjat(rajattuSisalto);
-
-  const { isLoading, data, error } = useLiitteet(
-    asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
-  );
-
-  useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.liitteiden-lataus', t);
-  }, [error, addToast, t]);
-
-  if (error) {
-    return null;
-  }
-
-  if (isLoading || !data) return <FullSpinner></FullSpinner>;
-
-  const completeAsiakirjaData = asiakirjat.map((asiakirja) => {
-    const metadata = data.find(
-      (dataItem) => dataItem.key === asiakirja.label.fi,
-    );
-    const liitteenTila = liitteidenTilat.find(
-      (state) => state.attachment === asiakirja.formId,
-    );
-    return { asiakirja, metadata, liitteenTila, key: asiakirja.label.fi };
-  });
-  /* ODOT */
-
+export const AsiakirjaTaulukko = ({ asiakirjat = [] }) => {
   return (
     <Table>
       <AsiakirjaTableHeader />
       <TableBody>
-        {completeAsiakirjaData.map((data) => (
+        {asiakirjat.map((data) => (
           <AsiakirjaTableRow key={data.key} data={data} />
         ))}
       </TableBody>
@@ -159,10 +112,11 @@ const tarkistuksenTilaIcon = (data: LiiteItem) => {
       return <CheckCircleOutlineIcon sx={{ color: ophColors.alias.success }} />;
     case 'attachment-missing':
       return <ErrorIcon sx={{ color: ophColors.alias.error }} />;
-    case 'late': // TODO: tarkista tilan arvo -- tulee Atarusta
+    case 'overdue':
       return <AlarmIcon sx={{ color: ophColors.yellow1 }} />;
-    case 'incomplete': // TODO: tarkista tilan arvo -- tulee Atarusta
+    case 'incomplete-attachment':
       return <ErrorOutlineIcon sx={{ color: ophColors.alias.error }} />;
+    case 'not-checked':
     default:
       return null;
   }
@@ -183,7 +137,7 @@ const pathToRoot = (value: SisaltoValue): (SisaltoItem | SisaltoValue)[] => {
 /* ------------------------------------------------------------ */
 /* Korkean tason funktio asiakirjojen etsimiseen puurakenteesta */
 
-const haeAsiakirjat = (sisalto: SisaltoItem[]): SisaltoValue[] => {
+export const haeAsiakirjat = (sisalto: SisaltoItem[]): SisaltoValue[] => {
   const acc: SisaltoValue[] = [];
 
   const handleItem = (item: (SisaltoItem | SisaltoValue)[]) => {
