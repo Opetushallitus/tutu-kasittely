@@ -78,6 +78,7 @@ class HakemusService(
             hakemusOid = dbHakemus.hakemusOid.toString,
             hakija = hakija,
             sisalto = ataruHakemusParser.parseSisalto(ataruHakemus, lomake),
+            liitteidenTilat = ataruHakemus.`application-hakukohde-attachment-reviews`,
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
