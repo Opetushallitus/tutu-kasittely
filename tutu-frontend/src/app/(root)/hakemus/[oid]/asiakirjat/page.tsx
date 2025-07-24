@@ -10,13 +10,28 @@ import {
   haeAsiakirjat,
 } from '@/src/app/(root)/hakemus/[oid]/components/AsiakirjaTaulukko';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
+import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
+import { VIRKAILIJA_URL } from '@/src/lib/configuration';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
 ];
+
+const ExternalLink = ({ href, label, gap }) => {
+  return (
+    <StyledLink href={href} target="_black" rel="noopener">
+      <CenteredRow gap={gap}>
+        <OpenInNewIcon />
+        {label}
+      </CenteredRow>
+    </StyledLink>
+  );
+};
 
 export default function AsiakirjaPage() {
   const theme = useTheme();
@@ -75,10 +90,20 @@ export default function AsiakirjaPage() {
   });
 
   return (
-    <Stack gap={theme.spacing(3)} sx={{ flexGrow: 1 }}>
-      <OphTypography variant={'h2'}>
-        {t('hakemus.asiakirjat.otsikko')}
-      </OphTypography>
+    <Stack
+      gap={theme.spacing(3)}
+      sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
+    >
+      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+        <OphTypography variant={'h2'}>
+          {t('hakemus.asiakirjat.otsikko')}
+        </OphTypography>
+        <ExternalLink
+          gap={theme.spacing(1)}
+          label={t('hakemus.asiakirjat.avaa_hakemuspalvelussa')}
+          href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
+        />
+      </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
     </Stack>
   );

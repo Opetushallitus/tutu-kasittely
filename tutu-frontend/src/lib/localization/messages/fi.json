@@ -106,6 +106,7 @@
     },
     "asiakirjat": {
       "otsikko": "Asiakirjat",
+      "avaa_hakemuspalvelussa": "Avaa asiakirjat hakemuspalvelussa",
       "asiakirja": "Asiakirja",
       "saapunut": "Saapunut",
       "uusi": "Uusi",
