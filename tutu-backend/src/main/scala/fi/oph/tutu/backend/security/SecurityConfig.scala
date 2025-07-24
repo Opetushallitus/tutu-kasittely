@@ -194,7 +194,8 @@ class SecurityConfig {
         csrf
           .ignoringRequestMatchers(
             "/api/healthcheck",
-            "/api/csrf"
+            "/api/csrf",
+            "/api/ataru-hakemus"
           )
       )
       .exceptionHandling(exceptionHandling =>

@@ -119,8 +119,12 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
-    val requestJson = mapper.writeValueAsString(hakemus)
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006666",
+          "maakoodi": "0008",
+          "hakemusKoskee": 1
+          }"""
 
     mockMvc
       .perform(
@@ -212,8 +216,12 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), "0008", 0)
-    val requestJson = mapper.writeValueAsString(hakemus)
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006665",
+          "maakoodi": "0008",
+          "hakemusKoskee": 0
+          }"""
 
     mockMvc
       .perform(
