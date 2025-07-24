@@ -1,18 +1,10 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{
-  Hakemus,
-  HakemusListItem,
-  HakemusOid,
-  PartialHakemus,
-  SortDef,
-  UserOid,
-  UserResponse,
-  UusiAtaruHakemus
-}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
@@ -47,6 +39,10 @@ class Controller(
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
   mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+  val module = new SimpleModule()
+  module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
+  mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
