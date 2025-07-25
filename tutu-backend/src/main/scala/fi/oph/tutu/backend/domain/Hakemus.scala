@@ -56,6 +56,7 @@ case class DbHakemus(
 
 case class Hakemus(
   hakemusOid: String,
+  lomakeOid: String,
   hakija: Hakija,
   sisalto: Seq[SisaltoItem],
   liitteidenTilat: Seq[AttachmentReview],
