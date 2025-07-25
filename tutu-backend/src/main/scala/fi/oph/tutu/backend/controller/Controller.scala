@@ -93,6 +93,7 @@ class Controller(
   )
   @Operation(
     summary = "Luo uuden hakemuspalvelun hakemuksen",
+    tags = Array("External"),
     description = "",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = Array(

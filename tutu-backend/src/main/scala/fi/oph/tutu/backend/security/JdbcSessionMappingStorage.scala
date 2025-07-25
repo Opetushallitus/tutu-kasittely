@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.security
 import fi.oph.tutu.backend.repository.TutuDatabase
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.session.{Session, SessionRepository}
 import slick.jdbc.PostgresProfile.api.*
 
@@ -43,12 +42,20 @@ class JdbcSessionMappingStorage(
 
   @Override
   def addSessionById(mappingId: String, session: HttpSession): Unit = {
-    LOG.debug(
-      s"Lisätään sessiomappaus, mappingId: $mappingId, sessionId: ${session.getId}"
-    )
-    val sql =
-      sqlu"""INSERT INTO #$mappingTableName (mapped_ticket_id, virkailija_session_id) VALUES ($mappingId, ${session.getId}) ON CONFLICT (mapped_ticket_id) DO NOTHING"""
-    tutuDatabase.run(sql, "addSessionById")
+    // Tarkistetaan että sessio on varmasti olemassa ennen mappausta
+    val sessionExistsQuery =
+      sql"""SELECT COUNT(*) FROM #$sessionTableName WHERE session_id = ${session.getId}""".as[Int].head
+    val exists = tutuDatabase.run(sessionExistsQuery, "checkSessionExists") == 1
+    if (exists) {
+      LOG.debug(
+        s"Lisätään sessiomappaus, mappingId: $mappingId, sessionId: ${session.getId}"
+      )
+      val sql =
+        sqlu"""INSERT INTO #$mappingTableName (mapped_ticket_id, virkailija_session_id) VALUES ($mappingId, ${session.getId}) ON CONFLICT (mapped_ticket_id) DO NOTHING"""
+      tutuDatabase.run(sql, "addSessionById")
+    } else {
+      LOG.warn(s"Sessiota ${session.getId} ei löytynyt, ei lisätä sessiomappausta")
+    }
   }
 
   @Override
