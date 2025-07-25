@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.annotation.Order
 import org.springframework.core.env.Environment
-import org.springframework.http.{HttpMethod, HttpStatus}
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.cas.ServiceProperties
 import org.springframework.security.cas.authentication.CasAuthenticationProvider
@@ -20,7 +20,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.context.{HttpSessionSecurityContextRepository, SecurityContextRepository}
-import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
 import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
@@ -33,7 +32,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
 @EnableJdbcHttpSession(tableName = "VIRKAILIJA_SESSION")
 class SecurityConfig {
   final private val SPRING_CAS_SECURITY_CHECK_PATH =
-    "/j_spring_cas_security_check"
+    "/api/j_spring_cas_security_check"
 
   @Value("${cas.url}")
   val cas_url: String = null
@@ -48,7 +47,6 @@ class SecurityConfig {
   def auditLog(): AuditLog = AuditLog
 
   @Bean
-  @SpringSessionDataSource
   def sessionDatasource(
     @Value("${spring.datasource.url}") url: String,
     @Value("${spring.datasource.username}") username: String,
