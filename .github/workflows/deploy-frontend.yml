@@ -14,6 +14,8 @@ on:
         required: true
         type: number
 
+run-name: Deploy TUTU-frontend revision ${{ inputs.revision }} to ${{ inputs.environment }}
+
 permissions:
   id-token: write
   contents: read

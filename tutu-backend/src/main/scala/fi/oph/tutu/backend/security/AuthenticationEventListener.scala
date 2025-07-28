@@ -11,8 +11,6 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.{RequestContextHolder, ServletRequestAttributes}
 
-import scala.jdk.javaapi.CollectionConverters
-
 @Component class AuthenticationEventListener(auditLog: AuditLog) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[AuthenticationEventListener])
 
@@ -23,7 +21,7 @@ import scala.jdk.javaapi.CollectionConverters
       .setField("userOid", event.getAuthentication.getName)
       .build()
     val request = getCurrentHttpRequest
-//    audit.log(getUser(request), Login, target, Changes.EMPTY)
+    audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
   }
 

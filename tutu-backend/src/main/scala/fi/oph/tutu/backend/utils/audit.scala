@@ -38,7 +38,7 @@ class AuditLog(val logger: Logger) {
       val paramsJson = toJson(raporttiParams)
       val target     =
         new Target.Builder().setField("parametrit", paramsJson).build()
-//      audit.log(getUser(request), operation, target, Changes.EMPTY)
+      audit.log(getUser(request), operation, target, Changes.EMPTY)
     } catch {
       case e: Exception =>
         errorLogger.error(s"Auditlokitus epäonnistui: ${e.getMessage}")
@@ -93,7 +93,14 @@ class AuditLog(val logger: Logger) {
   }
 
   def getInetAddress(request: HttpServletRequest): InetAddress = {
-    InetAddress.getByName(HttpServletRequestUtils.getRemoteAddress(request))
+    InetAddress.getByName(
+      HttpServletRequestUtils.getRemoteAddress(
+        request.getHeader("X-Forwarded-For").split(",").head.trim,
+        request.getHeader("X-Forwarded-For"),
+        request.getRemoteAddr,
+        request.getRequestURI
+      )
+    )
   }
 }
 
