@@ -14,7 +14,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ErrorIcon from '@mui/icons-material/Error';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import { ophColors } from '@/src/lib/theme';
-import { SisaltoItem } from '@/src/lib/types/hakemus';
+import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 import { LiiteItem } from '@/src/lib/types/liiteItem';
 import {
   useTranslations,
@@ -25,6 +25,11 @@ import * as dateFns from 'date-fns';
 
 const NoWrap = styled('div')(() => ({
   textWrap: 'nowrap',
+}));
+
+const GrayNoWrap = styled('div')(() => ({
+  textWrap: 'nowrap',
+  color: ophColors.grey600,
 }));
 
 const UusiBadge = styled(Chip)(() => ({
@@ -67,13 +72,12 @@ const AsiakirjaTableHeader = () => {
 const AsiakirjaTableRow = ({ data }) => {
   const { t } = useTranslations();
   const theme = useTheme();
-
   return (
     <TableRow>
       <TableCell>
         <Stack>
           <NoWrap>{lomakeOtsake(data.asiakirja)}</NoWrap>
-          <NoWrap>{tiedostoNimi(data.metadata)}</NoWrap>
+          <GrayNoWrap>{tiedostoNimi(data.metadata)}</GrayNoWrap>
         </Stack>
       </TableCell>
       <TableCell>
@@ -98,8 +102,12 @@ const AsiakirjaTableRow = ({ data }) => {
 const lomakeOtsake = (asiakirja: SisaltoValue) => {
   const lastItems = pathToRoot(asiakirja).slice(1, 3);
   return R.reverse(lastItems)
-    .map((item) => item.label.fi)
-    .join(' > ');
+    .map(
+      (item) =>
+        item.label.fi.charAt(0).toUpperCase() +
+        item.label.fi.slice(1).toLowerCase(),
+    )
+    .join(': ');
 };
 
 const saapumisAika = (metadata: LiiteItem) => {
@@ -135,7 +143,6 @@ const tarkistuksenTilaIcon = (data) => {
 };
 
 const uusiLiite = (t: TFunction, data) => {
-  console.log(data);
   switch (data.liitteenTila?.state) {
     case 'not-checked':
       return <UusiBadge label={t('hakemus.asiakirjat.uusi')} size="small" />;
