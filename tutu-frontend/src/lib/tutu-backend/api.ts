@@ -130,6 +130,7 @@ export const doApiFetch = async (
         return Promise.reject(new PermissionError());
       }
     }
+    console.log(error);
     return Promise.reject(error);
   }
 };
