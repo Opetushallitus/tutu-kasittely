@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -71,6 +72,20 @@ class Controller(
   @GetMapping(path = Array("csrf"))
   def csrf(csrfToken: CsrfToken): String =
     mapper.writeValueAsString(csrfToken)
+
+    @GetMapping(path = Array("debug/request"))
+    def debugRequest(request: HttpServletRequest): ResponseEntity[Any] = {
+      val info =
+        s"""
+           |Scheme: ${request.getScheme}
+           |ServerName: ${request.getServerName}
+           |ServerPort: ${request.getServerPort}
+           |X-Forwarded-Host: ${request.getHeader("X-Forwarded-Host")}
+           |X-Forwarded-Proto: ${request.getHeader("X-Forwarded-Proto")}
+           |""".stripMargin
+      LOG.info(info)
+      ResponseEntity.ok(info)
+    }
 
   @GetMapping(path = Array("user"))
   def user(): String = {
