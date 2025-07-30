@@ -73,23 +73,31 @@ const AsiakirjaTableRow = ({ data }) => {
   const { t } = useTranslations();
   const theme = useTheme();
   return (
-    <TableRow>
+    <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
       <TableCell>
         <Stack>
-          <NoWrap>{lomakeOtsake(data.asiakirja)}</NoWrap>
-          <GrayNoWrap>{tiedostoNimi(data.metadata)}</GrayNoWrap>
+          <NoWrap className="asiakirja-row__otsake">
+            {lomakeOtsake(data.asiakirja)}
+          </NoWrap>
+          <GrayNoWrap className="asiakirja-row__tiedostonimi">
+            {tiedostoNimi(data.metadata)}
+          </GrayNoWrap>
         </Stack>
       </TableCell>
       <TableCell>
         <Stack direction="row" gap={theme.spacing(1)}>
-          {saapumisAika(data.metadata)}
+          <NoWrap className="asiakirja-row__saapumisaika">
+            {saapumisAika(data.metadata)}
+          </NoWrap>
           {uusiLiite(t, data)}
         </Stack>
       </TableCell>
       <TableCell>
         <Stack direction="row" gap={theme.spacing(1)}>
           {tarkistuksenTilaIcon(data)}
-          {tarkistuksenTila(t, data)}
+          <NoWrap className="asiakirja-row__tarkistuksen-tila">
+            {tarkistuksenTila(t, data)}
+          </NoWrap>
         </Stack>
       </TableCell>
     </TableRow>
@@ -145,7 +153,13 @@ const tarkistuksenTilaIcon = (data) => {
 const uusiLiite = (t: TFunction, data) => {
   switch (data.liitteenTila?.state) {
     case 'not-checked':
-      return <UusiBadge label={t('hakemus.asiakirjat.uusi')} size="small" />;
+      return (
+        <UusiBadge
+          className="asiakirja-row__uusi-liite"
+          label={t('hakemus.asiakirjat.uusi')}
+          size="small"
+        />
+      );
     default:
       return null;
   }

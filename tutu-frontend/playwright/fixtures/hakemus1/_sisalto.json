@@ -1,0 +1,866 @@
+[
+  {
+    "key": "68afefd2-daff-4d74-857c-1736a54eab1b",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "VALITSE, MITÄ HAET",
+      "sv": "VÄLJ VILKET BESLUT DIN ANSÖKAN GÄLLER",
+      "en": "Choose what you are applying for"
+    },
+    "children": [
+      {
+        "key": "97840c6c-3642-48d0-9f47-adf9ee1793cc",
+        "fieldType": "dropdown",
+        "value": [
+          {
+            "label": {
+              "fi": "1. Tutkinnon tason rinnastaminen",
+              "sv": "1. Jämställande av nivån för examen",
+              "en": "1. Recognition of the degree level"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Valitse yksi pudotusvalikon vaihtoehdoista",
+          "sv": "Välj ett av följande alternativ i rullgardinsmenyn",
+          "en": "Choose one option from the drop-down menu"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "89e89dff-25b2-4177-b078-fcaf0c9d2589",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Tutkinto tai koulutus",
+      "sv": "Examen eller utbildning",
+      "en": "Qualification or education"
+    },
+    "children": [
+      {
+        "key": "f1882e83-2836-440d-a197-4950571e798a",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Tutkinto 1",
+              "sv": "Examen 1",
+              "en": "Qualification 1"
+            },
+            "value": "0",
+            "followups": [
+              {
+                "key": "ea25df4f-52a8-4540-83b7-19dffdd353f7",
+                "fieldType": "textField",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Tut1",
+                      "en": "Tut1",
+                      "sv": "Tut1"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Tutkinnon nimi",
+                  "sv": "Namnet på examen",
+                  "en": "Title of the degree / qualification"
+                },
+                "children": []
+              },
+              {
+                "key": "f79acf0e-d410-4948-9e0a-84596b092d32",
+                "fieldType": "textField",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Tut 1",
+                      "en": "Tut 1",
+                      "sv": "Tut 1"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Korkeakoulun tai oppilaitoksen nimi",
+                  "sv": "Högskolans eller läroanstaltens namn",
+                  "en": "Name of the institution"
+                },
+                "children": []
+              },
+              {
+                "key": "6e43a241-a3bd-4625-8035-40768a109461",
+                "fieldType": "dropdown",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Barbados",
+                      "sv": "Barbados",
+                      "en": "Barbados"
+                    },
+                    "value": "052",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Korkeakoulun tai oppilaitoksen sijaintimaa",
+                  "sv": "Det land i vilket högskolan eller läroanstalten finns",
+                  "en": "Country in which the institution is located"
+                },
+                "children": []
+              },
+              {
+                "key": "7812a33b-1ea5-4b67-918a-660f0a1a4e22",
+                "fieldType": "textField",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "1999",
+                      "en": "1999",
+                      "sv": "1999"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Opintojen alkamisvuosi",
+                  "sv": "Det år då studierna inleddes",
+                  "en": "Enrollment year"
+                },
+                "children": []
+              },
+              {
+                "key": "b6b2fc1f-2749-42d1-823a-4b4a33fe30b6",
+                "fieldType": "textField",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "2001",
+                      "en": "2001",
+                      "sv": "2001"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Opintojen päättymisvuosi",
+                  "sv": "Det år då studierna slutfördes",
+                  "en": "Completion year"
+                },
+                "children": []
+              },
+              {
+                "key": "337c0b08-03d3-4659-9309-aa1bbe731717",
+                "fieldType": "singleChoice",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Ei",
+                      "sv": "Nej",
+                      "en": "No"
+                    },
+                    "value": "1",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Sisältyikö tutkintoon opinnäytetyö, esimerkiksi lopputyö, tutkielma tai projekti?",
+                  "sv": "Omfattar examen ett lärdomsprov, t.ex. ett slutarbete, en avhandling eller ett projekt?",
+                  "en": "Did the qualification include a final project, for example a final assignment, a thesis or a project? "
+                },
+                "children": []
+              },
+              {
+                "key": "85d1aac5-b75f-4bba-9b52-6a42aad1c437",
+                "fieldType": "singleChoice",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Ei",
+                      "sv": "Nej",
+                      "en": "No"
+                    },
+                    "value": "No",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Sisältyikö tutkintoon harjoittelu?",
+                  "sv": "Omfattar examen praktik?",
+                  "en": "Did your qualification include a practical training?"
+                },
+                "children": []
+              },
+              {
+                "key": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed",
+                      "en": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed",
+                      "sv": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "TUTKINTOTODISTUS",
+                  "sv": "EXAMENSBEVIS",
+                  "en": "DEGREE / QUALIFICATION CERTIFICATE"
+                },
+                "children": []
+              },
+              {
+                "key": "7046e83e-b780-42c4-bbd5-a55b798050dd",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "7046e83e-b780-42c4-bbd5-a55b798050dd",
+                      "en": "7046e83e-b780-42c4-bbd5-a55b798050dd",
+                      "sv": "7046e83e-b780-42c4-bbd5-a55b798050dd"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "OPINTOSUORITUSOTE",
+                  "sv": "STUDIEPRESTATIONSUTDRAG",
+                  "en": "TRANSCRIPT OF STUDIES"
+                },
+                "children": []
+              },
+              {
+                "key": "582be518-e3ea-4692-8a2c-8370b40213e5",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "582be518-e3ea-4692-8a2c-8370b40213e5",
+                      "en": "582be518-e3ea-4692-8a2c-8370b40213e5",
+                      "sv": "582be518-e3ea-4692-8a2c-8370b40213e5"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "MUU LIITE",
+                  "sv": "ANDRA SAKEN",
+                  "en": "OTHER ATTACHMENT"
+                },
+                "children": []
+              },
+              {
+                "key": "f0974a8c-ff0e-4702-b62c-58f69047e25f",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "f0974a8c-ff0e-4702-b62c-58f69047e25f",
+                      "en": "f0974a8c-ff0e-4702-b62c-58f69047e25f",
+                      "sv": "f0974a8c-ff0e-4702-b62c-58f69047e25f"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "LISÄLIITE",
+                  "sv": "MERA SAKEN",
+                  "en": "MORE ATTACHMENT"
+                },
+                "children": []
+              },
+              {
+                "key": "3180ba61-336e-435d-8a2b-26500ea241cf",
+                "fieldType": "singleChoice",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "Ei",
+                      "sv": "Nej",
+                      "en": "No"
+                    },
+                    "value": "1",
+                    "followups": [
+                      {
+                        "key": "0443f1ca-6fd0-4919-812f-eaed4ae87933",
+                        "fieldType": "attachment",
+                        "value": [
+                          {
+                            "label": {
+                              "fi": "0443f1ca-6fd0-4919-812f-eaed4ae87933",
+                              "en": "0443f1ca-6fd0-4919-812f-eaed4ae87933",
+                              "sv": "0443f1ca-6fd0-4919-812f-eaed4ae87933"
+                            },
+                            "value": "",
+                            "followups": []
+                          }
+                        ],
+                        "label": {
+                          "fi": "Liitä käännökset",
+                          "sv": "Lägg till en översättning",
+                          "en": "Attach translations here"
+                        },
+                        "children": []
+                      }
+                    ]
+                  }
+                ],
+                "label": {
+                  "fi": "KÄÄNNÖKSET",
+                  "sv": "ÖVERSÄTTNINGAR",
+                  "en": "TRANSLATIONS"
+                },
+                "children": []
+              }
+            ]
+          }
+        ],
+        "label": {
+          "fi": "Anna tiedot ylimmästä tutkinnosta, jonka olet suorittanut ulkomailla ja jonka perusteella haet päätöstä",
+          "sv": "Ange uppgifter om den högsta examen som du har avlagt utomlands. ",
+          "en": "Provide information on the highest foreign qualification that you have completed. "
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "muu",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Henkilötiedot",
+      "sv": "Personuppgifter",
+      "en": "Personal information"
+    },
+    "children": [
+      {
+        "key": "4a7e8679-1598-41b6-9ea3-1cf3aaa6c0eb",
+        "fieldType": "rowcontainer",
+        "value": [],
+        "label": null,
+        "children": [
+          {
+            "key": "first-name",
+            "fieldType": "textField",
+            "value": [
+              {
+                "label": {
+                  "fi": "Testi",
+                  "en": "Testi",
+                  "sv": "Testi"
+                },
+                "value": "",
+                "followups": []
+              }
+            ],
+            "label": {
+              "fi": "Etunimet",
+              "sv": "Förnamn",
+              "en": "First/given names"
+            },
+            "children": []
+          },
+          {
+            "key": "preferred-name",
+            "fieldType": "textField",
+            "value": [
+              {
+                "label": {
+                  "fi": "Testi",
+                  "en": "Testi",
+                  "sv": "Testi"
+                },
+                "value": "",
+                "followups": []
+              }
+            ],
+            "label": {
+              "fi": "Kutsumanimi",
+              "sv": "Tilltalsnamn",
+              "en": "Preferred first or given name"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "key": "last-name",
+        "fieldType": "textField",
+        "value": [
+          {
+            "label": {
+              "fi": "Testinen33",
+              "en": "Testinen33",
+              "sv": "Testinen33"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Sukunimi",
+          "sv": "Efternamn",
+          "en": "Surname"
+        },
+        "children": []
+      },
+      {
+        "key": "63a49051-b3c3-4314-be80-c2e30e50934c",
+        "fieldType": "fieldset",
+        "value": [],
+        "label": {
+          "fi": "",
+          "sv": ""
+        },
+        "children": [
+          {
+            "key": "nationality",
+            "fieldType": "dropdown",
+            "value": [
+              {
+                "label": {
+                  "fi": "659",
+                  "en": "659",
+                  "sv": "659"
+                },
+                "value": "",
+                "followups": []
+              }
+            ],
+            "label": {
+              "fi": "Kansalaisuus",
+              "sv": "Medborgarskap",
+              "en": "Nationality"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "key": "b24fd366-9b33-4fb0-b196-14d2bc6043ca",
+        "fieldType": "rowcontainer",
+        "value": [],
+        "label": null,
+        "children": [
+          {
+            "key": "a73ec6d1-220c-4d28-a931-6005f95840de",
+            "fieldType": "rowcontainer",
+            "value": [],
+            "label": null,
+            "children": [
+              {
+                "key": "birth-date",
+                "fieldType": "textField",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "01.01.2000",
+                      "en": "01.01.2000",
+                      "sv": "01.01.2000"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "Syntymäaika",
+                  "sv": "Födelsetid",
+                  "en": "Date of birth"
+                },
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "email",
+        "fieldType": "textField",
+        "value": [
+          {
+            "label": {
+              "fi": "123@fi.fi",
+              "en": "123@fi.fi",
+              "sv": "123@fi.fi"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Sähköpostiosoite",
+          "sv": "E-postadress",
+          "en": "E-mail address"
+        },
+        "children": []
+      },
+      {
+        "key": "phone",
+        "fieldType": "textField",
+        "value": [
+          {
+            "label": {
+              "fi": "04011112222",
+              "en": "04011112222",
+              "sv": "04011112222"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Matkapuhelin",
+          "sv": "Mobiltelefonnummer",
+          "en": "Mobile phone number"
+        },
+        "children": []
+      },
+      {
+        "key": "country-of-residence",
+        "fieldType": "dropdown",
+        "value": [
+          {
+            "label": {
+              "fi": "246",
+              "en": "246",
+              "sv": "246"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Asuinmaa",
+          "sv": "Boningsland",
+          "en": "Country of residence"
+        },
+        "children": []
+      },
+      {
+        "key": "address",
+        "fieldType": "textField",
+        "value": [
+          {
+            "label": {
+              "fi": "Katu 4",
+              "en": "Katu 4",
+              "sv": "Katu 4"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Katuosoite",
+          "sv": "Näradress",
+          "en": "Address"
+        },
+        "children": []
+      },
+      {
+        "key": "c47fdf1c-0fae-4036-ad7e-4be28254994d",
+        "fieldType": "rowcontainer",
+        "value": [],
+        "label": null,
+        "children": [
+          {
+            "key": "postal-code",
+            "fieldType": "textField",
+            "value": [
+              {
+                "label": {
+                  "fi": "00100",
+                  "en": "00100",
+                  "sv": "00100"
+                },
+                "value": "",
+                "followups": []
+              }
+            ],
+            "label": {
+              "fi": "Postinumero",
+              "sv": "Postnummer",
+              "en": "Postal code"
+            },
+            "children": []
+          },
+          {
+            "key": "postal-office",
+            "fieldType": "textField",
+            "value": [
+              {
+                "label": {
+                  "fi": "HELSINKI",
+                  "en": "HELSINKI",
+                  "sv": "HELSINKI"
+                },
+                "value": "",
+                "followups": []
+              }
+            ],
+            "label": {
+              "fi": "Postitoimipaikka",
+              "sv": "Postkontor",
+              "en": "Town/city"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "key": "home-town",
+        "fieldType": "dropdown",
+        "value": [
+          {
+            "label": {
+              "fi": "079",
+              "en": "079",
+              "sv": "079"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Kotikunta",
+          "sv": "Hemkommun",
+          "en": "Municipality of residence"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "c3b22d35-514f-4cf6-9a89-dcdba6aedb55",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Henkilötietojen liitteet",
+      "sv": "Bilagor med personuppgifter",
+      "en": "Documents on personal data"
+    },
+    "children": [
+      {
+        "key": "f0974a8c-ff0e-4702-b62c-58f69047e25fx",
+        "fieldType": "attachment",
+        "value": [
+          {
+            "label": {
+              "fi": "f0974a8c-ff0e-4702-b62c-58f69047e25fx",
+              "en": "f0974a8c-ff0e-4702-b62c-58f69047e25fx",
+              "sv": "f0974a8c-ff0e-4702-b62c-58f69047e25fx"
+            },
+            "value": "",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Todistus kansalaisuudesta (esimerkiksi passin henkilötietosivu tai ote väestötietojärjestelmästä). Syntymäpaikka tai matkustusasiakirja ei todista kansalaisuutta.",
+          "sv": "Handling som bestyrker medborgarskap (t.ex. passets personuppgiftssida eller utdrag ur befolkningsdatasystemet)",
+          "en": "Document proving your citizenship (for example, the ID page of your passport or an extract from a population register) "
+        },
+        "children": []
+      },
+      {
+        "key": "291176ff-1725-4350-9e75-9b08293b569a",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Kyllä",
+              "sv": "Ja",
+              "en": "Yes"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Onko kansalaisuuden todistavassa asiakirjassa oleva nimesi sama kuin kaikissa liiteasiakirjoissa?",
+          "sv": "Är ditt namn i den handling som bestyrker medborgarskapet detsamma som i alla bifogade dokument?",
+          "en": "Is your name in the document that proves your citizenship the same as your name in all of the attached documents?"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "0d23f1d1-1aa5-4dcb-9234-28c593441935",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Päätös- ja asiointikieli",
+      "sv": "Beslutet och kommunikationsspråk",
+      "en": "Language to be used in the decision and when contacting the applicant"
+    },
+    "children": [
+      {
+        "key": "82c7260d-ebf0-4521-8f18-ad37e5490670",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "suomeksi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "value": "finnish",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Millä kielellä haluat päätöksen?",
+          "sv": "På vilket språk vill du ha beslutet?",
+          "en": "Language of the decision"
+        },
+        "children": []
+      },
+      {
+        "key": "9b5f4057-0b3e-45ae-827d-12d877822d4a",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "suomeksi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Millä kielellä haluat asioida Opetushallituksen kanssa?",
+          "sv": "På vilket språk vill du kommunicera med Utbildningsstyrelsen?",
+          "en": "Language to be used when contacting the applicant"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "3781f43c-fff7-47c7-aa7b-66f4a47395a5",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Päätöksen lähettäminen sähköpostilla",
+      "sv": "Tillstånd till att beslutet skickas per e-post",
+      "en": "Consent to receive the decision electronically"
+    },
+    "children": [
+      {
+        "key": "1098b604-115b-4e59-ba11-073c0924e473",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Kyllä",
+              "sv": "Ja",
+              "en": "Yes"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Saako päätöksen lähettää sinulle sähköpostilla?",
+          "sv": "Får beslutet skickas till dig per e-post?",
+          "en": "Can we send you the decision by email?"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "9e94bfe6-5855-43fc-bd80-d5b74741decb",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Tietojen oikeellisuus ja todistusten aitous",
+      "sv": "Uppgifternas riktighet och intygens äkthet",
+      "en": "Confirmation"
+    },
+    "children": [
+      {
+        "key": "66a6cdb5-8930-4c61-b704-806901264646",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Kyllä",
+              "sv": "Ja",
+              "en": "Yes"
+            },
+            "value": "Yes",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Vakuutatko, että hakemuksen tiedot ovat oikeita?",
+          "sv": "Intygar du att uppgifterna i ansökan är riktiga?",
+          "en": "Do you certify that the information you have provided in this application and the attachments is true and accurate? "
+        },
+        "children": []
+      },
+      {
+        "key": "c20bb2dc-fc8c-41a9-8897-b08fbfc3c705",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Kyllä",
+              "sv": "Ja",
+              "en": "Yes"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Saako Opetushallitus kysyä todistusten antajilta, ovatko todistukset aitoja?",
+          "sv": "Får Utbildningsstyrelsen kontakta utfärdarna av intygen för att kontrollera att intygen är äkta? ",
+          "en": "May the Finnish National Agency for Education verify from the institutions that have issued your documents that the documents in question are authentic?"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "a03ac23e-7056-4792-bd74-caa6a3607fa0",
+    "fieldType": "singleChoice",
+    "value": [
+      {
+        "label": {
+          "fi": "Kyllä",
+          "sv": "Ja",
+          "en": "Yes"
+        },
+        "value": "0",
+        "followups": []
+      }
+    ],
+    "label": {
+      "fi": "Ymmärrän, että hakemukseni otetaan käsittelyyn vasta, kun olen maksanut käsittelymaksun. Ymmärrän, että minun pitää myöhemmin maksaa erillinen päätösmaksu ennen kuin saan päätökseni.",
+      "sv": "Jag förstår att min ansökan tas till behandling först efter att jag har betalat behandlingsavgiften. Jag förstår att jag måste senare betala en separat beslutsavgift för att få beslutet.",
+      "en": "I understand that I have to pay the processing fee before my application is taken into processing. I understand that I will later have to pay a separate decision fee before I receive my decision."
+    },
+    "children": []
+  }
+]
