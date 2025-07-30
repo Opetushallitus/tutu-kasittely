@@ -142,16 +142,6 @@ class SecurityConfig {
       .authenticationProvider(casAuthenticationProvider)
       .build()
 
-//  private class TutuAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-//    override def onAuthenticationSuccess(
-//      request: HttpServletRequest,
-//      response: HttpServletResponse,
-//      authentication: Authentication
-//    ): Unit = {
-//      response.sendRedirect(tutu_backend_url + "/api/login")
-//    }
-//  }
-
   @Bean
   def forwardedHeaderFilter(): FilterRegistrationBean[ForwardedHeaderFilter] = {
     val filter       = new ForwardedHeaderFilter()
@@ -175,7 +165,6 @@ class SecurityConfig {
     casAuthenticationFilter.setSecurityContextRepository(
       securityContextRepository
     )
-//    casAuthenticationFilter.setAuthenticationSuccessHandler(new TutuAuthenticationSuccessHandler())
     casAuthenticationFilter
   }
 

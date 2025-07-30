@@ -70,22 +70,9 @@ class Controller(
     ResponseEntity.ok(Map("status" -> "ok"))
 
   @GetMapping(path = Array("csrf"))
-  def csrf(csrfToken: CsrfToken): String =
+  def csrf(csrfToken: CsrfToken): String = {
     mapper.writeValueAsString(csrfToken)
-
-    @GetMapping(path = Array("debug/request"))
-    def debugRequest(request: HttpServletRequest): ResponseEntity[Any] = {
-      val info =
-        s"""
-           |Scheme: ${request.getScheme}
-           |ServerName: ${request.getServerName}
-           |ServerPort: ${request.getServerPort}
-           |X-Forwarded-Host: ${request.getHeader("X-Forwarded-Host")}
-           |X-Forwarded-Proto: ${request.getHeader("X-Forwarded-Proto")}
-           |""".stripMargin
-      LOG.info(info)
-      ResponseEntity.ok(info)
-    }
+  }
 
   @GetMapping(path = Array("user"))
   def user(): String = {
