@@ -34,7 +34,6 @@ const ExternalLink = ({ href, label, gap }) => {
 };
 
 export default function AsiakirjaPage() {
-  const theme = useTheme();
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
@@ -45,6 +44,25 @@ export default function AsiakirjaPage() {
     hakemus,
     error: hakemusError,
   } = useHakemus();
+
+  /* ----------------------------------------- */
+  /* Käsitellään virheet ja puutteellinen data */
+  useEffect(() => {
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksen-lataus', t);
+  }, [hakemusError, addToast, t]);
+
+  if (hakemusError) {
+    return null;
+  }
+
+  if (hakemusIsLoading || !hakemus) return <FullSpinner></FullSpinner>;
+
+  return <AsiakirjaHookLayer hakemus={hakemus} />;
+}
+
+const AsiakirjaHookLayer = ({ hakemus }) => {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
 
   /* -------------------------- */
   /* Haetaan liitteiden  tiedot */
@@ -66,16 +84,29 @@ export default function AsiakirjaPage() {
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteiden-lataus', t);
   }, [asiakirjaError, addToast, t]);
 
-  useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksen-lataus', t);
-  }, [hakemusError, addToast, t]);
-
-  if (hakemusError || asiakirjaError) {
+  if (asiakirjaError) {
     return null;
   }
 
-  if (hakemusIsLoading || !hakemus || asiakirjatIsLoading || !asiakirjaMetadata)
+  if (asiakirjatIsLoading || !asiakirjaMetadata)
     return <FullSpinner></FullSpinner>;
+
+  return (
+    <AsiakirjaPagePure
+      hakemus={hakemus}
+      asiakirjat={asiakirjat}
+      asiakirjaMetadata={asiakirjaMetadata}
+    />
+  );
+};
+
+const AsiakirjaPagePure = ({
+  hakemus = {},
+  asiakirjat = [],
+  asiakirjaMetadata = [],
+}) => {
+  const theme = useTheme();
+  const { t } = useTranslations();
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -83,7 +114,7 @@ export default function AsiakirjaPage() {
     const metadata = asiakirjaMetadata.find(
       (dataItem) => dataItem.key === asiakirja.label.fi,
     );
-    const liitteenTila = hakemus.liitteidenTilat.find(
+    const liitteenTila = hakemus.liitteidenTilat?.find(
       (state) => state.attachment === asiakirja.formId,
     );
     return { asiakirja, metadata, liitteenTila, key: asiakirja.label.fi };
@@ -107,4 +138,4 @@ export default function AsiakirjaPage() {
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
     </Stack>
   );
-}
+};

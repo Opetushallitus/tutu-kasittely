@@ -9,6 +9,7 @@ export type MuutosHistoriaItem = {
 
 export type Hakemus = {
   hakemusOid: string;
+  lomakeOid: string;
   hakemusKoskee: number;
   readonly hakija: Hakija;
   asiatunnus: string;
@@ -21,6 +22,8 @@ export type Hakemus = {
   muokattu: string;
   muutosHistoria: MuutosHistoriaItem[];
   taydennyspyyntoLahetetty: string;
+  sisalto: SisaltoItem[];
+  liitteidenTilat: TarkistuksenTila[];
 };
 
 export type SisaltoItem = {
