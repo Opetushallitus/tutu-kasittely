@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.vm.sade.auditlog.{ApplicationType, Audit, Changes, Logger, Operation, Target, User}
-import org.ietf.jgss.Oid
-import org.slf4j.LoggerFactory
+import fi.vm.sade.auditlog.*
 import fi.vm.sade.javautils.http.HttpServletRequestUtils
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Value
+import org.ietf.jgss.Oid
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
-import scala.jdk.javaapi.CollectionConverters
 
 import java.net.InetAddress
 

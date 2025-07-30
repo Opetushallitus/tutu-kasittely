@@ -1,9 +1,7 @@
 package fi.oph.tutu.backend.security
 
 import fi.oph.tutu.backend.utils.AuditLog
-import fi.oph.tutu.backend.utils.AuditLog.{audit, getUser}
-import fi.oph.tutu.backend.utils.AuditOperation.Login
-import fi.vm.sade.auditlog.{Changes, Target}
+import fi.vm.sade.auditlog.Target
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.event.EventListener
@@ -21,7 +19,7 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
       .setField("userOid", event.getAuthentication.getName)
       .build()
     val request = getCurrentHttpRequest
-    audit.log(getUser(request), Login, target, Changes.EMPTY)
+//    audit.log(getUser(request), Login, target, Changes.EMPTY)
     val username = event.getAuthentication.getName
   }
 
