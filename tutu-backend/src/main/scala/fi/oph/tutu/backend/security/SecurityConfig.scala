@@ -6,7 +6,9 @@ import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl
 import org.apereo.cas.client.session.{SessionMappingStorage, SingleSignOutFilter}
 import org.apereo.cas.client.validation.{Cas20ServiceTicketValidator, TicketValidator}
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
@@ -23,6 +25,7 @@ import org.springframework.security.web.context.{HttpSessionSecurityContextRepos
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
 import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
+import org.springframework.web.filter.ForwardedHeaderFilter
 
 import scala.collection.mutable
 import scala.jdk.javaapi.CollectionConverters.asJava
@@ -138,6 +141,14 @@ class SecurityConfig {
       .getSharedObject(classOf[AuthenticationManagerBuilder])
       .authenticationProvider(casAuthenticationProvider)
       .build()
+
+  @Bean
+  def forwardedHeaderFilter(): FilterRegistrationBean[ForwardedHeaderFilter] = {
+    val filter       = new ForwardedHeaderFilter()
+    val registration = new FilterRegistrationBean(filter)
+    registration.setOrder(Ordered.HIGHEST_PRECEDENCE)
+    registration
+  }
 
   @Bean
   def casAuthenticationFilter(

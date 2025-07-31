@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -69,8 +70,9 @@ class Controller(
     ResponseEntity.ok(Map("status" -> "ok"))
 
   @GetMapping(path = Array("csrf"))
-  def csrf(csrfToken: CsrfToken): String =
+  def csrf(csrfToken: CsrfToken): String = {
     mapper.writeValueAsString(csrfToken)
+  }
 
   @GetMapping(path = Array("user"))
   def user(): String = {
