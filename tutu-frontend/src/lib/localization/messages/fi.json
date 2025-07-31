@@ -117,6 +117,25 @@
         "checked": "Tarkistettu",
         "incomplete-attachment": "Puutteellinen liite",
         "overdue": "Myöhässä"
+      },
+      "asiakirjapyynnot": {
+        "otsikko": "Pyydettävät asiakirjat",
+        "pyyda": "Pyydä asiakirjaa",
+        "lista": "Asiakirjojen tarkistuslista",
+        "tutkinnottaikoulutukset": "Tutkinnot tai koulutukset",
+        "tutkintotodistustenjaljennokset": "Tutkintotodistusten jäljennökset",
+        "liitteidenjaljennokset": "Liitteiden jäljennökset (opintosuoritusote)",
+        "tutkintotodistustenkaannokset": "Tutkintotodistusten käännökset",
+        "liitteidenkaannokset": "Liitteiden käännökset",
+        "alkuperaisettutkintotodistukset": "Alkuperäiset tutkintotodistukset",
+        "alkuperaisetliitteet": "Alkuperäiset liitteet",
+        "vaitoskirja": "Väitöskirja",
+        "kelpoisuusammattiin": "Kelpoisuus ammattiin",
+        "tyotodistukset": "Työtodistukset tai todistukset elinikäisestä oppimisesta",
+        "ammattipatevyys": "Ammattipätevyyden todistavan asiakirjan jäljennös",
+        "henkilotiedot": "Henkilötiedot",
+        "kansalaisuus": "Kansalaisuuden todistava asiakirja",
+        "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
       }
     }
   },
