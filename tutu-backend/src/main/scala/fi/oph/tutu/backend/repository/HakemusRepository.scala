@@ -1,9 +1,5 @@
 package fi.oph.tutu.backend.repository
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,12 +19,6 @@ class HakemusRepository {
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
-  private val mapper: ObjectMapper = new ObjectMapper()
-    .registerModule(DefaultScalaModule)
-    .registerModule(new JavaTimeModule())
-    .registerModule(new Jdk8Module())
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-
   implicit val getUUIDResult: GetResult[UUID] =
     GetResult(r => UUID.fromString(r.nextString()))
 
@@ -36,7 +26,7 @@ class HakemusRepository {
     GetResult(r => HakemusOid(r.nextString()))
 
   implicit val getHakemusResult: GetResult[DbHakemus] =
-    GetResult { r =>
+    GetResult(r =>
       DbHakemus(
         HakemusOid(r.nextString()),
         r.nextInt(),
@@ -44,18 +34,9 @@ class HakemusRepository {
         Option(r.nextString()).map(UserOid.apply),
         Option(r.nextString()),
         KasittelyVaihe.fromString(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString()).flatMap { jsonStr =>
-          try {
-            Some(mapper.readValue(jsonStr, classOf[Seq[PyydettavaAsiakirja]]))
-          } catch {
-            case e: Exception =>
-              LOG.error(s"Failed to deserialize pyydettavat asiakirjat: ${e.getMessage}")
-              None
-          }
-        }
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
-    }
+    )
 
   implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
     GetResult(r =>
@@ -71,6 +52,14 @@ class HakemusRepository {
         r.nextString(),
         Option(r.nextString()),
         null
+      )
+    )
+
+  implicit val getPyydettavaAsiakirjaResult: GetResult[PyydettavaAsiakirja] =
+    GetResult(r =>
+      PyydettavaAsiakirja(
+        Option(UUID.fromString(r.nextString())),
+        r.nextString()
       )
     )
 
@@ -151,12 +140,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu,
-              (
-              SELECT jsonb_agg(jsonb_build_object('id', pa.id, 'asiakirjanTyyppi', pa.asiakirja_tyyppi))::text
-              FROM pyydettava_asiakirja pa WHERE pa.hakemus_id = h.id
-            ) AS pyydettavatAsiakirjat
-
+              h.hakemus_oid, h.hakemus_koskee, h.esittelija_id, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -281,6 +265,16 @@ class HakemusRepository {
     }
   }
 
+  /**
+   * Luo pyydettävän asiakirjan
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @param asiakirjaTyyppi
+   * pyydettävän asiakirjan tyyppi
+   * @param virkailijaOid
+   * virkailijan oid
+   */
   def luoPyydettavaAsiakirja(
     hakemusOid: HakemusOid,
     asiakirjaTyyppi: String,
@@ -304,6 +298,12 @@ class HakemusRepository {
     }
   }
 
+  /**
+   * Poistaa pyydettävän asiakirjan
+   *
+   * @param id
+   * asiakirjan id
+   */
   def poistaPyydettavaAsiakirja(
     id: UUID
   ): Unit = {
@@ -311,7 +311,7 @@ class HakemusRepository {
       db.run(
         sqlu"""
           DELETE FROM pyydettava_asiakirja
-          WHERE id = ${id.toString}
+          WHERE id = ${id.toString}::uuid
         """,
         "poista_pyydettava_asiakirja"
       )
@@ -320,6 +320,34 @@ class HakemusRepository {
         LOG.error(s"Pyydettävän asiakirjan poisto epäonnistui: ${e}")
         throw new RuntimeException(
           s"Pyydettävän asiakirjan poisto epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Hakee hakemuksen pyydettävät asiakirjat
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @return
+   * hakemuksen pyydettävät asiakirjat
+   */
+  def haePyydettavatAsiakirjatHakemusOidilla(hakemusOid: HakemusOid): Seq[PyydettavaAsiakirja] = {
+    try {
+      db.run(
+        sql"""
+          SELECT id, asiakirja_tyyppi
+          FROM pyydettava_asiakirja
+          WHERE hakemus_id = (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
+        """.as[PyydettavaAsiakirja],
+        "hae_hakemuksen_pyydettavat_asiakirjat"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e.getMessage}",
           e
         )
     }

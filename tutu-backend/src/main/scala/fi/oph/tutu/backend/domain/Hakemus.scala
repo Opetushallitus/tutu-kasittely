@@ -50,8 +50,7 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  muokattu: Option[LocalDateTime],
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]]
+  muokattu: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -81,5 +80,6 @@ case class PartialHakemus(
   esittelyPvm: Option[LocalDateTime] = None,
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
-  kasittelyVaihe: Option[KasittelyVaihe] = None
+  kasittelyVaihe: Option[KasittelyVaihe] = None,
+  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None
 )

@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS pyydettava_asiakirja
     asiakirja_tyyppi asiakirjan_tyyppi NOT NULL,
     luotu            TIMESTAMPTZ      DEFAULT now(),
     luoja            VARCHAR(255)     NOT NULL,
-    CONSTRAINT fk_pyydettava_asiakirja_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id)
+    CONSTRAINT fk_pyydettava_asiakirja_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id),
+    CONSTRAINT uq_hakemus_asiakirja_tyyppi UNIQUE (hakemus_id, asiakirja_tyyppi)
 );
 
 COMMENT ON TABLE pyydettava_asiakirja IS 'Tutu-hakemusten hakijalta pyydettävät asiakirjat';

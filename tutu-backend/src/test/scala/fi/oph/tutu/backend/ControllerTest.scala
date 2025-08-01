@@ -523,6 +523,72 @@ class ControllerTest extends IntegrationTestBase {
 
     paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
     assert(paivitettyHakemus.get.hakemusKoskee == 0)
+
+    // Lisätään asiakirja
+    updatedHakemus = PartialHakemus(
+      pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 1)
+
+    // Lisätään toinen asiakirja
+    var hakemuksenAsiakirjat =
+      hakemusRepository
+        .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
+        .concat(Seq(PyydettavaAsiakirja(None, "tyotodistukset")))
+
+    updatedHakemus = PartialHakemus(
+      pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 2)
+
+    // Poistetaan ensimmäinen asiakirja
+    hakemuksenAsiakirjat = Seq(
+      hakemusRepository
+        .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
+        .last
+    )
+
+    updatedHakemus = PartialHakemus(
+      pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 1)
+    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.head.asiakirjanTyyppi == "tyotodistukset")
   }
 
   @Test

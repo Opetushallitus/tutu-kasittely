@@ -105,7 +105,11 @@ class HakemusService(
               case Some(timestamp) =>
                 Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
             },
-            pyydettavatAsiakirjat = dbHakemus.pyydettavatAsiakirjat
+            pyydettavatAsiakirjat =
+              hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
+                case null       => None
+                case asiakirjat => Some(asiakirjat)
+              }
           )
         )
       case None =>
@@ -233,12 +237,38 @@ class HakemusService(
         )
       }
       case Some(dbHakemus) => {
+        // Tallennetaan / poistetaan pyydettävät asiakirjat
+        hakemus.pyydettavatAsiakirjat match {
+          case None             => ()
+          case Some(asiakirjat) => {
+            val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
+            // Lisätään uudet asiakirjat
+            val uudetAsiakirjat = asiakirjat.filterNot(asiakirja => tallennetutAsiakirjat.exists(_.id == asiakirja.id))
+            if (uudetAsiakirjat.nonEmpty) {
+              uudetAsiakirjat.foreach(asiakirja =>
+                hakemusRepository.luoPyydettavaAsiakirja(hakemusOid, asiakirja.asiakirjanTyyppi, userOid)
+              )
+            }
+
+            // Poistetaan asiakirjat
+            val poistettavatAsiakirjat =
+              tallennetutAsiakirjat.filterNot(asiakirja => asiakirjat.exists(_.id == asiakirja.id))
+            if (poistettavatAsiakirjat.nonEmpty) {
+              poistettavatAsiakirjat.foreach(asiakirja => hakemusRepository.poistaPyydettavaAsiakirja(asiakirja.id.get))
+            }
+          }
+        }
+
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
         )
-        hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)
+        hakemusRepository.paivitaPartialHakemus(
+          hakemusOid,
+          updatedHakemus,
+          userOid.toString
+        )
       }
     }
   }
