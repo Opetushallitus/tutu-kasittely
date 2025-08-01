@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.meta.field
-import scala.beans.BeanProperty
 
 @Schema(name = "Hakemus")
 case class DbHakemus(
@@ -51,7 +50,8 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  muokattu: Option[LocalDateTime]
+  muokattu: Option[LocalDateTime],
+  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]]
 )
 
 case class Hakemus(
@@ -70,7 +70,8 @@ case class Hakemus(
   kasittelyVaihe: KasittelyVaihe,
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
-  taydennyspyyntoLahetetty: Option[LocalDateTime] = None
+  taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
+  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None
 )
 
 case class PartialHakemus(

@@ -28,9 +28,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
-import java.io.FileNotFoundException
-import scala.io.Source
-
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
@@ -350,7 +347,16 @@ class ControllerTest extends IntegrationTestBase {
   @Order(9)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
-
+    hakemusRepository.luoPyydettavaAsiakirja(
+      HakemusOid("1.2.246.562.11.00000000000000006667"),
+      "tutkintotodistustenjaljennokset",
+      UserOid("1.2.246.562.24.00000000000000006666")
+    )
+    hakemusRepository.luoPyydettavaAsiakirja(
+      HakemusOid("1.2.246.562.11.00000000000000006667"),
+      "tyotodistukset",
+      UserOid("1.2.246.562.24.00000000000000006666")
+    )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus.json")))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
@@ -405,7 +411,12 @@ class ControllerTest extends IntegrationTestBase {
                                   "time": "2025-06-18T05:57:18.866",
                                   "modifiedBy": "Esko Esittelijä"}],
                                   "taydennyspyyntoLahetetty": null,
-                                  "muokattu": null
+                                  "muokattu": null,
+                                  "pyydettavatAsiakirjat" : [ {
+                                    "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
+                                  }, {
+                                    "asiakirjanTyyppi" : "tyotodistukset"
+                                  } ]
                               }"""
 
     val result = mockMvc

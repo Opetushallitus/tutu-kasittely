@@ -104,7 +104,8 @@ class HakemusService(
               case None            => None
               case Some(timestamp) =>
                 Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
-            }
+            },
+            pyydettavatAsiakirjat = dbHakemus.pyydettavatAsiakirjat
           )
         )
       case None =>
