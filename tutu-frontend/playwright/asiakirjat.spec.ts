@@ -160,3 +160,25 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     row5_tarkistuksentila_check,
   ]);
 });
+
+test('Asiakirjapyyntöjen dropdown näkyy sivulla', async ({ page }) => {
+  await mockUser(page);
+  await mockHakemus(page);
+  await mockLiitteet(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+  );
+  const pyydaButton = page.getByTestId('pyyda-asiakirja-button');
+  await expect(pyydaButton).toBeVisible();
+  pyydaButton.click();
+
+  const pyydaSelect = page.getByTestId('pyyda-asiakirja-select');
+  await expect(pyydaSelect).toBeVisible();
+  // Wait for and verify dropdown options are visible
+  const menuItems = page.locator('.MuiMenuItem-root');
+  await expect(menuItems.first()).toBeVisible();
+
+  // Click the first available option
+  await menuItems.first().click();
+});

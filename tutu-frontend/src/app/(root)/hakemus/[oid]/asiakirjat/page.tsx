@@ -138,7 +138,7 @@ const AsiakirjaPagePure = ({
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
-        asiakirjaPyynnot={hakemus.asiakirjapyynnot}
+        asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
       ></AsiakirjaPyynnot>
     </Stack>
   );

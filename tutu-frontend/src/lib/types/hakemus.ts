@@ -49,5 +49,5 @@ export type TarkistuksenTila = {
 
 export type AsiakirjaPyynto = {
   id?: string;
-  asiakirjaTyyppi: string;
+  asiakirjanTyyppi: string;
 };
