@@ -340,6 +340,7 @@ class HakemusRepository {
           SELECT id, asiakirja_tyyppi
           FROM pyydettava_asiakirja
           WHERE hakemus_id = (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
+          ORDER BY luotu
         """.as[PyydettavaAsiakirja],
         "hae_hakemuksen_pyydettavat_asiakirjat"
       )

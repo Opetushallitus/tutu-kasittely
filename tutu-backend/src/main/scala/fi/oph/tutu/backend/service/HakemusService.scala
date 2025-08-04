@@ -242,6 +242,7 @@ class HakemusService(
           case None             => ()
           case Some(asiakirjat) => {
             val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
+
             // Lisätään uudet asiakirjat
             val uudetAsiakirjat = asiakirjat.filterNot(asiakirja => tallennetutAsiakirjat.exists(_.id == asiakirja.id))
             if (uudetAsiakirjat.nonEmpty) {

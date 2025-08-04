@@ -14,19 +14,34 @@ import {
   ListSubheader,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   useTheme,
 } from '@mui/material';
 import { StyledTooltip } from '@/src/components/ToolTip';
 import { pyydettavatAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/types';
+import { AsiakirjaPyynto } from '@/src/lib/types/hakemus';
+import { useHakemus } from '@/src/context/HakemusContext';
 
-export const AsiakirjaPyynnot = () => {
+interface AsiakirjaPyynnotProps {
+  asiakirjaPyynnot: AsiakirjaPyynto[] | [];
+}
+export const AsiakirjaPyynnot = ({
+  asiakirjaPyynnot,
+}: AsiakirjaPyynnotProps) => {
   const { t } = useTranslations();
   const theme = useTheme();
+  const { updateHakemus } = useHakemus();
+
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
-  const [showPyydaAsiakirjaaDropdown, setShowPyydaAsiakirjaaDropdown] =
+  const [showPyydaAsiakirjaDropdown, setShowPyydaAsiakirjaDropdown] =
     React.useState(false);
 
+  const addAsiakirjapyynto = (value: string) => {
+    updateHakemus({
+      pyydettavatAsiakirjat: [...asiakirjaPyynnot, { asiakirjaTyyppi: value }],
+    });
+  };
   const handleTooltipClose = () => {
     setToolTipOpen(false);
   };
@@ -53,14 +68,21 @@ export const AsiakirjaPyynnot = () => {
             {t(`hakemus.asiakirjat.asiakirjapyynnot.otsikko.${category}`)}
           </OphTypography>
         </ListSubheader>
+        {items.map((item) => {
+          const alreadyRequested = asiakirjaPyynnot?.some(
+            (pyynto) => pyynto.asiakirjaTyyppi === item,
+          );
 
-        {items.map((item) => (
-          <MenuItem key={item} value={item}>
-            <OphTypography style={{ paddingLeft: theme.spacing(1) }}>
-              {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
-            </OphTypography>
-          </MenuItem>
-        ))}
+          if (!alreadyRequested) {
+            return (
+              <MenuItem key={item} value={item}>
+                <OphTypography style={{ paddingLeft: theme.spacing(1) }}>
+                  {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
+                </OphTypography>
+              </MenuItem>
+            );
+          }
+        })}{' '}
       </div>
     );
   });
@@ -115,24 +137,38 @@ export const AsiakirjaPyynnot = () => {
           <StyledInfoOutlinedIcon style={{ marginLeft: 8 }} />
         </StyledTooltip>
       </div>
-      <OphButton
-        variant="outlined"
-        sx={{ width: '15%' }}
-        onClick={() => setShowPyydaAsiakirjaaDropdown(true)}
-      >
-        {t('hakemus.asiakirjat.asiakirjapyynnot.pyyda')}
-      </OphButton>
-      {showPyydaAsiakirjaaDropdown && (
+      {showPyydaAsiakirjaDropdown && (
         <FormControl sx={{ width: '80%' }}>
           <Select
-            value={'value'}
-            label=""
-            // onChange={(event: SelectChangeEvent) => null}
+            value={''}
+            onChange={(event: SelectChangeEvent) =>
+              addAsiakirjapyynto(event.target.value)
+            }
           >
             {pyydettavatAsiakirjatGroupedOptions}
           </Select>
         </FormControl>
       )}
+      {asiakirjaPyynnot &&
+        asiakirjaPyynnot.map((pyynto) => (
+          <FormControl key={pyynto.id} sx={{ width: '80%' }}>
+            <Select
+              value={pyynto.asiakirjaTyyppi}
+              onChange={(event: SelectChangeEvent) =>
+                addAsiakirjapyynto(event.target.value)
+              }
+            >
+              {pyydettavatAsiakirjatGroupedOptions}
+            </Select>
+          </FormControl>
+        ))}
+      <OphButton
+        variant="outlined"
+        sx={{ width: '15%' }}
+        onClick={() => setShowPyydaAsiakirjaDropdown(true)}
+      >
+        {t('hakemus.asiakirjat.asiakirjapyynnot.pyyda')}
+      </OphButton>
     </>
   );
 };
