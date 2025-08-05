@@ -46,7 +46,7 @@ const useDebounced = (
     return () => subscription.unsubscribe();
   }, [debounceObservable, debounceCallback]);
 
-  return [valueObservable, setValue, _debounceCallback];
+  return [valueObservable, setValue];
 };
 
 export const AllekirjoitustenTarkistus = ({ hakemus, updateHakemus }) => {
