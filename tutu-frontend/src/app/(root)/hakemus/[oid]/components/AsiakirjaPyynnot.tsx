@@ -155,7 +155,10 @@ export const AsiakirjaPyynnot = ({
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <OphTypography variant={'h2'}>
+        <OphTypography
+          variant={'h2'}
+          data-testid="pyydettavat-asiakirjat-otsikko"
+        >
           {t(
             'hakemus.asiakirjat.asiakirjapyynnot.otsikko.pyydettavatasiakirjat',
           )}
@@ -181,7 +184,7 @@ export const AsiakirjaPyynnot = ({
                 {pyydettavatAsiakirjatGroupedOptions}
               </Select>
               <OphButton
-                data-testid="poista-asiakirja-button"
+                data-testid={`poista-asiakirja-button-${index}`}
                 variant="text"
                 startIcon={<DeleteOutline />}
                 onClick={() => deleteAsiakirjapyynto(pyynto.asiakirjanTyyppi)}
