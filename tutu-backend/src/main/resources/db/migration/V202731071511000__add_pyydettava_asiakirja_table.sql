@@ -19,12 +19,13 @@ CREATE TYPE asiakirjan_tyyppi AS ENUM (
 CREATE TABLE IF NOT EXISTS pyydettava_asiakirja
 (
     id               uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    hakemus_id       uuid             NOT NULL,
+    hakemus_id       uuid              NOT NULL,
     asiakirja_tyyppi asiakirjan_tyyppi NOT NULL,
     luotu            TIMESTAMPTZ      DEFAULT now(),
-    luoja            VARCHAR(255)     NOT NULL,
-    CONSTRAINT fk_pyydettava_asiakirja_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id),
-    CONSTRAINT uq_hakemus_asiakirja_tyyppi UNIQUE (hakemus_id, asiakirja_tyyppi)
+    luoja            VARCHAR(255)      NOT NULL,
+    muokattu         TIMESTAMPTZ,
+    muokkaaja        VARCHAR(255),
+        CONSTRAINT fk_pyydettava_asiakirja_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id)
 );
 
 COMMENT ON TABLE pyydettava_asiakirja IS 'Tutu-hakemusten hakijalta pyydettävät asiakirjat';
@@ -32,3 +33,10 @@ COMMENT ON COLUMN pyydettava_asiakirja.id IS 'Taulun rivin id';
 COMMENT ON COLUMN pyydettava_asiakirja.asiakirja_tyyppi IS 'Asiakirjan tyyppi';
 COMMENT ON COLUMN pyydettava_asiakirja.luotu IS 'Taulun rivin luontiaika';
 COMMENT ON COLUMN pyydettava_asiakirja.luoja IS 'Taulun rivin luoja';
+COMMENT ON COLUMN pyydettava_asiakirja.muokkaaja IS 'Taulun rivin muokkausaika';
+COMMENT ON COLUMN pyydettava_asiakirja.muokattu IS 'Taulun rivin muokkaaja';
+
+CREATE OR REPLACE TRIGGER trg_pyydettava_asiakirja_update_muokattu_timestamp
+    BEFORE UPDATE ON pyydettava_asiakirja
+    FOR EACH ROW
+EXECUTE FUNCTION update_muokattu_timestamp();

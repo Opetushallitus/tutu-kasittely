@@ -251,6 +251,23 @@ class HakemusService(
               )
             }
 
+            // Päivitetään olemassa olevat asiakirjat
+            val paivitettavatAsiakirjat =
+              asiakirjat.filter(asiakirja =>
+                tallennetutAsiakirjat.exists(tallennettuAsiakirja =>
+                  tallennettuAsiakirja.id == asiakirja.id && tallennettuAsiakirja.asiakirjanTyyppi != asiakirja.asiakirjanTyyppi
+                )
+              )
+            if (paivitettavatAsiakirjat.nonEmpty) {
+              paivitettavatAsiakirjat.foreach { asiakirja =>
+                hakemusRepository.paivitaPyydettavaAsiakirja(
+                  asiakirja.id.get,
+                  asiakirja.asiakirjanTyyppi,
+                  userOid
+                )
+              }
+            }
+
             // Poistetaan asiakirjat
             val poistettavatAsiakirjat =
               tallennetutAsiakirjat.filterNot(asiakirja => asiakirjat.exists(_.id == asiakirja.id))

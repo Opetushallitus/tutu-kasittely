@@ -299,6 +299,40 @@ class HakemusRepository {
   }
 
   /**
+   * Päivittää pyydettävän asiakirjan
+   *
+   * @param id
+   * asiakirjan id
+   * @param asiakirjaTyyppi
+   * pyydettävän asiakirjan tyyppi
+   * @param virkailijaOid
+   * päivittävän virkailijan oid
+   */
+  def paivitaPyydettavaAsiakirja(
+    id: UUID,
+    asiakirjaTyyppi: String,
+    virkailijaOid: UserOid
+  ): Unit = {
+    try {
+      db.run(
+        sql"""
+            UPDATE pyydettava_asiakirja
+            SET asiakirja_tyyppi = ${asiakirjaTyyppi}::asiakirjan_tyyppi, muokkaaja = ${virkailijaOid.toString}
+            WHERE id = ${id.toString}::uuid
+          """.asUpdate,
+        "paivita_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Pyydettävän asiakirjan luonti epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Pyydettävän asiakirjan luonti epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
    * Poistaa pyydettävän asiakirjan
    *
    * @param id

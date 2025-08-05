@@ -13,7 +13,6 @@ import {
   ListSubheader,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
   useTheme,
 } from '@mui/material';
@@ -22,8 +21,6 @@ import { pyydettavatAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components
 import { AsiakirjaPyynto } from '@/src/lib/types/hakemus';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { DeleteOutline } from '@mui/icons-material';
-import useToaster from '@/src/hooks/useToaster';
-import { handleFetchError } from '@/src/lib/utils';
 
 const emptyAsiakirjaPyynto: AsiakirjaPyynto = {
   asiakirjanTyyppi: '',
@@ -39,39 +36,25 @@ export const AsiakirjaPyynnot = ({
   const { t } = useTranslations();
   const theme = useTheme();
   const { updateHakemus } = useHakemus();
-  const { addToast } = useToaster();
-  console.log(asiakirjaPyynnot);
-  console.log(asiakirjaPyynnot.length);
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
   const [showPyydaAsiakirjaDropdown, setShowPyydaAsiakirjaDropdown] =
     React.useState(asiakirjaPyynnot.length > 0);
 
-  const addAsiakirjapyynto = (event: SelectChangeEvent) => {
-    const selectedValue = event.target.value;
-    console.log('add ' + selectedValue);
-    const selectedValueExists = asiakirjaPyynnot.some(
-      (pyynto) => pyynto.asiakirjanTyyppi === selectedValue,
-    );
-    if (selectedValueExists) {
-      handleFetchError(
-        addToast,
-        Error(),
-        'virhe.duplikaatti-asiakirjapyynto',
-        t,
-      );
-      return;
-    }
+  const addOrUpdateAsiakirjapyynto = (selectedValue: string, id?: string) => {
+    const pyynto = id
+      ? { id: id, asiakirjanTyyppi: selectedValue }
+      : { asiakirjanTyyppi: selectedValue };
+
+    const pyynnot = id
+      ? asiakirjaPyynnot.filter((pyynto) => pyynto.id !== id)
+      : asiakirjaPyynnot;
 
     updateHakemus({
-      pyydettavatAsiakirjat: [
-        ...asiakirjaPyynnot,
-        { asiakirjanTyyppi: selectedValue },
-      ],
+      pyydettavatAsiakirjat: [...pyynnot, pyynto],
     });
   };
 
   const deleteAsiakirjapyynto = (value: string) => {
-    console.log('delete ' + value);
     if (value === '') {
       setShowPyydaAsiakirjaDropdown(false);
       return;
@@ -179,7 +162,9 @@ export const AsiakirjaPyynnot = ({
                 sx={{ width: '80%' }}
                 data-testid="pyyda-asiakirja-select"
                 value={pyynto.asiakirjanTyyppi}
-                onChange={addAsiakirjapyynto}
+                onChange={(e) =>
+                  addOrUpdateAsiakirjapyynto(e.target.value, pyynto.id)
+                }
               >
                 {pyydettavatAsiakirjatGroupedOptions}
               </Select>
