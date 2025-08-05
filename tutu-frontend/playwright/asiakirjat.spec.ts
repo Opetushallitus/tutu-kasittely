@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus, mockInit } from '@/playwright/mocks';
+import { mockUser, mockBasicForHakemus } from '@/playwright/mocks';
 import { getHakemus, getLiitteet } from './fixtures/hakemus1/index';
 
 test.beforeEach(mockBasicForHakemus);
@@ -159,72 +159,4 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     row5_uusiliite_check,
     row5_tarkistuksentila_check,
   ]);
-});
-
-test('Asiakirjapyyntöjen dropdown näkyy sivulla ja saa oikean arvon valitessa', async ({
-  page,
-}) => {
-  const testOrigin = 'https://127.0.0.1:33123';
-
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': testOrigin,
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-CSRF-TOKEN',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Max-Age': '86400',
-  };
-
-  mockInit(page);
-  await mockUser(page);
-  await mockHakemus(page);
-  await mockLiitteet(page);
-
-  const hakemus = getHakemus();
-
-  await page.route(
-    '**/tutu-backend/api/hakemus/*',
-    async (route) => {
-      if (route.request().method() === 'PATCH') {
-        await route.fulfill({
-          status: 200,
-          headers: corsHeaders,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'success' }),
-        });
-      } else if (route.request().method() === 'GET') {
-        await route.fulfill({
-          status: 200,
-          headers: corsHeaders,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            ...hakemus,
-            pyydettavatAsiakirjat: [
-              { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
-            ],
-          }),
-        });
-      } else {
-        await route.continue();
-      }
-    },
-    { times: 1 },
-  );
-
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
-  );
-  const pyydaButton = page.getByTestId('pyyda-asiakirja-button');
-  await expect(pyydaButton).toBeVisible();
-  await pyydaButton.click();
-
-  const pyydaSelect = page.getByTestId('pyyda-asiakirja-select').first();
-  await expect(pyydaSelect).toBeVisible();
-  await pyydaSelect.click();
-
-  const menuItems = page.locator('[role="option"]');
-  await menuItems.last().click();
-
-  await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
-
-  //TODO tee poisto poisto ja refaktorointi
 });

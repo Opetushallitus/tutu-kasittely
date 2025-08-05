@@ -40,10 +40,11 @@ export const AsiakirjaPyynnot = ({
   const theme = useTheme();
   const { updateHakemus } = useHakemus();
   const { addToast } = useToaster();
-
+  console.log(asiakirjaPyynnot);
+  console.log(asiakirjaPyynnot.length);
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
   const [showPyydaAsiakirjaDropdown, setShowPyydaAsiakirjaDropdown] =
-    React.useState(false);
+    React.useState(asiakirjaPyynnot.length > 0);
 
   const addAsiakirjapyynto = (event: SelectChangeEvent) => {
     const selectedValue = event.target.value;
@@ -69,6 +70,10 @@ export const AsiakirjaPyynnot = ({
   };
 
   const deleteAsiakirjapyynto = (value: string) => {
+    if (value === '') {
+      setShowPyydaAsiakirjaDropdown(false);
+      return;
+    }
     updateHakemus({
       pyydettavatAsiakirjat: asiakirjaPyynnot.filter(
         (pyynto) => pyynto.asiakirjanTyyppi !== value,
@@ -111,7 +116,7 @@ export const AsiakirjaPyynnot = ({
     ];
   });
 
-  const pyydettavatAsiakirjatTarkistuslista = (
+  const asiakirjatTooltip = (
     <>
       <div
         style={{
@@ -154,14 +159,14 @@ export const AsiakirjaPyynnot = ({
           )}
         </OphTypography>
         <StyledTooltip
-          title={pyydettavatAsiakirjatTarkistuslista}
+          title={asiakirjatTooltip}
           onClick={handleTooltipOpen}
           open={toolTipOpen}
         >
           <StyledInfoOutlinedIcon style={{ marginLeft: 8 }} />
         </StyledTooltip>
       </div>
-      {(showPyydaAsiakirjaDropdown || asiakirjaPyynnot) &&
+      {showPyydaAsiakirjaDropdown &&
         [...asiakirjaPyynnot, emptyAsiakirjaPyynto].map((pyynto, index) => {
           return (
             <Stack direction="row" key={index}>
@@ -174,11 +179,12 @@ export const AsiakirjaPyynnot = ({
                 {pyydettavatAsiakirjatGroupedOptions}
               </Select>
               <OphButton
+                data-testid="poista-asiakirja-button"
                 variant="text"
                 startIcon={<DeleteOutline />}
                 onClick={() => deleteAsiakirjapyynto(pyynto.asiakirjanTyyppi)}
               >
-                Poista
+                {t('yleiset.poista')}
               </OphButton>
             </Stack>
           );
