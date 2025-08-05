@@ -140,7 +140,10 @@
           "kansalaisuus": "Kansalaisuuden todistava asiakirja",
           "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
         }
-      }
+      },
+      "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
+      "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
+      "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja"
     }
   },
   "hakemusotsikko": {
@@ -174,10 +177,6 @@
     "hakemuksen-lataus": "Hakemuksen lataamisessa tapahtui virhe.",
     "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
-    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
-    "duplikaatti-asiakirjapyynto": "Asiakirjapyyntö on jo olemassa."
-  },
-  "yleiset": {
-    "poista": "Poista"
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen."
   }
 }

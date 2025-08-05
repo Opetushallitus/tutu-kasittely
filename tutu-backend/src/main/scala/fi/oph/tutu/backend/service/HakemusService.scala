@@ -109,7 +109,8 @@ class HakemusService(
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
                 case asiakirjat => Some(asiakirjat)
                 case _          => None
-              }
+              },
+            allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu
           )
         )
       case None =>
@@ -280,6 +281,9 @@ class HakemusService(
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+          // TODO: allekirjoituksetTarkistettu asettaninen NULL-arvoon
+          allekirjoituksetTarkistettu =
+            hakemus.allekirjoituksetTarkistettu.orElse(dbHakemus.allekirjoituksetTarkistettu),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
         )
         hakemusRepository.paivitaPartialHakemus(
