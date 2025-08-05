@@ -48,6 +48,7 @@ export const AsiakirjaPyynnot = ({
 
   const addAsiakirjapyynto = (event: SelectChangeEvent) => {
     const selectedValue = event.target.value;
+    console.log('add ' + selectedValue);
     const selectedValueExists = asiakirjaPyynnot.some(
       (pyynto) => pyynto.asiakirjanTyyppi === selectedValue,
     );
@@ -70,6 +71,7 @@ export const AsiakirjaPyynnot = ({
   };
 
   const deleteAsiakirjapyynto = (value: string) => {
+    console.log('delete ' + value);
     if (value === '') {
       setShowPyydaAsiakirjaDropdown(false);
       return;
