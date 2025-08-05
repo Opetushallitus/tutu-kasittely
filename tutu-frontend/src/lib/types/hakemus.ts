@@ -24,6 +24,7 @@ export type Hakemus = {
   taydennyspyyntoLahetetty: string;
   sisalto: SisaltoItem[];
   liitteidenTilat: TarkistuksenTila[];
+  allekirjoituksetTarkistettu: string?;
 };
 
 export type SisaltoItem = {

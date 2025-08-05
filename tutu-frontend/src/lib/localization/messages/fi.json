@@ -117,7 +117,10 @@
         "checked": "Tarkistettu",
         "incomplete-attachment": "Puutteellinen liite",
         "overdue": "Myöhässä"
-      }
+      },
+      "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
+      "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
+      "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja"
     }
   },
   "hakemusotsikko": {

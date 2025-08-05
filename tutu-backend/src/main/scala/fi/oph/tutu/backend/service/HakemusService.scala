@@ -104,7 +104,8 @@ class HakemusService(
               case None            => None
               case Some(timestamp) =>
                 Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
-            }
+            },
+            allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu
           )
         )
       case None =>
@@ -235,6 +236,9 @@ class HakemusService(
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+          // TODO: allekirjoituksetTarkistettu asettaninen NULL-arvoon
+          allekirjoituksetTarkistettu =
+            hakemus.allekirjoituksetTarkistettu.orElse(dbHakemus.allekirjoituksetTarkistettu),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
         )
         hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)
