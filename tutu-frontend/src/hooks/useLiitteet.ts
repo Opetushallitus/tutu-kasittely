@@ -1,7 +1,7 @@
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 
-export const getLiitteet = async (avaimet): Promise<Any[]> => {
+export const getLiitteet = async (avaimet: string): Promise<Any[]> => {
   if (!avaimet || !avaimet.length) {
     return {};
   }
@@ -11,7 +11,7 @@ export const getLiitteet = async (avaimet): Promise<Any[]> => {
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const useLiitteet = (avaimet) =>
+export const useLiitteet = (avaimet: string) =>
   useQuery({
     queryKey: ['getLiitteet', avaimet],
     queryFn: () => getLiitteet(avaimet),

@@ -83,7 +83,8 @@ case class Hakemus(
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
   allekirjoituksetTarkistettu: Boolean = false,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
+  asiakirjaMallitTutkinnoista: Seq[AsiakirjaMalliTutkinnosta] = Seq.empty
 )
 
 case class PartialHakemus(
