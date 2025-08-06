@@ -107,8 +107,8 @@ class HakemusService(
             },
             pyydettavatAsiakirjat =
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
-                case null       => None
                 case asiakirjat => Some(asiakirjat)
+                case _          => None
               }
           )
         )

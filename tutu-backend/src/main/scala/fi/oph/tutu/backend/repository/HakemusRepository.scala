@@ -324,9 +324,9 @@ class HakemusRepository {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Pyydettävän asiakirjan luonti epäonnistui: ${e}")
+        LOG.error(s"Pyydettävän asiakirjan päivitys epäonnistui: ${e}")
         throw new RuntimeException(
-          s"Pyydettävän asiakirjan luonti epäonnistui: ${e.getMessage}",
+          s"Pyydettävän asiakirjan päivitys epäonnistui: ${e.getMessage}",
           e
         )
     }

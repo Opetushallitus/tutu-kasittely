@@ -54,14 +54,14 @@ export const AsiakirjaPyynnot = ({
     });
   };
 
-  const deleteAsiakirjapyynto = (value: string) => {
-    if (value === '') {
+  const deleteAsiakirjapyynto = (id?: string) => {
+    if (!id) {
       setShowPyydaAsiakirjaDropdown(false);
       return;
     }
     updateHakemus({
       pyydettavatAsiakirjat: asiakirjaPyynnot.filter(
-        (pyynto) => pyynto.asiakirjanTyyppi !== value,
+        (pyynto) => pyynto.id !== id,
       ),
     });
   };
@@ -172,7 +172,7 @@ export const AsiakirjaPyynnot = ({
                 data-testid={`poista-asiakirja-button-${index}`}
                 variant="text"
                 startIcon={<DeleteOutline />}
-                onClick={() => deleteAsiakirjapyynto(pyynto.asiakirjanTyyppi)}
+                onClick={() => deleteAsiakirjapyynto(pyynto.id)}
               >
                 {t('yleiset.poista')}
               </OphButton>
