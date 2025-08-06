@@ -42,7 +42,14 @@ class HakemusRepository {
         Option(r.nextString()),
         r.nextBoolean(),
         Option(r.nextString()),
-        r.nextBoolean()
+        r.nextBoolean(),
+        imiPyynto = Option(r.nextObject()) match {
+          case Some(value: java.lang.Boolean) => Some(value.booleanValue())
+          case _                              => None
+        },
+        Option(r.nextString()),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -174,7 +181,11 @@ class HakemusRepository {
               h.allekirjoitukset_tarkistettu_lisatiedot,
               h.alkuperaiset_asiakirjat_saatu_nahtavaksi,
               h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot,
-              h.selvitykset_saatu
+              h.selvitykset_saatu,
+              h.imi_pyynto,
+              h.imi_pyynto_numero,
+              h.imi_pyynto_lahetetty,
+              h.imi_pyynto_vastattu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -280,11 +291,18 @@ class HakemusRepository {
     val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
     val allekirjoituksetTarkistettuLisatiedotOrNull =
       partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
-    val hakemusKoskee                                         = partialHakemus.hakemusKoskee
+    val hakemusKoskee   = partialHakemus.hakemusKoskee
     val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
     val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
       partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
     val selvityksetSaatu = partialHakemus.selvityksetSaatu
+    val imiPyyntoOrNull: Option[Boolean] = partialHakemus.imiPyynto match {
+      case Some(imiPyynto) => Some(imiPyynto)
+      case None            => None
+    }
+    val imiPyyntoNumeroOrNull    = partialHakemus.imiPyyntoNumero.orNull
+    val imiPyyntoLahetettyOrNull = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
+    val imiPyyntoVastattuOrNull  = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
     try
       db.run(
         sql"""
@@ -298,7 +316,11 @@ class HakemusRepository {
           alkuperaiset_asiakirjat_saatu_nahtavaksi = $alkuperaisetAsiakirjatSaatuNahtavaksi,
           alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = $alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull,
           selvitykset_saatu = $selvityksetSaatu,
-          muokkaaja = $muokkaaja
+          muokkaaja = $muokkaaja,
+          imi_pyynto = $imiPyyntoOrNull,
+          imi_pyynto_numero = $imiPyyntoNumeroOrNull,
+          imi_pyynto_lahetetty = $imiPyyntoLahetettyOrNull,
+          imi_pyynto_vastattu = $imiPyyntoVastattuOrNull
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

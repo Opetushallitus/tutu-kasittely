@@ -108,7 +108,7 @@ class HakemusService(
             pyydettavatAsiakirjat =
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
                 case asiakirjat => asiakirjat
-                case null       => Seq()
+                case null       => Seq.empty
               },
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
             allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
@@ -120,6 +120,12 @@ class HakemusService(
                 case asiakirjamallit => asiakirjamallit
                 case null            => Map()
               }
+            imiPyynto = ImiPyynto(
+              imiPyynto = dbHakemus.imiPyynto,
+              imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
+              imiPyyntoLahetetty = dbHakemus.imiPyyntoLahetetty,
+              imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu
+            )
           )
         )
       case None =>
@@ -226,27 +232,27 @@ class HakemusService(
       }
   }
 
-  def paivitaHakemus(hakemusOid: HakemusOid, hakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
-    val esittelijaId = hakemus.esittelijaOid match {
+  def paivitaHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
+    val esittelijaId = partialHakemus.esittelijaOid match {
       case None                => None
       case Some(esittelijaOid) =>
         esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
           case Some(esittelija) => Some(esittelija.esittelijaId)
           case None             =>
-            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
+            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${partialHakemus.esittelijaOid}")
             None
         }
 
     }
 
     hakemusRepository.haeHakemus(hakemusOid) match {
-      case None =>
+      case None => {
         LOG.warn(s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         throw new RuntimeException(
           s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
-
-      case Some(dbHakemus) =>
+      }
+      case Some(dbHakemus) => {
         // Tallennetaan / poistetaan pyydettävät asiakirjat
         hakemus.pyydettavatAsiakirjat match {
           case None             => ()
@@ -297,13 +303,14 @@ class HakemusService(
             hakemusRepository.suoritaAsiakirjamallienModifiointi(dbHakemus.id, asiakirjamalliModifyData, userOid)
         }
 
-        val updatedHakemus = dbHakemus.copy(
-          hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
-          asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+        val modifiedHakemus = dbHakemus.copy(
+          hakemusKoskee = partialHakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
+          asiatunnus = partialHakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
           allekirjoituksetTarkistettu =
-            hakemus.allekirjoituksetTarkistettu.getOrElse(dbHakemus.allekirjoituksetTarkistettu),
-          allekirjoituksetTarkistettuLisatiedot =
-            hakemus.allekirjoituksetTarkistettuLisatiedot.orElse(dbHakemus.allekirjoituksetTarkistettuLisatiedot),
+            partialHakemus.allekirjoituksetTarkistettu.getOrElse(dbHakemus.allekirjoituksetTarkistettu),
+          allekirjoituksetTarkistettuLisatiedot = partialHakemus.allekirjoituksetTarkistettuLisatiedot.orElse(
+            dbHakemus.allekirjoituksetTarkistettuLisatiedot
+          ),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
           alkuperaisetAsiakirjatSaatuNahtavaksi =
             hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi),
@@ -311,13 +318,30 @@ class HakemusService(
             hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
               dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
             ),
-          selvityksetSaatu = hakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu)
+          selvityksetSaatu = hakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu),
+            imiPyynto = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyynto
+            case _    => partialHakemus.imiPyynto.get.imiPyynto
+          },
+          imiPyyntoNumero = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoNumero
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoNumero
+          },
+          imiPyyntoLahetetty = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoLahetetty
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoLahetetty
+          },
+          imiPyyntoVastattu = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoVastattu
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoVastattu
+          }
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,
-          updatedHakemus,
+          modifiedHakemus,
           userOid.toString
         )
+      }
     }
   }
 }

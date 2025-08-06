@@ -1,5 +1,7 @@
 package fi.oph.tutu.backend.domain
 
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
@@ -83,7 +85,30 @@ case class DbHakemus(
     example = "true",
     requiredMode = RequiredMode.REQUIRED
   )
-  selvityksetSaatu: Boolean
+  selvityksetSaatu: Boolean,
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  imiPyynto: Option[Boolean],
+  @(Schema @field)(
+    example = "122224",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  imiPyyntoNumero: Option[String],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoLahetetty: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoVastattu: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -110,6 +135,7 @@ case class Hakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Boolean = false,
   asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty
+  imiPyynto: ImiPyynto = ImiPyynto()
 )
 
 case class PartialHakemus(
@@ -125,6 +151,51 @@ case class PartialHakemus(
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  selvityksetSaatu: Option[Boolean] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None
+  selvityksetSaatu: Option[Boolean] = None,
+  imiPyynto: Option[ImiPyynto] = None
 )
+
+case class ImiPyynto(
+  imiPyynto: Option[Boolean],
+  imiPyyntoNumero: Option[String] = None,
+  imiPyyntoLahetetty: Option[LocalDateTime] = None,
+  imiPyyntoVastattu: Option[LocalDateTime] = None
+)
+
+class ImiPyyntoDeserializer extends JsonDeserializer[ImiPyynto] {
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): ImiPyynto = {
+    if (p.getCurrentToken == JsonToken.VALUE_NULL) {
+      ImiPyynto(
+        imiPyynto = None,
+        imiPyyntoNumero = None,
+        imiPyyntoLahetetty = None,
+        imiPyyntoVastattu = None
+      )
+    } else {
+      val node      = p.getCodec.readTree[JsonNode](p)
+      val imiPyynto = Option(node.get("imiPyynto")) match {
+        case Some(jsonNode) if !jsonNode.isNull && jsonNode.isBoolean =>
+          Some(jsonNode.asBoolean())
+        case Some(_) =>
+          None
+        case None =>
+          None
+      }
+
+      val imiPyyntoNumero = Option(node.get("imiPyyntoNumero"))
+        .filterNot(_.isNull)
+        .map(_.asText)
+
+      val imiPyyntoLahetetty = Option(node.get("imiPyyntoLahetetty"))
+        .filterNot(_.isNull)
+        .map(date => LocalDateTime.parse(date.asText))
+
+      val imiPyyntoVastattu = Option(node.get("imiPyyntoVastattu"))
+        .filterNot(_.isNull)
+        .map(date => LocalDateTime.parse(date.asText))
+
+      ImiPyynto(imiPyynto, imiPyyntoNumero, imiPyyntoLahetetty, imiPyyntoVastattu)
+    }
+  }
+}

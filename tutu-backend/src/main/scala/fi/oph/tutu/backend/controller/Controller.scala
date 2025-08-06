@@ -11,7 +11,6 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -43,6 +42,7 @@ class Controller(
 
   val module = new SimpleModule()
   module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
+  module.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
   mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
