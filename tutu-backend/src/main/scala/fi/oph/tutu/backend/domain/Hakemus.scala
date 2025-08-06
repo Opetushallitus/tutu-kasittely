@@ -52,10 +52,16 @@ case class DbHakemus(
   )
   muokattu: Option[LocalDateTime],
   @(Schema @field)(
+    example = "true",
+    defaultValue = "false",
+    requiredMode = RequiredMode.REQUIRED
+  )
+  allekirjoituksetTarkistettu: Boolean,
+  @(Schema @field)(
     example = "Allekirjoitukset tarkistettu kopioista",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  allekirjoituksetTarkistettu: Option[String]
+  allekirjoituksetTarkistettuLisatiedot: Option[String]
 )
 
 case class Hakemus(
@@ -74,9 +80,10 @@ case class Hakemus(
   kasittelyVaihe: KasittelyVaihe,
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
-  taydennyspyyntoLahetetty: Option[LocalDateTime] = None,,
+  taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
-  allekirjoituksetTarkistettu: Option[String] = None
+  allekirjoituksetTarkistettu: Boolean = false,
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
 )
 
 case class PartialHakemus(
@@ -86,7 +93,8 @@ case class PartialHakemus(
   esittelyPvm: Option[LocalDateTime] = None,
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
-  kasittelyVaihe: Option[KasittelyVaihe] = None,,
+  kasittelyVaihe: Option[KasittelyVaihe] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
-  allekirjoituksetTarkistettu: Option[String] = None
+  allekirjoituksetTarkistettu: Boolean = false,
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
 )
