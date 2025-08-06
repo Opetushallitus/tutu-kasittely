@@ -110,7 +110,8 @@ class HakemusService(
                 case asiakirjat => Some(asiakirjat)
                 case _          => None
               },
-            allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu
+            allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
+            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot
           )
         )
       case None =>

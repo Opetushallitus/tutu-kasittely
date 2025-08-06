@@ -1,45 +1,12 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect } from 'react';
 
 import { OphCheckbox, OphInput } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-import { debounceTime, Subject, distinctUntilChanged, filter, map } from 'rxjs';
 import { useObservable } from 'react-rx';
 
-const isDefined = (val) => val !== undefined && val !== null;
-
-const useDebounced = (debounceCallback = () => {}, { delay = 1500 } = {}) => {
-  const subject = useRef(new Subject()).current;
-  const valueObservable = useRef(
-    subject.pipe(
-      filter((params) => params.debounce !== false),
-      map(({ value }) => value),
-      distinctUntilChanged(),
-    ),
-  ).current;
-  const debounceObservable = useRef(
-    subject.pipe(
-      debounceTime(delay),
-      filter((params) => params.debounce !== false),
-      map((params) => params.value),
-      distinctUntilChanged(),
-    ),
-  ).current;
-
-  const setValue = useCallback(
-    (value, { debounce } = {}) => subject.next({ value, debounce }),
-    [subject],
-  );
-
-  useEffect(() => {
-    const subscription = debounceObservable.subscribe((val) =>
-      debounceCallback(val),
-    );
-    return () => subscription.unsubscribe();
-  }, [debounceObservable, debounceCallback]);
-
-  return [valueObservable, setValue];
-};
+import { isDefined } from '@/src/lib/utils';
+import { useDebounced } from '@/src/hooks/useDebounced';
 
 export const AllekirjoitustenTarkistus = ({ hakemus, updateHakemus }) => {
   const [lisatietoSubject, setLisatieto] = useDebounced((val) => {
