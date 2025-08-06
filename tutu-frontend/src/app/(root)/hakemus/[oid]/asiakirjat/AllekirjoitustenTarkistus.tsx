@@ -6,17 +6,9 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { debounceTime, Subject, distinctUntilChanged, filter, map } from 'rxjs';
 import { useObservable } from 'react-rx';
 
-// const clicks = fromEvent(document, 'click');
-// const result = clicks.pipe(debounceTime(1000));
-// result.subscribe(x => console.log(x));
-
 const isDefined = (val) => val !== undefined && val !== null;
 
-const useDebounced = (
-  debounceCallback = () => {},
-  { delay = 1500 } = {},
-  // deps = [],
-) => {
+const useDebounced = (debounceCallback = () => {}, { delay = 1500 } = {}) => {
   const subject = useRef(new Subject()).current;
   const valueObservable = useRef(
     subject.pipe(
@@ -51,18 +43,26 @@ const useDebounced = (
 
 export const AllekirjoitustenTarkistus = ({ hakemus, updateHakemus }) => {
   const [lisatietoSubject, setLisatieto] = useDebounced((val) => {
-    console.log(`DEBOUNCE: ${val}`);
-    updateHakemus({ ...hakemus, allekirjoituksetTarkistettu: val });
+    updateHakemus({
+      ...hakemus,
+      allekirjoituksetTarkistettu: isDefined(val),
+      allekirjoituksetTarkistettuLisatiedot: val,
+    });
   });
 
   useEffect(() => {
     if (hakemus?.hakemusOid) {
-      const lisatieto = isDefined(hakemus?.allekirjoituksetTarkistettu)
-        ? hakemus.allekirjoituksetTarkistettu
+      const lisatieto = hakemus?.allekirjoituksetTarkistettu
+        ? hakemus.allekirjoituksetTarkistettuLisatiedot
         : null;
       setLisatieto(lisatieto, { debounce: false });
     }
-  }, [hakemus?.hakemusOid, hakemus?.allekirjoituksetTarkistettu, setLisatieto]);
+  }, [
+    hakemus?.hakemusOid,
+    hakemus?.allekirjoituksetTarkistettu,
+    hakemus.allekirjoituksetTarkistettuLisatiedot,
+    setLisatieto,
+  ]);
 
   return (
     <StatelessAllekirjoitustenTarkistus

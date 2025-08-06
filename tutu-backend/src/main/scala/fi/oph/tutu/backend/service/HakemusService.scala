@@ -236,9 +236,9 @@ class HakemusService(
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
-          // TODO: allekirjoituksetTarkistettu asettaninen NULL-arvoon
-          allekirjoituksetTarkistettu =
-            hakemus.allekirjoituksetTarkistettu.orElse(dbHakemus.allekirjoituksetTarkistettu),
+          allekirjoituksetTarkistettu = hakemus.allekirjoituksetTarkistettu,
+          allekirjoituksetTarkistettuLisatiedot =
+            hakemus.allekirjoituksetTarkistettuLisatiedot.orElse(dbHakemus.allekirjoituksetTarkistettuLisatiedot),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
         )
         hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)

@@ -35,6 +35,7 @@ class HakemusRepository {
         Option(r.nextString()),
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        r.nextBoolean(),
         Option(r.nextString())
       )
     )
@@ -140,7 +141,8 @@ class HakemusRepository {
               h.asiatunnus,
               h.kasittely_vaihe,
               h.muokattu,
-              h.allekirjoitukset_tarkistettu
+              h.allekirjoitukset_tarkistettu,
+              h.allekirjoitukset_tarkistettu_lisatiedot
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -240,11 +242,13 @@ class HakemusRepository {
     partialHakemus: DbHakemus,
     muokkaaja: String
   ): HakemusOid = {
-    val hakemusOidString                  = hakemusOid.toString
-    val esittelijaIdOrNull                = partialHakemus.esittelijaId.map(_.toString).orNull
-    val asiatunnusOrNull                  = partialHakemus.asiatunnus.map(_.toString).orNull
-    val allekirjoituksetTarkistettuOrNull = partialHakemus.allekirjoituksetTarkistettu.map(_.toString).orNull
-    val hakemusKoskee                     = partialHakemus.hakemusKoskee
+    val hakemusOidString                            = hakemusOid.toString
+    val esittelijaIdOrNull                          = partialHakemus.esittelijaId.map(_.toString).orNull
+    val asiatunnusOrNull                            = partialHakemus.asiatunnus.map(_.toString).orNull
+    val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
+    val allekirjoituksetTarkistettuLisatiedotOrNull =
+      partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
+    val hakemusKoskee = partialHakemus.hakemusKoskee
     try
       db.run(
         sql"""
@@ -253,7 +257,8 @@ class HakemusRepository {
           hakemus_koskee = $hakemusKoskee,
           esittelija_id = ${esittelijaIdOrNull}::uuid,
           asiatunnus = $asiatunnusOrNull,
-          allekirjoitukset_tarkistettu = $allekirjoituksetTarkistettuOrNull,
+          allekirjoitukset_tarkistettu = $allekirjoituksetTarkistettu,
+          allekirjoitukset_tarkistettu_lisatiedot = $allekirjoituksetTarkistettuLisatiedotOrNull,
           muokkaaja = $muokkaaja
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
