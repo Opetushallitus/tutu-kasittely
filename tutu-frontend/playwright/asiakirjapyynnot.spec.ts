@@ -9,7 +9,7 @@ import { getHakemus } from '@/playwright/fixtures/hakemus1';
 
 test.beforeEach(mockBasicForHakemus);
 
-test('Asiakirjapyyntöjen dropdownit', async ({ page }) => {
+test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
   let callCount = 0;
 
   await mockUser(page);
@@ -75,7 +75,8 @@ test('Asiakirjapyyntöjen dropdownit', async ({ page }) => {
   await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
 
   await page.getByTestId('poista-asiakirja-button-0').click();
-  await page.getByTestId('poista-asiakirja-button-0').click();
+  await page.getByTestId('pyyda-asiakirja-button').click();
+  await page.getByTestId('poista-asiakirja-button-undefined').click();
 
   await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
 });

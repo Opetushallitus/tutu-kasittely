@@ -10,6 +10,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import {
+  Divider,
   ListSubheader,
   MenuItem,
   Select,
@@ -22,12 +23,13 @@ import { AsiakirjaPyynto } from '@/src/lib/types/hakemus';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { DeleteOutline } from '@mui/icons-material';
 
-const emptyAsiakirjaPyynto: AsiakirjaPyynto = {
-  asiakirjanTyyppi: '',
-};
-
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[] | [];
+}
+
+interface AsiakirjaPyyntoProps {
+  pyynto?: AsiakirjaPyynto | null;
+  index?: number;
 }
 
 export const AsiakirjaPyynnot = ({
@@ -37,8 +39,10 @@ export const AsiakirjaPyynnot = ({
   const theme = useTheme();
   const { updateHakemus } = useHakemus();
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
-  const [showPyydaAsiakirjaDropdown, setShowPyydaAsiakirjaDropdown] =
-    React.useState(asiakirjaPyynnot.length > 0);
+  const [
+    showEmptyAsiakirjaPyyntoDropdown,
+    setShowEmptyAsiakirjaPyyntoDropdown,
+  ] = React.useState(false);
 
   const addOrUpdateAsiakirjapyynto = (selectedValue: string, id?: string) => {
     const pyynto = id
@@ -52,11 +56,12 @@ export const AsiakirjaPyynnot = ({
     updateHakemus({
       pyydettavatAsiakirjat: [...pyynnot, pyynto],
     });
+    setShowEmptyAsiakirjaPyyntoDropdown(false);
   };
 
   const deleteAsiakirjapyynto = (id?: string) => {
     if (!id) {
-      setShowPyydaAsiakirjaDropdown(false);
+      setShowEmptyAsiakirjaPyyntoDropdown(false);
       return;
     }
     updateHakemus({
@@ -135,6 +140,40 @@ export const AsiakirjaPyynnot = ({
     </>
   );
 
+  const AsiakirjaPyynto = ({ pyynto, index }: AsiakirjaPyyntoProps) => (
+    <Stack direction="row" alignItems={'center'}>
+      <Stack direction="column" width="100%" gap={theme.spacing(1)}>
+        <OphTypography variant="label">
+          {t('hakemus.asiakirjat.asiakirja')}
+        </OphTypography>
+        <Select
+          sx={{ width: '100%' }}
+          data-testid="pyyda-asiakirja-select"
+          value={pyynto?.asiakirjanTyyppi}
+          onChange={(e) =>
+            addOrUpdateAsiakirjapyynto(e.target.value, pyynto?.id)
+          }
+        >
+          {pyydettavatAsiakirjatGroupedOptions}
+        </Select>
+      </Stack>
+
+      <OphButton
+        sx={{
+          alignSelf: 'flex-end',
+          paddingLeft: '32px',
+          paddingRight: '16px',
+        }}
+        data-testid={`poista-asiakirja-button-${index}`}
+        variant="text"
+        startIcon={<DeleteOutline />}
+        onClick={() => deleteAsiakirjapyynto(pyynto?.id)}
+      >
+        {t('yleiset.poista')}
+      </OphButton>
+    </Stack>
+  );
+
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -154,36 +193,17 @@ export const AsiakirjaPyynnot = ({
           <StyledInfoOutlinedIcon style={{ marginLeft: 8 }} />
         </StyledTooltip>
       </div>
-      {showPyydaAsiakirjaDropdown &&
-        [...asiakirjaPyynnot, emptyAsiakirjaPyynto].map((pyynto, index) => {
-          return (
-            <Stack direction="row" key={index}>
-              <Select
-                sx={{ width: '80%' }}
-                data-testid="pyyda-asiakirja-select"
-                value={pyynto.asiakirjanTyyppi}
-                onChange={(e) =>
-                  addOrUpdateAsiakirjapyynto(e.target.value, pyynto.id)
-                }
-              >
-                {pyydettavatAsiakirjatGroupedOptions}
-              </Select>
-              <OphButton
-                data-testid={`poista-asiakirja-button-${index}`}
-                variant="text"
-                startIcon={<DeleteOutline />}
-                onClick={() => deleteAsiakirjapyynto(pyynto.id)}
-              >
-                {t('yleiset.poista')}
-              </OphButton>
-            </Stack>
-          );
-        })}
+      {asiakirjaPyynnot.length > 0 &&
+        asiakirjaPyynnot.map((pyynto, index) => (
+          <AsiakirjaPyynto pyynto={pyynto} key={index} index={index} />
+        ))}
+      {showEmptyAsiakirjaPyyntoDropdown && <AsiakirjaPyynto />}
+      <Divider orientation="horizontal" />
       <OphButton
         data-testid="pyyda-asiakirja-button"
         variant="outlined"
         sx={{ width: '15%' }}
-        onClick={() => setShowPyydaAsiakirjaDropdown(true)}
+        onClick={() => setShowEmptyAsiakirjaPyyntoDropdown(true)}
       >
         {t('hakemus.asiakirjat.asiakirjapyynnot.pyyda')}
       </OphButton>

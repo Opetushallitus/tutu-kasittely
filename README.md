@@ -1,5 +1,8 @@
 # Tutkintojen tunnustamisen hakemusten käsittelypalvelu
 
+[![Tutu-backend](https://github.com/Opetushallitus/tutu-kasittely/actions/workflows/build-backend.yml/badge.svg)](https://github.com/Opetushallitus/tutu-kasittely/actions/workflows/build-backend.yml)
+[![Tutu-frontend](https://github.com/Opetushallitus/tutu-kasittely/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/Opetushallitus/tutu-kasittely/actions/workflows/build-frontend.yml)
+
 Palvelu tutu-hakemusten käsittelyyn.
 
 # Tutu-backend
