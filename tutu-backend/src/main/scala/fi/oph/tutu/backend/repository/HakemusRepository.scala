@@ -55,6 +55,14 @@ class HakemusRepository {
       )
     )
 
+  implicit val getPyydettavaAsiakirjaResult: GetResult[PyydettavaAsiakirja] =
+    GetResult(r =>
+      PyydettavaAsiakirja(
+        Option(UUID.fromString(r.nextString())),
+        r.nextString()
+      )
+    )
+
   /**
    * Tallentaa uuden hakemuksen
    *
@@ -252,6 +260,129 @@ class HakemusRepository {
         LOG.error(s"Hakemuksen päivitus epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Luo pyydettävän asiakirjan
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @param asiakirjaTyyppi
+   * pyydettävän asiakirjan tyyppi
+   * @param virkailijaOid
+   * virkailijan oid
+   */
+  def luoPyydettavaAsiakirja(
+    hakemusOid: HakemusOid,
+    asiakirjaTyyppi: String,
+    virkailijaOid: UserOid
+  ): Unit = {
+    try {
+      db.run(
+        sql"""
+          INSERT INTO pyydettava_asiakirja (hakemus_id, asiakirja_tyyppi, luoja)
+          VALUES ((SELECT hakemus.id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString}), ${asiakirjaTyyppi}::asiakirjan_tyyppi, ${virkailijaOid.toString})
+        """.asUpdate,
+        "luo_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Pyydettävän asiakirjan luonti epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Pyydettävän asiakirjan luonti epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Päivittää pyydettävän asiakirjan
+   *
+   * @param id
+   * asiakirjan id
+   * @param asiakirjaTyyppi
+   * pyydettävän asiakirjan tyyppi
+   * @param virkailijaOid
+   * päivittävän virkailijan oid
+   */
+  def paivitaPyydettavaAsiakirja(
+    id: UUID,
+    asiakirjaTyyppi: String,
+    virkailijaOid: UserOid
+  ): Unit = {
+    try {
+      db.run(
+        sql"""
+            UPDATE pyydettava_asiakirja
+            SET asiakirja_tyyppi = ${asiakirjaTyyppi}::asiakirjan_tyyppi, muokkaaja = ${virkailijaOid.toString}
+            WHERE id = ${id.toString}::uuid
+          """.asUpdate,
+        "paivita_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Pyydettävän asiakirjan päivitys epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Pyydettävän asiakirjan päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Poistaa pyydettävän asiakirjan
+   *
+   * @param id
+   * asiakirjan id
+   */
+  def poistaPyydettavaAsiakirja(
+    id: UUID
+  ): Unit = {
+    try {
+      db.run(
+        sqlu"""
+          DELETE FROM pyydettava_asiakirja
+          WHERE id = ${id.toString}::uuid
+        """,
+        "poista_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Pyydettävän asiakirjan poisto epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Pyydettävän asiakirjan poisto epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Hakee hakemuksen pyydettävät asiakirjat
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @return
+   * hakemuksen pyydettävät asiakirjat
+   */
+  def haePyydettavatAsiakirjatHakemusOidilla(hakemusOid: HakemusOid): Seq[PyydettavaAsiakirja] = {
+    try {
+      db.run(
+        sql"""
+          SELECT id, asiakirja_tyyppi
+          FROM pyydettava_asiakirja
+          WHERE hakemus_id = (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
+          ORDER BY luotu
+        """.as[PyydettavaAsiakirja],
+        "hae_hakemuksen_pyydettavat_asiakirjat"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e.getMessage}",
           e
         )
     }

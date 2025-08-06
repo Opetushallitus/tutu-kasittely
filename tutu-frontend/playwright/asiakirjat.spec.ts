@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus } from '@/playwright/mocks';
-import { getHakemus, getLiitteet } from './fixtures/hakemus1/index';
+import {
+  mockUser,
+  mockBasicForHakemus,
+  mockLiitteet,
+} from '@/playwright/mocks';
+import { getHakemus } from './fixtures/hakemus1/index';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -13,20 +17,6 @@ export const mockHakemus = (page: Page) => {
       body: JSON.stringify(hakemus),
     });
   });
-};
-
-export const mockLiitteet = (page: Page) => {
-  return page.route(
-    '**/tutu-backend/api/liite/metadata**',
-    async (route: Route) => {
-      const liitteet = getLiitteet();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(liitteet),
-      });
-    },
-  );
 };
 
 test('Asiakirjat näkyvät taulukossa', async ({ page }) => {

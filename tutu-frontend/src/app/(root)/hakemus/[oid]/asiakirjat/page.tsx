@@ -17,6 +17,7 @@ import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { VIRKAILIJA_URL } from '@/src/lib/configuration';
+import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/AsiakirjaPyynnot';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
@@ -136,6 +137,9 @@ const AsiakirjaPagePure = ({
         />
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
+      <AsiakirjaPyynnot
+        asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
+      ></AsiakirjaPyynnot>
     </Stack>
   );
 };

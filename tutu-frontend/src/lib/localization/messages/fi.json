@@ -117,6 +117,29 @@
         "checked": "Tarkistettu",
         "incomplete-attachment": "Puutteellinen liite",
         "overdue": "Myöhässä"
+      },
+      "asiakirjapyynnot": {
+        "pyyda": "Pyydä asiakirjaa",
+        "otsikko": {
+          "lista": "Asiakirjojen tarkistuslista",
+          "pyydettavatasiakirjat": "Pyydettävät asiakirjat",
+          "tutkinnottaikoulutukset": "Tutkinnot tai koulutukset",
+          "kelpoisuusammattiin": "Kelpoisuus ammattiin",
+          "henkilotiedot": "Henkilötiedot"
+        },
+        "asiakirjat": {
+          "tutkintotodistustenjaljennokset": "Tutkintotodistusten jäljennökset",
+          "liitteidenjaljennokset": "Liitteiden jäljennökset (opintosuoritusote)",
+          "tutkintotodistustenkaannokset": "Tutkintotodistusten käännökset",
+          "liitteidenkaannokset": "Liitteiden käännökset",
+          "alkuperaisettutkintotodistukset": "Alkuperäiset tutkintotodistukset",
+          "alkuperaisetliitteet": "Alkuperäiset liitteet",
+          "vaitoskirja": "Väitöskirja",
+          "tyotodistukset": "Työtodistukset tai todistukset elinikäisestä oppimisesta",
+          "ammattipatevyys": "Ammattipätevyyden todistavan asiakirjan jäljennös",
+          "kansalaisuus": "Kansalaisuuden todistava asiakirja",
+          "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
+        }
       }
     }
   },
@@ -151,6 +174,10 @@
     "hakemuksen-lataus": "Hakemuksen lataamisessa tapahtui virhe.",
     "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
-    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen."
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
+    "duplikaatti-asiakirjapyynto": "Asiakirjapyyntö on jo olemassa."
+  },
+  "yleiset": {
+    "poista": "Poista"
   }
 }

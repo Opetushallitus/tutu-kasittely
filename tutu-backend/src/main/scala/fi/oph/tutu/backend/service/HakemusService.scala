@@ -104,7 +104,12 @@ class HakemusService(
               case None            => None
               case Some(timestamp) =>
                 Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
-            }
+            },
+            pyydettavatAsiakirjat =
+              hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
+                case asiakirjat => Some(asiakirjat)
+                case _          => None
+              }
           )
         )
       case None =>
@@ -232,12 +237,56 @@ class HakemusService(
         )
       }
       case Some(dbHakemus) => {
+        // Tallennetaan / poistetaan pyydettävät asiakirjat
+        hakemus.pyydettavatAsiakirjat match {
+          case None             => ()
+          case Some(asiakirjat) => {
+            val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
+
+            // Lisätään uudet asiakirjat
+            val uudetAsiakirjat = asiakirjat.filterNot(asiakirja => tallennetutAsiakirjat.exists(_.id == asiakirja.id))
+            if (uudetAsiakirjat.nonEmpty) {
+              uudetAsiakirjat.foreach(asiakirja =>
+                hakemusRepository.luoPyydettavaAsiakirja(hakemusOid, asiakirja.asiakirjanTyyppi, userOid)
+              )
+            }
+
+            // Päivitetään olemassa olevat asiakirjat
+            val paivitettavatAsiakirjat =
+              asiakirjat.filter(asiakirja =>
+                tallennetutAsiakirjat.exists(tallennettuAsiakirja =>
+                  tallennettuAsiakirja.id == asiakirja.id && tallennettuAsiakirja.asiakirjanTyyppi != asiakirja.asiakirjanTyyppi
+                )
+              )
+            if (paivitettavatAsiakirjat.nonEmpty) {
+              paivitettavatAsiakirjat.foreach { asiakirja =>
+                hakemusRepository.paivitaPyydettavaAsiakirja(
+                  asiakirja.id.get,
+                  asiakirja.asiakirjanTyyppi,
+                  userOid
+                )
+              }
+            }
+
+            // Poistetaan asiakirjat
+            val poistettavatAsiakirjat =
+              tallennetutAsiakirjat.filterNot(asiakirja => asiakirjat.exists(_.id == asiakirja.id))
+            if (poistettavatAsiakirjat.nonEmpty) {
+              poistettavatAsiakirjat.foreach(asiakirja => hakemusRepository.poistaPyydettavaAsiakirja(asiakirja.id.get))
+            }
+          }
+        }
+
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
         )
-        hakemusRepository.paivitaPartialHakemus(hakemusOid, updatedHakemus, userOid.toString)
+        hakemusRepository.paivitaPartialHakemus(
+          hakemusOid,
+          updatedHakemus,
+          userOid.toString
+        )
       }
     }
   }

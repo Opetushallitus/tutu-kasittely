@@ -2,6 +2,7 @@ import { Route, Page } from '@playwright/test';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { sortBy } from 'remeda';
+import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   mockInit(page);
@@ -155,7 +156,22 @@ export const mockHakemus = (page: Page) => {
         kasittelyVaihe: 'HakemustaTaydennetty',
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
+        pyydettavatAsiakirjat: [],
       }),
     });
   });
+};
+
+export const mockLiitteet = (page: Page) => {
+  return page.route(
+    '**/tutu-backend/api/liite/metadata**',
+    async (route: Route) => {
+      const liitteet = getLiitteet();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(liitteet),
+      });
+    },
+  );
 };
