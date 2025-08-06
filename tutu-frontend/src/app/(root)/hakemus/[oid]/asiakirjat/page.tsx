@@ -8,7 +8,7 @@ import { useLiitteet } from '@/src/hooks/useLiitteet';
 import {
   AsiakirjaTaulukko,
   haeAsiakirjat,
-} from '@/src/app/(root)/hakemus/[oid]/components/AsiakirjaTaulukko';
+} from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
@@ -17,7 +17,7 @@ import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { VIRKAILIJA_URL } from '@/src/lib/configuration';
-import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/AsiakirjaPyynnot';
+import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
