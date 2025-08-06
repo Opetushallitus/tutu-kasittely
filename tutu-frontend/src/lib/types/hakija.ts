@@ -1,18 +1,18 @@
-import { Kielistetty } from '@/src/lib/types/common';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 
 export type Hakija = {
   etunimet: string;
   kutsumanimi: string;
   sukunimi: string;
-  kansalaisuus: Kielistetty;
+  kansalaisuus: TranslatedName;
   hetu?: string;
   syntymaaika: string;
   matkapuhelin?: string;
-  asuinmaa: Kielistetty;
+  asuinmaa: TranslatedName;
   katuosoite: string;
   postinumero: string;
   postitoimipaikka: string;
-  kotikunta: Kielistetty;
+  kotikunta: TranslatedName;
   sahkopostiosoite?: string;
 };
 

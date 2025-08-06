@@ -102,7 +102,8 @@ case class Hakemus(
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  selvityksetSaatu: Boolean = false
+  selvityksetSaatu: Boolean = false,
+  asiakirjaMallitTutkinnoista: Seq[AsiakirjaMalliTutkinnosta] = Seq.empty
 )
 
 case class PartialHakemus(
