@@ -111,7 +111,18 @@ class HakemusService(
                 case _          => None
               },
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
-            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot
+            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
+            imiPyynto = dbHakemus.imiPyynto,
+                        imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
+                        imiPyyntoLahetettu = dbHakemus.imiPyyntoLahetettu match {
+                          case Some(timestamp) => Some(timestamp)
+                          case _               => None
+
+                        },
+                        imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu match {
+                          case Some(timestamp) => Some(timestamp)
+                          case _               => None
+                        }
           )
         )
       case None =>
@@ -241,8 +252,8 @@ class HakemusService(
       case Some(dbHakemus) => {
         // Tallennetaan / poistetaan pyydettävät asiakirjat
         hakemus.pyydettavatAsiakirjat match {
-          case None             => ()
-          case Some(asiakirjat) => {
+          case null       => ()
+          case asiakirjat => {
             val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
 
             // Lisätään uudet asiakirjat

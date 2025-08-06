@@ -36,7 +36,11 @@ class HakemusRepository {
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         r.nextBoolean(),
-        Option(r.nextString())
+        Option(r.nextString()),
+        Option(r.nextBoolean()),
+                Option(r.nextString()),
+                Option(r.nextTimestamp()).map(_.toLocalDateTime),
+                Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -150,7 +154,11 @@ class HakemusRepository {
               h.kasittely_vaihe,
               h.muokattu,
               h.allekirjoitukset_tarkistettu,
-              h.allekirjoitukset_tarkistettu_lisatiedot
+              h.allekirjoitukset_tarkistettu_lisatiedot,
+              h.imi_pyynto,
+              h.imi_pyynto_numero,
+              h.imi_pyynto_lahetetty,
+              h.imi_pyynto_vastattu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id

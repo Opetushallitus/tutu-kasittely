@@ -62,6 +62,30 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED
   )
   allekirjoituksetTarkistettuLisatiedot: Option[String]
+  muokattu: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  imiPyynto: Option[Boolean],
+  @(Schema @field)(
+    example = "122224",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  imiPyyntoNumero: Option[String],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoLahetettu: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoVastattu: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -81,9 +105,13 @@ case class Hakemus(
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
+  pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  imiPyynto: Option[Boolean] = None,
+  imiPyyntoNumero: Option[String] = None,
+  imiPyyntoLahetettu: Option[LocalDateTime] = None,
+  imiPyyntoVastattu: Option[LocalDateTime] = None
 )
 
 case class PartialHakemus(
@@ -94,7 +122,11 @@ case class PartialHakemus(
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
   kasittelyVaihe: Option[KasittelyVaihe] = None,
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
+  pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  imiPyynto: Option[Boolean] = None,
+  imiPyyntoNumero: Option[String] = None,
+  imiPyyntoLahetettu: Option[LocalDateTime] = None,
+  imiPyyntoVastattu: Option[LocalDateTime] = None
 )

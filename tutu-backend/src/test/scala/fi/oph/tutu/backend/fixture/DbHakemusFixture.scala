@@ -13,4 +13,9 @@ val dbHakemusFixture = DbHakemus(
   muokattu = None,
   allekirjoituksetTarkistettu = false,
   allekirjoituksetTarkistettuLisatiedot = None
+  muokattu = None,
+  imiPyynto = Some(true),
+  imiPyyntoNumero = Some("122224"),
+  imiPyyntoLahetettu = Some(java.time.LocalDateTime.parse("2025-06-14T10:59:47.597")),
+  imiPyyntoVastattu = Some(java.time.LocalDateTime.parse("2025-07-11T10:59:47.597"))
 )
