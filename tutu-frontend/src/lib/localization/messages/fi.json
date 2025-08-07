@@ -177,6 +177,10 @@
     "hakemuksen-lataus": "Hakemuksen lataamisessa tapahtui virhe.",
     "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
-    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen."
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
+    "duplikaatti-asiakirjapyynto": "Asiakirjapyyntö on jo olemassa."
+  },
+  "yleiset": {
+    "poista": "Poista"
   }
 }
