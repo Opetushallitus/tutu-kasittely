@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 import java.time.LocalDateTime
 import scala.annotation.meta.field
 
-enum AsiakirjaMalliLahde {
+enum AsiakirjamalliLahde {
   case ece, UK_enic, naric_portal, nuffic, aacrao, muu
 }
 
 @Schema(name = "AsiakirjaMalliTutkinnosta")
-case class DbAsiakirjaMalliTutkinnosta(
+case class DbAsiakirjamalliTutkinnosta(
   @(Schema @field)(
     example = "1.2.246.562.11.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED,
@@ -23,7 +23,7 @@ case class DbAsiakirjaMalliTutkinnosta(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 50
   )
-  lahde: AsiakirjaMalliLahde,
+  lahde: AsiakirjamalliLahde,
   @(Schema @field)(
     example = "true",
     requiredMode = RequiredMode.REQUIRED
@@ -41,8 +41,14 @@ case class DbAsiakirjaMalliTutkinnosta(
   muokattu: Option[LocalDateTime]
 )
 
-case class AsiakirjaMalliTutkinnosta(
-  lahde: AsiakirjaMalliLahde,
+case class AsiakirjamalliTutkinnosta(
+  lahde: AsiakirjamalliLahde,
   vastaavuus: Boolean,
   kuvaus: Option[String]
+)
+
+case class AsiakirjamalliModifyData(
+  uudetMallit: Seq[AsiakirjamalliTutkinnosta],
+  muutetutMallit: Seq[AsiakirjamalliTutkinnosta],
+  poistetutMallit: Seq[AsiakirjamalliTutkinnosta]
 )

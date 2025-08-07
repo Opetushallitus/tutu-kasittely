@@ -4,11 +4,13 @@ import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
+import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -28,6 +30,7 @@ class HakemusRepository {
   implicit val getHakemusResult: GetResult[DbHakemus] =
     GetResult(r =>
       DbHakemus(
+        UUID.fromString(r.nextString()),
         HakemusOid(r.nextString()),
         r.nextInt(),
         Option(r.nextString()).map(UUID.fromString),
@@ -67,6 +70,20 @@ class HakemusRepository {
         r.nextString()
       )
     )
+
+  implicit val getAsiakirjamalliTutkinnostaResult: GetResult[AsiakirjamalliTutkinnosta] =
+    GetResult(r =>
+      AsiakirjamalliTutkinnosta(
+        AsiakirjamalliLahde.valueOf(r.nextString()),
+        r.nextBoolean(),
+        Option(r.nextString())
+      )
+    )
+
+  def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    DBIO.fold(ints, 0)(_ + _)
+  }
 
   /**
    * Tallentaa uuden hakemuksen
@@ -145,6 +162,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
+              h.id,
               h.hakemus_oid,
               h.hakemus_koskee,
               h.esittelija_id,
@@ -415,6 +433,89 @@ class HakemusRepository {
         LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  def suoritaAsiakirjamallienModifiointi(
+    hakemusId: UUID,
+    modifyData: AsiakirjamalliModifyData,
+    virkailijaOid: UserOid
+  ): Unit = {
+    val actions = modifyData.uudetMallit.map(lisaaAsiakirjamalli(hakemusId, _, virkailijaOid)) ++
+      modifyData.muutetutMallit.map(muokkaaAsiakirjamallia(hakemusId, _, virkailijaOid)) ++
+      modifyData.poistetutMallit.map(malli => poistaAsiakirjamalli(hakemusId, malli.lahde))
+    val combined = combineIntDBIOs(actions)
+    db.runTransactionally(combined, "suorita_asiakirjamallien_modifiointi") match {
+      case Success(_) => ()
+      case Failure(e) =>
+        LOG.error(s"Virhe asiakirjamallien modifioinnissa: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe asiakirjamallien modifioinnissa: ${e.getMessage}", e)
+    }
+  }
+
+  def lisaaAsiakirjamalli(
+    hakemusId: UUID,
+    asiakirjamalli: AsiakirjamalliTutkinnosta,
+    virkailijaOid: UserOid
+  ): DBIO[Int] =
+    sqlu"""
+      INSERT INTO asiakirjamalli_tutkinnosta (hakemus_id, lahde, vastaavuus, kuvaus, luoja)
+      VALUES (
+        ${hakemusId.toString}::uuid,
+        ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde,
+        ${asiakirjamalli.vastaavuus},
+        ${asiakirjamalli.kuvaus},
+        ${virkailijaOid.toString}
+      )
+    """
+
+  def muokkaaAsiakirjamallia(
+    hakemusId: UUID,
+    asiakirjamalli: AsiakirjamalliTutkinnosta,
+    virkailijaOid: UserOid
+  ): DBIO[Int] =
+    sqlu"""
+      UPDATE asiakirjamalli_tutkinnosta
+      SET vastaavuus = ${asiakirjamalli.vastaavuus},
+          kuvaus = ${asiakirjamalli.kuvaus},
+          muokkaaja = ${virkailijaOid.toString}
+      WHERE hakemus_id = ${hakemusId.toString}::uuid
+        AND lahde = ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde
+    """
+
+  def poistaAsiakirjamalli(hakemusId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] =
+    sqlu"""
+      DELETE FROM asiakirjamalli_tutkinnosta
+      WHERE hakemus_id = ${hakemusId.toString}::uuid
+        AND lahde = ${lahde.toString}::asiakirja_malli_lahde
+    """
+
+    /**
+     * Hakee hakemuksen asiakirjamallit tutkinnosta
+     *
+     * @param hakemusId
+     * hakemuksen id
+     * @return
+     * hakemuksen asiakirjamallit tutkinnosta
+     */
+  def haeAsiakirjamallitTutkinnoistaHakemusOidilla(hakemusId: UUID): Seq[AsiakirjamalliTutkinnosta] = {
+    try {
+      db.run(
+        sql"""
+          SELECT lahde, vastaavuus, kuvaus
+          FROM asiakirjamalli_tutkinnosta
+          WHERE hakemus_id = ${hakemusId.toString}::uuid
+          ORDER BY luotu
+        """.as[AsiakirjamalliTutkinnosta],
+        "hae_hakemuksen_asiakirjamallit_tutkinnoista"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen asiakirjamallien haku epäonnistui: ${e.getMessage}",
           e
         )
     }

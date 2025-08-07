@@ -1,12 +1,19 @@
 package fi.oph.tutu.backend
 
+import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid, Hakija}
+import fi.oph.tutu.backend.fixture.hakijaFixture
+import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{AfterAll, BeforeAll, TestInstance}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.mockito.stubbing.OngoingStubbing
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
+import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -64,6 +71,11 @@ class IntegrationTestBase {
 
   val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
 
+  @MockitoBean
+  var hakemuspalveluService: HakemuspalveluService = _
+  @MockitoBean
+  var ataruHakemusParser: AtaruHakemusParser = _
+
   @BeforeAll
   def startContainer(): Unit = {
     LOG.info("Starting PostgreSQL container for integration tests")
@@ -78,5 +90,16 @@ class IntegrationTestBase {
   def teardown(): Unit = {
     LOG.info("Shutting PostgreSQL container down")
     postgres.stop()
+  }
+
+  def initAtaruHakemusRequests(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
+      Right(loadJson("muutosHistoria.json"))
+    )
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
   }
 }
