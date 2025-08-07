@@ -10,6 +10,12 @@ import scala.annotation.meta.field
 @Schema(name = "Hakemus")
 case class DbHakemus(
   @(Schema @field)(
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 36
+  )
+  id: UUID,
+  @(Schema @field)(
     example = "1.2.246.562.11.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
@@ -81,10 +87,10 @@ case class Hakemus(
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
+  pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
-  asiakirjaMallitTutkinnoista: Seq[AsiakirjaMalliTutkinnosta] = Seq.empty
+  asiakirjamallitTutkinnoista: Seq[AsiakirjamalliTutkinnosta] = Seq.empty
 )
 
 case class PartialHakemus(
@@ -97,5 +103,6 @@ case class PartialHakemus(
   kasittelyVaihe: Option[KasittelyVaihe] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
   allekirjoituksetTarkistettu: Boolean = false,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
+  asiakirjamallitTutkinnoista: Option[Seq[AsiakirjamalliTutkinnosta]] = None
 )

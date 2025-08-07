@@ -107,11 +107,16 @@ class HakemusService(
             },
             pyydettavatAsiakirjat =
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
-                case asiakirjat => Some(asiakirjat)
-                case _          => None
+                case asiakirjat => asiakirjat
+                case _          => Seq()
               },
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
-            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot
+            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
+            asiakirjamallitTutkinnoista =
+              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id) match {
+                case asiakirjamallit => asiakirjamallit
+                case _               => Seq()
+              }
           )
         )
       case None =>
@@ -232,17 +237,17 @@ class HakemusService(
     }
 
     hakemusRepository.haeHakemus(hakemusOid) match {
-      case None => {
+      case None =>
         LOG.warn(s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         throw new RuntimeException(
           s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
-      }
-      case Some(dbHakemus) => {
+
+      case Some(dbHakemus) =>
         // Tallennetaan / poistetaan pyydettävät asiakirjat
         hakemus.pyydettavatAsiakirjat match {
           case None             => ()
-          case Some(asiakirjat) => {
+          case Some(asiakirjat) =>
             val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
 
             // Lisätään uudet asiakirjat
@@ -276,7 +281,17 @@ class HakemusService(
             if (poistettavatAsiakirjat.nonEmpty) {
               poistettavatAsiakirjat.foreach(asiakirja => hakemusRepository.poistaPyydettavaAsiakirja(asiakirja.id.get))
             }
-          }
+        }
+
+        hakemus.asiakirjamallitTutkinnoista match {
+          case None                      => ()
+          case Some(toBeAsiakirjaMallit) =>
+            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id)
+            val asiakirjamalliModifyData = HakemusModifyOperationResolver.resolveAsiakirjamalliModifyOperations(
+              currentAsiakirjamallit,
+              toBeAsiakirjaMallit
+            )
+            hakemusRepository.suoritaAsiakirjamallienModifiointi(dbHakemus.id, asiakirjamalliModifyData, userOid)
         }
 
         val updatedHakemus = dbHakemus.copy(
@@ -292,7 +307,6 @@ class HakemusService(
           updatedHakemus,
           userOid.toString
         )
-      }
     }
   }
 }
