@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.fixture.hakijaFixture
@@ -27,6 +28,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+
+import java.time.LocalDateTime
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -83,6 +86,8 @@ class ControllerTest extends IntegrationTestBase {
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
+  mapper.registerModule(new JavaTimeModule)
+  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   @Test
   def get200ResponseFromHealthcheckUnautheticated(): Unit =
@@ -565,7 +570,6 @@ class ControllerTest extends IntegrationTestBase {
     paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
     assert(paivitettyHakemus.get.pyydettavatAsiakirjat.size == 2)
 
-    // Päivitetään toisen asiakirjan tyyppi
     // Lisätään toinen asiakirja
     hakemuksenAsiakirjat = hakemusRepository
       .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
@@ -637,6 +641,147 @@ class ControllerTest extends IntegrationTestBase {
 
     paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
     assert(paivitettyHakemus.get.pyydettavatAsiakirjat.isEmpty)
+  }
+
+  @Test
+  @Order(12)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaPartialHakemusWithIMIPyyntoValidRequestReturns200(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus.json")))
+    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
+      Right(loadJson("muutosHistoria.json"))
+    )
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
+
+    // imiPyynto = true
+    var updatedHakemus = PartialHakemus(
+      imiPyynto = Some(ImiPyynto(Some(true), null, null, null))
+    )
+    var requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
+
+    // Loput IMI-kentät
+    updatedHakemus = PartialHakemus(
+      imiPyynto = Some(
+        ImiPyynto(
+          Some(true),
+          Some("123-6P"),
+          Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+          Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+        )
+      )
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00")))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00")))
+
+    // imi-pyynto null -> Loput IMI-kentät pitäisi olla None
+    updatedHakemus = PartialHakemus(
+      imiPyynto = Some(
+        ImiPyynto(
+          null
+        )
+      )
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.isEmpty)
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.isEmpty)
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.isEmpty)
+
+    // IMI-kentät uudestaan sisään
+    updatedHakemus = PartialHakemus(
+      imiPyynto = Some(
+        ImiPyynto(
+          Some(true),
+          Some("123-6P"),
+          Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+          Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+        )
+      )
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00")))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00")))
+
+    // imi-pyynto false -> Loput IMI-kentät pitäisi olla None
+    updatedHakemus = PartialHakemus(
+      imiPyynto = Some(
+        ImiPyynto(
+          Some(false)
+        )
+      )
+    )
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(false))
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.isEmpty)
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
+    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.isEmpty)
   }
 
   @Test

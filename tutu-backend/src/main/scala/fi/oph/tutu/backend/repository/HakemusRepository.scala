@@ -37,10 +37,10 @@ class HakemusRepository {
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         r.nextBoolean(),
         Option(r.nextString()),
-        Option(r.nextBoolean()),
-                Option(r.nextString()),
-                Option(r.nextTimestamp()).map(_.toLocalDateTime),
-                Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        Option(r.nextObject().asInstanceOf[java.lang.Boolean]),
+        Option(r.nextString()),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -265,6 +265,13 @@ class HakemusRepository {
     val allekirjoituksetTarkistettuLisatiedotOrNull =
       partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
     val hakemusKoskee = partialHakemus.hakemusKoskee
+    val imiPyyntoOrNull    = partialHakemus.imiPyynto match {
+      case Some(boolean) => boolean.toString
+      case _             => null
+    }
+    val imiPyyntoNumeroOrNull    = partialHakemus.imiPyyntoNumero.orNull
+    val imiPyyntoLahetettyOrNull = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
+    val imiPyyntoVastattuOrNull  = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
     try
       db.run(
         sql"""
@@ -275,7 +282,11 @@ class HakemusRepository {
           asiatunnus = $asiatunnusOrNull,
           allekirjoitukset_tarkistettu = $allekirjoituksetTarkistettu,
           allekirjoitukset_tarkistettu_lisatiedot = $allekirjoituksetTarkistettuLisatiedotOrNull,
-          muokkaaja = $muokkaaja
+          muokkaaja = $muokkaaja,
+          imi_pyynto = $imiPyyntoOrNull::boolean,
+          imi_pyynto_numero = $imiPyyntoNumeroOrNull,
+          imi_pyynto_lahetetty = $imiPyyntoLahetettyOrNull,
+          imi_pyynto_vastattu = $imiPyyntoVastattuOrNull
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

@@ -107,22 +107,17 @@ class HakemusService(
             },
             pyydettavatAsiakirjat =
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
-                case asiakirjat => Some(asiakirjat)
-                case _          => None
+                case asiakirjat => asiakirjat
+                case null       => Seq.empty
               },
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
             allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
-            imiPyynto = dbHakemus.imiPyynto,
-                        imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
-                        imiPyyntoLahetettu = dbHakemus.imiPyyntoLahetettu match {
-                          case Some(timestamp) => Some(timestamp)
-                          case _               => None
-
-                        },
-                        imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu match {
-                          case Some(timestamp) => Some(timestamp)
-                          case _               => None
-                        }
+            imiPyynto = ImiPyynto(
+              imiPyynto = dbHakemus.imiPyynto,
+              imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
+              imiPyyntoLahetetty = dbHakemus.imiPyyntoLahetetty,
+              imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu
+            )
           )
         )
       case None =>
@@ -229,8 +224,8 @@ class HakemusService(
       }
   }
 
-  def paivitaHakemus(hakemusOid: HakemusOid, hakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
-    val esittelijaId = hakemus.esittelijaOid match {
+  def paivitaHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
+    val esittelijaId = partialHakemus.esittelijaOid match {
       case None                => None
       case Some(esittelijaOid) =>
         esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
@@ -251,7 +246,7 @@ class HakemusService(
       }
       case Some(dbHakemus) => {
         // Tallennetaan / poistetaan pyydettävät asiakirjat
-        hakemus.pyydettavatAsiakirjat match {
+        partialHakemus.pyydettavatAsiakirjat match {
           case null       => ()
           case asiakirjat => {
             val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
@@ -290,17 +285,33 @@ class HakemusService(
           }
         }
 
-        val updatedHakemus = dbHakemus.copy(
+        val modifiedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
           allekirjoituksetTarkistettu = hakemus.allekirjoituksetTarkistettu,
           allekirjoituksetTarkistettuLisatiedot =
             hakemus.allekirjoituksetTarkistettuLisatiedot.orElse(dbHakemus.allekirjoituksetTarkistettuLisatiedot),
-          esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId)
+          esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
+          imiPyynto = partialHakemus.imiPyynto match {
+          case None => dbHakemus.imiPyynto
+          case _    => partialHakemus.imiPyynto.get.imiPyynto
+        },
+        imiPyyntoNumero = partialHakemus.imiPyynto match {
+          case None => dbHakemus.imiPyyntoNumero
+          case _    => partialHakemus.imiPyynto.get.imiPyyntoNumero
+        },
+        imiPyyntoLahetetty = partialHakemus.imiPyynto match {
+          case None => dbHakemus.imiPyyntoLahetetty
+          case _    => partialHakemus.imiPyynto.get.imiPyyntoLahetetty
+        },
+        imiPyyntoVastattu = partialHakemus.imiPyynto match {
+          case None => dbHakemus.imiPyyntoVastattu
+          case _    => partialHakemus.imiPyynto.get.imiPyyntoVastattu
+        }
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,
-          updatedHakemus,
+          modifiedHakemus,
           userOid.toString
         )
       }

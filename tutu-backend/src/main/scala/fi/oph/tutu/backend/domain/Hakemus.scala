@@ -67,7 +67,7 @@ case class DbHakemus(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  imiPyynto: Option[Boolean],
+  imiPyynto: Option[java.lang.Boolean],
   @(Schema @field)(
     example = "122224",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -79,7 +79,7 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  imiPyyntoLahetettu: Option[LocalDateTime],
+  imiPyyntoLahetetty: Option[LocalDateTime],
   @(Schema @field)(
     example = "2025-06-14T10:59:47.597",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -108,10 +108,7 @@ case class Hakemus(
   pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None
-  imiPyynto: Option[Boolean] = None,
-  imiPyyntoNumero: Option[String] = None,
-  imiPyyntoLahetettu: Option[LocalDateTime] = None,
-  imiPyyntoVastattu: Option[LocalDateTime] = None
+  imiPyynto: ImiPyynto = ImiPyynto()
 )
 
 case class PartialHakemus(
@@ -125,8 +122,12 @@ case class PartialHakemus(
   pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None
-  imiPyynto: Option[Boolean] = None,
+  imiPyynto: Option[ImiPyynto] = None
+)
+
+case class ImiPyynto(
+  imiPyynto: Option[java.lang.Boolean] = None,
   imiPyyntoNumero: Option[String] = None,
-  imiPyyntoLahetettu: Option[LocalDateTime] = None,
+  imiPyyntoLahetetty: Option[LocalDateTime] = None,
   imiPyyntoVastattu: Option[LocalDateTime] = None
 )
