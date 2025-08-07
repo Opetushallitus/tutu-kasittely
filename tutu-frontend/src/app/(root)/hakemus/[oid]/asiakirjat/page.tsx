@@ -10,6 +10,7 @@ import {
   haeAsiakirjat,
 } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
 import { AllekirjoitustenTarkistus } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AllekirjoitustenTarkistus';
+import { AlkuperaisetAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AlkuperaisetAsiakirjat';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
@@ -155,6 +156,7 @@ const AsiakirjaPagePure = ({
         hakemus={hakemus}
         updateHakemus={updateHakemus}
       />
+      <AlkuperaisetAsiakirjat hakemus={hakemus} updateHakemus={updateHakemus} />
     </Stack>
   );
 };
