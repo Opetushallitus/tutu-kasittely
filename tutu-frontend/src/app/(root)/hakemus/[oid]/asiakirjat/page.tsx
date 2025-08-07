@@ -9,6 +9,7 @@ import {
   AsiakirjaTaulukko,
   haeAsiakirjat,
 } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
+import { AllekirjoitustenTarkistus } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AllekirjoitustenTarkistus';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
@@ -43,6 +44,7 @@ export default function AsiakirjaPage() {
   const {
     isLoading: hakemusIsLoading,
     hakemus,
+    updateHakemus,
     error: hakemusError,
   } = useHakemus();
 
@@ -58,10 +60,10 @@ export default function AsiakirjaPage() {
 
   if (hakemusIsLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
-  return <AsiakirjaHookLayer hakemus={hakemus} />;
+  return <AsiakirjaHookLayer hakemus={hakemus} updateHakemus={updateHakemus} />;
 }
 
-const AsiakirjaHookLayer = ({ hakemus }) => {
+const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
@@ -95,6 +97,7 @@ const AsiakirjaHookLayer = ({ hakemus }) => {
   return (
     <AsiakirjaPagePure
       hakemus={hakemus}
+      updateHakemus={updateHakemus}
       asiakirjat={asiakirjat}
       asiakirjaMetadata={asiakirjaMetadata}
     />
@@ -103,6 +106,7 @@ const AsiakirjaHookLayer = ({ hakemus }) => {
 
 const AsiakirjaPagePure = ({
   hakemus = {},
+  updateHakemus,
   asiakirjat = [],
   asiakirjaMetadata = [],
 }) => {
@@ -140,6 +144,17 @@ const AsiakirjaPagePure = ({
       <AsiakirjaPyynnot
         asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
       ></AsiakirjaPyynnot>
+
+      <OphTypography variant={'h3'}>
+        {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
+      </OphTypography>
+      <OphTypography variant={'h4'}>
+        {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
+      </OphTypography>
+      <AllekirjoitustenTarkistus
+        hakemus={hakemus}
+        updateHakemus={updateHakemus}
+      />
     </Stack>
   );
 };

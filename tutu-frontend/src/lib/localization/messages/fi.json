@@ -140,7 +140,10 @@
           "kansalaisuus": "Kansalaisuuden todistava asiakirja",
           "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
         }
-      }
+      },
+      "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
+      "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
+      "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja"
     }
   },
   "hakemusotsikko": {

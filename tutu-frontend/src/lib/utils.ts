@@ -52,3 +52,5 @@ export const LocalizeFetchError = (
     ? `${t(baseKey)} ${originTranslated}`
     : t(baseKey);
 };
+
+export const isDefined = (val) => val !== undefined && val !== null;
