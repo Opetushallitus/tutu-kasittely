@@ -36,6 +36,8 @@ class HakemusRepository {
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         r.nextBoolean(),
+        Option(r.nextString()),
+        r.nextBoolean(),
         Option(r.nextString())
       )
     )
@@ -150,7 +152,9 @@ class HakemusRepository {
               h.kasittely_vaihe,
               h.muokattu,
               h.allekirjoitukset_tarkistettu,
-              h.allekirjoitukset_tarkistettu_lisatiedot
+              h.allekirjoitukset_tarkistettu_lisatiedot,
+              h.alkuperaiset_asiakirjat_saatu_nahtavaksi,
+              h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -256,7 +260,10 @@ class HakemusRepository {
     val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
     val allekirjoituksetTarkistettuLisatiedotOrNull =
       partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
-    val hakemusKoskee = partialHakemus.hakemusKoskee
+    val hakemusKoskee                                         = partialHakemus.hakemusKoskee
+    val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
+    val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
+      partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
     try
       db.run(
         sql"""
@@ -267,6 +274,8 @@ class HakemusRepository {
           asiatunnus = $asiatunnusOrNull,
           allekirjoitukset_tarkistettu = $allekirjoituksetTarkistettu,
           allekirjoitukset_tarkistettu_lisatiedot = $allekirjoituksetTarkistettuLisatiedotOrNull,
+          alkuperaiset_asiakirjat_saatu_nahtavaksi = $alkuperaisetAsiakirjatSaatuNahtavaksi,
+          alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = $alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull,
           muokkaaja = $muokkaaja
         WHERE hakemus_oid = $hakemusOidString
         RETURNING

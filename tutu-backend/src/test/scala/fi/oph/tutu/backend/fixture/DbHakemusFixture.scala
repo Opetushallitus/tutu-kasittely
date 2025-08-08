@@ -12,5 +12,7 @@ val dbHakemusFixture = DbHakemus(
   kasittelyVaihe = AlkukasittelyKesken,
   muokattu = None,
   allekirjoituksetTarkistettu = false,
-  allekirjoituksetTarkistettuLisatiedot = None
+  allekirjoituksetTarkistettuLisatiedot = None,
+  alkuperaisetAsiakirjatSaatuNahtavaksi = false,
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = None
 )

@@ -26,7 +26,9 @@ export type Hakemus = {
   liitteidenTilat: TarkistuksenTila[];
   pyydettavatAsiakirjat: AsiakirjaPyynto[];
   allekirjoituksetTarkistettu: boolean;
-  allekirjoituksetTarkistettuLisatiedot: string?;
+  allekirjoituksetTarkistettuLisatiedot: string | undefined;
+  alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | undefined;
 };
 
 export type SisaltoItem = {
