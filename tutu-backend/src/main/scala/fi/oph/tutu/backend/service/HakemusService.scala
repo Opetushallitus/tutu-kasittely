@@ -231,7 +231,7 @@ class HakemusService(
         esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
           case Some(esittelija) => Some(esittelija.esittelijaId)
           case None             =>
-            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemus.esittelijaOid}")
+            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${partialHakemus.esittelijaOid}")
             None
         }
 
@@ -286,28 +286,29 @@ class HakemusService(
         }
 
         val modifiedHakemus = dbHakemus.copy(
-          hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
-          asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
-          allekirjoituksetTarkistettu = hakemus.allekirjoituksetTarkistettu,
-          allekirjoituksetTarkistettuLisatiedot =
-            hakemus.allekirjoituksetTarkistettuLisatiedot.orElse(dbHakemus.allekirjoituksetTarkistettuLisatiedot),
+          hakemusKoskee = partialHakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
+          asiatunnus = partialHakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
+          allekirjoituksetTarkistettu = partialHakemus.allekirjoituksetTarkistettu,
+          allekirjoituksetTarkistettuLisatiedot = partialHakemus.allekirjoituksetTarkistettuLisatiedot.orElse(
+            dbHakemus.allekirjoituksetTarkistettuLisatiedot
+          ),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
           imiPyynto = partialHakemus.imiPyynto match {
-          case None => dbHakemus.imiPyynto
-          case _    => partialHakemus.imiPyynto.get.imiPyynto
-        },
-        imiPyyntoNumero = partialHakemus.imiPyynto match {
-          case None => dbHakemus.imiPyyntoNumero
-          case _    => partialHakemus.imiPyynto.get.imiPyyntoNumero
-        },
-        imiPyyntoLahetetty = partialHakemus.imiPyynto match {
-          case None => dbHakemus.imiPyyntoLahetetty
-          case _    => partialHakemus.imiPyynto.get.imiPyyntoLahetetty
-        },
-        imiPyyntoVastattu = partialHakemus.imiPyynto match {
-          case None => dbHakemus.imiPyyntoVastattu
-          case _    => partialHakemus.imiPyynto.get.imiPyyntoVastattu
-        }
+            case None => dbHakemus.imiPyynto
+            case _    => partialHakemus.imiPyynto.get.imiPyynto
+          },
+          imiPyyntoNumero = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoNumero
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoNumero
+          },
+          imiPyyntoLahetetty = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoLahetetty
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoLahetetty
+          },
+          imiPyyntoVastattu = partialHakemus.imiPyynto match {
+            case None => dbHakemus.imiPyyntoVastattu
+            case _    => partialHakemus.imiPyynto.get.imiPyyntoVastattu
+          }
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,

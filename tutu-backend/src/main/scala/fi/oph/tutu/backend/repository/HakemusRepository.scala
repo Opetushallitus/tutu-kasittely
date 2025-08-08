@@ -264,8 +264,8 @@ class HakemusRepository {
     val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
     val allekirjoituksetTarkistettuLisatiedotOrNull =
       partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
-    val hakemusKoskee = partialHakemus.hakemusKoskee
-    val imiPyyntoOrNull    = partialHakemus.imiPyynto match {
+    val hakemusKoskee   = partialHakemus.hakemusKoskee
+    val imiPyyntoOrNull = partialHakemus.imiPyynto match {
       case Some(boolean) => boolean.toString
       case _             => null
     }

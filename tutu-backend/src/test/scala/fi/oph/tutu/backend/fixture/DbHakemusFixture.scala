@@ -12,10 +12,9 @@ val dbHakemusFixture = DbHakemus(
   kasittelyVaihe = AlkukasittelyKesken,
   muokattu = None,
   allekirjoituksetTarkistettu = false,
-  allekirjoituksetTarkistettuLisatiedot = None
-  muokattu = None,
+  allekirjoituksetTarkistettuLisatiedot = None,
   imiPyynto = null,
-    imiPyyntoNumero = null,
-    imiPyyntoLahetetty = null,
-    imiPyyntoVastattu = null
+  imiPyyntoNumero = null,
+  imiPyyntoLahetetty = null,
+  imiPyyntoVastattu = null
 )

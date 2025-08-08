@@ -61,8 +61,7 @@ case class DbHakemus(
     example = "Allekirjoitukset tarkistettu kopioista",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  allekirjoituksetTarkistettuLisatiedot: Option[String]
-  muokattu: Option[LocalDateTime],
+  allekirjoituksetTarkistettuLisatiedot: Option[String],
   @(Schema @field)(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
@@ -107,7 +106,7 @@ case class Hakemus(
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   imiPyynto: ImiPyynto = ImiPyynto()
 )
 
@@ -121,7 +120,7 @@ case class PartialHakemus(
   kasittelyVaihe: Option[KasittelyVaihe] = None,
   pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   allekirjoituksetTarkistettu: Boolean = false,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None
+  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   imiPyynto: Option[ImiPyynto] = None
 )
 
