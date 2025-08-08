@@ -284,11 +284,13 @@ class HakemusService(
         val updatedHakemus = dbHakemus.copy(
           hakemusKoskee = hakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = hakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
-          allekirjoituksetTarkistettu = hakemus.allekirjoituksetTarkistettu,
+          allekirjoituksetTarkistettu =
+            hakemus.allekirjoituksetTarkistettu.getOrElse(dbHakemus.allekirjoituksetTarkistettu),
           allekirjoituksetTarkistettuLisatiedot =
             hakemus.allekirjoituksetTarkistettuLisatiedot.orElse(dbHakemus.allekirjoituksetTarkistettuLisatiedot),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
-          alkuperaisetAsiakirjatSaatuNahtavaksi = hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
+          alkuperaisetAsiakirjatSaatuNahtavaksi =
+            hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi),
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
             hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
               dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot

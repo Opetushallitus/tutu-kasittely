@@ -108,8 +108,8 @@ case class PartialHakemus(
   esittelijaOid: Option[String] = None,
   kasittelyVaihe: Option[KasittelyVaihe] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
-  allekirjoituksetTarkistettu: Boolean = false,
+  allekirjoituksetTarkistettu: Option[Boolean] = None,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
+  alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None
 )
