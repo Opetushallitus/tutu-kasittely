@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
-  OphInput,
   OphInputFormField,
   OphRadio,
   OphTypography,
@@ -122,31 +121,18 @@ const StatelessKuvausInput = ({
   kuvaus,
   setKuvaus,
   kuvausLabel,
-  useOphInputFormField,
 }: {
   kuvaus: Observable<string>;
   setKuvaus: DebounceSetValue<string>;
   kuvausLabel?: string;
-  useOphInputFormField: boolean;
 }) => {
   return (
     <TableCell>
-      {useOphInputFormField ? (
-        <OphInputFormField
-          label={kuvausLabel}
-          value={kuvaus}
-          onChange={(event) =>
-            setKuvaus(event.target.value, { debounce: true })
-          }
-        />
-      ) : (
-        <OphInput
-          value={kuvaus}
-          onChange={(event) =>
-            setKuvaus(event.target.value, { debounce: true })
-          }
-        />
-      )}
+      <OphInputFormField
+        label={kuvausLabel}
+        value={kuvaus}
+        onChange={(event) => setKuvaus(event.target.value, { debounce: true })}
+      />
     </TableCell>
   );
 };
@@ -156,14 +142,12 @@ const ContentRow = ({
   label,
   value,
   handleChange,
-  useOphInputFormField = false,
   kuvausLabel,
 }: {
   id: AsiakirjamalliLahde;
   label: string;
   value?: AsiakirjamalliTutkinnosta;
   handleChange: (changeRequest: AsiakirjamalliChangeRequest) => void;
-  useOphInputFormField?: boolean;
   kuvausLabel?: string;
 }) => {
   const [kuvausObservable, setKuvaus] = useDebounced((val: string) => {
@@ -190,7 +174,6 @@ const ContentRow = ({
         kuvaus={kuvaus}
         setKuvaus={setKuvaus}
         kuvausLabel={kuvausLabel}
-        useOphInputFormField={useOphInputFormField}
       />
     </TableRow>
   );
@@ -256,12 +239,11 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
           ))}
           <ContentRow
             id={'muu'}
-            label={'hakemus.asiakirjat.malleja_tutkinnoista.muut'}
+            label={'hakemus.asiakirjat.malleja_tutkinnoista.muu'}
             value={hakemus.asiakirjamallitTutkinnoista?.muu}
             handleChange={handleChange}
-            useOphInputFormField={true}
             kuvausLabel={t(
-              'hakemus.asiakirjat.malleja_tutkinnoista.muut_selite',
+              'hakemus.asiakirjat.malleja_tutkinnoista.muu_selite',
             )}
           />
         </TableBody>

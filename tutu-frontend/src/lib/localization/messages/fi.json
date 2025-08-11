@@ -147,7 +147,7 @@
       "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
       "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja",
       "alkuperaisetAsiakirjatSaatuNahtavaksi": "Alkuperäiset asiakirjat saatu nähtäväksi",
-      "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista"
+      "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista",
       "malleja_tutkinnoista": {
         "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
         "lahde": "Lähde",
@@ -157,8 +157,8 @@
         "naric-portal": "Naric portal (UHR)",
         "nuffic": "Nuffic",
         "aacrao": "Aacrao",
-        "muut": "Muut lähteet",
-        "muut_selite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
+        "muu": "Muut lähteet",
+        "muu_selite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
       }
     }
   },
