@@ -17,31 +17,30 @@ interface WrappedValue<A> {
   debounce: boolean | undefined;
   value: A;
 }
-type UseDebounced<A> = (
-  cb: DebounceCallback<A>,
-  opts: DebounceOptions,
-) => [Observable<A>, DebounceSetValue<A>];
 
 /* Types in */
 export type DebounceCallback<A> = (value: A) => void;
 export interface DebounceOptions {
-  delay: num;
+  delay?: number;
 }
 
 /* Types out */
 export { Observable } from 'rxjs';
-export type DebounceSetValue<A> = (value: A, options: SetValueOptions) => void;
+export type DebounceSetValue<A> = (
+  value: A,
+  options: DebounceSetValueOptions,
+) => void;
 export interface DebounceSetValueOptions {
-  debounce: boolean | undefined;
+  debounce?: boolean | undefined;
 }
 
 /* ---- */
 /* Hook */
 
-export const useDebounced: UseDebounced<A> = (
-  debounceCallback = () => {},
-  { delay = 1500 } = {},
-) => {
+export function useDebounced<A>(
+  debounceCallback: DebounceCallback<A> = () => {},
+  { delay = 1500 }: DebounceOptions = {},
+) {
   const subject = useRef(new Subject<WrappedValue<A>>()).current;
   const valueObservable: Observable<A> = useRef(
     subject.pipe(
@@ -74,4 +73,4 @@ export const useDebounced: UseDebounced<A> = (
   }, [debounceObservable, debounceCallback]);
 
   return [valueObservable, setValue];
-};
+}
