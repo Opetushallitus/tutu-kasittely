@@ -72,7 +72,12 @@ case class DbHakemus(
     example = "Yksipuoliset kopiot. Alkuperäiset kaksipuolisia.",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String]
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String],
+  @(Schema @field)(
+    example = "true",
+    requiredMode = RequiredMode.REQUIRED
+  )
+  selvityksetSaatu: Boolean
 )
 
 case class Hakemus(
@@ -96,7 +101,8 @@ case class Hakemus(
   allekirjoituksetTarkistettu: Boolean = false,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
+  selvityksetSaatu: Boolean = false
 )
 
 case class PartialHakemus(
@@ -111,5 +117,6 @@ case class PartialHakemus(
   allekirjoituksetTarkistettu: Option[Boolean] = None,
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
+  selvityksetSaatu: Option[Boolean] = None
 )

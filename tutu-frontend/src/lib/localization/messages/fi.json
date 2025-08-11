@@ -141,6 +141,8 @@
           "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
         }
       },
+      "asiakirjojenTarkistukset": "Asiakirjojen tarkistukset",
+      "kaikkiSelvityksetSaatu": "Kaikki tarvittavat serlvitykset saatu",
       "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
       "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
       "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja",
