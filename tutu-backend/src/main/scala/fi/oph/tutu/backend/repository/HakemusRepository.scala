@@ -443,9 +443,9 @@ class HakemusRepository {
     modifyData: AsiakirjamalliModifyData,
     virkailijaOid: UserOid
   ): Unit = {
-    val actions = modifyData.uudetMallit.map(lisaaAsiakirjamalli(hakemusId, _, virkailijaOid)) ++
-      modifyData.muutetutMallit.map(muokkaaAsiakirjamallia(hakemusId, _, virkailijaOid)) ++
-      modifyData.poistetutMallit.map(malli => poistaAsiakirjamalli(hakemusId, malli.lahde))
+    val actions = modifyData.uudetMallit.values.toSeq.map(lisaaAsiakirjamalli(hakemusId, _, virkailijaOid)) ++
+      modifyData.muutetutMallit.values.toSeq.map(muokkaaAsiakirjamallia(hakemusId, _, virkailijaOid)) ++
+      modifyData.poistetutMallit.map(poistaAsiakirjamalli(hakemusId, _))
     val combined = combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_asiakirjamallien_modifiointi") match {
       case Success(_) => ()
@@ -500,7 +500,9 @@ class HakemusRepository {
      * @return
      * hakemuksen asiakirjamallit tutkinnosta
      */
-  def haeAsiakirjamallitTutkinnoistaHakemusOidilla(hakemusId: UUID): Seq[AsiakirjamalliTutkinnosta] = {
+  def haeAsiakirjamallitTutkinnoistaHakemusOidilla(
+    hakemusId: UUID
+  ): Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = {
     try {
       db.run(
         sql"""
@@ -510,7 +512,8 @@ class HakemusRepository {
           ORDER BY luotu
         """.as[AsiakirjamalliTutkinnosta],
         "hae_hakemuksen_asiakirjamallit_tutkinnoista"
-      )
+      ).map(malli => malli.lahde -> malli)
+        .toMap
     } catch {
       case e: Exception =>
         LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")

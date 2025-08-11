@@ -21,7 +21,8 @@ import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { VIRKAILIJA_URL } from '@/src/lib/configuration';
 import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
-import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/asiakirjat/MallitTutkinnoista';
+import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
@@ -172,7 +173,10 @@ const AsiakirjaPagePure = ({
         updateHakemus={updateHakemus}
       />
       <AlkuperaisetAsiakirjat hakemus={hakemus} updateHakemus={updateHakemus} />
-      <AsiakirjaMallejaVastaavistaTutkinnoista />
+      <AsiakirjaMallejaVastaavistaTutkinnoista
+        hakemus={hakemus as Hakemus}
+        updateHakemus={updateHakemus}
+      />
     </Stack>
   );
 };

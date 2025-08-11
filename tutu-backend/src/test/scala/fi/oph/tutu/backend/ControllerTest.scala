@@ -429,15 +429,17 @@ class ControllerTest extends IntegrationTestBase {
                                   }, {
                                     "asiakirjanTyyppi" : "tyotodistukset"
                                   } ],
-                                    "asiakirjamallitTutkinnoista" : [ {
+                                    "asiakirjamallitTutkinnoista" : {
+                                      "ece" : {
                                         "lahde" : "ece",
                                         "vastaavuus" : true,
                                         "kuvaus" : "Jotain kuvausta"
-                                    }, {
+                                      },
+                                      "aacrao" : {
                                         "lahde" : "aacrao",
                                         "vastaavuus" : false,
                                         "kuvaus" : "Jotain muuta kuvausta"
-                                    } ]
+                                      } }
                               }"""
 
     val result = mockMvc
@@ -573,55 +575,55 @@ class ControllerTest extends IntegrationTestBase {
 
     var updatedHakemus = PartialHakemus(
       asiakirjamallitTutkinnoista = Some(
-        Seq(
-          AsiakirjamalliTutkinnosta(ece, true, Some("kuvaus1")),
-          AsiakirjamalliTutkinnosta(nuffic, false, Some("kuvaus2")),
-          AsiakirjamalliTutkinnosta(aacrao, true, None),
-          AsiakirjamalliTutkinnosta(muu, false, None)
+        Map(
+          ece    -> AsiakirjamalliTutkinnosta(ece, true, Some("kuvaus1")),
+          nuffic -> AsiakirjamalliTutkinnosta(nuffic, false, Some("kuvaus2")),
+          aacrao -> AsiakirjamalliTutkinnosta(aacrao, true, None),
+          muu    -> AsiakirjamalliTutkinnosta(muu, false, None)
         )
       )
     )
     var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
     var asiakirjamallit   = paivitettyHakemus.asiakirjamallitTutkinnoista
     assert(asiakirjamallit.size == 4)
-    assert(asiakirjamallit.head.lahde == ece)
-    assert(asiakirjamallit.head.vastaavuus)
-    assert(asiakirjamallit.head.kuvaus.contains("kuvaus1"))
-    assert(asiakirjamallit(1).lahde == nuffic)
-    assert(!asiakirjamallit(1).vastaavuus)
-    assert(asiakirjamallit(1).kuvaus.contains("kuvaus2"))
-    assert(asiakirjamallit(2).lahde == aacrao)
-    assert(asiakirjamallit(2).vastaavuus)
-    assert(asiakirjamallit(2).kuvaus.isEmpty)
-    assert(asiakirjamallit(3).lahde == muu)
-    assert(!asiakirjamallit(3).vastaavuus)
-    assert(asiakirjamallit(3).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(ece))
+    assert(asiakirjamallit(ece).vastaavuus)
+    assert(asiakirjamallit(ece).kuvaus.contains("kuvaus1"))
+    assert(asiakirjamallit.contains(nuffic))
+    assert(!asiakirjamallit(nuffic).vastaavuus)
+    assert(asiakirjamallit(nuffic).kuvaus.contains("kuvaus2"))
+    assert(asiakirjamallit.contains(aacrao))
+    assert(asiakirjamallit(aacrao).vastaavuus)
+    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(muu))
+    assert(!asiakirjamallit(muu).vastaavuus)
+    assert(asiakirjamallit(muu).kuvaus.isEmpty)
 
     updatedHakemus = PartialHakemus(
       asiakirjamallitTutkinnoista = Some(
-        Seq(
-          AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
-          AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
-          AsiakirjamalliTutkinnosta(aacrao, false, None),
-          AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
+        Map(
+          ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
+          naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
+          aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
+          muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
         )
       )
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
     asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
     assert(asiakirjamallit.size == 4)
-    assert(asiakirjamallit.head.lahde == ece)
-    assert(!asiakirjamallit.head.vastaavuus)
-    assert(asiakirjamallit.head.kuvaus.contains("editoitu kuvaus"))
-    assert(asiakirjamallit(1).lahde == aacrao)
-    assert(!asiakirjamallit(1).vastaavuus)
-    assert(asiakirjamallit(1).kuvaus.isEmpty)
-    assert(asiakirjamallit(2).lahde == muu)
-    assert(!asiakirjamallit(2).vastaavuus)
-    assert(asiakirjamallit(2).kuvaus.contains("uusi kuvaus"))
-    assert(asiakirjamallit(3).lahde == naric_portal)
-    assert(asiakirjamallit(3).vastaavuus)
-    assert(asiakirjamallit(3).kuvaus.contains("naric kuvaus"))
+    assert(asiakirjamallit.contains(ece))
+    assert(!asiakirjamallit(ece).vastaavuus)
+    assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
+    assert(asiakirjamallit.contains(naric_portal))
+    assert(asiakirjamallit(naric_portal).vastaavuus)
+    assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
+    assert(asiakirjamallit.contains(aacrao))
+    assert(!asiakirjamallit(aacrao).vastaavuus)
+    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(muu))
+    assert(!asiakirjamallit(muu).vastaavuus)
+    assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
   }
 
   @Test

@@ -48,7 +48,7 @@ case class AsiakirjamalliTutkinnosta(
 )
 
 case class AsiakirjamalliModifyData(
-  uudetMallit: Seq[AsiakirjamalliTutkinnosta],
-  muutetutMallit: Seq[AsiakirjamalliTutkinnosta],
-  poistetutMallit: Seq[AsiakirjamalliTutkinnosta]
+  uudetMallit: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta],
+  muutetutMallit: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta],
+  poistetutMallit: Seq[AsiakirjamalliLahde]
 )

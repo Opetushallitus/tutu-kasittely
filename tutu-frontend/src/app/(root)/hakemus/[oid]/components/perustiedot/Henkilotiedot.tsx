@@ -50,7 +50,7 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
       .with(P.nullish, () => '')
       .with(P.string, (str) => str)
       .with(P._, (fieldValue) => {
-        if (containsTranslatedName(fieldValue)) return fieldValue[lan];
+        if (containsTranslatedName(fieldValue)) return fieldValue[lan]!;
         return '';
       })
       .otherwise(() => '');

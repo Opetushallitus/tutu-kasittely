@@ -1,25 +1,29 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{AsiakirjamalliModifyData, AsiakirjamalliTutkinnosta}
+import fi.oph.tutu.backend.domain.{AsiakirjamalliLahde, AsiakirjamalliModifyData, AsiakirjamalliTutkinnosta}
 
 object HakemusModifyOperationResolver {
   private def asiakirjamalliModified(
-    currentMalli: AsiakirjamalliTutkinnosta,
+    currentMalli: Option[AsiakirjamalliTutkinnosta],
     toBeMalli: AsiakirjamalliTutkinnosta
-  ): Boolean =
-    currentMalli.lahde == toBeMalli.lahde && (
-      currentMalli.vastaavuus != toBeMalli.vastaavuus ||
-        currentMalli.kuvaus != toBeMalli.kuvaus
-    )
+  ): Boolean = {
+    currentMalli match {
+      case Some(current) =>
+        current.vastaavuus != toBeMalli.vastaavuus ||
+        current.kuvaus != toBeMalli.kuvaus
+      case None => false
+    }
+  }
 
   def resolveAsiakirjamalliModifyOperations(
-    currentAsiakirjamallit: Seq[AsiakirjamalliTutkinnosta],
-    toBeAsiakirjamallit: Seq[AsiakirjamalliTutkinnosta]
+    currentAsiakirjamallit: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta],
+    toBeAsiakirjamallit: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]
   ): AsiakirjamalliModifyData = {
-    val uudetMallit     = toBeAsiakirjamallit.filterNot(malli => currentAsiakirjamallit.exists(_.lahde == malli.lahde))
-    val poistetutMallit = currentAsiakirjamallit.filterNot(malli => toBeAsiakirjamallit.exists(_.lahde == malli.lahde))
-    val muutetutMallit  =
-      toBeAsiakirjamallit.filter(malli => currentAsiakirjamallit.exists(asiakirjamalliModified(_, malli)))
+    val uudetMallit     = toBeAsiakirjamallit.view.filterKeys(!currentAsiakirjamallit.contains(_)).toMap
+    val poistetutMallit = currentAsiakirjamallit.view.filterKeys(!toBeAsiakirjamallit.contains(_)).keys.toSeq
+    val muutetutMallit  = toBeAsiakirjamallit.view
+      .filterKeys(lahde => asiakirjamalliModified(currentAsiakirjamallit.get(lahde), toBeAsiakirjamallit(lahde)))
+      .toMap
 
     AsiakirjamalliModifyData(
       uudetMallit = uudetMallit,

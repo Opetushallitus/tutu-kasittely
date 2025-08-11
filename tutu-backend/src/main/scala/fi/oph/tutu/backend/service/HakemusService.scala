@@ -108,7 +108,7 @@ class HakemusService(
             pyydettavatAsiakirjat =
               hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
                 case asiakirjat => asiakirjat
-                case _          => Seq()
+                case null       => Seq()
               },
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
             allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
@@ -118,7 +118,7 @@ class HakemusService(
             asiakirjamallitTutkinnoista =
               hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id) match {
                 case asiakirjamallit => asiakirjamallit
-                case _               => Seq()
+                case null            => Map()
               }
           )
         )

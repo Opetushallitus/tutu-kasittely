@@ -109,7 +109,7 @@ case class Hakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Boolean = false,
-  asiakirjaMallitTutkinnoista: Seq[AsiakirjaMalliTutkinnosta] = Seq.empty
+  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty
 )
 
 case class PartialHakemus(
@@ -126,5 +126,5 @@ case class PartialHakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Option[Boolean] = None,
-  asiakirjamallitTutkinnoista: Option[Seq[AsiakirjamalliTutkinnosta]] = None
+  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None
 )

@@ -30,6 +30,9 @@ export type Hakemus = {
   alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | undefined;
   selvityksetSaatu: boolean;
+  asiakirjamallitTutkinnoista?: Partial<
+    Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
+  >;
 };
 
 export type SisaltoItem = {
@@ -55,4 +58,18 @@ export type TarkistuksenTila = {
 export type AsiakirjaPyynto = {
   id?: string;
   asiakirjanTyyppi: string;
+};
+
+export type AsiakirjamalliLahde =
+  | 'ece'
+  | 'UK_enic'
+  | 'naric_portal'
+  | 'nuffic'
+  | 'aacrao'
+  | 'muu';
+
+export type AsiakirjamalliTutkinnosta = {
+  lahde: AsiakirjamalliLahde;
+  vastaavuus: boolean;
+  kuvaus?: string;
 };
