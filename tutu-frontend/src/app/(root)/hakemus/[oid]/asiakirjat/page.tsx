@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -156,8 +156,14 @@ const AsiakirjaPagePure = ({
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
         asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
+        updateHakemusAction={updateHakemus}
       ></AsiakirjaPyynnot>
-
+      <Divider orientation={'horizontal'} />
+      <ImiPyyntoComponent
+        imiPyynto={hakemus.imiPyynto}
+        updateHakemusAction={updateHakemus}
+      ></ImiPyyntoComponent>
+      <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>

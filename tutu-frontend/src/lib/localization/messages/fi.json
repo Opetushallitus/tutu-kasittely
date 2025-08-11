@@ -141,6 +141,13 @@
           "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
         }
       },
+      "imiPyynnot": {
+        "otsikko": "IMI-pyynnöt",
+        "imiPyyntoQuestion": "Tarvitaanko IMI-pyyntö",
+        "imiPyyntoNumero": "IMI-pyynnön numero",
+        "imiPyyntoLahetetty": "IMI-pyyntö lähetetty",
+        "imiPyyntoVastattu": "IMI-pyyntöön vastattu"
+      },
       "asiakirjojenTarkistukset": "Asiakirjojen tarkistukset",
       "kaikkiSelvityksetSaatu": "Kaikki tarvittavat selvitykset saatu",
       "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
