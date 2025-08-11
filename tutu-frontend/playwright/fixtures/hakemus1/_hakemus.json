@@ -34,5 +34,7 @@
   "esittelijaOid": "1.2.246.562.4.999999999999",
   "ataruHakemuksenTila": "kasittelymaksamatta",
   "kasittelyVaihe": "HakemustaTaydennetty",
-  "muokattu": "2025-06-28T10:59:04.597"
+  "muokattu": "2025-06-28T10:59:04.597",
+  "pyydettavatAsiakirjat": [],
+  "imiPyynto": {}
 }

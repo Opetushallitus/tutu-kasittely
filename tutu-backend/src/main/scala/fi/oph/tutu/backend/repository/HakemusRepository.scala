@@ -291,11 +291,11 @@ class HakemusRepository {
     val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
     val allekirjoituksetTarkistettuLisatiedotOrNull =
       partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
-    val hakemusKoskee   = partialHakemus.hakemusKoskee
+    val hakemusKoskee                                         = partialHakemus.hakemusKoskee
     val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
     val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
       partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
-    val selvityksetSaatu = partialHakemus.selvityksetSaatu
+    val selvityksetSaatu                 = partialHakemus.selvityksetSaatu
     val imiPyyntoOrNull: Option[Boolean] = partialHakemus.imiPyynto match {
       case Some(imiPyynto) => Some(imiPyynto)
       case None            => None

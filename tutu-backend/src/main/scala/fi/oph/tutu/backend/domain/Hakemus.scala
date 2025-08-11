@@ -134,8 +134,13 @@ case class Hakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Boolean = false,
-  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty
-  imiPyynto: ImiPyynto = ImiPyynto()
+  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty,
+  imiPyynto: ImiPyynto = ImiPyynto(
+    imiPyynto = None,
+    imiPyyntoNumero = None,
+    imiPyyntoLahetetty = None,
+    imiPyyntoVastattu = None
+  )
 )
 
 case class PartialHakemus(
@@ -155,47 +160,3 @@ case class PartialHakemus(
   selvityksetSaatu: Option[Boolean] = None,
   imiPyynto: Option[ImiPyynto] = None
 )
-
-case class ImiPyynto(
-  imiPyynto: Option[Boolean],
-  imiPyyntoNumero: Option[String] = None,
-  imiPyyntoLahetetty: Option[LocalDateTime] = None,
-  imiPyyntoVastattu: Option[LocalDateTime] = None
-)
-
-class ImiPyyntoDeserializer extends JsonDeserializer[ImiPyynto] {
-  override def deserialize(p: JsonParser, ctxt: DeserializationContext): ImiPyynto = {
-    if (p.getCurrentToken == JsonToken.VALUE_NULL) {
-      ImiPyynto(
-        imiPyynto = None,
-        imiPyyntoNumero = None,
-        imiPyyntoLahetetty = None,
-        imiPyyntoVastattu = None
-      )
-    } else {
-      val node      = p.getCodec.readTree[JsonNode](p)
-      val imiPyynto = Option(node.get("imiPyynto")) match {
-        case Some(jsonNode) if !jsonNode.isNull && jsonNode.isBoolean =>
-          Some(jsonNode.asBoolean())
-        case Some(_) =>
-          None
-        case None =>
-          None
-      }
-
-      val imiPyyntoNumero = Option(node.get("imiPyyntoNumero"))
-        .filterNot(_.isNull)
-        .map(_.asText)
-
-      val imiPyyntoLahetetty = Option(node.get("imiPyyntoLahetetty"))
-        .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
-
-      val imiPyyntoVastattu = Option(node.get("imiPyyntoVastattu"))
-        .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
-
-      ImiPyynto(imiPyynto, imiPyyntoNumero, imiPyyntoLahetetty, imiPyyntoVastattu)
-    }
-  }
-}

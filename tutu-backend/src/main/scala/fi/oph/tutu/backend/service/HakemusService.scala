@@ -312,29 +312,50 @@ class HakemusService(
             dbHakemus.allekirjoituksetTarkistettuLisatiedot
           ),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
-          alkuperaisetAsiakirjatSaatuNahtavaksi =
-            hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi),
+          alkuperaisetAsiakirjatSaatuNahtavaksi = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(
+            dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
+          ),
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
-            hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
+            partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
               dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
             ),
           selvityksetSaatu = hakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu),
-            imiPyynto = partialHakemus.imiPyynto match {
-            case None => dbHakemus.imiPyynto
-            case _    => partialHakemus.imiPyynto.get.imiPyynto
-          },
-          imiPyyntoNumero = partialHakemus.imiPyynto match {
-            case None => dbHakemus.imiPyyntoNumero
-            case _    => partialHakemus.imiPyynto.get.imiPyyntoNumero
-          },
-          imiPyyntoLahetetty = partialHakemus.imiPyynto match {
-            case None => dbHakemus.imiPyyntoLahetetty
-            case _    => partialHakemus.imiPyynto.get.imiPyyntoLahetetty
-          },
-          imiPyyntoVastattu = partialHakemus.imiPyynto match {
-            case None => dbHakemus.imiPyyntoVastattu
-            case _    => partialHakemus.imiPyynto.get.imiPyyntoVastattu
-          }
+          imiPyynto = partialHakemus.imiPyynto match {
+                      case Some(imiPyynto) =>
+                        imiPyynto.imiPyynto match {
+                          case Some(value) => Some(value)
+                          case None        => None
+                        }
+                      case None =>
+                        dbHakemus.imiPyynto
+                    },
+                    imiPyyntoNumero = partialHakemus.imiPyynto match {
+                      case Some(imiPyynto) =>
+                        imiPyynto.imiPyynto match {
+                          case Some(true) => imiPyynto.imiPyyntoNumero
+                          case _          => None
+                        }
+                      case None =>
+                        dbHakemus.imiPyyntoNumero
+                    },
+                    imiPyyntoLahetetty = partialHakemus.imiPyynto match {
+                      case Some(imiPyynto) =>
+                        imiPyynto.imiPyynto match {
+                          case Some(true) => imiPyynto.imiPyyntoLahetetty
+                          case _          => None
+                        }
+                      case None =>
+                        dbHakemus.imiPyyntoLahetetty
+                    },
+                    imiPyyntoVastattu = partialHakemus.imiPyynto match {
+                      case Some(imiPyynto) =>
+                        imiPyynto.imiPyynto match {
+                          case Some(true) => imiPyynto.imiPyyntoVastattu
+                          case _          => None
+                        }
+                      case None =>
+                        dbHakemus.imiPyyntoVastattu
+                    }
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,

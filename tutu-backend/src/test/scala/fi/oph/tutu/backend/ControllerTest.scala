@@ -603,33 +603,49 @@ class ControllerTest extends IntegrationTestBase {
     assert(!asiakirjamallit(muu).vastaavuus)
     assert(asiakirjamallit(muu).kuvaus.isEmpty)
 
+    // Poistetaan kaikki asiakirjat
     updatedHakemus = PartialHakemus(
-      asiakirjamallitTutkinnoista = Some(
-        Map(
-          ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
-          naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
-          aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
-          muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
-        )
-      )
+      pyydettavatAsiakirjat = Some(Seq.empty[PyydettavaAsiakirja])
     )
-    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
-    asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
-    assert(asiakirjamallit.size == 4)
-    assert(asiakirjamallit.contains(ece))
-    assert(!asiakirjamallit(ece).vastaavuus)
-    assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
-    assert(asiakirjamallit.contains(naric_portal))
-    assert(asiakirjamallit(naric_portal).vastaavuus)
-    assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
-    assert(asiakirjamallit.contains(aacrao))
-    assert(!asiakirjamallit(aacrao).vastaavuus)
-    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
-    assert(asiakirjamallit.contains(muu))
-    assert(!asiakirjamallit(muu).vastaavuus)
-    assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
+    requestJson = mapper.writeValueAsString(updatedHakemus)
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
     paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
     assert(paivitettyHakemus.get.pyydettavatAsiakirjat.isEmpty)
+
+    updatedHakemus = PartialHakemus(
+          asiakirjamallitTutkinnoista = Some(
+            Map(
+              ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
+              naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
+              aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
+              muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
+            )
+          )
+        )
+        paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
+        asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
+        assert(asiakirjamallit.size == 4)
+        assert(asiakirjamallit.contains(ece))
+        assert(!asiakirjamallit(ece).vastaavuus)
+        assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
+        assert(asiakirjamallit.contains(naric_portal))
+        assert(asiakirjamallit(naric_portal).vastaavuus)
+        assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
+        assert(asiakirjamallit.contains(aacrao))
+        assert(!asiakirjamallit(aacrao).vastaavuus)
+        assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+        assert(asiakirjamallit.contains(muu))
+        assert(!asiakirjamallit(muu).vastaavuus)
+        assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
   }
 
   @Test

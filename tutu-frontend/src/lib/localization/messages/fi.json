@@ -206,6 +206,7 @@
   "yleiset": {
     "poista": "Poista",
     "kylla": "Kyllä",
-    "ei": "Ei"
+    "ei": "Ei",
+    "paivamaaraFormaatti": "pp.kk.vvvv"
   }
 }

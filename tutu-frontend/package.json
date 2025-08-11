@@ -34,6 +34,7 @@
     "next": "15.2.5",
     "nuqs": "^2.4.3",
     "react": "^19.0.0",
+    "react-datepicker": "^8.4.0",
     "react-dom": "^19.0.0",
     "react-rx": "^4.1.31",
     "remeda": "^2.21.3",
