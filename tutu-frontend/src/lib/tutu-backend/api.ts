@@ -1,8 +1,11 @@
-import { TUTU_BACKEND_API_URL } from '../configuration';
+'use client';
+
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import { FetchError, PermissionError } from '@/src/lib/common';
 import { redirect } from 'next/navigation';
 
 let _csrfToken: string;
+const TUTU_BACKEND_API_URL = getConfiguration().TUTU_BACKEND_API_URL;
 const loginUrl = `${TUTU_BACKEND_API_URL}/login`;
 const isServer = typeof window === 'undefined';
 

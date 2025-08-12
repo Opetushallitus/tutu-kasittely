@@ -1,12 +1,7 @@
-import {
-  isTesting,
-  localTranslations,
-  LOKALISOINTI_URL,
-  tolgeeTools,
-} from '../configuration';
-import { BackendFetch, Tolgee } from '@tolgee/react';
+import { isTesting, localTranslations } from '../configuration/configuration';
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
-import { InContextTools } from '@tolgee/web/tools';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
@@ -32,16 +27,16 @@ export function TolgeeBase() {
       },
     });
   } else {
-    const tgWithTools = tolgeeTools ? tg.use(InContextTools()) : tg;
-    return tgWithTools
+    return tg
       .use(
         BackendFetch({
-          prefix: LOKALISOINTI_URL,
+          prefix: getConfiguration().LOKALISOINTI_URL,
           next: {
             revalidate: REVALIDATE_TIME_SECONDS,
           },
         }),
       )
+      .use(DevTools())
       .updateDefaults({
         apiKey,
         apiUrl,

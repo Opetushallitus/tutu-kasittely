@@ -20,7 +20,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
-import { VIRKAILIJA_URL } from '@/src/lib/configuration';
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
 import { Hakemus } from '@/src/lib/types/hakemus';
@@ -131,6 +131,7 @@ const AsiakirjaPagePure = ({
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
+  const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
