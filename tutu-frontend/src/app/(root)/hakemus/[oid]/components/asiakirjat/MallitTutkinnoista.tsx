@@ -23,6 +23,7 @@ import { DebounceSetValue, useDebounced } from '@/src/hooks/useDebounced';
 import { useObservable } from 'react-rx';
 import { Observable } from 'rxjs';
 import { useEffect } from 'react';
+import { match, P } from 'ts-pattern';
 
 type LahdeOption = {
   id: AsiakirjamalliLahde;
@@ -68,7 +69,7 @@ const TableHeader = () => {
           <BoldedLabel label={t('yleiset.ei')} />
         </TableCell>
         <TableCell>
-          <OphTypography variant={'label'}>
+          <OphTypography variant={'body1'}>
             {t('hakemus.asiakirjat.malleja_tutkinnoista.kuvaus')}
           </OphTypography>
         </TableCell>
@@ -121,10 +122,18 @@ const StatelessKuvausInput = ({
 }) => {
   const kuvaus = useObservable(kuvausObservable, '');
 
+  const [minRows, multiline] = kuvausLabel ? [3, true] : [1, false];
   return (
     <TableCell>
       <OphInputFormField
+        sx={{
+          '& .MuiFormLabel-root': {
+            fontWeight: 'normal',
+          },
+        }}
         label={kuvausLabel}
+        multiline={multiline}
+        minRows={minRows}
         value={kuvaus}
         onChange={(event) => setKuvaus(event.target.value, { debounce: true })}
       />
@@ -199,27 +208,37 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
 
   const handleChange = (changeRequest: AsiakirjamalliChangeRequest) => {
     const changedLahde = changeRequest.lahde;
-    const updatedMalli = {
-      ...hakemus.asiakirjamallitTutkinnoista?.[changedLahde],
-      lahde: changedLahde,
-      vastaavuus:
-        changeRequest.vastaavuus !== undefined
-          ? changeRequest.vastaavuus
-          : hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
-      kuvaus:
-        changeRequest.kuvaus !== undefined
-          ? changeRequest.kuvaus
-          : hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.kuvaus,
-    };
+    const toBeVastaavuus = match([
+      hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
+      changeRequest.vastaavuus,
+      changeRequest.kuvaus,
+    ])
+      .with([P._, P.not(P.nullish), P._], ([, newVal]) => newVal)
+      .with([P.not(P.nullish), P.nullish, P._], ([origVal, ,]) => origVal)
+      .with([P.nullish, P.nullish, P.not(P.nullish)], () => false)
+      .with([P.nullish, P.nullish, P.nullish], () => undefined)
+      .exhaustive();
 
-    const updatedHakemus: Partial<Hakemus> = {
-      asiakirjamallitTutkinnoista: {
-        ...hakemus.asiakirjamallitTutkinnoista,
-        [changedLahde]: updatedMalli,
-      },
-    };
+    if (toBeVastaavuus !== undefined) {
+      const updatedMalli = {
+        ...hakemus.asiakirjamallitTutkinnoista?.[changedLahde],
+        lahde: changedLahde,
+        vastaavuus: toBeVastaavuus,
+        kuvaus:
+          changeRequest.kuvaus !== undefined
+            ? changeRequest.kuvaus
+            : hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.kuvaus,
+      };
 
-    updateHakemus(updatedHakemus);
+      const updatedHakemus: Partial<Hakemus> = {
+        asiakirjamallitTutkinnoista: {
+          ...hakemus.asiakirjamallitTutkinnoista,
+          [changedLahde]: updatedMalli,
+        },
+      };
+
+      updateHakemus(updatedHakemus);
+    }
   };
 
   return (
@@ -244,7 +263,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
           ))}
           <ContentRow
             id={'muu'}
-            label={'hakemus.asiakirjat.malleja_tutkinnoista.muu'}
+            label={t('hakemus.asiakirjat.malleja_tutkinnoista.muu')}
             value={hakemus.asiakirjamallitTutkinnoista?.muu}
             handleChange={handleChange}
             kuvausLabel={t(

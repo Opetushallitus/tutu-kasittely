@@ -54,3 +54,53 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
     'Jotain muuta kuvausta',
   );
 });
+
+test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
+  page,
+}) => {
+  mockUser(page);
+  mockHakemus(page);
+  await mockLiitteet(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+  );
+
+  await expect(
+    page.getByTestId('asiakirjamalleja-vastaavista-tutkinnoista-otsikko'),
+  ).toBeVisible();
+
+  const cellsOfEce = page
+    .getByTestId('asiakirjamallit-tutkinnoista-ece')
+    .locator('td');
+
+  let [request] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
+        req.method() === 'PATCH',
+    ),
+    cellsOfEce.nth(2).locator('input[type="radio"]').click(),
+  ]);
+  expect(
+    request.postDataJSON().asiakirjamallitTutkinnoista.ece.vastaavuus,
+  ).toEqual(false);
+
+  const cellsOfUkEnic = page
+    .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
+    .locator('td');
+  [request] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
+        req.method() === 'PATCH',
+    ),
+    cellsOfUkEnic.nth(3).locator('input[type="text"]').fill('Uusi kuvaus'),
+  ]);
+  expect(
+    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+  ).toEqual('Uusi kuvaus');
+  expect(
+    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.vastaavuus,
+  ).toEqual(false);
+});
