@@ -28,7 +28,7 @@ export interface DebounceOptions {
 export { Observable } from 'rxjs';
 export type DebounceSetValue<A> = (
   value: A,
-  options: DebounceSetValueOptions,
+  options?: DebounceSetValueOptions,
 ) => void;
 export interface DebounceSetValueOptions {
   debounce?: boolean | undefined;

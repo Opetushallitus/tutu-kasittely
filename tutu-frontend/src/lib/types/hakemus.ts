@@ -29,6 +29,7 @@ export type Hakemus = {
   allekirjoituksetTarkistettuLisatiedot: string | undefined;
   alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | undefined;
+  selvityksetSaatu: boolean;
 };
 
 export type SisaltoItem = {

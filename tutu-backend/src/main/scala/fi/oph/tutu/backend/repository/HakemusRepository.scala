@@ -38,7 +38,8 @@ class HakemusRepository {
         r.nextBoolean(),
         Option(r.nextString()),
         r.nextBoolean(),
-        Option(r.nextString())
+        Option(r.nextString()),
+        r.nextBoolean()
       )
     )
 
@@ -154,7 +155,8 @@ class HakemusRepository {
               h.allekirjoitukset_tarkistettu,
               h.allekirjoitukset_tarkistettu_lisatiedot,
               h.alkuperaiset_asiakirjat_saatu_nahtavaksi,
-              h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot
+              h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot,
+              h.selvitykset_saatu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -264,6 +266,7 @@ class HakemusRepository {
     val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
     val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
       partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
+    val selvityksetSaatu = partialHakemus.selvityksetSaatu
     try
       db.run(
         sql"""
@@ -276,6 +279,7 @@ class HakemusRepository {
           allekirjoitukset_tarkistettu_lisatiedot = $allekirjoituksetTarkistettuLisatiedotOrNull,
           alkuperaiset_asiakirjat_saatu_nahtavaksi = $alkuperaisetAsiakirjatSaatuNahtavaksi,
           alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = $alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull,
+          selvitykset_saatu = $selvityksetSaatu,
           muokkaaja = $muokkaaja
         WHERE hakemus_oid = $hakemusOidString
         RETURNING

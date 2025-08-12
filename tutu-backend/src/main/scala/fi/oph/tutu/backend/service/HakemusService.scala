@@ -113,7 +113,8 @@ class HakemusService(
             allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
             allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
             alkuperaisetAsiakirjatSaatuNahtavaksi = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
-            alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
+            alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
+            selvityksetSaatu = dbHakemus.selvityksetSaatu
           )
         )
       case None =>
@@ -294,7 +295,8 @@ class HakemusService(
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
             hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
               dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
-            )
+            ),
+          selvityksetSaatu = hakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu)
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,

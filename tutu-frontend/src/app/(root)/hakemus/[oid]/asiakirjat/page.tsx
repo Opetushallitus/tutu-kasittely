@@ -11,6 +11,7 @@ import {
 } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
 import { AllekirjoitustenTarkistus } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AllekirjoitustenTarkistus';
 import { AlkuperaisetAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AlkuperaisetAsiakirjat';
+import { KaikkiSelvityksetSaatu } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/KaikkiSelvityksetSaatu';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
@@ -145,6 +146,11 @@ const AsiakirjaPagePure = ({
       <AsiakirjaPyynnot
         asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
       ></AsiakirjaPyynnot>
+
+      <OphTypography variant={'h3'}>
+        {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
+      </OphTypography>
+      <KaikkiSelvityksetSaatu hakemus={hakemus} updateHakemus={updateHakemus} />
 
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
