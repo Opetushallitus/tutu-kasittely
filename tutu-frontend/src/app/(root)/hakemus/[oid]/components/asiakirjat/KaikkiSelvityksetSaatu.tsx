@@ -59,13 +59,11 @@ export const KaikkiSelvityksetSaatu = ({
     });
 
   useEffect(() => {
-    if (hakemus?.hakemusOid) {
-      const selvityksetSaatu = hakemus?.selvityksetSaatu;
-      if (isDefined(selvityksetSaatu)) {
-        setSelvityksetSaatu(selvityksetSaatu, { debounce: false });
-      }
+    const selvityksetSaatu = hakemus?.selvityksetSaatu;
+    if (isDefined(selvityksetSaatu)) {
+      setSelvityksetSaatu(selvityksetSaatu, { debounce: false });
     }
-  }, [hakemus?.hakemusOid, hakemus?.selvityksetSaatu, setSelvityksetSaatu]);
+  }, [hakemus?.selvityksetSaatu, setSelvityksetSaatu]);
 
   return (
     <StatelessKaikkiSelvityksetSaatu
