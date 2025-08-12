@@ -157,6 +157,22 @@ export const mockHakemus = (page: Page) => {
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
         pyydettavatAsiakirjat: [],
+        asiakirjamallitTutkinnoista: {
+          ece: {
+            lahde: 'ece',
+            vastaavuus: true,
+            kuvaus: 'Jotain kuvausta',
+          },
+          nuffic: {
+            lahde: 'nuffic',
+            vastaavuus: false,
+          },
+          aacrao: {
+            lahde: 'aacrao',
+            vastaavuus: false,
+            kuvaus: 'Jotain muuta kuvausta',
+          },
+        },
       }),
     });
   });

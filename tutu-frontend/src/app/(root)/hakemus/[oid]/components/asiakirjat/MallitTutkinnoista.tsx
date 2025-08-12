@@ -77,40 +77,33 @@ const TableHeader = () => {
   );
 };
 
-const RadioGroup = ({
-  id,
-  value,
-  handleChange,
+const StatelessRadioGroup = ({
+  vastaavuusObservable,
+  setVastaavuus,
 }: {
-  id: AsiakirjamalliLahde;
-  value?: boolean;
-  handleChange: (changeRequest: AsiakirjamalliChangeRequest) => void;
+  vastaavuusObservable: Observable<boolean>;
+  setVastaavuus: DebounceSetValue<boolean>;
 }) => {
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange({
-      lahde: id,
-      vastaavuus: event.target.value === 'true',
-    });
-  };
+  const vastaavuus = useObservable(vastaavuusObservable, undefined);
 
   return (
     <>
       <TableCell>
         <OphRadio
           value={'true'}
-          checked={value === true}
+          checked={vastaavuus === true}
           label={''}
           name="vastaavuus_true_false"
-          onChange={onChange}
+          onChange={() => setVastaavuus(true, { debounce: true })}
         ></OphRadio>
       </TableCell>
       <TableCell>
         <OphRadio
           value={'false'}
-          checked={value === false}
+          checked={vastaavuus === false}
           label={''}
           name="vastaavuus_true_false"
-          onChange={onChange}
+          onChange={() => setVastaavuus(false, { debounce: true })}
         ></OphRadio>
       </TableCell>
     </>
@@ -118,14 +111,16 @@ const RadioGroup = ({
 };
 
 const StatelessKuvausInput = ({
-  kuvaus,
+  kuvausObservable,
   setKuvaus,
   kuvausLabel,
 }: {
-  kuvaus: Observable<string>;
+  kuvausObservable: Observable<string>;
   setKuvaus: DebounceSetValue<string>;
   kuvausLabel?: string;
 }) => {
+  const kuvaus = useObservable(kuvausObservable, '');
+
   return (
     <TableCell>
       <OphInputFormField
@@ -154,24 +149,31 @@ const ContentRow = ({
     handleChange({ lahde: id, kuvaus: val });
   });
 
-  const kuvaus = useObservable(kuvausObservable);
+  const [vastaavuusObservable, setVastaavuus] = useDebounced((val: boolean) => {
+    handleChange({ lahde: id, vastaavuus: val });
+  });
 
   useEffect(() => {
     if (value?.kuvaus) {
-      setKuvaus(kuvaus, { debounce: false });
+      setKuvaus(value.kuvaus!, { debounce: false });
     }
-  }, [value?.kuvaus, setKuvaus, kuvaus]);
+  }, [value?.kuvaus, setKuvaus]);
+
+  useEffect(() => {
+    if (value?.vastaavuus !== undefined) {
+      setVastaavuus(value.vastaavuus!, { debounce: false });
+    }
+  }, [value?.vastaavuus, setVastaavuus]);
 
   return (
-    <TableRow>
+    <TableRow data-testid={`asiakirjamallit-tutkinnoista-${id}`}>
       <TableCell>{label}</TableCell>
-      <RadioGroup
-        id={id}
-        value={value?.vastaavuus}
-        handleChange={handleChange}
+      <StatelessRadioGroup
+        vastaavuusObservable={vastaavuusObservable}
+        setVastaavuus={setVastaavuus}
       />
       <StatelessKuvausInput
-        kuvaus={kuvaus}
+        kuvausObservable={kuvausObservable}
         setKuvaus={setKuvaus}
         kuvausLabel={kuvausLabel}
       />
@@ -222,7 +224,10 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
 
   return (
     <Stack gap={theme.spacing(3)}>
-      <OphTypography variant={'h3'}>
+      <OphTypography
+        variant={'h3'}
+        data-testid="asiakirjamalleja-vastaavista-tutkinnoista-otsikko"
+      >
         {t('hakemus.asiakirjat.malleja_tutkinnoista.otsikko')}
       </OphTypography>
       <Table>
