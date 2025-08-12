@@ -22,8 +22,7 @@ permissions:
   packages: read
 
 jobs:
-  deploy-frontend-dev:
-    if: ${{ inputs.environment == 'dev' }}
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,10 +45,18 @@ jobs:
           unzip build.zip
           cp -R .next/standalone/.next/server .next/server
       - name: Configure AWS dev-role credentials
+        if: ${{ inputs.environment == 'dev' }}
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: ${{ secrets.AWS_TUTU_DEV_ROLE_ARN }}
           role-session-name: tutu-frontend-deploy-dev
+          aws-region: eu-west-1
+      - name: Configure AWS qa-role credentials
+        if: ${{ inputs.environment == 'qa' }}
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_QA_ROLE_ARN }}
+          role-session-name: tutu-frontend-deploy-qa
           aws-region: eu-west-1
       - name: Deploy Next.js app
         working-directory: ./tutu-infra
@@ -59,4 +66,4 @@ jobs:
           npm ci
           npm install -g aws-cdk
           cdk cli-telemetry --disable
-          cdk deploy TutuFrontendNextjsStack --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
+          cdk deploy TutuFrontendNextjsStack --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=frontendonly"

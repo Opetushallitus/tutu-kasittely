@@ -60,11 +60,14 @@
       }
     },
     "web_frontend": {
-      "cpu_limit": "512",
-      "memory_limit": "1024",
-      "min_count": 1,
-      "max_count": 1,
-      "allow_ecs_exec": true
+      "env_vars": {
+        "NEXT_TELEMETRY_DISABLED": "1",
+        "NODE_ENV": "production",
+        "VIRKAILIJA_URL": "https://virkailija.testiopintopolku.fi",
+        "APP_URL": "https://virkailija.testiopintopolku.fi/tutu-frontend",
+        "TUTU_BACKEND": "https://virkailija.testiopintopolku.fi",
+        "TOLGEE_TOOLS": "true"
+      }
     },
     "web_backend": {
       "cpu_limit": "512",
@@ -73,95 +76,13 @@
       "max_count": 1,
       "allow_ecs_exec": true,
       "env_vars": {
-        "NODE_ENV": "production",
         "LOG_LEVEL": "error",
         "PORT_LISTEN": "8080",
-        "MATERIAL_VERSION_URL": "https://qa.example.fi/#/materiaali/",
         "HTTP_OPTIONS_TIMEOUT": "5000",
         "HTTP_OPTIONS_RETRY": "2",
         "HTTP_OPTIONS_CLOCK_TOLERANCE": "5",
-
-        "POSTGRESQL_DATA": "example",
-        "PG_USER": "example_admin",
-        "SERVER_CONFIG_OAIPMH_ANALYTICS_URL": "http://data-analytics.qa.example.local:8080",
-        "KAFKA_EXCLUDED_AGENT_IDENTIFIERS": "oersi",
-        "KAFKA_BROKER_TOPIC_MATERIAL_ACTIVITY": "prod_material_activity",
-        "KAFKA_BROKER_TOPIC_SEARCH_REQUESTS": "prod_search_requests",
-        "KAFKA_CLIENT_ID": "example-web-backend",
-        "KAFKA_CLIENT_REGION": "eu-west-1",
-
-        "SESSION_COOKIE_DOMAIN": ".example.fi",
-        "SESSION_COOKIE_HTTP_ONLY": "true",
-        "SESSION_COOKIE_MAX_AGE": "86400000",
-        "SESSION_COOKIE_PATH": "/",
-        "SESSION_COOKIE_SAME_SITE": "lax",
-        "SESSION_COOKIE_SECURE": "true",
-
-        "SESSION_OPTION_PROXY": "true",
-        "SESSION_OPTION_RESAVE": "false",
-        "SESSION_OPTION_ROLLING": "false",
-        "SESSION_OPTION_SAVE_UNINITIALIZED": "false",
-
-        "CLOUD_STORAGE_REGION": "eu-west-1",
-        "CLOUD_STORAGE_BUCKET": "example-qa",
-        "CLOUD_STORAGE_BUCKET_PDF": "examplepdf-qa",
-        "CLOUD_STORAGE_BUCKET_THUMBNAIL": "examplethumbnail-qa",
-
-        "THUMBNAIL_END_POINT": "/app/thumbnail/",
-        "FILE_SIZE_LIMIT": "10737418240",
-        "THUMBNAIL_FILE_SIZE_LIMIT": "10485760",
-
-        "REDIRECT_URI": "https://qa.example.fi/api/secure/redirect",
-        "SUCCESS_REDIRECT_URI": "/",
-        "FAILURE_REDIRECT_URI": "/api/login",
-
-        "CREATE_ES_INDEX": "0",
-        "ES_INDEX": "example",
-        "ES_MAPPING_FILE": "/app/examplemapping.json",
-        "ES_COLLECTION_INDEX": "examplecollection",
-        "ES_COLLECTION_MAPPING_FILE": "/app/examplecollectionmapping.json",
-        "ES_SIZE_DEFAULT": "1000",
-        "ES_FROM_DEFAULT": "0",
-
-        "HTML_BASE_URL": "https://qa.example.fi",
-        "HTML_FOLDER": "/mnt/data/webdata/htmlfolder",
-
-        "H5P_USER_EMAIL": "oppimateriaalivaranto@example.fi",
-
-        "MATERIAL_FILE_UPLOAD_FOLDER": "/mnt/data/uploads",
-
-        "CONVERSION_TO_PDF_API": "https://qa.example.fi/api/v1/pdf/content/",
-        "CONVERSION_TO_PDF_ENABLED": "1",
-
-        "FILE_DOWNLOAD_URL": "https://qa.example.fi/api/v1/download/file/",
-        "THUMBNAIL_DOWNLOAD_URL": "https://qa.example.fi/api/v1/thumbnail/",
-        "COLLECTION_THUMBNAIL_DOWNLOAD_URL": "https://qa.example.fi/api/v1/collection/thumbnail/",
-
-        "REDIS_USERNAME": "app",
-        "REDIS_USE_TLS": "true",
-        "BASE_URL": "https://qa.example.fi/api/v1/",
-
-        "EMAIL_FROM": "oppimateriaalivaranto@qa.example.fi",
-        "SEND_SYSTEM_NOTIFICATION_EMAIL": "0",
-        "SEND_EXPIRATION_NOTIFICATION_EMAIL": "0",
-        "SEND_RATING_NOTIFICATION_EMAIL": "0",
-        "SEND_VERIFICATION_EMAIL": "1",
-        "VERIFY_EMAIL_REDIRECT_URL": "/",
-
-        "CLOUD_STORAGE_ENABLED": "1",
-        "KAFKA_ENABLED": "1",
-        "LOGIN_ENABLED": "1",
-
-        "PID_SERVICE_RUN_SCHEDULED": "1",
-        "PID_SERVICE_ENABLED": "1",
-
-        "STREAM_ENABLED": "1",
-        "STREAM_FILESIZE_MIN": "100000",
-        "STREAM_REDIRECT_URI": "https://qa.example.fi/stream/api/v1/material/",
-        "STREAM_STATUS_HOST": "streaming-app.qa.example.local",
-        "STREAM_STATUS_PORT": "8080",
-        "STREAM_STATUS_PATH": "/stream/api/v1/material/",
-        "STREAM_STATUS_HOST_HTTPS_ENABLED": "0"
+        "PG_USER": "app",
+        "OPINTOPOLKU_DOMAIN": "testiopintopolku.fi"
       }
     },
     "streaming": {
