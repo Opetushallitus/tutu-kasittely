@@ -220,7 +220,8 @@ class HakemusRepository {
   def haeHakemusOidit(
     userOid: Option[String],
     hakemusKoskee: Option[String],
-    vaiheet: Option[Seq[String]]
+    vaiheet: Option[Seq[String]],
+    apHakemus: Boolean
   ): Seq[HakemusOid] = {
     try {
       val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
@@ -241,6 +242,10 @@ class HakemusRepository {
           val vaiheList = v.map(vaihe => s"'${vaihe}'").mkString(", ")
           whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
         }
+      }
+
+      if (apHakemus) {
+        whereClauses += s"h.ap_hakemus = true"
       }
 
       val whereClause = {
