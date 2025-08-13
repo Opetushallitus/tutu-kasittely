@@ -156,7 +156,7 @@ case class PartialHakemus(
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None
+  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   selvityksetSaatu: Option[Boolean] = None,
   imiPyynto: Option[ImiPyynto] = None
 )

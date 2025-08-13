@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece, muu, naric_portal, nuffic}
+import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -562,10 +562,19 @@ class ControllerTest extends IntegrationTestBase {
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.head.asiakirjanTyyppi == "alkuperaisetliitteet")
+
+    // Poistetaan kaikki asiakirjat
+    updatedHakemus = PartialHakemus(
+      pyydettavatAsiakirjat = Some(Seq.empty[PyydettavaAsiakirja])
+    )
+
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.isEmpty)
+
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -603,66 +612,41 @@ class ControllerTest extends IntegrationTestBase {
     assert(!asiakirjamallit(muu).vastaavuus)
     assert(asiakirjamallit(muu).kuvaus.isEmpty)
 
-    // Poistetaan kaikki asiakirjat
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(Seq.empty[PyydettavaAsiakirja])
-    )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.isEmpty)
-
-    updatedHakemus = PartialHakemus(
-          asiakirjamallitTutkinnoista = Some(
-            Map(
-              ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
-              naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
-              aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
-              muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
-            )
-          )
+      asiakirjamallitTutkinnoista = Some(
+        Map(
+          ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
+          naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
+          aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
+          muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
         )
-        paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
-        asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
-        assert(asiakirjamallit.size == 4)
-        assert(asiakirjamallit.contains(ece))
-        assert(!asiakirjamallit(ece).vastaavuus)
-        assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
-        assert(asiakirjamallit.contains(naric_portal))
-        assert(asiakirjamallit(naric_portal).vastaavuus)
-        assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
-        assert(asiakirjamallit.contains(aacrao))
-        assert(!asiakirjamallit(aacrao).vastaavuus)
-        assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
-        assert(asiakirjamallit.contains(muu))
-        assert(!asiakirjamallit(muu).vastaavuus)
-        assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
+      )
+    )
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
+    asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
+    assert(asiakirjamallit.size == 4)
+    assert(asiakirjamallit.contains(ece))
+    assert(!asiakirjamallit(ece).vastaavuus)
+    assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
+    assert(asiakirjamallit.contains(naric_portal))
+    assert(asiakirjamallit(naric_portal).vastaavuus)
+    assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
+    assert(asiakirjamallit.contains(aacrao))
+    assert(!asiakirjamallit(aacrao).vastaavuus)
+    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(muu))
+    assert(!asiakirjamallit(muu).vastaavuus)
+    assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def paivitaPartialHakemusWithIMIPyyntoValidRequestReturns200(): Unit = {
-    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
-    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
-      Right(loadJson("muutosHistoria.json"))
-    )
-    when(hakemuspalveluService.haeLomake(any[Long]))
-      .thenReturn(Right(loadJson("ataruLomake.json")))
-    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
+    initAtaruHakemusRequests()
 
     // imiPyynto = true
     var updatedHakemus = PartialHakemus(
