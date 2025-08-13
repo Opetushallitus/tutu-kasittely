@@ -108,7 +108,12 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  imiPyyntoVastattu: Option[LocalDateTime]
+  imiPyyntoVastattu: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "true",
+    requiredMode = RequiredMode.REQUIRED
+  )
+  apHakemus: Boolean
 )
 
 case class Hakemus(
@@ -140,7 +145,8 @@ case class Hakemus(
     imiPyyntoNumero = None,
     imiPyyntoLahetetty = None,
     imiPyyntoVastattu = None
-  )
+  ),
+  apHakemus: Boolean = false
 )
 
 case class PartialHakemus(
@@ -158,5 +164,6 @@ case class PartialHakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   selvityksetSaatu: Option[Boolean] = None,
-  imiPyynto: Option[ImiPyynto] = None
+  imiPyynto: Option[ImiPyynto] = None,
+  apHakemus: Option[Boolean] = None
 )

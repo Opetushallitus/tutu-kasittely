@@ -34,6 +34,7 @@ export type Hakemus = {
     Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
   >;
   imiPyynto: ImiPyynto;
+  apHakemus: boolean;
 };
 
 export type SisaltoItem = {
