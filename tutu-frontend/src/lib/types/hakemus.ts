@@ -33,6 +33,7 @@ export type Hakemus = {
   asiakirjamallitTutkinnoista?: Partial<
     Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
   >;
+  imiPyynto: ImiPyynto;
 };
 
 export type SisaltoItem = {
@@ -72,4 +73,11 @@ export type AsiakirjamalliTutkinnosta = {
   lahde: AsiakirjamalliLahde;
   vastaavuus: boolean;
   kuvaus?: string;
+};
+
+export type ImiPyynto = {
+  imiPyynto: boolean | null;
+  imiPyyntoNumero: string;
+  imiPyyntoLahetetty: string;
+  imiPyyntoVastattu: string;
 };

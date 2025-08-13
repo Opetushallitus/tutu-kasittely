@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -23,6 +23,7 @@ import { VIRKAILIJA_URL } from '@/src/lib/configuration';
 import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { ImiPyyntoComponent } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/ImiPyynto';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
@@ -155,8 +156,14 @@ const AsiakirjaPagePure = ({
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
         asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
+        updateHakemusAction={updateHakemus}
       ></AsiakirjaPyynnot>
-
+      <Divider orientation={'horizontal'} />
+      <ImiPyyntoComponent
+        imiPyynto={hakemus.imiPyynto}
+        updateHakemusAction={updateHakemus}
+      ></ImiPyyntoComponent>
+      <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>

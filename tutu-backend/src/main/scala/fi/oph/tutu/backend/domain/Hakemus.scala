@@ -1,5 +1,7 @@
 package fi.oph.tutu.backend.domain
 
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
@@ -83,7 +85,30 @@ case class DbHakemus(
     example = "true",
     requiredMode = RequiredMode.REQUIRED
   )
-  selvityksetSaatu: Boolean
+  selvityksetSaatu: Boolean,
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  imiPyynto: Option[Boolean],
+  @(Schema @field)(
+    example = "122224",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  imiPyyntoNumero: Option[String],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoLahetetty: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  imiPyyntoVastattu: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -109,7 +134,13 @@ case class Hakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Boolean = false,
-  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty
+  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty,
+  imiPyynto: ImiPyynto = ImiPyynto(
+    imiPyynto = None,
+    imiPyyntoNumero = None,
+    imiPyyntoLahetetty = None,
+    imiPyyntoVastattu = None
+  )
 )
 
 case class PartialHakemus(
@@ -125,6 +156,7 @@ case class PartialHakemus(
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
+  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   selvityksetSaatu: Option[Boolean] = None,
-  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None
+  imiPyynto: Option[ImiPyynto] = None
 )

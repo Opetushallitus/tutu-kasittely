@@ -157,6 +157,7 @@ export const mockHakemus = (page: Page) => {
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
         pyydettavatAsiakirjat: [],
+        imiPyynto: {},
         asiakirjamallitTutkinnoista: {
           ece: {
             lahde: 'ece',

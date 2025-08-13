@@ -19,12 +19,13 @@ import {
 } from '@mui/material';
 import { StyledTooltip } from '@/src/components/ToolTip';
 import { pyydettavatAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/types';
-import { AsiakirjaPyynto } from '@/src/lib/types/hakemus';
-import { useHakemus } from '@/src/context/HakemusContext';
+import { AsiakirjaPyynto, Hakemus } from '@/src/lib/types/hakemus';
 import { DeleteOutline } from '@mui/icons-material';
+import { IconButton } from '@/src/components/IconButton';
 
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[] | [];
+  updateHakemusAction: (hakemus: Partial<Hakemus>) => void;
 }
 
 interface AsiakirjaPyyntoProps {
@@ -34,10 +35,10 @@ interface AsiakirjaPyyntoProps {
 
 export const AsiakirjaPyynnot = ({
   asiakirjaPyynnot,
+  updateHakemusAction,
 }: AsiakirjaPyynnotProps) => {
   const { t } = useTranslations();
   const theme = useTheme();
-  const { updateHakemus } = useHakemus();
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
   const [
     showEmptyAsiakirjaPyyntoDropdown,
@@ -53,7 +54,7 @@ export const AsiakirjaPyynnot = ({
       ? asiakirjaPyynnot.filter((pyynto) => pyynto.id !== id)
       : asiakirjaPyynnot;
 
-    updateHakemus({
+    updateHakemusAction({
       pyydettavatAsiakirjat: [...pyynnot, pyynto],
     });
     setShowEmptyAsiakirjaPyyntoDropdown(false);
@@ -64,7 +65,7 @@ export const AsiakirjaPyynnot = ({
       setShowEmptyAsiakirjaPyyntoDropdown(false);
       return;
     }
-    updateHakemus({
+    updateHakemusAction({
       pyydettavatAsiakirjat: asiakirjaPyynnot.filter(
         (pyynto) => pyynto.id !== id,
       ),
@@ -185,13 +186,15 @@ export const AsiakirjaPyynnot = ({
             'hakemus.asiakirjat.asiakirjapyynnot.otsikko.pyydettavatasiakirjat',
           )}
         </OphTypography>
-        <StyledTooltip
-          title={asiakirjatTooltip}
-          onClick={handleTooltipOpen}
-          open={toolTipOpen}
-        >
-          <StyledInfoOutlinedIcon style={{ marginLeft: 8 }} />
-        </StyledTooltip>
+        <IconButton>
+          <StyledTooltip
+            title={asiakirjatTooltip}
+            onClick={handleTooltipOpen}
+            open={toolTipOpen}
+          >
+            <StyledInfoOutlinedIcon />
+          </StyledTooltip>
+        </IconButton>
       </div>
       {asiakirjaPyynnot.length > 0 &&
         asiakirjaPyynnot.map((pyynto, index) => (

@@ -16,5 +16,9 @@ val dbHakemusFixture = DbHakemus(
   allekirjoituksetTarkistettuLisatiedot = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = None,
-  selvityksetSaatu = false
+  selvityksetSaatu = false,
+  imiPyynto = null,
+  imiPyyntoNumero = null,
+  imiPyyntoLahetetty = null,
+  imiPyyntoVastattu = null
 )
