@@ -1,14 +1,21 @@
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
-import { styled, TableCell, TableRow } from '@mui/material';
+import { Chip, styled, TableCell, TableRow } from '@mui/material';
 import Link from 'next/link';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
+import { ophColors } from '@/src/lib/theme';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
 });
+
+const ApHakemusBadge = styled(Chip)(() => ({
+  color: ophColors.cyan1,
+  backgroundColor: ophColors.lightBlue1,
+  borderRadius: '2px',
+}));
 
 export const muotoileKokonaisaikaPure = (nyt: Date, luotu: Date) => {
   const kuukausiYlitetty = luotu.getDate() > nyt.getDate();
@@ -63,7 +70,19 @@ export default function HakemusRow({
       <StyledTableCell data-testid={'hakemus-row-kasittelyvaihe'}>
         {useKasittelyvaiheTranslation(hakemus)}
       </StyledTableCell>
-      <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
+      <StyledTableCell>
+        {t(hakemusKoskee)}{' '}
+        {hakemus.apHakemus && (
+          <>
+            <br />
+            <ApHakemusBadge
+              className="hakemusrow-aphakemus-badge"
+              label={t('hakemuslista.apHakemus')}
+              size="small"
+            />
+          </>
+        )}
+      </StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaikaKk', '', {
           aika: muotoileKokonaisaika(hakemus.aika),

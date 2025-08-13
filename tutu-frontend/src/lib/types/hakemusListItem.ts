@@ -11,4 +11,5 @@ export type HakemusListItem = {
   kasittelyVaihe: string;
   muokattu: string;
   taydennyspyyntoLahetetty: string;
+  apHakemus?: boolean;
 };

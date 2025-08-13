@@ -3,11 +3,13 @@
     "hakemusKoskeeValinta": {
       "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
       "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
       "riittavatOpinnot": "Päätös riittävistä opinnoista"
     }
   },
   "hakemuslista": {
+    "apHakemus": "AP-hakemus",
     "otsikko": "Tutkintojen tunnustaminen",
     "hakemukset": "Hakemukset",
     "hakemus": "Hakemus",
