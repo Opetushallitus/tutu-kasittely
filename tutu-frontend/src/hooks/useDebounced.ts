@@ -40,7 +40,7 @@ export interface DebounceSetValueOptions {
 export function useDebounced<A>(
   debounceCallback: DebounceCallback<A> = () => {},
   { delay = 1500 }: DebounceOptions = {},
-) {
+): [Observable<A>, DebounceSetValue<A>] {
   const subject = useRef(new Subject<WrappedValue<A>>()).current;
   const valueObservable: Observable<A> = useRef(
     subject.pipe(

@@ -4,6 +4,7 @@ import fi.oph.tutu.backend.domain.KasittelyVaihe.AlkukasittelyKesken
 import fi.oph.tutu.backend.domain.{DbHakemus, HakemusOid, UserOid}
 
 val dbHakemusFixture = DbHakemus(
+  id = java.util.UUID.fromString("de4ffbea-1763-4a43-a24d-50ee48b81ff1"),
   hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666"),
   hakemusKoskee = 1,
   esittelijaId = None,

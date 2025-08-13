@@ -3,7 +3,7 @@ package fi.oph.tutu.backend
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.fixture.hakijaFixture
+import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece, muu, naric_portal, nuffic}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
@@ -51,16 +51,10 @@ class ControllerTest extends IntegrationTestBase {
   var hakemusService: HakemusService = _
 
   @MockitoBean
-  var hakemuspalveluService: HakemuspalveluService = _
-
-  @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
 
   @Autowired
   var userService: UserService = _
-
-  @MockitoBean
-  var ataruHakemusParser: AtaruHakemusParser = _
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
@@ -83,6 +77,18 @@ class ControllerTest extends IntegrationTestBase {
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
+
+  def updateHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus): Hakemus = {
+    mockMvc
+      .perform(
+        patch(s"/api/hakemus/${hakemusOid.toString}")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(mapper.writeValueAsString(partialHakemus))
+      )
+      .andExpect(status().isOk)
+    hakemusService.haeHakemus(hakemusOid).get
+  }
 
   @Test
   def get200ResponseFromHealthcheckUnautheticated(): Unit =
@@ -347,24 +353,30 @@ class ControllerTest extends IntegrationTestBase {
   @Order(9)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
+    val virkailijaOid = UserOid("1.2.246.562.24.00000000000000006666")
     hakemusRepository.luoPyydettavaAsiakirja(
       HakemusOid("1.2.246.562.11.00000000000000006667"),
       "tutkintotodistustenjaljennokset",
-      UserOid("1.2.246.562.24.00000000000000006666")
+      virkailijaOid
     )
     hakemusRepository.luoPyydettavaAsiakirja(
       HakemusOid("1.2.246.562.11.00000000000000006667"),
       "tyotodistukset",
-      UserOid("1.2.246.562.24.00000000000000006666")
+      virkailijaOid
     )
-    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
-    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
-      Right(loadJson("muutosHistoria.json"))
+    val dbHakemus    = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
+    val malliAction1 = hakemusRepository.lisaaAsiakirjamalli(
+      dbHakemus.get.id,
+      AsiakirjamalliTutkinnosta(ece, true, Some("Jotain kuvausta")),
+      virkailijaOid
     )
-    when(hakemuspalveluService.haeLomake(any[Long]))
-      .thenReturn(Right(loadJson("ataruLomake.json")))
-    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
+    val malliAction2 = hakemusRepository.lisaaAsiakirjamalli(
+      dbHakemus.get.id,
+      AsiakirjamalliTutkinnosta(aacrao, false, Some("Jotain muuta kuvausta")),
+      virkailijaOid
+    )
+    hakemusRepository.db.run(hakemusRepository.combineIntDBIOs(Seq(malliAction1, malliAction2)), "lisaaAsiakirjamalli")
+    initAtaruHakemusRequests()
 
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
@@ -416,7 +428,18 @@ class ControllerTest extends IntegrationTestBase {
                                     "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
                                   }, {
                                     "asiakirjanTyyppi" : "tyotodistukset"
-                                  } ]
+                                  } ],
+                                    "asiakirjamallitTutkinnoista" : {
+                                      "ece" : {
+                                        "lahde" : "ece",
+                                        "vastaavuus" : true,
+                                        "kuvaus" : "Jotain kuvausta"
+                                      },
+                                      "aacrao" : {
+                                        "lahde" : "aacrao",
+                                        "vastaavuus" : false,
+                                        "kuvaus" : "Jotain muuta kuvausta"
+                                      } }
                               }"""
 
     val result = mockMvc
@@ -457,14 +480,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def paivitaHakemusValidRequestReturns200WithChangedEsittelijaOid(): Unit = {
-    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
-    when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
-      Right(loadJson("muutosHistoria.json"))
-    )
-    when(hakemuspalveluService.haeLomake(any[Long]))
-      .thenReturn(Right(loadJson("ataruLomake.json")))
-    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
+    initAtaruHakemusRequests()
 
     // maakoodi 0000 -> esittelijaOid = null
     val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), "0000", 0)
@@ -474,73 +490,29 @@ class ControllerTest extends IntegrationTestBase {
     var updatedHakemus = PartialHakemus(
       esittelijaOid = Some(esittelijaOidString)
     )
-    var requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.esittelijaOid.contains(esittelijaOidString))
+    var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.esittelijaOid.contains(esittelijaOidString))
 
     // Päivitetään hakemuskoskee 1 -> 0
     updatedHakemus = PartialHakemus(
       hakemusKoskee = Some(0)
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.hakemusKoskee == 0)
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.hakemusKoskee == 0)
 
     // Päivitetään asiatunnus
     updatedHakemus = PartialHakemus(
       asiatunnus = Some("OPH-122-2025")
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.hakemusKoskee == 0)
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.asiatunnus.contains("OPH-122-2025"))
 
     // Lisätään asiakirja
     updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 1)
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
 
     // Lisätään toinen asiakirja
     var hakemuksenAsiakirjat =
@@ -551,19 +523,8 @@ class ControllerTest extends IntegrationTestBase {
     updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 2)
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 2)
 
     // Päivitetään toisen asiakirjan tyyppi
     // Lisätään toinen asiakirja
@@ -580,20 +541,9 @@ class ControllerTest extends IntegrationTestBase {
     updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(uudetAsiakirjat)
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 2)
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.last.asiakirjanTyyppi == "alkuperaisetliitteet")
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 2)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.last.asiakirjanTyyppi == "alkuperaisetliitteet")
 
     // Poistetaan ensimmäinen asiakirja
     hakemuksenAsiakirjat = Seq(
@@ -605,20 +555,75 @@ class ControllerTest extends IntegrationTestBase {
     updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
+    assert(paivitettyHakemus.pyydettavatAsiakirjat.head.asiakirjanTyyppi == "alkuperaisetliitteet")
+  }
 
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
+  @Test
+  @Order(11)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaHakemusValidRequestReturns200WithChangedAsiakirjamallit(): Unit = {
+    initAtaruHakemusRequests()
+
+    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), "0000", 0)
+    hakemusService.tallennaHakemus(originalHakemus)
+    val dbHakemus = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"))
+
+    var updatedHakemus = PartialHakemus(
+      asiakirjamallitTutkinnoista = Some(
+        Map(
+          ece    -> AsiakirjamalliTutkinnosta(ece, true, Some("kuvaus1")),
+          nuffic -> AsiakirjamalliTutkinnosta(nuffic, false, Some("kuvaus2")),
+          aacrao -> AsiakirjamalliTutkinnosta(aacrao, true, None),
+          muu    -> AsiakirjamalliTutkinnosta(muu, false, None)
+        )
       )
-      .andExpect(status().isOk)
+    )
+    var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
+    var asiakirjamallit   = paivitettyHakemus.asiakirjamallitTutkinnoista
+    assert(asiakirjamallit.size == 4)
+    assert(asiakirjamallit.contains(ece))
+    assert(asiakirjamallit(ece).vastaavuus)
+    assert(asiakirjamallit(ece).kuvaus.contains("kuvaus1"))
+    assert(asiakirjamallit.contains(nuffic))
+    assert(!asiakirjamallit(nuffic).vastaavuus)
+    assert(asiakirjamallit(nuffic).kuvaus.contains("kuvaus2"))
+    assert(asiakirjamallit.contains(aacrao))
+    assert(asiakirjamallit(aacrao).vastaavuus)
+    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(muu))
+    assert(!asiakirjamallit(muu).vastaavuus)
+    assert(asiakirjamallit(muu).kuvaus.isEmpty)
 
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.size == 1)
-    assert(paivitettyHakemus.get.pyydettavatAsiakirjat.get.head.asiakirjanTyyppi == "alkuperaisetliitteet")
+    updatedHakemus = PartialHakemus(
+      asiakirjamallitTutkinnoista = Some(
+        Map(
+          ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
+          naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
+          aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
+          muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
+        )
+      )
+    )
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
+    asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
+    assert(asiakirjamallit.size == 4)
+    assert(asiakirjamallit.contains(ece))
+    assert(!asiakirjamallit(ece).vastaavuus)
+    assert(asiakirjamallit(ece).kuvaus.contains("editoitu kuvaus"))
+    assert(asiakirjamallit.contains(naric_portal))
+    assert(asiakirjamallit(naric_portal).vastaavuus)
+    assert(asiakirjamallit(naric_portal).kuvaus.contains("naric kuvaus"))
+    assert(asiakirjamallit.contains(aacrao))
+    assert(!asiakirjamallit(aacrao).vastaavuus)
+    assert(asiakirjamallit(aacrao).kuvaus.isEmpty)
+    assert(asiakirjamallit.contains(muu))
+    assert(!asiakirjamallit(muu).vastaavuus)
+    assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
   }
 
   @Test

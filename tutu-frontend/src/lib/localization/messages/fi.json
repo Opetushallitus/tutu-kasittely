@@ -147,7 +147,19 @@
       "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
       "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja",
       "alkuperaisetAsiakirjatSaatuNahtavaksi": "Alkuperäiset asiakirjat saatu nähtäväksi",
-      "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista"
+      "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista",
+      "malleja_tutkinnoista": {
+        "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
+        "lahde": "Lähde",
+        "kuvaus": "Kuvaa lyhyesti, vastaako löytämäsi asiakirjamalli hakemuksen asiakirjaa",
+        "ece": "ECE",
+        "uk-enic": "UK Enic",
+        "naric-portal": "Naric portal (UHR)",
+        "nuffic": "Nuffic",
+        "aacrao": "Aacrao",
+        "muu": "Muut lähteet",
+        "muu_selite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
+      }
     }
   },
   "hakemusotsikko": {
@@ -185,6 +197,8 @@
     "duplikaatti-asiakirjapyynto": "Asiakirjapyyntö on jo olemassa."
   },
   "yleiset": {
-    "poista": "Poista"
+    "poista": "Poista",
+    "kylla": "Kyllä",
+    "ei": "Ei"
   }
 }

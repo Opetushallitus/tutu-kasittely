@@ -9,7 +9,7 @@ import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
 import { Grid } from '@mui/system';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
-import { Kielistetty } from '@/src/lib/types/common';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 
 const HenkilotietoRivi = ({
   nimi,
@@ -41,16 +41,16 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
 
   const lan = getLanguage();
 
-  const containsKielistettyArvo = (fieldValue: Kielistetty) => {
+  const containsTranslatedName = (fieldValue: TranslatedName) => {
     return Object.keys(fieldValue).includes(lan);
   };
 
-  const arvo = (fieldValue: string | Kielistetty | undefined) => {
+  const arvo = (fieldValue: string | TranslatedName | undefined) => {
     return match(fieldValue)
       .with(P.nullish, () => '')
       .with(P.string, (str) => str)
       .with(P._, (fieldValue) => {
-        if (containsKielistettyArvo(fieldValue)) return fieldValue[lan];
+        if (containsTranslatedName(fieldValue)) return fieldValue[lan]!;
         return '';
       })
       .otherwise(() => '');

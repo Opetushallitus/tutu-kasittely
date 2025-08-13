@@ -1,5 +1,5 @@
 import { Hakija } from '@/src/lib/types/hakija';
-import { Kielistetty } from '@/src/lib/types/common';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 
 export type MuutosHistoriaItem = {
   role: 'Esittelija' | 'Hakija' | 'Irrelevant';
@@ -30,18 +30,21 @@ export type Hakemus = {
   alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | undefined;
   selvityksetSaatu: boolean;
+  asiakirjamallitTutkinnoista?: Partial<
+    Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
+  >;
 };
 
 export type SisaltoItem = {
   key: string;
   fieldType: string;
   value: SisaltoValue[];
-  label: Kielistetty;
+  label: TranslatedName;
   children: SisaltoItem[];
 };
 
 export type SisaltoValue = {
-  label: Kielistetty;
+  label: TranslatedName;
   value: string;
   followups: SisaltoItem[];
 };
@@ -55,4 +58,18 @@ export type TarkistuksenTila = {
 export type AsiakirjaPyynto = {
   id?: string;
   asiakirjanTyyppi: string;
+};
+
+export type AsiakirjamalliLahde =
+  | 'ece'
+  | 'UK_enic'
+  | 'naric_portal'
+  | 'nuffic'
+  | 'aacrao'
+  | 'muu';
+
+export type AsiakirjamalliTutkinnosta = {
+  lahde: AsiakirjamalliLahde;
+  vastaavuus: boolean;
+  kuvaus?: string;
 };
