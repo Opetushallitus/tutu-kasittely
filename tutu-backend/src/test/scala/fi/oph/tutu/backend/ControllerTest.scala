@@ -409,6 +409,8 @@ class ControllerTest extends IntegrationTestBase {
                                   "sahkopostiosoite": "patu.kuusinen@riibasu.fi"
                                 },
                                 "asiatunnus": null,
+                                "apHakemus": false,
+                                "yhteistutkinto": false,
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
@@ -512,6 +514,20 @@ class ControllerTest extends IntegrationTestBase {
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.asiatunnus.contains("OPH-122-2025"))
 
+    // Päivitetään AP-hakemus
+    updatedHakemus = PartialHakemus(
+      apHakemus = Some(true)
+    )
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.apHakemus.contains(true))
+
+    // Päivitetään yhteistutkinto
+    updatedHakemus = PartialHakemus(
+      yhteistutkinto = Some(true)
+    )
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.yhteistutkinto.contains(true))
+
     // Lisätään asiakirja
     updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
@@ -570,7 +586,6 @@ class ControllerTest extends IntegrationTestBase {
 
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.isEmpty)
-
   }
 
   @Test

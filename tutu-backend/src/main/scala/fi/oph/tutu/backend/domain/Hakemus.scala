@@ -1,7 +1,5 @@
 package fi.oph.tutu.backend.domain
 
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
@@ -111,9 +109,14 @@ case class DbHakemus(
   imiPyyntoVastattu: Option[LocalDateTime],
   @(Schema @field)(
     example = "true",
-    requiredMode = RequiredMode.REQUIRED
+    requiredMode = RequiredMode.NOT_REQUIRED
   )
-  apHakemus: Option[Boolean]
+  apHakemus: Option[Boolean],
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  yhteistutkinto: Option[Boolean]
 )
 
 case class Hakemus(
@@ -146,7 +149,8 @@ case class Hakemus(
     imiPyyntoLahetetty = None,
     imiPyyntoVastattu = None
   ),
-  apHakemus: Option[Boolean] = None
+  apHakemus: Option[Boolean] = None,
+  yhteistutkinto: Option[Boolean] = None
 )
 
 case class PartialHakemus(
@@ -165,5 +169,6 @@ case class PartialHakemus(
   selvityksetSaatu: Option[Boolean] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   imiPyynto: Option[ImiPyynto] = None,
-  apHakemus: Option[Boolean] = None
+  apHakemus: Option[Boolean] = None,
+  yhteistutkinto: Option[Boolean] = None
 )

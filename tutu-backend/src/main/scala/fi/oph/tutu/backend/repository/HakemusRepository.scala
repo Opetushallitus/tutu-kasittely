@@ -50,6 +50,7 @@ class HakemusRepository {
         Option(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextBoolean()),
         Option(r.nextBoolean())
       )
     )
@@ -188,7 +189,8 @@ class HakemusRepository {
               h.imi_pyynto_numero,
               h.imi_pyynto_lahetetty,
               h.imi_pyynto_vastattu,
-              h.ap_hakemus
+              h.ap_hakemus,
+              h.yhteistutkinto
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -312,6 +314,7 @@ class HakemusRepository {
     val imiPyyntoLahetettyOrNull = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
     val imiPyyntoVastattuOrNull  = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
     val apHakemus                = partialHakemus.apHakemus
+    val yhteistutkinto           = partialHakemus.yhteistutkinto
     try
       db.run(
         sql"""
@@ -330,7 +333,8 @@ class HakemusRepository {
           imi_pyynto_numero = $imiPyyntoNumeroOrNull,
           imi_pyynto_lahetetty = $imiPyyntoLahetettyOrNull,
           imi_pyynto_vastattu = $imiPyyntoVastattuOrNull,
-          ap_hakemus = $apHakemus
+          ap_hakemus = $apHakemus,
+          yhteistutkinto = $yhteistutkinto
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
