@@ -10,6 +10,22 @@ import { Grid } from '@mui/system';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { Theme } from '@mui/material/styles';
+import { ReactNode } from 'react';
+
+const HenkilotietoGrid = ({
+  theme,
+  children,
+}: {
+  theme: Theme;
+  children: ReactNode | ReactNode[];
+}) => {
+  return (
+    <Grid container spacing={theme.spacing(2)} columns={6}>
+      {children}
+    </Grid>
+  );
+};
 
 const HenkilotietoRivi = ({
   nimi,
@@ -35,7 +51,15 @@ const HenkilotietoRivi = ({
     </>
   );
 };
-export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
+export const Henkilotiedot = ({
+  hakija,
+  paatosKieli,
+  asiointiKieli,
+}: {
+  hakija: Hakija;
+  paatosKieli: string;
+  asiointiKieli: string;
+}) => {
   const { t, getLanguage } = useTranslations();
   const theme = useTheme();
 
@@ -62,7 +86,7 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
         {t('hakemus.perustiedot.henkilotiedot.otsikko')}
       </OphTypography>
       <InfoBox infoText={t('hakemus.perustiedot.henkilotiedot.huomautus')} />
-      <Grid container spacing={theme.spacing(2)} columns={6}>
+      <HenkilotietoGrid theme={theme}>
         {R.map(Object.values(HAKIJA_FIELDS_WO_SAHKOPOSTI), (fieldKey) => (
           <HenkilotietoRivi
             key={fieldKey}
@@ -71,7 +95,7 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
             arvo={arvo(hakija[fieldKey as keyof Hakija])}
           ></HenkilotietoRivi>
         ))}
-      </Grid>
+      </HenkilotietoGrid>
       <Stack>
         <OphTypography variant={'label'}>
           {t('hakemus.perustiedot.henkilotiedot.sahkopostiosoite')}
@@ -82,6 +106,13 @@ export const Henkilotiedot = ({ hakija }: { hakija: Hakija }) => {
           value={hakija.sahkopostiosoite || ''}
         ></OphInput>
       </Stack>
+      <OphTypography variant={'h3'}>
+        {t('hakemus.perustiedot.henkilotiedot.kielet')}
+      </OphTypography>
+      <HenkilotietoGrid theme={theme}>
+        <HenkilotietoRivi nimi={'paatoskieli'} arvo={paatosKieli} t={t} />
+        <HenkilotietoRivi nimi={'asiointikieli'} arvo={asiointiKieli} t={t} />
+      </HenkilotietoGrid>
     </Stack>
   );
 };

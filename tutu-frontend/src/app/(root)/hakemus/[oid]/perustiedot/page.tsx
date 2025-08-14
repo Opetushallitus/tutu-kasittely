@@ -13,11 +13,17 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { handleFetchError } from '@/src/lib/utils';
-import { perustietoOsiot } from '@/src/constants/hakemuspalveluSisalto';
+import {
+  asiointiKieli,
+  paatosJaAsiointikieli,
+  paatosKieli,
+  perustietoOsiot,
+} from '@/src/constants/hakemuspalveluSisalto';
+import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 
 export default function PerustietoPage() {
   const theme = useTheme();
-  const { t } = useTranslations();
+  const { t, getLanguage } = useTranslations();
   const { addToast } = useToaster();
   const { isLoading, hakemus, error } = useHakemus();
 
@@ -36,6 +42,19 @@ export default function PerustietoPage() {
       (option) => option.value === String(hakemus?.hakemusKoskee),
     )?.label || ''
   }`;
+
+  const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
+    hakemus.sisalto,
+    [paatosJaAsiointikieli, paatosKieli],
+    getLanguage(),
+  );
+
+  const [, asiointiKieliVal] = findSisaltoQuestionAndAnswer(
+    hakemus.sisalto,
+    [paatosJaAsiointikieli, asiointiKieli],
+    getLanguage(),
+  );
+
   return (
     <Stack gap={theme.spacing(3)}>
       <OphTypography variant={'h2'}>
@@ -51,7 +70,11 @@ export default function PerustietoPage() {
       <Sisalto osiot={perustietoOsiot} sisalto={hakemus.sisalto} />
       <Stack gap={theme.spacing(3)} width={'60%'}>
         <Muutoshistoria muutosHistoria={hakemus.muutosHistoria} />
-        <Henkilotiedot hakija={hakemus.hakija} />
+        <Henkilotiedot
+          hakija={hakemus.hakija}
+          paatosKieli={paatosKieliVal || ''}
+          asiointiKieli={asiointiKieliVal || ''}
+        />
       </Stack>
     </Stack>
   );
