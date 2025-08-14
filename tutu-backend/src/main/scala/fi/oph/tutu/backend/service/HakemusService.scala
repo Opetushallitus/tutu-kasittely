@@ -125,7 +125,8 @@ class HakemusService(
               imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
               imiPyyntoLahetetty = dbHakemus.imiPyyntoLahetetty,
               imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu
-            )
+            ),
+            apHakemus = dbHakemus.apHakemus
           )
         )
       case None =>
@@ -355,7 +356,8 @@ class HakemusService(
               }
             case None =>
               dbHakemus.imiPyyntoVastattu
-          }
+          },
+          apHakemus = partialHakemus.apHakemus.orElse(dbHakemus.apHakemus)
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,
