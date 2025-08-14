@@ -25,6 +25,11 @@ import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asia
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/ImiPyynto';
+import {
+  oikeellisuusJaAitous,
+  todistusAitoustarkistusLupa,
+} from '@/src/constants/hakemuspalveluSisalto';
+import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 
 const sisallonOsiot = [
   '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
@@ -125,7 +130,7 @@ const AsiakirjaPagePure = ({
   asiakirjaMetadata = [],
 }) => {
   const theme = useTheme();
-  const { t } = useTranslations();
+  const { t, getLanguage } = useTranslations();
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -138,6 +143,13 @@ const AsiakirjaPagePure = ({
     );
     return { asiakirja, metadata, liitteenTila, key: asiakirja.label.fi };
   });
+
+  const [todistusTarkistusLupaLabel, todistusAitoustarkistusLupaValue] =
+    findSisaltoQuestionAndAnswer(
+      hakemus.sisalto,
+      [oikeellisuusJaAitous, todistusAitoustarkistusLupa],
+      getLanguage(),
+    );
 
   return (
     <Stack
@@ -170,10 +182,23 @@ const AsiakirjaPagePure = ({
       </OphTypography>
       <KaikkiSelvityksetSaatu hakemus={hakemus} updateHakemus={updateHakemus} />
       <ApHakemus hakemus={hakemus} updateHakemus={updateHakemus} />
-
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
       </OphTypography>
+      <Stack>
+        <OphTypography
+          variant={'label'}
+          data-testid="todistus-tarkistus-lupa-label"
+        >
+          {todistusTarkistusLupaLabel}
+        </OphTypography>
+        <OphTypography
+          variant={'body1'}
+          data-testid="todistus-tarkistus-lupa-value"
+        >
+          {todistusAitoustarkistusLupaValue}
+        </OphTypography>
+      </Stack>
       <OphTypography variant={'h4'}>
         {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
       </OphTypography>
