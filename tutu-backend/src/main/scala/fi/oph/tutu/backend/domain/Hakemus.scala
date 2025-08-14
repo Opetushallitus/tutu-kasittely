@@ -113,7 +113,7 @@ case class DbHakemus(
     example = "true",
     requiredMode = RequiredMode.REQUIRED
   )
-  apHakemus: Boolean
+  apHakemus: Option[Boolean]
 )
 
 case class Hakemus(
@@ -146,7 +146,7 @@ case class Hakemus(
     imiPyyntoLahetetty = None,
     imiPyyntoVastattu = None
   ),
-  apHakemus: Boolean = false
+  apHakemus: Option[Boolean] = None
 )
 
 case class PartialHakemus(
@@ -162,6 +162,7 @@ case class PartialHakemus(
   allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
+  selvityksetSaatu: Option[Boolean] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   selvityksetSaatu: Option[Boolean] = None,
   imiPyynto: Option[ImiPyynto] = None,
