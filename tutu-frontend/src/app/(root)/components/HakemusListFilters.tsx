@@ -49,7 +49,7 @@ export default function HakemusListFilters() {
   const { addToast } = useToaster();
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.esittelijoiden-lataus', t);
+    handleFetchError(addToast, error, 'virhe.esittelijoidenLataus', t);
   }, [error, addToast, t]);
 
   const [nayta, setNayta] = useQueryState(

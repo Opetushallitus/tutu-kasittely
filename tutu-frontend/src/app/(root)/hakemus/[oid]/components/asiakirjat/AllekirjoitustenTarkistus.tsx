@@ -32,16 +32,14 @@ const StatelessAllekirjoitustenTarkistus = ({
   return (
     <>
       <OphCheckbox
-        label={t('hakemus.asiakirjat.allekirjoitukset_tarkistettu')}
+        label={t('hakemus.asiakirjat.allekirjoituksetTarkistettu')}
         checked={checked}
         onChange={() => setLisatieto(checked ? null : '')}
       />
       {checked ? (
         <OphInput
           multiline={true}
-          label={t(
-            'hakemus.asiakirjat.allekirjoitukset_tarkistettu_lisatietoja',
-          )}
+          label={t('hakemus.asiakirjat.allekirjoituksetTarkistettuLisatietoja')}
           value={lisatieto}
           onChange={(event) => setLisatieto(event.target.value)}
         />

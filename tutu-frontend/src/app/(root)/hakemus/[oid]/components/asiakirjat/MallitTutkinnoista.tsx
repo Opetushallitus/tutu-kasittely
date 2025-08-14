@@ -31,17 +31,17 @@ type LahdeOption = {
 };
 
 const LahdeOptionsWoMuut: LahdeOption[] = [
-  { id: 'ece', lKey: 'hakemus.asiakirjat.malleja_tutkinnoista.ece' },
+  { id: 'ece', lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.ece' },
   {
     id: 'UK_enic',
-    lKey: 'hakemus.asiakirjat.malleja_tutkinnoista.uk-enic',
+    lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.ukEnic',
   },
   {
     id: 'naric_portal',
-    lKey: 'hakemus.asiakirjat.malleja_tutkinnoista.naric-portal',
+    lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.naricPortal',
   },
-  { id: 'nuffic', lKey: 'hakemus.asiakirjat.malleja_tutkinnoista.nuffic' },
-  { id: 'aacrao', lKey: 'hakemus.asiakirjat.malleja_tutkinnoista.aacrao' },
+  { id: 'nuffic', lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.nuffic' },
+  { id: 'aacrao', lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.aacrao' },
 ];
 
 const BoldedLabel = ({ label }: { label: string }) => {
@@ -59,7 +59,7 @@ const TableHeader = () => {
       <TableRow>
         <TableCell style={{ width: '20%' }}>
           <BoldedLabel
-            label={t('hakemus.asiakirjat.malleja_tutkinnoista.lahde')}
+            label={t('hakemus.asiakirjat.mallejaTutkinnoista.lahde')}
           />
         </TableCell>
         <TableCell style={{ width: '5%' }}>
@@ -70,7 +70,7 @@ const TableHeader = () => {
         </TableCell>
         <TableCell>
           <OphTypography variant={'body1'}>
-            {t('hakemus.asiakirjat.malleja_tutkinnoista.kuvaus')}
+            {t('hakemus.asiakirjat.mallejaTutkinnoista.kuvaus')}
           </OphTypography>
         </TableCell>
       </TableRow>
@@ -247,7 +247,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
         variant={'h3'}
         data-testid="asiakirjamalleja-vastaavista-tutkinnoista-otsikko"
       >
-        {t('hakemus.asiakirjat.malleja_tutkinnoista.otsikko')}
+        {t('hakemus.asiakirjat.mallejaTutkinnoista.otsikko')}
       </OphTypography>
       <Table>
         <TableHeader />
@@ -263,12 +263,10 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
           ))}
           <ContentRow
             id={'muu'}
-            label={t('hakemus.asiakirjat.malleja_tutkinnoista.muu')}
+            label={t('hakemus.asiakirjat.mallejaTutkinnoista.muu')}
             value={hakemus.asiakirjamallitTutkinnoista?.muu}
             handleChange={handleChange}
-            kuvausLabel={t(
-              'hakemus.asiakirjat.malleja_tutkinnoista.muu_selite',
-            )}
+            kuvausLabel={t('hakemus.asiakirjat.mallejaTutkinnoista.muuSelite')}
           />
         </TableBody>
       </Table>

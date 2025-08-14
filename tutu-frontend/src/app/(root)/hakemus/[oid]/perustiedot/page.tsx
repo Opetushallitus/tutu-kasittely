@@ -28,7 +28,7 @@ export default function PerustietoPage() {
   const { isLoading, hakemus, error } = useHakemus();
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.hakemuksen-lataus', t);
+    handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
   }, [error, addToast, t]);
 
   if (error) {

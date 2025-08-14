@@ -70,7 +70,7 @@ export function HakemusList({ user }: HakemusListProps) {
   );
   const { isLoading, data, error } = useHakemukset();
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.hakemus-listan-lataus', t);
+    handleFetchError(addToast, error, 'virhe.hakemuslistanLataus', t);
   }, [error, addToast, t]);
 
   const [nayta] = useQueryState(

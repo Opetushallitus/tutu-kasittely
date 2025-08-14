@@ -65,7 +65,7 @@ export default function HakemusRow({
       </StyledTableCell>
       <StyledTableCell>{t(hakemusKoskee)}</StyledTableCell>
       <StyledTableCell>
-        {t('hakemuslista.kokonaisaika.arvo', '', {
+        {t('hakemuslista.kokonaisaikaKk', '', {
           aika: muotoileKokonaisaika(hakemus.aika),
         })}
       </StyledTableCell>

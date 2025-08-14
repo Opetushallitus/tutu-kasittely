@@ -90,7 +90,7 @@ const LinkedTab = (props: TabLinkProps) => {
         ),
         iconPosition: 'end',
       })}
-      label={t(`hakemus-tabs.${value}`)}
+      label={t(`hakemusTabs.${value}`)}
       component={TabLink}
       sx={sx}
     />
@@ -116,7 +116,7 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
         value={selectedTabName}
         onChange={handleChange}
         orientation="vertical"
-        aria-label={t('hakemus-tabs.navigaatio')}
+        aria-label={t('hakemusTabs.navigaatio')}
         role="navigation"
         sx={{
           '.MuiTabs-indicator': {
