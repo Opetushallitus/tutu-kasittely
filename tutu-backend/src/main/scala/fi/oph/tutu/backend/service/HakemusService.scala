@@ -182,7 +182,7 @@ class HakemusService(
       case _         => hakemuskoskee
     }
 
-    val apHakemusQueryParam = hakemusKoskeeQueryParam match {
+    val apHakemusQueryParam = hakemuskoskee match {
       case Some("4") => true
       case _         => false
     }
@@ -239,7 +239,8 @@ class HakemusService(
                 esittelijaSukunimi = esittelija(1),
                 kasittelyVaihe = item.kasittelyVaihe,
                 muokattu = item.muokattu,
-                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`
+                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`,
+                apHakemus = item.apHakemus
               )
             )
         }

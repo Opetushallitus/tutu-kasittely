@@ -67,7 +67,8 @@ class HakemusRepository {
         null,
         r.nextString(),
         Option(r.nextString()),
-        null
+        null,
+        Option(r.nextBoolean())
       )
     )
 
@@ -139,7 +140,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, h.ap_hakemus
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
