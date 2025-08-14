@@ -156,6 +156,7 @@ export const mockHakemus = (page: Page) => {
         kasittelyVaihe: 'HakemustaTaydennetty',
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
+        sisalto: [],
         pyydettavatAsiakirjat: [],
         imiPyynto: {},
         asiakirjamallitTutkinnoista: {
