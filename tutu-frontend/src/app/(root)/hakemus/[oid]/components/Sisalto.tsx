@@ -3,6 +3,8 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { SisaltoItem } from '@/src/lib/types/hakemus';
 import * as R from 'remeda';
 import { styled } from '@mui/material';
+import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
+import { sisaltoItemMatchesToAny } from '@/src/lib/hakemuspalveluUtils';
 
 const Indented = styled((props) => (
   <div {...props} className={`${props.className} indented`} />
@@ -23,7 +25,7 @@ const EntryLabel = styled((props) => (
 });
 
 const EntryValue = styled((props) => (
-  <OphTypography variant={'body 1'} {...props} />
+  <OphTypography variant={'body1'} {...props} />
 ))({
   paddingLeft: `1em`,
   display: 'block',
@@ -39,12 +41,12 @@ export const Sisalto = ({
   osiot = [],
 }: {
   sisalto: SisaltoItem[];
-  osiot: string[];
+  osiot: HakemuspalveluSisaltoId[];
 }) => {
   return (
     <div>
       {sisalto
-        .filter((item) => osiot.includes(item.key))
+        .filter((item) => sisaltoItemMatchesToAny(item, osiot))
         .map((item) => renderItem(item))}
     </div>
   );
