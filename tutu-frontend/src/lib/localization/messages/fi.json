@@ -9,7 +9,6 @@
     }
   },
   "hakemuslista": {
-    "apHakemus": "AP-hakemus",
     "otsikko": "Tutkintojen tunnustaminen",
     "hakemukset": "Hakemukset",
     "hakemus": "Hakemus",
@@ -25,6 +24,7 @@
     "kokonaisaikaKk": "{aika, number} kk"
   },
   "hakemus": {
+    "apHakemus": "AP-hakemus",
     "ataruhakemuksentila": {
       "kasittelematta": "Käsittelemättä",
       "kasittelyssa": "Käsittelyssä",

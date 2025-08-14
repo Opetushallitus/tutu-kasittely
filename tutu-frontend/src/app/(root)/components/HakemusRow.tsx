@@ -12,7 +12,7 @@ const StyledTableCell = styled(TableCell)({
 });
 
 const ApHakemusBadge = styled(Chip)(() => ({
-  color: ophColors.cyan1,
+  color: ophColors.blue3,
   backgroundColor: ophColors.lightBlue1,
   borderRadius: '2px',
 }));
@@ -76,8 +76,9 @@ export default function HakemusRow({
           <>
             <br />
             <ApHakemusBadge
+              data-testid="ap-hakemus-badge"
               className="hakemusrow-aphakemus-badge"
-              label={t('hakemuslista.apHakemus')}
+              label={t('hakemus.apHakemus')}
               size="small"
             />
           </>

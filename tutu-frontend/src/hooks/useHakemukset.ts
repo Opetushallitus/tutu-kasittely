@@ -15,6 +15,6 @@ export const useHakemukset = () =>
   useQuery({
     queryKey: ['getHakemukset'],
     queryFn: getHakemukset,
-    staleTime: Infinity,
+    refetchOnMount: 'always',
     throwOnError: false,
   });

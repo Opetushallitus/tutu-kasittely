@@ -44,9 +44,7 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
 
   return (
     <>
-      <OphTypography variant="h4">
-        {t('hakemus.asiakirjat.apHakemus')}
-      </OphTypography>
+      <OphTypography variant="h4">{t('hakemus.apHakemus')}</OphTypography>
       <Stack direction="row" gap={theme.spacing(3)}>
         <OphRadio
           value={'true'}
