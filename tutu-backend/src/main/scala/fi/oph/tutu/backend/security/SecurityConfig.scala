@@ -3,10 +3,14 @@ package fi.oph.tutu.backend.security
 import com.zaxxer.hikari.HikariDataSource
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl
+import jakarta.servlet.*
+import jakarta.servlet.http.*
 import org.apereo.cas.client.session.{SessionMappingStorage, SingleSignOutFilter}
 import org.apereo.cas.client.validation.{Cas20ServiceTicketValidator, TicketValidator}
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
@@ -23,6 +27,7 @@ import org.springframework.security.web.context.{HttpSessionSecurityContextRepos
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
 import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
+import org.springframework.web.filter.ForwardedHeaderFilter
 
 import scala.collection.mutable
 import scala.jdk.javaapi.CollectionConverters.asJava
@@ -139,33 +144,31 @@ class SecurityConfig {
       .authenticationProvider(casAuthenticationProvider)
       .build()
 
-  // Filter joka säilyttää X-Forwarded-For headerin alkuperäisen arvon
-//  @Component
-//  @org.springframework.core.annotation.Order(Ordered.HIGHEST_PRECEDENCE)
-//  class PreserveXffFilter extends OncePerRequestFilter {
-//
-//    @throws[IOException]
-//    @throws[ServletException]
-//    override def doFilterInternal(
-//      request: HttpServletRequest,
-//      response: HttpServletResponse,
-//      filterChain: FilterChain
-//    ): Unit = {
-//      val xff = request.getHeader("X-Forwarded-For")
-//      if (xff != null) {
-//        request.setAttribute("XFF_ORIGINAL", xff)
-//      }
-//      filterChain.doFilter(request, response)
-//    }
-//  }
+  class PreserveXForwardedForFilter extends Filter {
+    override def doFilter(req: ServletRequest, res: ServletResponse, chain: FilterChain): Unit = {
+      val request = req.asInstanceOf[HttpServletRequest]
+      val xff     = Option(request.getHeader("X-Forwarded-For")).getOrElse("localhost")
+      val wrapped = new HttpServletRequestWrapper(request) {
+        override def getHeader(name: String): String =
+          if (name.equalsIgnoreCase("XFF_ORIGINAL")) xff else super.getHeader(name)
+      }
+      chain.doFilter(wrapped, res)
+    }
+  }
 
-//  @Bean
-//  def forwardedHeaderFilter(): FilterRegistrationBean[ForwardedHeaderFilter] = {
-//    val filter       = new ForwardedHeaderFilter()
-//    val registration = new FilterRegistrationBean(filter)
-//    registration.setOrder(Ordered.HIGHEST_PRECEDENCE)
-//    registration
-//  }
+  @Bean
+  def preserveXFFFilterRegistration(): FilterRegistrationBean[PreserveXForwardedForFilter] = {
+    val registration = new FilterRegistrationBean(new PreserveXForwardedForFilter())
+    registration.setOrder(Ordered.HIGHEST_PRECEDENCE) // runs BEFORE ForwardedHeaderFilter
+    registration
+  }
+
+  @Bean
+  def forwardedHeaderFilterRegistration(): FilterRegistrationBean[ForwardedHeaderFilter] = {
+    val registration = new FilterRegistrationBean(new ForwardedHeaderFilter())
+    registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1) // runs AFTER PreserveXForwardedForFilter
+    registration
+  }
 
   @Bean
   def casAuthenticationFilter(
