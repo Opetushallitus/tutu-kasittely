@@ -18,9 +18,7 @@ const findSisaltoItemRecursivelyFromChildren = (
   childPath: HakemuspalveluSisaltoId[],
   currentItem: SisaltoItem,
 ): SisaltoItem | undefined => {
-  if (childPath.length === 0) {
-    return currentItem;
-  }
+  if (!childPath.length) return currentItem;
   const child = currentItem.children.find((childCandidate) =>
     sisaltoItemMatches(childCandidate, childPath[0]),
   );
