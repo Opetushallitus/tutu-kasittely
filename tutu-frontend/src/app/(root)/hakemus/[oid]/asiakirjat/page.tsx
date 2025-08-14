@@ -181,7 +181,9 @@ const AsiakirjaPagePure = ({
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>
       <KaikkiSelvityksetSaatu hakemus={hakemus} updateHakemus={updateHakemus} />
-      <ApHakemus hakemus={hakemus} updateHakemus={updateHakemus} />
+      {hakemus.hakemusKoskee === 1 && (
+        <ApHakemus hakemus={hakemus} updateHakemus={updateHakemus} />
+      )}
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
