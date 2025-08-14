@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { sortBy } from 'remeda';
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
+import _sisalto from './fixtures/hakemus1/_sisalto.json';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   mockInit(page);
@@ -156,7 +157,7 @@ export const mockHakemus = (page: Page) => {
         kasittelyVaihe: 'HakemustaTaydennetty',
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
-        sisalto: [],
+        sisalto: _sisalto,
         pyydettavatAsiakirjat: [],
         imiPyynto: {},
         asiakirjamallitTutkinnoista: {

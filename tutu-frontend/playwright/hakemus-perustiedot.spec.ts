@@ -24,6 +24,8 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
   await expect(page.getByTestId('sahkopostiosoite')).toHaveValue(
     'hessu@hemuli.com',
   );
+  await expect(page.getByTestId('paatoskieli')).toHaveText('suomeksi');
+  await expect(page.getByTestId('asiointikieli')).toHaveText('suomeksi');
 });
 
 test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => {
@@ -35,6 +37,8 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
   await expect(page.getByTestId('kansalaisuus')).toHaveText('Finland');
   await expect(page.getByTestId('asuinmaa')).toHaveText('Finland');
   await expect(page.getByTestId('kotikunta')).toHaveText('Helsingfors');
+  await expect(page.getByTestId('paatoskieli')).toHaveText('finska');
+  await expect(page.getByTestId('asiointikieli')).toHaveText('finska');
 });
 
 test('Muutoshistoriassa näkyy oikeat tiedot', async ({ page }) => {

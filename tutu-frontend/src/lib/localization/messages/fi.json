@@ -98,11 +98,11 @@
         "postinumero": "Postinumero",
         "postitoimipaikka": "Postitoimipaikka",
         "kotikunta": "Kotikunta",
-        "sahkopostiosoite": "Sähköpostiosoite"
-      },
-      "kielet": "Päätös- ja asiointikieli",
-      "paatoskieli": "Päätöskieli",
-      "asiointikieli": "Asiointikieli"
+        "sahkopostiosoite": "Sähköpostiosoite",
+        "kielet": "Päätös- ja asiointikieli",
+        "paatoskieli": "Päätöskieli",
+        "asiointikieli": "Asiointikieli"
+      }
     },
     "asiakirjat": {
       "otsikko": "Asiakirjat",
