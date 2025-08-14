@@ -70,7 +70,7 @@ export default function AsiakirjaPage() {
   /* ----------------------------------------- */
   /* Käsitellään virheet ja puutteellinen data */
   useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksen-lataus', t);
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
   }, [hakemusError, addToast, t]);
 
   if (hakemusError) {
@@ -162,7 +162,7 @@ const AsiakirjaPagePure = ({
         </OphTypography>
         <ExternalLink
           gap={theme.spacing(1)}
-          label={t('hakemus.asiakirjat.avaa_hakemuspalvelussa')}
+          label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
           href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
         />
       </Stack>
@@ -183,7 +183,7 @@ const AsiakirjaPagePure = ({
       <KaikkiSelvityksetSaatu hakemus={hakemus} updateHakemus={updateHakemus} />
       <ApHakemus hakemus={hakemus} updateHakemus={updateHakemus} />
       <OphTypography variant={'h3'}>
-        {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
+        {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
       <Stack>
         <OphTypography
@@ -200,7 +200,7 @@ const AsiakirjaPagePure = ({
         </OphTypography>
       </Stack>
       <OphTypography variant={'h4'}>
-        {t('hakemus.asiakirjat.asiakirjojen_vahvistaminen')}
+        {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
       <AllekirjoitustenTarkistus
         hakemus={hakemus}

@@ -20,7 +20,7 @@
     "omat": "Minulle osoitetut",
     "kaikki": "Kaikki",
     "kokonaisaika": "Kokonaisaika",
-    "kokonaisaika.arvo": "{aika, number} kk"
+    "kokonaisaikaKk": "{aika, number} kk"
   },
   "hakemus": {
     "ataruhakemuksentila": {
@@ -106,11 +106,11 @@
     },
     "asiakirjat": {
       "otsikko": "Asiakirjat",
-      "avaa_hakemuspalvelussa": "Avaa asiakirjat hakemuspalvelussa",
+      "avaaHakemuspalvelussa": "Avaa asiakirjat hakemuspalvelussa",
       "asiakirja": "Asiakirja",
       "saapunut": "Saapunut",
       "uusi": "Uusi",
-      "tarkistuksen_tila": {
+      "tarkistuksenTila": {
         "otsikko": "Tarkastuksen tila",
         "not-checked": "Tarkastamatta",
         "attachment-missing": "Liite puuttuu",
@@ -150,23 +150,23 @@
       },
       "asiakirjojenTarkistukset": "Asiakirjojen tarkistukset",
       "kaikkiSelvityksetSaatu": "Kaikki tarvittavat selvitykset saatu",
-      "asiakirjojen_vahvistaminen": "Asiakirjojen vahvistaminen",
-      "allekirjoitukset_tarkistettu": "Allekirjoitukset tarkistettu",
-      "allekirjoitukset_tarkistettu_lisatietoja": "Lisätietoja",
+      "asiakirjojenVahvistaminen": "Asiakirjojen vahvistaminen",
+      "allekirjoituksetTarkistettu": "Allekirjoitukset tarkistettu",
+      "allekirjoituksetTarkistettuLisatietoja": "Lisätietoja",
       "alkuperaisetAsiakirjatSaatuNahtavaksi": "Alkuperäiset asiakirjat saatu nähtäväksi",
       "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista",
       "apHakemus": "AP hakemus",
-      "malleja_tutkinnoista": {
+      "mallejaTutkinnoista": {
         "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
         "lahde": "Lähde",
         "kuvaus": "Kuvaa lyhyesti, vastaako löytämäsi asiakirjamalli hakemuksen asiakirjaa",
         "ece": "ECE",
-        "uk-enic": "UK Enic",
-        "naric-portal": "Naric portal (UHR)",
+        "ukEnic": "UK Enic",
+        "naricPortal": "Naric portal (UHR)",
         "nuffic": "Nuffic",
         "aacrao": "Aacrao",
         "muu": "Muut lähteet",
-        "muu_selite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
+        "muuSelite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
       }
     }
   },
@@ -179,7 +179,7 @@
     "esittelija": "Esittelijä:",
     "lopullinenPaatosPvm": "Lopullinen päätös:"
   },
-  "hakemus-tabs": {
+  "hakemusTabs": {
     "navigaatio": "Hakemuksen näkymävalitsin",
     "perustiedot": "Hakijan ja hakemuksen tiedot",
     "asiakirjat": "Asiakirjat",
@@ -195,14 +195,13 @@
   },
   "puuttuu": "Puuttuu",
   "virhe": {
-    "ei-tutu-oikeuksia": "Sinulla ei ole oikeuksia TUTU -hakemuksiin.",
-    "esittelijoiden-lataus": "Esittelijöiden lataamisessa tapahtui virhe.",
-    "hakemus-listan-lataus": "Hakemuslistan lataamisessa tapahtui virhe.",
-    "hakemuksen-lataus": "Hakemuksen lataamisessa tapahtui virhe.",
+    "eiTutuOikeuksia": "Sinulla ei ole oikeuksia TUTU -hakemuksiin.",
+    "esittelijoidenLataus": "Esittelijöiden lataamisessa tapahtui virhe.",
+    "hakemuslistanLataus": "Hakemuslistan lataamisessa tapahtui virhe.",
+    "hakemuksenLataus": "Hakemuksen lataamisessa tapahtui virhe.",
     "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
-    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
-    "duplikaatti-asiakirjapyynto": "Asiakirjapyyntö on jo olemassa."
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen."
   },
   "yleiset": {
     "poista": "Poista",

@@ -37,7 +37,7 @@ export default function ListViewPage() {
         </>
       ) : (
         <OphTypography variant={'body1'} component={'p'}>
-          {t('virhe.ei-tutu-oikeuksia')}
+          {t('virhe.eiTutuOikeuksia')}
         </OphTypography>
       )}
     </PageLayout>

@@ -62,7 +62,7 @@ const AsiakirjaTableHeader = () => {
         </TableCell>
         <TableCell>{t('hakemus.asiakirjat.saapunut')}</TableCell>
         <TableCell>
-          {t('hakemus.asiakirjat.tarkistuksen_tila.otsikko')}
+          {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
         </TableCell>
       </TableRow>
     </TableHead>
@@ -128,7 +128,7 @@ const tiedostoNimi = (metadata: LiiteItem) => {
 };
 
 const tarkistuksenTila = (t: TFunction, data) => {
-  const translationKey = `hakemus.asiakirjat.tarkistuksen_tila.${data.liitteenTila?.state}`;
+  const translationKey = `hakemus.asiakirjat.tarkistuksenTila.${data.liitteenTila?.state}`;
   const result = t(translationKey);
 
   return result !== translationKey ? result : '-';
