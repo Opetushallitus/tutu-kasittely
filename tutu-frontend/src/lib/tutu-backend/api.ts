@@ -5,13 +5,15 @@ import { FetchError, PermissionError } from '@/src/lib/common';
 import { redirect } from 'next/navigation';
 
 let _csrfToken: string;
-const TUTU_BACKEND_API_URL = getConfiguration().TUTU_BACKEND_API_URL;
-const loginUrl = `${TUTU_BACKEND_API_URL}/login`;
 const isServer = typeof window === 'undefined';
+
+const getTutuBackendApiUrl = () => getConfiguration().TUTU_BACKEND_API_URL;
+
+const getLoginUrl = () => `${getTutuBackendApiUrl()}/login`;
 
 async function csrfToken() {
   if (!_csrfToken) {
-    const response = await fetch(`${TUTU_BACKEND_API_URL}/csrf`, {
+    const response = await fetch(`${getTutuBackendApiUrl()}/csrf`, {
       credentials: 'include',
     });
     const data = await response.json();
@@ -38,7 +40,7 @@ export async function apiFetch(
   try {
     const queryParams = options?.queryParams ? options.queryParams : '';
     const response = await fetch(
-      `${TUTU_BACKEND_API_URL}/${resource}${queryParams}`,
+      `${getTutuBackendApiUrl()}/${resource}${queryParams}`,
       {
         ...options,
         method: options?.method ?? 'GET',
@@ -87,9 +89,9 @@ const isRedirected = (response: Response) => {
 
 const redirectToLogin = () => {
   if (isServer) {
-    redirect(loginUrl);
+    redirect(getLoginUrl());
   } else {
-    location.assign(loginUrl);
+    location.assign(getLoginUrl());
   }
 };
 

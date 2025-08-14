@@ -37,15 +37,12 @@ export default async function RootLayout({
         }}
       >
         <main>
-          <ConfigurationProvider configuration={config}>
-            <NuqsAdapter>
-              <AppRouterCacheProvider>
-                {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-                <OphNextJsThemeProvider
-                  variant="oph"
-                  overrides={THEME_OVERRIDES}
-                >
-                  <ReactQueryClientProvider>
+          <NuqsAdapter>
+            <AppRouterCacheProvider>
+              {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
+              <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
+                <ReactQueryClientProvider>
+                  <ConfigurationProvider configuration={config}>
                     <MyTolgeeProvider>
                       <AuthorizedUserProvider>
                         <LocalizationProvider>
@@ -56,11 +53,11 @@ export default async function RootLayout({
                         </LocalizationProvider>
                       </AuthorizedUserProvider>
                     </MyTolgeeProvider>
-                  </ReactQueryClientProvider>
-                </OphNextJsThemeProvider>
-              </AppRouterCacheProvider>
-            </NuqsAdapter>
-          </ConfigurationProvider>
+                  </ConfigurationProvider>
+                </ReactQueryClientProvider>
+              </OphNextJsThemeProvider>
+            </AppRouterCacheProvider>
+          </NuqsAdapter>
         </main>
       </body>
     </html>
