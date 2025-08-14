@@ -50,7 +50,7 @@ class HakemusRepository {
         Option(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextBoolean()
+        Option(r.nextBoolean())
       )
     )
 

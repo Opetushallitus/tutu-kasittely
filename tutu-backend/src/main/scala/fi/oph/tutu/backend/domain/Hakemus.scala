@@ -164,7 +164,6 @@ case class PartialHakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Option[Boolean] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
-  selvityksetSaatu: Option[Boolean] = None,
   imiPyynto: Option[ImiPyynto] = None,
   apHakemus: Option[Boolean] = None
 )

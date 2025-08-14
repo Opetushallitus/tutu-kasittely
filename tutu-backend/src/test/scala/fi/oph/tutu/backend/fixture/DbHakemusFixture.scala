@@ -21,5 +21,5 @@ val dbHakemusFixture = DbHakemus(
   imiPyyntoNumero = null,
   imiPyyntoLahetetty = null,
   imiPyyntoVastattu = null,
-  apHakemus = false
+  apHakemus = None
 )
