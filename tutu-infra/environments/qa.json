@@ -40,6 +40,6 @@
     }
   },
   "cloudfront": {
-    "require_test_authentication": true
+    "require_test_authentication": false
   }
 }
