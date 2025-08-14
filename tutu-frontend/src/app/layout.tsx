@@ -15,6 +15,7 @@ import { AuthorizedUserProvider } from '@/src/components/providers/AuthorizedUse
 import { Toaster } from '@/src/components/Toaster';
 import { ConfigurationProvider } from '@/src/components/providers/ConfigurationProvider';
 import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
+import { isTesting } from '@/src/lib/configuration/configuration';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',
@@ -30,7 +31,7 @@ export default async function RootLayout({
 
   return (
     <html lang="fi">
-      <Script src={config.RAAMIT_URL} />
+      {!isTesting && <Script src={config.RAAMIT_URL} />}
       <body
         style={{
           backgroundColor: ophColors.grey50,
