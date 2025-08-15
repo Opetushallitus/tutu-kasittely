@@ -373,7 +373,7 @@ class HakemusService(
               dbHakemus.imiPyyntoVastattu
           },
           apHakemus = partialHakemus.apHakemus.orElse(dbHakemus.apHakemus),
-          yhteistutkinto = partialHakemus.yhteistutkinto.orElse(dbHakemus.yhteistutkinto)
+          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto)
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,

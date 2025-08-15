@@ -22,5 +22,5 @@ val dbHakemusFixture = DbHakemus(
   imiPyyntoLahetetty = null,
   imiPyyntoVastattu = null,
   apHakemus = None,
-  yhteistutkinto = None
+  yhteistutkinto = false
 )

@@ -116,7 +116,7 @@ case class DbHakemus(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  yhteistutkinto: Option[Boolean]
+  yhteistutkinto: Boolean
 )
 
 case class Hakemus(
@@ -150,7 +150,7 @@ case class Hakemus(
     imiPyyntoVastattu = None
   ),
   apHakemus: Option[Boolean] = None,
-  yhteistutkinto: Option[Boolean] = None
+  yhteistutkinto: Boolean = false
 )
 
 case class PartialHakemus(

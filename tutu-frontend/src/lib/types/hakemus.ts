@@ -35,7 +35,7 @@ export type Hakemus = {
   >;
   imiPyynto: ImiPyynto;
   apHakemus?: boolean;
-  yhteistutkinto?: boolean;
+  yhteistutkinto: boolean;
 };
 
 export type SisaltoItem = {

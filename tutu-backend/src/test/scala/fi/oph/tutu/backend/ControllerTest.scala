@@ -526,7 +526,7 @@ class ControllerTest extends IntegrationTestBase {
       yhteistutkinto = Some(true)
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.yhteistutkinto.contains(true))
+    assert(paivitettyHakemus.yhteistutkinto.equals(true))
   }
 
   @Test
