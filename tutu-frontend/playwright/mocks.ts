@@ -160,6 +160,7 @@ export const mockHakemus = (page: Page) => {
         sisalto: _sisalto,
         pyydettavatAsiakirjat: [],
         imiPyynto: {},
+        yhteistutkinto: null,
         asiakirjamallitTutkinnoista: {
           ece: {
             lahde: 'ece',

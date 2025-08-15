@@ -409,6 +409,8 @@ class ControllerTest extends IntegrationTestBase {
                                   "sahkopostiosoite": "patu.kuusinen@riibasu.fi"
                                 },
                                 "asiatunnus": null,
+                                "apHakemus": false,
+                                "yhteistutkinto": false,
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
@@ -512,11 +514,35 @@ class ControllerTest extends IntegrationTestBase {
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.asiatunnus.contains("OPH-122-2025"))
 
-    // Lisätään asiakirja
+    // Päivitetään AP-hakemus
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
+      apHakemus = Some(true)
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.apHakemus.contains(true))
+
+    // Päivitetään yhteistutkinto
+    updatedHakemus = PartialHakemus(
+      yhteistutkinto = Some(true)
+    )
+    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    assert(paivitettyHakemus.yhteistutkinto.equals(true))
+  }
+
+  @Test
+  @Order(12)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaHakemusValidRequestReturns200WithChangedPyydettavatAsiakirjat(): Unit = {
+    initAtaruHakemusRequests()
+
+    // Lisätään asiakirja
+    var updatedHakemus = PartialHakemus(
+      pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
+    )
+    var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
 
     // Lisätään toinen asiakirja
@@ -570,11 +596,10 @@ class ControllerTest extends IntegrationTestBase {
 
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.isEmpty)
-
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
