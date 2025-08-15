@@ -72,7 +72,7 @@ test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', a
   await expect(omatButton).not.toHaveClass(/Mui-selected/);
 });
 
-test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
+test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadge näkyy', async ({
   page,
 }) => {
   await mockSuccessfullLists({ page });
@@ -98,6 +98,8 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta', async ({
   await expect(hakemusKoskee).toHaveValue('1');
 
   await expect(esittelija).toHaveValue('1.2.246.562.24.999999999999');
+
+  await expect(page.getByTestId('ap-hakemus-badge')).toBeVisible();
 });
 
 test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', async ({

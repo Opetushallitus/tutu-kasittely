@@ -16,4 +16,5 @@ export const hakemusKoskeeOptions: Array<{
   { value: '1', label: 'kelpoisuusAmmattiin' },
   { value: '2', label: 'tutkintoSuoritusRinnakkaistaminen' },
   { value: '3', label: 'riittavatOpinnot' },
-];
+  { value: '4', label: 'kelpoisuusAmmattiinAPHakemus' },
+].sort((a, b) => a.label.localeCompare(b.label));

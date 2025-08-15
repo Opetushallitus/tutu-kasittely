@@ -15,7 +15,7 @@ export const kasittelyVaiheet = [
 
 export type KasittelyVaihe = (typeof kasittelyVaiheet)[number];
 
-export const hakemusKoskeeQueryStates = ['', '0', '1', '2', '3'] as const;
+export const hakemusKoskeeQueryStates = ['', '0', '1', '2', '3', '4'] as const;
 
 export type HakemusKoskeeQueryState = (typeof hakemusKoskeeQueryStates)[number];
 

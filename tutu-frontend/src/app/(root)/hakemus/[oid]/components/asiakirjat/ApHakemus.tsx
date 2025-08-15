@@ -43,26 +43,26 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
   const theme = useTheme();
 
   return (
-    <>
-      <OphTypography variant="h4">
-        {t('hakemus.asiakirjat.apHakemus')}
-      </OphTypography>
-      <Stack direction="row" gap={theme.spacing(3)}>
-        <OphRadio
-          value={'true'}
-          checked={isApHakemus === true}
-          label={t('yleiset.kylla')}
-          name="ap_hakemus_true_false"
-          onChange={() => setIsApHakemus(true)}
-        ></OphRadio>
-        <OphRadio
-          value={'false'}
-          checked={isApHakemus === false}
-          label={t('yleiset.ei')}
-          name="ap_hakemus_true_false"
-          onChange={() => setIsApHakemus(false)}
-        ></OphRadio>
-      </Stack>
-    </>
+    hakemus?.hakemusKoskee === 1 && (
+      <>
+        <OphTypography variant="h4">{t('hakemus.apHakemus')}</OphTypography>
+        <Stack direction="row" gap={theme.spacing(3)}>
+          <OphRadio
+            value={'true'}
+            checked={isApHakemus === true}
+            label={t('yleiset.kylla')}
+            name="ap_hakemus_true_false"
+            onChange={() => setIsApHakemus(true)}
+          ></OphRadio>
+          <OphRadio
+            value={'false'}
+            checked={isApHakemus === false}
+            label={t('yleiset.ei')}
+            name="ap_hakemus_true_false"
+            onChange={() => setIsApHakemus(false)}
+          ></OphRadio>
+        </Stack>
+      </>
+    )
   );
 };

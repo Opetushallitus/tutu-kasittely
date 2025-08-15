@@ -175,7 +175,20 @@ class HakemusService(
       case None        => None
       case Some(vaihe) => Some(vaihe.split(",").map(_.trim).toSeq)
     }
-    val hakemusOidit: Seq[HakemusOid] = hakemusRepository.haeHakemusOidit(userOid, hakemuskoskee, vaiheet)
+
+    // jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
+    val hakemusKoskeeQueryParam = hakemuskoskee match {
+      case Some("4") => Some("1")
+      case _         => hakemuskoskee
+    }
+
+    val apHakemusQueryParam = hakemuskoskee match {
+      case Some("4") => true
+      case _         => false
+    }
+
+    val hakemusOidit: Seq[HakemusOid] =
+      hakemusRepository.haeHakemusOidit(userOid, hakemusKoskeeQueryParam, vaiheet, apHakemusQueryParam)
 
     // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
     if (hakemusOidit.isEmpty) {
@@ -226,7 +239,8 @@ class HakemusService(
                 esittelijaSukunimi = esittelija(1),
                 kasittelyVaihe = item.kasittelyVaihe,
                 muokattu = item.muokattu,
-                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`
+                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`,
+                apHakemus = item.apHakemus
               )
             )
         }

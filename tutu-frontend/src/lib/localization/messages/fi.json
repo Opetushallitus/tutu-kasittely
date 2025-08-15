@@ -3,6 +3,7 @@
     "hakemusKoskeeValinta": {
       "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
       "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
       "riittavatOpinnot": "Päätös riittävistä opinnoista"
     }
@@ -23,6 +24,7 @@
     "kokonaisaikaKk": "{aika, number} kk"
   },
   "hakemus": {
+    "apHakemus": "AP-hakemus",
     "ataruhakemuksentila": {
       "kasittelematta": "Käsittelemättä",
       "kasittelyssa": "Käsittelyssä",

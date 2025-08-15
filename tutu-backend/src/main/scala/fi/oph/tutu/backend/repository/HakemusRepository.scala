@@ -67,7 +67,8 @@ class HakemusRepository {
         null,
         r.nextString(),
         Option(r.nextString()),
-        null
+        null,
+        Option(r.nextBoolean())
       )
     )
 
@@ -139,7 +140,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, h.ap_hakemus
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -220,7 +221,8 @@ class HakemusRepository {
   def haeHakemusOidit(
     userOid: Option[String],
     hakemusKoskee: Option[String],
-    vaiheet: Option[Seq[String]]
+    vaiheet: Option[Seq[String]],
+    apHakemus: Boolean
   ): Seq[HakemusOid] = {
     try {
       val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
@@ -241,6 +243,10 @@ class HakemusRepository {
           val vaiheList = v.map(vaihe => s"'${vaihe}'").mkString(", ")
           whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
         }
+      }
+
+      if (apHakemus) {
+        whereClauses += s"h.ap_hakemus = true"
       }
 
       val whereClause = {
