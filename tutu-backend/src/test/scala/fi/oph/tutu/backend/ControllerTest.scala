@@ -527,12 +527,22 @@ class ControllerTest extends IntegrationTestBase {
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.yhteistutkinto.contains(true))
+  }
+
+  @Test
+  @Order(12)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaHakemusValidRequestReturns200WithChangedPyydettavatAsiakirjat(): Unit = {
+    initAtaruHakemusRequests()
 
     // Lisätään asiakirja
-    updatedHakemus = PartialHakemus(
+    var updatedHakemus = PartialHakemus(
       pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
     )
-    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
+    var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
 
     // Lisätään toinen asiakirja
@@ -589,7 +599,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
