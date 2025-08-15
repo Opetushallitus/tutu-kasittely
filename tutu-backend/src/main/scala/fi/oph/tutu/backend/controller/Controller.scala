@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
+import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, MuistioService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
@@ -29,6 +29,7 @@ class Controller(
   hakemusService: HakemusService,
   hakemusRepository: HakemusRepository,
   userService: UserService,
+  muistioService: MuistioService,
   val auditLog: AuditLog = AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
@@ -302,4 +303,55 @@ class Controller(
         LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
         errorMessageMapper.mapErrorMessage(e)
     }
+
+  @GetMapping(
+    path = Array("muistio/{hakemusId}/{hakemuksenOsa}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeMuistio(
+    @PathVariable("hakemusId") hakemusId: String,
+    @PathVariable("hakemuksenOsa") hakemuksenOsa: String,
+    @RequestParam("nakyvyys") nakyvyys: String
+  ): ResponseEntity[Any] = {
+    Try {
+      val sisainen: Boolean = nakyvyys == "sisainen";
+      // TODO
+      muistioService.haeMuistio(hakemusId, hakemuksenOsa, sisainen)
+    } match {
+      case Success(result) =>
+        result match {
+          case None =>
+            LOG.warn(s"Muistiota ei löytynyt")
+            errorMessageMapper.mapPlainErrorMessage("Muistiota ei löytynyt", HttpStatus.NOT_FOUND)
+          case Some(muistio) =>
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(muistio))
+        }
+      case Failure(exception) =>
+        LOG.error(s"Muistion haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PostMapping(
+    path = Array("muistio/{hakemusId}/{hakemuksenOsa}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def tallennaMuistio(
+    @PathVariable("hakemusId") hakemusId: String,
+    @PathVariable("hakemuksenOsa") hakemuksenOsa: String,
+    @RequestBody muistioBytes: Array[Byte]
+  ): ResponseEntity[Any] = {
+    println(hakemusId + ": " + hakemuksenOsa);
+    var muistioPostBody: MuistioPostBody = null
+    try
+      muistioPostBody = mapper.readValue(muistioBytes, classOf[MuistioPostBody])
+    catch {
+      case e: Exception =>
+        LOG.error("Muistion tallennus epäonnistui", e.getMessage)
+        return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
+    }
+    val muistioId = muistioService.tallennaMuistio(hakemusId, hakemuksenOsa, muistioPostBody)
+    ResponseEntity.status(HttpStatus.OK).body(muistioId)
+  }
 }
