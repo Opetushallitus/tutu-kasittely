@@ -28,8 +28,8 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
 
   const updateApHakemus = (val: boolean | undefined) => {
     if (val !== isApHakemus) {
-      debouncedHakemusUpdateAction(val);
       setIsApHakemus(val);
+      debouncedHakemusUpdateAction(val);
     }
   };
 
@@ -52,14 +52,14 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
             checked={isApHakemus === true}
             label={t('yleiset.kylla')}
             name="ap_hakemus_true_false"
-            onChange={() => setIsApHakemus(true)}
+            onChange={() => updateApHakemus(true)}
           ></OphRadio>
           <OphRadio
             value={'false'}
             checked={isApHakemus === false}
             label={t('yleiset.ei')}
             name="ap_hakemus_true_false"
-            onChange={() => setIsApHakemus(false)}
+            onChange={() => updateApHakemus(false)}
           ></OphRadio>
         </Stack>
       </>
