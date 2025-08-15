@@ -40,6 +40,7 @@ export const Yhteistutkinto = ({
   };
   return (
     <OphCheckbox
+      data-testid="yhteistutkinto-checkbox"
       name="yhteistutkinto"
       label={t('hakemus.tutkinnot.yhteistutkinto')}
       checked={isYhteistutkinto}
