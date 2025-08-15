@@ -17,7 +17,7 @@ interface ApHakemusProps {
 export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
   const { t } = useTranslations();
 
-  const [isApHakemus, _setIsApHakemus] = useState<boolean | undefined>();
+  const [isApHakemus, setIsApHakemus] = useState<boolean | undefined>();
 
   const debouncedHakemusUpdateAction = useDebounce((val: boolean) => {
     updateHakemus({
@@ -26,17 +26,17 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
     });
   }, 1500);
 
-  const setIsApHakemus = (val: boolean | undefined) => {
+  const updateApHakemus = (val: boolean | undefined) => {
     if (val !== isApHakemus) {
       debouncedHakemusUpdateAction(val);
-      _setIsApHakemus(val);
+      setIsApHakemus(val);
     }
   };
 
   useEffect(() => {
     const apHakemus = hakemus?.apHakemus;
     if (isDefined(apHakemus)) {
-      _setIsApHakemus(apHakemus);
+      setIsApHakemus(apHakemus);
     }
   }, [hakemus?.apHakemus]);
 

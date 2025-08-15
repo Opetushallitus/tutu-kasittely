@@ -170,6 +170,10 @@
         "muu": "Muut lähteet",
         "muuSelite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
       }
+    },
+    "tutkinnot": {
+      "otsikko": "Tutkinnot",
+      "yhteistutkinto": "Yhteistutkinto"
     }
   },
   "hakemusotsikko": {
