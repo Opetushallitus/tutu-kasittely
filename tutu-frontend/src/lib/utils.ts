@@ -53,4 +53,4 @@ export const LocalizeFetchError = (
     : t(baseKey);
 };
 
-export const isDefined = (val) => val !== undefined && val !== null;
+export const isDefined = (val: unknown) => val !== undefined && val !== null;

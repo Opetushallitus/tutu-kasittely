@@ -5,68 +5,13 @@
     "domain": "tutu-dev.opintopolku.fi"
   },
   "services": {
-    "data_analytics": {
-      "cpu_limit": "512",
-      "memory_limit": "1024",
-      "min_count": 1,
-      "max_count": 1,
-      "allow_ecs_exec": true,
-      "env_vars": {
-        "LOGGING_LEVEL_FI_CSC": "ERROR",
-        "LOGGING_LEVEL_ORG_APACHE_KAFKA": "ERROR",
-        "LOGGING_LEVEL_ORG_SPRINGFRAMEWORK": "ERROR",
-        "SERVER_PORT": "8080",
-        "SERVER_SERVLET_CONTEXTPATH": "/analytics/api",
-        "SPRING_PROFILES_ACTIVE": "prod",
-        "SPRING_AUTOCONFIGURATION_EXCLUDE": "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration",
-
-        "SPRING_DATASOURCE_PRIMARY_USERNAME": "reporter",
-        "SPRING_DATASOURCE_PRIMARY_INITIALIZATIONMODE": "never",
-        "SPRING_DATASOURCE_PRIMARY_DRIVERCLASSNAME": "org.postgresql.Driver",
-
-        "MONGODB_PRIMARY_ENABLE_SSL": "true",
-        "MONGODB_PRIMARY_DATABASE": "analytics",
-        "MONGODB_PRIMARY_USERNAME": "exampleOwner",
-
-        "KAFKA_ENABLED": "true",
-        "KAFKA_SASL_ENABLE": "true",
-        "TRUST_STORE_LOCATION": "/certs/rds-truststore.jks",
-
-        "SPRING_KAFKA_CONSUMER_AUTO_STARTUP": "true",
-        "SPRING_KAFKA_CONSUMER_AUTOOFFSETRESET": "latest",
-        "SPRING_KAFKA_CONSUMER_ENABLEAUTOCOMMIT": "true",
-        "SPRING_KAFKA_PRODUCER_BATCH_SIZE": "10",
-        "SPRING_KAFKA_PRODUCER_CLIENTID": "example-kafka-client",
-
-        "KAFKA_GROUPID_PRODMATERIALACTIVITY": "group-prod-material-activity",
-        "KAFKA_GROUPID_PRODSEARCHREQUESTS": "group-prod-search-requests",
-
-        "KAFKA_TOPIC_PRODMATERIALACTIVITY": "prod_material_activity",
-        "KAFKA_TOPIC_PRODSEARCHREQUESTS": "prod_search_requests"
-      }
-    },
-    "data_services": {
-      "cpu_limit": "512",
-      "memory_limit": "1024",
-      "min_count": 1,
-      "max_count": 1,
-      "allow_ecs_exec": true,
-      "env_vars": {
-        "SPRING_PROFILES_ACTIVE": "prod",
-        "SERVER_PORT": "8080",
-        "EXAMPLE_OAIIDENTIFIER_REPOSITORYIDENTIFIER": "dev.example.fi",
-        "EXAMPLE_REQUEST_PERPAGE": "20",
-        "EXAMPLE_REQUEST_URL": "http://web-backend.dev.example.local:8080/api/v1/oaipmh/metadata"
-      }
-    },
     "web_frontend": {
       "env_vars": {
         "NEXT_TELEMETRY_DISABLED": "1",
         "NODE_ENV": "production",
         "VIRKAILIJA_URL": "https://virkailija.untuvaopintopolku.fi",
         "APP_URL": "https://virkailija.untuvaopintopolku.fi/tutu-frontend",
-        "TUTU_BACKEND": "https://virkailija.untuvaopintopolku.fi",
-        "TOLGEE_TOOLS": "true"
+        "TUTU_BACKEND": "https://virkailija.untuvaopintopolku.fi"
       }
     },
     "web_backend": {
@@ -84,56 +29,7 @@
         "PG_USER": "app",
         "OPINTOPOLKU_DOMAIN": "untuvaopintopolku.fi"
       }
-    },
-    "streaming": {
-      "cpu_limit": "512",
-      "memory_limit": "1024",
-      "min_count": 1,
-      "max_count": 1,
-      "allow_ecs_exec": true,
-      "env_vars": {
-        "LOG_LEVEL": "error",
-        "PORT": "8080",
-        "NODE_ENV": "production",
-        "STORAGE_BUCKET": "example-dev",
-        "STORAGE_REGION": "eu-west-1",
-        "STORAGE_MAX_RANGE": "10000000"
-      }
-    },
-    "semantic_apis": {
-      "cpu_limit": "512",
-      "memory_limit": "1024",
-      "min_count": 1,
-      "max_count": 1,
-      "allow_ecs_exec": true,
-      "env_vars": {
-        "NODE_ENV": "production",
-        "LOG_LEVEL": "error",
-        "PORT_LISTEN": "8080",
-        "REDIS_USERNAME": "app",
-        "REDIS_EXPIRE_TIME": "86400",
-        "REDIS_USE_TLS": "true",
-        "EXTERNAL_API_CALLERID_OID": "1.2.246.562.10.2013112012294919827487",
-        "EXTERNAL_API_CALLERID_SERVICE": "example",
-        "EXTERNAL_API_OPINTOPOLKU_KOODISTOT": "https://virkailija.opintopolku.fi/koodisto-service/rest/json",
-        "EXTERNAL_API_FINTO_ASIASANAT": "http://api.finto.fi/rest/v1",
-        "EXTERNAL_API_SUOMI_KOODISTOT": "https://koodistot.suomi.fi/codelist-api/api/v1/coderegistries",
-        "EXTERNAL_API_OPINTOPOLKU_ORGANISAATIOT": "https://virkailija.opintopolku.fi/organisaatio-service/rest",
-        "EXTERNAL_API_OPINTOPOLKU_EPERUSTEET": "https://virkailija.opintopolku.fi/eperusteet-service/api"
-      }
     }
-  },
-  "msk": {
-    "clusterName": "EXAMPLEKafkaCluster",
-    "instanceType": "kafka.t3.small",
-    "numberOfBrokerNodes": 2,
-    "version": "3.6.0",
-    "volumeSize": 100
-  },
-  "open_search": {
-    "standbyReplicas": "DISABLED",
-    "collectionName": "examplecollection",
-    "collectionDescription": "Collection for example"
   },
   "aurora_databases": {
     "web_backend": {
@@ -141,28 +37,6 @@
       "min_size_acu": 0.5,
       "max_size_acu": 2,
       "performance_insights": false
-    }
-  },
-  "document_db": {
-    "instances": 1,
-    "instanceType": "t3.medium",
-    "engineVersion": "4.0.0"
-  },
-  "S3": {
-    "exampleBucketName": "example",
-    "examplePdfBucketName": "examplepdf",
-    "exampleThumbnailBucketName": "examplethumbnail"
-  },
-  "EFS": {
-    "throughputMode": "bursting"
-  },
-  "redis_serverless": {
-    "semantic_apis": {
-      "major_version": "7",
-      "storage_min": 1,
-      "storage_max": 5,
-      "min_ecpu_per_second": 1000,
-      "max_ecpu_per_second": 40000
     }
   },
   "cloudfront": {

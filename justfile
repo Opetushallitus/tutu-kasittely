@@ -37,7 +37,7 @@ _playwright-in-docker:
     PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")
     docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
     --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
-    mcr.microsoft.com/playwright:v$PLAYWRIGHT_VERSION \
+    mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
     npx playwright test
 
 start-all:
