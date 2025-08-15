@@ -23,7 +23,7 @@ permissions:
   packages: read
 
 jobs:
-  deploy-backend-dev:
+  deploy-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
