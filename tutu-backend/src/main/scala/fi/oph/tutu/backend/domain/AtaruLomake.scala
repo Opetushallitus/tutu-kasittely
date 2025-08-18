@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.domain
 
-import org.json4s.*
 import org.json4s.native.JsonMethods.*
 
 case class AtaruLomake(
@@ -37,4 +36,9 @@ case class SisaltoValue(
   label: Kielistetty,
   value: String,
   followups: Seq[SisaltoItem] = Seq()
+)
+
+case class AtaruKysymysId(
+  generatedId: String,
+  definedId: String
 )
