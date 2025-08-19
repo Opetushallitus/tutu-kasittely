@@ -116,7 +116,12 @@ case class DbHakemus(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  yhteistutkinto: Boolean
+  yhteistutkinto: Boolean,
+  @(Schema @field)(
+    example = "true",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  suostumusVahvistamiselleSaatu: Boolean
 )
 
 case class Hakemus(
@@ -150,7 +155,8 @@ case class Hakemus(
     imiPyyntoVastattu = None
   ),
   apHakemus: Option[Boolean] = None,
-  yhteistutkinto: Boolean = false
+  yhteistutkinto: Boolean = false,
+  suostumusVahvistamiselleSaatu: Boolean = false
 )
 
 case class PartialHakemus(
@@ -170,5 +176,6 @@ case class PartialHakemus(
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   imiPyynto: Option[ImiPyynto] = None,
   apHakemus: Option[Boolean] = None,
-  yhteistutkinto: Option[Boolean] = None
+  yhteistutkinto: Option[Boolean] = None,
+  suostumusVahvistamiselleSaatu: Option[Boolean] = None
 )

@@ -7,6 +7,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import {
   AsiakirjaTaulukko,
+  AsiakirjaTaulukkoData,
   haeAsiakirjat,
 } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
 import { AllekirjoitustenTarkistus } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AllekirjoitustenTarkistus';
@@ -23,16 +24,27 @@ import { useEffect } from 'react';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import { AsiakirjaPyynnot } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaMetadata,
+  Hakemus,
+  HakemusUpdateCallback,
+  SisaltoValue,
+} from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/ImiPyynto';
 import {
   oikeellisuusJaAitous,
   todistusAitoustarkistusLupa,
+  tutkintoTaiKoulutus,
 } from '@/src/constants/hakemuspalveluSisalto';
-import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import {
+  findSisaltoQuestionAndAnswer,
+  sisaltoItemMatchesToAny,
+} from '@/src/lib/hakemuspalveluUtils';
+import { SuostumusVahvistamiselle } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/SuostumusVahvistamiselle';
+import { useDebounce } from '@/src/hooks/useDebounce';
 
 const sisallonOsiot = [
-  '89e89dff-25b2-4177-b078-fcaf0c9d2589', // Tutkinto tai koulutus
+  tutkintoTaiKoulutus, // Tutkinto tai koulutus
 ];
 
 const ExternalLink = ({
@@ -82,7 +94,13 @@ export default function AsiakirjaPage() {
   return <AsiakirjaHookLayer hakemus={hakemus} updateHakemus={updateHakemus} />;
 }
 
-const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
+const AsiakirjaHookLayer = ({
+  hakemus,
+  updateHakemus,
+}: {
+  hakemus: Hakemus;
+  updateHakemus: HakemusUpdateCallback;
+}) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
@@ -90,7 +108,7 @@ const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
   /* Haetaan liitteiden  tiedot */
   const sisalto = hakemus?.sisalto || [];
   const rajattuSisalto = sisalto.filter((item) =>
-    sisallonOsiot.includes(item.key),
+    sisaltoItemMatchesToAny(item, sisallonOsiot),
   );
   const asiakirjat = haeAsiakirjat(rajattuSisalto);
 
@@ -106,6 +124,11 @@ const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteiden-lataus', t);
   }, [asiakirjaError, addToast, t]);
 
+  const debouncedHakemusUpdateAction: HakemusUpdateCallback = useDebounce(
+    (next: Partial<Hakemus>) => updateHakemus(next),
+    1000,
+  );
+
   if (asiakirjaError) {
     return null;
   }
@@ -116,7 +139,7 @@ const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
   return (
     <AsiakirjaPagePure
       hakemus={hakemus}
-      updateHakemus={updateHakemus}
+      debouncedHakemusUpdateAction={debouncedHakemusUpdateAction}
       asiakirjat={asiakirjat}
       asiakirjaMetadata={asiakirjaMetadata}
     />
@@ -124,10 +147,15 @@ const AsiakirjaHookLayer = ({ hakemus, updateHakemus }) => {
 };
 
 const AsiakirjaPagePure = ({
-  hakemus = {},
-  updateHakemus,
+  hakemus,
+  debouncedHakemusUpdateAction,
   asiakirjat = [],
   asiakirjaMetadata = [],
+}: {
+  hakemus: Hakemus;
+  debouncedHakemusUpdateAction: HakemusUpdateCallback;
+  asiakirjat: SisaltoValue[];
+  asiakirjaMetadata: AsiakirjaMetadata[];
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
@@ -135,15 +163,22 @@ const AsiakirjaPagePure = ({
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
-  const completeAsiakirjaData = asiakirjat.map((asiakirja) => {
-    const metadata = asiakirjaMetadata.find(
-      (dataItem) => dataItem.key === asiakirja.label.fi,
-    );
-    const liitteenTila = hakemus.liitteidenTilat?.find(
-      (state) => state.attachment === asiakirja.formId,
-    );
-    return { asiakirja, metadata, liitteenTila, key: asiakirja.label.fi };
-  });
+  const completeAsiakirjaData: AsiakirjaTaulukkoData[] = asiakirjat.map(
+    (asiakirja) => {
+      const metadata = asiakirjaMetadata.find(
+        (dataItem) => dataItem.key === asiakirja.label.fi,
+      );
+      const liitteenTila = hakemus.liitteidenTilat?.find(
+        (state) => state.attachment === asiakirja.formId,
+      );
+      return {
+        asiakirja,
+        metadata,
+        liitteenTila,
+        key: asiakirja.label.fi || crypto.randomUUID(),
+      };
+    },
+  );
 
   const [todistusTarkistusLupaLabel, todistusAitoustarkistusLupaValue] =
     findSisaltoQuestionAndAnswer(
@@ -170,19 +205,25 @@ const AsiakirjaPagePure = ({
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
         asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
-        updateHakemusAction={updateHakemus}
+        updateHakemusAction={debouncedHakemusUpdateAction}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />
       <ImiPyyntoComponent
         imiPyynto={hakemus.imiPyynto}
-        updateHakemusAction={updateHakemus}
+        updateHakemusAction={debouncedHakemusUpdateAction}
       ></ImiPyyntoComponent>
       <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>
-      <KaikkiSelvityksetSaatu hakemus={hakemus} updateHakemus={updateHakemus} />
-      <ApHakemus hakemus={hakemus} updateHakemus={updateHakemus} />
+      <KaikkiSelvityksetSaatu
+        hakemus={hakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
+      />
+      <ApHakemus
+        hakemus={hakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
+      />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
@@ -203,14 +244,21 @@ const AsiakirjaPagePure = ({
       <OphTypography variant={'h4'}>
         {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
+      <SuostumusVahvistamiselle
+        hakemus={hakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
+      />
       <AllekirjoitustenTarkistus
         hakemus={hakemus}
-        updateHakemus={updateHakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
       />
-      <AlkuperaisetAsiakirjat hakemus={hakemus} updateHakemus={updateHakemus} />
+      <AlkuperaisetAsiakirjat
+        hakemus={hakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
+      />
       <AsiakirjaMallejaVastaavistaTutkinnoista
-        hakemus={hakemus as Hakemus}
-        updateHakemus={updateHakemus}
+        hakemus={hakemus}
+        updateHakemus={debouncedHakemusUpdateAction}
       />
     </Stack>
   );

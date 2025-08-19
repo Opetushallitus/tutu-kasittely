@@ -14,7 +14,12 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ErrorIcon from '@mui/icons-material/Error';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import { ophColors } from '@/src/lib/theme';
-import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaMetadata,
+  SisaltoItem,
+  SisaltoValue,
+  TarkistuksenTila,
+} from '@/src/lib/types/hakemus';
 import { LiiteItem } from '@/src/lib/types/liiteItem';
 import {
   useTranslations,
@@ -38,7 +43,18 @@ const UusiBadge = styled(Chip)(() => ({
   borderRadius: '2px',
 }));
 
-export const AsiakirjaTaulukko = ({ asiakirjat = [] }) => {
+export type AsiakirjaTaulukkoData = {
+  key: string;
+  asiakirja?: SisaltoValue;
+  metadata?: AsiakirjaMetadata;
+  liitteenTila?: TarkistuksenTila;
+};
+
+export const AsiakirjaTaulukko = ({
+  asiakirjat,
+}: {
+  asiakirjat: AsiakirjaTaulukkoData[];
+}) => {
   return (
     <Table>
       <AsiakirjaTableHeader />

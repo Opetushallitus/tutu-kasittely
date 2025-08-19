@@ -51,6 +51,7 @@ class HakemusRepository {
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextBoolean()),
+        r.nextBoolean(),
         r.nextBoolean()
       )
     )
@@ -190,7 +191,8 @@ class HakemusRepository {
               h.imi_pyynto_lahetetty,
               h.imi_pyynto_vastattu,
               h.ap_hakemus,
-              h.yhteistutkinto
+              h.yhteistutkinto,
+              h.suostumus_vahvistamiselle_saatu
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -310,11 +312,13 @@ class HakemusRepository {
       case Some(imiPyynto) => Some(imiPyynto)
       case None            => None
     }
-    val imiPyyntoNumeroOrNull    = partialHakemus.imiPyyntoNumero.orNull
-    val imiPyyntoLahetettyOrNull = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
-    val imiPyyntoVastattuOrNull  = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
-    val apHakemus                = partialHakemus.apHakemus
-    val yhteistutkinto           = partialHakemus.yhteistutkinto
+    val imiPyyntoNumeroOrNull         = partialHakemus.imiPyyntoNumero.orNull
+    val imiPyyntoLahetettyOrNull      = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
+    val imiPyyntoVastattuOrNull       = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
+    val apHakemus                     = partialHakemus.apHakemus
+    val yhteistutkinto                = partialHakemus.yhteistutkinto
+    val suostumusVahvistamiselleSaatu = partialHakemus.suostumusVahvistamiselleSaatu
+
     try
       db.run(
         sql"""
@@ -334,7 +338,8 @@ class HakemusRepository {
           imi_pyynto_lahetetty = $imiPyyntoLahetettyOrNull,
           imi_pyynto_vastattu = $imiPyyntoVastattuOrNull,
           ap_hakemus = $apHakemus,
-          yhteistutkinto = $yhteistutkinto
+          yhteistutkinto = $yhteistutkinto,
+          suostumus_vahvistamiselle_saatu = $suostumusVahvistamiselleSaatu
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
