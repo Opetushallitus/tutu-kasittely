@@ -4,6 +4,8 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import org.springframework.stereotype.{Component, Service}
 
+import java.util.UUID
+
 @Component
 @Service
 class AtaruHakemusParser(koodistoService: KoodistoService) {
@@ -67,69 +69,81 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   private def findAnswerByAtaruKysymysId(
     kysymysId: AtaruKysymysId,
     allAnswers: Seq[Answer]
-  ): String = {
+  ): Option[String] = {
     findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
-      case Some(answer) => answer
+      case Some(answer) => Some(answer)
       case None         =>
         findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
-          case Some(answer) => answer
-          case None         => ""
+          case Some(answer) => Some(answer)
+          case None         => None
         }
     }
   }
 
-  def parseTutkinnot(hakemus: AtaruHakemus): Tutkinnot = {
+  def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Tutkinnot = {
     val answers = hakemus.content.answers
 
     val tutkinto1 = Tutkinto(
       id = None,
-      hakemusId = None,
-      jarjestysNumero = 1,
+      hakemusId = hakemusId,
+      jarjestys = "1",
       nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_NIMI, answers),
       oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPPILAITOS, answers),
-      aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).toInt,
-      paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).toInt
+      aloitusVuosi =
+        findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+      paattymisVuosi =
+        findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption)
     )
 
     val tutkinto2 =
-      if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers) != "") {
+      if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined) {
         Some(
           Tutkinto(
             id = None,
-            hakemusId = None,
-            jarjestysNumero = 2,
+            hakemusId = hakemusId,
+            jarjestys = "2",
             nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers),
             oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPPILAITOS, answers),
-            aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).toInt,
-            paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).toInt
+            aloitusVuosi =
+              findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+            paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
+              _.toIntOption
+            )
           )
         )
       } else {
         None
       }
 
-    val tutkinto3 = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers) != "") {
+    val tutkinto3 = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined) {
       Some(
         Tutkinto(
-          None,
-          None,
-          jarjestysNumero = 3,
+          id = None,
+          hakemusId = hakemusId,
+          jarjestys = "3",
           nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers),
           oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPPILAITOS, answers),
-          aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).toInt,
-          paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).toInt
+          aloitusVuosi =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+          paattymisVuosi =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption)
         )
       )
     } else {
       None
     }
 
-    val muuTutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers) != "") {
+    val muuTutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers).isDefined) {
       Some(
-        MuuTutkinto(
-          None,
-          None,
-          tieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers)
+        Tutkinto(
+          id = None,
+          hakemusId = hakemusId,
+          nimi = None,
+          oppilaitos = None,
+          aloitusVuosi = None,
+          paattymisVuosi = None,
+          jarjestys = "MUU",
+          muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers)
         )
       )
     } else {
@@ -149,28 +163,26 @@ def traverseContent(
   handleItem: (LomakeContentItem) => SisaltoItem
 ): Seq[SisaltoItem] = {
   // map content
-  val newItems = content
-    .map((item: LomakeContentItem) => {
-      // handle this
-      val newItem = handleItem(item)
+  val newItems = content.flatMap((item: LomakeContentItem) => {
+    // handle this
+    val newItem = handleItem(item)
 
-      // traverse children (children, followups)
-      val newChildren = traverseContent(item.children, handleItem)
+    // traverse children (children, followups)
+    val newChildren = traverseContent(item.children, handleItem)
 
-      val resultItem = newItem.copy(
-        children = newChildren
-      )
+    val resultItem = newItem.copy(
+      children = newChildren
+    )
 
-      // omit form nodes with no answer content
-      val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
+    // omit form nodes with no answer content
+    val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
 
-      if (resultIsEmpty) {
-        None
-      } else {
-        Some(resultItem)
-      }
-    })
-    .flatten
+    if (resultIsEmpty) {
+      None
+    } else {
+      Some(resultItem)
+    }
+  })
 
   newItems
 }

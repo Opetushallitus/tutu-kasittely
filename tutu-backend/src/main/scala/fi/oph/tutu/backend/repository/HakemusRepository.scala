@@ -569,4 +569,35 @@ class HakemusRepository {
         )
     }
   }
+
+  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
+    val nimiOrNull             = tutkinto.nimi.map(_.toString).orNull
+    val oppilaitosOrNull       = tutkinto.oppilaitos.map(_.toString).orNull
+    val aloitusVuosiOrNull     = tutkinto.aloitusVuosi.map(_.toString).orNull
+    val paattymisVuosiOrNull   = tutkinto.paattymisVuosi.map(_.toString).orNull
+    val muuTutkintoTietoOrNull = tutkinto.muuTutkintoTieto.map(_.toString).orNull
+
+    sqlu"""
+      INSERT INTO muu_tutkinto (
+        hakemus_id,
+        jarjestys,
+        nimi,
+        oppilaitos,
+        aloitus_vuosi,
+        paattymis_vuosi,
+        muu_tutkinto_tieto,
+        luoja
+      )
+      VALUES (
+        ${hakemusId.toString}::uuid,
+        ${tutkinto.jarjestys},
+        ${nimiOrNull},
+        ${oppilaitosOrNull},
+        ${aloitusVuosiOrNull},
+        ${paattymisVuosiOrNull},
+        ${muuTutkintoTietoOrNull},
+        ${luoja}
+      )
+    """
+  }
 }
