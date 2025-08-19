@@ -1,32 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { OphCheckbox, OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphInputFormField,
+} from '@opetushallitus/oph-design-system';
 import {
   useTranslations,
   TFunction,
 } from '@/src/lib/localization/hooks/useTranslations';
 
-import { useObservable } from 'react-rx';
-
 import { isDefined } from '@/src/lib/utils';
-import {
-  useDebounced,
-  Observable,
-  DebounceSetValue,
-} from '@/src/hooks/useDebounced';
+import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
 
 interface StatelessAlkuperaisetAsiakirjatProps {
-  lisatietoObservable: Observable<string | null>;
-  setLisatieto: DebounceSetValue<string | null>;
+  lisatieto: string | null | undefined;
+  setLisatieto: (lisatieto: string | null) => void;
   t: TFunction;
 }
 
 const StatelessAlkuperaisetAsiakirjat = ({
-  lisatietoObservable,
+  lisatieto,
   setLisatieto,
   t,
 }: StatelessAlkuperaisetAsiakirjatProps) => {
-  const lisatieto = useObservable(lisatietoObservable);
   const checked = isDefined(lisatieto);
 
   return (
@@ -37,7 +33,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
         onChange={() => setLisatieto(checked ? null : '')}
       />
       {checked ? (
-        <OphInput
+        <OphInputFormField
           multiline={true}
           label={t(
             'hakemus.asiakirjat.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot',
@@ -51,8 +47,8 @@ const StatelessAlkuperaisetAsiakirjat = ({
 };
 
 interface AlkuperaisetAsiakirjatProps {
-  hakemus: Hakemus | undefined;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  hakemus: Hakemus;
+  updateHakemus: HakemusUpdateCallback;
 }
 
 export const AlkuperaisetAsiakirjat = ({
@@ -61,32 +57,33 @@ export const AlkuperaisetAsiakirjat = ({
 }: AlkuperaisetAsiakirjatProps) => {
   const { t } = useTranslations();
 
-  const [lisatietoObservable, setLisatieto] = useDebounced((val) => {
-    updateHakemus({
-      ...hakemus,
-      alkuperaisetAsiakirjatSaatuNahtavaksi: isDefined(val),
-      alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: val,
-    });
-  });
+  const [lisatieto, setLisatieto] = useState<string | null | undefined>(
+    hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
+      ? hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
+      : null,
+  );
 
   useEffect(() => {
-    if (hakemus?.hakemusOid) {
-      const lisatieto = hakemus?.alkuperaisetAsiakirjatSaatuNahtavaksi
-        ? hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
-        : null;
-      setLisatieto(lisatieto, { debounce: false });
-    }
+    const lisatieto = hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
+      ? hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
+      : null;
+    setLisatieto(lisatieto);
   }, [
-    hakemus?.hakemusOid,
-    hakemus?.alkuperaisetAsiakirjatSaatuNahtavaksi,
+    hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
     hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
     setLisatieto,
   ]);
 
   return (
     <StatelessAlkuperaisetAsiakirjat
-      lisatietoObservable={lisatietoObservable}
-      setLisatieto={setLisatieto}
+      lisatieto={lisatieto}
+      setLisatieto={(lisatieto: string | null) => {
+        setLisatieto(lisatieto);
+        updateHakemus({
+          alkuperaisetAsiakirjatSaatuNahtavaksi: isDefined(lisatieto),
+          alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: lisatieto,
+        });
+      }}
       t={t}
     />
   );

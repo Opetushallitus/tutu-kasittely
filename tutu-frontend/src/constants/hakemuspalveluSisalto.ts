@@ -29,8 +29,13 @@ export const oikeellisuusJaAitous: HakemuspalveluSisaltoId = createId(
   'oikeellisuus-ja-aitous',
 );
 
+export const tutkintoTaiKoulutus: HakemuspalveluSisaltoId = createId(
+  '89e89dff-25b2-4177-b078-fcaf0c9d2589',
+  'tutkinto-tai-koulutus',
+);
+
 export const perustietoOsiot = [
-  createId('89e89dff-25b2-4177-b078-fcaf0c9d2589', 'tutkinto-tai-koulutus'),
+  tutkintoTaiKoulutus,
   paatosJaAsiointikieli,
   createId(
     '3781f43c-fff7-47c7-aa7b-66f4a47395a5',

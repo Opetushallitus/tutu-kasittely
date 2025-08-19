@@ -15,14 +15,13 @@ import {
 } from '@opetushallitus/oph-design-system';
 import {
   AsiakirjamalliLahde,
+  AsiakirjamallitTutkinnoista,
   AsiakirjamalliTutkinnosta,
   Hakemus,
+  HakemusUpdateCallback,
 } from '@/src/lib/types/hakemus';
 import * as R from 'remeda';
-import { DebounceSetValue, useDebounced } from '@/src/hooks/useDebounced';
-import { useObservable } from 'react-rx';
-import { Observable } from 'rxjs';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { match, P } from 'ts-pattern';
 
 type LahdeOption = {
@@ -78,15 +77,13 @@ const TableHeader = () => {
   );
 };
 
-const StatelessRadioGroup = ({
-  vastaavuusObservable,
+const RadioGroup = ({
+  vastaavuus,
   setVastaavuus,
 }: {
-  vastaavuusObservable: Observable<boolean>;
-  setVastaavuus: DebounceSetValue<boolean>;
+  vastaavuus: boolean | undefined;
+  setVastaavuus: (updatedVastaavuus: boolean) => void;
 }) => {
-  const vastaavuus = useObservable(vastaavuusObservable, undefined);
-
   return (
     <>
       <TableCell>
@@ -95,7 +92,7 @@ const StatelessRadioGroup = ({
           checked={vastaavuus === true}
           label={''}
           name="vastaavuus_true_false"
-          onChange={() => setVastaavuus(true, { debounce: true })}
+          onChange={() => setVastaavuus(true)}
         ></OphRadio>
       </TableCell>
       <TableCell>
@@ -104,24 +101,22 @@ const StatelessRadioGroup = ({
           checked={vastaavuus === false}
           label={''}
           name="vastaavuus_true_false"
-          onChange={() => setVastaavuus(false, { debounce: true })}
+          onChange={() => setVastaavuus(false)}
         ></OphRadio>
       </TableCell>
     </>
   );
 };
 
-const StatelessKuvausInput = ({
-  kuvausObservable,
+const KuvausInput = ({
+  kuvaus,
   setKuvaus,
   kuvausLabel,
 }: {
-  kuvausObservable: Observable<string>;
-  setKuvaus: DebounceSetValue<string>;
+  kuvaus: string;
+  setKuvaus: (updatedKuvaus: string) => void;
   kuvausLabel?: string;
 }) => {
-  const kuvaus = useObservable(kuvausObservable, '');
-
   const [minRows, multiline] = kuvausLabel ? [3, true] : [1, false];
   return (
     <TableCell>
@@ -135,7 +130,7 @@ const StatelessKuvausInput = ({
         multiline={multiline}
         minRows={minRows}
         value={kuvaus}
-        onChange={(event) => setKuvaus(event.target.value, { debounce: true })}
+        onChange={(event) => setKuvaus(event.target.value)}
       />
     </TableCell>
   );
@@ -151,46 +146,36 @@ const ContentRow = ({
   id: AsiakirjamalliLahde;
   label: string;
   value?: AsiakirjamalliTutkinnosta;
-  handleChange: (changeRequest: AsiakirjamalliChangeRequest) => void;
+  handleChange: (changeRequest: AsiakirjamalliPyynto) => void;
   kuvausLabel?: string;
 }) => {
-  const [kuvausObservable, setKuvaus] = useDebounced((val: string) => {
-    handleChange({ lahde: id, kuvaus: val });
-  });
-
-  const [vastaavuusObservable, setVastaavuus] = useDebounced((val: boolean) => {
-    handleChange({ lahde: id, vastaavuus: val });
-  });
-
-  useEffect(() => {
-    if (value?.kuvaus) {
-      setKuvaus(value.kuvaus!, { debounce: false });
-    }
-  }, [value?.kuvaus, setKuvaus]);
-
-  useEffect(() => {
-    if (value?.vastaavuus !== undefined) {
-      setVastaavuus(value.vastaavuus!, { debounce: false });
-    }
-  }, [value?.vastaavuus, setVastaavuus]);
-
   return (
     <TableRow data-testid={`asiakirjamallit-tutkinnoista-${id}`}>
       <TableCell>{label}</TableCell>
-      <StatelessRadioGroup
-        vastaavuusObservable={vastaavuusObservable}
-        setVastaavuus={setVastaavuus}
+      <RadioGroup
+        vastaavuus={value?.vastaavuus}
+        setVastaavuus={(updatedVastaavuus: boolean) =>
+          handleChange({
+            lahde: id,
+            vastaavuus: updatedVastaavuus,
+          })
+        }
       />
-      <StatelessKuvausInput
-        kuvausObservable={kuvausObservable}
-        setKuvaus={setKuvaus}
+      <KuvausInput
+        kuvaus={value?.kuvaus || ''}
+        setKuvaus={(updatedKuvaus: string) =>
+          handleChange({
+            lahde: id,
+            kuvaus: updatedKuvaus,
+          })
+        }
         kuvausLabel={kuvausLabel}
       />
     </TableRow>
   );
 };
 
-interface AsiakirjamalliChangeRequest {
+interface AsiakirjamalliPyynto {
   lahde: AsiakirjamalliLahde;
   vastaavuus?: boolean;
   kuvaus?: string;
@@ -201,12 +186,22 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   updateHakemus,
 }: {
   hakemus: Hakemus;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  updateHakemus: HakemusUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
 
-  const handleChange = (changeRequest: AsiakirjamalliChangeRequest) => {
+  const [currentMallit, setCurrentMallit] = React.useState<
+    AsiakirjamallitTutkinnoista | undefined
+  >(hakemus.asiakirjamallitTutkinnoista);
+
+  useEffect(() => {
+    if (hakemus.asiakirjamallitTutkinnoista !== undefined) {
+      setCurrentMallit(hakemus.asiakirjamallitTutkinnoista);
+    }
+  }, [hakemus.asiakirjamallitTutkinnoista]);
+
+  const handleChange = (changeRequest: AsiakirjamalliPyynto) => {
     const changedLahde = changeRequest.lahde;
     const toBeVastaavuus = match([
       hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
@@ -230,14 +225,12 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
             : hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.kuvaus,
       };
 
-      const updatedHakemus: Partial<Hakemus> = {
-        asiakirjamallitTutkinnoista: {
-          ...hakemus.asiakirjamallitTutkinnoista,
-          [changedLahde]: updatedMalli,
-        },
+      const updatedMallit: AsiakirjamallitTutkinnoista = {
+        ...hakemus.asiakirjamallitTutkinnoista,
+        [changedLahde]: updatedMalli,
       };
-
-      updateHakemus(updatedHakemus);
+      setCurrentMallit(updatedMallit);
+      updateHakemus({ asiakirjamallitTutkinnoista: updatedMallit });
     }
   };
 
@@ -257,14 +250,14 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
               key={option.id}
               id={option.id}
               label={t(option.lKey)}
-              value={hakemus.asiakirjamallitTutkinnoista?.[option.id]}
+              value={currentMallit?.[option.id]}
               handleChange={handleChange}
             />
           ))}
           <ContentRow
             id={'muu'}
             label={t('hakemus.asiakirjat.mallejaTutkinnoista.muu')}
-            value={hakemus.asiakirjamallitTutkinnoista?.muu}
+            value={currentMallit?.muu}
             handleChange={handleChange}
             kuvausLabel={t('hakemus.asiakirjat.mallejaTutkinnoista.muuSelite')}
           />

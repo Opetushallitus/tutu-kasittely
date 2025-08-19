@@ -26,17 +26,18 @@ export type Hakemus = {
   liitteidenTilat: TarkistuksenTila[];
   pyydettavatAsiakirjat: AsiakirjaPyynto[];
   allekirjoituksetTarkistettu: boolean;
-  allekirjoituksetTarkistettuLisatiedot: string | undefined;
+  allekirjoituksetTarkistettuLisatiedot: string | null | undefined;
   alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | undefined;
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | null | undefined;
   selvityksetSaatu: boolean;
-  asiakirjamallitTutkinnoista?: Partial<
-    Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
-  >;
+  asiakirjamallitTutkinnoista?: AsiakirjamallitTutkinnoista;
   imiPyynto: ImiPyynto;
   apHakemus?: boolean;
   yhteistutkinto: boolean;
+  suostumusVahvistamiselleSaatu: boolean;
 };
+
+export type HakemusUpdateCallback = (patch: Partial<Hakemus>) => void;
 
 export type SisaltoItem = {
   key: string;
@@ -50,6 +51,12 @@ export type SisaltoValue = {
   label: TranslatedName;
   value: string;
   followups: SisaltoItem[];
+  formId?: string;
+};
+
+export type AsiakirjaMetadata = {
+  key: string;
+  filename: string;
 };
 
 export type TarkistuksenTila = {
@@ -76,6 +83,10 @@ export type AsiakirjamalliTutkinnosta = {
   vastaavuus: boolean;
   kuvaus?: string;
 };
+
+export type AsiakirjamallitTutkinnoista = Partial<
+  Record<AsiakirjamalliLahde, AsiakirjamalliTutkinnosta>
+>;
 
 export type ImiPyynto = {
   imiPyynto: boolean | null;

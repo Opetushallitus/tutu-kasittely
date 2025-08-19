@@ -1,9 +1,12 @@
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
+import { AsiakirjaMetadata } from '@/src/lib/types/hakemus';
 
-export const getLiitteet = async (avaimet: string): Promise<Any[]> => {
+export const getLiitteet = async (
+  avaimet: string,
+): Promise<AsiakirjaMetadata[]> => {
   if (!avaimet || !avaimet.length) {
-    return {};
+    return [];
   }
 
   const url = `liite/metadata?avaimet=${avaimet}`;

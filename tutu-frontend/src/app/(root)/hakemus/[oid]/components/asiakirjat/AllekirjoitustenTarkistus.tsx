@@ -1,32 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { OphCheckbox, OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphInputFormField,
+} from '@opetushallitus/oph-design-system';
 import {
   useTranslations,
   TFunction,
 } from '@/src/lib/localization/hooks/useTranslations';
 
-import { useObservable } from 'react-rx';
-
 import { isDefined } from '@/src/lib/utils';
-import {
-  useDebounced,
-  Observable,
-  DebounceSetValue,
-} from '@/src/hooks/useDebounced';
+import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
 
 interface StatelessAllekirjoitustenTarkistusProps {
-  lisatietoObservable: Observable<string | null>;
-  setLisatieto: DebounceSetValue<string | null>;
+  lisatieto: string | null | undefined;
+  setLisatieto: (lisatieto: string | null) => void;
   t: TFunction;
 }
 
 const StatelessAllekirjoitustenTarkistus = ({
-  lisatietoObservable,
+  lisatieto,
   setLisatieto,
   t,
 }: StatelessAllekirjoitustenTarkistusProps) => {
-  const lisatieto = useObservable(lisatietoObservable);
   const checked = isDefined(lisatieto);
 
   return (
@@ -37,7 +33,7 @@ const StatelessAllekirjoitustenTarkistus = ({
         onChange={() => setLisatieto(checked ? null : '')}
       />
       {checked ? (
-        <OphInput
+        <OphInputFormField
           multiline={true}
           label={t('hakemus.asiakirjat.allekirjoituksetTarkistettuLisatietoja')}
           value={lisatieto}
@@ -49,8 +45,8 @@ const StatelessAllekirjoitustenTarkistus = ({
 };
 
 interface AllekirjoitustenTarkistusProps {
-  hakemus: Hakemus | undefined;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  hakemus: Hakemus;
+  updateHakemus: HakemusUpdateCallback;
 }
 
 export const AllekirjoitustenTarkistus = ({
@@ -59,23 +55,18 @@ export const AllekirjoitustenTarkistus = ({
 }: AllekirjoitustenTarkistusProps) => {
   const { t } = useTranslations();
 
-  const [lisatietoObservable, setLisatieto] = useDebounced((val) => {
-    updateHakemus({
-      ...hakemus,
-      allekirjoituksetTarkistettu: isDefined(val),
-      allekirjoituksetTarkistettuLisatiedot: val,
-    });
-  });
+  const [lisatieto, setLisatieto] = useState<string | null | undefined>(
+    hakemus.allekirjoituksetTarkistettu
+      ? hakemus.allekirjoituksetTarkistettuLisatiedot
+      : null,
+  );
 
   useEffect(() => {
-    if (hakemus?.hakemusOid) {
-      const lisatieto = hakemus?.allekirjoituksetTarkistettu
-        ? hakemus.allekirjoituksetTarkistettuLisatiedot
-        : null;
-      setLisatieto(lisatieto, { debounce: false });
-    }
+    const lisatieto = hakemus.allekirjoituksetTarkistettu
+      ? hakemus.allekirjoituksetTarkistettuLisatiedot
+      : null;
+    setLisatieto(lisatieto);
   }, [
-    hakemus?.hakemusOid,
     hakemus?.allekirjoituksetTarkistettu,
     hakemus.allekirjoituksetTarkistettuLisatiedot,
     setLisatieto,
@@ -83,8 +74,14 @@ export const AllekirjoitustenTarkistus = ({
 
   return (
     <StatelessAllekirjoitustenTarkistus
-      lisatietoObservable={lisatietoObservable}
-      setLisatieto={setLisatieto}
+      lisatieto={lisatieto}
+      setLisatieto={(lisatieto: string | null) => {
+        setLisatieto(lisatieto);
+        updateHakemus({
+          allekirjoituksetTarkistettu: isDefined(lisatieto),
+          allekirjoituksetTarkistettuLisatiedot: lisatieto,
+        });
+      }}
       t={t}
     />
   );

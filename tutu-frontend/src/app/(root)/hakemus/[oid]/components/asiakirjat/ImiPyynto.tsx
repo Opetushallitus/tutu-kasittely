@@ -1,6 +1,6 @@
 'use client';
 
-import { Hakemus, ImiPyynto } from '@/src/lib/types/hakemus';
+import { HakemusUpdateCallback, ImiPyynto } from '@/src/lib/types/hakemus';
 import { Stack } from '@mui/material';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import {
@@ -13,13 +13,12 @@ import React from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
 import { IconButton } from '@/src/components/IconButton';
-import { useDebounce } from '@/src/hooks/useDebounce';
 import * as dateFns from 'date-fns';
 import { CalendarComponent } from '@/src/app/(root)/hakemus/[oid]/components/calendar-component';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
-  updateHakemusAction: (hakemus: Partial<Hakemus>) => void;
+  updateHakemusAction: HakemusUpdateCallback;
 }
 interface OphRadioOption<T> {
   value: T;
@@ -39,11 +38,6 @@ export const ImiPyyntoComponent = ({
   const [currentImiPyynto, setCurrentImiPyynto] =
     React.useState<ImiPyynto>(imiPyynto);
 
-  const debouncedHakemusUpdateAction = useDebounce(
-    (next: ImiPyynto) => updateHakemusAction({ imiPyynto: next }),
-    1000,
-  );
-
   React.useEffect(() => {
     setCurrentImiPyynto(imiPyynto);
   }, [imiPyynto]);
@@ -51,7 +45,7 @@ export const ImiPyyntoComponent = ({
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
     setCurrentImiPyynto(updatedImiPyynto);
-    debouncedHakemusUpdateAction(updatedImiPyynto);
+    updateHakemusAction({ imiPyynto: updatedImiPyynto });
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {

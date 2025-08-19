@@ -4,14 +4,12 @@ import { Stack, useTheme } from '@mui/material';
 import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-import { useDebounce } from '@/src/hooks/useDebounce';
-
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
 import { isDefined } from 'remeda';
 
 interface ApHakemusProps {
-  hakemus: Hakemus | undefined;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  hakemus: Hakemus;
+  updateHakemus: HakemusUpdateCallback;
 }
 
 export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
@@ -19,17 +17,10 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
 
   const [isApHakemus, setIsApHakemus] = useState<boolean | undefined>();
 
-  const debouncedHakemusUpdateAction = useDebounce((val: boolean) => {
-    updateHakemus({
-      ...hakemus,
-      apHakemus: val,
-    });
-  }, 1500);
-
   const updateApHakemus = (val: boolean | undefined) => {
     if (val !== isApHakemus) {
       setIsApHakemus(val);
-      debouncedHakemusUpdateAction(val);
+      updateHakemus({ apHakemus: val });
     }
   };
 

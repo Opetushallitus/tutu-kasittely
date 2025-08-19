@@ -411,6 +411,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "asiatunnus": null,
                                 "apHakemus": false,
                                 "yhteistutkinto": false,
+                                "suostumusVahvistamiselleSaatu": false,
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
