@@ -21,6 +21,8 @@ class HakemusRepository {
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+
   implicit val getUUIDResult: GetResult[UUID] =
     GetResult(r => UUID.fromString(r.nextString()))
 
@@ -81,6 +83,78 @@ class HakemusRepository {
       PyydettavaAsiakirja(
         Option(UUID.fromString(r.nextString())),
         r.nextString()
+      )
+    )
+
+  implicit val getTutkinnotResult: GetResult[Tutkinnot] = {
+    GetResult(r =>
+      Tutkinnot(
+        tutkinto1 = Tutkinto(
+          Option(UUID.fromString(r.nextString())),
+          UUID.fromString(r.nextString()),
+          r.nextString(),
+          r.nextStringOption(),
+          r.nextStringOption(),
+          r.nextIntOption(),
+          r.nextIntOption(),
+          r.nextStringOption()
+        ),
+        tutkinto2 = r.nextObjectOption().flatMap { _ =>
+          Some(
+            Tutkinto(
+              Option(UUID.fromString(r.nextString())),
+              UUID.fromString(r.nextString()),
+              r.nextString(),
+              r.nextStringOption(),
+              r.nextStringOption(),
+              r.nextIntOption(),
+              r.nextIntOption(),
+              r.nextStringOption()
+            )
+          )
+        },
+        tutkinto3 = r.nextObjectOption().flatMap { _ =>
+          Some(
+            Tutkinto(
+              Option(UUID.fromString(r.nextString())),
+              UUID.fromString(r.nextString()),
+              r.nextString(),
+              r.nextStringOption(),
+              r.nextStringOption(),
+              r.nextIntOption(),
+              r.nextIntOption(),
+              r.nextStringOption()
+            )
+          )
+        },
+        muuTutkinto = r.nextObjectOption().flatMap { _ =>
+          Some(
+            Tutkinto(
+              Option(UUID.fromString(r.nextString())),
+              UUID.fromString(r.nextString()),
+              r.nextString(),
+              r.nextStringOption(),
+              r.nextStringOption(),
+              r.nextIntOption(),
+              r.nextIntOption(),
+              r.nextStringOption()
+            )
+          )
+        }
+      )
+    )
+  }
+  implicit val getTutkintoResult: GetResult[Tutkinto] =
+    GetResult(r =>
+      Tutkinto(
+        Option(UUID.fromString(r.nextString())),
+        UUID.fromString(r.nextString()),
+        r.nextString(),
+        r.nextStringOption(),
+        r.nextStringOption(),
+        r.nextIntOption(),
+        r.nextIntOption(),
+        r.nextStringOption()
       )
     )
 
@@ -570,34 +644,73 @@ class HakemusRepository {
     }
   }
 
-  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
+  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
     val nimiOrNull             = tutkinto.nimi.map(_.toString).orNull
     val oppilaitosOrNull       = tutkinto.oppilaitos.map(_.toString).orNull
-    val aloitusVuosiOrNull     = tutkinto.aloitusVuosi.map(_.toString).orNull
-    val paattymisVuosiOrNull   = tutkinto.paattymisVuosi.map(_.toString).orNull
+    val aloitusVuosiOrNull     = tutkinto.aloitusVuosi
+    val paattymisVuosiOrNull   = tutkinto.paattymisVuosi
     val muuTutkintoTietoOrNull = tutkinto.muuTutkintoTieto.map(_.toString).orNull
+    try
+      db.run(
+        sql"""
+          INSERT INTO tutkinto (
+            hakemus_id,
+            jarjestys,
+            nimi,
+            oppilaitos,
+            aloitus_vuosi,
+            paattymis_vuosi,
+            muu_tutkinto_tieto,
+            luoja
+          )
+          VALUES (
+            ${hakemusId.toString}::uuid,
+            ${tutkinto.jarjestys}::jarjestys,
+            ${nimiOrNull},
+            ${oppilaitosOrNull},
+            ${aloitusVuosiOrNull},
+            ${paattymisVuosiOrNull},
+            ${muuTutkintoTietoOrNull},
+            ${luoja}
+          )
+    """.asUpdate,
+        "tallenna_tutkinto"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon tallennus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 
-    sqlu"""
-      INSERT INTO muu_tutkinto (
-        hakemus_id,
-        jarjestys,
-        nimi,
-        oppilaitos,
-        aloitus_vuosi,
-        paattymis_vuosi,
-        muu_tutkinto_tieto,
-        luoja
-      )
-      VALUES (
-        ${hakemusId.toString}::uuid,
-        ${tutkinto.jarjestys},
-        ${nimiOrNull},
-        ${oppilaitosOrNull},
-        ${aloitusVuosiOrNull},
-        ${paattymisVuosiOrNull},
-        ${muuTutkintoTietoOrNull},
-        ${luoja}
-      )
-    """
+  /**
+   * Hakee hakemuksen tutkinnot
+   *
+   * @param hakemusId
+   * hakemuksen Id
+   * @return
+   * hakemuksen tutkinnot
+   */
+  def haeTutkinnotHakemusIdilla(hakemusId: UUID): DBIO[Tutkinnot] = {
+    sql"""
+    SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, muu_tutkinto_tieto
+    FROM tutkinto
+    WHERE hakemus_id = ${hakemusId.toString}::uuid
+    ORDER BY jarjestys
+  """
+      .as[Tutkinto]
+      .map { tutkinnot =>
+        Tutkinnot(
+          tutkinto1 = tutkinnot.headOption.getOrElse(
+            throw new RuntimeException(s"Hakemukselle (hakemusId: $hakemusId) tulee löytyä ainakin yksi tutkinto")
+          ),
+          tutkinto2 = tutkinnot.lift(1),
+          tutkinto3 = tutkinnot.lift(2),
+          muuTutkinto = tutkinnot.lift(3)
+        )
+      }
   }
 }

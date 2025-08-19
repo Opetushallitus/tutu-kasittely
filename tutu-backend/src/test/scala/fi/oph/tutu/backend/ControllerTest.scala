@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.LocalDateTime
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -57,12 +59,14 @@ class ControllerTest extends IntegrationTestBase {
   var kayttooikeusService: KayttooikeusService = _
 
   @Autowired
-  var userService: UserService = _
+  var userService: UserService                       = _
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
   var esittelija: Option[DbEsittelija] = None
-  @BeforeAll def setup(): Unit         = {
+
+  @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
     val intermediate: DefaultMockMvcBuilder =
@@ -70,6 +74,7 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
   }
+
   @BeforeEach
   def setupTest(): Unit =
     when(mockOnrService.haeAsiointikieli(any[String]))
@@ -847,6 +852,83 @@ class ControllerTest extends IntegrationTestBase {
     assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.isEmpty)
     assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
     assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.isEmpty)
+  }
+
+  @Test
+  @Order(14)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoHakemusValidRequestStoresTutkinnotCorrectly(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006670",
+          "maakoodi": "0008",
+          "hakemusKoskee": 1
+          }"""
+
+    mockMvc
+      .perform(
+        post("/api/ataru-hakemus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+
+    val hakemus         = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    val timeoutDuration = 30.seconds
+
+    val dbTimeout = 30.seconds
+
+    val tutkinnot: Tutkinnot = hakemusRepository.db.run(
+      hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.get.id),
+      "fetch_tutkinnot_for_hakemus"
+    )
+
+    val tutkinto1 = tutkinnot.tutkinto1
+    assert(tutkinto1.hakemusId == hakemus.get.id)
+    assert(tutkinto1.jarjestys == "1")
+    assert(tutkinto1.nimi.contains("Päälikkö"))
+    assert(tutkinto1.oppilaitos.contains("Butan Amattikoulu"))
+    assert(tutkinto1.aloitusVuosi.contains(1999))
+    assert(tutkinto1.paattymisVuosi.contains(2000))
+    assert(tutkinto1.muuTutkintoTieto.isEmpty)
+
+    val tutkinto2 = tutkinnot.tutkinto2.get
+    assert(tutkinto2.hakemusId == hakemus.get.id)
+    assert(tutkinto2.jarjestys == "2")
+    assert(tutkinto2.nimi.contains("Johto tehtävä"))
+    assert(tutkinto2.oppilaitos.contains("Johto koulu"))
+    assert(tutkinto2.aloitusVuosi.contains(2006))
+    assert(tutkinto2.paattymisVuosi.contains(2007))
+    assert(tutkinto2.muuTutkintoTieto.isEmpty)
+
+    val tutkinto3 = tutkinnot.tutkinto3.get
+    assert(tutkinto3.hakemusId == hakemus.get.id)
+    assert(tutkinto3.jarjestys == "3")
+    assert(tutkinto3.nimi.contains("Apu poika"))
+    assert(tutkinto3.oppilaitos.contains("Apu koulu"))
+    assert(tutkinto3.aloitusVuosi.contains(2010))
+    assert(tutkinto3.paattymisVuosi.contains(2011))
+    assert(tutkinto3.muuTutkintoTieto.isEmpty)
+
+    val muuTutkinto = tutkinnot.muuTutkinto.get
+    assert(muuTutkinto.hakemusId == hakemus.get.id)
+    assert(muuTutkinto.jarjestys == "MUU")
+    assert(muuTutkinto.nimi.isEmpty)
+    assert(muuTutkinto.oppilaitos.isEmpty)
+    assert(muuTutkinto.aloitusVuosi.isEmpty)
+    assert(muuTutkinto.paattymisVuosi.isEmpty)
+    assert(
+      muuTutkinto.muuTutkintoTieto.contains(
+        "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
+      )
+    )
+
   }
 
   @Test
