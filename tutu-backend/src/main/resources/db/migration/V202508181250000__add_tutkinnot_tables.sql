@@ -24,7 +24,7 @@ COMMENT ON COLUMN tutkinto.oppilaitos IS 'Tutkinnon suorituksen oppilaitos';
 COMMENT ON COLUMN tutkinto.aloitus_vuosi IS 'Tutkinnon aloitusvuosi';
 COMMENT ON COLUMN tutkinto.paattymis_vuosi IS 'Tutkinnon päättymisvuosi';
 COMMENT ON COLUMN tutkinto.luotu IS 'Taulun rivin luontiaika';
-COMMENT ON COLUMN tutkinto.luotu IS 'Taulun rivin luoja';
+COMMENT ON COLUMN tutkinto.luoja IS 'Taulun rivin luoja';
 COMMENT ON COLUMN tutkinto.muokattu IS 'Taulun rivin viimeisin muokkausaika';
 COMMENT ON COLUMN tutkinto.muokkaaja IS 'Taulun rivin viimeisin muokkaaja';
 
@@ -56,7 +56,7 @@ COMMENT ON COLUMN muu_tutkinto.hakemus_id IS 'Hakemustaulun hakemuksen id';
 COMMENT ON COLUMN muu_tutkinto.tieto IS 'Tutkinnon tiedot';
 COMMENT ON COLUMN muu_tutkinto.huomio IS 'Tutkinnon huomiot päätökseen';
 COMMENT ON COLUMN muu_tutkinto.luotu IS 'Taulun rivin luontiaika';
-COMMENT ON COLUMN muu_tutkinto.luotu IS 'Taulun rivin luoja';
+COMMENT ON COLUMN muu_tutkinto.luoja IS 'Taulun rivin luoja';
 COMMENT ON COLUMN muu_tutkinto.muokattu IS 'Taulun rivin viimeisin muokkausaika';
 COMMENT ON COLUMN muu_tutkinto.muokkaaja IS 'Taulun rivin viimeisin muokkaaja';
 

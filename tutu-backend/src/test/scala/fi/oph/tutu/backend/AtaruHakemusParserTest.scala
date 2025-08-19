@@ -30,7 +30,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
   var ataruHakemusParser: AtaruHakemusParser = _
 
-  val hakemus = JsonMethods.parse(loadJson("ataruHakemus.json")).extract[AtaruHakemus]
+  val hakemus = JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]
 
   @BeforeEach
   def setup(): Unit = {
@@ -473,6 +473,74 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
       assertEquals(valuesOf402(0).value, "502")
     }
-
   }
+
+  @Test
+  def parseTutkinnotWithGeneratedIds(): Unit = {
+    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusWithKaikkiTutkinnot)
+    val tutkinto1   = tutkinnot.tutkinto1
+    val tutkinto2   = tutkinnot.tutkinto2
+    val tutkinto3   = tutkinnot.tutkinto3
+    val muuTutkinto = tutkinnot.muuTutkinto
+
+    assertEquals(tutkinto1.nimi, "Tutkinto1")
+    assertEquals(tutkinto1.oppilaitos, "Oppilaitos1")
+    assertEquals(tutkinto1.aloitusVuosi, 2001)
+    assertEquals(tutkinto1.paattymisVuosi, 2003)
+    assertEquals(tutkinto1.jarjestysNumero, 1)
+
+    assertEquals(tutkinto2.get.nimi, "Tutkinto2")
+    assertEquals(tutkinto2.get.oppilaitos, "Oppilaitos2")
+    assertEquals(tutkinto2.get.aloitusVuosi, 2005)
+    assertEquals(tutkinto2.get.paattymisVuosi, 2005)
+    assertEquals(tutkinto2.get.jarjestysNumero, 2)
+
+    assertEquals(tutkinto3.get.nimi, "Tutkinto3")
+    assertEquals(tutkinto3.get.oppilaitos, "Oppilaitos3")
+    assertEquals(tutkinto3.get.aloitusVuosi, 2005)
+    assertEquals(tutkinto3.get.paattymisVuosi, 2025)
+    assertEquals(tutkinto3.get.jarjestysNumero, 3)
+
+    assertEquals(
+      muuTutkinto.get.tieto,
+      "Mä oon suorittanut tutkintoja ainakin:\n\n-Norja\n-Oulu\n-Peräseinäjoki\n\nVannon kautta kiven ja kannon, bro."
+    )
+  }
+
+  @Test
+  def parseTutkinnotWithDefinedIds(): Unit = {
+    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6670.json")).extract[AtaruHakemus]
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusWithKaikkiTutkinnot)
+    val tutkinto1   = tutkinnot.tutkinto1
+    val tutkinto2   = tutkinnot.tutkinto2
+    val tutkinto3   = tutkinnot.tutkinto3
+    val muuTutkinto = tutkinnot.muuTutkinto
+
+    assertEquals(tutkinto1.nimi, "Päälikkö")
+    assertEquals(tutkinto1.oppilaitos, "Butan Amattikoulu")
+    assertEquals(tutkinto1.aloitusVuosi, 1999)
+    assertEquals(tutkinto1.paattymisVuosi, 2000)
+    assertEquals(tutkinto1.jarjestysNumero, 1)
+
+    assertEquals(tutkinto2.get.nimi, "Johto tehtävä")
+    assertEquals(tutkinto2.get.oppilaitos, "Johto koulu")
+    assertEquals(tutkinto2.get.aloitusVuosi, 2006)
+    assertEquals(tutkinto2.get.paattymisVuosi, 2007)
+    assertEquals(tutkinto2.get.jarjestysNumero, 2)
+
+    assertEquals(tutkinto3.get.nimi, "Apu poika")
+    assertEquals(tutkinto3.get.oppilaitos, "Apu koulu")
+    assertEquals(tutkinto3.get.aloitusVuosi, 2010)
+    assertEquals(tutkinto3.get.paattymisVuosi, 2011)
+    assertEquals(tutkinto3.get.jarjestysNumero, 3)
+
+    assertEquals(
+      muuTutkinto.get.tieto,
+      "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
+    )
+  }
+
 }

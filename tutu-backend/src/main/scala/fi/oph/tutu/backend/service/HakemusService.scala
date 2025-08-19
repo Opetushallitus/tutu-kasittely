@@ -26,7 +26,7 @@ class HakemusService(
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
-    esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
+    val tallennettuAtaruHakemusId = esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
@@ -36,6 +36,15 @@ class HakemusService(
         )
       case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
     }
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+    // TODO hakemuksen tutkintojen tallennus
+
+    tallennettuAtaruHakemusId
   }
 
   def haeHakemus(hakemusOid: HakemusOid, muutosHistoriaSortDef: SortDef = Undefined): Option[Hakemus] = {
@@ -117,7 +126,7 @@ class HakemusService(
             selvityksetSaatu = dbHakemus.selvityksetSaatu,
             viimeinenAsiakirjaHakijalta = dbHakemus.viimeinenAsiakirjaHakijalta,
             asiakirjamallitTutkinnoista =
-              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id) match {
+              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id) match {
                 case asiakirjamallit => asiakirjamallit
                 case null            => Map()
               },
@@ -314,7 +323,7 @@ class HakemusService(
         partialHakemus.asiakirjamallitTutkinnoista match {
           case None                      => ()
           case Some(toBeAsiakirjaMallit) =>
-            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id)
+            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id)
             val asiakirjamalliModifyData = HakemusModifyOperationResolver.resolveAsiakirjamalliModifyOperations(
               currentAsiakirjamallit,
               toBeAsiakirjaMallit

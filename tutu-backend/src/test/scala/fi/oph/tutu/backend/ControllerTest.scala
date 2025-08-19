@@ -127,6 +127,8 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6666.json")))
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
@@ -224,6 +226,9 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006665",
@@ -253,6 +258,12 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
+
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")))
+      .thenReturn(Right(loadJson("ataruHakemus6668.json")))
+
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
 

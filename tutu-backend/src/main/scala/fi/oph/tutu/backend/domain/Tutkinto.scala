@@ -3,8 +3,8 @@ package fi.oph.tutu.backend.domain
 import java.util.UUID
 
 case class Tutkinto(
-  id: Int,
-  hakemusId: UUID,
+  id: Option[Int],
+  hakemusId: Option[UUID],
   jarjestysNumero: Int,
   nimi: String,
   oppilaitos: String,
@@ -13,8 +13,15 @@ case class Tutkinto(
 )
 
 case class MuuTutkinto(
-  id: Int,
-  hakemusId: UUID,
+  id: Option[Int],
+  hakemusId: Option[UUID],
   tieto: String,
   huomio: Option[String] = None
+)
+
+case class Tutkinnot(
+  tutkinto1: Tutkinto,
+  tutkinto2: Option[Tutkinto] = None,
+  tutkinto3: Option[Tutkinto] = None,
+  muuTutkinto: Option[MuuTutkinto] = None
 )

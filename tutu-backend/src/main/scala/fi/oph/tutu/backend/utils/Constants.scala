@@ -28,5 +28,5 @@ object Constants {
   val ATARU_TUTKINTO_3_LOPETUS_VUOSI =
     AtaruKysymysId("b7b38bf4-12bb-4e58-9399-4fb59fdb326e", "tutu-third-degree-end-year")
 
-  val ATARU_TUTKINTO_MUU_KUVAUS = AtaruKysymysId("743fd221-6ec7-40d8-9758-7786e7ff2458", "tutu-other-degree-text")
+  val ATARU_MUU_TUTKINTO_TIETO = AtaruKysymysId("743fd221-6ec7-40d8-9758-7786e7ff2458", "tutu-other-degree-text")
 }
