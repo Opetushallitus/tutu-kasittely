@@ -4,24 +4,18 @@ import java.util.UUID
 
 case class Tutkinto(
   id: Option[Int],
-  hakemusId: Option[UUID],
-  jarjestysNumero: Int,
-  nimi: String,
-  oppilaitos: String,
-  aloitusVuosi: Int,
-  paattymisVuosi: Int
-)
-
-case class MuuTutkinto(
-  id: Option[Int],
-  hakemusId: Option[UUID],
-  tieto: String,
-  huomio: Option[String] = None
+  hakemusId: UUID,
+  jarjestys: String,
+  nimi: Option[String],
+  oppilaitos: Option[String],
+  aloitusVuosi: Option[Int] = None,
+  paattymisVuosi: Option[Int] = None,
+  muuTutkintoTieto: Option[String] = None
 )
 
 case class Tutkinnot(
   tutkinto1: Tutkinto,
   tutkinto2: Option[Tutkinto] = None,
   tutkinto3: Option[Tutkinto] = None,
-  muuTutkinto: Option[MuuTutkinto] = None
+  muuTutkinto: Option[Tutkinto] = None
 )
