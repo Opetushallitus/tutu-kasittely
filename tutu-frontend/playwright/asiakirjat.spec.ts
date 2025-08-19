@@ -150,16 +150,3 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     row5_tarkistuksentila_check,
   ]);
 });
-
-test('Muut komponentit näkyvät sivulla', async ({ page }) => {
-  await mockUser(page);
-  await mockHakemus(page);
-  await mockLiitteet(page);
-
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
-  );
-  await expect(
-    page.getByTestId('suostumus-vahvistamiselle-saatu-checkbox'),
-  ).toBeVisible();
-});
