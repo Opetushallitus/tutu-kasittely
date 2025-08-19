@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid, Hakija}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.hakijaFixture
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
 import org.flywaydb.core.Flyway
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{AfterAll, BeforeAll, TestInstance}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.stubbing.OngoingStubbing
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -94,7 +93,7 @@ class IntegrationTestBase {
 
   def initAtaruHakemusRequests(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
       Right(loadJson("muutosHistoria.json"))
     )

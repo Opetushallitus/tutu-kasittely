@@ -541,7 +541,7 @@ class HakemusRepository {
      * @return
      * hakemuksen asiakirjamallit tutkinnosta
      */
-  def haeAsiakirjamallitTutkinnoistaHakemusOidilla(
+  def haeAsiakirjamallitTutkinnoistaHakemusIdlla(
     hakemusId: UUID
   ): Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = {
     try {

@@ -1,22 +1,7 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{
-  Answer,
-  AnswerValue,
-  AtaruHakemus,
-  AtaruLomake,
-  EmptyValue,
-  Hakija,
-  Kieli,
-  Kielistetty,
-  LomakeContentItem,
-  MultiValue,
-  NestedValues,
-  SingleValue,
-  SisaltoItem,
-  SisaltoValue,
-  Valinta
-}
+import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.utils.Constants
 import org.springframework.stereotype.{Component, Service}
 
 @Component
@@ -77,6 +62,85 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val transformedContent = traverseContent(formContent, item => transformItem(answers, item))
 
     transformedContent
+  }
+
+  private def findAnswerByAtaruKysymysId(
+    kysymysId: AtaruKysymysId,
+    allAnswers: Seq[Answer]
+  ): String = {
+    findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
+      case Some(answer) => answer
+      case None         =>
+        findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
+          case Some(answer) => answer
+          case None         => ""
+        }
+    }
+  }
+
+  def parseTutkinnot(hakemus: AtaruHakemus): Tutkinnot = {
+    val answers = hakemus.content.answers
+
+    val tutkinto1 = Tutkinto(
+      id = None,
+      hakemusId = None,
+      jarjestysNumero = 1,
+      nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_NIMI, answers),
+      oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPPILAITOS, answers),
+      aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).toInt,
+      paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).toInt
+    )
+
+    val tutkinto2 =
+      if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers) != "") {
+        Some(
+          Tutkinto(
+            id = None,
+            hakemusId = None,
+            jarjestysNumero = 2,
+            nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers),
+            oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPPILAITOS, answers),
+            aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).toInt,
+            paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).toInt
+          )
+        )
+      } else {
+        None
+      }
+
+    val tutkinto3 = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers) != "") {
+      Some(
+        Tutkinto(
+          None,
+          None,
+          jarjestysNumero = 3,
+          nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers),
+          oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPPILAITOS, answers),
+          aloitusVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).toInt,
+          paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).toInt
+        )
+      )
+    } else {
+      None
+    }
+
+    val muuTutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers) != "") {
+      Some(
+        MuuTutkinto(
+          None,
+          None,
+          tieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers)
+        )
+      )
+    } else {
+      None
+    }
+    Tutkinnot(
+      tutkinto1 = tutkinto1,
+      tutkinto2 = tutkinto2,
+      tutkinto3 = tutkinto3,
+      muuTutkinto = muuTutkinto
+    )
   }
 }
 
