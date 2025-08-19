@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend
 
 import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
-import fi.oph.tutu.backend.fixture.hakijaFixture
+import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -19,6 +19,7 @@ import org.testcontainers.containers.wait.strategy.Wait
 
 import java.io.FileNotFoundException
 import java.time.Duration
+import java.util.UUID
 import scala.io.Source
 
 class OphPostgresContainer(dockerImageName: String)
@@ -100,5 +101,11 @@ class IntegrationTestBase {
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+      .thenAnswer { invocation =>
+        val uuid = invocation.getArgument[UUID](0)
+        createTutkinnotFixture(uuid)
+      }
+
   }
 }

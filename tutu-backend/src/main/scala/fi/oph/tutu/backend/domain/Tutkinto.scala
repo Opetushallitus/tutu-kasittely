@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.domain
 import java.util.UUID
 
 case class Tutkinto(
-  id: Option[Int],
+  id: Option[UUID],
   hakemusId: UUID,
   jarjestys: String,
   nimi: Option[String],
