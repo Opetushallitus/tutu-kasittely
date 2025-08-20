@@ -6,7 +6,6 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useMuistio } from '@/src/hooks/useMuistio';
-import { isDefined } from '@/src/lib/utils';
 
 import { Hakemus } from '@/src/lib/types/hakemus';
 
@@ -31,36 +30,30 @@ export const Muistio = ({
     sisainen,
   );
 
-  const [sisalto, _setSisalto] = useState<string | undefined>(muistio?.sisalto);
+  const [sisalto, setSisalto] = useState<string | undefined>(muistio?.sisalto);
 
   useEffect(() => {
-    _setSisalto(muistio?.sisalto || '');
-  }, [muistio?.sisalto, _setSisalto]);
+    setSisalto(muistio?.sisalto || '');
+  }, [muistio?.sisalto, setSisalto]);
 
   const debouncedMuistioUpdateAction = useDebounce((value: string) => {
     updateMuistio(value);
   }, 1500);
 
-  const setSisalto = (value: string) => {
-    _setSisalto(value);
+  const updateSisalto = (value: string) => {
+    setSisalto(value);
     debouncedMuistioUpdateAction(value);
   };
 
-  const _label = isDefined(label) ? (
-    <OphTypography variant="label">{label}</OphTypography>
-  ) : null;
-
-  const _helperText = isDefined(helperText) ? (
-    <OphTypography variant="body1">{helperText}</OphTypography>
-  ) : null;
-
   return (
     <Stack direction="column">
-      {_label}
-      {_helperText}
+      {label && <OphTypography variant="label">{label}</OphTypography>}
+      {helperText && (
+        <OphTypography variant="body1">{helperText}</OphTypography>
+      )}
       <OphInputFormField
         multiline={true}
-        onChange={(event) => setSisalto(event?.target.value)}
+        onChange={(event) => updateSisalto(event?.target.value)}
         value={sisalto ?? ''}
         minRows={3}
       />

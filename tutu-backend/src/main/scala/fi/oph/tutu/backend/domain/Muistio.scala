@@ -9,8 +9,6 @@ import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.meta.field
 
-/* ------- */
-
 case class MuistioPostBody(
   nakyvyys: String = "sisainen",
   sisalto: String = ""
