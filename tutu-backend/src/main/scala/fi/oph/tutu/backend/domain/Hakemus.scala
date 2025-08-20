@@ -163,7 +163,8 @@ case class Hakemus(
   ),
   apHakemus: Option[Boolean] = None,
   yhteistutkinto: Boolean = false,
-  suostumusVahvistamiselleSaatu: Boolean = false
+  suostumusVahvistamiselleSaatu: Boolean = false,
+  tutkinnot: Tutkinnot
 )
 
 case class PartialHakemus(

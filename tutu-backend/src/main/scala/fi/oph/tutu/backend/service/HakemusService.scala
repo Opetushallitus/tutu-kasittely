@@ -161,7 +161,8 @@ class HakemusService(
             ),
             apHakemus = dbHakemus.apHakemus,
             yhteistutkinto = dbHakemus.yhteistutkinto,
-            suostumusVahvistamiselleSaatu = dbHakemus.suostumusVahvistamiselleSaatu
+            suostumusVahvistamiselleSaatu = dbHakemus.suostumusVahvistamiselleSaatu,
+            tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
           )
         )
       case None =>

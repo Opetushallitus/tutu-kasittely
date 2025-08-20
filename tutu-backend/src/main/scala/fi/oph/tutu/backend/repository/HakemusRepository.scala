@@ -694,23 +694,27 @@ class HakemusRepository {
    * @return
    * hakemuksen tutkinnot
    */
-  def haeTutkinnotHakemusIdilla(hakemusId: UUID): DBIO[Tutkinnot] = {
-    sql"""
+  def haeTutkinnotHakemusIdilla(hakemusId: UUID): Tutkinnot = {
+    db.run(
+      sql"""
     SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, muu_tutkinto_tieto
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys
   """
-      .as[Tutkinto]
-      .map { tutkinnot =>
-        Tutkinnot(
-          tutkinto1 = tutkinnot.headOption.getOrElse(
-            throw new RuntimeException(s"Hakemukselle (hakemusId: $hakemusId) tulee löytyä ainakin yksi tutkinto")
-          ),
-          tutkinto2 = tutkinnot.lift(1),
-          tutkinto3 = tutkinnot.lift(2),
-          muuTutkinto = tutkinnot.lift(3)
-        )
-      }
+        .as[Tutkinto]
+        .map(tutkinnot =>
+          Tutkinnot(
+            tutkinto1 = tutkinnot.headOption.getOrElse(
+              throw new RuntimeException(s"Hakemukselle (hakemusId: $hakemusId) tulee löytyä ainakin yksi tutkinto")
+            ),
+            tutkinto2 = tutkinnot.lift(1),
+            tutkinto3 = tutkinnot.lift(2),
+            muuTutkinto = tutkinnot.lift(3)
+          )
+        ),
+      "hae_tutkinnot_hakemus_idlla"
+    )
+
   }
 }
