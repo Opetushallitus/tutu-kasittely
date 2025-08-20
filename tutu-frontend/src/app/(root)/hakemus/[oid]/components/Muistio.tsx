@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
-import { OphInputFormField } from '@opetushallitus/oph-design-system';
+import { Stack } from '@mui/material';
+import {
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useMuistio } from '@/src/hooks/useMuistio';
+import { isDefined } from '@/src/lib/utils';
 
 import { Hakemus } from '@/src/lib/types/hakemus';
 
@@ -9,7 +14,8 @@ interface MuistioProps {
   hakemus: Hakemus | undefined;
   sisainen: boolean;
   hakemuksenOsa: string;
-  label: string;
+  label?: string;
+  helperText?: string;
 }
 
 export const Muistio = ({
@@ -17,6 +23,7 @@ export const Muistio = ({
   sisainen,
   hakemuksenOsa,
   label,
+  helperText,
 }: MuistioProps) => {
   const { muistio, updateMuistio } = useMuistio(
     hakemus?.hakemusOid,
@@ -39,13 +46,24 @@ export const Muistio = ({
     debouncedMuistioUpdateAction(value);
   };
 
+  const _label = isDefined(label) ? (
+    <OphTypography variant="label">{label}</OphTypography>
+  ) : null;
+
+  const _helperText = isDefined(helperText) ? (
+    <OphTypography variant="body1">{helperText}</OphTypography>
+  ) : null;
+
   return (
-    <OphInputFormField
-      label={label}
-      multiline={true}
-      onChange={(event) => setSisalto(event?.target.value)}
-      value={sisalto ?? ''}
-      minRows={3}
-    />
+    <Stack direction="column">
+      {_label}
+      {_helperText}
+      <OphInputFormField
+        multiline={true}
+        onChange={(event) => setSisalto(event?.target.value)}
+        value={sisalto ?? ''}
+        minRows={3}
+      />
+    </Stack>
   );
 };
