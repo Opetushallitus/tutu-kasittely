@@ -35,7 +35,7 @@ class MuistioRepository {
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         r.nextString(),
         r.nextBoolean(),
-        HakemuksenOsa.valueOf(r.nextString())
+        r.nextString()
       )
     )
   }
@@ -53,7 +53,7 @@ class MuistioRepository {
    */
   def tallennaMuistio(
     hakemusId: UUID,
-    hakemuksenOsa: HakemuksenOsa,
+    hakemuksenOsa: String,
     sisainen: Boolean,
     sisalto: String,
     luoja: String
@@ -72,7 +72,7 @@ class MuistioRepository {
             ${hakemusId.toString}::uuid,
             $sisalto,
             $sisainen,
-            ${hakemuksenOsa.toString}::hakemuksen_osa,
+            ${hakemuksenOsa}::hakemuksen_osa,
             $luoja
           )
           ON CONFLICT (hakemus_id, hakemuksen_osa, sisainen_huomio)
@@ -105,7 +105,7 @@ class MuistioRepository {
    */
   def haeMuistio(
     hakemusId: UUID,
-    hakemuksenOsa: HakemuksenOsa,
+    hakemuksenOsa: String,
     sisainen: Boolean
   ): Option[Muistio] = {
     try {
@@ -126,7 +126,7 @@ class MuistioRepository {
             WHERE
               m.hakemus_id =  ${hakemusId.toString}::uuid
             AND
-              m.hakemuksen_osa = ${hakemuksenOsa.toString}::hakemuksen_osa
+              m.hakemuksen_osa = ${hakemuksenOsa}::hakemuksen_osa
             AND
               m.sisainen_huomio = ${sisainen}
           """.as[Muistio].headOption,

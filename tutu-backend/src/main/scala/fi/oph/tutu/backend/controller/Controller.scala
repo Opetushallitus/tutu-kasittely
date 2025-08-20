@@ -314,11 +314,10 @@ class Controller(
     @RequestParam("nakyvyys") nakyvyys: String
   ): ResponseEntity[Any] = {
     Try {
-      val sisainen: Boolean             = nakyvyys == "sisainen";
-      val _hakemusOid: HakemusOid       = HakemusOid(hakemusOid)
-      val _hakemuksenOsa: HakemuksenOsa = HakemuksenOsa.valueOf(hakemuksenOsa);
+      val sisainen: Boolean       = nakyvyys == "sisainen";
+      val _hakemusOid: HakemusOid = HakemusOid(hakemusOid)
 
-      muistioService.haeMuistio(_hakemusOid, _hakemuksenOsa, sisainen)
+      muistioService.haeMuistio(_hakemusOid, hakemuksenOsa, sisainen)
     } match {
       case Success(result) => {
         result match {
@@ -349,13 +348,12 @@ class Controller(
     Try {
       val muistioPostBody: MuistioPostBody = mapper.readValue(muistioBytes, classOf[MuistioPostBody])
 
-      val sisainen: Boolean             = muistioPostBody.nakyvyys == "sisainen";
-      val _hakemusOid: HakemusOid       = HakemusOid(hakemusOid)
-      val _hakemuksenOsa: HakemuksenOsa = HakemuksenOsa.valueOf(hakemuksenOsa);
+      val sisainen: Boolean       = muistioPostBody.nakyvyys == "sisainen";
+      val _hakemusOid: HakemusOid = HakemusOid(hakemusOid)
 
       muistioService.tallennaMuistio(
         _hakemusOid,
-        _hakemuksenOsa,
+        hakemuksenOsa,
         sisainen,
         muistioPostBody.sisalto,
         "Hakemuspalvelu"

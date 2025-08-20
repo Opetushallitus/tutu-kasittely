@@ -24,7 +24,7 @@ class MuistioService(
 
   def haeMuistio(
     hakemusOid: HakemusOid,
-    hakemuksenOsa: HakemuksenOsa,
+    hakemuksenOsa: String,
     sisainen: Boolean
   ): Option[Muistio] = {
     hakemusRepository
@@ -38,10 +38,9 @@ class MuistioService(
       })
   }
 
-  // val muistioId = muistioService.tallennaMuistio(hakemusOid, hakemuksenOsa, muistioPostBody)
   def tallennaMuistio(
     hakemusOid: HakemusOid,
-    hakemuksenOsa: HakemuksenOsa,
+    hakemuksenOsa: String,
     sisainen: Boolean,
     sisalto: String,
     luoja: String

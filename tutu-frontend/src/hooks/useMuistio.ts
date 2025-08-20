@@ -9,7 +9,7 @@ export const getMuistio = async (
   hakemuksenOsa: string,
   sisainen: boolean,
 ): Promise<Muistio> => {
-  const nakyvyys = sisainen ? 'sisainen' : 'julkinen';
+  const nakyvyys = sisainen ? 'sisainen' : 'muistio';
   const url = `muistio/${hakemusOid}/${hakemuksenOsa}?nakyvyys=${nakyvyys}`;
   return await doApiFetch(url, undefined, 'no-store');
 };
@@ -20,7 +20,7 @@ export const postMuistio = (
   sisainen: boolean,
   sisalto: string,
 ) => {
-  const nakyvyys = sisainen ? 'sisainen' : 'julkinen';
+  const nakyvyys = sisainen ? 'sisainen' : 'muistio';
   const url = `muistio/${hakemusOid}/${hakemuksenOsa}`;
   const body = {
     nakyvyys,
