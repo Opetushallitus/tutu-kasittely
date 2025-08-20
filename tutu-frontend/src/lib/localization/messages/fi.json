@@ -172,6 +172,11 @@
         "aacrao": "Aacrao",
         "muu": "Muut lähteet",
         "muuSelite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
+      },
+      "muistio": {
+        "sisainenOtsake": "Esittelijän huomioita asiakirjoista (ei näy muistiossa)",
+        "sisainenOhjeteksti": "Numerotarkistukset, turvamerkinnät ym asiakirjoihin liittyvät muistiinpanot ja lisätiedot.",
+        "muistioOtsake": "Huomiot asiakirjoista muistioon"
       }
     },
     "tutkinnot": {

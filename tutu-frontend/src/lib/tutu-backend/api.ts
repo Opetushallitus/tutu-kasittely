@@ -159,3 +159,24 @@ export async function doApiPatch(
     cache,
   );
 }
+
+export async function doApiPost(
+  resource: string,
+  body: object,
+  options?: Options,
+  cache?: string,
+) {
+  return apiFetch(
+    resource,
+    {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        ...options?.headers,
+        'Content-Type': 'application/json',
+      },
+    },
+    cache,
+  );
+}

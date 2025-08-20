@@ -14,6 +14,7 @@ import { AllekirjoitustenTarkistus } from '@/src/app/(root)/hakemus/[oid]/compon
 import { AlkuperaisetAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/AlkuperaisetAsiakirjat';
 import { KaikkiSelvityksetSaatu } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/KaikkiSelvityksetSaatu';
 import { ApHakemus } from '@/src/app/(root)/hakemus/[oid]/components/asiakirjat/ApHakemus';
+import { Muistio } from '@/src/app/(root)/hakemus/[oid]/components/Muistio';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
 import { CenteredRow } from '@/src/app/(root)/hakemus/[oid]/components/CenteredRow';
@@ -224,6 +225,21 @@ const AsiakirjaPagePure = ({
         hakemus={hakemus}
         updateHakemus={debouncedHakemusUpdateAction}
       />
+
+      <Muistio
+        label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
+        helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
+        hakemus={hakemus}
+        sisainen={true}
+        hakemuksenOsa={'asiakirjat'}
+      />
+      <Muistio
+        label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
+        hakemus={hakemus}
+        sisainen={false}
+        hakemuksenOsa={'asiakirjat'}
+      />
+
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
       </OphTypography>
