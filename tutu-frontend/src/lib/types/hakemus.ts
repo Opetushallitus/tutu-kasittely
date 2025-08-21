@@ -111,5 +111,6 @@ export type Tutkinto = {
   oppilaitos?: string;
   aloitusVuosi?: string;
   paattymisVuosi?: string;
+  maakoodi?: string;
   muuTutkintoTieto?: string;
 };

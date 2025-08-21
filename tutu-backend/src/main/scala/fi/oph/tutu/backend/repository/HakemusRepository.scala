@@ -95,6 +95,7 @@ class HakemusRepository {
           r.nextStringOption(),
           r.nextIntOption(),
           r.nextIntOption(),
+          r.nextIntOption(),
           r.nextStringOption()
         ),
         tutkinto2 = r.nextObjectOption().flatMap { _ =>
@@ -105,6 +106,7 @@ class HakemusRepository {
               r.nextString(),
               r.nextStringOption(),
               r.nextStringOption(),
+              r.nextIntOption(),
               r.nextIntOption(),
               r.nextIntOption(),
               r.nextStringOption()
@@ -121,6 +123,7 @@ class HakemusRepository {
               r.nextStringOption(),
               r.nextIntOption(),
               r.nextIntOption(),
+              r.nextIntOption(),
               r.nextStringOption()
             )
           )
@@ -133,6 +136,7 @@ class HakemusRepository {
               r.nextString(),
               r.nextStringOption(),
               r.nextStringOption(),
+              r.nextIntOption(),
               r.nextIntOption(),
               r.nextIntOption(),
               r.nextStringOption()
@@ -150,6 +154,7 @@ class HakemusRepository {
         r.nextString(),
         r.nextStringOption(),
         r.nextStringOption(),
+        r.nextIntOption(),
         r.nextIntOption(),
         r.nextIntOption(),
         r.nextStringOption()
@@ -644,6 +649,7 @@ class HakemusRepository {
     val oppilaitosOrNull       = tutkinto.oppilaitos.map(_.toString).orNull
     val aloitusVuosiOrNull     = tutkinto.aloitusVuosi
     val paattymisVuosiOrNull   = tutkinto.paattymisVuosi
+    val maakoodiOrNull         = tutkinto.maakoodi
     val muuTutkintoTietoOrNull = tutkinto.muuTutkintoTieto.map(_.toString).orNull
     try
       db.run(
@@ -655,6 +661,7 @@ class HakemusRepository {
             oppilaitos,
             aloitus_vuosi,
             paattymis_vuosi,
+            maakoodi,
             muu_tutkinto_tieto,
             luoja
           )
@@ -665,6 +672,7 @@ class HakemusRepository {
             ${oppilaitosOrNull},
             ${aloitusVuosiOrNull},
             ${paattymisVuosiOrNull},
+            ${maakoodiOrNull},
             ${muuTutkintoTietoOrNull},
             ${luoja}
           )
@@ -692,7 +700,7 @@ class HakemusRepository {
   def haeTutkinnotHakemusIdilla(hakemusId: UUID): Tutkinnot = {
     db.run(
       sql"""
-    SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, muu_tutkinto_tieto
+    SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, maakoodi, muu_tutkinto_tieto
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys

@@ -53,7 +53,7 @@ export const TutkintoComponent = ({
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
             sx={{ width: '50%' }}
             options={[]}
-            defaultValue={''}
+            defaultValue={tutkinto.maakoodi}
           />
           <Stack direction="row" gap={2}>
             <OphInputFormField
