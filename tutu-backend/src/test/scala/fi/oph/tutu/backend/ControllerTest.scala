@@ -70,7 +70,7 @@ class ControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
+    esittelija = esittelijaRepository.upsertEsittelija(752, UserOid(esittelijaOidString), "testi")
   }
 
   @BeforeEach
@@ -168,7 +168,7 @@ class ControllerTest extends IntegrationTestBase {
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
-          "maakoodi": "0008",
+          "maakoodi": "752",
           "hakemusKoskee": 1
           }"""
 
@@ -189,7 +189,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "752", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -225,7 +225,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -242,7 +242,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -268,7 +268,7 @@ class ControllerTest extends IntegrationTestBase {
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006665",
-          "maakoodi": "0008",
+          "maakoodi": "752",
           "hakemusKoskee": 0
           }"""
 
@@ -350,8 +350,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "taydennyspyyntoLahetetty": null
                               } ]"""
 
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "000", 0))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "752", 1))
 
     val result = mockMvc
       .perform(
@@ -899,7 +899,7 @@ class ControllerTest extends IntegrationTestBase {
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006670",
-          "maakoodi": "0008",
+          "maakoodi": "752",
           "hakemusKoskee": 1
           }"""
 
@@ -922,6 +922,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto1.oppilaitos.contains("Butan Amattikoulu"))
     assert(tutkinto1.aloitusVuosi.contains(1999))
     assert(tutkinto1.paattymisVuosi.contains(2000))
+    assert(tutkinto1.maakoodi.contains(762))
     assert(tutkinto1.muuTutkintoTieto.isEmpty)
 
     val tutkinto2 = tutkinnot.tutkinto2.get
@@ -931,6 +932,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto2.oppilaitos.contains("Johto koulu"))
     assert(tutkinto2.aloitusVuosi.contains(2006))
     assert(tutkinto2.paattymisVuosi.contains(2007))
+    assert(tutkinto2.maakoodi.contains(762))
     assert(tutkinto2.muuTutkintoTieto.isEmpty)
 
     val tutkinto3 = tutkinnot.tutkinto3.get
@@ -940,6 +942,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto3.oppilaitos.contains("Apu koulu"))
     assert(tutkinto3.aloitusVuosi.contains(2010))
     assert(tutkinto3.paattymisVuosi.contains(2011))
+    assert(tutkinto3.maakoodi.contains(762))
     assert(tutkinto3.muuTutkintoTieto.isEmpty)
 
     val muuTutkinto = tutkinnot.muuTutkinto.get
@@ -949,6 +952,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(muuTutkinto.oppilaitos.isEmpty)
     assert(muuTutkinto.aloitusVuosi.isEmpty)
     assert(muuTutkinto.paattymisVuosi.isEmpty)
+    assert(muuTutkinto.maakoodi.isEmpty)
     assert(
       muuTutkinto.muuTutkintoTieto.contains(
         "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
@@ -1052,11 +1056,11 @@ class ControllerTest extends IntegrationTestBase {
          |    "hakukohde" : "form"
          |  } ],
          |  "hakemusKoskee" : 0,
-         |  "asiatunnus" : OPH-122-2025,
+         |  "asiatunnus" : "OPH-122-2025",
          |  "kirjausPvm" : "2025-08-19T07:10:39.874",
          |  "esittelyPvm" : null,
          |  "paatosPvm" : null,
-         |  "esittelijaOid" : 1.2.246.562.24.00000000000000006666,
+         |  "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
          |  "ataruHakemuksenTila" : "KasittelyMaksettu",
          |  "kasittelyVaihe" : "AlkukasittelyKesken",
          |  "muutosHistoria" : [ {
@@ -1096,6 +1100,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Butan Amattikoulu",
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
+         |      "maakoodi" : 762,
          |      "muuTutkintoTieto" : null
          |    },
          |    "tutkinto2" : {
@@ -1105,6 +1110,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Johto koulu",
          |      "aloitusVuosi" : 2006,
          |      "paattymisVuosi" : 2007,
+         |      "maakoodi" : 762,
          |      "muuTutkintoTieto" : null
          |    },
          |    "tutkinto3" : {
@@ -1114,6 +1120,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Apu koulu",
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
+         |      "maakoodi": 762,
          |      "muuTutkintoTieto" : null
          |    },
          |    "muuTutkinto" : {
@@ -1123,6 +1130,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : null,
          |      "aloitusVuosi" : null,
          |      "paattymisVuosi" : null,
+         |      "maakoodi" : null,
          |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
          |    }
          |  }

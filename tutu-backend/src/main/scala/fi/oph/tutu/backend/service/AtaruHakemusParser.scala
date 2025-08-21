@@ -92,7 +92,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       aloitusVuosi =
         findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
       paattymisVuosi =
-        findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption)
+        findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
+      maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).flatMap(_.toIntOption)
     )
 
     val tutkinto2 =
@@ -108,7 +109,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
               findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
             paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
               _.toIntOption
-            )
+            ),
+            maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers).flatMap(_.toIntOption)
           )
         )
       } else {
@@ -126,7 +128,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           aloitusVuosi =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
           paattymisVuosi =
-            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption)
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
+          maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers).flatMap(_.toIntOption)
         )
       )
     } else {
@@ -142,6 +145,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           oppilaitos = None,
           aloitusVuosi = None,
           paattymisVuosi = None,
+          maakoodi = None,
           jarjestys = "MUU",
           muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers)
         )

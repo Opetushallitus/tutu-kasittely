@@ -30,12 +30,12 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] = {
+  def haeEsittelijaMaakoodilla(maakoodi: Int): Option[DbEsittelija] = {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
         SELECT id, esittelija_oid from esittelija 
-        WHERE maatjavaltiot_koodi_uri = $maakoodi AND esittelija_oid IS NOT NULL
+        WHERE maakoodi = $maakoodi AND esittelija_oid IS NOT NULL
         """.as[DbEsittelija].head,
         "haeEsittelijaMaakoodilla"
       )
@@ -80,14 +80,14 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
+  def upsertEsittelija(maakoodi: Int, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
         sql"""
-        INSERT INTO esittelija (maatjavaltiot_koodi_uri, esittelija_oid, luoja)
+        INSERT INTO esittelija (maakoodi, esittelija_oid, luoja)
         VALUES ($maakoodi, $esittelijaOidString, $luoja)
-        ON CONFLICT (maatjavaltiot_koodi_uri) DO
+        ON CONFLICT (maakoodi) DO
         UPDATE SET
         esittelija_oid = $esittelijaOidString,
         muokkaaja = $luoja

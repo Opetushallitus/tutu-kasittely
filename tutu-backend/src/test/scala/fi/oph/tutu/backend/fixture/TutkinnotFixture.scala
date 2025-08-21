@@ -13,6 +13,7 @@ def createTutkinnotFixture(hakemusId: UUID): Tutkinnot = Tutkinnot(
     Some("Butan Amattikoulu"),
     Some(1999),
     Some(2000),
+    Some(762),
     None
   ),
   Some(
@@ -24,6 +25,7 @@ def createTutkinnotFixture(hakemusId: UUID): Tutkinnot = Tutkinnot(
       Some("Johto koulu"),
       Some(2006),
       Some(2007),
+      Some(762),
       None
     )
   ),
@@ -36,6 +38,7 @@ def createTutkinnotFixture(hakemusId: UUID): Tutkinnot = Tutkinnot(
       Some("Apu koulu"),
       Some(2010),
       Some(2011),
+      Some(762),
       None
     )
   ),
@@ -44,6 +47,7 @@ def createTutkinnotFixture(hakemusId: UUID): Tutkinnot = Tutkinnot(
       None,
       hakemusId,
       "MUU",
+      None,
       None,
       None,
       None,
