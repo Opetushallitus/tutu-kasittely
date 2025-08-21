@@ -1,17 +1,16 @@
-export const emptyOption: Array<{
+export type Option = {
   value: string;
   label: string;
-}> = [
+};
+
+export const emptyOptionArray: Array<Option> = [
   {
     value: '',
     label: '',
   },
 ];
 
-export const hakemusKoskeeOptions: Array<{
-  value: string;
-  label: string;
-}> = [
+export const hakemusKoskeeOptions: Array<Option> = [
   { value: '0', label: 'tutkinnonTasonRinnakkaistaminen' },
   { value: '1', label: 'kelpoisuusAmmattiin' },
   { value: '2', label: 'tutkintoSuoritusRinnakkaistaminen' },

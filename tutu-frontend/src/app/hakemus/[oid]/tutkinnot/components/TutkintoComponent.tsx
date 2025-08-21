@@ -7,25 +7,27 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
+import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 
 export type TutkintoProps = {
   tutkinto: Tutkinto;
   updateHakemus: (patch: Partial<Hakemus>) => void;
+  otsikko: string;
   t: TFunction;
 };
 export const TutkintoComponent = ({
   tutkinto,
   // updateHakemus,
+  otsikko,
   t,
 }: TutkintoProps) => {
-  console.log(tutkinto.jarjestys);
+  const { maatJaValtiotOptions, koulutusLuokitusOptions } =
+    useKoodistoOptions();
 
   return (
     <Stack direction="column" gap={2}>
-      <OphTypography variant={'h2'}>
-        {t('hakemus.tutkinnot.tutkinto.tutkinto1')}
-      </OphTypography>
+      <OphTypography variant={'h2'}>{t(otsikko)}</OphTypography>
       {tutkinto.jarjestys === 'MUU' ? (
         'muu'
       ) : (
@@ -52,7 +54,7 @@ export const TutkintoComponent = ({
           <OphSelectFormField
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
             sx={{ width: '50%' }}
-            options={[]}
+            options={maatJaValtiotOptions}
             defaultValue={tutkinto.maakoodi}
           />
           <Stack direction="row" gap={2}>
@@ -81,11 +83,12 @@ export const TutkintoComponent = ({
           <OphSelectFormField
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
             sx={{ width: '25%' }}
-            options={[]}
+            options={koulutusLuokitusOptions}
             defaultValue={''}
           />
         </>
       )}
+      <Divider orientation={'horizontal'} />
     </Stack>
   );
 };
