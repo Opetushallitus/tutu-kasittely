@@ -9,6 +9,7 @@ import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
+import { TutkintoComponent } from '@/src/app/(root)/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
 
 export default function TutkintoPage() {
   const theme = useTheme();
@@ -34,6 +35,11 @@ export default function TutkintoPage() {
         {t('hakemus.tutkinnot.otsikko')}
       </OphTypography>
       <Yhteistutkinto hakemus={hakemus} updateHakemus={updateHakemus} t={t} />
+      <TutkintoComponent
+        tutkinto={hakemus.tutkinnot.tutkinto1}
+        updateHakemus={updateHakemus}
+        t={t}
+      ></TutkintoComponent>
     </Stack>
   );
 }

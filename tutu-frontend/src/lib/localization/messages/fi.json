@@ -183,7 +183,22 @@
     },
     "tutkinnot": {
       "otsikko": "Tutkinnot",
-      "yhteistutkinto": "Yhteistutkinto"
+      "yhteistutkinto": "Yhteistutkinto",
+      "tutkinto": {
+        "tutkinto1": "Tutkinto 1",
+        "tutkinto2": "Tutkinto 2",
+        "tutkinto3": "Tutkinto 3",
+        "muuTutkinto": "Muut tutkinnot ja opinnot",
+        "tutkintoTodistusOtsikko": "Tutkintotodistusotsikko",
+        "tutkinnonNimi": "Tutkinnon nimi",
+        "tutkinnonPaaaineTaiErikoisala": "Tutkinnon pääaine tai erikoisala",
+        "oppilaitos": "Korkeakoulun tai oppilaitoksen nimi",
+        "tutkinnonMaa": "Korkeakoulun tai sijaintimaa",
+        "opintojenAloitusVuosi": "Opintojen alkamisvuosi",
+        "opintojenPaattymisVuosi": "Opintojen päättymisvuosi",
+        "todistuksenPvm": "Todistuksen pvm",
+        "tutkinnonKoulutusala": "Tutkinnon koulutusala"
+      }
     }
   },
   "hakemusotsikko": {

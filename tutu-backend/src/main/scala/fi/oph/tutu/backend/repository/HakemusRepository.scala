@@ -665,7 +665,7 @@ class HakemusRepository {
           )
           VALUES (
             ${hakemusId.toString}::uuid,
-            ${tutkinto.jarjestys}::jarjestys,
+            ${tutkinto.jarjestys}::tutkinto_jarjestys,
             ${nimiOrNull},
             ${oppilaitosOrNull},
             ${aloitusVuosiOrNull},
