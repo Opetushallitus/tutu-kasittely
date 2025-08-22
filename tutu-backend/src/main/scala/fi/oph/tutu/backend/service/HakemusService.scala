@@ -45,24 +45,9 @@ class HakemusService(
     val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
 
     try {
-      hakemusRepository.lisaaTutkinto(tallennettuAtaruHakemusId, tutkinnot.tutkinto1, "Hakemuspalvelu")
-      tutkinnot.tutkinto2 match {
-        case Some(tutkinto2) => hakemusRepository.lisaaTutkinto(tallennettuAtaruHakemusId, tutkinto2, "Hakemuspalvelu")
-        case None            => ()
-      }
-      tutkinnot.tutkinto3 match {
-        case Some(tutkinto3) => hakemusRepository.lisaaTutkinto(tallennettuAtaruHakemusId, tutkinto3, "Hakemuspalvelu")
-        case None            => ()
-      }
-      tutkinnot.muuTutkinto match {
-        case Some(muuTutkinto) =>
-          hakemusRepository.lisaaTutkinto(
-            tallennettuAtaruHakemusId,
-            muuTutkinto,
-            "Hakemuspalvelu"
-          )
-        case None => ()
-      }
+      tutkinnot.foreach(tutkinto =>
+        hakemusRepository.lisaaTutkinto(tallennettuAtaruHakemusId, tutkinto, "Hakemuspalvelu")
+      )
     } catch {
       case e: Exception =>
         LOG.error(s"Virhe tutkintojen tallennuksessa hakemukselle ${hakemus.hakemusOid}: ${e.getMessage}", e)

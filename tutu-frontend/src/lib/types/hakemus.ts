@@ -35,7 +35,7 @@ export type Hakemus = {
   apHakemus?: boolean;
   yhteistutkinto: boolean;
   suostumusVahvistamiselleSaatu: boolean;
-  tutkinnot: Tutkinnot;
+  tutkinnot: Tutkinto[];
 };
 
 export type HakemusUpdateCallback = (patch: Partial<Hakemus>) => void;
@@ -96,15 +96,8 @@ export type ImiPyynto = {
   imiPyyntoVastattu: string;
 };
 
-export type Tutkinnot = {
-  tutkinto1: Tutkinto;
-  tutkinto2?: Tutkinto;
-  tutkinto3?: Tutkinto;
-  muuTutkinto?: Tutkinto;
-};
-
 export type Tutkinto = {
-  id: string;
+  id?: string;
   hakemusId: string;
   jarjestys: string;
   nimi?: string;

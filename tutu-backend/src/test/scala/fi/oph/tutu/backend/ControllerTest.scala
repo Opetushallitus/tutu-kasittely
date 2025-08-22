@@ -913,9 +913,9 @@ class ControllerTest extends IntegrationTestBase {
 
     val hakemus = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
 
-    val tutkinnot: Tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.get.id)
+    val tutkinnot: Seq[Tutkinto] = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.get.id)
 
-    val tutkinto1 = tutkinnot.tutkinto1
+    val tutkinto1 = tutkinnot.head
     assert(tutkinto1.hakemusId == hakemus.get.id)
     assert(tutkinto1.jarjestys == "1")
     assert(tutkinto1.nimi.contains("Päälikkö"))
@@ -925,7 +925,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto1.maakoodi.contains(762))
     assert(tutkinto1.muuTutkintoTieto.isEmpty)
 
-    val tutkinto2 = tutkinnot.tutkinto2.get
+    val tutkinto2 = tutkinnot(1)
     assert(tutkinto2.hakemusId == hakemus.get.id)
     assert(tutkinto2.jarjestys == "2")
     assert(tutkinto2.nimi.contains("Johto tehtävä"))
@@ -935,7 +935,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto2.maakoodi.contains(762))
     assert(tutkinto2.muuTutkintoTieto.isEmpty)
 
-    val tutkinto3 = tutkinnot.tutkinto3.get
+    val tutkinto3 = tutkinnot(2)
     assert(tutkinto3.hakemusId == hakemus.get.id)
     assert(tutkinto3.jarjestys == "3")
     assert(tutkinto3.nimi.contains("Apu poika"))
@@ -945,7 +945,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto3.maakoodi.contains(762))
     assert(tutkinto3.muuTutkintoTieto.isEmpty)
 
-    val muuTutkinto = tutkinnot.muuTutkinto.get
+    val muuTutkinto = tutkinnot.last
     assert(muuTutkinto.hakemusId == hakemus.get.id)
     assert(muuTutkinto.jarjestys == "MUU")
     assert(muuTutkinto.nimi.isEmpty)
@@ -966,7 +966,7 @@ class ControllerTest extends IntegrationTestBase {
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
-  def haeHakemusValidRequestStoresTutkinnotCorrectly(): Unit = {
+  def haeHakemusValidRequestReturnsTutkinnotCorrectly(): Unit = {
     initAtaruHakemusRequests()
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6670.json")))
@@ -1092,8 +1092,8 @@ class ControllerTest extends IntegrationTestBase {
          |  },
          |  "apHakemus" : true,
          |  "yhteistutkinto" : true,
-         |  "tutkinnot" : {
-         |    "tutkinto1" : {
+         |  "tutkinnot" : [
+         |    {
          |      "hakemusId" : $hakemusId,
          |      "jarjestys" : "1",
          |      "nimi" : "Päälikkö",
@@ -1103,7 +1103,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "maakoodi" : 762,
          |      "muuTutkintoTieto" : null
          |    },
-         |    "tutkinto2" : {
+         |    {
          |      "hakemusId" : $hakemusId,
          |      "jarjestys" : "2",
          |      "nimi" : "Johto tehtävä",
@@ -1113,7 +1113,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "maakoodi" : 762,
          |      "muuTutkintoTieto" : null
          |    },
-         |    "tutkinto3" : {
+         |    {
          |      "hakemusId" : $hakemusId,
          |      "jarjestys" : "3",
          |      "nimi" : "Apu poika",
@@ -1123,7 +1123,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "maakoodi": 762,
          |      "muuTutkintoTieto" : null
          |    },
-         |    "muuTutkinto" : {
+         |    {
          |      "hakemusId" : $hakemusId,
          |      "jarjestys" : "MUU",
          |      "nimi" : null,
@@ -1133,7 +1133,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "maakoodi" : null,
          |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
          |    }
-         |  }
+         |  ]
          |}""".stripMargin
 
     val hakemus = mockMvc

@@ -35,37 +35,14 @@ export default function TutkintoPage() {
         {t('hakemus.tutkinnot.otsikko')}
       </OphTypography>
       <Yhteistutkinto hakemus={hakemus} updateHakemus={updateHakemus} t={t} />
-      {}
-      <TutkintoComponent
-        tutkinto={hakemus.tutkinnot.tutkinto1}
-        updateHakemus={updateHakemus}
-        otsikko={'hakemus.tutkinnot.tutkinto.tutkinto1'}
-        t={t}
-      />
-      {hakemus.tutkinnot.tutkinto2 && (
+      {hakemus.tutkinnot.map((tutkinto, index) => (
         <TutkintoComponent
-          tutkinto={hakemus.tutkinnot.tutkinto2}
+          key={index}
+          tutkinto={tutkinto}
           updateHakemus={updateHakemus}
-          otsikko={'hakemus.tutkinnot.tutkinto.tutkinto2'}
           t={t}
         />
-      )}
-      {hakemus.tutkinnot.tutkinto3 && (
-        <TutkintoComponent
-          tutkinto={hakemus.tutkinnot.tutkinto3}
-          updateHakemus={updateHakemus}
-          otsikko={'hakemus.tutkinnot.tutkinto.tutkinto3'}
-          t={t}
-        />
-      )}
-      {hakemus.tutkinnot.muuTutkinto && (
-        <TutkintoComponent
-          tutkinto={hakemus.tutkinnot.muuTutkinto}
-          updateHakemus={updateHakemus}
-          otsikko={'hakemus.tutkinnot.tutkinto.muuTutkinto'}
-          t={t}
-        />
-      )}
+      ))}
     </Stack>
   );
 }

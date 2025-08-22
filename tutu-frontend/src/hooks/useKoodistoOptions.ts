@@ -57,7 +57,10 @@ export const useKoodistoOptions = () => {
     });
 
   const maatJaValtiotOptions = getKoodistoOptions(maatJaValtiot, lang);
-  const koulutusLuokitusOptions = getKoodistoOptions(koulutusLuokitus, lang);
+  const koulutusLuokitusOptions = getKoodistoOptions(
+    koulutusLuokitus,
+    lang,
+  ).filter((option) => option.value !== '00');
 
   return {
     maatJaValtiotOptions,
