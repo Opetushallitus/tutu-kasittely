@@ -45,6 +45,12 @@ export const Muistio = ({
     debouncedMuistioUpdateAction(value);
   };
 
+  const testid = [
+    'muistio',
+    hakemuksenOsa,
+    sisainen ? 'sisainen' : 'muistio',
+  ].join('-');
+
   return (
     <Stack direction="column">
       {label && <OphTypography variant="label">{label}</OphTypography>}
@@ -56,6 +62,9 @@ export const Muistio = ({
         onChange={(event) => updateSisalto(event?.target.value)}
         value={sisalto ?? ''}
         minRows={3}
+        inputProps={{
+          'data-testid': testid,
+        }}
       />
     </Stack>
   );
