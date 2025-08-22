@@ -13,13 +13,11 @@ import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 export type TutkintoProps = {
   tutkinto: Tutkinto;
   updateHakemus: (patch: Partial<Hakemus>) => void;
-  otsikko: string;
   t: TFunction;
 };
 export const TutkintoComponent = ({
   tutkinto,
   // updateHakemus,
-  otsikko,
   t,
 }: TutkintoProps) => {
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
@@ -27,11 +25,37 @@ export const TutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <OphTypography variant={'h2'}>{t(otsikko)}</OphTypography>
       {tutkinto.jarjestys === 'MUU' ? (
-        'muu'
+        <>
+          <OphTypography variant={'h2'}>
+            {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
+          </OphTypography>
+          <OphInputFormField
+            minRows={9}
+            multiline={true}
+            label={t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
+            value={tutkinto.muuTutkintoTieto}
+            // onChange={(event) => null}
+          />
+          <OphTypography variant={'h2'}>
+            {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomio')}
+          </OphTypography>
+          <OphTypography variant={'body1'}>
+            {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomioSelite')}
+          </OphTypography>
+          <OphInputFormField
+            minRows={5}
+            multiline={true}
+            value={'TODO muu tutkintohuomio'}
+            // onChange={(event) => null}
+          />
+        </>
       ) : (
         <>
+          <OphTypography variant={'h2'}>
+            {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')}{' '}
+            {tutkinto.jarjestys}
+          </OphTypography>
           <OphSelectFormField
             label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
             options={[]}

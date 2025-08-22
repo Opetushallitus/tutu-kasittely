@@ -7,13 +7,11 @@ ALTER TABLE esittelija
 
 COMMENT ON COLUMN esittelija.maakoodi IS 'Maatjavaltiot-koodiston arvo, joka on esittelijän vastuualuetta';
 
-CREATE TYPE tutkinto_jarjestys AS ENUM ('1', '2', '3', 'MUU');
-
 CREATE TABLE IF NOT EXISTS tutkinto
 (
     id                 uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    hakemus_id         uuid               NOT NULL,
-    jarjestys          tutkinto_jarjestys NOT NULL,
+    hakemus_id         uuid         NOT NULL,
+    jarjestys          VARCHAR(255) NOT NULL,
     nimi               VARCHAR(255),
     oppilaitos         VARCHAR(255),
     aloitus_vuosi      INT,
@@ -21,7 +19,7 @@ CREATE TABLE IF NOT EXISTS tutkinto
     maakoodi           INT,
     muu_tutkinto_tieto TEXT,
     luotu              TIMESTAMPTZ      DEFAULT now(),
-    luoja              VARCHAR(255)       NOT NULL,
+    luoja              VARCHAR(255) NOT NULL,
     muokattu           TIMESTAMPTZ,
     muokkaaja          VARCHAR(255),
     CONSTRAINT fk_tutkinto_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id),

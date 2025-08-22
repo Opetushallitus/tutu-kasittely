@@ -13,10 +13,3 @@ case class Tutkinto(
   maakoodi: Option[Int] = None,
   muuTutkintoTieto: Option[String] = None
 )
-
-case class Tutkinnot(
-  tutkinto1: Tutkinto,
-  tutkinto2: Option[Tutkinto] = None,
-  tutkinto3: Option[Tutkinto] = None,
-  muuTutkinto: Option[Tutkinto] = None
-)

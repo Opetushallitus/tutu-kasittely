@@ -185,10 +185,8 @@
       "otsikko": "Tutkinnot",
       "yhteistutkinto": "Yhteistutkinto",
       "tutkinto": {
-        "tutkinto1": "Tutkinto 1",
-        "tutkinto2": "Tutkinto 2",
-        "tutkinto3": "Tutkinto 3",
-        "muuTutkinto": "Muut tutkinnot ja opinnot",
+        "tutkintoOtsikko": "Tutkinto",
+        "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
         "tutkintoTodistusOtsikko": "Tutkintotodistusotsikko",
         "tutkinnonNimi": "Tutkinnon nimi",
         "tutkinnonPaaaineTaiErikoisala": "Tutkinnon pääaine tai erikoisala",
@@ -197,7 +195,9 @@
         "opintojenAloitusVuosi": "Opintojen alkamisvuosi",
         "opintojenPaattymisVuosi": "Opintojen päättymisvuosi",
         "todistuksenPvm": "Todistuksen pvm",
-        "tutkinnonKoulutusala": "Tutkinnon koulutusala"
+        "tutkinnonKoulutusala": "Tutkinnon koulutusala",
+        "muuTutkintoHuomio": "Huomiot muista tutkinnoista päätökseen",
+        "muuTutkintoHuomioSelite": "Tiedot tutkinnoista tai opintosuorituksista: tutkinnon tai opintosuorituksen nimi, korkeakoulun tai oppilaitoksen nimi, sijaintimaa sekä todistuksen päivämäärä"
       }
     }
   },

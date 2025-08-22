@@ -86,68 +86,6 @@ class HakemusRepository {
       )
     )
 
-  implicit val getTutkinnotResult: GetResult[Tutkinnot] = {
-    GetResult(r =>
-      Tutkinnot(
-        tutkinto1 = Tutkinto(
-          Option(UUID.fromString(r.nextString())),
-          UUID.fromString(r.nextString()),
-          r.nextString(),
-          r.nextStringOption(),
-          r.nextStringOption(),
-          r.nextIntOption(),
-          r.nextIntOption(),
-          r.nextIntOption(),
-          r.nextStringOption()
-        ),
-        tutkinto2 = r.nextObjectOption().flatMap { _ =>
-          Some(
-            Tutkinto(
-              Option(UUID.fromString(r.nextString())),
-              UUID.fromString(r.nextString()),
-              r.nextString(),
-              r.nextStringOption(),
-              r.nextStringOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextStringOption()
-            )
-          )
-        },
-        tutkinto3 = r.nextObjectOption().flatMap { _ =>
-          Some(
-            Tutkinto(
-              Option(UUID.fromString(r.nextString())),
-              UUID.fromString(r.nextString()),
-              r.nextString(),
-              r.nextStringOption(),
-              r.nextStringOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextStringOption()
-            )
-          )
-        },
-        muuTutkinto = r.nextObjectOption().flatMap { _ =>
-          Some(
-            Tutkinto(
-              Option(UUID.fromString(r.nextString())),
-              UUID.fromString(r.nextString()),
-              r.nextString(),
-              r.nextStringOption(),
-              r.nextStringOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextIntOption(),
-              r.nextStringOption()
-            )
-          )
-        }
-      )
-    )
-  }
   implicit val getTutkintoResult: GetResult[Tutkinto] =
     GetResult(r =>
       Tutkinto(
@@ -672,7 +610,7 @@ class HakemusRepository {
           )
           VALUES (
             ${hakemusId.toString}::uuid,
-            ${tutkinto.jarjestys}::tutkinto_jarjestys,
+            ${tutkinto.jarjestys},
             ${nimiOrNull},
             ${oppilaitosOrNull},
             ${aloitusVuosiOrNull},
@@ -702,25 +640,15 @@ class HakemusRepository {
    * @return
    * hakemuksen tutkinnot
    */
-  def haeTutkinnotHakemusIdilla(hakemusId: UUID): Tutkinnot = {
+  def haeTutkinnotHakemusIdilla(hakemusId: UUID): Seq[Tutkinto] = {
     db.run(
       sql"""
     SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, maakoodi, muu_tutkinto_tieto
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
-    ORDER BY jarjestys
+    ORDER BY jarjestys ASC
   """
-        .as[Tutkinto]
-        .map(tutkinnot =>
-          Tutkinnot(
-            tutkinto1 = tutkinnot.headOption.getOrElse(
-              throw new RuntimeException(s"Hakemukselle (hakemusId: $hakemusId) tulee löytyä ainakin yksi tutkinto")
-            ),
-            tutkinto2 = tutkinnot.lift(1),
-            tutkinto3 = tutkinnot.lift(2),
-            muuTutkinto = tutkinnot.lift(3)
-          )
-        ),
+        .as[Tutkinto],
       "hae_tutkinnot_hakemus_idlla"
     )
 
