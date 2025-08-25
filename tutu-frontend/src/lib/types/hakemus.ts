@@ -107,4 +107,5 @@ export type Tutkinto = {
   paattymisVuosi?: number;
   maakoodi?: number;
   muuTutkintoTieto?: string;
+  todistuksenPaivamaara?: string;
 };
