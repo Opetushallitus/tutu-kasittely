@@ -1,31 +1,43 @@
-import { Hakemus } from '@/src/lib/types/hakemus';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Option } from '@/src/constants/dropdownOptions';
 import {
+  OphButton,
   OphInputFormField,
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { Divider, Stack } from '@mui/material';
-import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
+import { DeleteOutline } from '@mui/icons-material';
 
 export type TutkintoProps = {
   tutkinto: Tutkinto;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  maatJaValtiotOptions: Option[];
+  koulutusLuokitusOptions: Option[];
+  updateTutkinto: (tutkinto: Tutkinto) => void;
+  deleteTutkinto: (id: string | undefined) => void;
   t: TFunction;
 };
 export const TutkintoComponent = ({
   tutkinto,
-  // updateHakemus,
+  maatJaValtiotOptions,
+  koulutusLuokitusOptions,
+  updateTutkinto,
+  deleteTutkinto,
   t,
 }: TutkintoProps) => {
-  const { maatJaValtiotOptions, koulutusLuokitusOptions } =
-    useKoodistoOptions();
+  const [currentTutkinto, setCurrentTutkinto] =
+    React.useState<Tutkinto>(tutkinto);
+
+  const updateCurrentTutkinto = (value: Tutkinto) => {
+    updateTutkinto(value);
+    setCurrentTutkinto(value);
+  };
 
   return (
     <Stack direction="column" gap={2}>
-      {tutkinto.jarjestys === 'MUU' ? (
+      {currentTutkinto.jarjestys === 'MUU' ? (
         <>
           <OphTypography variant={'h2'}>
             {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
@@ -34,8 +46,13 @@ export const TutkintoComponent = ({
             minRows={9}
             multiline={true}
             label={t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
-            value={tutkinto.muuTutkintoTieto}
-            // onChange={(event) => null}
+            value={currentTutkinto.muuTutkintoTieto}
+            onChange={(event) =>
+              updateCurrentTutkinto({
+                ...currentTutkinto,
+                muuTutkintoTieto: event.target.value,
+              })
+            }
           />
           <OphTypography variant={'h2'}>
             {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomio')}
@@ -54,8 +71,23 @@ export const TutkintoComponent = ({
         <>
           <OphTypography variant={'h2'}>
             {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')}{' '}
-            {tutkinto.jarjestys}
+            {currentTutkinto.jarjestys}
           </OphTypography>
+          {currentTutkinto.jarjestys !== '1' && (
+            <OphButton
+              sx={{
+                alignSelf: 'flex-end',
+                paddingLeft: '32px',
+                paddingRight: '16px',
+              }}
+              data-testid={`poista-tutkinto-button-${currentTutkinto.jarjestys}`}
+              variant="text"
+              startIcon={<DeleteOutline />}
+              onClick={() => deleteTutkinto(tutkinto.id)}
+            >
+              {t('yleiset.poista')}
+            </OphButton>
+          )}
           <OphSelectFormField
             label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
             options={[]}
@@ -63,8 +95,13 @@ export const TutkintoComponent = ({
           />
           <OphInputFormField
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
-            // onChange={(event) => null}
-            value={tutkinto.nimi}
+            onChange={(event) =>
+              updateCurrentTutkinto({
+                ...currentTutkinto,
+                nimi: event.target.value,
+              })
+            }
+            value={currentTutkinto.nimi}
             minRows={3}
           />
           <OphInputFormField
@@ -79,21 +116,44 @@ export const TutkintoComponent = ({
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
             sx={{ width: '50%' }}
             options={maatJaValtiotOptions}
-            defaultValue={tutkinto.maakoodi}
+            value={
+              currentTutkinto.maakoodi !== undefined
+                ? String(currentTutkinto.maakoodi)
+                : ''
+            }
+            onChange={(event) =>
+              updateCurrentTutkinto({
+                ...currentTutkinto,
+                maakoodi:
+                  event.target.value === ''
+                    ? undefined
+                    : Number(event.target.value),
+              })
+            }
           />
           <Stack direction="row" gap={2}>
             <OphInputFormField
               sx={{ width: '25%' }}
               label={t('hakemus.tutkinnot.tutkinto.opintojenAloitusVuosi')}
-              // onChange={(event) => null}
-              value={tutkinto.aloitusVuosi}
+              onChange={(event) =>
+                updateCurrentTutkinto({
+                  ...currentTutkinto,
+                  aloitusVuosi: Number(event.target.value),
+                })
+              }
+              value={currentTutkinto.aloitusVuosi}
               minRows={3}
             />
             <OphInputFormField
               sx={{ width: '25%' }}
               label={t('hakemus.tutkinnot.tutkinto.opintojenPaattymisVuosi')}
-              // onChange={(event) => null}
-              value={tutkinto.paattymisVuosi}
+              onChange={(event) =>
+                updateCurrentTutkinto({
+                  ...currentTutkinto,
+                  paattymisVuosi: Number(event.target.value),
+                })
+              }
+              value={currentTutkinto.paattymisVuosi}
               minRows={3}
             />
           </Stack>
@@ -108,6 +168,7 @@ export const TutkintoComponent = ({
             label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
             sx={{ width: '25%' }}
             options={koulutusLuokitusOptions}
+            // onChange={(event) => null}
             defaultValue={''}
           />
         </>

@@ -90,7 +90,7 @@ export type AsiakirjamallitTutkinnoista = Partial<
 >;
 
 export type ImiPyynto = {
-  imiPyynto: boolean | null;
+  imiPyynto?: boolean;
   imiPyyntoNumero: string;
   imiPyyntoLahetetty: string;
   imiPyyntoVastattu: string;
@@ -102,8 +102,8 @@ export type Tutkinto = {
   jarjestys: string;
   nimi?: string;
   oppilaitos?: string;
-  aloitusVuosi?: string;
-  paattymisVuosi?: string;
-  maakoodi?: string;
+  aloitusVuosi?: number;
+  paattymisVuosi?: number;
+  maakoodi?: number;
   muuTutkintoTieto?: string;
 };
