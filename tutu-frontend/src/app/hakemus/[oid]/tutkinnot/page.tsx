@@ -1,18 +1,20 @@
 'use client';
 
-import { Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import useToaster from '@/src/hooks/useToaster';
 import { useHakemus } from '@/src/context/HakemusContext';
 import React, { useEffect } from 'react';
 import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { OphTypography } from '@opetushallitus/oph-design-system';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 import { TutkintoComponent } from '@/src/app/(root)/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
+import { MuuTutkintoComponent } from '@/src/app/(root)/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { useDebounce } from '@/src/hooks/useDebounce';
+import { Add } from '@mui/icons-material';
 
 export default function TutkintoPage() {
   const theme = useTheme();
@@ -21,6 +23,12 @@ export default function TutkintoPage() {
   const { isLoading, hakemus, error, updateHakemus } = useHakemus();
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
+  const [tutkinnot, setTutkinnot] = React.useState<Tutkinto[]>([]);
+
+  useEffect(() => {
+    if (!hakemus) return;
+    setTutkinnot(hakemus.tutkinnot);
+  }, [hakemus]);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
@@ -40,11 +48,37 @@ export default function TutkintoPage() {
     0,
   );
 
+  const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
+    id: '',
+    hakemusId: hakemusId,
+    jarjestys: jarjestys,
+    nimi: '',
+    oppilaitos: '',
+    aloitusVuosi: undefined,
+    paattymisVuosi: undefined,
+    maakoodi: undefined,
+    muuTutkintoTieto: '',
+    todistuksenPaivamaara: '',
+  });
+
+  const addTutkinto = () => {
+    const jarjestys = tutkinnot.filter(
+      (tutkinto) => tutkinto.jarjestys !== 'MUU',
+    ).length;
+
+    const hakemusId = tutkinnot[0]!.hakemusId;
+    setTutkinnot((tutkinnot) => [
+      ...tutkinnot,
+      emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
+    ]);
+  };
+
   if (error) {
     return null;
   }
 
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -58,17 +92,41 @@ export default function TutkintoPage() {
         updateHakemus={debouncedTutkinnotUpdateAction}
         t={t}
       />
-      {hakemus.tutkinnot.map((tutkinto, index) => (
-        <TutkintoComponent
-          key={index}
-          tutkinto={tutkinto}
-          maatJaValtiotOptions={maatJaValtiotOptions}
-          koulutusLuokitusOptions={koulutusLuokitusOptions}
-          updateTutkinto={debouncedTutkinnotUpdateAction}
-          deleteTutkinto={debouncedTutkinnotDeleteAction}
-          t={t}
-        />
-      ))}
+      {tutkinnot
+        .filter((tutkinto) => tutkinto.jarjestys !== 'MUU')
+        .map((tutkinto, index) => (
+          <TutkintoComponent
+            key={index}
+            tutkinto={tutkinto}
+            maatJaValtiotOptions={maatJaValtiotOptions}
+            koulutusLuokitusOptions={koulutusLuokitusOptions}
+            updateTutkintoAction={debouncedTutkinnotUpdateAction}
+            deleteTutkintoAction={debouncedTutkinnotDeleteAction}
+            t={t}
+          />
+        ))}
+      <OphButton
+        sx={{
+          alignSelf: 'flex-start',
+        }}
+        data-testid={`lisaa-tutkinto-button`}
+        variant="outlined"
+        startIcon={<Add />}
+        onClick={addTutkinto}
+      >
+        {t('hakemus.tutkinnot.lisaaTutkinto')}
+      </OphButton>
+      <Divider orientation={'horizontal'} />
+      {tutkinnot
+        .filter((tutkinto) => tutkinto.jarjestys === 'MUU')
+        .map((tutkinto, index) => (
+          <MuuTutkintoComponent
+            key={index}
+            tutkinto={tutkinto}
+            updateTutkintoAction={debouncedTutkinnotUpdateAction}
+            t={t}
+          />
+        ))}
     </Stack>
   );
 }

@@ -184,6 +184,8 @@
     "tutkinnot": {
       "otsikko": "Tutkinnot",
       "yhteistutkinto": "Yhteistutkinto",
+      "lisaaTutkinto": "Lisää tutkinto",
+      "poistaTutkinto": "Poista tutkinto",
       "tutkinto": {
         "tutkintoOtsikko": "Tutkinto",
         "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
