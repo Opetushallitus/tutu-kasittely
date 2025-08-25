@@ -19,6 +19,7 @@ export type TutkintoProps = {
   deleteTutkinto: (id: string | undefined) => void;
   t: TFunction;
 };
+
 export const TutkintoComponent = ({
   tutkinto,
   maatJaValtiotOptions,
@@ -160,8 +161,13 @@ export const TutkintoComponent = ({
           <OphInputFormField
             sx={{ width: '25%' }}
             label={t('hakemus.tutkinnot.tutkinto.todistuksenPvm')}
-            // onChange={(event) => null}
-            value={'Todo todistuksen pvm'}
+            onChange={(event) =>
+              updateCurrentTutkinto({
+                ...currentTutkinto,
+                todistuksenPaivamaara: event.target.value,
+              })
+            }
+            value={currentTutkinto.todistuksenPaivamaara}
             minRows={3}
           />
           <OphSelectFormField

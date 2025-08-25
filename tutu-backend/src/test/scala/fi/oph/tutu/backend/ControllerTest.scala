@@ -1173,7 +1173,8 @@ class ControllerTest extends IntegrationTestBase {
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
          |      "maakoodi" : 762,
-         |      "muuTutkintoTieto" : null
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara": "Helmikuu 2000"
          |    },
          |    {
          |      "id" : "${tutkinnot(1).id.get}",
@@ -1220,6 +1221,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
 
     var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.tutkinnot.head.todistuksenPaivamaara.contains("Helmikuu 2000"))
     assert(paivitettyHakemus.get.tutkinnot(1).nimi.contains("Erityis Johto tehtävä"))
     assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
     assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))

@@ -11,5 +11,6 @@ case class Tutkinto(
   aloitusVuosi: Option[Int] = None,
   paattymisVuosi: Option[Int] = None,
   maakoodi: Option[Int] = None,
-  muuTutkintoTieto: Option[String] = None
+  muuTutkintoTieto: Option[String] = None,
+  todistuksenPaivamaara: Option[String] = None
 )
