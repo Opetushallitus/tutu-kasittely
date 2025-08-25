@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { useDebounce } from '@/src/hooks/useDebounce';
 import { isDefined } from 'remeda';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 
 export type YhteistutkintoProps = {
   hakemus: Hakemus;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  updateHakemus: HakemusUpdateCallback;
   t: TFunction;
 };
 
@@ -18,13 +17,6 @@ export const Yhteistutkinto = ({
 }: YhteistutkintoProps) => {
   const [isYhteistutkinto, setIsYhteistutkinto] = useState<boolean>(false);
 
-  const debouncedYhteistutkintoUpdateAction = useDebounce((value: boolean) => {
-    updateHakemus({
-      ...hakemus,
-      yhteistutkinto: value,
-    });
-  }, 1500);
-
   useEffect(() => {
     const yhteistutkinto = hakemus?.yhteistutkinto;
     if (isDefined(yhteistutkinto)) {
@@ -34,10 +26,11 @@ export const Yhteistutkinto = ({
 
   const updateYhteistutkinto = (value: boolean) => {
     if (value !== isYhteistutkinto) {
-      debouncedYhteistutkintoUpdateAction(value);
+      updateHakemus({ yhteistutkinto: value });
       setIsYhteistutkinto(value);
     }
   };
+
   return (
     <OphCheckbox
       data-testid="yhteistutkinto-checkbox"
