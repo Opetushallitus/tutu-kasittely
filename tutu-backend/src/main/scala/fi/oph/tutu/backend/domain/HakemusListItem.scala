@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.domain
 case class HakemusListItem(
   hakija: String,
   aika: String,
+  hakijanAika: Option[String],
   hakemusOid: String,
   hakemusKoskee: Int,
   esittelijaOid: Option[String],

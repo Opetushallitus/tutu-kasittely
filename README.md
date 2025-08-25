@@ -20,12 +20,13 @@ session.schema.name=tutu
 
 flyway.locations=classpath:db/migration
 
-opintopolku.virkailija.url=https://virkailija.hahtuvaopintopolku.fi
+opintopolku.virkailija.url=https://virkailija.untuvaopintopolku.fi
 cas.url=${opintopolku.virkailija.url}/cas
 tutu.ui.url=https://localhost:3123
 tutu.backend.url=https://localhost:8444/tutu-backend
 tutu-backend.cas.username=<CAS-KAYTTAJATUNNUS>
 tutu-backend.cas.password=<CAS-SALASANA>
+tutu-backend.esittelija.kayttooikeusryhma.ids=<id>,<id>
 #logging.level.org.springframework.cache=TRACE
 
 server.port=8444

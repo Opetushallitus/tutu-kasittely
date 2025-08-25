@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { Yhteistutkinto } from '@/src/app/(root)/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
+import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 
 export default function TutkintoPage() {
   const theme = useTheme();

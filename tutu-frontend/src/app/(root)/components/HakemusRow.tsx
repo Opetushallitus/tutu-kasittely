@@ -89,6 +89,11 @@ export default function HakemusRow({
           aika: muotoileKokonaisaika(hakemus.aika),
         })}
       </StyledTableCell>
+      <StyledTableCell>
+        {t('hakemuslista.hakijanaikaKk', '', {
+          aika: muotoileKokonaisaika(hakemus.hakijanAika ?? hakemus.aika),
+        })}
+      </StyledTableCell>
     </TableRow>
   );
 }

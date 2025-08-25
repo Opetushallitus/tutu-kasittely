@@ -1,9 +1,9 @@
 'use client';
 import { Divider, Stack, useTheme } from '@mui/material';
-import { HakemusTabs } from '@/src/app/(root)/hakemus/[oid]/components/HakemusTabs';
+import { HakemusTabs } from '@/src/app/hakemus/[oid]/components/HakemusTabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { HakemusHeader } from '@/src/app/(root)/hakemus/[oid]/components/HakemusHeader';
-import { SideBar } from '@/src/app/(root)/hakemus/[oid]/components/sidebar/SideBar';
+import { HakemusHeader } from '@/src/app/hakemus/[oid]/components/HakemusHeader';
+import { SideBar } from '@/src/app/hakemus/[oid]/components/sidebar/SideBar';
 
 export const HakemusDetailLayout = ({
   hakemusOid,

@@ -18,7 +18,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { StyledTooltip } from '@/src/components/ToolTip';
-import { pyydettavatAsiakirjat } from '@/src/app/(root)/hakemus/[oid]/components/types';
+import { pyydettavatAsiakirjat } from '@/src/app/hakemus/[oid]/components/types';
 import {
   AsiakirjaPyynto,
   HakemusUpdateCallback,

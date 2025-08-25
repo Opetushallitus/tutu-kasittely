@@ -43,6 +43,7 @@ class HakemusRepository {
         r.nextBoolean(),
         Option(r.nextString()),
         r.nextBoolean(),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
         imiPyynto = Option(r.nextObject()) match {
           case Some(value: java.lang.Boolean) => Some(value.booleanValue())
           case _                              => None
@@ -61,6 +62,7 @@ class HakemusRepository {
       HakemusListItem(
         null,
         null,
+        Option(r.nextString()),
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),

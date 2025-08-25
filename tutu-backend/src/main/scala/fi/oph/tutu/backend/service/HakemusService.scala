@@ -115,6 +115,7 @@ class HakemusService(
             alkuperaisetAsiakirjatSaatuNahtavaksi = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
             alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
             selvityksetSaatu = dbHakemus.selvityksetSaatu,
+            viimeinenAsiakirjaHakijalta = dbHakemus.viimeinenAsiakirjaHakijalta,
             asiakirjamallitTutkinnoista =
               hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id) match {
                 case asiakirjamallit => asiakirjamallit
@@ -234,6 +235,7 @@ class HakemusService(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 aika = ataruHakemus.created,
+                hakijanAika = Some(ataruHakemus.created),
                 hakemusOid = item.hakemusOid,
                 hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid,
@@ -337,6 +339,8 @@ class HakemusService(
               dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
             ),
           selvityksetSaatu = partialHakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu),
+          viimeinenAsiakirjaHakijalta =
+            partialHakemus.viimeinenAsiakirjaHakijalta.orElse(dbHakemus.viimeinenAsiakirjaHakijalta),
           imiPyynto = partialHakemus.imiPyynto match {
             case Some(imiPyynto) =>
               imiPyynto.imiPyynto match {
