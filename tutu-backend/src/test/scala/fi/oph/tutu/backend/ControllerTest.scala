@@ -1146,4 +1146,135 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
   }
+
+  @Test
+  @Order(16)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaOrPoistaPartialHakemusWithTutkinnotValidRequestReturns200(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+
+    val hakemusId = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670")).get.id
+
+    val tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(hakemusId)
+
+    var requestJson =
+      s"""{"tutkinnot" : [
+         |    {
+         |      "id" : "${tutkinnot.head.id.get}",
+         |      "hakemusId" : "${hakemusId}",
+         |      "jarjestys" : "1",
+         |      "nimi" : "Päälikkö",
+         |      "oppilaitos" : "Butan Amattikoulu",
+         |      "aloitusVuosi" : 1999,
+         |      "paattymisVuosi" : 2000,
+         |      "maakoodi" : 762,
+         |      "muuTutkintoTieto" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot(1).id.get}",
+         |      "hakemusId" : "${hakemusId}",
+         |      "jarjestys" : "2",
+         |      "nimi" : "Erityis Johto tehtävä",
+         |      "oppilaitos" : "Hankken Johto koulu",
+         |      "aloitusVuosi" : 2024,
+         |      "paattymisVuosi" : 2025,
+         |      "maakoodi" : 100,
+         |      "muuTutkintoTieto" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot(2).id.get}",
+         |      "hakemusId" : "$hakemusId",
+         |      "jarjestys" : "3",
+         |      "nimi" : "Apu poika",
+         |      "oppilaitos" : "Apu koulu",
+         |      "aloitusVuosi" : 2010,
+         |      "paattymisVuosi" : 2011,
+         |      "maakoodi": 762,
+         |      "muuTutkintoTieto" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot.last.id.get}",
+         |      "hakemusId" : "$hakemusId",
+         |      "jarjestys" : "MUU",
+         |      "nimi" : null,
+         |      "oppilaitos" : null,
+         |      "aloitusVuosi" : null,
+         |      "paattymisVuosi" : null,
+         |      "maakoodi" : null,
+         |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta"
+         |    }
+         |  ]}}""".stripMargin
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.tutkinnot(1).nimi.contains("Erityis Johto tehtävä"))
+    assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
+    assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))
+    assert(paivitettyHakemus.get.tutkinnot(1).paattymisVuosi.contains(2025))
+    assert(paivitettyHakemus.get.tutkinnot(1).maakoodi.contains(100))
+
+    requestJson = s"""{"tutkinnot" : [
+                     |    {
+                     |      "id" : "${tutkinnot.head.id.get}",
+                     |      "hakemusId" : "${hakemusId}",
+                     |      "jarjestys" : "1",
+                     |      "nimi" : "Päälikkö",
+                     |      "oppilaitos" : "Butan Amattikoulu",
+                     |      "aloitusVuosi" : 1999,
+                     |      "paattymisVuosi" : 2000,
+                     |      "maakoodi" : 762,
+                     |      "muuTutkintoTieto" : null
+                     |    },
+                     |    {
+                     |      "id" : "${tutkinnot(2).id.get}",
+                     |      "hakemusId" : "$hakemusId",
+                     |      "jarjestys" : "3",
+                     |      "nimi" : "Apu poika",
+                     |      "oppilaitos" : "Apu koulu",
+                     |      "aloitusVuosi" : 2010,
+                     |      "paattymisVuosi" : 2011,
+                     |      "maakoodi": 762,
+                     |      "muuTutkintoTieto" : null
+                     |    },
+                     |    {
+                     |      "id" : "${tutkinnot.last.id.get}",
+                     |      "hakemusId" : "$hakemusId",
+                     |      "jarjestys" : "MUU",
+                     |      "nimi" : null,
+                     |      "oppilaitos" : null,
+                     |      "aloitusVuosi" : null,
+                     |      "paattymisVuosi" : null,
+                     |      "maakoodi" : null,
+                     |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta"
+                     |    }
+                     |  ]}}""".stripMargin
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.tutkinnot.size == 3)
+    assert(paivitettyHakemus.get.tutkinnot.head.jarjestys == "1")
+    assert(paivitettyHakemus.get.tutkinnot(1).jarjestys == "2")
+    assert(paivitettyHakemus.get.tutkinnot(2).jarjestys == "MUU")
+  }
 }

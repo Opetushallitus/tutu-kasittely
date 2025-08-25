@@ -590,9 +590,9 @@ class HakemusRepository {
   def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
     val nimiOrNull             = tutkinto.nimi.map(_.toString).orNull
     val oppilaitosOrNull       = tutkinto.oppilaitos.map(_.toString).orNull
-    val aloitusVuosiOrNull     = tutkinto.aloitusVuosi
-    val paattymisVuosiOrNull   = tutkinto.paattymisVuosi
-    val maakoodiOrNull         = tutkinto.maakoodi
+    val aloitusVuosi           = tutkinto.aloitusVuosi
+    val paattymisVuosi         = tutkinto.paattymisVuosi
+    val maakoodi               = tutkinto.maakoodi
     val muuTutkintoTietoOrNull = tutkinto.muuTutkintoTieto.map(_.toString).orNull
     try
       db.run(
@@ -613,9 +613,9 @@ class HakemusRepository {
             ${tutkinto.jarjestys},
             ${nimiOrNull},
             ${oppilaitosOrNull},
-            ${aloitusVuosiOrNull},
-            ${paattymisVuosiOrNull},
-            ${maakoodiOrNull},
+            ${aloitusVuosi},
+            ${paattymisVuosi},
+            ${maakoodi},
             ${muuTutkintoTietoOrNull},
             ${luoja}
           )
@@ -651,6 +651,90 @@ class HakemusRepository {
         .as[Tutkinto],
       "hae_tutkinnot_hakemus_idlla"
     )
+  }
 
+  /**
+   * Päivittää hakemuksen tutkinnon
+   *
+   * @param id
+   * tutkinnon id
+   * @param tutkinto
+   * muokattava tutkinto
+   * @param virkailijaOid
+   * päivittävän virkailijan oid
+   */
+  def paivitaTutkinto(
+    id: UUID,
+    tutkinto: Tutkinto,
+    virkailijaOid: UserOid
+  ): Unit = {
+    val jarjestys        = tutkinto.jarjestys
+    val nimiOrNull       = tutkinto.nimi.map(_.toString).orNull
+    val oppilaitosOrNull = tutkinto.oppilaitos.map(_.toString).orNull
+    val aloitusVuosi     = tutkinto.aloitusVuosi match {
+      case Some(vuosi) => vuosi
+      case None        => null
+    }
+    val paattymisVuosi = tutkinto.paattymisVuosi match {
+      case Some(vuosi) => vuosi
+      case None        => null
+    }
+    val maakoodi = tutkinto.maakoodi match {
+      case Some(koodi) => koodi
+      case None        => null
+    }
+    val muuTutkintoTietoOrNull = tutkinto.muuTutkintoTieto.map(_.toString).orNull
+    try {
+      db.run(
+        sql"""
+              UPDATE tutkinto
+              SET
+                jarjestys = ${tutkinto.jarjestys},
+                nimi = ${tutkinto.nimi.orNull},
+                oppilaitos = ${tutkinto.oppilaitos.orNull},
+                aloitus_vuosi = ${tutkinto.aloitusVuosi},
+                paattymis_vuosi = ${tutkinto.paattymisVuosi},
+                maakoodi = ${tutkinto.maakoodi},
+                muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
+                muokkaaja = ${virkailijaOid.toString}
+              WHERE id = ${id.toString}::uuid
+            """.asUpdate,
+        "paivita_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon $id päivitys epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon $id päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Poistaa hakemuksen tutkinnon
+   *
+   * @param id
+   * tutkinnon id
+   */
+  def poistaTutkinto(
+    id: UUID
+  ): Unit = {
+    try {
+      db.run(
+        sqlu"""
+            DELETE FROM tutkinto
+            WHERE id = ${id.toString}::uuid
+          """,
+        "poista_tutkinto"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon $id poisto epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon $id poisto epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
   }
 }
