@@ -96,7 +96,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
         maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).flatMap(_.toIntOption),
         muuTutkintoTieto = None,
-        todistuksenPaivamaara = None
+        todistuksenPaivamaara = None,
+        koulutusalaKoodi = None,
+        paaaaineTaiErikoisala = None,
+        todistusOtsikko = None,
+        muuTutkintoMuistioId = None
       )
     )
 
@@ -114,11 +118,15 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         ),
         maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers).flatMap(_.toIntOption),
         muuTutkintoTieto = None,
-        todistuksenPaivamaara = None
+        todistuksenPaivamaara = None,
+        koulutusalaKoodi = None,
+        paaaaineTaiErikoisala = None,
+        todistusOtsikko = None,
+        muuTutkintoMuistioId = None
       )
     }
 
-    val tutkinto3 = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined) {
+    val tutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined) {
       tutkinnot +=
         Tutkinto(
           id = None,
@@ -132,7 +140,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
           maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers).flatMap(_.toIntOption),
           muuTutkintoTieto = None,
-          todistuksenPaivamaara = None
+          todistuksenPaivamaara = None,
+          koulutusalaKoodi = None,
+          paaaaineTaiErikoisala = None,
+          todistusOtsikko = None,
+          muuTutkintoMuistioId = None
         )
     }
 
@@ -148,7 +160,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           maakoodi = None,
           jarjestys = "MUU",
           muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
-          todistuksenPaivamaara = None
+          todistuksenPaivamaara = None,
+          koulutusalaKoodi = None,
+          paaaaineTaiErikoisala = None,
+          todistusOtsikko = None,
+          muuTutkintoMuistioId = None
         )
     }
     tutkinnot.toSeq

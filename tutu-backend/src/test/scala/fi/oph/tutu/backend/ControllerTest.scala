@@ -1101,7 +1101,12 @@ class ControllerTest extends IntegrationTestBase {
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
          |      "maakoodi" : 762,
-         |      "muuTutkintoTieto" : null
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
          |    },
          |    {
          |      "hakemusId" : $hakemusId,
@@ -1111,7 +1116,12 @@ class ControllerTest extends IntegrationTestBase {
          |      "aloitusVuosi" : 2006,
          |      "paattymisVuosi" : 2007,
          |      "maakoodi" : 762,
-         |      "muuTutkintoTieto" : null
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
          |    },
          |    {
          |      "hakemusId" : $hakemusId,
@@ -1121,7 +1131,12 @@ class ControllerTest extends IntegrationTestBase {
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
          |      "maakoodi": 762,
-         |      "muuTutkintoTieto" : null
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
          |    },
          |    {
          |      "hakemusId" : $hakemusId,
@@ -1131,7 +1146,12 @@ class ControllerTest extends IntegrationTestBase {
          |      "aloitusVuosi" : null,
          |      "paattymisVuosi" : null,
          |      "maakoodi" : null,
-         |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
+         |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111",
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
          |    }
          |  ]
          |}""".stripMargin
@@ -1174,7 +1194,11 @@ class ControllerTest extends IntegrationTestBase {
          |      "paattymisVuosi" : 2000,
          |      "maakoodi" : 762,
          |      "muuTutkintoTieto" : null,
-         |      "todistuksenPaivamaara": "Helmikuu 2000"
+         |      "todistuksenPaivamaara": "Helmikuu 2000",
+         |      "koulutusalaKoodi" : 13,
+         |      "paaaaineTaiErikoisala" : "erikoisala",
+         |      "todistusOtsikko": "otsikko",
+         |      "muuTutkintoMuistioId" : null
          |    },
          |    {
          |      "id" : "${tutkinnot(1).id.get}",
@@ -1222,6 +1246,10 @@ class ControllerTest extends IntegrationTestBase {
 
     var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
     assert(paivitettyHakemus.get.tutkinnot.head.todistuksenPaivamaara.contains("Helmikuu 2000"))
+    assert(paivitettyHakemus.get.tutkinnot.head.koulutusalaKoodi.contains(13))
+    assert(paivitettyHakemus.get.tutkinnot.head.paaaaineTaiErikoisala.contains("erikoisala"))
+    assert(paivitettyHakemus.get.tutkinnot.head.todistusOtsikko.contains("otsikko"))
+
     assert(paivitettyHakemus.get.tutkinnot(1).nimi.contains("Erityis Johto tehtävä"))
     assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
     assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))
@@ -1238,7 +1266,12 @@ class ControllerTest extends IntegrationTestBase {
                      |      "aloitusVuosi" : 1999,
                      |      "paattymisVuosi" : 2000,
                      |      "maakoodi" : 762,
-                     |      "muuTutkintoTieto" : null
+                     |      "muuTutkintoTieto" : null,
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
                      |    },
                      |    {
                      |      "id" : "${tutkinnot(2).id.get}",
@@ -1249,7 +1282,12 @@ class ControllerTest extends IntegrationTestBase {
                      |      "aloitusVuosi" : 2010,
                      |      "paattymisVuosi" : 2011,
                      |      "maakoodi": 762,
-                     |      "muuTutkintoTieto" : null
+                     |      "muuTutkintoTieto" : null,
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
                      |    },
                      |    {
                      |      "id" : "${tutkinnot.last.id.get}",
@@ -1260,7 +1298,12 @@ class ControllerTest extends IntegrationTestBase {
                      |      "aloitusVuosi" : null,
                      |      "paattymisVuosi" : null,
                      |      "maakoodi" : null,
-                     |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta"
+                     |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta",
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
                      |    }
                      |  ]}}""".stripMargin
 

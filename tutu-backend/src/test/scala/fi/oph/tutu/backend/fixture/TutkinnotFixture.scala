@@ -14,6 +14,11 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     Some(1999),
     Some(2000),
     Some(762),
+    None,
+    None,
+    None,
+    None,
+    None,
     None
   ),
   Tutkinto(
@@ -25,6 +30,11 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     Some(2006),
     Some(2007),
     Some(762),
+    None,
+    None,
+    None,
+    None,
+    None,
     None
   ),
   Tutkinto(
@@ -36,6 +46,11 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     Some(2010),
     Some(2011),
     Some(762),
+    None,
+    None,
+    None,
+    None,
+    None,
     None
   ),
   Tutkinto(
@@ -49,6 +64,11 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     None,
     Some(
       "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
-    )
+    ),
+    None,
+    None,
+    None,
+    None,
+    None
   )
 )

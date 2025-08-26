@@ -12,5 +12,9 @@ case class Tutkinto(
   paattymisVuosi: Option[Int] = None,
   maakoodi: Option[Int] = None,
   muuTutkintoTieto: Option[String] = None,
-  todistuksenPaivamaara: Option[String] = None
+  todistuksenPaivamaara: Option[String] = None,
+  koulutusalaKoodi: Option[Int] = None,
+  paaaaineTaiErikoisala: Option[String] = None,
+  todistusOtsikko: Option[String] = None,
+  muuTutkintoMuistioId: Option[UUID] = None
 )

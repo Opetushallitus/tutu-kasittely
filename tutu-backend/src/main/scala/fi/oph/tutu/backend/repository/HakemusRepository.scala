@@ -89,16 +89,20 @@ class HakemusRepository {
   implicit val getTutkintoResult: GetResult[Tutkinto] =
     GetResult(r =>
       Tutkinto(
-        Option(UUID.fromString(r.nextString())),
-        UUID.fromString(r.nextString()),
-        r.nextString(),
-        r.nextStringOption(),
-        r.nextStringOption(),
-        r.nextIntOption(),
-        r.nextIntOption(),
-        r.nextIntOption(),
-        r.nextStringOption(),
-        r.nextStringOption()
+        id = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
+        hakemusId = UUID.fromString(r.nextString()),
+        jarjestys = r.nextString(),
+        nimi = r.nextStringOption(),
+        oppilaitos = r.nextStringOption(),
+        aloitusVuosi = r.nextIntOption(),
+        paattymisVuosi = r.nextIntOption(),
+        maakoodi = r.nextIntOption(),
+        muuTutkintoTieto = r.nextStringOption(),
+        todistuksenPaivamaara = r.nextStringOption(),
+        koulutusalaKoodi = r.nextIntOption(),
+        paaaaineTaiErikoisala = r.nextStringOption(),
+        todistusOtsikko = r.nextStringOption(),
+        muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString)
       )
     )
 
@@ -596,6 +600,10 @@ class HakemusRepository {
     val maakoodi                    = tutkinto.maakoodi
     val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(_.toString).orNull
     val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(_.toString).orNull
+    val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
+    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(_.toString).orNull
+    val todistusOtsikko             = tutkinto.todistusOtsikko.map(_.toString).orNull
+    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
     try
       db.run(
         sql"""
@@ -609,6 +617,10 @@ class HakemusRepository {
             maakoodi,
             muu_tutkinto_tieto,
             todistuksen_paivamaara,
+            koulutusala_koodi,
+            paaaine_tai_erikoisala,
+            todistusotsikko,
+            muu_tutkinto_muistio_id,
             luoja
           )
           VALUES (
@@ -621,6 +633,10 @@ class HakemusRepository {
             ${maakoodi},
             ${muuTutkintoTietoOrNull},
             ${todistuksenPaivamaaraOrNull},
+            ${koulutusalaKoodi},
+            ${paaaineTaiErikoisala},
+            ${todistusOtsikko},
+            ${muuTutkintoMuistioId}::uuid,
             ${luoja}
           )
     """.asUpdate,
@@ -647,7 +663,21 @@ class HakemusRepository {
   def haeTutkinnotHakemusIdilla(hakemusId: UUID): Seq[Tutkinto] = {
     db.run(
       sql"""
-    SELECT id, hakemus_id, jarjestys, nimi, oppilaitos, aloitus_vuosi, paattymis_vuosi, maakoodi, muu_tutkinto_tieto, todistuksen_paivamaara
+    SELECT
+      id,
+      hakemus_id,
+      jarjestys,
+      nimi,
+      oppilaitos,
+      aloitus_vuosi,
+      paattymis_vuosi,
+      maakoodi,
+      muu_tutkinto_tieto,
+      todistuksen_paivamaara,
+      koulutusala_koodi,
+      paaaine_tai_erikoisala,
+      todistusotsikko,
+      muu_tutkinto_muistio_id
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
@@ -685,6 +715,10 @@ class HakemusRepository {
                 maakoodi = ${tutkinto.maakoodi},
                 muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
                 todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
+                koulutusala_koodi = ${tutkinto.koulutusalaKoodi},
+                paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
+                todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
+                muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
                 muokkaaja = ${virkailijaOid.toString}
               WHERE id = ${id.toString}::uuid
             """.asUpdate,
