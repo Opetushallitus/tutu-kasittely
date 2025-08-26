@@ -99,7 +99,7 @@ class HakemusRepository {
         maakoodi = r.nextIntOption(),
         muuTutkintoTieto = r.nextStringOption(),
         todistuksenPaivamaara = r.nextStringOption(),
-        koulutusalaKoodi = r.nextIntOption(),
+        koulutusalaKoodi = r.nextStringOption(),
         paaaaineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
         muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString)

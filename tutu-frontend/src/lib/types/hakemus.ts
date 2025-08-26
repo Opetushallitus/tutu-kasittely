@@ -108,4 +108,8 @@ export type Tutkinto = {
   maakoodi?: number;
   muuTutkintoTieto?: string;
   todistuksenPaivamaara?: string;
+  koulutusalaKoodi?: string;
+  paaaaineTaiErikoisala?: string;
+  todistusOtsikko?: string;
+  muuTutkintoMuistioId?: string;
 };

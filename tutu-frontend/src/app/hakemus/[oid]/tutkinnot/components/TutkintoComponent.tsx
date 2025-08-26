@@ -77,26 +77,24 @@ export const TutkintoComponent = ({
       />
       <OphInputFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonPaaaineTaiErikoisala')}
-        // onChange={(event) => null}
-        value={'Todo pääaine'}
+        onChange={(event) =>
+          updateCurrentTutkinto({
+            ...currentTutkinto,
+            paaaaineTaiErikoisala: event.target.value,
+          })
+        }
+        value={currentTutkinto.paaaaineTaiErikoisala || ''}
         minRows={3}
       />
       <OphSelectFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
         sx={{ width: '50%' }}
         options={maatJaValtiotOptions}
-        value={
-          currentTutkinto.maakoodi !== undefined
-            ? String(currentTutkinto.maakoodi)
-            : ''
-        }
+        value={String(currentTutkinto.maakoodi) || ''}
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,
-            maakoodi:
-              event.target.value === ''
-                ? undefined
-                : Number(event.target.value),
+            maakoodi: Number(event.target.value),
           })
         }
       />
@@ -142,8 +140,13 @@ export const TutkintoComponent = ({
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
         sx={{ width: '25%' }}
         options={koulutusLuokitusOptions}
-        // onChange={(event) => null}
-        defaultValue={''}
+        onChange={(event) =>
+          updateCurrentTutkinto({
+            ...currentTutkinto,
+            koulutusalaKoodi: event.target.value,
+          })
+        }
+        value={currentTutkinto.koulutusalaKoodi || ''}
       />
 
       <Divider orientation={'horizontal'} />

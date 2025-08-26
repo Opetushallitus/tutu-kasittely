@@ -79,6 +79,10 @@ export default function TutkintoPage() {
 
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
+  const muuTutkinto = tutkinnot.find(
+    (tutkinto) => tutkinto.jarjestys === 'MUU',
+  );
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -117,16 +121,13 @@ export default function TutkintoPage() {
         {t('hakemus.tutkinnot.lisaaTutkinto')}
       </OphButton>
       <Divider orientation={'horizontal'} />
-      {tutkinnot
-        .filter((tutkinto) => tutkinto.jarjestys === 'MUU')
-        .map((tutkinto, index) => (
-          <MuuTutkintoComponent
-            key={index}
-            tutkinto={tutkinto}
-            updateTutkintoAction={debouncedTutkinnotUpdateAction}
-            t={t}
-          />
-        ))}
+      {muuTutkinto && (
+        <MuuTutkintoComponent
+          tutkinto={muuTutkinto}
+          updateTutkintoAction={debouncedTutkinnotUpdateAction}
+          t={t}
+        />
+      )}
     </Stack>
   );
 }

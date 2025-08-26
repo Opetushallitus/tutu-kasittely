@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS tutkinto
     maakoodi                INT,
     muu_tutkinto_tieto      TEXT,
     todistuksen_paivamaara  VARCHAR(255),
-    koulutusala_koodi       INT,
+    koulutusala_koodi       VARCHAR(4),
     paaaine_tai_erikoisala  VARCHAR(255),
     todistusotsikko         VARCHAR(255),
     muu_tutkinto_muistio_id uuid,
