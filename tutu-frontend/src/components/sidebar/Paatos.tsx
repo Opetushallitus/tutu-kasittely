@@ -1,12 +1,12 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { PaatosTaydennyspyyntoStack } from '@/src/app/(root)/hakemus/[oid]/components/sidebar/PaatosTaydennyspyyntoStack';
+import { PaatosTaydennyspyyntoStack } from '@/src/components/sidebar/PaatosTaydennyspyyntoStack';
 import { Stack, useTheme } from '@mui/material';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { StyledLink } from '@/src/app/(root)/hakemus/[oid]/components/StyledLink';
+import { StyledLink } from '@/src/components/StyledLink';
 
 const AikaisempiPaatos = ({
   t,

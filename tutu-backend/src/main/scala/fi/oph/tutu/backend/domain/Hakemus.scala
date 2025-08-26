@@ -85,6 +85,12 @@ case class DbHakemus(
   )
   selvityksetSaatu: Boolean,
   @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime],
+  @(Schema @field)(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
@@ -147,6 +153,7 @@ case class Hakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Boolean = false,
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
   asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty,
   imiPyynto: ImiPyynto = ImiPyynto(
     imiPyynto = None,
@@ -173,6 +180,7 @@ case class PartialHakemus(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Option[Boolean] = None,
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
   imiPyynto: Option[ImiPyynto] = None,
   apHakemus: Option[Boolean] = None,

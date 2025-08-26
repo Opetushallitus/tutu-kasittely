@@ -14,7 +14,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
 import { IconButton } from '@/src/components/IconButton';
 import * as dateFns from 'date-fns';
-import { CalendarComponent } from '@/src/app/(root)/hakemus/[oid]/components/calendar-component';
+import { CalendarComponent } from '@/src/components/calendar-component';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;

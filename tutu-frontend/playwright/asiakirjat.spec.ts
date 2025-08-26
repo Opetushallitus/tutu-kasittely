@@ -6,8 +6,6 @@ import {
 } from '@/playwright/mocks';
 import { getHakemus } from './fixtures/hakemus1/index';
 
-test.beforeEach(mockBasicForHakemus);
-
 export const mockHakemus = (page: Page) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const hakemus = getHakemus();
@@ -19,11 +17,14 @@ export const mockHakemus = (page: Page) => {
   });
 };
 
-test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
-  await mockUser(page);
+test.beforeEach(async ({ page }) => {
+  await mockBasicForHakemus({ page });
+  mockUser(page);
   await mockHakemus(page);
   await mockLiitteet(page);
+});
 
+test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
   );
@@ -149,4 +150,18 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     row5_uusiliite_check,
     row5_tarkistuksentila_check,
   ]);
+});
+
+test('Näytetään Viimeinen asiakirja hakijalta jos Kaikki selvitykset saatu chekattu', async ({
+  page,
+}) => {
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+  );
+  const kaikkiSelvitykset = page.getByTestId('kaikki-selvitykset-saatu');
+  const viimeinenAsiakirja = page.getByTestId('viimeinen-asiakirja-hakijalta');
+
+  await expect(viimeinenAsiakirja).toBeHidden();
+  await kaikkiSelvitykset.click();
+  await expect(viimeinenAsiakirja).toBeVisible();
 });

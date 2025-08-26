@@ -4,7 +4,7 @@ import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { InfoBox } from '@/src/app/(root)/hakemus/[oid]/components/InfoBox';
+import { InfoBox } from '@/src/components/InfoBox';
 import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
 import { Grid } from '@mui/system';
 import * as R from 'remeda';

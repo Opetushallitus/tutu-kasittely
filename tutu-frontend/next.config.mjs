@@ -6,6 +6,7 @@ const cspHeaders = {
   'script-src':
     "'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
   'style-src': "'self' 'unsafe-inline'",
+  'script-src-elem': `'self' 'unsafe-inline' ${process.env.VIRKAILIJA_URL}`,
   'img-src': "'self' blob: data:",
   'font-src': "'self'",
   'object-src': "'none'",

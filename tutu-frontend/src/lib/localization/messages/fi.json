@@ -23,6 +23,7 @@
     "omat": "Minulle osoitetut",
     "kaikki": "Kaikki",
     "kokonaisaika": "Kokonaisaika",
+    "hakijanaika": "Hakijan aika",
     "kokonaisaikaKk": "{aika, number} kk"
   },
   "hakemus": {
@@ -154,6 +155,7 @@
       },
       "asiakirjojenTarkistukset": "Asiakirjojen tarkistukset",
       "kaikkiSelvityksetSaatu": "Kaikki tarvittavat selvitykset saatu",
+      "viimeinenAsiakirjaHakijalta": "Viimeinen asiakirja hakijalta",
       "asiakirjojenVahvistaminen": "Asiakirjojen vahvistaminen",
       "suostumusVahvistamiselleSaatu": "Suostumuslomake saatu asiakirjojen vahvistamiselle",
       "allekirjoituksetTarkistettu": "Allekirjoitukset tarkistettu",

@@ -112,12 +112,9 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
     .locator('input');
   await expect(lahetettyCalendar).toBeVisible();
   await lahetettyCalendar.click();
-  await page
-    .locator('.react-datepicker__day:not(.react-datepicker__day--disabled)')
-    .first()
-    .click();
+  await page.locator('.react-datepicker__day--026').click();
   await expect(lahetettyCalendar).toHaveValue(
-    dateFns.format(new Date(), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
 
   const vastattyCalendar = page
@@ -125,12 +122,9 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
     .locator('input');
   await expect(vastattyCalendar).toBeVisible();
   await vastattyCalendar.click();
-  await page
-    .locator('.react-datepicker__day:not(.react-datepicker__day--disabled)')
-    .first()
-    .click();
+  await page.locator('.react-datepicker__day--026').click();
   await expect(vastattyCalendar).toHaveValue(
-    dateFns.format(new Date(), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
 
   await expect(numeroInput).toHaveValue('123456');

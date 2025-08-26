@@ -12,5 +12,6 @@ case class HakemusListItem(
   kasittelyVaihe: String,
   muokattu: Option[String],
   taydennyspyyntoLahetetty: Option[String],
-  apHakemus: Option[Boolean] = None
+  apHakemus: Option[Boolean] = None,
+  viimeinenAsiakirjaHakijalta: Option[String]
 )
