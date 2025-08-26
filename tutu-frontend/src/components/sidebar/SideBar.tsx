@@ -7,11 +7,11 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import { KasittelyVaihe } from '@/src/app/hakemus/[oid]/components/sidebar/KasittelyVaihe';
-import { CenteredRow } from '@/src/app/hakemus/[oid]/components/CenteredRow';
-import { StyledLink } from '@/src/app/hakemus/[oid]/components/StyledLink';
-import { Paatos } from '@/src/app/hakemus/[oid]/components/sidebar/Paatos';
-import { Taydennyspyynto } from '@/src/app/hakemus/[oid]/components/sidebar/Taydennyspyynto';
+import { KasittelyVaihe } from '@/src/components/sidebar/KasittelyVaihe';
+import { CenteredRow } from '@/src/components/CenteredRow';
+import { StyledLink } from '@/src/components/StyledLink';
+import { Paatos } from '@/src/components/sidebar/Paatos';
+import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
 
 const MailOutlineIconBlue = styled(MailOutlineIcon)({
   color: ophColors.blue2,

@@ -9,29 +9,29 @@ import {
   AsiakirjaTaulukko,
   AsiakirjaTaulukkoData,
   haeAsiakirjat,
-} from '@/src/app/hakemus/[oid]/components/asiakirjat/AsiakirjaTaulukko';
-import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/components/asiakirjat/AllekirjoitustenTarkistus';
-import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/components/asiakirjat/AlkuperaisetAsiakirjat';
-import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/components/asiakirjat/KaikkiSelvityksetSaatu';
-import { ApHakemus } from '@/src/app/hakemus/[oid]/components/asiakirjat/ApHakemus';
-import { Muistio } from '@/src/app/hakemus/[oid]/components/Muistio';
+} from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaTaulukko';
+import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
+import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
+import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/components/KaikkiSelvityksetSaatu';
+import { ApHakemus } from '@/src/app/hakemus/[oid]/asiakirjat/components/ApHakemus';
+import { Muistio } from '@/src/components/Muistio';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { StyledLink } from '@/src/app/hakemus/[oid]/components/StyledLink';
-import { CenteredRow } from '@/src/app/hakemus/[oid]/components/CenteredRow';
+import { StyledLink } from '@/src/components/StyledLink';
+import { CenteredRow } from '@/src/components/CenteredRow';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
-import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/components/asiakirjat/AsiakirjaPyynnot';
-import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/components/asiakirjat/MallitTutkinnoista';
+import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
+import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
 import {
   AsiakirjaMetadata,
   Hakemus,
   HakemusUpdateCallback,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
-import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/components/asiakirjat/ImiPyynto';
+import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
 import {
   oikeellisuusJaAitous,
   todistusAitoustarkistusLupa,
@@ -41,7 +41,7 @@ import {
   findSisaltoQuestionAndAnswer,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
-import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/components/asiakirjat/SuostumusVahvistamiselle';
+import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
 import { useDebounce } from '@/src/hooks/useDebounce';
 
 const sisallonOsiot = [

@@ -62,7 +62,6 @@ class HakemusRepository {
       HakemusListItem(
         null,
         null,
-        Option(r.nextString()),
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
@@ -72,7 +71,8 @@ class HakemusRepository {
         r.nextString(),
         Option(r.nextString()),
         null,
-        Option(r.nextBoolean())
+        Option(r.nextBoolean()),
+        Option(r.nextString())
       )
     )
 
@@ -144,7 +144,7 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, h.ap_hakemus
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, h.ap_hakemus, h.viimeinen_asiakirja_hakijalta
             FROM
               hakemus h
             LEFT JOIN public.esittelija e on e.id = h.esittelija_id
@@ -188,6 +188,7 @@ class HakemusRepository {
               h.alkuperaiset_asiakirjat_saatu_nahtavaksi,
               h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot,
               h.selvitykset_saatu,
+              h.viimeinen_asiakirja_hakijalta,
               h.imi_pyynto,
               h.imi_pyynto_numero,
               h.imi_pyynto_lahetetty,
@@ -309,7 +310,8 @@ class HakemusRepository {
     val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
     val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
       partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
-    val selvityksetSaatu                 = partialHakemus.selvityksetSaatu
+    val selvityksetSaatu            = partialHakemus.selvityksetSaatu
+    val viimeinenAsiakirjaHakijalta = partialHakemus.viimeinenAsiakirjaHakijalta.map(java.sql.Timestamp.valueOf).orNull
     val imiPyyntoOrNull: Option[Boolean] = partialHakemus.imiPyynto match {
       case Some(imiPyynto) => Some(imiPyynto)
       case None            => None
@@ -334,6 +336,7 @@ class HakemusRepository {
           alkuperaiset_asiakirjat_saatu_nahtavaksi = $alkuperaisetAsiakirjatSaatuNahtavaksi,
           alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = $alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull,
           selvitykset_saatu = $selvityksetSaatu,
+          viimeinen_asiakirja_hakijalta = $viimeinenAsiakirjaHakijalta,
           muokkaaja = $muokkaaja,
           imi_pyynto = $imiPyyntoOrNull,
           imi_pyynto_numero = $imiPyyntoNumeroOrNull,

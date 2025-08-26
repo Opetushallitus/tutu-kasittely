@@ -4,7 +4,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { PaatosTaydennyspyyntoStack } from '@/src/app/hakemus/[oid]/components/sidebar/PaatosTaydennyspyyntoStack';
+import { PaatosTaydennyspyyntoStack } from '@/src/components/sidebar/PaatosTaydennyspyyntoStack';
 import { useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';

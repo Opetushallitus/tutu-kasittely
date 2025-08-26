@@ -30,7 +30,7 @@ export type Hakemus = {
   alkuperaisetAsiakirjatSaatuNahtavaksi: boolean;
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: string | null | undefined;
   selvityksetSaatu: boolean;
-  viimeinenAsiakirjaHakijalta: string;
+  viimeinenAsiakirjaHakijalta?: string;
   asiakirjamallitTutkinnoista?: AsiakirjamallitTutkinnoista;
   imiPyynto: ImiPyynto;
   apHakemus?: boolean;

@@ -36,7 +36,6 @@ export const muotoileKokonaisaikaPure = (nyt: Date, luotu: Date) => {
 export const muotoileKokonaisaika = (luotuStr: string) => {
   const luotu = new Date(luotuStr);
   const nyt = new Date();
-
   return muotoileKokonaisaikaPure(nyt, luotu);
 };
 
@@ -90,9 +89,11 @@ export default function HakemusRow({
         })}
       </StyledTableCell>
       <StyledTableCell>
-        {t('hakemuslista.hakijanaikaKk', '', {
-          aika: muotoileKokonaisaika(hakemus.hakijanAika ?? hakemus.aika),
-        })}
+        {hakemus.hakijanAika
+          ? t('hakemuslista.kokonaisaikaKk', '', {
+              aika: muotoileKokonaisaika(hakemus.hakijanAika),
+            })
+          : ''}
       </StyledTableCell>
     </TableRow>
   );

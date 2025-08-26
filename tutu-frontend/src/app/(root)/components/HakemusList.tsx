@@ -32,8 +32,8 @@ const FIELD_KEYS = {
   esittelija: 'hakemuslista.esittelija',
   kasittelyvaihe: 'hakemuslista.kasittelyvaihe',
   hakemusKoskee: 'hakemuslista.hakemusKoskee',
-  // hakijanaika: 'hakemuslista.hakijanaika',
   kokonaisaika: 'hakemuslista.kokonaisaika',
+  hakijanaika: 'hakemuslista.hakijanaika',
 };
 
 const StyledTableBody = styled(TableBody)({

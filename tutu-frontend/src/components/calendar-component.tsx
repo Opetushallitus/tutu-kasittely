@@ -157,7 +157,7 @@ export const CalendarComponent = ({
             ariaLabelledBy={labelId}
             selected={selectedValue}
             onChange={(date) => setDate(date)}
-            minDate={new Date()}
+            minDate={new Date(0)}
             customInput={<CustomInput ref={refCustomInput} />}
             calendarClassName={CALENDAR_CLASSNAME}
             showTimeSelect={false}

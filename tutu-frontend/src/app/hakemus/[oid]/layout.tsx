@@ -1,5 +1,5 @@
 import { PageLayout } from '@/src/components/PageLayout';
-import { HakemusDetailLayout } from '@/src/app/hakemus/[oid]/components/HakemusDetailLayout';
+import { HakemusDetailLayout } from '@/src/components/HakemusDetailLayout';
 import { HakemusProvider } from '@/src/context/HakemusContext';
 
 export default async function HakemusLayout(props: {

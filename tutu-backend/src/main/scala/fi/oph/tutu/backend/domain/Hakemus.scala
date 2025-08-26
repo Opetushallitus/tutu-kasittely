@@ -85,14 +85,14 @@ case class DbHakemus(
   )
   selvityksetSaatu: Boolean,
   @(Schema @field)(
-    example = "false",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime],
-  @(Schema @field)(
     example = "2025-06-14T10:59:47.597",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
+  )
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
   )
   imiPyynto: Option[Boolean],
   @(Schema @field)(

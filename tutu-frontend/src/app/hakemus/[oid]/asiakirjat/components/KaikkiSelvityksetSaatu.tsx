@@ -4,7 +4,7 @@ import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
-import { CalendarComponent } from '@/src/app/hakemus/[oid]/components/calendar-component';
+import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 
 interface KaikkiSelvityksetSaatuProps {
@@ -29,6 +29,14 @@ export const KaikkiSelvityksetSaatu = ({
     setSelvityksetSaatu(hakemus?.selvityksetSaatu || false);
   }, [hakemus.selvityksetSaatu]);
 
+  useEffect(() => {
+    if (hakemus.viimeinenAsiakirjaHakijalta) {
+      setViimeinenAsiakirjaHakijalta(
+        new Date(hakemus.viimeinenAsiakirjaHakijalta),
+      );
+    }
+  }, [hakemus.viimeinenAsiakirjaHakijalta]);
+
   return (
     <>
       <OphCheckbox
@@ -41,21 +49,23 @@ export const KaikkiSelvityksetSaatu = ({
           });
         }}
       />
-      <CalendarComponent
-        selectedValue={viimeinenAsiakirjaHakijalta}
-        setDate={(value) => {
-          if (value) {
-            setViimeinenAsiakirjaHakijalta(value);
-            updateHakemus({
-              viimeinenAsiakirjaHakijalta: dateFns.format(
-                value,
-                "yyyy-MM-dd'T'HH:mm",
-              ),
-            });
-          }
-        }}
-        label={t('hakemus.asiakirjat.viimeinenAsiakirja')}
-      />
+      {selvityksetSaatu && (
+        <CalendarComponent
+          selectedValue={viimeinenAsiakirjaHakijalta}
+          setDate={(value) => {
+            if (value) {
+              setViimeinenAsiakirjaHakijalta(value);
+              updateHakemus({
+                viimeinenAsiakirjaHakijalta: dateFns.format(
+                  value,
+                  "yyyy-MM-dd'T'HH:mm",
+                ),
+              });
+            }
+          }}
+          label={t('hakemus.asiakirjat.viimeinenAsiakirja')}
+        />
+      )}
     </>
   );
 };
