@@ -48,6 +48,7 @@ export const KaikkiSelvityksetSaatu = ({
             selvityksetSaatu: !selvityksetSaatu,
           });
         }}
+        data-testid={'kaikki-selvitykset-saatu'}
       />
       {selvityksetSaatu && (
         <CalendarComponent
@@ -63,7 +64,8 @@ export const KaikkiSelvityksetSaatu = ({
               });
             }
           }}
-          label={t('hakemus.asiakirjat.viimeinenAsiakirja')}
+          label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
+          dataTestId={'viimeinen-asiakirja-hakijalta'}
         />
       )}
     </>

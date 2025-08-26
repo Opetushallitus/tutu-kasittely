@@ -89,9 +89,9 @@ export default function HakemusRow({
         })}
       </StyledTableCell>
       <StyledTableCell>
-        {hakemus.hakijanAika
+        {hakemus.viimeinenAsiakirjaHakijalta
           ? t('hakemuslista.kokonaisaikaKk', '', {
-              aika: muotoileKokonaisaika(hakemus.hakijanAika),
+              aika: muotoileKokonaisaika(hakemus.viimeinenAsiakirjaHakijalta),
             })
           : ''}
       </StyledTableCell>

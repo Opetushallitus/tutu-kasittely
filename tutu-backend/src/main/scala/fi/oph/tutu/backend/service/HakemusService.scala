@@ -235,7 +235,7 @@ class HakemusService(
                 asiatunnus = item.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 aika = ataruHakemus.created,
-                hakijanAika = item.hakijanAika.map(dateStr => dateStr.split(" ").head),
+                viimeinenAsiakirjaHakijalta = item.viimeinenAsiakirjaHakijalta.map(dateStr => dateStr.split(" ").head),
                 hakemusOid = item.hakemusOid,
                 hakemusKoskee = item.hakemusKoskee,
                 esittelijaOid = item.esittelijaOid,
