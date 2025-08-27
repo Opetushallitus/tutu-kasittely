@@ -161,6 +161,56 @@ export const mockHakemus = (page: Page) => {
         pyydettavatAsiakirjat: [],
         imiPyynto: {},
         yhteistutkinto: null,
+        tutkinnot: [
+          {
+            id: '$18732268-07ca-4898-a21f-e49b9dd68275',
+            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+            jarjestys: '1',
+            nimi: 'Päälikkö',
+            oppilaitos: 'Butan Amattikoulu',
+            aloitusVuosi: 1999,
+            paattymisVuosi: 2000,
+            maakoodi: 762,
+            muuTutkintoTieto: null,
+            todistuksenPaivamaara: null,
+            koulutusalaKoodi: null,
+            paaaaineTaiErikoisala: null,
+            todistusOtsikko: null,
+            muuTutkintoMuistioId: null,
+          },
+          {
+            id: '589038c5-00eb-465b-98bf-3b9ce62bb94d',
+            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+            jarjestys: '2',
+            nimi: 'Apu poika',
+            oppilaitos: 'Apu koulu',
+            aloitusVuosi: 2010,
+            paattymisVuosi: 2011,
+            maakoodi: 762,
+            muuTutkintoTieto: null,
+            todistuksenPaivamaara: null,
+            koulutusalaKoodi: null,
+            paaaaineTaiErikoisala: null,
+            todistusOtsikko: null,
+            muuTutkintoMuistioId: null,
+          },
+          {
+            id: '07f503b7-7cf4-4437-b4c6-97512bd44450',
+            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+            jarjestys: 'MUU',
+            nimi: null,
+            oppilaitos: null,
+            aloitusVuosi: null,
+            paattymisVuosi: null,
+            maakoodi: null,
+            muuTutkintoTieto: 'En olekaan suorittanutkoulutusta',
+            todistuksenPaivamaara: null,
+            koulutusalaKoodi: null,
+            paaaaineTaiErikoisala: null,
+            todistusOtsikko: null,
+            muuTutkintoMuistioId: null,
+          },
+        ],
         asiakirjamallitTutkinnoista: {
           ece: {
             lahde: 'ece',
@@ -191,6 +241,36 @@ export const mockLiitteet = (page: Page) => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(liitteet),
+      });
+    },
+  );
+};
+
+export const mockKoodistot = (page: Page) => {
+  page.route(
+    '**/tutu-backend/api/koodisto/kansallinenkoulutusluokitus2016koulutusalataso1',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: await readFile(
+          path.join(
+            __dirname,
+            './fixtures/koodistot/kansallinenkoulutusluokitus2016koulutusalataso1.json',
+          ),
+        ),
+      });
+    },
+  );
+  page.route(
+    '**/tutu-backend/api/koodisto/maatjavaltiot2',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: await readFile(
+          path.join(__dirname, './fixtures/koodistot/maatjavaltiot2.json'),
+        ),
       });
     },
   );

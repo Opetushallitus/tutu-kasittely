@@ -31,7 +31,7 @@ export const MuuTutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <OphTypography variant={'h2'}>
+      <OphTypography variant={'h2'} data-testid={'tutkinto-otsikko-MUU'}>
         {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
       </OphTypography>
       <OphInputFormField
@@ -45,6 +45,7 @@ export const MuuTutkintoComponent = ({
             muuTutkintoTieto: event.target.value,
           })
         }
+        data-testid={'tutkinto-tieto-MUU'}
       />
       <OphTypography variant={'h2'}>
         {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomio')}
@@ -57,6 +58,7 @@ export const MuuTutkintoComponent = ({
         multiline={true}
         value={'TODO muu tutkintohuomio'}
         // onChange={(event) => null}
+        data-testid={'tutkinto-huomio-MUU'}
       />
       <Divider orientation={'horizontal'} />
     </Stack>

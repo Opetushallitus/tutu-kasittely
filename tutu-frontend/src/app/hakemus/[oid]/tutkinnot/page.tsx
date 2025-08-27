@@ -35,7 +35,10 @@ export default function TutkintoPage() {
   }, [error, addToast, t]);
 
   const debouncedTutkinnotUpdateAction = useDebounce((next: Tutkinto) => {
-    updateHakemus({ tutkinnot: [...hakemus!.tutkinnot, next] });
+    const oldTutkinnot = hakemus!.tutkinnot.filter(
+      (tutkinto) => tutkinto.id !== next.id,
+    );
+    updateHakemus({ tutkinnot: [...oldTutkinnot, next] });
   }, 1000);
 
   const debouncedTutkinnotDeleteAction = useDebounce(

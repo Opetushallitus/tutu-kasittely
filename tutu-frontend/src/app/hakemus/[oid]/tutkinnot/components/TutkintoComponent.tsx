@@ -41,7 +41,10 @@ export const TutkintoComponent = ({
   return (
     <Stack direction="column" gap={2}>
       <Stack direction="row" justifyContent="space-between">
-        <OphTypography variant={'h2'}>
+        <OphTypography
+          variant={'h2'}
+          data-testid={`tutkinto-otsikko-${tutkinto.jarjestys}`}
+        >
           {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')}{' '}
           {currentTutkinto.jarjestys}
         </OphTypography>
@@ -63,6 +66,7 @@ export const TutkintoComponent = ({
         label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
         options={[]}
         defaultValue={''}
+        data-testid={`tutkinto-todistusotsikko-${tutkinto.jarjestys}`}
       />
       <OphInputFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
@@ -73,7 +77,9 @@ export const TutkintoComponent = ({
           })
         }
         value={currentTutkinto.nimi}
-        minRows={3}
+        inputProps={{
+          'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
+        }}
       />
       <OphInputFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonPaaaineTaiErikoisala')}
@@ -84,7 +90,9 @@ export const TutkintoComponent = ({
           })
         }
         value={currentTutkinto.paaaaineTaiErikoisala || ''}
-        minRows={3}
+        inputProps={{
+          'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
+        }}
       />
       <OphSelectFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
@@ -97,6 +105,7 @@ export const TutkintoComponent = ({
             maakoodi: Number(event.target.value),
           })
         }
+        data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}
       />
       <Stack direction="row" gap={2}>
         <OphInputFormField
@@ -109,7 +118,9 @@ export const TutkintoComponent = ({
             })
           }
           value={currentTutkinto.aloitusVuosi || ''}
-          minRows={3}
+          inputProps={{
+            'data-testid': `tutkinto-aloitusvuosi-${tutkinto.jarjestys}`,
+          }}
         />
         <OphInputFormField
           sx={{ width: '25%' }}
@@ -121,7 +132,9 @@ export const TutkintoComponent = ({
             })
           }
           value={currentTutkinto.paattymisVuosi || ''}
-          minRows={3}
+          inputProps={{
+            'data-testid': `tutkinto-paattymisvuosi-${tutkinto.jarjestys}`,
+          }}
         />
       </Stack>
       <OphInputFormField
@@ -134,7 +147,9 @@ export const TutkintoComponent = ({
           })
         }
         value={currentTutkinto.todistuksenPaivamaara || ''}
-        minRows={3}
+        inputProps={{
+          'data-testid': `tutkinto-todistuksenpvm-${tutkinto.jarjestys}`,
+        }}
       />
       <OphSelectFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
@@ -147,8 +162,8 @@ export const TutkintoComponent = ({
           })
         }
         value={currentTutkinto.koulutusalaKoodi || ''}
+        data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
       />
-
       <Divider orientation={'horizontal'} />
     </Stack>
   );

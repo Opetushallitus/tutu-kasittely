@@ -1,7 +1,7 @@
 {
   "valinnat": {
     "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnastaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
       "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
       "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
@@ -111,7 +111,7 @@
     },
     "asiakirjat": {
       "otsikko": "Asiakirjat",
-      "avaaHakemuspalvelussa": "Avaa asiakirjat hakemuspalvelussa",
+      "avaaHakemuspalvelussa": "Avaa hakemus hakemuspalvelussa",
       "asiakirja": "Asiakirja",
       "saapunut": "Saapunut",
       "uusi": "Uusi",
