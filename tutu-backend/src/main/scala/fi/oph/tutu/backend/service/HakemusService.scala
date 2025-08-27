@@ -356,7 +356,7 @@ class HakemusService(
                     val uusiJarjestys = (tutkinto.jarjestys.toInt - 1).toString
 
                     val paivitettyTutkinto =
-                      tutkinto.copy(jarjestys = uusiJarjestys) // Luodaan uusi tutkinto päivitettyllä järjestysnumerolla
+                      tutkinto.copy(jarjestys = uusiJarjestys)
                     hakemusRepository.paivitaTutkinto(
                       tutkinto.id.get,
                       paivitettyTutkinto,

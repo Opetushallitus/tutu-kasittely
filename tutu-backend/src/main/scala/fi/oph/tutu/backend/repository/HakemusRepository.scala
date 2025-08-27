@@ -661,8 +661,9 @@ class HakemusRepository {
    * hakemuksen tutkinnot
    */
   def haeTutkinnotHakemusIdilla(hakemusId: UUID): Seq[Tutkinto] = {
-    db.run(
-      sql"""
+    try
+      db.run(
+        sql"""
     SELECT
       id,
       hakemus_id,
@@ -682,9 +683,18 @@ class HakemusRepository {
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
   """
-        .as[Tutkinto],
-      "hae_tutkinnot_hakemus_idlla"
-    )
+          .as[Tutkinto],
+        "hae_tutkinnot_hakemus_idlla"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tutkintojen haku hakemusId:llä $hakemusId epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkintojen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+
   }
 
   /**

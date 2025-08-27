@@ -129,9 +129,9 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
 
   await expect(numeroInput).toHaveValue('123456');
   await expect(lahetettyCalendar).toHaveValue(
-    dateFns.format(new Date(), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
   await expect(vastattyCalendar).toHaveValue(
-    dateFns.format(new Date(), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
 });
