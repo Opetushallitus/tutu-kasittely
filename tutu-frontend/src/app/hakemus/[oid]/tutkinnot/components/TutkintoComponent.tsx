@@ -12,6 +12,7 @@ import {
 import React from 'react';
 import { Divider, Stack } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
+import { ModalComponent } from '@/src/components/ModalComponent';
 
 export type TutkintoProps = {
   tutkinto: Tutkinto;
@@ -32,14 +33,30 @@ export const TutkintoComponent = ({
 }: TutkintoProps) => {
   const [currentTutkinto, setCurrentTutkinto] =
     React.useState<Tutkinto>(tutkinto);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
     updateTutkintoAction(value);
     setCurrentTutkinto(value);
   };
+  const closeModal = () => {
+    setDeleteModalOpen(false);
+  };
 
+  const confirmDelete = () => {
+    deleteTutkintoAction(tutkinto.id);
+    closeModal();
+  };
   return (
     <Stack direction="column" gap={2}>
+      <ModalComponent
+        open={deleteModalOpen}
+        header={t('hakemus.tutkinnot.modal.otsikko')}
+        content={t('hakemus.tutkinnot.modal.teksti')}
+        handleConfirm={confirmDelete}
+        handleClose={closeModal}
+        t={t}
+      />
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
           variant={'h2'}
@@ -56,7 +73,7 @@ export const TutkintoComponent = ({
             data-testid={`poista-tutkinto-button-${currentTutkinto.jarjestys}`}
             variant="text"
             startIcon={<DeleteOutline />}
-            onClick={() => deleteTutkintoAction(tutkinto.id)}
+            onClick={() => setDeleteModalOpen(true)}
           >
             {t('hakemus.tutkinnot.poistaTutkinto')}
           </OphButton>
