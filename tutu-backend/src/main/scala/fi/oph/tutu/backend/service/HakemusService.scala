@@ -26,7 +26,7 @@ class HakemusService(
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
-    val tallennettuAtaruHakemusId = esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi.toInt) match {
+    val tallennettuAtaruHakemusId = esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,

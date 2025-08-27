@@ -70,7 +70,7 @@ class ControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    esittelija = esittelijaRepository.upsertEsittelija(752, UserOid(esittelijaOidString), "testi")
+    esittelija = esittelijaRepository.upsertEsittelija("752", UserOid(esittelijaOidString), "testi")
   }
 
   @BeforeEach

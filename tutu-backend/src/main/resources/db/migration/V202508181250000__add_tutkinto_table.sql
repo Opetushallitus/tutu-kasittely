@@ -2,9 +2,6 @@
 ALTER TABLE esittelija
     RENAME COLUMN maatjavaltiot_koodi_uri TO maakoodi;
 
-ALTER TABLE esittelija
-    ALTER COLUMN maakoodi TYPE INT USING maakoodi::INT;
-
 COMMENT ON COLUMN esittelija.maakoodi IS 'Maatjavaltiot-koodiston arvo, joka on esittelijän vastuualuetta';
 
 CREATE TABLE IF NOT EXISTS tutkinto
@@ -16,7 +13,7 @@ CREATE TABLE IF NOT EXISTS tutkinto
     oppilaitos              VARCHAR(255),
     aloitus_vuosi           INT,
     paattymis_vuosi         INT,
-    maakoodi                INT,
+    maakoodi                VARCHAR(4),
     muu_tutkinto_tieto      TEXT,
     todistuksen_paivamaara  VARCHAR(255),
     koulutusala_koodi       VARCHAR(4),

@@ -30,7 +30,7 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def haeEsittelijaMaakoodilla(maakoodi: Int): Option[DbEsittelija] = {
+  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] = {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
@@ -80,7 +80,7 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def upsertEsittelija(maakoodi: Int, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
+  def upsertEsittelija(maakoodi: String, esittelijaOid: UserOid, luoja: String): Option[DbEsittelija] =
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
