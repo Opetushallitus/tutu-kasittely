@@ -9,16 +9,13 @@ import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Component
 @Service
 class MuistioService(
   hakemusRepository: HakemusRepository,
-  muistioRepository: MuistioRepository,
-  hakemusService: HakemusService
+  muistioRepository: MuistioRepository
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[MuistioService])
 
