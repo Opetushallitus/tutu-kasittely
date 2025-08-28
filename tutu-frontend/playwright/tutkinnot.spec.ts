@@ -157,3 +157,39 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
 
   expect(updatedItem.paattymisVuosi).toEqual(2015);
 });
+
+test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', async ({
+  page,
+}) => {
+  mockUser(page);
+  mockHakemus(page);
+  mockKoodistot(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
+  );
+
+  const poistaTutkintoButton = page.getByTestId('poista-tutkinto-button-2');
+  await poistaTutkintoButton.click();
+
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+
+  const [req] = await Promise.all([
+    page.waitForRequest(
+      (r) =>
+        r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
+        r.method() === 'PATCH',
+    ),
+    (async () => {
+      await page.getByTestId('modal-confirm-button').click();
+    })(),
+  ]);
+
+  const payload = req.postDataJSON();
+
+  const deletedItem = (payload.tutkinnot || []).find(
+    (t: Tutkinto) => t.jarjestys === '2',
+  );
+  expect(payload.tutkinnot?.length).toEqual(2);
+  expect(deletedItem).toEqual(undefined);
+});

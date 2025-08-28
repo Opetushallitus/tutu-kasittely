@@ -6,8 +6,10 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { Stack } from '@mui/material';
+import { Stack, styled } from '@mui/material';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton } from '@/src/components/IconButton';
 
 const style = {
   position: 'absolute',
@@ -16,10 +18,16 @@ const style = {
   transform: 'translate(-50%, -50%)',
   minWidth: 800,
   bgcolor: ophColors.white,
-  border: '00px solid #FFF',
+  border: `00px solid ${ophColors.white}`,
   boxShadow: 24,
   p: 4,
 };
+
+const StyledIconButton = styled(IconButton)(() => ({
+  position: 'absolute',
+  right: '12px',
+  top: '20px',
+}));
 
 export type ModalComponentProps = {
   open: boolean;
@@ -38,25 +46,26 @@ export const ModalComponent = ({
   t,
 }: ModalComponentProps) => {
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleClose} data-testid="modal-component">
       <Box sx={style}>
+        <StyledIconButton aria-label="close" onClick={handleClose}>
+          <CloseIcon />
+        </StyledIconButton>
         <Stack direction="column" gap={2}>
           <OphTypography variant="h2">{header}</OphTypography>
           <OphTypography variant={'body1'}>{content}</OphTypography>
           <Stack direction="row" gap={2} justifyContent="flex-end">
             <OphButton
-              data-testid="pyyda-asiakirja-button"
+              data-testid="modal-peruuta-button"
               variant="outlined"
-              // sx={{ width: '15%' }}
-              onClick={() => handleClose()}
+              onClick={handleClose}
             >
               {t('yleiset.peruuta')}
             </OphButton>
             <OphButton
-              data-testid="pyyda-asiakirja-button"
-              variant="outlined"
-              // sx={{ width: '15%' }}
-              onClick={() => handleConfirm()}
+              data-testid="modal-confirm-button"
+              variant="contained"
+              onClick={handleConfirm}
             >
               {t('hakemus.tutkinnot.poistaTutkinto')}
             </OphButton>
