@@ -922,7 +922,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto1.oppilaitos.contains("Butan Amattikoulu"))
     assert(tutkinto1.aloitusVuosi.contains(1999))
     assert(tutkinto1.paattymisVuosi.contains(2000))
-    assert(tutkinto1.maakoodi.contains(762))
+    assert(tutkinto1.maakoodi.contains("762"))
     assert(tutkinto1.muuTutkintoTieto.isEmpty)
 
     val tutkinto2 = tutkinnot(1)
@@ -932,7 +932,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto2.oppilaitos.contains("Johto koulu"))
     assert(tutkinto2.aloitusVuosi.contains(2006))
     assert(tutkinto2.paattymisVuosi.contains(2007))
-    assert(tutkinto2.maakoodi.contains(762))
+    assert(tutkinto2.maakoodi.contains("762"))
     assert(tutkinto2.muuTutkintoTieto.isEmpty)
 
     val tutkinto3 = tutkinnot(2)
@@ -942,7 +942,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto3.oppilaitos.contains("Apu koulu"))
     assert(tutkinto3.aloitusVuosi.contains(2010))
     assert(tutkinto3.paattymisVuosi.contains(2011))
-    assert(tutkinto3.maakoodi.contains(762))
+    assert(tutkinto3.maakoodi.contains("762"))
     assert(tutkinto3.muuTutkintoTieto.isEmpty)
 
     val muuTutkinto = tutkinnot.last
@@ -1100,7 +1100,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Butan Amattikoulu",
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
-         |      "maakoodi" : 762,
+         |      "maakoodi" : "762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1115,7 +1115,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Johto koulu",
          |      "aloitusVuosi" : 2006,
          |      "paattymisVuosi" : 2007,
-         |      "maakoodi" : 762,
+         |      "maakoodi" : "762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1130,7 +1130,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Apu koulu",
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
-         |      "maakoodi": 762,
+         |      "maakoodi": "762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1192,7 +1192,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Butan Amattikoulu",
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
-         |      "maakoodi" : 762,
+         |      "maakoodi" : "762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara": "Helmikuu 2000",
          |      "koulutusalaKoodi" : "13",
@@ -1208,7 +1208,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Hankken Johto koulu",
          |      "aloitusVuosi" : 2024,
          |      "paattymisVuosi" : 2025,
-         |      "maakoodi" : 100,
+         |      "maakoodi" : "100",
          |      "muuTutkintoTieto" : null
          |    },
          |    {
@@ -1219,7 +1219,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Apu koulu",
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
-         |      "maakoodi": 762,
+         |      "maakoodi": "762",
          |      "muuTutkintoTieto" : null
          |    },
          |    {
@@ -1254,7 +1254,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
     assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))
     assert(paivitettyHakemus.get.tutkinnot(1).paattymisVuosi.contains(2025))
-    assert(paivitettyHakemus.get.tutkinnot(1).maakoodi.contains(100))
+    assert(paivitettyHakemus.get.tutkinnot(1).maakoodi.contains("100"))
 
     requestJson = s"""{"tutkinnot" : [
                      |    {
@@ -1265,7 +1265,7 @@ class ControllerTest extends IntegrationTestBase {
                      |      "oppilaitos" : "Butan Amattikoulu",
                      |      "aloitusVuosi" : 1999,
                      |      "paattymisVuosi" : 2000,
-                     |      "maakoodi" : 762,
+                     |      "maakoodi" : "762",
                      |      "muuTutkintoTieto" : null,
                      |      "todistuksenPaivamaara" : null,
                      |      "koulutusalaKoodi" : null,
@@ -1281,7 +1281,7 @@ class ControllerTest extends IntegrationTestBase {
                      |      "oppilaitos" : "Apu koulu",
                      |      "aloitusVuosi" : 2010,
                      |      "paattymisVuosi" : 2011,
-                     |      "maakoodi": 762,
+                     |      "maakoodi": "762",
                      |      "muuTutkintoTieto" : null,
                      |      "todistuksenPaivamaara" : null,
                      |      "koulutusalaKoodi" : null,

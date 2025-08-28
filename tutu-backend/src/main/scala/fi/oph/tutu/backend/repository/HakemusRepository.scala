@@ -96,7 +96,7 @@ class HakemusRepository {
         oppilaitos = r.nextStringOption(),
         aloitusVuosi = r.nextIntOption(),
         paattymisVuosi = r.nextIntOption(),
-        maakoodi = r.nextIntOption(),
+        maakoodi = r.nextStringOption(),
         muuTutkintoTieto = r.nextStringOption(),
         todistuksenPaivamaara = r.nextStringOption(),
         koulutusalaKoodi = r.nextStringOption(),

@@ -94,7 +94,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
         paattymisVuosi =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
-        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).flatMap(_.toIntOption),
+        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
@@ -116,7 +116,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
           _.toIntOption
         ),
-        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers).flatMap(_.toIntOption),
+        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
@@ -138,7 +138,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
           paattymisVuosi =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
-          maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers).flatMap(_.toIntOption),
+          maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers),
           muuTutkintoTieto = None,
           todistuksenPaivamaara = None,
           koulutusalaKoodi = None,
