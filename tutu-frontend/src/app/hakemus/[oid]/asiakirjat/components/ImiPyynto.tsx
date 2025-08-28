@@ -1,6 +1,9 @@
 'use client';
 
-import { HakemusUpdateCallback, ImiPyynto } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTietoUpdateCallback,
+  ImiPyynto,
+} from '@/src/lib/types/hakemus';
 import { Stack } from '@mui/material';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import {
@@ -15,14 +18,11 @@ import { styled } from '@/src/lib/theme';
 import { IconButton } from '@/src/components/IconButton';
 import * as dateFns from 'date-fns';
 import { CalendarComponent } from '@/src/components/calendar-component';
+import { OphRadioOption } from '@/src/lib/types/common';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
-  updateHakemusAction: HakemusUpdateCallback;
-}
-interface OphRadioOption<T> {
-  value: T;
-  label: string;
+  updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
 const StyledEditOffIcon = styled(EditOffIcon)({
@@ -31,7 +31,7 @@ const StyledEditOffIcon = styled(EditOffIcon)({
 
 export const ImiPyyntoComponent = ({
   imiPyynto,
-  updateHakemusAction,
+  updateAsiakirjaTietoAction,
 }: ImiPyyntoProps) => {
   const { t } = useTranslations();
 
@@ -45,7 +45,7 @@ export const ImiPyyntoComponent = ({
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
     setCurrentImiPyynto(updatedImiPyynto);
-    updateHakemusAction({ imiPyynto: updatedImiPyynto });
+    updateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {

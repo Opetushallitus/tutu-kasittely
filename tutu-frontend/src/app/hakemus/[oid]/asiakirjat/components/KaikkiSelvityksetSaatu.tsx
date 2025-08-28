@@ -3,39 +3,42 @@ import { useEffect, useState } from 'react';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+} from '@/src/lib/types/hakemus';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 
 interface KaikkiSelvityksetSaatuProps {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirjaTieto: AsiakirjaTieto;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const KaikkiSelvityksetSaatu = ({
-  hakemus,
-  updateHakemus,
+  asiakirjaTieto,
+  updateAsiakirjaTieto,
 }: KaikkiSelvityksetSaatuProps) => {
   const { t } = useTranslations();
 
   const [selvityksetSaatu, setSelvityksetSaatu] = useState<boolean>(
-    hakemus.selvityksetSaatu,
+    asiakirjaTieto.selvityksetSaatu,
   );
 
   const [viimeinenAsiakirjaHakijalta, setViimeinenAsiakirjaHakijalta] =
     useState<Date>(new Date());
 
   useEffect(() => {
-    setSelvityksetSaatu(hakemus?.selvityksetSaatu || false);
-  }, [hakemus.selvityksetSaatu]);
+    setSelvityksetSaatu(asiakirjaTieto?.selvityksetSaatu || false);
+  }, [asiakirjaTieto.selvityksetSaatu]);
 
   useEffect(() => {
-    if (hakemus.viimeinenAsiakirjaHakijalta) {
+    if (asiakirjaTieto.viimeinenAsiakirjaHakijalta) {
       setViimeinenAsiakirjaHakijalta(
-        new Date(hakemus.viimeinenAsiakirjaHakijalta),
+        new Date(asiakirjaTieto.viimeinenAsiakirjaHakijalta),
       );
     }
-  }, [hakemus.viimeinenAsiakirjaHakijalta]);
+  }, [asiakirjaTieto.viimeinenAsiakirjaHakijalta]);
 
   return (
     <>
@@ -44,7 +47,7 @@ export const KaikkiSelvityksetSaatu = ({
         checked={selvityksetSaatu || false}
         onChange={() => {
           setSelvityksetSaatu(!selvityksetSaatu);
-          updateHakemus({
+          updateAsiakirjaTieto({
             selvityksetSaatu: !selvityksetSaatu,
           });
         }}
@@ -56,7 +59,7 @@ export const KaikkiSelvityksetSaatu = ({
           setDate={(value) => {
             if (value) {
               setViimeinenAsiakirjaHakijalta(value);
-              updateHakemus({
+              updateAsiakirjaTieto({
                 viimeinenAsiakirjaHakijalta: dateFns.format(
                   value,
                   "yyyy-MM-dd'T'HH:mm",

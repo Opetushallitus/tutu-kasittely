@@ -35,7 +35,6 @@
   "ataruHakemuksenTila": "kasittelymaksamatta",
   "kasittelyVaihe": "HakemustaTaydennetty",
   "muokattu": "2025-06-28T10:59:04.597",
-  "pyydettavatAsiakirjat": [],
-  "imiPyynto": {},
-  "tutkinnot": []
+  "tutkinnot": [],
+  "asiakirja": {}
 }

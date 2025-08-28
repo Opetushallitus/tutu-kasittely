@@ -158,8 +158,6 @@ export const mockHakemus = (page: Page) => {
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
-        pyydettavatAsiakirjat: [],
-        imiPyynto: {},
         yhteistutkinto: null,
         tutkinnot: [
           {
@@ -211,20 +209,32 @@ export const mockHakemus = (page: Page) => {
             muuTutkintoMuistioId: null,
           },
         ],
-        asiakirjamallitTutkinnoista: {
-          ece: {
-            lahde: 'ece',
-            vastaavuus: true,
-            kuvaus: 'Jotain kuvausta',
+        asiakirja: {
+          allekirjoituksetTarkistettu: false,
+          allekirjoituksetTarkistettuLisatiedot: null,
+          alkuperaisetAsiakirjatSaatuNahtavaksi: false,
+          alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: null,
+          selvityksetSaatu: false,
+          pyydettavatAsiakirjat: [],
+          imiPyynto: {},
+          asiakirjamallitTutkinnoista: {
+            ece: {
+              lahde: 'ece',
+              vastaavuus: true,
+              kuvaus: 'Jotain kuvausta',
+            },
+            nuffic: {
+              lahde: 'nuffic',
+              vastaavuus: false,
+            },
+            aacrao: {
+              lahde: 'aacrao',
+              vastaavuus: false,
+              kuvaus: 'Jotain muuta kuvausta',
+            },
           },
-          nuffic: {
-            lahde: 'nuffic',
-            vastaavuus: false,
-          },
-          aacrao: {
-            lahde: 'aacrao',
-            vastaavuus: false,
-            kuvaus: 'Jotain muuta kuvausta',
+          valmistumisenVahvistus: {
+            valmistumisenVahvistus: false,
           },
         },
       }),

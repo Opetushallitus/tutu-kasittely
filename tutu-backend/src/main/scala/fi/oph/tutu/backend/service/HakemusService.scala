@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
-import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
@@ -19,6 +19,7 @@ import java.util.UUID
 class HakemusService(
   hakemusRepository: HakemusRepository,
   esittelijaRepository: EsittelijaRepository,
+  asiakirjaRepository: AsiakirjaRepository,
   hakemuspalveluService: HakemuspalveluService,
   onrService: OnrService,
   ataruHakemusParser: AtaruHakemusParser
@@ -122,32 +123,20 @@ class HakemusService(
               case Some(timestamp) =>
                 Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
             },
-            pyydettavatAsiakirjat =
-              hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(dbHakemus.hakemusOid) match {
-                case asiakirjat => asiakirjat
-                case null       => Seq.empty
-              },
-            allekirjoituksetTarkistettu = dbHakemus.allekirjoituksetTarkistettu,
-            allekirjoituksetTarkistettuLisatiedot = dbHakemus.allekirjoituksetTarkistettuLisatiedot,
-            alkuperaisetAsiakirjatSaatuNahtavaksi = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
-            alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
-            selvityksetSaatu = dbHakemus.selvityksetSaatu,
-            viimeinenAsiakirjaHakijalta = dbHakemus.viimeinenAsiakirjaHakijalta,
-            asiakirjamallitTutkinnoista =
-              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id) match {
-                case asiakirjamallit => asiakirjamallit
-                case null            => Map()
-              },
-            imiPyynto = ImiPyynto(
-              imiPyynto = dbHakemus.imiPyynto,
-              imiPyyntoNumero = dbHakemus.imiPyyntoNumero,
-              imiPyyntoLahetetty = dbHakemus.imiPyyntoLahetetty,
-              imiPyyntoVastattu = dbHakemus.imiPyyntoVastattu
-            ),
-            apHakemus = dbHakemus.apHakemus,
             yhteistutkinto = dbHakemus.yhteistutkinto,
-            suostumusVahvistamiselleSaatu = dbHakemus.suostumusVahvistamiselleSaatu,
-            tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
+            tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id),
+            asiakirja = asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
+              case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
+                Some(
+                  new Asiakirja(
+                    asiakirjaTiedot,
+                    pyydettavatAsiakirjat,
+                    asiakirjamallitTutkinnoista
+                  )
+                )
+              case _ =>
+                None
+            }
           )
         )
       case None =>
@@ -290,44 +279,6 @@ class HakemusService(
         )
       }
       case Some(dbHakemus) => {
-        // Tallennetaan / poistetaan pyydettävät asiakirjat
-        partialHakemus.pyydettavatAsiakirjat match {
-          case None             => ()
-          case Some(asiakirjat) =>
-            val tallennetutAsiakirjat = hakemusRepository.haePyydettavatAsiakirjatHakemusOidilla(hakemusOid)
-
-            // Lisätään uudet asiakirjat
-            val uudetAsiakirjat = asiakirjat.filterNot(asiakirja => tallennetutAsiakirjat.exists(_.id == asiakirja.id))
-            if (uudetAsiakirjat.nonEmpty) {
-              uudetAsiakirjat.foreach(asiakirja =>
-                hakemusRepository.luoPyydettavaAsiakirja(hakemusOid, asiakirja.asiakirjanTyyppi, userOid)
-              )
-            }
-
-            // Päivitetään olemassa olevat asiakirjat
-            val paivitettavatAsiakirjat =
-              asiakirjat.filter(asiakirja =>
-                tallennetutAsiakirjat.exists(tallennettuAsiakirja =>
-                  tallennettuAsiakirja.id == asiakirja.id && tallennettuAsiakirja.asiakirjanTyyppi != asiakirja.asiakirjanTyyppi
-                )
-              )
-            if (paivitettavatAsiakirjat.nonEmpty) {
-              paivitettavatAsiakirjat.foreach { asiakirja =>
-                hakemusRepository.paivitaPyydettavaAsiakirja(
-                  asiakirja.id.get,
-                  asiakirja.asiakirjanTyyppi,
-                  userOid
-                )
-              }
-            }
-
-            // Poistetaan asiakirjat
-            val poistettavatAsiakirjat =
-              tallennetutAsiakirjat.filterNot(asiakirja => asiakirjat.exists(_.id == asiakirja.id))
-            if (poistettavatAsiakirjat.nonEmpty) {
-              poistettavatAsiakirjat.foreach(asiakirja => hakemusRepository.poistaPyydettavaAsiakirja(asiakirja.id.get))
-            }
-        }
 
         // Tallennetaan / poistetaan tutkinnot
         partialHakemus.tutkinnot match {
@@ -385,77 +336,18 @@ class HakemusService(
             }
         }
 
-        partialHakemus.asiakirjamallitTutkinnoista match {
-          case None                      => ()
-          case Some(toBeAsiakirjaMallit) =>
-            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id)
-            val asiakirjamalliModifyData = HakemusModifyOperationResolver.resolveAsiakirjamalliModifyOperations(
-              currentAsiakirjamallit,
-              toBeAsiakirjaMallit
-            )
-            hakemusRepository.suoritaAsiakirjamallienModifiointi(dbHakemus.id, asiakirjamalliModifyData, userOid)
+        val newOrUpdatedAsiakirjaId = partialHakemus.asiakirja match {
+          case Some(asiakirja) =>
+            paivitaTaiLisaaAsiakirjatiedot(dbHakemus.asiakirjaId, asiakirja, userOid)
+          case _ => None
         }
 
         val modifiedHakemus = dbHakemus.copy(
+          asiakirjaId = newOrUpdatedAsiakirjaId.orElse(dbHakemus.asiakirjaId),
           hakemusKoskee = partialHakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = partialHakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
-          allekirjoituksetTarkistettu =
-            partialHakemus.allekirjoituksetTarkistettu.getOrElse(dbHakemus.allekirjoituksetTarkistettu),
-          allekirjoituksetTarkistettuLisatiedot = partialHakemus.allekirjoituksetTarkistettuLisatiedot.orElse(
-            dbHakemus.allekirjoituksetTarkistettuLisatiedot
-          ),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
-          alkuperaisetAsiakirjatSaatuNahtavaksi = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(
-            dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
-          ),
-          alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
-            partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orElse(
-              dbHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
-            ),
-          selvityksetSaatu = partialHakemus.selvityksetSaatu.getOrElse(dbHakemus.selvityksetSaatu),
-          viimeinenAsiakirjaHakijalta =
-            partialHakemus.viimeinenAsiakirjaHakijalta.orElse(dbHakemus.viimeinenAsiakirjaHakijalta),
-          imiPyynto = partialHakemus.imiPyynto match {
-            case Some(imiPyynto) =>
-              imiPyynto.imiPyynto match {
-                case Some(value) => Some(value)
-                case None        => None
-              }
-            case None =>
-              dbHakemus.imiPyynto
-          },
-          imiPyyntoNumero = partialHakemus.imiPyynto match {
-            case Some(imiPyynto) =>
-              imiPyynto.imiPyynto match {
-                case Some(true) => imiPyynto.imiPyyntoNumero
-                case _          => None
-              }
-            case None =>
-              dbHakemus.imiPyyntoNumero
-          },
-          imiPyyntoLahetetty = partialHakemus.imiPyynto match {
-            case Some(imiPyynto) =>
-              imiPyynto.imiPyynto match {
-                case Some(true) => imiPyynto.imiPyyntoLahetetty
-                case _          => None
-              }
-            case None =>
-              dbHakemus.imiPyyntoLahetetty
-          },
-          imiPyyntoVastattu = partialHakemus.imiPyynto match {
-            case Some(imiPyynto) =>
-              imiPyynto.imiPyynto match {
-                case Some(true) => imiPyynto.imiPyyntoVastattu
-                case _          => None
-              }
-            case None =>
-              dbHakemus.imiPyyntoVastattu
-          },
-          apHakemus = partialHakemus.apHakemus.orElse(dbHakemus.apHakemus),
-          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto),
-          suostumusVahvistamiselleSaatu = partialHakemus.suostumusVahvistamiselleSaatu.getOrElse(
-            dbHakemus.suostumusVahvistamiselleSaatu
-          )
+          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto)
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,
@@ -463,6 +355,60 @@ class HakemusService(
           userOid.toString
         )
       }
+    }
+  }
+
+  private def paivitaTaiLisaaAsiakirjatiedot(
+    currentAsiakirjaId: Option[UUID],
+    toBeAsiakirjaTiedot: PartialAsiakirja,
+    luojaTaiMuokkaaja: UserOid
+  ): Option[UUID] = {
+    asiakirjaRepository.haeKaikkiAsiakirjaTiedot(currentAsiakirjaId) match {
+      case Some((dbAsiakirjaTiedot, dbPyydettavatAsiakirjat, dbAsiakirjamallitTutkinnoista)) =>
+        val updatedAsiakirjaTiedot = dbAsiakirjaTiedot.mergeWithUpdatedAsiakirja(toBeAsiakirjaTiedot)
+        if (updatedAsiakirjaTiedot != dbAsiakirjaTiedot) {
+          asiakirjaRepository.paivitaAsiakirjaTiedot(
+            updatedAsiakirjaTiedot,
+            luojaTaiMuokkaaja
+          )
+        }
+        toBeAsiakirjaTiedot.pyydettavatAsiakirjat.foreach { pyydettavatAsiakirjat =>
+          asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(
+            currentAsiakirjaId.get,
+            HakemusModifyOperationResolver
+              .resolvePyydettavatAsiakirjatModifyOperations(dbPyydettavatAsiakirjat, pyydettavatAsiakirjat),
+            luojaTaiMuokkaaja
+          )
+        }
+        toBeAsiakirjaTiedot.asiakirjamallitTutkinnoista.foreach { asiakirjamallitTutkinnoista =>
+          asiakirjaRepository.suoritaAsiakirjamallienModifiointi(
+            currentAsiakirjaId.get,
+            HakemusModifyOperationResolver
+              .resolveAsiakirjamalliModifyOperations(dbAsiakirjamallitTutkinnoista, asiakirjamallitTutkinnoista),
+            luojaTaiMuokkaaja
+          )
+        }
+        None
+      case None =>
+        val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
+          new Asiakirja(toBeAsiakirjaTiedot),
+          luojaTaiMuokkaaja
+        )
+        toBeAsiakirjaTiedot.pyydettavatAsiakirjat.foreach { pyydettavatAsiakirjat =>
+          asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(
+            asiakirjaId,
+            PyydettavaAsiakirjaModifyData(pyydettavatAsiakirjat, Seq(), Seq()),
+            luojaTaiMuokkaaja
+          )
+        }
+        toBeAsiakirjaTiedot.asiakirjamallitTutkinnoista.foreach { asiakirjamallitTutkinnoista =>
+          asiakirjaRepository.suoritaAsiakirjamallienModifiointi(
+            asiakirjaId,
+            AsiakirjamalliModifyData(asiakirjamallitTutkinnoista, Map(), Seq()),
+            luojaTaiMuokkaaja
+          )
+        }
+        Some(asiakirjaId)
     }
   }
 }

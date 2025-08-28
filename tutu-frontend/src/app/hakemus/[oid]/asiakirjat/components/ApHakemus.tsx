@@ -4,15 +4,23 @@ import { Stack, useTheme } from '@mui/material';
 import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+} from '@/src/lib/types/hakemus';
 import { isDefined } from 'remeda';
 
 interface ApHakemusProps {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirjaTieto: AsiakirjaTieto;
+  hakemusKoskee: number;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
-export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
+export const ApHakemus = ({
+  asiakirjaTieto,
+  hakemusKoskee,
+  updateAsiakirjaTieto,
+}: ApHakemusProps) => {
   const { t } = useTranslations();
 
   const [isApHakemus, setIsApHakemus] = useState<boolean | undefined>();
@@ -20,21 +28,21 @@ export const ApHakemus = ({ hakemus, updateHakemus }: ApHakemusProps) => {
   const updateApHakemus = (val: boolean | undefined) => {
     if (val !== isApHakemus) {
       setIsApHakemus(val);
-      updateHakemus({ apHakemus: val });
+      updateAsiakirjaTieto({ apHakemus: val });
     }
   };
 
   useEffect(() => {
-    const apHakemus = hakemus?.apHakemus;
+    const apHakemus = asiakirjaTieto.apHakemus;
     if (isDefined(apHakemus)) {
       setIsApHakemus(apHakemus);
     }
-  }, [hakemus?.apHakemus]);
+  }, [asiakirjaTieto.apHakemus]);
 
   const theme = useTheme();
 
   return (
-    hakemus?.hakemusKoskee === 1 && (
+    hakemusKoskee === 1 && (
       <>
         <OphTypography variant="h4">{t('hakemus.apHakemus')}</OphTypography>
         <Stack direction="row" gap={theme.spacing(3)}>

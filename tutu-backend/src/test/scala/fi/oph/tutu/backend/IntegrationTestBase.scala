@@ -1,7 +1,9 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
+import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
+import fi.oph.tutu.backend.domain.{Asiakirja, AsiakirjamalliTutkinnosta, AtaruHakemus, HakemusOid, Hakija, UserOid}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -63,6 +65,15 @@ class IntegrationTestBase {
   @Autowired
   private val flyway: Flyway = null
 
+  @Autowired
+  var esittelijaRepository: EsittelijaRepository = _
+
+  @Autowired
+  var hakemusRepository: HakemusRepository = _
+
+  @Autowired
+  var asiakirjaRepository: AsiakirjaRepository = _
+
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   val POSTGRES_DATABASENAME = "tutu"
@@ -107,5 +118,34 @@ class IntegrationTestBase {
         createTutkinnotFixture(uuid)
       }
 
+  }
+
+  def addAsiakirjaStuffToHakemus(virkailijaOid: UserOid): UUID = {
+    val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), virkailijaOid)
+    val apAction1   = asiakirjaRepository.luoPyydettavaAsiakirja(
+      asiakirjaId,
+      "tutkintotodistustenjaljennokset",
+      virkailijaOid
+    )
+    val apAction2 = asiakirjaRepository.luoPyydettavaAsiakirja(
+      asiakirjaId,
+      "tyotodistukset",
+      virkailijaOid
+    )
+    val malliAction1 = asiakirjaRepository.lisaaAsiakirjamalli(
+      asiakirjaId,
+      AsiakirjamalliTutkinnosta(ece, true, Some("Jotain kuvausta")),
+      virkailijaOid
+    )
+    val malliAction2 = asiakirjaRepository.lisaaAsiakirjamalli(
+      asiakirjaId,
+      AsiakirjamalliTutkinnosta(aacrao, false, Some("Jotain muuta kuvausta")),
+      virkailijaOid
+    )
+    asiakirjaRepository.db.run(
+      asiakirjaRepository.combineIntDBIOs(Seq(apAction1, apAction2, malliAction1, malliAction2)),
+      "lisaaPyydettavatAsiakirjatJaAsiakirjamalli"
+    )
+    asiakirjaId
   }
 }

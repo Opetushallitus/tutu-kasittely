@@ -179,6 +179,18 @@
         "sisainenOtsake": "Esittelijän huomioita asiakirjoista (ei näy muistiossa)",
         "sisainenOhjeteksti": "Numerotarkistukset, turvamerkinnät ym asiakirjoihin liittyvät muistiinpanot ja lisätiedot.",
         "muistioOtsake": "Huomiot asiakirjoista muistioon"
+      },
+      "valmistumisenVahvistus": {
+        "otsikko": "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta",
+        "lahetetty": "Milloin vahvistuspyyntö lähetetty?",
+        "vastaanotettu": "Milloin vahvistus saatu?",
+        "vastaus": "Vastaus",
+        "myonteinen": "Myönteinen",
+        "kielteinen": "Kielteinen",
+        "eiVastausta": "Vahvistusta ei saatu",
+        "myonteinenLisatieto": "Mistä myönteinen vahvistus on saatu?",
+        "kielteinenLisatieto": "Mistä kielteinen vahvistus on saatu? Kielteisen vahvistuksen teksti",
+        "eiVastaustaLisatieto": "Kuvaus tilanteesta"
       }
     },
     "tutkinnot": {

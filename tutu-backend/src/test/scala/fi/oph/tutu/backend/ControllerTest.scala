@@ -5,7 +5,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
-import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myonteinen}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import org.hamcrest.Matchers.equalTo
@@ -43,12 +44,6 @@ class ControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   var mockOnrService: OnrService = _
-
-  @Autowired
-  var esittelijaRepository: EsittelijaRepository = _
-
-  @Autowired
-  var hakemusRepository: HakemusRepository = _
 
   @Autowired
   var hakemusService: HakemusService = _
@@ -368,6 +363,11 @@ class ControllerTest extends IntegrationTestBase {
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
+    hakemusService.paivitaHakemus(
+      HakemusOid("1.2.246.562.11.00000000000000006668"),
+      PartialHakemus(asiakirja = Some(PartialAsiakirja(apHakemus = Some(true)))),
+      UserOid(esittelijaOidString)
+    )
 
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
@@ -375,27 +375,17 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 1,
+                                "apHakemus": true,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
                                 "taydennyspyyntoLahetetty": null
-                              }, {
-                                "asiatunnus" : null,
-                                "hakija" : "Testi Toka Hakija",
-                                "aika" : "2025-05-14T10:59:47.597Z",
-                                "hakemusOid" : "1.2.246.562.11.00000000000000006666",
-                                "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
-                                "esittelijaKutsumanimi": "Esko",
-                                "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken",
-                                "taydennyspyyntoLahetetty": "2025-07-21T11:06:38.273Z"
                               } ]"""
 
     val result = mockMvc
       .perform(
-        get("/api/hakemuslista?nayta=omat&hakemuskoskee=1")
+        get("/api/hakemuslista?nayta=omat&hakemuskoskee=4")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -407,28 +397,14 @@ class ControllerTest extends IntegrationTestBase {
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
     val virkailijaOid = UserOid("1.2.246.562.24.00000000000000006666")
-    hakemusRepository.luoPyydettavaAsiakirja(
-      HakemusOid("1.2.246.562.11.00000000000000006667"),
-      "tutkintotodistustenjaljennokset",
-      virkailijaOid
+    val hakemusOid    = HakemusOid("1.2.246.562.11.00000000000000006667")
+    val asiakirjaId   = addAsiakirjaStuffToHakemus(virkailijaOid)
+    val dbAsiakirja   = hakemusRepository.haeHakemus(hakemusOid).get
+    hakemusRepository.paivitaPartialHakemus(
+      hakemusOid,
+      dbAsiakirja.copy(asiakirjaId = Some(asiakirjaId)),
+      virkailijaOid.toString
     )
-    hakemusRepository.luoPyydettavaAsiakirja(
-      HakemusOid("1.2.246.562.11.00000000000000006667"),
-      "tyotodistukset",
-      virkailijaOid
-    )
-    val dbHakemus    = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"))
-    val malliAction1 = hakemusRepository.lisaaAsiakirjamalli(
-      dbHakemus.get.id,
-      AsiakirjamalliTutkinnosta(ece, true, Some("Jotain kuvausta")),
-      virkailijaOid
-    )
-    val malliAction2 = hakemusRepository.lisaaAsiakirjamalli(
-      dbHakemus.get.id,
-      AsiakirjamalliTutkinnosta(aacrao, false, Some("Jotain muuta kuvausta")),
-      virkailijaOid
-    )
-    hakemusRepository.db.run(hakemusRepository.combineIntDBIOs(Seq(malliAction1, malliAction2)), "lisaaAsiakirjamalli")
     initAtaruHakemusRequests()
 
     val expectedResult = s"""{
@@ -457,9 +433,7 @@ class ControllerTest extends IntegrationTestBase {
                                   "sahkopostiosoite": "patu.kuusinen@riibasu.fi"
                                 },
                                 "asiatunnus": null,
-                                "apHakemus": false,
                                 "yhteistutkinto": false,
-                                "suostumusVahvistamiselleSaatu": false,
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
@@ -477,25 +451,30 @@ class ControllerTest extends IntegrationTestBase {
                                   }, {
                                   "role": "Esittelija",
                                   "time": "2025-06-18T05:57:18.866",
-                                  "modifiedBy": "Esko Esittelijä"}],
-                                  "taydennyspyyntoLahetetty": null,
-                                  "muokattu": null,
+                                  "modifiedBy": "Esko Esittelijä"}
+                                ],
+                                "taydennyspyyntoLahetetty": null,
+                                "asiakirja": {
+                                  "apHakemus": false,
+                                  "suostumusVahvistamiselleSaatu": false,
                                   "pyydettavatAsiakirjat" : [ {
                                     "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
                                   }, {
                                     "asiakirjanTyyppi" : "tyotodistukset"
                                   } ],
-                                    "asiakirjamallitTutkinnoista" : {
-                                      "ece" : {
-                                        "lahde" : "ece",
-                                        "vastaavuus" : true,
-                                        "kuvaus" : "Jotain kuvausta"
-                                      },
-                                      "aacrao" : {
-                                        "lahde" : "aacrao",
-                                        "vastaavuus" : false,
-                                        "kuvaus" : "Jotain muuta kuvausta"
-                                      } }
+                                  "asiakirjamallitTutkinnoista" : {
+                                    "ece" : {
+                                      "lahde" : "ece",
+                                      "vastaavuus" : true,
+                                      "kuvaus" : "Jotain kuvausta"
+                                    },
+                                    "aacrao" : {
+                                      "lahde" : "aacrao",
+                                      "vastaavuus" : false,
+                                      "kuvaus" : "Jotain muuta kuvausta"
+                                    }
+                                  }
+                                }
                               }"""
 
     val result = mockMvc
@@ -563,13 +542,6 @@ class ControllerTest extends IntegrationTestBase {
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.asiatunnus.contains("OPH-122-2025"))
 
-    // Päivitetään AP-hakemus
-    updatedHakemus = PartialHakemus(
-      apHakemus = Some(true)
-    )
-    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.apHakemus.contains(true))
-
     // Päivitetään yhteistutkinto
     updatedHakemus = PartialHakemus(
       yhteistutkinto = Some(true)
@@ -586,65 +558,79 @@ class ControllerTest extends IntegrationTestBase {
   )
   def paivitaHakemusValidRequestReturns200WithChangedPyydettavatAsiakirjat(): Unit = {
     initAtaruHakemusRequests()
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006670")
 
     // Lisätään asiakirja
     var updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
+      asiakirja = Some(
+        PartialAsiakirja(
+          pyydettavatAsiakirjat = Some(Seq(PyydettavaAsiakirja(None, "tutkintotodistustenjaljennokset")))
+        )
+      )
     )
-    var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
+    var paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.size == 1)
+
+    val asiakirjaId = hakemusRepository.haeHakemus(hakemusOid).get.asiakirjaId.get
 
     // Lisätään toinen asiakirja
-    var hakemuksenAsiakirjat =
-      hakemusRepository
-        .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    var hakemuksenPyydettavatAsiakirjat =
+      asiakirjaRepository
+        .haePyydettavatAsiakirjat(asiakirjaId)
         .concat(Seq(PyydettavaAsiakirja(None, "tyotodistukset")))
 
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
+      asiakirja = Some(
+        PartialAsiakirja(
+          pyydettavatAsiakirjat = Some(hakemuksenPyydettavatAsiakirjat)
+        )
+      )
     )
-    paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 2)
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.size == 2)
 
-    // Lisätään toinen asiakirja
-    hakemuksenAsiakirjat = hakemusRepository
-      .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
-      .concat(Seq(PyydettavaAsiakirja(None, "tyotodistukset")))
+    // Päivitetään asiakirja
+    hakemuksenPyydettavatAsiakirjat = asiakirjaRepository
+      .haePyydettavatAsiakirjat(asiakirjaId)
 
     val uudetAsiakirjat =
       Seq(
-        hakemuksenAsiakirjat.head,
-        PyydettavaAsiakirja(hakemuksenAsiakirjat.last.id, "alkuperaisetliitteet")
+        hakemuksenPyydettavatAsiakirjat.head,
+        PyydettavaAsiakirja(hakemuksenPyydettavatAsiakirjat.last.id, "alkuperaisetliitteet")
       )
 
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(uudetAsiakirjat)
+      asiakirja = Some(PartialAsiakirja(pyydettavatAsiakirjat = Some(uudetAsiakirjat)))
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 2)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.last.asiakirjanTyyppi == "alkuperaisetliitteet")
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.size == 2)
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.last.asiakirjanTyyppi == "alkuperaisetliitteet")
 
     // Poistetaan ensimmäinen asiakirja
-    hakemuksenAsiakirjat = Seq(
-      hakemusRepository
-        .haePyydettavatAsiakirjatHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    hakemuksenPyydettavatAsiakirjat = Seq(
+      asiakirjaRepository
+        .haePyydettavatAsiakirjat(asiakirjaId)
         .last
     )
 
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(hakemuksenAsiakirjat)
+      asiakirja = Some(
+        PartialAsiakirja(
+          pyydettavatAsiakirjat = Some(hakemuksenPyydettavatAsiakirjat)
+        )
+      )
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.size == 1)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.head.asiakirjanTyyppi == "alkuperaisetliitteet")
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.size == 1)
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.last.asiakirjanTyyppi == "alkuperaisetliitteet")
 
     // Poistetaan kaikki asiakirjat
     updatedHakemus = PartialHakemus(
-      pyydettavatAsiakirjat = Some(Seq.empty[PyydettavaAsiakirja])
+      asiakirja = Some(PartialAsiakirja(pyydettavatAsiakirjat = Some(Seq.empty[PyydettavaAsiakirja])))
     )
 
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
-    assert(paivitettyHakemus.pyydettavatAsiakirjat.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.isEmpty)
   }
 
   @Test
@@ -661,17 +647,21 @@ class ControllerTest extends IntegrationTestBase {
     val dbHakemus = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"))
 
     var updatedHakemus = PartialHakemus(
-      asiakirjamallitTutkinnoista = Some(
-        Map(
-          ece    -> AsiakirjamalliTutkinnosta(ece, true, Some("kuvaus1")),
-          nuffic -> AsiakirjamalliTutkinnosta(nuffic, false, Some("kuvaus2")),
-          aacrao -> AsiakirjamalliTutkinnosta(aacrao, true, None),
-          muu    -> AsiakirjamalliTutkinnosta(muu, false, None)
+      asiakirja = Some(
+        PartialAsiakirja(asiakirjamallitTutkinnoista =
+          Some(
+            Map(
+              ece    -> AsiakirjamalliTutkinnosta(ece, true, Some("kuvaus1")),
+              nuffic -> AsiakirjamalliTutkinnosta(nuffic, false, Some("kuvaus2")),
+              aacrao -> AsiakirjamalliTutkinnosta(aacrao, true, None),
+              muu    -> AsiakirjamalliTutkinnosta(muu, false, None)
+            )
+          )
         )
       )
     )
     var paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
-    var asiakirjamallit   = paivitettyHakemus.asiakirjamallitTutkinnoista
+    var asiakirjamallit   = paivitettyHakemus.asiakirja.get.asiakirjamallitTutkinnoista
     assert(asiakirjamallit.size == 4)
     assert(asiakirjamallit.contains(ece))
     assert(asiakirjamallit(ece).vastaavuus)
@@ -687,17 +677,21 @@ class ControllerTest extends IntegrationTestBase {
     assert(asiakirjamallit(muu).kuvaus.isEmpty)
 
     updatedHakemus = PartialHakemus(
-      asiakirjamallitTutkinnoista = Some(
-        Map(
-          ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
-          naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
-          aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
-          muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
+      asiakirja = Some(
+        PartialAsiakirja(asiakirjamallitTutkinnoista =
+          Some(
+            Map(
+              ece          -> AsiakirjamalliTutkinnosta(ece, false, Some("editoitu kuvaus")),
+              naric_portal -> AsiakirjamalliTutkinnosta(naric_portal, true, Some("naric kuvaus")),
+              aacrao       -> AsiakirjamalliTutkinnosta(aacrao, false, None),
+              muu          -> AsiakirjamalliTutkinnosta(muu, false, Some("uusi kuvaus"))
+            )
+          )
         )
       )
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), updatedHakemus)
-    asiakirjamallit = paivitettyHakemus.asiakirjamallitTutkinnoista
+    asiakirjamallit = paivitettyHakemus.asiakirja.get.asiakirjamallitTutkinnoista
     assert(asiakirjamallit.size == 4)
     assert(asiakirjamallit.contains(ece))
     assert(!asiakirjamallit(ece).vastaavuus)
@@ -722,168 +716,196 @@ class ControllerTest extends IntegrationTestBase {
   def paivitaPartialHakemusWithIMIPyyntoValidRequestReturns200(): Unit = {
     initAtaruHakemusRequests()
 
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006670")
+
     // imiPyynto = true
     var updatedHakemus = PartialHakemus(
-      imiPyynto = Some(ImiPyynto(Some(true), null, null, null))
+      asiakirja = Some(PartialAsiakirja(imiPyynto = Some(ImiPyynto(Some(true), null, null, null))))
     )
-    var requestJson =
-      """{"imiPyynto":{
-        |"imiPyynto":true,
-        |"imiPyyntoNumero":null,
-        |"imiPyyntoLahetetty":null,
-        |"imiPyyntoVastattu":null}}""".stripMargin
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
+    var paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyynto.contains(true))
 
     // Loput IMI-kentät
     updatedHakemus = PartialHakemus(
-      imiPyynto = Some(
-        ImiPyynto(
-          Some(true),
-          Some("123-6P"),
-          Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
-          Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+      asiakirja = Some(
+        PartialAsiakirja(imiPyynto =
+          Some(
+            ImiPyynto(
+              Some(true),
+              Some("123-6P"),
+              Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+              Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+            )
+          )
         )
       )
     )
-    requestJson = """{"imiPyynto": {
-                    |"imiPyynto":true,
-                    |"imiPyyntoNumero":"123-6P",
-                    |"imiPyyntoLahetetty":"2025-08-06T00:00:00.000",
-                    |"imiPyyntoVastattu":"2025-08-15T00:00:00.000"}}""".stripMargin
 
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyynto.contains(true))
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00"))
+    )
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00"))
+    )
 
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00")))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00")))
+    // Päivitetään AP-hakemus
+    updatedHakemus = PartialHakemus(
+      asiakirja = Some(PartialAsiakirja(apHakemus = Some(true)))
+    )
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.apHakemus.contains(true))
 
     // imi-pyynto null -> Loput IMI-kentät pitäisi olla None
     updatedHakemus = PartialHakemus(
-      imiPyynto = Some(
-        ImiPyynto(
-          None
+      asiakirja = Some(
+        PartialAsiakirja(imiPyynto =
+          Some(
+            ImiPyynto(
+              None
+            )
+          )
         )
       )
     )
-    requestJson = """{"imiPyynto":
-                    |{"imiPyynto":null}}""".stripMargin
 
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.isEmpty)
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.isEmpty)
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.isEmpty)
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyynto.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoNumero.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoVastattu.isEmpty)
 
     // IMI-kentät uudestaan sisään
     updatedHakemus = PartialHakemus(
-      imiPyynto = Some(
-        ImiPyynto(
-          Some(true),
-          Some("123-6P"),
-          Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
-          Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+      asiakirja = Some(
+        PartialAsiakirja(imiPyynto =
+          Some(
+            ImiPyynto(
+              Some(true),
+              Some("123-6P"),
+              Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+              Some(LocalDateTime.parse("2025-08-15T00:00:00.000"))
+            )
+          )
         )
       )
     )
-    requestJson = """{"imiPyynto": {
-                    |"imiPyynto":true,
-                    |"imiPyyntoNumero":"123-6P",
-                    |"imiPyyntoLahetetty":"2025-08-06T00:00:00.000",
-                    |"imiPyyntoVastattu":"2025-08-15T00:00:00.000"}}""".stripMargin
-
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
-
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00")))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00")))
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyynto.contains(true))
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00"))
+    )
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00"))
+    )
 
     // Päivitetään joku toinen kenttä, tämä ei saa vaikuttaa IMI-kenttiin
     updatedHakemus = PartialHakemus(
       asiatunnus = Some("OPH-122-2025")
     )
-    requestJson = mapper.writeValueAsString(updatedHakemus)
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyynto.contains(true))
+    assert(paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00"))
+    )
+    assert(
+      paivitettyHakemus.asiakirja.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00"))
+    )
+  }
 
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isOk)
+  @Test
+  @Order(13)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaPartialHakemusWithValmistumisenVahvistusValidRequestReturns200(): Unit = {
+    initAtaruHakemusRequests()
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006670")
+    println(
+      "!!!!!!!!!!!!!!!!!!!!! Current asiakirja: " + asiakirjaRepository
+        .haeKaikkiAsiakirjaTiedot(hakemusRepository.haeHakemus(hakemusOid).get.asiakirjaId)
+        .get
+        ._1
+    )
 
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(true))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.contains("123-6P"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.contains(LocalDateTime.parse("2025-08-06T00:00")))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.contains(LocalDateTime.parse("2025-08-15T00:00")))
-
-    // imi-pyynto false -> Loput IMI-kentät pitäisi olla None
-    updatedHakemus = PartialHakemus(
-      imiPyynto = Some(
-        ImiPyynto(
-          Some(false)
+    var updatedHakemus = PartialHakemus(
+      asiakirja = Some(
+        PartialAsiakirja(valmistumisenVahvistus =
+          Some(
+            ValmistumisenVahvistus(
+              true,
+              Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+              Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+              Some(Myonteinen),
+              Some("Lisätietoja")
+            )
+          )
         )
       )
     )
-    requestJson = """{"imiPyynto":{
-                    |"imiPyynto":false,
-                    |"imiPyyntoNumero":"123-6P",
-                    |"imiPyyntoLahetetty":"2025-08-06T00:00:00.000",
-                    |"imiPyyntoVastattu":"2025-08-15T00:00:00.000"}}""".stripMargin
+    var paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistus)
+    assert(
+      paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty
+        .contains(LocalDateTime.parse("2025-08-06T00:00"))
+    )
+    assert(
+      paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusSaatu
+        .contains(LocalDateTime.parse("2025-08-15T00:00"))
+    )
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusVastaus.contains(Myonteinen))
+    assert(
+      paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.contains("Lisätietoja")
+    )
 
-    mockMvc
-      .perform(
-        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
+    // Päivitetään vahvistustiedot
+    updatedHakemus = PartialHakemus(
+      asiakirja = Some(
+        PartialAsiakirja(valmistumisenVahvistus =
+          Some(
+            ValmistumisenVahvistus(
+              true,
+              Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+              Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+              Some(Kielteinen),
+              None
+            )
+          )
+        )
       )
-      .andExpect(status().isOk)
+    )
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusVastaus.contains(Kielteinen))
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.isEmpty)
 
-    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyynto.contains(false))
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoNumero.isEmpty)
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoLahetetty.isEmpty)
-    assert(paivitettyHakemus.get.imiPyynto.imiPyyntoVastattu.isEmpty)
+    // vahvistus false -> Loput vahvistus-kentät myös None
+    updatedHakemus = PartialHakemus(
+      asiakirja = Some(
+        PartialAsiakirja(valmistumisenVahvistus =
+          Some(
+            ValmistumisenVahvistus(
+              false,
+              Some(LocalDateTime.parse("2025-08-06T00:00:00.000")),
+              Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+              Some(Kielteinen),
+              None
+            )
+          )
+        )
+      )
+    )
+
+    paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
+    assert(!paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistus)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusSaatu.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusVastaus.isEmpty)
+    assert(paivitettyHakemus.asiakirja.get.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.isEmpty)
   }
 
   @Test

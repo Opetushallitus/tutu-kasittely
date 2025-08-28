@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
 import java.time.LocalDateTime
+import java.util.UUID
 import scala.annotation.meta.field
 
 enum AsiakirjamalliLahde {
@@ -13,11 +14,17 @@ enum AsiakirjamalliLahde {
 @Schema(name = "AsiakirjaMalliTutkinnosta")
 case class DbAsiakirjamalliTutkinnosta(
   @(Schema @field)(
-    example = "1.2.246.562.11.00000000000000006666",
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.REQUIRED,
-    maxLength = 40
+    maxLength = 36
   )
-  hakemusOid: HakemusOid,
+  id: UUID,
+  @(Schema @field)(
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 36
+  )
+  asiakirjaId: UUID,
   @(Schema @field)(
     example = "Ece",
     requiredMode = RequiredMode.REQUIRED,

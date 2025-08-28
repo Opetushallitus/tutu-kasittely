@@ -19,14 +19,16 @@ CREATE TYPE asiakirjan_tyyppi AS ENUM (
 CREATE TABLE IF NOT EXISTS pyydettava_asiakirja
 (
     id               uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    hakemus_id       uuid              NOT NULL,
+    asiakirja_id       uuid              NOT NULL,
     asiakirja_tyyppi asiakirjan_tyyppi NOT NULL,
     luotu            TIMESTAMPTZ      DEFAULT now(),
     luoja            VARCHAR(255)      NOT NULL,
     muokattu         TIMESTAMPTZ,
     muokkaaja        VARCHAR(255),
-        CONSTRAINT fk_pyydettava_asiakirja_hakemus FOREIGN KEY (hakemus_id) REFERENCES hakemus (id)
+        CONSTRAINT fk_pyydettava_asiakirja_asiakirja FOREIGN KEY (asiakirja_id) REFERENCES asiakirja (id)
 );
+
+CREATE INDEX idx_pyydettava_asiakirja_asiakirja_id ON pyydettava_asiakirja(asiakirja_id);
 
 COMMENT ON TABLE pyydettava_asiakirja IS 'Tutu-hakemusten hakijalta pyydettävät asiakirjat';
 COMMENT ON COLUMN pyydettava_asiakirja.id IS 'Taulun rivin id';
