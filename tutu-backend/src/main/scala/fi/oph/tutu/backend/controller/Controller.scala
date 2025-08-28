@@ -348,6 +348,7 @@ class Controller(
     @RequestBody muistioBytes: Array[Byte]
   ): ResponseEntity[Any] = {
     Try {
+      val user                             = userService.getEnrichedUserDetails(true)
       val muistioPostBody: MuistioPostBody = mapper.readValue(muistioBytes, classOf[MuistioPostBody])
 
       val sisainen: Boolean       = muistioPostBody.nakyvyys == "sisainen";
@@ -358,7 +359,7 @@ class Controller(
         hakemuksenOsa,
         sisainen,
         muistioPostBody.sisalto,
-        "Hakemuspalvelu"
+        user.userOid
       )
     } match {
       case Success(result) => {

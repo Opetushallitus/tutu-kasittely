@@ -4,13 +4,11 @@ import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
-import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -141,5 +139,4 @@ class MuistioRepository {
         )
     }
   }
-
 }

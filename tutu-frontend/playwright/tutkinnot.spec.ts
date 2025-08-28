@@ -27,6 +27,26 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   mockHakemus(page);
   mockKoodistot(page);
 
+  await page.route(`**/muistio/**`, async (route) => {
+    if (route.request().method() === 'GET') {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'mock_uuid_1',
+          hakemus_id: 'mock_uuid_2',
+          sisalto: 'HUOMIO!',
+          luotu: '2025-08-21T12:52:00',
+          luoja: 'Hakemuspalvelu',
+          muokattu: undefined,
+          muokkaaja: undefined,
+          sisainenHuomio: false,
+          hakemuksenOsa: 'tutkinnot_muu_tutkinto_huomio',
+        }),
+      });
+    }
+  });
+
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
@@ -103,10 +123,12 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-tieto-MUU')).toHaveText(
     'En olekaan suorittanutkoulutusta',
   );
-  await expect(page.getByTestId('tutkinto-huomio-MUU')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-huomio-MUU')).toHaveText(
-    'TODO muu tutkintohuomio',
-  );
+  await expect(
+    page.getByTestId('muistio-tutkinnot_muu_tutkinto_huomio-muistio'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('muistio-tutkinnot_muu_tutkinto_huomio-muistio'),
+  ).toHaveText('HUOMIO!');
 });
 
 test('Tutkintojen lisäys- ja poistopainikkeet näkyvät oikein', async ({
@@ -156,4 +178,86 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
   );
 
   expect(updatedItem.paattymisVuosi).toEqual(2015);
+});
+
+test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', async ({
+  page,
+}) => {
+  mockUser(page);
+  mockHakemus(page);
+  mockKoodistot(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
+  );
+
+  const poistaTutkintoButton = page.getByTestId('poista-tutkinto-button-2');
+  await poistaTutkintoButton.click();
+
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+
+  const [req] = await Promise.all([
+    page.waitForRequest(
+      (r) =>
+        r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
+        r.method() === 'PATCH',
+    ),
+    (async () => {
+      await page.getByTestId('modal-confirm-button').click();
+    })(),
+  ]);
+
+  const payload = req.postDataJSON();
+
+  const deletedItem = (payload.tutkinnot || []).find(
+    (t: Tutkinto) => t.jarjestys === '2',
+  );
+  expect(payload.tutkinnot?.length).toEqual(2);
+  expect(deletedItem).toEqual(undefined);
+});
+
+test('Tutkinnon muistion esittäminen ja tallennus', async ({ page }) => {
+  mockUser(page);
+  mockHakemus(page);
+  mockKoodistot(page);
+
+  await page.route(`**/muistio/**`, async (route) => {
+    if (route.request().method() === 'GET') {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'mock_uuid_1',
+          hakemus_id: 'mock_uuid_2',
+          sisalto: 'HUOMIO!',
+          luotu: '2025-08-21T12:52:00',
+          luoja: 'Hakemuspalvelu',
+          muokattu: undefined,
+          muokkaaja: undefined,
+          sisainenHuomio: false,
+          hakemuksenOsa: 'tutkinnot_muu_tutkinto_huomio',
+        }),
+      });
+    }
+  });
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
+  );
+
+  const muistio = page.getByTestId(
+    'muistio-tutkinnot_muu_tutkinto_huomio-muistio',
+  );
+
+  await expect(muistio).toBeVisible();
+  await expect(muistio).toContainText('HUOMIO!');
+
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes(`/muistio/`) && req.method() === 'POST',
+    ),
+    muistio.fill('EIKU!'),
+  ]);
+
+  expect(request.postDataJSON().sisalto).toEqual('EIKU!');
 });

@@ -186,6 +186,11 @@
       "yhteistutkinto": "Yhteistutkinto",
       "lisaaTutkinto": "Lisää tutkinto",
       "poistaTutkinto": "Poista tutkinto",
+      "modal": {
+        "otsikko": "Vahvista tutkinnon poisto",
+        "teksti": "Olet poistamassa tutkintoa. Vahvista tutkinnon poistaminen."
+      },
+
       "tutkinto": {
         "tutkintoOtsikko": "Tutkinto",
         "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
@@ -240,6 +245,7 @@
     "poista": "Poista",
     "kylla": "Kyllä",
     "ei": "Ei",
-    "paivamaaraFormaatti": "pp.kk.vvvv"
+    "paivamaaraFormaatti": "pp.kk.vvvv",
+    "peruuta": "Peruuta"
   }
 }
