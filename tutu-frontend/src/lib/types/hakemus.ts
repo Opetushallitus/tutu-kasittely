@@ -105,7 +105,7 @@ export type Tutkinto = {
   oppilaitos?: string;
   aloitusVuosi?: number;
   paattymisVuosi?: number;
-  maakoodi?: number;
+  maakoodi?: string;
   muuTutkintoTieto?: string;
   todistuksenPaivamaara?: string;
   koulutusalaKoodi?: string;

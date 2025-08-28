@@ -102,7 +102,7 @@ export const TutkintoComponent = ({
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,
-            maakoodi: Number(event.target.value),
+            maakoodi: event.target.value,
           })
         }
         data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}
