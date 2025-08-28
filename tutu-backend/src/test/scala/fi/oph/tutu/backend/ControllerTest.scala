@@ -1099,20 +1099,6 @@ class ControllerTest extends IntegrationTestBase {
          |    "modifiedBy" : "Esko Esittelijä"
          |  } ],
          |  "taydennyspyyntoLahetetty" : null,
-         |  "pyydettavatAsiakirjat" : [ ],
-         |  "allekirjoituksetTarkistettu" : false,
-         |  "allekirjoituksetTarkistettuLisatiedot" : null,
-         |  "alkuperaisetAsiakirjatSaatuNahtavaksi" : false,
-         |  "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot" : null,
-         |  "selvityksetSaatu" : false,
-         |  "asiakirjamallitTutkinnoista" : { },
-         |  "imiPyynto" : {
-         |    "imiPyynto" : false,
-         |    "imiPyyntoNumero" : null,
-         |    "imiPyyntoLahetetty" : null,
-         |    "imiPyyntoVastattu" : null
-         |  },
-         |  "apHakemus" : true,
          |  "yhteistutkinto" : true,
          |  "tutkinnot" : [
          |    {
