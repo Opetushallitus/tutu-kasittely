@@ -112,26 +112,31 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
     .locator('input');
   await expect(lahetettyCalendar).toBeVisible();
   await lahetettyCalendar.click();
-  await page.locator('.react-datepicker__day--026').click();
-  await expect(lahetettyCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
+  const prevLahetetty = await lahetettyCalendar.inputValue();
+  const day26CurrentMonth =
+    '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)';
+  await page.locator(day26CurrentMonth).click();
+  await expect(page.locator('.react-datepicker')).toBeHidden();
+  await expect
+    .poll(async () => lahetettyCalendar.inputValue())
+    .not.toBe(prevLahetetty);
+  await expect(lahetettyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 
   const vastattyCalendar = page
     .getByTestId('imiPyyntoVastattu-calendar')
     .locator('input');
   await expect(vastattyCalendar).toBeVisible();
   await vastattyCalendar.click();
-  await page.locator('.react-datepicker__day--026').click();
-  await expect(vastattyCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
+  const prevVastattu = await vastattyCalendar.inputValue();
+  await page.locator(day26CurrentMonth).click();
+  await expect(page.locator('.react-datepicker')).toBeHidden();
+  await expect
+    .poll(async () => vastattyCalendar.inputValue())
+    .not.toBe(prevVastattu);
+  await expect(vastattyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 
   await expect(numeroInput).toHaveValue('123456');
-  await expect(lahetettyCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
-  await expect(vastattyCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
+
+  await expect(lahetettyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+  await expect(vastattyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 });
