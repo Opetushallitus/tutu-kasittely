@@ -5,14 +5,14 @@ import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.{dbHakemusFixture, hakijaFixture, onrUserFixture}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.service.*
-import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 
 import java.time.format.DateTimeFormatter
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 class HakemusServiceTest extends UnitTestBase {
   @Mock

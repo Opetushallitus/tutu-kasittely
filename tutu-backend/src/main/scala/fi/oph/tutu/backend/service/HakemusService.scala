@@ -350,6 +350,7 @@ class HakemusService(
                 val poistettavanTutkinnonJarjestys = tutkinto.jarjestys
 
                 hakemusRepository.poistaTutkinto(tutkinto.id.get)
+
                 // Päivitetään muiden tutkintojen järjestysnumerot
                 partialHakemus.tutkinnot.get.map(tutkinto => {
                   if (tutkinto.jarjestys > poistettavanTutkinnonJarjestys && tutkinto.jarjestys != "MUU") {

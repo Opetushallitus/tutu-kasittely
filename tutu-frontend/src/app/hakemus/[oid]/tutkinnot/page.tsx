@@ -127,6 +127,7 @@ export default function TutkintoPage() {
       {muuTutkinto && (
         <MuuTutkintoComponent
           tutkinto={muuTutkinto}
+          hakemus={hakemus}
           updateTutkintoAction={debouncedTutkinnotUpdateAction}
           t={t}
         />
