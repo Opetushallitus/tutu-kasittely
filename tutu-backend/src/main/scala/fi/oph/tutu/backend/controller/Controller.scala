@@ -397,7 +397,7 @@ class Controller(
       case Success(result) => {
         result match {
           case None =>
-            LOG.warn(s"Perustelua ei löytynyt")
+            LOG.info(s"Perustelua ei löytynyt")
             errorMessageMapper.mapPlainErrorMessage("Perustelua ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(perustelu) =>
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
@@ -431,7 +431,7 @@ class Controller(
       case Success(result) => {
         result match {
           case None => {
-            LOG.warn(s"Perustelua ei löytynyt")
+            LOG.warn(s"Perustelun tallennus epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(
               "Perustelun tallennus epäonnistui",
               HttpStatus.INTERNAL_SERVER_ERROR

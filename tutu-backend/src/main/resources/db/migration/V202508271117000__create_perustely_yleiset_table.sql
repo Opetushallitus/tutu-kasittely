@@ -1,10 +1,10 @@
 -- PERUSTELU YLEISET
 CREATE TYPE tutkinnon_asema AS ENUM (
-    'korkeakoulu_1',               -- Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto 
-    'korkeakoulu_2',               -- Toisen vaiheen korkeakoulututkinto
-    'korkeakoulu_1_ja_2',          -- Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot
-    'tieteellinen_jatkotutkinto',  -- Tieteellinen jatkotutknto
-    'alle_korkeakoulutason'        -- Alle korkeakoulutasoinen koulutus
+    'alempi_korkeakouluaste',            -- Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto 
+    'ylempi_korkeakouluaste',            -- Toisen vaiheen korkeakoulututkinto
+    'alempi_ja_ylempi_korkeakouluaste',  -- Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot
+    'tutkijakoulutusaste',               -- Tieteellinen jatkotutknto
+    'ei_korkeakouluaste'                 -- Alle korkeakoulutasoinen koulutus
 );
 
 CREATE TABLE IF NOT EXISTS perustelu_yleiset (
