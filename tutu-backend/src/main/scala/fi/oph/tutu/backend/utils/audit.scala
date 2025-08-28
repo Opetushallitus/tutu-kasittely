@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.utils
 
+import com.google.gson.{JsonArray, JsonParser}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -11,7 +12,6 @@ import org.ietf.jgss.Oid
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
-
 import java.net.InetAddress
 
 object AuditLogger extends Logger {
@@ -26,6 +26,27 @@ class AuditLog(val logger: Logger) {
 
   val audit               = new Audit(logger, "tutu", ApplicationType.VIRKAILIJA)
   private val errorLogger = LoggerFactory.getLogger(classOf[AuditLog])
+
+  def logRead(kohde: String, tunniste: String, operaatio: AuditOperation, request: HttpServletRequest): Unit =
+    val target = new Target.Builder().setField(kohde, tunniste).build()
+    audit.log(getUser(request), operaatio, target, Changes.EMPTY)
+
+  def logCreate(user: User, targetFields: Map[String, String], operaatio: AuditOperation, muutokset: Any): Unit =
+    val target = new Target.Builder()
+    for ((key, value) <- targetFields)
+      target.setField(key, value)
+    // Tämä kludge on lisätty koska audit-lokirjaston gson-konfiguraatio ei kykene serialisoimaan esim. java.time.Instant-luokkia
+    // (eikä paljon muutakaan), mutta kirjaston metodit haluavat kuitenkin parametreina gson-objekteja.
+    // Tällä tavoin audit lokille voi antaa suoraan entiteetin ja kaikki kentät tallennetaan.
+    val elements: JsonArray = new JsonArray()
+    elements.add(JsonParser.parseString(mapper.writeValueAsString(muutokset)))
+    audit.log(user, operaatio, target.build(), elements)
+
+  def logChanges(user: User, targetFields: Map[String, String], operaatio: AuditOperation, changes: Changes): Unit =
+    val target = new Target.Builder()
+    for ((key, value) <- targetFields)
+      target.setField(key, value)
+    audit.log(user, operaatio, target.build(), changes)
 
   def logWithParams(
     request: HttpServletRequest,
@@ -111,8 +132,43 @@ object AuditOperation {
     val name = "KIRJAUTUMINEN"
   }
 
-  case object KoulutuksetToteutuksetHakukohteet extends AuditOperation {
-    val name = "KOULUTUKSET_TOTEUTUKSET_HAKUKOHTEET"
+  case object CreateHakemus extends AuditOperation {
+    val name = "HAKEMUKSEN_LUONTI"
+  }
+
+  case object CreateMuistio extends AuditOperation {
+    val name = "MUISTION_LUONTI"
+  }
+  case object UpdateHakemus extends AuditOperation {
+    val name = "HAKEMUKSEN_PAIVITYS"
+  }
+
+  case object ReadLiitteenTiedot extends AuditOperation {
+    val name = "LIITTEEN_TIEDOT_LUKU"
+  }
+
+  case object ReadHakemus extends AuditOperation {
+    val name = "HAKEMUKSEN_LUKU"
+  }
+
+  case object ReadHakemukset extends AuditOperation {
+    val name = "HAKEMUKSIEN_LUKU"
+  }
+
+  case object ReadEsittelija extends AuditOperation {
+    val name = "ESITTELIJAN_LUKU"
+  }
+
+  case object ReadMuistio extends AuditOperation {
+    val name = "MUISTION_LUKU"
+  }
+
+  case object ReadPerustelu extends AuditOperation {
+    val name = "PERUSTELUN_LUKU"
+  }
+
+  case object ReadKoodisto extends AuditOperation {
+    val name = "KOODISTON_LUKU"
   }
 }
 
