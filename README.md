@@ -16,18 +16,26 @@ spring.datasource.url=jdbc:postgresql://localhost:5433/tutu
 spring.datasource.username=app
 spring.datasource.password=app
 
-session.schema.name=tutu
-
 flyway.locations=classpath:db/migration
 
 opintopolku.virkailija.url=https://virkailija.untuvaopintopolku.fi
+#opintopolku.virkailija.url=https://virkailija.testiopintopolku.fi
+
 cas.url=${opintopolku.virkailija.url}/cas
+
 tutu.ui.url=https://localhost:3123
 tutu.backend.url=https://localhost:8444/tutu-backend
 tutu-backend.cas.username=<CAS-KAYTTAJATUNNUS>
 tutu-backend.cas.password=<CAS-SALASANA>
-tutu-backend.esittelija.kayttooikeusryhma.ids=<id>,<id>
+# Untuvan käyttöoikeusryhmät
+tutu-backend.esittelija.kayttooikeusryhma.ids=71713274,71713307
 #logging.level.org.springframework.cache=TRACE
+logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
+
+#logging.level.org.springframework.security=DEBUG
+#logging.level.org.jasig.cas.client=DEBUG
+#logging.level.org.apereo.cas=DEBUG
+#logging.level.org.springframework.web=DEBUG
 
 server.port=8444
 #self-signed SSL-sertifikaatti lokaalia kayttoa varten - ota pois kommenteista jos olet ajanut generate_certs.sh

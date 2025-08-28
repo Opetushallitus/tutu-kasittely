@@ -1,0 +1,791 @@
+{
+  "haku": null,
+  "etunimet": "Kalle Mikael",
+  "key": "1.2.246.562.11.00000000000000006670",
+  "content": {
+    "answers": [
+      {
+        "key": "1098b604-115b-4e59-ba11-073c0924e473",
+        "value": "1",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "1d4bb273-0889-401e-aae1-5134a12cf238",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "291176ff-1725-4350-9e75-9b08293b569a",
+        "value": "1",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "3180ba61-336e-435d-8a2b-26500ea241cf",
+        "value": "1",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "337c0b08-03d3-4659-9309-aa1bbe731717",
+        "value": "1",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "5f00f6e1-777a-42a8-ae69-82a4b049c0a6",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "6259e995-c34d-458e-834b-f1061cec09a7",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "66a6cdb5-8930-4c61-b704-806901264646",
+        "value": "Yes",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "6f284c1d-15ed-4ca8-9474-69d310eed7cf",
+        "value": "Kyllä",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "7d07bf15-79ab-4d2a-b1b9-63f03c1d0862",
+        "value": "Hitsari",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "7e2c9068-886e-4518-990d-938901116a1f",
+        "value": "Ei",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "7e526c98-7bfd-437e-9628-d78e3712619d",
+        "value": "Kyllä",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "82604c92-954a-44d6-959f-3efc5363b6a1",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "85d1aac5-b75f-4bba-9b52-6a42aad1c437",
+        "value": "Yes",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "8989cb83-2ffe-4d81-91c9-048336013db2",
+        "value": "Ei",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "a03ac23e-7056-4792-bd74-caa6a3607fa0",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "address",
+        "value": "Kontulantie 1",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "asiointi-kieli",
+        "value": "2",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "bcd33577-cb01-4ef0-bb02-c4b128722ec3",
+        "value": null,
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "birth-date",
+        "value": "12.07.1980",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "cb593dfd-e361-493b-971c-09597bb54f4b",
+        "value": "Masa todistaa oikeeksi pieksämäen apsilla.",
+        "fieldType": "textArea",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "country-of-residence",
+        "value": "246",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "email",
+        "value": "tatu.honkanen@rebase.fi",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "f0af0bb7-8e4a-4582-9e5c-dd3de9273beb",
+        "value": "Yes",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "f1882e83-2836-440d-a197-4950571e798a",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "f4da3e15-fcd6-4a65-a408-8550bfb4fbd2",
+        "value": "Yes",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "f738b265-1670-4600-b72d-d11df7892ebb",
+        "value": "0",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "first-name",
+        "value": "Kalle Mikael",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "gender",
+        "value": "1",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "home-town",
+        "value": "976",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "language",
+        "value": "FI",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "last-name",
+        "value": "Aarnio Tes",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "paatos-kieli",
+        "value": "swedish",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "phone",
+        "value": "0441122321",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "postal-code",
+        "value": "00950",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "postal-office",
+        "value": "HELSINKI",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "preferred-name",
+        "value": "Kalle",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "ssn",
+        "value": "120780-9057",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "todistus-aitoustarkistus-lupa",
+        "value": "1",
+        "fieldType": "singleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-apply-reason",
+        "value": "1",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-first-degree-country",
+        "value": "064",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-first-degree-end-year",
+        "value": "2000",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-first-degree-name",
+        "value": "Päälikkö",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-first-degree-school",
+        "value": "Butan Amattikoulu",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-first-degree-start-year",
+        "value": "1999",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-other-degree-text",
+        "value": "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111",
+        "fieldType": "textArea",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-second-degree-country",
+        "value": "288",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-second-degree-end-year",
+        "value": "2007",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-second-degree-name",
+        "value": "Johto tehtävä",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-second-degree-school",
+        "value": "Johto koulu",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-second-degree-start-year",
+        "value": "2006",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-third-degree-country",
+        "value": "218",
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-third-degree-end-year",
+        "value": "2011",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-third-degree-name",
+        "value": "Apu poika",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-third-degree-school",
+        "value": "Apu koulu",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "tutu-third-degree-start-year",
+        "value": "2010",
+        "fieldType": "textField",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "142b4364-1b26-4c95-a98c-d500edf2fcfa",
+        "value": [
+          "0"
+        ],
+        "fieldType": "multipleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "216fb38b-7864-4eec-84be-356b420c9167",
+        "value": [
+          "1",
+          "2"
+        ],
+        "fieldType": "multipleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "54559d94-9dff-4103-9b31-a0a4a5bbd7bd",
+        "value": [],
+        "fieldType": "multipleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "564d6150-478b-4338-84c2-1846bf91d615",
+        "value": [],
+        "fieldType": "multipleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "582be518-e3ea-4692-8a2c-8370b40213e9",
+        "value": [
+          "a2d2f8f2-a007-4bd5-88a0-64542dbe4118"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "5b179002-91a4-449d-8c4a-d024637a516d",
+        "value": [
+          "3e05ba1b-4be8-463a-8bfd-ffb9cfcca2cd"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "7281aa4d-39ee-4e5b-a183-11a49e60d678",
+        "value": [
+          "e8cf659f-ba83-43ce-91ab-40bead8f2de8"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "7a403a34-e551-4eed-93e7-52c7ab97ba13",
+        "value": [
+          "1dbaa517-d0c8-452a-8c3c-97cb35569cf0"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "8b40d098-da19-4017-9e39-23568ec18140",
+        "value": [
+          "04a2507d-6e81-4442-ba36-33af1a5528f6"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "9d67450d-7f2a-4d25-8070-ec360c912fdb",
+        "value": [
+          "ea272651-a40e-421a-a839-2a67672c30b5"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "ac90b133-1c67-4850-b24c-eb513d509a5c",
+        "value": [
+          "240bcd7d-a757-451c-a7de-7beb117b4919"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "b04bc60f-2c1a-4e6b-8919-f7269a63ccf8",
+        "value": [
+          "372f5dfb-f8c7-489f-b57f-09e88ab3f378"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "b2e6ddc3-f571-4937-8444-8042a6b725fe",
+        "value": [
+          "387e11d9-d36f-4418-847b-9e751963df0d"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "c5bbd06e-01b1-4b29-af79-5e93da966940",
+        "value": [
+          "019226e0-a16a-4330-b658-77d436fdabee"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "c6e4b7d5-7d5e-4c79-b0be-ac8bd2db8b76",
+        "value": [
+          "21412d38-9461-46ab-8ac5-a8d136411959"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "e5a0fcdc-7d82-4dfb-8919-e894020d8bcf",
+        "value": [
+          "8ce5405d-3f86-4722-bbc0-b800c7022e0d"
+        ],
+        "fieldType": "attachment",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "e8cd9e32-6690-4e30-a099-e6a71c433c24",
+        "value": [
+          "7"
+        ],
+        "fieldType": "multipleChoice",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      },
+      {
+        "key": "nationality",
+        "value": [
+          [
+            "246"
+          ]
+        ],
+        "fieldType": "dropdown",
+        "original-followup": null,
+        "original-question": null,
+        "duplikoitu-kysymys-hakukohde-oid": null,
+        "duplikoitu-followup-hakukohde-oid": null
+      }
+    ]
+  },
+  "created": "2025-08-19T07:10:39.874Z",
+  "state": "active",
+  "modified": "2025-08-19T07:11:49.073Z",
+  "submitted": "2025-08-19T07:10:39.874Z",
+  "lang": "fi",
+  "sukunimi": "Aarnio Tes",
+  "application-review-notes": null,
+  "form_id": 1813377,
+  "henkilotunnus": "120780-9057",
+  "person-oid": "1.2.246.562.98.22159980923",
+  "information-request-timestamp": null,
+  "application-hakukohde-attachment-reviews": [
+    {
+      "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "7281aa4d-39ee-4e5b-a183-11a49e60d678",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "7a403a34-e551-4eed-93e7-52c7ab97ba13",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "8b40d098-da19-4017-9e39-23568ec18140",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "9d67450d-7f2a-4d25-8070-ec360c912fdb",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "ac90b133-1c67-4850-b24c-eb513d509a5c",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "b04bc60f-2c1a-4e6b-8919-f7269a63ccf8",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "b2e6ddc3-f571-4937-8444-8042a6b725fe",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "c6e4b7d5-7d5e-4c79-b0be-ac8bd2db8b76",
+      "state": "not-checked",
+      "hakukohde": "form"
+    },
+    {
+      "attachment": "e5a0fcdc-7d82-4dfb-8919-e894020d8bcf",
+      "state": "not-checked",
+      "hakukohde": "form"
+    }
+  ],
+  "application-hakukohde-reviews": [
+    {
+      "requirement": "processing-state",
+      "state": "processing-fee-paid",
+      "hakukohde": "form"
+    }
+  ],
+  "hakutoiveet": []
+}

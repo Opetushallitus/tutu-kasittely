@@ -1,7 +1,7 @@
 --Replace <OWN_USER_OID> with your own OID from /cas/me
 
 -- Esittelija
-insert into esittelija (esittelija_oid, luoja, maatjavaltiot_koodi_uri) values ('<OWN_USER_OID>', 'test', '0008');
+insert into esittelija (esittelija_oid, luoja, maakoodi) values ('<OWN_USER_OID>', 'test', '752');
 
 -- Hakemus
 insert into hakemus (hakemus_oid, esittelija_id, hakemus_koskee, luoja) values ('1.2.246.562.11.00000000000002354802', (select id from esittelija where esittelija_oid = '<OWN_USER_OID>'), 0, 'test');

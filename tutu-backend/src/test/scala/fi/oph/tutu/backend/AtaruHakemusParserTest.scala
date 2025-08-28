@@ -7,7 +7,6 @@ import org.mockito.{Mock, MockitoAnnotations}
 import fi.oph.tutu.backend.domain.{
   Answer,
   AtaruHakemus,
-  AtaruLomake,
   EmptyValue,
   Kieli,
   KoodistoItem,
@@ -24,13 +23,15 @@ import org.json4s.native.JsonMethods
 import org.json4s.jvalue2extractable
 import org.junit.jupiter.api.Assertions.assertEquals
 
+import java.util.UUID
+
 class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
   @Mock
   var koodistoService: KoodistoService = _
 
   var ataruHakemusParser: AtaruHakemusParser = _
 
-  val hakemus = JsonMethods.parse(loadJson("ataruHakemus.json")).extract[AtaruHakemus]
+  val hakemus: AtaruHakemus = JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]
 
   @BeforeEach
   def setup(): Unit = {
@@ -432,25 +433,25 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
 
       assertEquals(rootItems.size, 1)
 
-      assertEquals(rootItems(0).key, "101")
+      assertEquals(rootItems.head.key, "101")
 
-      val childrenOf101 = rootItems(0).children
+      val childrenOf101 = rootItems.head.children
 
       assertEquals(childrenOf101.size, 2)
 
-      assertEquals(childrenOf101(0).key, "202")
+      assertEquals(childrenOf101.head.key, "202")
       assertEquals(childrenOf101(1).key, "203")
 
-      val valuesOf202 = childrenOf101(0).value
+      val valuesOf202 = childrenOf101.head.value
       val valuesOf203 = childrenOf101(1).value
 
       assertEquals(valuesOf202.size, 2)
       assertEquals(valuesOf203.size, 1)
 
-      assertEquals(valuesOf202(0).value, "301")
+      assertEquals(valuesOf202.head.value, "301")
       assertEquals(valuesOf202(1).value, "302")
 
-      assertEquals(valuesOf203(0).value, "303")
+      assertEquals(valuesOf203.head.value, "303")
 
       val followupsOf202 = valuesOf202.flatMap(value => value.followups)
       val followupsOf203 = valuesOf203.flatMap(value => value.followups)
@@ -458,21 +459,167 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       assertEquals(followupsOf202.size, 2)
       assertEquals(followupsOf203.size, 0)
 
-      assertEquals(followupsOf202(0).key, "401")
+      assertEquals(followupsOf202.head.key, "401")
       assertEquals(followupsOf202(1).key, "402")
 
-      val valuesOf401 = followupsOf202(0).value
+      val valuesOf401 = followupsOf202.head.value
 
       assertEquals(valuesOf401.size, 1)
 
-      assertEquals(valuesOf401(0).value, "501")
+      assertEquals(valuesOf401.head.value, "501")
 
       val valuesOf402 = followupsOf202(1).value
 
       assertEquals(valuesOf402.size, 1)
 
-      assertEquals(valuesOf402(0).value, "502")
+      assertEquals(valuesOf402.head.value, "502")
     }
-
   }
+
+  @Test
+  def parseTutkinnotWithGeneratedIds(): Unit = {
+    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+    val hakemusId                  = UUID.randomUUID()
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val tutkinto1   = tutkinnot.head
+    val tutkinto2   = tutkinnot(1)
+    val tutkinto3   = tutkinnot(2)
+    val muuTutkinto = tutkinnot.last
+
+    assertEquals(tutkinto1.hakemusId, hakemusId)
+    assertEquals(Some("Tutkinto1"), tutkinto1.nimi)
+    assertEquals(Some("Oppilaitos1"), tutkinto1.oppilaitos)
+    assertEquals(Some(2001), tutkinto1.aloitusVuosi)
+    assertEquals(Some(2003), tutkinto1.paattymisVuosi)
+    assertEquals("1", tutkinto1.jarjestys)
+    assertEquals(None, tutkinto1.muuTutkintoTieto)
+    assertEquals(Some("152"), tutkinto1.maakoodi)
+    assertEquals(None, tutkinto1.todistuksenPaivamaara)
+    assertEquals(None, tutkinto1.koulutusalaKoodi)
+    assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto1.todistusOtsikko)
+    assertEquals(None, tutkinto1.muuTutkintoMuistioId)
+
+    assertEquals(tutkinto2.hakemusId, hakemusId)
+    assertEquals(Some("Tutkinto2"), tutkinto2.nimi)
+    assertEquals(Some("Oppilaitos2"), tutkinto2.oppilaitos)
+    assertEquals(Some(2005), tutkinto2.aloitusVuosi)
+    assertEquals(Some(2005), tutkinto2.paattymisVuosi)
+    assertEquals("2", tutkinto2.jarjestys)
+    assertEquals(None, tutkinto2.muuTutkintoTieto)
+    assertEquals(Some("531"), tutkinto2.maakoodi)
+    assertEquals(None, tutkinto2.todistuksenPaivamaara)
+    assertEquals(None, tutkinto2.koulutusalaKoodi)
+    assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto2.todistusOtsikko)
+    assertEquals(None, tutkinto2.muuTutkintoMuistioId)
+
+    assertEquals(tutkinto3.hakemusId, hakemusId)
+    assertEquals(Some("Tutkinto3"), tutkinto3.nimi)
+    assertEquals(Some("Oppilaitos3"), tutkinto3.oppilaitos)
+    assertEquals(Some(2005), tutkinto3.aloitusVuosi)
+    assertEquals(Some(2025), tutkinto3.paattymisVuosi)
+    assertEquals("3", tutkinto3.jarjestys)
+    assertEquals(None, tutkinto3.muuTutkintoTieto)
+    assertEquals(Some("826"), tutkinto3.maakoodi)
+    assertEquals(None, tutkinto3.todistuksenPaivamaara)
+    assertEquals(None, tutkinto3.koulutusalaKoodi)
+    assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto3.todistusOtsikko)
+    assertEquals(None, tutkinto3.muuTutkintoMuistioId)
+
+    assertEquals(muuTutkinto.jarjestys, "MUU")
+    assertEquals(muuTutkinto.hakemusId, hakemusId)
+    assertEquals(None, muuTutkinto.nimi)
+    assertEquals(None, muuTutkinto.oppilaitos)
+    assertEquals(None, muuTutkinto.aloitusVuosi)
+    assertEquals(None, muuTutkinto.paattymisVuosi)
+    assertEquals(
+      muuTutkinto.muuTutkintoTieto,
+      Some(
+        "Mä oon suorittanut tutkintoja ainakin:\n\n-Norja\n-Oulu\n-Peräseinäjoki\n\nVannon kautta kiven ja kannon, bro."
+      )
+    )
+    assertEquals(None, muuTutkinto.maakoodi)
+    assertEquals(None, muuTutkinto.todistuksenPaivamaara)
+    assertEquals(None, muuTutkinto.koulutusalaKoodi)
+    assertEquals(None, muuTutkinto.paaaaineTaiErikoisala)
+    assertEquals(None, muuTutkinto.todistusOtsikko)
+    assertEquals(None, muuTutkinto.muuTutkintoMuistioId)
+  }
+
+  @Test
+  def parseTutkinnotWithDefinedIds(): Unit = {
+    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6670.json")).extract[AtaruHakemus]
+    val hakemusId                  = UUID.randomUUID()
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val tutkinto1   = tutkinnot.head
+    val tutkinto2   = tutkinnot(1)
+    val tutkinto3   = tutkinnot(2)
+    val muuTutkinto = tutkinnot.last
+
+    assertEquals(tutkinto1.hakemusId, hakemusId)
+    assertEquals(Some("Päälikkö"), tutkinto1.nimi)
+    assertEquals(Some("Butan Amattikoulu"), tutkinto1.oppilaitos)
+    assertEquals(Some(1999), tutkinto1.aloitusVuosi)
+    assertEquals(Some(2000), tutkinto1.paattymisVuosi)
+    assertEquals("1", tutkinto1.jarjestys)
+    assertEquals(None, tutkinto1.muuTutkintoTieto)
+    assertEquals(Some("064"), tutkinto1.maakoodi)
+    assertEquals(None, tutkinto1.todistuksenPaivamaara)
+    assertEquals(None, tutkinto1.koulutusalaKoodi)
+    assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto1.todistusOtsikko)
+    assertEquals(None, tutkinto1.muuTutkintoMuistioId)
+
+    assertEquals(tutkinto2.hakemusId, hakemusId)
+    assertEquals(Some("Johto tehtävä"), tutkinto2.nimi)
+    assertEquals(Some("Johto koulu"), tutkinto2.oppilaitos)
+    assertEquals(Some(2006), tutkinto2.aloitusVuosi)
+    assertEquals(Some(2007), tutkinto2.paattymisVuosi)
+    assertEquals("2", tutkinto2.jarjestys)
+    assertEquals(None, tutkinto2.muuTutkintoTieto)
+    assertEquals(Some("288"), tutkinto2.maakoodi)
+    assertEquals(None, tutkinto2.todistuksenPaivamaara)
+    assertEquals(None, tutkinto2.koulutusalaKoodi)
+    assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto2.todistusOtsikko)
+    assertEquals(None, tutkinto2.muuTutkintoMuistioId)
+
+    assertEquals(tutkinto3.hakemusId, hakemusId)
+    assertEquals(Some("Apu poika"), tutkinto3.nimi)
+    assertEquals(Some("Apu koulu"), tutkinto3.oppilaitos)
+    assertEquals(Some(2010), tutkinto3.aloitusVuosi)
+    assertEquals(Some(2011), tutkinto3.paattymisVuosi)
+    assertEquals("3", tutkinto3.jarjestys)
+    assertEquals(None, tutkinto3.muuTutkintoTieto)
+    assertEquals(Some("218"), tutkinto3.maakoodi)
+    assertEquals(None, tutkinto3.todistuksenPaivamaara)
+    assertEquals(None, tutkinto3.koulutusalaKoodi)
+    assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
+    assertEquals(None, tutkinto3.todistusOtsikko)
+    assertEquals(None, tutkinto3.muuTutkintoMuistioId)
+
+    assertEquals(muuTutkinto.hakemusId, hakemusId)
+    assertEquals(None, muuTutkinto.nimi)
+    assertEquals(None, muuTutkinto.oppilaitos)
+    assertEquals(None, muuTutkinto.aloitusVuosi)
+    assertEquals(None, muuTutkinto.paattymisVuosi)
+    assertEquals(
+      muuTutkinto.muuTutkintoTieto,
+      Some(
+        "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
+      )
+    )
+    assertEquals(muuTutkinto.jarjestys, "MUU")
+    assertEquals(None, muuTutkinto.maakoodi)
+    assertEquals(None, muuTutkinto.todistuksenPaivamaara)
+    assertEquals(None, muuTutkinto.koulutusalaKoodi)
+    assertEquals(None, muuTutkinto.paaaaineTaiErikoisala)
+    assertEquals(None, muuTutkinto.todistusOtsikko)
+    assertEquals(None, muuTutkinto.muuTutkintoMuistioId)
+  }
+
 }

@@ -1,7 +1,7 @@
 {
   "valinnat": {
     "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnakkaistaminen",
+      "tutkinnonTasonRinnakkaistaminen": "Tutkinnon tason rinnastaminen",
       "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
       "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
       "tutkintoSuoritusRinnakkaistaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnakkaistaminen",
@@ -111,7 +111,7 @@
     },
     "asiakirjat": {
       "otsikko": "Asiakirjat",
-      "avaaHakemuspalvelussa": "Avaa asiakirjat hakemuspalvelussa",
+      "avaaHakemuspalvelussa": "Avaa hakemus hakemuspalvelussa",
       "asiakirja": "Asiakirja",
       "saapunut": "Saapunut",
       "uusi": "Uusi",
@@ -183,7 +183,24 @@
     },
     "tutkinnot": {
       "otsikko": "Tutkinnot",
-      "yhteistutkinto": "Yhteistutkinto"
+      "yhteistutkinto": "Yhteistutkinto",
+      "lisaaTutkinto": "Lisää tutkinto",
+      "poistaTutkinto": "Poista tutkinto",
+      "tutkinto": {
+        "tutkintoOtsikko": "Tutkinto",
+        "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
+        "tutkintoTodistusOtsikko": "Tutkintotodistusotsikko",
+        "tutkinnonNimi": "Tutkinnon nimi",
+        "tutkinnonPaaaineTaiErikoisala": "Tutkinnon pääaine tai erikoisala",
+        "oppilaitos": "Korkeakoulun tai oppilaitoksen nimi",
+        "tutkinnonMaa": "Korkeakoulun tai oppilaitoksen sijaintimaa",
+        "opintojenAloitusVuosi": "Opintojen alkamisvuosi",
+        "opintojenPaattymisVuosi": "Opintojen päättymisvuosi",
+        "todistuksenPvm": "Todistuksen pvm",
+        "tutkinnonKoulutusala": "Tutkinnon koulutusala",
+        "muuTutkintoHuomio": "Huomiot muista tutkinnoista päätökseen",
+        "muuTutkintoHuomioSelite": "Tiedot tutkinnoista tai opintosuorituksista: tutkinnon tai opintosuorituksen nimi, korkeakoulun tai oppilaitoksen nimi, sijaintimaa sekä todistuksen päivämäärä"
+      }
     }
   },
   "hakemusotsikko": {

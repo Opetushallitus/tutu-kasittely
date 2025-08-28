@@ -57,19 +57,22 @@ class ControllerTest extends IntegrationTestBase {
   var kayttooikeusService: KayttooikeusService = _
 
   @Autowired
-  var userService: UserService = _
+  var userService: UserService                       = _
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
 
   var esittelija: Option[DbEsittelija] = None
-  @BeforeAll def setup(): Unit         = {
+
+  @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    esittelija = esittelijaRepository.upsertEsittelija("0008", UserOid(esittelijaOidString), "testi")
+    esittelija = esittelijaRepository.upsertEsittelija("752", UserOid(esittelijaOidString), "testi")
   }
+
   @BeforeEach
   def setupTest(): Unit =
     when(mockOnrService.haeAsiointikieli(any[String]))
@@ -121,16 +124,51 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isUnauthorized)
 
   @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
+    val expectedResult =
+      """[
+        |  {
+        |    "esittelijaOid": "1.2.246.562.24.00000000001",
+        |    "etunimi": "Roope",
+        |    "sukunimi": "Roihuvuori"
+        |  },
+        |  {
+        |    "esittelijaOid": "1.2.246.562.24.00000000002",
+        |    "etunimi": "Jarmo",
+        |    "sukunimi": "Jakomäki"
+        |  }
+        |]""".stripMargin
+    when(
+      kayttooikeusService.haeEsittelijat
+    ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
+    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
+      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+
+    mockMvc
+      .perform(
+        get("/api/esittelijat")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(expectedResult))
+  }
+
+  @Test
   @Order(1)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6666.json")))
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
-          "maakoodi": "0008",
+          "maakoodi": "752",
           "hakemusKoskee": 1
           }"""
 
@@ -151,7 +189,7 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "0008", 1)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "752", 1)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -187,7 +225,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -204,7 +242,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0008", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -224,10 +262,13 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006665",
-          "maakoodi": "0008",
+          "maakoodi": "752",
           "hakemusKoskee": 0
           }"""
 
@@ -253,6 +294,13 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
+
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")))
+      .thenReturn(Right(loadJson("ataruHakemus6668.json")))
+
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
 
@@ -302,8 +350,8 @@ class ControllerTest extends IntegrationTestBase {
                                 "taydennyspyyntoLahetetty": null
                               } ]"""
 
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "0000", 0))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "0008", 1))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "000", 0))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "752", 1))
 
     val result = mockMvc
       .perform(
@@ -839,36 +887,439 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
-    val expectedResult =
-      """[
-        |  {
-        |    "esittelijaOid": "1.2.246.562.24.00000000001",
-        |    "etunimi": "Roope",
-        |    "sukunimi": "Roihuvuori"
-        |  },
-        |  {
-        |    "esittelijaOid": "1.2.246.562.24.00000000002",
-        |    "etunimi": "Jarmo",
-        |    "sukunimi": "Jakomäki"
-        |  }
-        |]""".stripMargin
-    when(
-      kayttooikeusService.haeEsittelijat
-    ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
-    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
-      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
-    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
-      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+  @Order(14)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoHakemusValidRequestStoresTutkinnotCorrectly(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006670",
+          "maakoodi": "752",
+          "hakemusKoskee": 1
+          }"""
 
     mockMvc
       .perform(
-        get("/api/esittelijat")
+        post("/api/ataru-hakemus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+
+    val hakemus = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+
+    val tutkinnot: Seq[Tutkinto] = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.get.id)
+
+    val tutkinto1 = tutkinnot.head
+    assert(tutkinto1.hakemusId == hakemus.get.id)
+    assert(tutkinto1.jarjestys == "1")
+    assert(tutkinto1.nimi.contains("Päälikkö"))
+    assert(tutkinto1.oppilaitos.contains("Butan Amattikoulu"))
+    assert(tutkinto1.aloitusVuosi.contains(1999))
+    assert(tutkinto1.paattymisVuosi.contains(2000))
+    assert(tutkinto1.maakoodi.contains("762"))
+    assert(tutkinto1.muuTutkintoTieto.isEmpty)
+
+    val tutkinto2 = tutkinnot(1)
+    assert(tutkinto2.hakemusId == hakemus.get.id)
+    assert(tutkinto2.jarjestys == "2")
+    assert(tutkinto2.nimi.contains("Johto tehtävä"))
+    assert(tutkinto2.oppilaitos.contains("Johto koulu"))
+    assert(tutkinto2.aloitusVuosi.contains(2006))
+    assert(tutkinto2.paattymisVuosi.contains(2007))
+    assert(tutkinto2.maakoodi.contains("762"))
+    assert(tutkinto2.muuTutkintoTieto.isEmpty)
+
+    val tutkinto3 = tutkinnot(2)
+    assert(tutkinto3.hakemusId == hakemus.get.id)
+    assert(tutkinto3.jarjestys == "3")
+    assert(tutkinto3.nimi.contains("Apu poika"))
+    assert(tutkinto3.oppilaitos.contains("Apu koulu"))
+    assert(tutkinto3.aloitusVuosi.contains(2010))
+    assert(tutkinto3.paattymisVuosi.contains(2011))
+    assert(tutkinto3.maakoodi.contains("762"))
+    assert(tutkinto3.muuTutkintoTieto.isEmpty)
+
+    val muuTutkinto = tutkinnot.last
+    assert(muuTutkinto.hakemusId == hakemus.get.id)
+    assert(muuTutkinto.jarjestys == "MUU")
+    assert(muuTutkinto.nimi.isEmpty)
+    assert(muuTutkinto.oppilaitos.isEmpty)
+    assert(muuTutkinto.aloitusVuosi.isEmpty)
+    assert(muuTutkinto.paattymisVuosi.isEmpty)
+    assert(muuTutkinto.maakoodi.isEmpty)
+    assert(
+      muuTutkinto.muuTutkintoTieto.contains(
+        "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
+      )
+    )
+  }
+
+  @Test
+  @Order(15)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def haeHakemusValidRequestReturnsTutkinnotCorrectly(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+
+    val hakemusId =
+      hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670")).get.id
+
+    val expectedResult =
+      s"""{
+         |  "hakemusOid" : "1.2.246.562.11.00000000000000006670",
+         |  "lomakeOid" : "aaa89601-78dd-48c7-91fa-7da419f680bb",
+         |  "hakija" : {
+         |    "etunimet" : "Testi Kolmas",
+         |    "kutsumanimi" : "Tatu",
+         |    "sukunimi" : "Hakija",
+         |    "kansalaisuus" : {
+         |      "fi" : "Suomi",
+         |      "sv" : "Finland",
+         |      "en" : "Finland"
+         |    },
+         |    "hetu" : "180462-9981",
+         |    "syntymaaika" : "18.04.1962",
+         |    "matkapuhelin" : "+3584411222333",
+         |    "asuinmaa" : {
+         |      "fi" : "Suomi",
+         |      "sv" : "Finland",
+         |      "en" : "Finland"
+         |    },
+         |    "katuosoite" : "Sillitie 1",
+         |    "postinumero" : "00800",
+         |    "postitoimipaikka" : "HELSINKI",
+         |    "kotikunta" : {
+         |      "fi" : "Kajaani",
+         |      "sv" : "Kajana",
+         |      "en" : "Kanada"
+         |    },
+         |    "sahkopostiosoite" : "patu.kuusinen@riibasu.fi"
+         |  },
+         |  "sisalto" : null,
+         |  "liitteidenTilat" : [ {
+         |    "attachment" : "582be518-e3ea-4692-8a2c-8370b40213e9",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "5b179002-91a4-449d-8c4a-d024637a516d",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "7281aa4d-39ee-4e5b-a183-11a49e60d678",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "7a403a34-e551-4eed-93e7-52c7ab97ba13",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "8b40d098-da19-4017-9e39-23568ec18140",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "9d67450d-7f2a-4d25-8070-ec360c912fdb",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "ac90b133-1c67-4850-b24c-eb513d509a5c",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "b04bc60f-2c1a-4e6b-8919-f7269a63ccf8",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "b2e6ddc3-f571-4937-8444-8042a6b725fe",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "c5bbd06e-01b1-4b29-af79-5e93da966940",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "c6e4b7d5-7d5e-4c79-b0be-ac8bd2db8b76",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  }, {
+         |    "attachment" : "e5a0fcdc-7d82-4dfb-8919-e894020d8bcf",
+         |    "state" : "not-checked",
+         |    "hakukohde" : "form"
+         |  } ],
+         |  "hakemusKoskee" : 0,
+         |  "asiatunnus" : "OPH-122-2025",
+         |  "kirjausPvm" : "2025-08-19T07:10:39.874",
+         |  "esittelyPvm" : null,
+         |  "paatosPvm" : null,
+         |  "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+         |  "ataruHakemuksenTila" : "KasittelyMaksettu",
+         |  "kasittelyVaihe" : "AlkukasittelyKesken",
+         |  "muutosHistoria" : [ {
+         |    "role" : "Esittelija",
+         |    "time" : "2025-06-17T10:02:20.473",
+         |    "modifiedBy" : "Esko Esittelijä"
+         |  }, {
+         |    "role" : "Hakija",
+         |    "time" : "2025-06-17T15:19:44.23",
+         |    "modifiedBy" : "Tatu Hakija"
+         |  }, {
+         |    "role" : "Esittelija",
+         |    "time" : "2025-06-18T05:57:18.866",
+         |    "modifiedBy" : "Esko Esittelijä"
+         |  } ],
+         |  "taydennyspyyntoLahetetty" : null,
+         |  "pyydettavatAsiakirjat" : [ ],
+         |  "allekirjoituksetTarkistettu" : false,
+         |  "allekirjoituksetTarkistettuLisatiedot" : null,
+         |  "alkuperaisetAsiakirjatSaatuNahtavaksi" : false,
+         |  "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot" : null,
+         |  "selvityksetSaatu" : false,
+         |  "asiakirjamallitTutkinnoista" : { },
+         |  "imiPyynto" : {
+         |    "imiPyynto" : false,
+         |    "imiPyyntoNumero" : null,
+         |    "imiPyyntoLahetetty" : null,
+         |    "imiPyyntoVastattu" : null
+         |  },
+         |  "apHakemus" : true,
+         |  "yhteistutkinto" : true,
+         |  "tutkinnot" : [
+         |    {
+         |      "hakemusId" : $hakemusId,
+         |      "jarjestys" : "1",
+         |      "nimi" : "Päälikkö",
+         |      "oppilaitos" : "Butan Amattikoulu",
+         |      "aloitusVuosi" : 1999,
+         |      "paattymisVuosi" : 2000,
+         |      "maakoodi" : "762",
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
+         |    },
+         |    {
+         |      "hakemusId" : $hakemusId,
+         |      "jarjestys" : "2",
+         |      "nimi" : "Johto tehtävä",
+         |      "oppilaitos" : "Johto koulu",
+         |      "aloitusVuosi" : 2006,
+         |      "paattymisVuosi" : 2007,
+         |      "maakoodi" : "762",
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
+         |    },
+         |    {
+         |      "hakemusId" : $hakemusId,
+         |      "jarjestys" : "3",
+         |      "nimi" : "Apu poika",
+         |      "oppilaitos" : "Apu koulu",
+         |      "aloitusVuosi" : 2010,
+         |      "paattymisVuosi" : 2011,
+         |      "maakoodi": "762",
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
+         |    },
+         |    {
+         |      "hakemusId" : $hakemusId,
+         |      "jarjestys" : "MUU",
+         |      "nimi" : null,
+         |      "oppilaitos" : null,
+         |      "aloitusVuosi" : null,
+         |      "paattymisVuosi" : null,
+         |      "maakoodi" : null,
+         |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111",
+         |      "todistuksenPaivamaara" : null,
+         |      "koulutusalaKoodi" : null,
+         |      "paaaaineTaiErikoisala" : null,
+         |      "todistusOtsikko": null,
+         |      "muuTutkintoMuistioId" : null
+         |    }
+         |  ]
+         |}""".stripMargin
+
+    val hakemus = mockMvc
+      .perform(
+        get("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
   }
 
+  @Test
+  @Order(16)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def paivitaOrPoistaPartialHakemusWithTutkinnotValidRequestReturns200(): Unit = {
+    initAtaruHakemusRequests()
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+
+    val hakemusId = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670")).get.id
+
+    val tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(hakemusId)
+
+    var requestJson =
+      s"""{"tutkinnot" : [
+         |    {
+         |      "id" : "${tutkinnot.head.id.get}",
+         |      "hakemusId" : "${hakemusId}",
+         |      "jarjestys" : "1",
+         |      "nimi" : "Päälikkö",
+         |      "oppilaitos" : "Butan Amattikoulu",
+         |      "aloitusVuosi" : 1999,
+         |      "paattymisVuosi" : 2000,
+         |      "maakoodi" : "762",
+         |      "muuTutkintoTieto" : null,
+         |      "todistuksenPaivamaara": "Helmikuu 2000",
+         |      "koulutusalaKoodi" : "13",
+         |      "paaaaineTaiErikoisala" : "erikoisala",
+         |      "todistusOtsikko": "otsikko",
+         |      "muuTutkintoMuistioId" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot(1).id.get}",
+         |      "hakemusId" : "${hakemusId}",
+         |      "jarjestys" : "2",
+         |      "nimi" : "Erityis Johto tehtävä",
+         |      "oppilaitos" : "Hankken Johto koulu",
+         |      "aloitusVuosi" : 2024,
+         |      "paattymisVuosi" : 2025,
+         |      "maakoodi" : "100",
+         |      "muuTutkintoTieto" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot(2).id.get}",
+         |      "hakemusId" : "$hakemusId",
+         |      "jarjestys" : "3",
+         |      "nimi" : "Apu poika",
+         |      "oppilaitos" : "Apu koulu",
+         |      "aloitusVuosi" : 2010,
+         |      "paattymisVuosi" : 2011,
+         |      "maakoodi": "762",
+         |      "muuTutkintoTieto" : null
+         |    },
+         |    {
+         |      "id" : "${tutkinnot.last.id.get}",
+         |      "hakemusId" : "$hakemusId",
+         |      "jarjestys" : "MUU",
+         |      "nimi" : null,
+         |      "oppilaitos" : null,
+         |      "aloitusVuosi" : null,
+         |      "paattymisVuosi" : null,
+         |      "maakoodi" : null,
+         |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta"
+         |    }
+         |  ]}}""".stripMargin
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    var paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.tutkinnot.head.todistuksenPaivamaara.contains("Helmikuu 2000"))
+    assert(paivitettyHakemus.get.tutkinnot.head.koulutusalaKoodi.contains("13"))
+    assert(paivitettyHakemus.get.tutkinnot.head.paaaaineTaiErikoisala.contains("erikoisala"))
+    assert(paivitettyHakemus.get.tutkinnot.head.todistusOtsikko.contains("otsikko"))
+
+    assert(paivitettyHakemus.get.tutkinnot(1).nimi.contains("Erityis Johto tehtävä"))
+    assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
+    assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))
+    assert(paivitettyHakemus.get.tutkinnot(1).paattymisVuosi.contains(2025))
+    assert(paivitettyHakemus.get.tutkinnot(1).maakoodi.contains("100"))
+
+    requestJson = s"""{"tutkinnot" : [
+                     |    {
+                     |      "id" : "${tutkinnot.head.id.get}",
+                     |      "hakemusId" : "${hakemusId}",
+                     |      "jarjestys" : "1",
+                     |      "nimi" : "Päälikkö",
+                     |      "oppilaitos" : "Butan Amattikoulu",
+                     |      "aloitusVuosi" : 1999,
+                     |      "paattymisVuosi" : 2000,
+                     |      "maakoodi" : "762",
+                     |      "muuTutkintoTieto" : null,
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
+                     |    },
+                     |    {
+                     |      "id" : "${tutkinnot(2).id.get}",
+                     |      "hakemusId" : "$hakemusId",
+                     |      "jarjestys" : "3",
+                     |      "nimi" : "Apu poika",
+                     |      "oppilaitos" : "Apu koulu",
+                     |      "aloitusVuosi" : 2010,
+                     |      "paattymisVuosi" : 2011,
+                     |      "maakoodi": "762",
+                     |      "muuTutkintoTieto" : null,
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
+                     |    },
+                     |    {
+                     |      "id" : "${tutkinnot.last.id.get}",
+                     |      "hakemusId" : "$hakemusId",
+                     |      "jarjestys" : "MUU",
+                     |      "nimi" : null,
+                     |      "oppilaitos" : null,
+                     |      "aloitusVuosi" : null,
+                     |      "paattymisVuosi" : null,
+                     |      "maakoodi" : null,
+                     |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta",
+                     |      "todistuksenPaivamaara" : null,
+                     |      "koulutusalaKoodi" : null,
+                     |      "paaaaineTaiErikoisala" : null,
+                     |      "todistusOtsikko": null,
+                     |      "muuTutkintoMuistioId" : null
+                     |    }
+                     |  ]}}""".stripMargin
+
+    mockMvc
+      .perform(
+        patch("/api/hakemus/1.2.246.562.11.00000000000000006670")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+
+    paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+    assert(paivitettyHakemus.get.tutkinnot.size == 3)
+    assert(paivitettyHakemus.get.tutkinnot.head.jarjestys == "1")
+    assert(paivitettyHakemus.get.tutkinnot(1).jarjestys == "2")
+    assert(paivitettyHakemus.get.tutkinnot(2).jarjestys == "MUU")
+  }
 }

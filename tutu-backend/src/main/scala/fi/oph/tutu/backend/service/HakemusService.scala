@@ -26,7 +26,7 @@ class HakemusService(
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
-    esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
+    val tallennettuAtaruHakemusId = esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
       case Some(esittelija) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
@@ -36,6 +36,23 @@ class HakemusService(
         )
       case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
     }
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+
+    val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
+
+    try {
+      tutkinnot.foreach(tutkinto =>
+        hakemusRepository.lisaaTutkinto(tallennettuAtaruHakemusId, tutkinto, "Hakemuspalvelu")
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Virhe tutkintojen tallennuksessa hakemukselle ${hakemus.hakemusOid}: ${e.getMessage}", e)
+    }
+    tallennettuAtaruHakemusId
   }
 
   def haeHakemus(hakemusOid: HakemusOid, muutosHistoriaSortDef: SortDef = Undefined): Option[Hakemus] = {
@@ -117,7 +134,7 @@ class HakemusService(
             selvityksetSaatu = dbHakemus.selvityksetSaatu,
             viimeinenAsiakirjaHakijalta = dbHakemus.viimeinenAsiakirjaHakijalta,
             asiakirjamallitTutkinnoista =
-              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id) match {
+              hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id) match {
                 case asiakirjamallit => asiakirjamallit
                 case null            => Map()
               },
@@ -129,7 +146,8 @@ class HakemusService(
             ),
             apHakemus = dbHakemus.apHakemus,
             yhteistutkinto = dbHakemus.yhteistutkinto,
-            suostumusVahvistamiselleSaatu = dbHakemus.suostumusVahvistamiselleSaatu
+            suostumusVahvistamiselleSaatu = dbHakemus.suostumusVahvistamiselleSaatu,
+            tutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
           )
         )
       case None =>
@@ -311,10 +329,65 @@ class HakemusService(
             }
         }
 
+        // Tallennetaan / poistetaan tutkinnot
+        partialHakemus.tutkinnot match {
+          case None            => ()
+          case Some(tutkinnot) =>
+            val tallennetutTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
+            // Lisätään uudet tutkinnot
+            val uudetTutkinnot = tutkinnot.filterNot(tutkinto => tallennetutTutkinnot.exists(_.id == tutkinto.id))
+            if (uudetTutkinnot.nonEmpty) {
+              uudetTutkinnot.foreach(tutkinto =>
+                hakemusRepository.lisaaTutkinto(dbHakemus.id, tutkinto, userOid.toString)
+              )
+            }
+
+            // Poistetaan tutkinnot ja päivitään järjestysnumerot
+            val poistettavatTutkinnot =
+              tallennetutTutkinnot.filterNot(tutkinto => tutkinnot.exists(_.id == tutkinto.id))
+            if (poistettavatTutkinnot.nonEmpty) {
+              poistettavatTutkinnot.foreach(tutkinto => {
+                val poistettavanTutkinnonJarjestys = tutkinto.jarjestys
+
+                hakemusRepository.poistaTutkinto(tutkinto.id.get)
+                // Päivitetään muiden tutkintojen järjestysnumerot
+                partialHakemus.tutkinnot.get.map(tutkinto => {
+                  if (tutkinto.jarjestys > poistettavanTutkinnonJarjestys && tutkinto.jarjestys != "MUU") {
+                    val uusiJarjestys = (tutkinto.jarjestys.toInt - 1).toString
+
+                    val paivitettyTutkinto =
+                      tutkinto.copy(jarjestys = uusiJarjestys)
+                    hakemusRepository.paivitaTutkinto(
+                      tutkinto.id.get,
+                      paivitettyTutkinto,
+                      userOid
+                    )
+                  }
+                })
+              })
+            }
+            // Päivitetään olemassa olevat tutkinnot
+            val paivitettavatTutkinnot =
+              tutkinnot.filter(tutkinto =>
+                tallennetutTutkinnot.exists(tallennettuTutkinto =>
+                  tallennettuTutkinto.id == tutkinto.id && tallennettuTutkinto != tutkinto
+                )
+              )
+            if (paivitettavatTutkinnot.nonEmpty) {
+              paivitettavatTutkinnot.foreach { tutkinto =>
+                hakemusRepository.paivitaTutkinto(
+                  tutkinto.id.get,
+                  tutkinto,
+                  userOid
+                )
+              }
+            }
+        }
+
         partialHakemus.asiakirjamallitTutkinnoista match {
           case None                      => ()
           case Some(toBeAsiakirjaMallit) =>
-            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusOidilla(dbHakemus.id)
+            val currentAsiakirjamallit   = hakemusRepository.haeAsiakirjamallitTutkinnoistaHakemusIdlla(dbHakemus.id)
             val asiakirjamalliModifyData = HakemusModifyOperationResolver.resolveAsiakirjamalliModifyOperations(
               currentAsiakirjamallit,
               toBeAsiakirjaMallit

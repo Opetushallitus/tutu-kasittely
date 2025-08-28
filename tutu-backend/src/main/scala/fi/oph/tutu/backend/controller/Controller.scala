@@ -6,13 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.service.{
-  HakemusService,
-  HakemuspalveluService,
-  MuistioService,
-  PerusteluService,
-  UserService
-}
+import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
@@ -37,6 +31,7 @@ class Controller(
   userService: UserService,
   muistioService: MuistioService,
   perusteluService: PerusteluService,
+  koodistoService: KoodistoService,
   val auditLog: AuditLog = AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
@@ -379,7 +374,7 @@ class Controller(
       }
       case Failure(e) => {
         LOG.error("Muistion tallennus epäonnistui", e.getMessage)
-        return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
       }
     }
   }
@@ -446,6 +441,20 @@ class Controller(
         LOG.error("Perustelun tallennus epäonnistui", e.getMessage)
         return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
       }
+    }
+  }
+
+  @GetMapping(path = Array("koodisto/{koodisto}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
+  def haeKoodisto(@PathVariable("koodisto") koodisto: String): ResponseEntity[Any] = {
+    Try {
+      koodistoService.getKoodisto(koodisto)
+    } match {
+      case Success(koodisto) =>
+        val response = mapper.writeValueAsString(koodisto)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Koodiston haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 }

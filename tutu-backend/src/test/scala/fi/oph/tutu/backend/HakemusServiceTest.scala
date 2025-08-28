@@ -4,21 +4,15 @@ import fi.oph.tutu.backend.domain.SortDef.Desc
 import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.{dbHakemusFixture, hakijaFixture, onrUserFixture}
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
-import fi.oph.tutu.backend.service.{
-  AtaruHakemusParser,
-  HakemusService,
-  HakemuspalveluService,
-  HakemuspalveluServiceException,
-  OnrService
-}
+import fi.oph.tutu.backend.service.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.jupiter.api.{BeforeEach, Test}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
-import org.mockito.ArgumentMatchers.any
 
-import scala.util.{Failure, Success, Try}
 import java.time.format.DateTimeFormatter
+import scala.util.{Failure, Success, Try}
 
 class HakemusServiceTest extends UnitTestBase {
   @Mock
@@ -50,7 +44,7 @@ class HakemusServiceTest extends UnitTestBase {
   @Test
   def testMuutoshistoriaSortDescending(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
@@ -66,7 +60,7 @@ class HakemusServiceTest extends UnitTestBase {
   @Test
   def testMuutoshistoriaFetchFailed(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
@@ -85,7 +79,7 @@ class HakemusServiceTest extends UnitTestBase {
   @Test
   def testMuutoshistoriaFetchEsittelijaFetchFailed(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus.json")))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)

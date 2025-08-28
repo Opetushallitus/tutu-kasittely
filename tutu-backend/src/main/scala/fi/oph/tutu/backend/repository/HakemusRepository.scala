@@ -21,6 +21,8 @@ class HakemusRepository {
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+
   implicit val getUUIDResult: GetResult[UUID] =
     GetResult(r => UUID.fromString(r.nextString()))
 
@@ -81,6 +83,26 @@ class HakemusRepository {
       PyydettavaAsiakirja(
         Option(UUID.fromString(r.nextString())),
         r.nextString()
+      )
+    )
+
+  implicit val getTutkintoResult: GetResult[Tutkinto] =
+    GetResult(r =>
+      Tutkinto(
+        id = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
+        hakemusId = UUID.fromString(r.nextString()),
+        jarjestys = r.nextString(),
+        nimi = r.nextStringOption(),
+        oppilaitos = r.nextStringOption(),
+        aloitusVuosi = r.nextIntOption(),
+        paattymisVuosi = r.nextIntOption(),
+        maakoodi = r.nextStringOption(),
+        muuTutkintoTieto = r.nextStringOption(),
+        todistuksenPaivamaara = r.nextStringOption(),
+        koulutusalaKoodi = r.nextStringOption(),
+        paaaaineTaiErikoisala = r.nextStringOption(),
+        todistusOtsikko = r.nextStringOption(),
+        muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString)
       )
     )
 
@@ -546,7 +568,7 @@ class HakemusRepository {
      * @return
      * hakemuksen asiakirjamallit tutkinnosta
      */
-  def haeAsiakirjamallitTutkinnoistaHakemusOidilla(
+  def haeAsiakirjamallitTutkinnoistaHakemusIdlla(
     hakemusId: UUID
   ): Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = {
     try {
@@ -565,6 +587,185 @@ class HakemusRepository {
         LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen asiakirjamallien haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
+    val nimiOrNull                  = tutkinto.nimi.map(_.toString).orNull
+    val oppilaitosOrNull            = tutkinto.oppilaitos.map(_.toString).orNull
+    val aloitusVuosi                = tutkinto.aloitusVuosi
+    val paattymisVuosi              = tutkinto.paattymisVuosi
+    val maakoodi                    = tutkinto.maakoodi
+    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(_.toString).orNull
+    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(_.toString).orNull
+    val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
+    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(_.toString).orNull
+    val todistusOtsikko             = tutkinto.todistusOtsikko.map(_.toString).orNull
+    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
+    try
+      db.run(
+        sql"""
+          INSERT INTO tutkinto (
+            hakemus_id,
+            jarjestys,
+            nimi,
+            oppilaitos,
+            aloitus_vuosi,
+            paattymis_vuosi,
+            maakoodi,
+            muu_tutkinto_tieto,
+            todistuksen_paivamaara,
+            koulutusala_koodi,
+            paaaine_tai_erikoisala,
+            todistusotsikko,
+            muu_tutkinto_muistio_id,
+            luoja
+          )
+          VALUES (
+            ${hakemusId.toString}::uuid,
+            ${tutkinto.jarjestys},
+            ${nimiOrNull},
+            ${oppilaitosOrNull},
+            ${aloitusVuosi},
+            ${paattymisVuosi},
+            ${maakoodi},
+            ${muuTutkintoTietoOrNull},
+            ${todistuksenPaivamaaraOrNull},
+            ${koulutusalaKoodi},
+            ${paaaineTaiErikoisala},
+            ${todistusOtsikko},
+            ${muuTutkintoMuistioId}::uuid,
+            ${luoja}
+          )
+    """.asUpdate,
+        "tallenna_tutkinto"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon tallennus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Hakee hakemuksen tutkinnot
+   *
+   * @param hakemusId
+   * hakemuksen Id
+   * @return
+   * hakemuksen tutkinnot
+   */
+  def haeTutkinnotHakemusIdilla(hakemusId: UUID): Seq[Tutkinto] = {
+    try
+      db.run(
+        sql"""
+    SELECT
+      id,
+      hakemus_id,
+      jarjestys,
+      nimi,
+      oppilaitos,
+      aloitus_vuosi,
+      paattymis_vuosi,
+      maakoodi,
+      muu_tutkinto_tieto,
+      todistuksen_paivamaara,
+      koulutusala_koodi,
+      paaaine_tai_erikoisala,
+      todistusotsikko,
+      muu_tutkinto_muistio_id
+    FROM tutkinto
+    WHERE hakemus_id = ${hakemusId.toString}::uuid
+    ORDER BY jarjestys ASC
+  """
+          .as[Tutkinto],
+        "hae_tutkinnot_hakemus_idlla"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tutkintojen haku hakemusId:llä $hakemusId epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkintojen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+
+  }
+
+  /**
+   * Päivittää hakemuksen tutkinnon
+   *
+   * @param id
+   * tutkinnon id
+   * @param tutkinto
+   * muokattava tutkinto
+   * @param virkailijaOid
+   * päivittävän virkailijan oid
+   */
+  def paivitaTutkinto(
+    id: UUID,
+    tutkinto: Tutkinto,
+    virkailijaOid: UserOid
+  ): Unit = {
+    try {
+      db.run(
+        sql"""
+              UPDATE tutkinto
+              SET
+                jarjestys = ${tutkinto.jarjestys},
+                nimi = ${tutkinto.nimi.orNull},
+                oppilaitos = ${tutkinto.oppilaitos.orNull},
+                aloitus_vuosi = ${tutkinto.aloitusVuosi},
+                paattymis_vuosi = ${tutkinto.paattymisVuosi},
+                maakoodi = ${tutkinto.maakoodi},
+                muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
+                todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
+                koulutusala_koodi = ${tutkinto.koulutusalaKoodi},
+                paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
+                todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
+                muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
+                muokkaaja = ${virkailijaOid.toString}
+              WHERE id = ${id.toString}::uuid
+            """.asUpdate,
+        "paivita_pyydettava_asiakirja"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon $id päivitys epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon $id päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Poistaa hakemuksen tutkinnon
+   *
+   * @param id
+   * tutkinnon id
+   */
+  def poistaTutkinto(
+    id: UUID
+  ): Unit = {
+    try {
+      db.run(
+        sqlu"""
+            DELETE FROM tutkinto
+            WHERE id = ${id.toString}::uuid
+          """,
+        "poista_tutkinto"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon $id poisto epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon $id poisto epäonnistui: ${e.getMessage}",
           e
         )
     }

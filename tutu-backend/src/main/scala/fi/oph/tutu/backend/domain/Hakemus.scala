@@ -163,7 +163,8 @@ case class Hakemus(
   ),
   apHakemus: Option[Boolean] = None,
   yhteistutkinto: Boolean = false,
-  suostumusVahvistamiselleSaatu: Boolean = false
+  suostumusVahvistamiselleSaatu: Boolean = false,
+  tutkinnot: Seq[Tutkinto] = Seq.empty
 )
 
 case class PartialHakemus(
@@ -185,5 +186,6 @@ case class PartialHakemus(
   imiPyynto: Option[ImiPyynto] = None,
   apHakemus: Option[Boolean] = None,
   yhteistutkinto: Option[Boolean] = None,
-  suostumusVahvistamiselleSaatu: Option[Boolean] = None
+  suostumusVahvistamiselleSaatu: Option[Boolean] = None,
+  tutkinnot: Option[Seq[Tutkinto]] = None
 )

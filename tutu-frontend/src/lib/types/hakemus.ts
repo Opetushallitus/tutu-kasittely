@@ -36,6 +36,7 @@ export type Hakemus = {
   apHakemus?: boolean;
   yhteistutkinto: boolean;
   suostumusVahvistamiselleSaatu: boolean;
+  tutkinnot: Tutkinto[];
 };
 
 export type HakemusUpdateCallback = (patch: Partial<Hakemus>) => void;
@@ -90,8 +91,25 @@ export type AsiakirjamallitTutkinnoista = Partial<
 >;
 
 export type ImiPyynto = {
-  imiPyynto: boolean | null;
+  imiPyynto?: boolean;
   imiPyyntoNumero: string;
   imiPyyntoLahetetty: string;
   imiPyyntoVastattu: string;
+};
+
+export type Tutkinto = {
+  id?: string;
+  hakemusId: string;
+  jarjestys: string;
+  nimi?: string;
+  oppilaitos?: string;
+  aloitusVuosi?: number;
+  paattymisVuosi?: number;
+  maakoodi?: string;
+  muuTutkintoTieto?: string;
+  todistuksenPaivamaara?: string;
+  koulutusalaKoodi?: string;
+  paaaaineTaiErikoisala?: string;
+  todistusOtsikko?: string;
+  muuTutkintoMuistioId?: string;
 };

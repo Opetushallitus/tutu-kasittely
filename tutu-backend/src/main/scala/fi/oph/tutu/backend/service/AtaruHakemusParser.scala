@@ -1,23 +1,11 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{
-  Answer,
-  AnswerValue,
-  AtaruHakemus,
-  AtaruLomake,
-  EmptyValue,
-  Hakija,
-  Kieli,
-  Kielistetty,
-  LomakeContentItem,
-  MultiValue,
-  NestedValues,
-  SingleValue,
-  SisaltoItem,
-  SisaltoValue,
-  Valinta
-}
+import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.utils.Constants
 import org.springframework.stereotype.{Component, Service}
+
+import java.util.UUID
+import scala.collection.mutable.ArrayBuffer
 
 @Component
 @Service
@@ -78,6 +66,109 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
 
     transformedContent
   }
+
+  private def findAnswerByAtaruKysymysId(
+    kysymysId: AtaruKysymysId,
+    allAnswers: Seq[Answer]
+  ): Option[String] = {
+    findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
+      case Some(answer) => Some(answer)
+      case None         =>
+        findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
+          case Some(answer) => Some(answer)
+          case None         => None
+        }
+    }
+  }
+
+  def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {
+    val answers   = hakemus.content.answers
+    val tutkinnot = ArrayBuffer(
+      Tutkinto(
+        id = None,
+        hakemusId = hakemusId,
+        jarjestys = "1",
+        nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_NIMI, answers),
+        oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPPILAITOS, answers),
+        aloitusVuosi =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+        paattymisVuosi =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
+        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers),
+        muuTutkintoTieto = None,
+        todistuksenPaivamaara = None,
+        koulutusalaKoodi = None,
+        paaaaineTaiErikoisala = None,
+        todistusOtsikko = None,
+        muuTutkintoMuistioId = None
+      )
+    )
+
+    if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined) {
+      tutkinnot += Tutkinto(
+        id = None,
+        hakemusId = hakemusId,
+        jarjestys = "2",
+        nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers),
+        oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPPILAITOS, answers),
+        aloitusVuosi =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+        paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
+          _.toIntOption
+        ),
+        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers),
+        muuTutkintoTieto = None,
+        todistuksenPaivamaara = None,
+        koulutusalaKoodi = None,
+        paaaaineTaiErikoisala = None,
+        todistusOtsikko = None,
+        muuTutkintoMuistioId = None
+      )
+    }
+
+    val tutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined) {
+      tutkinnot +=
+        Tutkinto(
+          id = None,
+          hakemusId = hakemusId,
+          jarjestys = "3",
+          nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers),
+          oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPPILAITOS, answers),
+          aloitusVuosi =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
+          paattymisVuosi =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
+          maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers),
+          muuTutkintoTieto = None,
+          todistuksenPaivamaara = None,
+          koulutusalaKoodi = None,
+          paaaaineTaiErikoisala = None,
+          todistusOtsikko = None,
+          muuTutkintoMuistioId = None
+        )
+    }
+
+    val muuTutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers).isDefined) {
+      tutkinnot +=
+        Tutkinto(
+          id = None,
+          hakemusId = hakemusId,
+          nimi = None,
+          oppilaitos = None,
+          aloitusVuosi = None,
+          paattymisVuosi = None,
+          maakoodi = None,
+          jarjestys = "MUU",
+          muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
+          todistuksenPaivamaara = None,
+          koulutusalaKoodi = None,
+          paaaaineTaiErikoisala = None,
+          todistusOtsikko = None,
+          muuTutkintoMuistioId = None
+        )
+    }
+    tutkinnot.toSeq
+  }
 }
 
 def traverseContent(
@@ -85,28 +176,26 @@ def traverseContent(
   handleItem: (LomakeContentItem) => SisaltoItem
 ): Seq[SisaltoItem] = {
   // map content
-  val newItems = content
-    .map((item: LomakeContentItem) => {
-      // handle this
-      val newItem = handleItem(item)
+  val newItems = content.flatMap((item: LomakeContentItem) => {
+    // handle this
+    val newItem = handleItem(item)
 
-      // traverse children (children, followups)
-      val newChildren = traverseContent(item.children, handleItem)
+    // traverse children (children, followups)
+    val newChildren = traverseContent(item.children, handleItem)
 
-      val resultItem = newItem.copy(
-        children = newChildren
-      )
+    val resultItem = newItem.copy(
+      children = newChildren
+    )
 
-      // omit form nodes with no answer content
-      val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
+    // omit form nodes with no answer content
+    val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
 
-      if (resultIsEmpty) {
-        None
-      } else {
-        Some(resultItem)
-      }
-    })
-    .flatten
+    if (resultIsEmpty) {
+      None
+    } else {
+      Some(resultItem)
+    }
+  })
 
   newItems
 }

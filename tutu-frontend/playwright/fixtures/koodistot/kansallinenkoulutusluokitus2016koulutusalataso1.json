@@ -1,0 +1,110 @@
+[
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_05",
+    "koodiArvo": "05",
+    "nimi": {
+      "fi": "Luonnontieteet",
+      "en": "Natural sciences, mathematics and statistics",
+      "sv": "De naturvetenskapliga områdena"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_99",
+    "koodiArvo": "99",
+    "nimi": {
+      "en": "Unknown",
+      "sv": "Övriga eller okända",
+      "fi": "Muut tai tuntemattomat koulutusalat"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_07",
+    "koodiArvo": "07",
+    "nimi": {
+      "fi": "Tekniikan alat",
+      "en": "Engineering, manufacturing and construction",
+      "sv": "De tekniska områdena"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_00",
+    "koodiArvo": "00",
+    "nimi": {
+      "en": "Generic programmes and qualifications",
+      "fi": "Yleissivistävä koulutus",
+      "sv": "Allmänbildande utbildning"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_01",
+    "koodiArvo": "01",
+    "nimi": {
+      "fi": "Kasvatusalat",
+      "en": "Education",
+      "sv": "De pedagogiska områdena"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_03",
+    "koodiArvo": "03",
+    "nimi": {
+      "fi": "Yhteiskunnalliset alat",
+      "en": "Social sciences, journalism and information",
+      "sv": "De samhällsvetenskapliga områdena"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_10",
+    "koodiArvo": "10",
+    "nimi": {
+      "en": "Services",
+      "fi": "Palvelualat",
+      "sv": "Tjänstebranschen"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_04",
+    "koodiArvo": "04",
+    "nimi": {
+      "en": "Business, administration and law",
+      "sv": "Handel, administration och juridik",
+      "fi": "Kauppa, hallinto ja oikeustieteet"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_06",
+    "koodiArvo": "06",
+    "nimi": {
+      "en": "Information and Communication Technologies (ICT)",
+      "fi": "Tietojenkäsittely ja tietoliikenne (ICT) ",
+      "sv": "Databehandling och kommunikation (IKT) "
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_02",
+    "koodiArvo": "02",
+    "nimi": {
+      "sv": "De humanistiska och konstnärliga områdena",
+      "fi": "Humanistiset ja taidealat",
+      "en": "Arts and humanities"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_08",
+    "koodiArvo": "08",
+    "nimi": {
+      "sv": "Lant- och skogsbruk",
+      "fi": "Maa- ja metsätalousalat",
+      "en": "Agriculture, forestry, fisheries and veterinary"
+    }
+  },
+  {
+    "koodiUri": "kansallinenkoulutusluokitus2016koulutusalataso1_09",
+    "koodiArvo": "09",
+    "nimi": {
+      "sv": "Hälsovård och välfärd",
+      "en": "Health and welfare",
+      "fi": "Terveys- ja hyvinvointialat"
+    }
+  }
+]

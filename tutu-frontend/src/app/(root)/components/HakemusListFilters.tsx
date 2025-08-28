@@ -34,7 +34,7 @@ import {
 } from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  emptyOption,
+  emptyOptionArray,
   hakemusKoskeeOptions,
 } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
@@ -187,7 +187,7 @@ export default function HakemusListFilters() {
         <Grid size={3}>
           <OphSelectFormField
             label={t('hakemuslista.hakemusKoskee')}
-            options={emptyOption.concat(
+            options={emptyOptionArray.concat(
               R.map(hakemusKoskeeOptions, (option) => ({
                 label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
                 value: option.value,
