@@ -6,6 +6,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
+import fi.oph.tutu.backend.utils.AuditOperation.{
+  CreateHakemus,
+  CreateMuistio,
+  ReadEsittelija,
+  ReadHakemukset,
+  ReadHakemus,
+  ReadKoodisto,
+  ReadLiitteenTiedot,
+  ReadMuistio,
+  UpdateHakemus
+}
+import fi.oph.tutu.backend.utils.AuditUtil
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -32,7 +44,7 @@ class Controller(
   muistioService: MuistioService,
   perusteluService: PerusteluService,
   koodistoService: KoodistoService,
-  val auditLog: AuditLog = AuditLog
+  val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
 
@@ -128,7 +140,10 @@ class Controller(
       )
     )
   )
-  def luoHakemus(@RequestBody hakemusBytes: Array[Byte]): ResponseEntity[Any] =
+  def luoHakemus(
+    @RequestBody hakemusBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
     try {
       val user        = userService.getEnrichedUserDetails(true)
       val authorities = user.authorities
@@ -149,6 +164,12 @@ class Controller(
           errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
         } else {
           val hakemusOid = hakemusService.tallennaHakemus(hakemus)
+          auditLog.logCreate(
+            AuditLog.getUser(request),
+            Map("hakemusOid" -> hakemusOid.toString),
+            CreateHakemus,
+            hakemus.toString
+          )
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
         }
       }
@@ -157,12 +178,14 @@ class Controller(
         LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
         errorMessageMapper.mapErrorMessage(e)
     }
+  }
 
   @GetMapping(
     path = Array("liite/metadata")
   )
   def haeLiitteidenTiedot(
-    @RequestParam("avaimet") avaimet: String
+    @RequestParam("avaimet") avaimet: String,
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val avainLista = avaimet.split(",");
@@ -174,6 +197,7 @@ class Controller(
             LOG.warn(s"Liitteitä ei löytynyt avaimilla: $avaimet")
             errorMessageMapper.mapPlainErrorMessage("Liitteitä ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(metadata) =>
+            auditLog.logRead("liite/metadata", avaimet, ReadLiitteenTiedot, request)
             ResponseEntity.status(HttpStatus.OK).body(metadata)
         }
       case Failure(exception) =>
@@ -185,7 +209,8 @@ class Controller(
   @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeHakemus(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestParam(required = false) hakemusMuutoshistoriaSort: String = SortDef.Undefined.toString
+    @RequestParam(required = false) hakemusMuutoshistoriaSort: String = SortDef.Undefined.toString,
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort))
@@ -196,6 +221,7 @@ class Controller(
             LOG.warn(s"Hakemusta ei löytynyt hakemusOid:illa: $hakemusOid")
             errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(hakemus) =>
+            auditLog.logRead("hakemus", hakemusOid, ReadHakemus, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemus))
         }
       case Failure(exception) =>
@@ -209,7 +235,8 @@ class Controller(
     @RequestParam(required = false) nayta: String,
     @RequestParam(required = false) hakemuskoskee: String,
     @RequestParam(required = false) esittelija: String,
-    @RequestParam(required = false) vaihe: String
+    @RequestParam(required = false) vaihe: String,
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val user    = userService.getEnrichedUserDetails(true)
@@ -225,6 +252,15 @@ class Controller(
       hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
     } match {
       case Success(hakemukset) =>
+        val params = mapper.writeValueAsString(
+          Map(
+            "nayta"         -> Option(nayta).getOrElse(""),
+            "hakemuskoskee" -> Option(hakemuskoskee).getOrElse(""),
+            "esittelija"    -> Option(esittelija).getOrElse(""),
+            "vaihe"         -> Option(vaihe).getOrElse("")
+          )
+        )
+        auditLog.logRead("hakemuslista", params, ReadHakemukset, request)
         val response = mapper.writeValueAsString(hakemukset)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
@@ -234,11 +270,12 @@ class Controller(
   }
 
   @GetMapping(path = Array("esittelijat"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def haeEsittelijat(): ResponseEntity[Any] = {
+  def haeEsittelijat(request: jakarta.servlet.http.HttpServletRequest): ResponseEntity[Any] = {
     Try {
       userService.haeEsittelijat
     } match {
       case Success(users) =>
+        auditLog.logRead("esittelijat", "", ReadEsittelija, request)
         val response = mapper.writeValueAsString(users)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
@@ -281,7 +318,8 @@ class Controller(
   )
   def paivitaHakemus(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody hakemusBytes: Array[Byte]
+    @RequestBody hakemusBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] =
     try {
       val user        = userService.getEnrichedUserDetails(true)
@@ -298,8 +336,19 @@ class Controller(
             LOG.error("Hakemuksen päivitys epäonnistui", e.getMessage)
             return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
         }
+        val vanhaHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
         hakemusService.paivitaHakemus(HakemusOid(hakemusOid), partialHakemus, UserOid(user.userOid))
-        haeHakemus(hakemusOid)
+        val uusiHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdateHakemus,
+          AuditUtil.getChanges(
+            vanhaHakemus.map(h => mapper.writeValueAsString(h)),
+            uusiHakemus.map(h => mapper.writeValueAsString(h))
+          )
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusiHakemus))
       }
     } catch {
       case e: Exception =>
@@ -314,7 +363,8 @@ class Controller(
   def haeMuistio(
     @PathVariable("hakemusOid") hakemusOid: String,
     @PathVariable("hakemuksenOsa") hakemuksenOsa: String,
-    @RequestParam("nakyvyys") nakyvyys: String
+    @RequestParam("nakyvyys") nakyvyys: String,
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val sisainen: Boolean       = nakyvyys == "sisainen";
@@ -328,6 +378,14 @@ class Controller(
             LOG.warn(s"Muistiota ei löytynyt")
             errorMessageMapper.mapPlainErrorMessage("Muistiota ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(muistio) =>
+            val params = mapper.writeValueAsString(
+              Map(
+                "hakemusOid"    -> Option(hakemusOid).getOrElse(""),
+                "hakemuksenOsa" -> Option(hakemuksenOsa).getOrElse(""),
+                "nakyvyys"      -> Option(nakyvyys).getOrElse("")
+              )
+            )
+            auditLog.logRead("muistio", params, ReadMuistio, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(muistio))
         }
       }
@@ -346,7 +404,8 @@ class Controller(
   def tallennaMuistio(
     @PathVariable("hakemusOid") hakemusOid: String,
     @PathVariable("hakemuksenOsa") hakemuksenOsa: String,
-    @RequestBody muistioBytes: Array[Byte]
+    @RequestBody muistioBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val user                             = userService.getEnrichedUserDetails(true)
@@ -370,6 +429,19 @@ class Controller(
             errorMessageMapper.mapPlainErrorMessage("Muistion tallennus epäonnistui", HttpStatus.INTERNAL_SERVER_ERROR)
           }
           case Some(muistioId) => {
+            val params = mapper
+              .writeValueAsString(
+                Map(
+                  "hakemuksenOsa" -> hakemuksenOsa,
+                  "muistio"       -> new String(muistioBytes)
+                )
+              )
+            auditLog.logCreate(
+              AuditLog.getUser(request),
+              Map("hakemusOid" -> hakemusOid),
+              CreateMuistio,
+              params
+            )
             ResponseEntity.status(HttpStatus.OK).body(muistioId)
           }
         }
@@ -386,7 +458,8 @@ class Controller(
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def haePerustelu(
-    @PathVariable("hakemusOid") hakemusOid: String
+    @PathVariable("hakemusOid") hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       perusteluService.haePerustelu(HakemusOid(hakemusOid))
@@ -397,6 +470,7 @@ class Controller(
             LOG.info(s"Perustelua ei löytynyt")
             errorMessageMapper.mapPlainErrorMessage("Perustelua ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(perustelu) =>
+            auditLog.logRead("muistio", hakemusOid, ReadMuistio, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
         }
       }
@@ -414,7 +488,8 @@ class Controller(
   )
   def tallennaPerustelu(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody perusteluBytes: Array[Byte]
+    @RequestBody perusteluBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val perustelu: Perustelu = mapper.readValue(perusteluBytes, classOf[Perustelu])
@@ -435,6 +510,18 @@ class Controller(
             )
           }
           case Some(perustelu) => {
+            val params = mapper
+              .writeValueAsString(
+                Map(
+                  "perustelu" -> new String(perusteluBytes)
+                )
+              )
+            auditLog.logCreate(
+              AuditLog.getUser(request),
+              Map("hakemusOid" -> hakemusOid),
+              CreateMuistio,
+              params
+            )
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
           }
         }
@@ -447,11 +534,15 @@ class Controller(
   }
 
   @GetMapping(path = Array("koodisto/{koodisto}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
-  def haeKoodisto(@PathVariable("koodisto") koodisto: String): ResponseEntity[Any] = {
+  def haeKoodisto(
+    @PathVariable("koodisto") koodisto: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
     Try {
       koodistoService.getKoodisto(koodisto)
     } match {
       case Success(koodisto) =>
+        auditLog.logRead("koodisto/{koodisto}", koodisto.toString(), ReadKoodisto, request)
         val response = mapper.writeValueAsString(koodisto)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
