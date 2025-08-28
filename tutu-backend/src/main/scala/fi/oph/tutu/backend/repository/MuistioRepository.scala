@@ -48,6 +48,7 @@ class MuistioRepository {
    * @param hakemuksenOsa
    * @param sisainen
    * @param sisalto
+   * @param luoja
    * @return
    *   tallennetun muistion id
    */
@@ -85,9 +86,9 @@ class MuistioRepository {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e}")
+        LOG.error(s"Muistion tallennus epäonnistui: ${e}")
         throw new RuntimeException(
-          s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
+          s"Muistion tallennus epäonnistui: ${e.getMessage}",
           e
         )
     }

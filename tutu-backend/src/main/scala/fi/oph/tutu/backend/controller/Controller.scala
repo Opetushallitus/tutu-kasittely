@@ -6,7 +6,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, MuistioService, UserService}
+import fi.oph.tutu.backend.service.{
+  HakemusService,
+  HakemuspalveluService,
+  MuistioService,
+  PerusteluService,
+  UserService
+}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
@@ -30,6 +36,7 @@ class Controller(
   hakemusRepository: HakemusRepository,
   userService: UserService,
   muistioService: MuistioService,
+  perusteluService: PerusteluService,
   val auditLog: AuditLog = AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
@@ -372,6 +379,71 @@ class Controller(
       }
       case Failure(e) => {
         LOG.error("Muistion tallennus epäonnistui", e.getMessage)
+        return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
+      }
+    }
+  }
+
+  @GetMapping(
+    path = Array("perustelu/{hakemusOid}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haePerustelu(
+    @PathVariable("hakemusOid") hakemusOid: String
+  ): ResponseEntity[Any] = {
+    Try {
+      perusteluService.haePerustelu(HakemusOid(hakemusOid))
+    } match {
+      case Success(result) => {
+        result match {
+          case None =>
+            LOG.warn(s"Perustelua ei löytynyt")
+            errorMessageMapper.mapPlainErrorMessage("Perustelua ei löytynyt", HttpStatus.NOT_FOUND)
+          case Some(perustelu) =>
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
+        }
+      }
+      case Failure(exception) => {
+        LOG.error(s"Perustelun haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+      }
+    }
+  }
+
+  @PostMapping(
+    path = Array("perustelu/{hakemusOid}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def tallennaPerustelu(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody perusteluBytes: Array[Byte]
+  ): ResponseEntity[Any] = {
+    Try {
+      val perustelu: Perustelu = mapper.readValue(perusteluBytes, classOf[Perustelu])
+
+      perusteluService.tallennaPerustelu(
+        HakemusOid(hakemusOid),
+        perustelu,
+        "Hakemuspalvelu"
+      )
+    } match {
+      case Success(result) => {
+        result match {
+          case None => {
+            LOG.warn(s"Perustelua ei löytynyt")
+            errorMessageMapper.mapPlainErrorMessage(
+              "Perustelun tallennus epäonnistui",
+              HttpStatus.INTERNAL_SERVER_ERROR
+            )
+          }
+          case Some(perustelu) => {
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
+          }
+        }
+      }
+      case Failure(e) => {
+        LOG.error("Perustelun tallennus epäonnistui", e.getMessage)
         return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
       }
     }
