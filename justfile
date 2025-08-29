@@ -7,8 +7,8 @@ start-postgresql:
 wait-for-db:
     @echo "🕐 Waiting for PostgreSQL to be ready..."
     @until docker exec tutu-postgres pg_isready -U app -d tutu > /dev/null 2>&1; do \
-        @echo "🕐 Still waiting..."; \
-        @sleep 5; \
+        echo "🕐 Still waiting..."; \
+        sleep 5; \
     done
     @echo "✅ PostgreSQL is ready!"
 
