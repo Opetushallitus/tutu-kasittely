@@ -1,1 +1,0 @@
-ALTER TYPE hakemuksen_osa ADD VALUE 'tutkinnot_muu_tutkinto_huomio';
