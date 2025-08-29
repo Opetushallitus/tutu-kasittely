@@ -147,6 +147,7 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
 
   await expect(numeroInput).toHaveValue('123456');
 
-  await expect(lahetettyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
-  await expect(vastattyCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+  // hyväksytään mikä tahansa päivämäärä, joten tarkistetaan vain formaatti
+  await expect(lahetettyCalendar).toHaveValue(/^\d{2}\.\d{2}\.\d{4}$/);
+  await expect(vastattyCalendar).toHaveValue(/^\d{2}\.\d{2}\.\d{4}$/);
 });

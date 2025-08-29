@@ -3,13 +3,6 @@ export type Option = {
   label: string;
 };
 
-export const emptyOptionArray: Array<Option> = [
-  {
-    value: '',
-    label: '',
-  },
-];
-
 export const hakemusKoskeeOptions: Array<Option> = [
   { value: '0', label: 'tutkinnonTasonRinnakkaistaminen' },
   { value: '1', label: 'kelpoisuusAmmattiin' },

@@ -33,10 +33,7 @@ import {
   setQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  emptyOptionArray,
-  hakemusKoskeeOptions,
-} from '@/src/constants/dropdownOptions';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
@@ -145,6 +142,7 @@ export default function HakemusListFilters() {
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
           <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
             label={t('hakemuslista.kasittelyvaihe')}
             multiple
             options={R.map(kasittelyVaiheet, (vaihe) => ({
@@ -186,13 +184,12 @@ export default function HakemusListFilters() {
         </Grid>
         <Grid size={3}>
           <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
             label={t('hakemuslista.hakemusKoskee')}
-            options={emptyOptionArray.concat(
-              R.map(hakemusKoskeeOptions, (option) => ({
-                label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
-                value: option.value,
-              })),
-            )}
+            options={R.map(hakemusKoskeeOptions, (option) => ({
+              label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
+              value: option.value,
+            }))}
             value={hakemusKoskee}
             onChange={(event: SelectChangeEvent) =>
               setQueryStateAndLocalStorage(
@@ -208,6 +205,7 @@ export default function HakemusListFilters() {
         {naytaKaikki && (
           <Grid size={3}>
             <OphSelectFormField
+              placeholder={t('yleiset.valitse')}
               label={t('hakemuslista.esittelija')}
               options={esittelijaOptions}
               value={esittelija}

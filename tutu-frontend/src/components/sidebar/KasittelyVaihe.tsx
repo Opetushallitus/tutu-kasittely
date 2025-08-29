@@ -39,6 +39,7 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
         </OphTypography>
         {showExtended ? (
           <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
             options={R.map(kasittelyVaiheet, (vaihe) => ({
               label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
               value: vaihe,

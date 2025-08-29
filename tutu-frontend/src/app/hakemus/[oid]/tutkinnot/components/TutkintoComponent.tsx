@@ -29,7 +29,6 @@ const primaryTutkintotodistusOtsikko = {
 
 const tutkintotodistusOtsikko = {
   fi: [
-    { value: '', label: '' },
     { value: 'muutodistus', label: 'Muu todistus' },
     { value: 'muuttodistukset', label: 'Muut todistukset' },
     {
@@ -38,7 +37,6 @@ const tutkintotodistusOtsikko = {
     },
   ],
   sv: [
-    { value: '', label: '' },
     { value: 'ovrigbevis', label: 'Övrig bevis' },
     { value: 'ovrigabevis', label: 'Övriga bevis' },
     { value: 'foregaendehogskolestudier', label: 'Föregående högskolestudier' },
@@ -122,6 +120,7 @@ export const TutkintoComponent = ({
         )}
       </Stack>
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
         options={resolveTutkintoTodistusOtsikkoOptions()}
         value={currentTutkinto.todistusOtsikko || ''}
@@ -160,6 +159,7 @@ export const TutkintoComponent = ({
         }}
       />
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
         sx={{ width: '50%' }}
         options={maatJaValtiotOptions}
@@ -217,6 +217,7 @@ export const TutkintoComponent = ({
         }}
       />
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
         sx={{ width: '25%' }}
         options={koulutusLuokitusOptions}
