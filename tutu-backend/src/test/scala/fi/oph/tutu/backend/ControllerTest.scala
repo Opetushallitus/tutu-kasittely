@@ -9,12 +9,15 @@ import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myo
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import org.mockito.Mockito.{times, verify}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -45,6 +48,9 @@ class ControllerTest extends IntegrationTestBase {
   @MockitoBean
   var mockOnrService: OnrService = _
 
+  @MockitoBean
+  var auditLog: AuditLog = _
+
   @Autowired
   var hakemusService: HakemusService = _
 
@@ -56,6 +62,10 @@ class ControllerTest extends IntegrationTestBase {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
+  val dummyUserAgent            = "User-Agent"
+  val dummyUserAgentValue       = "DummyAgent/1.0"
+  val xffOriginalHeaderName     = "XFF_ORIGINAL"
+  val xffOriginalHeaderValue    = "127.0.0.1"
 
   var esittelija: Option[DbEsittelija] = None
 
@@ -149,6 +159,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadEsittelija), any())
   }
 
   @Test
@@ -173,8 +184,12 @@ class ControllerTest extends IntegrationTestBase {
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
       )
       .andExpect(status().isOk)
+
+    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
 
   @Test
@@ -193,6 +208,7 @@ class ControllerTest extends IntegrationTestBase {
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
+          .header("XFF_ORIGINAL", "127.0.0.1")
       )
       .andExpect(status().isInternalServerError)
   }
@@ -273,6 +289,8 @@ class ControllerTest extends IntegrationTestBase {
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
       )
       .andExpect(status().isOk)
     val insertedHakemus = hakemusRepository
@@ -280,6 +298,7 @@ class ControllerTest extends IntegrationTestBase {
       .headOption
       .getOrElse(fail("Hakemusta ei löytynyt"))
     assert(insertedHakemus.esittelijaOid.get == esittelija.get.esittelijaOid.toString)
+    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
 
   @Test
@@ -355,6 +374,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
   }
 
   @Test
@@ -390,6 +410,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
   }
 
   @Test
@@ -484,6 +505,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
 
   @Test
@@ -548,6 +570,9 @@ class ControllerTest extends IntegrationTestBase {
     )
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.yhteistutkinto.equals(true))
+
+    // Testissä on 4 eri päivitystä, joten auditlogia tulee kutsua 4 kertaa
+    verify(auditLog, times(4)).logChanges(any(), any(), eqTo(AuditOperation.UpdateHakemus), any())
   }
 
   @Test
@@ -631,6 +656,10 @@ class ControllerTest extends IntegrationTestBase {
 
     paivitettyHakemus = updateHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), updatedHakemus)
     assert(paivitettyHakemus.asiakirja.get.pyydettavatAsiakirjat.isEmpty)
+
+    // Testissä on 5 eri päivitystä, joten auditlogia tulee kutsua 5 kertaa
+    verify(auditLog, times(5)).logChanges(any(), any(), eqTo(AuditOperation.UpdateHakemus), any())
+
   }
 
   @Test
@@ -705,6 +734,9 @@ class ControllerTest extends IntegrationTestBase {
     assert(asiakirjamallit.contains(muu))
     assert(!asiakirjamallit(muu).vastaavuus)
     assert(asiakirjamallit(muu).kuvaus.contains("uusi kuvaus"))
+
+    // Testissä on 2 eri päivitystä, joten auditlogia tulee kutsua 2 kertaa
+    verify(auditLog, times(2)).logChanges(any(), any(), eqTo(AuditOperation.UpdateHakemus), any())
   }
 
   @Test
@@ -1329,9 +1361,13 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
 
     paivitettyHakemus = hakemusService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"))
+
     assert(paivitettyHakemus.get.tutkinnot.size == 3)
     assert(paivitettyHakemus.get.tutkinnot.head.jarjestys == "1")
     assert(paivitettyHakemus.get.tutkinnot(1).jarjestys == "2")
     assert(paivitettyHakemus.get.tutkinnot(2).jarjestys == "MUU")
+
+    // Testissä on 2 eri päivitystä, joten auditlogia tulee kutsua 2 kertaa
+    verify(auditLog, times(2)).logChanges(any(), any(), eqTo(AuditOperation.UpdateHakemus), any())
   }
 }
