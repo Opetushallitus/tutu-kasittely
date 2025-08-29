@@ -56,7 +56,9 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-otsikko-1')).toHaveText('Tutkinto 1');
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toHaveText(
+    'Tutkintotodistus',
+  );
 
   await expect(page.getByTestId('tutkinto-tutkintonimi-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-tutkintonimi-1')).toHaveValue(
@@ -81,14 +83,18 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-todistuksenpvm-1')).toHaveValue('');
 
   await expect(page.getByTestId('tutkinto-koulutusala-1')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-koulutusala-1')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-koulutusala-1')).toHaveText(
+    'Valitse...',
+  );
 
   // Tutkinto 2
   await expect(page.getByTestId('tutkinto-otsikko-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-2')).toHaveText('Tutkinto 2');
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toHaveText(
+    'Muu todistus',
+  );
 
   await expect(page.getByTestId('tutkinto-tutkintonimi-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-tutkintonimi-2')).toHaveValue(
@@ -112,7 +118,9 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-todistuksenpvm-2')).toHaveValue('');
 
   await expect(page.getByTestId('tutkinto-koulutusala-2')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-koulutusala-2')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-koulutusala-2')).toHaveText(
+    'Valitse...',
+  );
 
   // Muu tutkinto
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toBeVisible();

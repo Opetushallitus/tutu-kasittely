@@ -945,6 +945,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto1.aloitusVuosi.contains(1999))
     assert(tutkinto1.paattymisVuosi.contains(2000))
     assert(tutkinto1.maakoodi.contains("762"))
+    assert(tutkinto1.todistusOtsikko.contains("examensbevis"))
     assert(tutkinto1.muuTutkintoTieto.isEmpty)
 
     val tutkinto2 = tutkinnot(1)
@@ -955,6 +956,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto2.aloitusVuosi.contains(2006))
     assert(tutkinto2.paattymisVuosi.contains(2007))
     assert(tutkinto2.maakoodi.contains("762"))
+    assert(tutkinto2.todistusOtsikko.contains("ovrigbevis"))
     assert(tutkinto2.muuTutkintoTieto.isEmpty)
 
     val tutkinto3 = tutkinnot(2)
@@ -965,6 +967,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto3.aloitusVuosi.contains(2010))
     assert(tutkinto3.paattymisVuosi.contains(2011))
     assert(tutkinto3.maakoodi.contains("762"))
+    assert(tutkinto3.todistusOtsikko.isEmpty)
     assert(tutkinto3.muuTutkintoTieto.isEmpty)
 
     val muuTutkinto = tutkinnot.last
@@ -975,6 +978,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(muuTutkinto.aloitusVuosi.isEmpty)
     assert(muuTutkinto.paattymisVuosi.isEmpty)
     assert(muuTutkinto.maakoodi.isEmpty)
+    assert(muuTutkinto.todistusOtsikko.isEmpty)
     assert(
       muuTutkinto.muuTutkintoTieto.contains(
         "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111"
@@ -1113,7 +1117,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
          |      "paaaaineTaiErikoisala" : null,
-         |      "todistusOtsikko": null,
+         |      "todistusOtsikko": "examensbevis",
          |      "muuTutkintoMuistioId" : null
          |    },
          |    {
@@ -1128,7 +1132,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
          |      "paaaaineTaiErikoisala" : null,
-         |      "todistusOtsikko": null,
+         |      "todistusOtsikko": "ovrigbevis",
          |      "muuTutkintoMuistioId" : null
          |    },
          |    {

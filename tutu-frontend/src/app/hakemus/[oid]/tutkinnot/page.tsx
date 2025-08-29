@@ -15,20 +15,35 @@ import { Tutkinto } from '@/src/lib/types/hakemus';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { Add } from '@mui/icons-material';
+import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import {
+  paatosJaAsiointikieli,
+  paatosKieli,
+} from '@/src/constants/hakemuspalveluSisalto';
 
 export default function TutkintoPage() {
   const theme = useTheme();
-  const { t } = useTranslations();
+  const { t, getLanguage } = useTranslations();
   const { addToast } = useToaster();
   const { isLoading, hakemus, error, updateHakemus } = useHakemus();
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
   const [tutkinnot, setTutkinnot] = React.useState<Tutkinto[]>([]);
+  const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = React.useState<
+    string | undefined
+  >();
 
   useEffect(() => {
     if (!hakemus) return;
     setTutkinnot(hakemus.tutkinnot);
-  }, [hakemus]);
+
+    const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
+      hakemus.sisalto,
+      [paatosJaAsiointikieli, paatosKieli],
+      getLanguage(),
+    );
+    setHakemuksenPaatosKieli(paatosKieliVal === 'suomeksi' ? 'fi' : 'sv');
+  }, [hakemus, getLanguage]);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
@@ -59,7 +74,7 @@ export default function TutkintoPage() {
     oppilaitos: '',
     aloitusVuosi: undefined,
     paattymisVuosi: undefined,
-    maakoodi: undefined,
+    maakoodi: '',
     muuTutkintoTieto: '',
     todistuksenPaivamaara: '',
   });
@@ -109,6 +124,7 @@ export default function TutkintoPage() {
             koulutusLuokitusOptions={koulutusLuokitusOptions}
             updateTutkintoAction={debouncedTutkinnotUpdateAction}
             deleteTutkintoAction={debouncedTutkinnotDeleteAction}
+            paatosKieli={hakemuksenPaatosKieli as string}
             t={t}
           />
         ))}

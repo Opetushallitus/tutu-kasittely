@@ -5,6 +5,9 @@ import fi.oph.tutu.backend.domain.AtaruKysymysId
 object Constants {
   val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
 
+  val ATARU_PAATOS_KIELI: AtaruKysymysId =
+    AtaruKysymysId("82c7260d-ebf0-4521-8f18-ad37e5490670", "paatos-kieli")
+
   val ATARU_TUTKINTO_1_NIMI: AtaruKysymysId =
     AtaruKysymysId("ea25df4f-52a8-4540-83b7-19dffdd353f7", "tutu-first-degree-name")
   val ATARU_TUTKINTO_1_OPPILAITOS: AtaruKysymysId =

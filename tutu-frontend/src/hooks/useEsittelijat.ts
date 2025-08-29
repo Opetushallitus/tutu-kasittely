@@ -2,7 +2,6 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 import { Esittelija } from '@/src/lib/types/esittelija';
 import * as R from 'remeda';
-import { emptyOptionArray } from '@/src/constants/dropdownOptions';
 
 export const getEsittelijat = async (): Promise<Esittelija[]> => {
   return await doApiFetch('esittelijat', undefined, 'no-store');
@@ -25,14 +24,12 @@ export const useEsittelijat = () => {
   const options =
     isLoading || error
       ? []
-      : emptyOptionArray.concat(
-          R.map(
-            R.sortBy(uniqueEsittelijat, (esittelija) => esittelija.etunimi),
-            (esittelija) => ({
-              value: esittelija.esittelijaOid,
-              label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-            }),
-          ),
+      : R.map(
+          R.sortBy(uniqueEsittelijat, (esittelija) => esittelija.etunimi),
+          (esittelija) => ({
+            value: esittelija.esittelijaOid,
+            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+          }),
         );
 
   return { data, isLoading, options, error };

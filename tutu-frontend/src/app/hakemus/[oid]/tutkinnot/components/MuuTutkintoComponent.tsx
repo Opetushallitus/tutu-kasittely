@@ -37,9 +37,6 @@ export const MuuTutkintoComponent = ({
         {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
       </OphTypography>
       <OphTypography variant={'label'}>
-        {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
-      </OphTypography>
-      <OphTypography variant={'body1'}>
         {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomioSelite')}
       </OphTypography>
       <OphInputFormField

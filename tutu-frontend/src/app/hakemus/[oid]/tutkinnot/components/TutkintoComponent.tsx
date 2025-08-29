@@ -14,12 +14,42 @@ import { Divider, Stack } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
 import { ModalComponent } from '@/src/components/ModalComponent';
 
+const primaryTutkintotodistusOtsikko = {
+  fi: [
+    { value: 'tutkintotodistus', label: 'Tutkintotodistus' },
+    { value: 'tutkintotodistukset', label: 'Tutkintotodistukset' },
+    { value: 'todistus', label: 'Todistus' },
+    { value: 'todistukset', label: 'Todistukset' },
+  ],
+  sv: [
+    { value: 'examensbevis', label: 'Examensbevis' },
+    { value: 'bevis', label: 'Bevis' },
+  ],
+};
+
+const tutkintotodistusOtsikko = {
+  fi: [
+    { value: 'muutodistus', label: 'Muu todistus' },
+    { value: 'muuttodistukset', label: 'Muut todistukset' },
+    {
+      value: 'edeltaneetkorkeakouluopinnot',
+      label: 'Edeltäneet korkeakouluopinnot',
+    },
+  ],
+  sv: [
+    { value: 'ovrigbevis', label: 'Övrig bevis' },
+    { value: 'ovrigabevis', label: 'Övriga bevis' },
+    { value: 'foregaendehogskolestudier', label: 'Föregående högskolestudier' },
+  ],
+};
+
 export type TutkintoProps = {
   tutkinto: Tutkinto;
   maatJaValtiotOptions: Option[];
   koulutusLuokitusOptions: Option[];
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
   deleteTutkintoAction: (id: string | undefined) => void;
+  paatosKieli: string;
   t: TFunction;
 };
 
@@ -29,6 +59,7 @@ export const TutkintoComponent = ({
   koulutusLuokitusOptions,
   updateTutkintoAction,
   deleteTutkintoAction,
+  paatosKieli,
   t,
 }: TutkintoProps) => {
   const [currentTutkinto, setCurrentTutkinto] =
@@ -36,9 +67,10 @@ export const TutkintoComponent = ({
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
-    updateTutkintoAction(value);
     setCurrentTutkinto(value);
+    updateTutkintoAction(value);
   };
+
   const closeModal = () => {
     setDeleteModalOpen(false);
   };
@@ -47,6 +79,14 @@ export const TutkintoComponent = ({
     deleteTutkintoAction(tutkinto.id);
     closeModal();
   };
+
+  function resolveTutkintoTodistusOtsikkoOptions() {
+    const key: 'fi' | 'sv' = paatosKieli === 'sv' ? 'sv' : 'fi';
+    return currentTutkinto.jarjestys === '1'
+      ? primaryTutkintotodistusOtsikko[key]
+      : tutkintotodistusOtsikko[key];
+  }
+
   return (
     <Stack direction="column" gap={2}>
       <ModalComponent
@@ -80,9 +120,16 @@ export const TutkintoComponent = ({
         )}
       </Stack>
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
-        options={[]}
-        defaultValue={''}
+        options={resolveTutkintoTodistusOtsikkoOptions()}
+        value={currentTutkinto.todistusOtsikko || ''}
+        onChange={(event) =>
+          updateCurrentTutkinto({
+            ...currentTutkinto,
+            todistusOtsikko: event.target.value,
+          })
+        }
         data-testid={`tutkinto-todistusotsikko-${tutkinto.jarjestys}`}
       />
       <OphInputFormField
@@ -112,6 +159,7 @@ export const TutkintoComponent = ({
         }}
       />
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
         sx={{ width: '50%' }}
         options={maatJaValtiotOptions}
@@ -169,6 +217,7 @@ export const TutkintoComponent = ({
         }}
       />
       <OphSelectFormField
+        placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
         sx={{ width: '25%' }}
         options={koulutusLuokitusOptions}

@@ -71,6 +71,7 @@ export const HakemusHeader = () => {
           >
             {t('hakemusotsikko.esittelija')}{' '}
             <OphSelectFormField
+              placeholder={t('yleiset.valitse')}
               options={esittelijaOptions}
               value={
                 esittelijaOptions.some(

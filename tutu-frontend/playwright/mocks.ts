@@ -173,7 +173,7 @@ export const mockHakemus = (page: Page) => {
             todistuksenPaivamaara: null,
             koulutusalaKoodi: null,
             paaaaineTaiErikoisala: null,
-            todistusOtsikko: null,
+            todistusOtsikko: 'tutkintotodistus',
             muuTutkintoMuistioId: null,
           },
           {
@@ -189,7 +189,7 @@ export const mockHakemus = (page: Page) => {
             todistuksenPaivamaara: null,
             koulutusalaKoodi: null,
             paaaaineTaiErikoisala: null,
-            todistusOtsikko: null,
+            todistusOtsikko: 'muutodistus',
             muuTutkintoMuistioId: null,
           },
           {
