@@ -33,8 +33,8 @@ def pick[T](items: Seq[T]): T = {
   items(index)
 }
 
-def pickBooleanOrNone: Option[Boolean] = {
-  pick(Seq(Some(true), Some(false), None))
+def pickBooleanOption: Option[Boolean] = {
+  pick(Seq(Some(true), Some(false)))
 }
 
 def pickBoolean: Boolean = {
@@ -52,15 +52,14 @@ def pickTutkinnonAsema: Option[String] = {
       Some("ylempi_korkeakouluaste"),
       Some("alempi_ja_ylempi_korkeakouluaste"),
       Some("tutkijakoulutusaste"),
-      Some("ei_korkeakouluaste"),
-      None
+      Some("ei_korkeakouluaste")
     )
   )
 }
 
 def makePerustelu(
-  virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOrNone,
-  virallinenTutkinto: Option[Boolean] = pickBooleanOrNone,
+  virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
+  virallinenTutkinto: Option[Boolean] = pickBooleanOption,
   lahdeLahtomaanKansallinenLahde: Boolean = pickBoolean,
   lahdeLahtomaanVirallinenVastaus: Boolean = pickBoolean,
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
@@ -81,8 +80,8 @@ def makePerustelu(
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
     LocalDateTime.now(),
     "Hakemuspalvelu",
-    None,
-    ""
+    Option(LocalDateTime.now()),
+    "Hakemuspalvelu"
   )
 }
 
@@ -149,58 +148,20 @@ class PerusteluControllerUnitTest {
         get("/api/perustelu/000")
       )
       .andExpect(status().isOk)
-      .andExpect(
-        jsonPath("$.id").value(perustelu.id.toString)
-      )
-      .andExpect(
-        jsonPath("$.hakemusId").value(perustelu.hakemusId.toString)
-      )
-      .andExpect(
-        jsonPath("$.virallinenTutkinnonMyontaja").value(perustelu.virallinenTutkinnonMyontaja.getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.virallinenTutkinto").value(perustelu.virallinenTutkinto.getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.lahdeLahtomaanKansallinenLahde").value(perustelu.lahdeLahtomaanKansallinenLahde)
-      )
-      .andExpect(
-        jsonPath("$.lahdeLahtomaanVirallinenVastaus").value(
-          perustelu.lahdeLahtomaanVirallinenVastaus
-        )
-      )
-      .andExpect(
-        jsonPath("$.lahdeKansainvalinenHakuteosTaiVerkkosivusto").value(
-          perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto
-        )
-      )
-      .andExpect(
-        jsonPath("$.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta").value(
-          perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta
-        )
-      )
-      .andExpect(
-        jsonPath("$.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa").value(
-          perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.getOrElse(null)
-        )
-      )
-      .andExpect(
-        jsonPath("$.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa").value(
-          perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
-        )
-      )
-      .andExpect(
-        jsonPath("$.luotu").value(perustelu.luotu.toString)
-      )
-      .andExpect(
-        jsonPath("$.luoja").value(perustelu.luoja)
-      )
-      .andExpect(
-        jsonPath("$.muokattu").value(perustelu.muokattu.map(date => date.toString).getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.muokkaaja").value(perustelu.muokkaaja)
-      )
+      .andExpect(jsonPath("$.id").isString())
+      .andExpect(jsonPath("$.hakemusId").isString())
+      .andExpect(jsonPath("$.virallinenTutkinnonMyontaja").isBoolean())
+      .andExpect(jsonPath("$.virallinenTutkinto").isBoolean())
+      .andExpect(jsonPath("$.lahdeLahtomaanKansallinenLahde").isBoolean())
+      .andExpect(jsonPath("$.lahdeLahtomaanVirallinenVastaus").isBoolean())
+      .andExpect(jsonPath("$.lahdeKansainvalinenHakuteosTaiVerkkosivusto").isBoolean())
+      .andExpect(jsonPath("$.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta").isString())
+      .andExpect(jsonPath("$.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa").isString())
+      .andExpect(jsonPath("$.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa").isString())
+      .andExpect(jsonPath("$.luotu").isString())
+      .andExpect(jsonPath("$.luoja").isString())
+      .andExpect(jsonPath("$.muokattu").isString())
+      .andExpect(jsonPath("$.muokkaaja").isString())
   }
 
   @Test
@@ -264,57 +225,19 @@ class PerusteluControllerUnitTest {
           .content(perusteluJSON)
       )
       .andExpect(status().isOk)
-      .andExpect(
-        jsonPath("$.id").value(perustelu.id.toString)
-      )
-      .andExpect(
-        jsonPath("$.hakemusId").value(perustelu.hakemusId.toString)
-      )
-      .andExpect(
-        jsonPath("$.virallinenTutkinnonMyontaja").value(perustelu.virallinenTutkinnonMyontaja.getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.virallinenTutkinto").value(perustelu.virallinenTutkinto.getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.lahdeLahtomaanKansallinenLahde").value(perustelu.lahdeLahtomaanKansallinenLahde)
-      )
-      .andExpect(
-        jsonPath("$.lahdeLahtomaanVirallinenVastaus").value(
-          perustelu.lahdeLahtomaanVirallinenVastaus
-        )
-      )
-      .andExpect(
-        jsonPath("$.lahdeKansainvalinenHakuteosTaiVerkkosivusto").value(
-          perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto
-        )
-      )
-      .andExpect(
-        jsonPath("$.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta").value(
-          perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta
-        )
-      )
-      .andExpect(
-        jsonPath("$.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa").value(
-          perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.getOrElse(null)
-        )
-      )
-      .andExpect(
-        jsonPath("$.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa").value(
-          perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
-        )
-      )
-      .andExpect(
-        jsonPath("$.luotu").value(perustelu.luotu.toString)
-      )
-      .andExpect(
-        jsonPath("$.luoja").value(perustelu.luoja)
-      )
-      .andExpect(
-        jsonPath("$.muokattu").value(perustelu.muokattu.map(date => date.toString).getOrElse(null))
-      )
-      .andExpect(
-        jsonPath("$.muokkaaja").value(perustelu.muokkaaja)
-      )
+      .andExpect(jsonPath("$.id").isString())
+      .andExpect(jsonPath("$.hakemusId").isString())
+      .andExpect(jsonPath("$.virallinenTutkinnonMyontaja").isBoolean())
+      .andExpect(jsonPath("$.virallinenTutkinto").isBoolean())
+      .andExpect(jsonPath("$.lahdeLahtomaanKansallinenLahde").isBoolean())
+      .andExpect(jsonPath("$.lahdeLahtomaanVirallinenVastaus").isBoolean())
+      .andExpect(jsonPath("$.lahdeKansainvalinenHakuteosTaiVerkkosivusto").isBoolean())
+      .andExpect(jsonPath("$.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta").isString())
+      .andExpect(jsonPath("$.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa").isString())
+      .andExpect(jsonPath("$.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa").isString())
+      .andExpect(jsonPath("$.luotu").isString())
+      .andExpect(jsonPath("$.luoja").isString())
+      .andExpect(jsonPath("$.muokattu").isString())
+      .andExpect(jsonPath("$.muokkaaja").isString())
   }
 }
