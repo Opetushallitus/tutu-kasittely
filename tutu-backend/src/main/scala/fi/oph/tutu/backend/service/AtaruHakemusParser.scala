@@ -82,7 +82,9 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {
-    val answers   = hakemus.content.answers
+    val answers     = hakemus.content.answers
+    val paatosKieli = findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, answers)
+
     val tutkinnot = ArrayBuffer(
       Tutkinto(
         id = None,
@@ -99,7 +101,10 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
         paaaaineTaiErikoisala = None,
-        todistusOtsikko = None,
+        todistusOtsikko = paatosKieli match {
+          case Some("swedish") => Some("examensbevis")
+          case _               => Some("tutkintotodistus")
+        },
         muuTutkintoMuistioId = None
       )
     )
@@ -121,7 +126,10 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
         paaaaineTaiErikoisala = None,
-        todistusOtsikko = None,
+        todistusOtsikko = paatosKieli match {
+          case Some("swedish") => Some("ovrigbevis")
+          case _               => Some("muutodistus")
+        },
         muuTutkintoMuistioId = None
       )
     }

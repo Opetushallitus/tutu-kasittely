@@ -18,7 +18,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     None,
     None,
     None,
-    None,
+    Some("examensbevis"),
     None
   ),
   Tutkinto(
@@ -34,7 +34,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     None,
     None,
     None,
-    None,
+    Some("ovrigbevis"),
     None
   ),
   Tutkinto(

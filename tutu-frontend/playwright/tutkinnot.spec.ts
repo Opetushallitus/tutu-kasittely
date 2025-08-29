@@ -56,7 +56,9 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-otsikko-1')).toHaveText('Tutkinto 1');
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toHaveText(
+    'Todistus',
+  );
 
   await expect(page.getByTestId('tutkinto-tutkintonimi-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-tutkintonimi-1')).toHaveValue(
@@ -88,7 +90,9 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-otsikko-2')).toHaveText('Tutkinto 2');
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toHaveText('');
+  await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toHaveText(
+    'Muu todistus',
+  );
 
   await expect(page.getByTestId('tutkinto-tutkintonimi-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-tutkintonimi-2')).toHaveValue(
