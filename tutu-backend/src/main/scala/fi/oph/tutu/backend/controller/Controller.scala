@@ -420,12 +420,13 @@ class Controller(
     @RequestBody perusteluBytes: Array[Byte]
   ): ResponseEntity[Any] = {
     Try {
+      val user                 = userService.getEnrichedUserDetails(true)
       val perustelu: Perustelu = mapper.readValue(perusteluBytes, classOf[Perustelu])
 
       perusteluService.tallennaPerustelu(
         HakemusOid(hakemusOid),
         perustelu,
-        "Hakemuspalvelu"
+        user.userOid
       )
     } match {
       case Success(result) => {
