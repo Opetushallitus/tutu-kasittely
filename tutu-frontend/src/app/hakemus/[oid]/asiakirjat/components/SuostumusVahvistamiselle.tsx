@@ -1,23 +1,28 @@
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+} from '@/src/lib/types/hakemus';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useEffect, useState } from 'react';
 
 export const SuostumusVahvistamiselle = ({
-  hakemus,
-  updateHakemus,
+  asiakirjaTieto,
+  updateAsiakirjaTieto,
 }: {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirjaTieto: AsiakirjaTieto;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const { t } = useTranslations();
 
   const [suostumusVahvistamiselleSaatu, setSuostumusVahvistamiselleSaatu] =
-    useState<boolean>(hakemus.suostumusVahvistamiselleSaatu);
+    useState<boolean>(asiakirjaTieto.suostumusVahvistamiselleSaatu);
 
   useEffect(() => {
-    setSuostumusVahvistamiselleSaatu(hakemus.suostumusVahvistamiselleSaatu);
-  }, [hakemus.suostumusVahvistamiselleSaatu]);
+    setSuostumusVahvistamiselleSaatu(
+      asiakirjaTieto.suostumusVahvistamiselleSaatu,
+    );
+  }, [asiakirjaTieto.suostumusVahvistamiselleSaatu]);
 
   return (
     <OphCheckbox
@@ -26,7 +31,7 @@ export const SuostumusVahvistamiselle = ({
       checked={suostumusVahvistamiselleSaatu}
       onChange={() => {
         setSuostumusVahvistamiselleSaatu(!suostumusVahvistamiselleSaatu);
-        updateHakemus({
+        updateAsiakirjaTieto({
           suostumusVahvistamiselleSaatu: !suostumusVahvistamiselleSaatu,
         });
       }}

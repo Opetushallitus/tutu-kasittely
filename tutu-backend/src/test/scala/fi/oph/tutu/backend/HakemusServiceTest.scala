@@ -3,8 +3,14 @@ package fi.oph.tutu.backend
 import fi.oph.tutu.backend.domain.SortDef.Desc
 import fi.oph.tutu.backend.domain.{AtaruHakemus, HakemusOid}
 import fi.oph.tutu.backend.fixture.{dbHakemusFixture, hakijaFixture, onrUserFixture}
-import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository}
-import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.service.{
+  AtaruHakemusParser,
+  HakemusService,
+  HakemuspalveluService,
+  HakemuspalveluServiceException,
+  OnrService
+}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
@@ -19,6 +25,8 @@ class HakemusServiceTest extends UnitTestBase {
   var hakemusRepository: HakemusRepository = _
   @Mock
   var esittelijaRepository: EsittelijaRepository = _
+  @Mock
+  var asiakirjaRepository: AsiakirjaRepository = _
   @Mock
   var hakemuspalveluService: HakemuspalveluService = _
   @Mock
@@ -35,6 +43,7 @@ class HakemusServiceTest extends UnitTestBase {
     hakemusService = new HakemusService(
       hakemusRepository,
       esittelijaRepository,
+      asiakirjaRepository,
       hakemuspalveluService,
       onrService,
       ataruHakemusParser

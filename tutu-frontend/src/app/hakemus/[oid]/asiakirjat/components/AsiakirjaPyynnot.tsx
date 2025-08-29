@@ -21,14 +21,14 @@ import { StyledTooltip } from '@/src/components/ToolTip';
 import { pyydettavatAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/types';
 import {
   AsiakirjaPyynto,
-  HakemusUpdateCallback,
+  AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
 import { DeleteOutline } from '@mui/icons-material';
 import { IconButton } from '@/src/components/IconButton';
 
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[] | [];
-  updateHakemusAction: HakemusUpdateCallback;
+  updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
 interface AsiakirjaPyyntoProps {
@@ -38,7 +38,7 @@ interface AsiakirjaPyyntoProps {
 
 export const AsiakirjaPyynnot = ({
   asiakirjaPyynnot,
-  updateHakemusAction,
+  updateAsiakirjaTietoAction,
 }: AsiakirjaPyynnotProps) => {
   const { t } = useTranslations();
   const theme = useTheme();
@@ -66,7 +66,7 @@ export const AsiakirjaPyynnot = ({
       : currentAsiakirjaPyynnot;
 
     setCurrentAsiakirjaPyynnot([...pyynnot, pyynto]);
-    updateHakemusAction({
+    updateAsiakirjaTietoAction({
       pyydettavatAsiakirjat: [...pyynnot, pyynto],
     });
     setShowEmptyAsiakirjaPyyntoDropdown(false);
@@ -81,7 +81,7 @@ export const AsiakirjaPyynnot = ({
       (pyynto) => pyynto.id !== id,
     );
     setCurrentAsiakirjaPyynnot(toBeAsiakirjaPyynnot);
-    updateHakemusAction({
+    updateAsiakirjaTietoAction({
       pyydettavatAsiakirjat: toBeAsiakirjaPyynnot,
     });
   };

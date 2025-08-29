@@ -24,6 +24,21 @@ export type Hakemus = {
   taydennyspyyntoLahetetty: string;
   sisalto: SisaltoItem[];
   liitteidenTilat: TarkistuksenTila[];
+  asiakirja?: AsiakirjaTieto;
+  yhteistutkinto: boolean;
+  tutkinnot: Tutkinto[];
+};
+
+export type PartialHakemus = Partial<Omit<Hakemus, 'asiakirja'>> & {
+  asiakirja?: Partial<AsiakirjaTieto>;
+};
+
+export type HakemusUpdateCallback = (patch: PartialHakemus) => void;
+export type AsiakirjaTietoUpdateCallback = (
+  patch: Partial<AsiakirjaTieto>,
+) => void;
+
+export type AsiakirjaTieto = {
   pyydettavatAsiakirjat: AsiakirjaPyynto[];
   allekirjoituksetTarkistettu: boolean;
   allekirjoituksetTarkistettuLisatiedot: string | null | undefined;
@@ -34,12 +49,9 @@ export type Hakemus = {
   asiakirjamallitTutkinnoista?: AsiakirjamallitTutkinnoista;
   imiPyynto: ImiPyynto;
   apHakemus?: boolean;
-  yhteistutkinto: boolean;
   suostumusVahvistamiselleSaatu: boolean;
-  tutkinnot: Tutkinto[];
+  valmistumisenVahvistus: ValmistumisenVahvistus;
 };
-
-export type HakemusUpdateCallback = (patch: Partial<Hakemus>) => void;
 
 export type SisaltoItem = {
   key: string;
@@ -91,10 +103,23 @@ export type AsiakirjamallitTutkinnoista = Partial<
 >;
 
 export type ImiPyynto = {
-  imiPyynto?: boolean;
-  imiPyyntoNumero: string;
-  imiPyyntoLahetetty: string;
-  imiPyyntoVastattu: string;
+  imiPyynto: boolean | null;
+  imiPyyntoNumero: string | null;
+  imiPyyntoLahetetty: string | null;
+  imiPyyntoVastattu: string | null;
+};
+
+export type ValmistumisenVahvistusVastaus =
+  | 'Myonteinen'
+  | 'Kielteinen'
+  | 'EiVastausta';
+
+export type ValmistumisenVahvistus = {
+  valmistumisenVahvistus: boolean;
+  valmistumisenVahvistusPyyntoLahetetty: string | null;
+  valmistumisenVahvistusSaatu: string | null;
+  valmistumisenVahvistusVastaus: ValmistumisenVahvistusVastaus | null;
+  valmistumisenVahvistusLisatieto: string | null;
 };
 
 export type Tutkinto = {

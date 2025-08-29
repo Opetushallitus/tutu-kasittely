@@ -10,21 +10,15 @@ import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
 
 @Component
 @Repository
-class HakemusRepository {
+class HakemusRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
-
-  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-
-  implicit val getUUIDResult: GetResult[UUID] =
-    GetResult(r => UUID.fromString(r.nextString()))
 
   implicit val getHakemusOidResult: GetResult[HakemusOid] =
     GetResult(r => HakemusOid(r.nextString()))
@@ -36,25 +30,11 @@ class HakemusRepository {
         HakemusOid(r.nextString()),
         r.nextInt(),
         Option(r.nextString()).map(UUID.fromString),
-        Option(r.nextString()).map(UserOid.apply),
+        Option(UserOid(r.nextString())),
+        Option(r.nextString()).map(UUID.fromString),
         Option(r.nextString()),
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextBoolean(),
-        Option(r.nextString()),
-        r.nextBoolean(),
-        Option(r.nextString()),
-        r.nextBoolean(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        imiPyynto = Option(r.nextObject()) match {
-          case Some(value: java.lang.Boolean) => Some(value.booleanValue())
-          case _                              => None
-        },
-        Option(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextBoolean()),
-        r.nextBoolean(),
         r.nextBoolean()
       )
     )
@@ -78,14 +58,6 @@ class HakemusRepository {
       )
     )
 
-  implicit val getPyydettavaAsiakirjaResult: GetResult[PyydettavaAsiakirja] =
-    GetResult(r =>
-      PyydettavaAsiakirja(
-        Option(UUID.fromString(r.nextString())),
-        r.nextString()
-      )
-    )
-
   implicit val getTutkintoResult: GetResult[Tutkinto] =
     GetResult(r =>
       Tutkinto(
@@ -105,20 +77,6 @@ class HakemusRepository {
         muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString)
       )
     )
-
-  implicit val getAsiakirjamalliTutkinnostaResult: GetResult[AsiakirjamalliTutkinnosta] =
-    GetResult(r =>
-      AsiakirjamalliTutkinnosta(
-        AsiakirjamalliLahde.valueOf(r.nextString()),
-        r.nextBoolean(),
-        Option(r.nextString())
-      )
-    )
-
-  def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    DBIO.fold(ints, 0)(_ + _)
-  }
 
   /**
    * Tallentaa uuden hakemuksen
@@ -166,10 +124,11 @@ class HakemusRepository {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, h.ap_hakemus, h.viimeinen_asiakirja_hakijalta
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
             FROM
               hakemus h
-            LEFT JOIN public.esittelija e on e.id = h.esittelija_id
+            LEFT JOIN esittelija e on e.id = h.esittelija_id
+            LEFT JOIN asiakirja a on a.id = h.asiakirja_id
             WHERE
               h.hakemus_oid IN (#$oidt)
             """.as[HakemusListItem],
@@ -202,25 +161,14 @@ class HakemusRepository {
               h.hakemus_koskee,
               h.esittelija_id,
               e.esittelija_oid,
+              h.asiakirja_id,
               h.asiatunnus,
               h.kasittely_vaihe,
               h.muokattu,
-              h.allekirjoitukset_tarkistettu,
-              h.allekirjoitukset_tarkistettu_lisatiedot,
-              h.alkuperaiset_asiakirjat_saatu_nahtavaksi,
-              h.alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot,
-              h.selvitykset_saatu,
-              h.viimeinen_asiakirja_hakijalta,
-              h.imi_pyynto,
-              h.imi_pyynto_numero,
-              h.imi_pyynto_lahetetty,
-              h.imi_pyynto_vastattu,
-              h.ap_hakemus,
-              h.yhteistutkinto,
-              h.suostumus_vahvistamiselle_saatu
+              h.yhteistutkinto
             FROM
               hakemus h
-            LEFT JOIN public.esittelija e on e.id = h.esittelija_id
+            LEFT JOIN esittelija e on e.id = h.esittelija_id
             WHERE
               h.hakemus_oid = ${hakemusOid.s}
           """.as[DbHakemus].headOption,
@@ -256,9 +204,17 @@ class HakemusRepository {
     try {
       val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
 
-      val joinClause = userOid match {
-        case None      => ""
-        case Some(oid) => s" INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid = '${oid}'"
+      val joinClauses = Seq.newBuilder[String]
+      userOid.foreach { oid =>
+        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid = '${oid}'"
+      }
+      if (apHakemus) {
+        joinClauses += "INNER JOIN asiakirja a ON h.asiakirja_id = a.id AND a.ap_hakemus = true"
+      }
+      val joinClause = {
+        val clauses = joinClauses.result()
+        if (clauses.isEmpty) ""
+        else " " + clauses.mkString(" ")
       }
 
       val whereClauses = Seq.newBuilder[String]
@@ -272,10 +228,6 @@ class HakemusRepository {
           val vaiheList = v.map(vaihe => s"'${vaihe}'").mkString(", ")
           whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
         }
-      }
-
-      if (apHakemus) {
-        whereClauses += s"h.ap_hakemus = true"
       }
 
       val whereClause = {
@@ -322,28 +274,12 @@ class HakemusRepository {
     partialHakemus: DbHakemus,
     muokkaaja: String
   ): HakemusOid = {
-    val hakemusOidString                            = hakemusOid.toString
-    val esittelijaIdOrNull                          = partialHakemus.esittelijaId.map(_.toString).orNull
-    val asiatunnusOrNull                            = partialHakemus.asiatunnus.map(_.toString).orNull
-    val allekirjoituksetTarkistettu                 = partialHakemus.allekirjoituksetTarkistettu
-    val allekirjoituksetTarkistettuLisatiedotOrNull =
-      partialHakemus.allekirjoituksetTarkistettuLisatiedot.map(_.toString).orNull
-    val hakemusKoskee                                         = partialHakemus.hakemusKoskee
-    val alkuperaisetAsiakirjatSaatuNahtavaksi                 = partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
-    val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull =
-      partialHakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.map(_.toString).orNull
-    val selvityksetSaatu            = partialHakemus.selvityksetSaatu
-    val viimeinenAsiakirjaHakijalta = partialHakemus.viimeinenAsiakirjaHakijalta.map(java.sql.Timestamp.valueOf).orNull
-    val imiPyyntoOrNull: Option[Boolean] = partialHakemus.imiPyynto match {
-      case Some(imiPyynto) => Some(imiPyynto)
-      case None            => None
-    }
-    val imiPyyntoNumeroOrNull         = partialHakemus.imiPyyntoNumero.orNull
-    val imiPyyntoLahetettyOrNull      = partialHakemus.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull
-    val imiPyyntoVastattuOrNull       = partialHakemus.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull
-    val apHakemus                     = partialHakemus.apHakemus
-    val yhteistutkinto                = partialHakemus.yhteistutkinto
-    val suostumusVahvistamiselleSaatu = partialHakemus.suostumusVahvistamiselleSaatu
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = partialHakemus.esittelijaId.map(_.toString).orNull
+    val asiakirjaIdOrNull  = partialHakemus.asiakirjaId.map(_.toString).orNull
+    val asiatunnusOrNull   = partialHakemus.asiatunnus.map(identity).orNull
+    val hakemusKoskee      = partialHakemus.hakemusKoskee
+    val yhteistutkinto     = partialHakemus.yhteistutkinto
 
     try
       db.run(
@@ -351,22 +287,11 @@ class HakemusRepository {
         UPDATE hakemus
         SET
           hakemus_koskee = $hakemusKoskee,
-          esittelija_id = ${esittelijaIdOrNull}::uuid,
+          esittelija_id = $esittelijaIdOrNull::uuid,
+          asiakirja_id = $asiakirjaIdOrNull::uuid,
           asiatunnus = $asiatunnusOrNull,
-          allekirjoitukset_tarkistettu = $allekirjoituksetTarkistettu,
-          allekirjoitukset_tarkistettu_lisatiedot = $allekirjoituksetTarkistettuLisatiedotOrNull,
-          alkuperaiset_asiakirjat_saatu_nahtavaksi = $alkuperaisetAsiakirjatSaatuNahtavaksi,
-          alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = $alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedotOrNull,
-          selvitykset_saatu = $selvityksetSaatu,
-          viimeinen_asiakirja_hakijalta = $viimeinenAsiakirjaHakijalta,
           muokkaaja = $muokkaaja,
-          imi_pyynto = $imiPyyntoOrNull,
-          imi_pyynto_numero = $imiPyyntoNumeroOrNull,
-          imi_pyynto_lahetetty = $imiPyyntoLahetettyOrNull,
-          imi_pyynto_vastattu = $imiPyyntoVastattuOrNull,
-          ap_hakemus = $apHakemus,
-          yhteistutkinto = $yhteistutkinto,
-          suostumus_vahvistamiselle_saatu = $suostumusVahvistamiselleSaatu
+          yhteistutkinto = $yhteistutkinto
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
@@ -378,215 +303,6 @@ class HakemusRepository {
         LOG.error(s"Hakemuksen päivitus epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen päivitys epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * Luo pyydettävän asiakirjan
-   *
-   * @param hakemusOid
-   * hakemuksen oid
-   * @param asiakirjaTyyppi
-   * pyydettävän asiakirjan tyyppi
-   * @param virkailijaOid
-   * virkailijan oid
-   */
-  def luoPyydettavaAsiakirja(
-    hakemusOid: HakemusOid,
-    asiakirjaTyyppi: String,
-    virkailijaOid: UserOid
-  ): Unit = {
-    try {
-      db.run(
-        sql"""
-          INSERT INTO pyydettava_asiakirja (hakemus_id, asiakirja_tyyppi, luoja)
-          VALUES ((SELECT hakemus.id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString}), ${asiakirjaTyyppi}::asiakirjan_tyyppi, ${virkailijaOid.toString})
-        """.asUpdate,
-        "luo_pyydettava_asiakirja"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Pyydettävän asiakirjan luonti epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Pyydettävän asiakirjan luonti epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * Päivittää pyydettävän asiakirjan
-   *
-   * @param id
-   * asiakirjan id
-   * @param asiakirjaTyyppi
-   * pyydettävän asiakirjan tyyppi
-   * @param virkailijaOid
-   * päivittävän virkailijan oid
-   */
-  def paivitaPyydettavaAsiakirja(
-    id: UUID,
-    asiakirjaTyyppi: String,
-    virkailijaOid: UserOid
-  ): Unit = {
-    try {
-      db.run(
-        sql"""
-            UPDATE pyydettava_asiakirja
-            SET asiakirja_tyyppi = ${asiakirjaTyyppi}::asiakirjan_tyyppi, muokkaaja = ${virkailijaOid.toString}
-            WHERE id = ${id.toString}::uuid
-          """.asUpdate,
-        "paivita_pyydettava_asiakirja"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Pyydettävän asiakirjan päivitys epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Pyydettävän asiakirjan päivitys epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * Poistaa pyydettävän asiakirjan
-   *
-   * @param id
-   * asiakirjan id
-   */
-  def poistaPyydettavaAsiakirja(
-    id: UUID
-  ): Unit = {
-    try {
-      db.run(
-        sqlu"""
-          DELETE FROM pyydettava_asiakirja
-          WHERE id = ${id.toString}::uuid
-        """,
-        "poista_pyydettava_asiakirja"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Pyydettävän asiakirjan poisto epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Pyydettävän asiakirjan poisto epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * Hakee hakemuksen pyydettävät asiakirjat
-   *
-   * @param hakemusOid
-   * hakemuksen oid
-   * @return
-   * hakemuksen pyydettävät asiakirjat
-   */
-  def haePyydettavatAsiakirjatHakemusOidilla(hakemusOid: HakemusOid): Seq[PyydettavaAsiakirja] = {
-    try {
-      db.run(
-        sql"""
-          SELECT id, asiakirja_tyyppi
-          FROM pyydettava_asiakirja
-          WHERE hakemus_id = (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
-          ORDER BY luotu
-        """.as[PyydettavaAsiakirja],
-        "hae_hakemuksen_pyydettavat_asiakirjat"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  def suoritaAsiakirjamallienModifiointi(
-    hakemusId: UUID,
-    modifyData: AsiakirjamalliModifyData,
-    virkailijaOid: UserOid
-  ): Unit = {
-    val actions = modifyData.uudetMallit.values.toSeq.map(lisaaAsiakirjamalli(hakemusId, _, virkailijaOid)) ++
-      modifyData.muutetutMallit.values.toSeq.map(muokkaaAsiakirjamallia(hakemusId, _, virkailijaOid)) ++
-      modifyData.poistetutMallit.map(poistaAsiakirjamalli(hakemusId, _))
-    val combined = combineIntDBIOs(actions)
-    db.runTransactionally(combined, "suorita_asiakirjamallien_modifiointi") match {
-      case Success(_) => ()
-      case Failure(e) =>
-        LOG.error(s"Virhe asiakirjamallien modifioinnissa: ${e.getMessage}", e)
-        throw new RuntimeException(s"Virhe asiakirjamallien modifioinnissa: ${e.getMessage}", e)
-    }
-  }
-
-  def lisaaAsiakirjamalli(
-    hakemusId: UUID,
-    asiakirjamalli: AsiakirjamalliTutkinnosta,
-    virkailijaOid: UserOid
-  ): DBIO[Int] =
-    sqlu"""
-      INSERT INTO asiakirjamalli_tutkinnosta (hakemus_id, lahde, vastaavuus, kuvaus, luoja)
-      VALUES (
-        ${hakemusId.toString}::uuid,
-        ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde,
-        ${asiakirjamalli.vastaavuus},
-        ${asiakirjamalli.kuvaus},
-        ${virkailijaOid.toString}
-      )
-    """
-
-  def muokkaaAsiakirjamallia(
-    hakemusId: UUID,
-    asiakirjamalli: AsiakirjamalliTutkinnosta,
-    virkailijaOid: UserOid
-  ): DBIO[Int] =
-    sqlu"""
-      UPDATE asiakirjamalli_tutkinnosta
-      SET vastaavuus = ${asiakirjamalli.vastaavuus},
-          kuvaus = ${asiakirjamalli.kuvaus},
-          muokkaaja = ${virkailijaOid.toString}
-      WHERE hakemus_id = ${hakemusId.toString}::uuid
-        AND lahde = ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde
-    """
-
-  def poistaAsiakirjamalli(hakemusId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] =
-    sqlu"""
-      DELETE FROM asiakirjamalli_tutkinnosta
-      WHERE hakemus_id = ${hakemusId.toString}::uuid
-        AND lahde = ${lahde.toString}::asiakirja_malli_lahde
-    """
-
-    /**
-     * Hakee hakemuksen asiakirjamallit tutkinnosta
-     *
-     * @param hakemusId
-     * hakemuksen id
-     * @return
-     * hakemuksen asiakirjamallit tutkinnosta
-     */
-  def haeAsiakirjamallitTutkinnoistaHakemusIdlla(
-    hakemusId: UUID
-  ): Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = {
-    try {
-      db.run(
-        sql"""
-          SELECT lahde, vastaavuus, kuvaus
-          FROM asiakirjamalli_tutkinnosta
-          WHERE hakemus_id = ${hakemusId.toString}::uuid
-          ORDER BY luotu
-        """.as[AsiakirjamalliTutkinnosta],
-        "hae_hakemuksen_asiakirjamallit_tutkinnoista"
-      ).map(malli => malli.lahde -> malli)
-        .toMap
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Hakemuksen asiakirjamallien haku epäonnistui: ${e.getMessage}",
           e
         )
     }

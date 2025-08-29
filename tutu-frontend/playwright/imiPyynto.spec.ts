@@ -27,11 +27,14 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          imiPyynto: {
-            imiPyynto: null,
-            imiPyyntoNumero: null,
-            imiPyyntoLahetetty: null,
-            imiPyyntoVastattu: null,
+          asiakirja: {
+            ...hakemus.asiakirja,
+            imiPyynto: {
+              imiPyynto: null,
+              imiPyyntoNumero: null,
+              imiPyyntoLahetetty: null,
+              imiPyyntoVastattu: null,
+            },
           },
         }),
       });
@@ -41,11 +44,14 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          imiPyynto: {
-            imiPyynto: true,
-            imiPyyntoNumero: null,
-            imiPyyntoLahetetty: null,
-            imiPyyntoVastattu: null,
+          asiakirja: {
+            ...hakemus.asiakirja,
+            imiPyynto: {
+              imiPyynto: true,
+              imiPyyntoNumero: null,
+              imiPyyntoLahetetty: null,
+              imiPyyntoVastattu: null,
+            },
           },
         }),
       });
@@ -55,17 +61,21 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          imiPyynto: {
-            imiPyynto: true,
-            imiPyyntoNumero: 123456,
-            imiPyyntoLahetetty: dateFns.format(
-              new Date(),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS",
-            ),
-            imiPyyntoVastattu: dateFns.format(
-              new Date(),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS",
-            ),
+          asiakirja: {
+            ...hakemus.asiakirja,
+
+            imiPyynto: {
+              imiPyynto: true,
+              imiPyyntoNumero: 123456,
+              imiPyyntoLahetetty: dateFns.format(
+                new Date(),
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
+              ),
+              imiPyyntoVastattu: dateFns.format(
+                new Date(),
+                "yyyy-MM-dd'T'HH:mm:ss.SSS",
+              ),
+            },
           },
         }),
       });

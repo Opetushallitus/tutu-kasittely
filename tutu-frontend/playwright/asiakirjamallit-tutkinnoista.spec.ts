@@ -83,7 +83,7 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     cellsOfEce.nth(2).locator('input[type="radio"]').click(),
   ]);
   expect(
-    request.postDataJSON().asiakirjamallitTutkinnoista.ece.vastaavuus,
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
   ).toEqual(false);
 
   const cellsOfUkEnic = page
@@ -98,9 +98,10 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     cellsOfUkEnic.nth(3).locator('input[type="text"]').fill('Uusi kuvaus'),
   ]);
   expect(
-    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
   expect(
-    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.vastaavuus,
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
+      .vastaavuus,
   ).toEqual(false);
 });

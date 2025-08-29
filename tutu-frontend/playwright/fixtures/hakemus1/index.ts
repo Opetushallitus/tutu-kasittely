@@ -19,8 +19,13 @@ export const getHakemus = () => {
   hakemus.sisalto = sisalto;
   hakemus.liitteidenTilat = liitteidenTilat;
   hakemus.muutoshistoria = muutoshistoria;
-  hakemus.pyydettavatAsiakirjat = pyydettavatAsiakirjat;
-  hakemus.asiakirjamallitTutkinnoista = asiakirjamallit;
+  hakemus.asiakirja.pyydettavatAsiakirjat = pyydettavatAsiakirjat;
+  hakemus.asiakirja.asiakirjamallitTutkinnoista = asiakirjamallit;
+  hakemus.asiakirja.imiPyynto = {};
+
+  hakemus.asiakirja.valmistumisenVahvistus = {
+    valmistumisenVahvistus: false,
+  };
 
   return hakemus;
 };

@@ -30,7 +30,7 @@ case class DbHakemus(
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 16
+    maxLength = 36
   )
   esittelijaId: Option[UUID],
   @(Schema @field)(
@@ -39,6 +39,12 @@ case class DbHakemus(
     maxLength = 40
   )
   esittelijaOid: Option[UserOid],
+  @(Schema @field)(
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 36
+  )
+  asiakirjaId: Option[UUID],
   @(Schema @field)(
     example = "OPH-197-2025",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -58,76 +64,10 @@ case class DbHakemus(
   )
   muokattu: Option[LocalDateTime],
   @(Schema @field)(
-    example = "true",
-    defaultValue = "false",
-    requiredMode = RequiredMode.REQUIRED
-  )
-  allekirjoituksetTarkistettu: Boolean,
-  @(Schema @field)(
-    example = "Allekirjoitukset tarkistettu kopioista",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  allekirjoituksetTarkistettuLisatiedot: Option[String],
-  @(Schema @field)(
-    example = "true",
-    defaultValue = "false",
-    requiredMode = RequiredMode.REQUIRED
-  )
-  alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean,
-  @(Schema @field)(
-    example = "Yksipuoliset kopiot. Alkuperäiset kaksipuolisia.",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String],
-  @(Schema @field)(
-    example = "true",
-    requiredMode = RequiredMode.REQUIRED
-  )
-  selvityksetSaatu: Boolean,
-  @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 50
-  )
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime],
-  @(Schema @field)(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  imiPyynto: Option[Boolean],
-  @(Schema @field)(
-    example = "122224",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 255
-  )
-  imiPyyntoNumero: Option[String],
-  @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 50
-  )
-  imiPyyntoLahetetty: Option[LocalDateTime],
-  @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 50
-  )
-  imiPyyntoVastattu: Option[LocalDateTime],
-  @(Schema @field)(
-    example = "true",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  apHakemus: Option[Boolean],
-  @(Schema @field)(
-    example = "false",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  yhteistutkinto: Boolean,
-  @(Schema @field)(
-    example = "true",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  suostumusVahvistamiselleSaatu: Boolean
+  yhteistutkinto: Boolean
 )
 
 case class Hakemus(
@@ -147,24 +87,9 @@ case class Hakemus(
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
-  pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
-  allekirjoituksetTarkistettu: Boolean = false,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksi: Boolean = false,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  selvityksetSaatu: Boolean = false,
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
-  asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty,
-  imiPyynto: ImiPyynto = ImiPyynto(
-    imiPyynto = None,
-    imiPyyntoNumero = None,
-    imiPyyntoLahetetty = None,
-    imiPyyntoVastattu = None
-  ),
-  apHakemus: Option[Boolean] = None,
   yhteistutkinto: Boolean = false,
-  suostumusVahvistamiselleSaatu: Boolean = false,
-  tutkinnot: Seq[Tutkinto] = Seq.empty
+  tutkinnot: Seq[Tutkinto] = Seq.empty,
+  asiakirja: Option[Asiakirja] = None
 )
 
 case class PartialHakemus(
@@ -175,17 +100,7 @@ case class PartialHakemus(
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
   kasittelyVaihe: Option[KasittelyVaihe] = None,
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
-  allekirjoituksetTarkistettu: Option[Boolean] = None,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  selvityksetSaatu: Option[Boolean] = None,
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
-  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
-  imiPyynto: Option[ImiPyynto] = None,
-  apHakemus: Option[Boolean] = None,
   yhteistutkinto: Option[Boolean] = None,
-  suostumusVahvistamiselleSaatu: Option[Boolean] = None,
-  tutkinnot: Option[Seq[Tutkinto]] = None
+  tutkinnot: Option[Seq[Tutkinto]] = None,
+  asiakirja: Option[PartialAsiakirja] = None
 )

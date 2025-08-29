@@ -17,8 +17,8 @@ import {
   AsiakirjamalliLahde,
   AsiakirjamallitTutkinnoista,
   AsiakirjamalliTutkinnosta,
-  Hakemus,
-  HakemusUpdateCallback,
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
 import * as R from 'remeda';
 import React, { useEffect } from 'react';
@@ -125,6 +125,7 @@ const KuvausInput = ({
           '& .MuiFormLabel-root': {
             fontWeight: 'normal',
           },
+          width: '100%',
         }}
         label={kuvausLabel}
         multiline={multiline}
@@ -182,29 +183,29 @@ interface AsiakirjamalliPyynto {
 }
 
 export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
-  hakemus,
-  updateHakemus,
+  asiakirjaTieto,
+  updateAsiakirjaTieto,
 }: {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirjaTieto: AsiakirjaTieto;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
 
   const [currentMallit, setCurrentMallit] = React.useState<
     AsiakirjamallitTutkinnoista | undefined
-  >(hakemus.asiakirjamallitTutkinnoista);
+  >(asiakirjaTieto.asiakirjamallitTutkinnoista);
 
   useEffect(() => {
-    if (hakemus.asiakirjamallitTutkinnoista !== undefined) {
-      setCurrentMallit(hakemus.asiakirjamallitTutkinnoista);
+    if (asiakirjaTieto.asiakirjamallitTutkinnoista !== undefined) {
+      setCurrentMallit(asiakirjaTieto.asiakirjamallitTutkinnoista);
     }
-  }, [hakemus.asiakirjamallitTutkinnoista]);
+  }, [asiakirjaTieto.asiakirjamallitTutkinnoista]);
 
   const handleChange = (changeRequest: AsiakirjamalliPyynto) => {
     const changedLahde = changeRequest.lahde;
     const toBeVastaavuus = match([
-      hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
+      asiakirjaTieto.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
       changeRequest.vastaavuus,
       changeRequest.kuvaus,
     ])
@@ -216,21 +217,22 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
 
     if (toBeVastaavuus !== undefined) {
       const updatedMalli = {
-        ...hakemus.asiakirjamallitTutkinnoista?.[changedLahde],
+        ...asiakirjaTieto.asiakirjamallitTutkinnoista?.[changedLahde],
         lahde: changedLahde,
         vastaavuus: toBeVastaavuus,
         kuvaus:
           changeRequest.kuvaus !== undefined
             ? changeRequest.kuvaus
-            : hakemus.asiakirjamallitTutkinnoista?.[changedLahde]?.kuvaus,
+            : asiakirjaTieto.asiakirjamallitTutkinnoista?.[changedLahde]
+                ?.kuvaus,
       };
 
       const updatedMallit: AsiakirjamallitTutkinnoista = {
-        ...hakemus.asiakirjamallitTutkinnoista,
+        ...asiakirjaTieto.asiakirjamallitTutkinnoista,
         [changedLahde]: updatedMalli,
       };
       setCurrentMallit(updatedMallit);
-      updateHakemus({ asiakirjamallitTutkinnoista: updatedMallit });
+      updateAsiakirjaTieto({ asiakirjamallitTutkinnoista: updatedMallit });
     }
   };
 

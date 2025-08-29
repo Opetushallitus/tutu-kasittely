@@ -46,6 +46,7 @@ class Controller(
   val module = new SimpleModule()
   module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
   module.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
+  module.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())
   mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)

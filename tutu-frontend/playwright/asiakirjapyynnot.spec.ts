@@ -26,7 +26,7 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          pyydettavatAsiakirjat: [],
+          asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
         }),
       });
     } else if (callCount == 2) {
@@ -35,9 +35,12 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          pyydettavatAsiakirjat: [
-            { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
-          ],
+          asiakirja: {
+            ...hakemus.asiakirja,
+            pyydettavatAsiakirjat: [
+              { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
+            ],
+          },
         }),
       });
     } else if (callCount == 3) {
@@ -46,7 +49,7 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...hakemus,
-          pyydettavatAsiakirjat: [],
+          asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
         }),
       });
     } else {

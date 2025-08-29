@@ -115,6 +115,8 @@ export type CalendarProps = {
   selectedValue: Date | null;
   setDate: (value: Date | null) => void;
   label: string;
+  minDate?: Date | null;
+  maxDate?: Date | null;
   dataTestId?: string;
 };
 
@@ -122,6 +124,8 @@ export const CalendarComponent = ({
   selectedValue,
   setDate,
   label,
+  minDate = new Date(0),
+  maxDate,
   dataTestId,
 }: CalendarProps) => {
   const { t, getLanguage } = useTranslations();
@@ -157,7 +161,8 @@ export const CalendarComponent = ({
             ariaLabelledBy={labelId}
             selected={selectedValue}
             onChange={(date) => setDate(date)}
-            minDate={new Date(0)}
+            minDate={minDate || undefined}
+            maxDate={maxDate || undefined}
             customInput={<CustomInput ref={refCustomInput} />}
             calendarClassName={CALENDAR_CLASSNAME}
             showTimeSelect={false}

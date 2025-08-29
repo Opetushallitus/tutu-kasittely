@@ -10,7 +10,10 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 
 import { isDefined } from '@/src/lib/utils';
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+} from '@/src/lib/types/hakemus';
 
 interface StatelessAllekirjoitustenTarkistusProps {
   lisatieto: string | null | undefined;
@@ -45,30 +48,30 @@ const StatelessAllekirjoitustenTarkistus = ({
 };
 
 interface AllekirjoitustenTarkistusProps {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirjaTieto: AsiakirjaTieto;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const AllekirjoitustenTarkistus = ({
-  hakemus,
-  updateHakemus,
+  asiakirjaTieto,
+  updateAsiakirjaTieto,
 }: AllekirjoitustenTarkistusProps) => {
   const { t } = useTranslations();
 
   const [lisatieto, setLisatieto] = useState<string | null | undefined>(
-    hakemus.allekirjoituksetTarkistettu
-      ? hakemus.allekirjoituksetTarkistettuLisatiedot
+    asiakirjaTieto.allekirjoituksetTarkistettu
+      ? asiakirjaTieto.allekirjoituksetTarkistettuLisatiedot
       : null,
   );
 
   useEffect(() => {
-    const lisatieto = hakemus.allekirjoituksetTarkistettu
-      ? hakemus.allekirjoituksetTarkistettuLisatiedot
+    const lisatieto = asiakirjaTieto.allekirjoituksetTarkistettu
+      ? asiakirjaTieto.allekirjoituksetTarkistettuLisatiedot
       : null;
     setLisatieto(lisatieto);
   }, [
-    hakemus?.allekirjoituksetTarkistettu,
-    hakemus.allekirjoituksetTarkistettuLisatiedot,
+    asiakirjaTieto?.allekirjoituksetTarkistettu,
+    asiakirjaTieto.allekirjoituksetTarkistettuLisatiedot,
     setLisatieto,
   ]);
 
@@ -77,7 +80,7 @@ export const AllekirjoitustenTarkistus = ({
       lisatieto={lisatieto}
       setLisatieto={(lisatieto: string | null) => {
         setLisatieto(lisatieto);
-        updateHakemus({
+        updateAsiakirjaTieto({
           allekirjoituksetTarkistettu: isDefined(lisatieto),
           allekirjoituksetTarkistettuLisatiedot: lisatieto,
         });

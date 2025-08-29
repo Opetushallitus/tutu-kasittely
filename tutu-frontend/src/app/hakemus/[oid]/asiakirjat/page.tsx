@@ -27,6 +27,8 @@ import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
 import {
   AsiakirjaMetadata,
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
   Hakemus,
   HakemusUpdateCallback,
   SisaltoValue,
@@ -43,6 +45,7 @@ import {
 } from '@/src/lib/hakemuspalveluUtils';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
 import { useDebounce } from '@/src/hooks/useDebounce';
+import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
 
 const sisallonOsiot = [
   tutkintoTaiKoulutus, // Tutkinto tai koulutus
@@ -65,6 +68,31 @@ const ExternalLink = ({
       </CenteredRow>
     </StyledLink>
   );
+};
+
+const emptyAsiakirjaTieto: AsiakirjaTieto = {
+  pyydettavatAsiakirjat: [],
+  allekirjoituksetTarkistettu: false,
+  allekirjoituksetTarkistettuLisatiedot: null,
+  alkuperaisetAsiakirjatSaatuNahtavaksi: false,
+  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: null,
+  selvityksetSaatu: false,
+  asiakirjamallitTutkinnoista: {},
+  imiPyynto: {
+    imiPyynto: null,
+    imiPyyntoNumero: null,
+    imiPyyntoLahetetty: null,
+    imiPyyntoVastattu: null,
+  },
+  apHakemus: false,
+  suostumusVahvistamiselleSaatu: false,
+  valmistumisenVahvistus: {
+    valmistumisenVahvistus: false,
+    valmistumisenVahvistusPyyntoLahetetty: null,
+    valmistumisenVahvistusSaatu: null,
+    valmistumisenVahvistusVastaus: null,
+    valmistumisenVahvistusLisatieto: null,
+  },
 };
 
 export default function AsiakirjaPage() {
@@ -125,10 +153,11 @@ const AsiakirjaHookLayer = ({
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteiden-lataus', t);
   }, [asiakirjaError, addToast, t]);
 
-  const debouncedHakemusUpdateAction: HakemusUpdateCallback = useDebounce(
-    (next: Partial<Hakemus>) => updateHakemus(next),
-    1000,
-  );
+  const debouncedAsiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback =
+    useDebounce(
+      (next: Partial<AsiakirjaTieto>) => updateHakemus({ asiakirja: next }),
+      1000,
+    );
 
   if (asiakirjaError) {
     return null;
@@ -140,7 +169,7 @@ const AsiakirjaHookLayer = ({
   return (
     <AsiakirjaPagePure
       hakemus={hakemus}
-      debouncedHakemusUpdateAction={debouncedHakemusUpdateAction}
+      debouncedAsiakirjaTietoUpdateAction={debouncedAsiakirjaTietoUpdateAction}
       asiakirjat={asiakirjat}
       asiakirjaMetadata={asiakirjaMetadata}
     />
@@ -149,12 +178,12 @@ const AsiakirjaHookLayer = ({
 
 const AsiakirjaPagePure = ({
   hakemus,
-  debouncedHakemusUpdateAction,
+  debouncedAsiakirjaTietoUpdateAction,
   asiakirjat = [],
   asiakirjaMetadata = [],
 }: {
   hakemus: Hakemus;
-  debouncedHakemusUpdateAction: HakemusUpdateCallback;
+  debouncedAsiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
   asiakirjat: SisaltoValue[];
   asiakirjaMetadata: AsiakirjaMetadata[];
 }) => {
@@ -188,6 +217,8 @@ const AsiakirjaPagePure = ({
       getLanguage(),
     );
 
+  const asiakirja = hakemus.asiakirja || emptyAsiakirjaTieto;
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -205,25 +236,26 @@ const AsiakirjaPagePure = ({
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
-        asiakirjaPyynnot={hakemus.pyydettavatAsiakirjat}
-        updateHakemusAction={debouncedHakemusUpdateAction}
+        asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
+        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />
       <ImiPyyntoComponent
-        imiPyynto={hakemus.imiPyynto}
-        updateHakemusAction={debouncedHakemusUpdateAction}
+        imiPyynto={asiakirja.imiPyynto}
+        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
       ></ImiPyyntoComponent>
       <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>
       <KaikkiSelvityksetSaatu
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirjaTieto={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
       <ApHakemus
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirjaTieto={asiakirja}
+        hakemusKoskee={hakemus.hakemusKoskee}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
 
       <Muistio
@@ -257,24 +289,25 @@ const AsiakirjaPagePure = ({
           {todistusAitoustarkistusLupaValue}
         </OphTypography>
       </Stack>
-      <OphTypography variant={'h4'}>
-        {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
-      </OphTypography>
       <SuostumusVahvistamiselle
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirjaTieto={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+      />
+      <ValmistumisenVahvistusComponent
+        asiakirjaTieto={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
       <AllekirjoitustenTarkistus
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirjaTieto={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
       <AlkuperaisetAsiakirjat
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirja={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
       <AsiakirjaMallejaVastaavistaTutkinnoista
-        hakemus={hakemus}
-        updateHakemus={debouncedHakemusUpdateAction}
+        asiakirjaTieto={asiakirja}
+        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
     </Stack>
   );

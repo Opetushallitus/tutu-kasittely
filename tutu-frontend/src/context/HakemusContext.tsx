@@ -3,12 +3,12 @@
 import { createContext, useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { Hakemus, PartialHakemus } from '@/src/lib/types/hakemus';
 import { doApiFetch, doApiPatch } from '@/src/lib/tutu-backend/api';
 
 type HakemusContextValue = {
   hakemus: Hakemus | undefined;
-  updateHakemus: (patch: Partial<Hakemus>) => void;
+  updateHakemus: (patch: PartialHakemus) => void;
   isLoading: boolean;
   isError?: boolean;
   error: Error | null;
@@ -52,7 +52,7 @@ export const HakemusProvider = ({
   });
 
   const mutation = useMutation({
-    mutationFn: (patchHakemus: Partial<Hakemus>) =>
+    mutationFn: (patchHakemus: PartialHakemus) =>
       doApiPatch(`hakemus/${hakemus?.hakemusOid}`, patchHakemus),
     onSuccess: async (response) => {
       const paivitettyHakemus = await response.json();
@@ -64,7 +64,7 @@ export const HakemusProvider = ({
     },
   });
 
-  const updateHakemus = (patchHakemus: Partial<Hakemus>) => {
+  const updateHakemus = (patchHakemus: PartialHakemus) => {
     mutation.mutate(patchHakemus);
   };
 

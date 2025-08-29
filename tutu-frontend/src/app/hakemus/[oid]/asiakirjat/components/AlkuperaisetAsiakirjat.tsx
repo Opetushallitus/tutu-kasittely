@@ -10,7 +10,10 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 
 import { isDefined } from '@/src/lib/utils';
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+} from '@/src/lib/types/hakemus';
 
 interface StatelessAlkuperaisetAsiakirjatProps {
   lisatieto: string | null | undefined;
@@ -47,30 +50,30 @@ const StatelessAlkuperaisetAsiakirjat = ({
 };
 
 interface AlkuperaisetAsiakirjatProps {
-  hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  asiakirja: AsiakirjaTieto;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const AlkuperaisetAsiakirjat = ({
-  hakemus,
-  updateHakemus,
+  asiakirja,
+  updateAsiakirjaTieto,
 }: AlkuperaisetAsiakirjatProps) => {
   const { t } = useTranslations();
 
   const [lisatieto, setLisatieto] = useState<string | null | undefined>(
-    hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
-      ? hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
+    asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi
+      ? asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
       : null,
   );
 
   useEffect(() => {
-    const lisatieto = hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi
-      ? hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
+    const lisatieto = asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi
+      ? asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
       : null;
     setLisatieto(lisatieto);
   }, [
-    hakemus.alkuperaisetAsiakirjatSaatuNahtavaksi,
-    hakemus.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
+    asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi,
+    asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
     setLisatieto,
   ]);
 
@@ -79,7 +82,7 @@ export const AlkuperaisetAsiakirjat = ({
       lisatieto={lisatieto}
       setLisatieto={(lisatieto: string | null) => {
         setLisatieto(lisatieto);
-        updateHakemus({
+        updateAsiakirjaTieto({
           alkuperaisetAsiakirjatSaatuNahtavaksi: isDefined(lisatieto),
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: lisatieto,
         });
