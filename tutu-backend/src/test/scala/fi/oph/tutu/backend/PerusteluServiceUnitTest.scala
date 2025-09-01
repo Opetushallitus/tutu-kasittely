@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
+import org.mockito.*
 
 import java.util.Random
 import java.time.LocalDateTime
@@ -60,6 +61,24 @@ val somePerustelu = Some(perustelu)
 val perusteluId   = perustelu.id
 
 class PerusteluServiceUnitTest extends UnitTestBase {
+
+  @Mock
+  var hakemusRepository: HakemusRepository = _
+
+  @Mock
+  var perusteluRepository: PerusteluRepository = _
+
+  var perusteluService: PerusteluService = _
+
+  @BeforeEach
+  def setup(): Unit = {
+    MockitoAnnotations.openMocks(this)
+    perusteluService = new PerusteluService(
+      hakemusRepository,
+      perusteluRepository
+    )
+  }
+
   @Test
   def haePerustelu(): Unit = {
     Seq(
@@ -73,18 +92,9 @@ class PerusteluServiceUnitTest extends UnitTestBase {
       val perusteluResult = values(1)
       val expectedResult  = values(2)
 
-      val hakemusRepository = new HakemusRepository() {
-        override def haeHakemus(hakemusOid: HakemusOid) = { hakemusResult }
-      }
-
-      val perusteluRepository = new PerusteluRepository() {
-        override def haePerustelu(hakemusId: UUID) = { perusteluResult }
-      }
-
-      val perusteluService = PerusteluService(
-        hakemusRepository,
-        perusteluRepository
-      )
+      // Setup mock behavior
+      when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(hakemusResult)
+      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(perusteluResult)
 
       val result = perusteluService.haePerustelu(
         HakemusOid("de4ffbea-1763-4a43-a24d-50ee48b81ff1")
@@ -108,23 +118,16 @@ class PerusteluServiceUnitTest extends UnitTestBase {
       val perusteluResult   = values(2)
       val expectedResult    = values(3)
 
-      val hakemusRepository = new HakemusRepository() {
-        override def haeHakemus(hakemusOid: HakemusOid) = { hakemusResult }
-      }
-
-      val perusteluRepository = new PerusteluRepository() {
-        override def tallennaPerustelu(
-          hakemusId: UUID,
-          perustelu: Perustelu,
-          luoja: String
-        ) = { perusteluIdResult }
-        override def haePerustelu(hakemusId: UUID) = { perusteluResult }
-      }
-
-      val perusteluService = PerusteluService(
-        hakemusRepository,
-        perusteluRepository
-      )
+      // Setup mock behavior
+      when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(hakemusResult)
+      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(perusteluResult)
+      when(
+        perusteluRepository.tallennaPerustelu(
+          any[UUID],
+          any[Perustelu],
+          any[String]
+        )
+      ).thenReturn(perusteluIdResult)
 
       val result = perusteluService.tallennaPerustelu(
         HakemusOid("de4ffbea-1763-4a43-a24d-50ee48b81ff1"),
