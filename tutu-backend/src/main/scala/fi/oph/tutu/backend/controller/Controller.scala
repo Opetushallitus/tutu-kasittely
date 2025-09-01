@@ -173,14 +173,14 @@ class Controller(
           )
           val perustelu = perusteluService
             .tallennaPerustelu(
-              hakemusOid,
+              hakemus.hakemusOid,
               Perustelu(),
               "Hakemuspalvelu"
             )
-            .forEach((perustelu: Perustelu) => {
+            .foreach((perustelu: Perustelu) => {
               auditLog.logCreate(
                 AuditLog.getUser(request),
-                Map("hakemusId" -> perustelu.hakemusId),
+                Map("perusteluId" -> perustelu.id.toString),
                 CreatePerustelu,
                 perustelu.toString
               )
