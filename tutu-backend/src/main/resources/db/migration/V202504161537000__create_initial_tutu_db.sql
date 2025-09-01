@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS hakemus (
     asiakirja_id uuid,
     esitelty TIMESTAMPTZ,
     paatos TIMESTAMPTZ,
-    hakemus_koskee INTEGER NOT NULL default 9,
+    hakemus_koskee INTEGER NOT NULL,
     asiatunnus VARCHAR(15),
     kasittely_vaihe VARCHAR(50) NOT NULL DEFAULT 'AlkukasittelyKesken',
     yhteistutkinto BOOLEAN,
