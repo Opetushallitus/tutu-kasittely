@@ -533,7 +533,7 @@ class Controller(
                 )
               )
             auditLog.logCreate(
-              AuditLog.getUser(request),
+              auditLog.getUser(request),
               Map("hakemusOid" -> hakemusOid),
               CreateMuistio,
               params

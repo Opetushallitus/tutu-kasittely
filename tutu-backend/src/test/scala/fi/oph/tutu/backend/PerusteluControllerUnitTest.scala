@@ -107,6 +107,9 @@ class PerusteluControllerUnitTest {
   private var perusteluService: PerusteluService = _
 
   @MockitoBean
+  private var koodistoService: KoodistoService = _
+
+  @MockitoBean
   private var auditLog: AuditLog = _
 
   @BeforeEach def setup(): Unit = {
@@ -129,7 +132,18 @@ class PerusteluControllerUnitTest {
     when(userService.toString).thenCallRealMethod()
     when(muistioService.toString).thenCallRealMethod()
     when(perusteluService.toString).thenCallRealMethod()
+    when(koodistoService.toString).thenCallRealMethod()
     when(auditLog.toString).thenCallRealMethod()
+
+    doNothing().when(auditLog).logCreate(any, any, any, any)
+    when(auditLog.getUser(any)).thenReturn(
+      fi.vm.sade.auditlog.User(
+        null,
+        null,
+        null,
+        null
+      )
+    )
   }
 
   @Test

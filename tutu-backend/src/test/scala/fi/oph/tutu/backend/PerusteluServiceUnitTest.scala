@@ -25,19 +25,8 @@ val someDbHakemus = Some(
     asiatunnus = Option("OPH-197-2025"),
     kasittelyVaihe = KasittelyVaihe.fromString("AlkukasittelyKesken"),
     muokattu = Option(LocalDateTime.parse("2025-06-14T10:59:47.597")),
-    allekirjoituksetTarkistettu = true,
-    allekirjoituksetTarkistettuLisatiedot = Option("Allekirjoitukset tarkistettu kopioista"),
-    alkuperaisetAsiakirjatSaatuNahtavaksi = true,
-    alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = Option("Yksipuoliset kopiot. Alkuperäiset kaksipuolisia."),
-    selvityksetSaatu = true,
-    viimeinenAsiakirjaHakijalta = Option(LocalDateTime.parse("2025-06-14T10:59:47.597")),
-    imiPyynto = Option(false),
-    imiPyyntoNumero = Option("122224"),
-    imiPyyntoLahetetty = Option(LocalDateTime.parse("2025-06-14T10:59:47.597")),
-    imiPyyntoVastattu = Option(LocalDateTime.parse("2025-06-14T10:59:47.597")),
-    apHakemus = Option(true),
-    yhteistutkinto = false,
-    suostumusVahvistamiselleSaatu = true
+    asiakirjaId = None,
+    yhteistutkinto = false
   )
 )
 
