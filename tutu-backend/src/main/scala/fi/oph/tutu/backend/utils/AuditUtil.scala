@@ -24,10 +24,7 @@ object AuditUtil {
     val afterMap  = after.map(flattenJson).getOrElse(Map.empty)
 
     // Find added keys (keys that exist in after but not in before)
-    val addedKeys = afterMap.keySet.diff(beforeMap.keySet)
-    for (key <- addedKeys) {
-      changes.added(key, afterMap(key))
-    }
+    afterMap.keySet.diff(beforeMap.keySet).foreach(key => changes.added(key, afterMap(key)))
 
     // Find removed keys (keys that exist in before but not in after)
     val removedKeys = beforeMap.keySet.diff(afterMap.keySet)
