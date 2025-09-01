@@ -1,13 +1,7 @@
 package fi.oph.tutu.backend.domain
 
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
-
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.annotation.meta.field
 
 case class Perustelu(
   id: UUID = null,
@@ -22,6 +16,54 @@ case class Perustelu(
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = "",
   luotu: LocalDateTime = null,
   luoja: String = null,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None,
+  perusteluUoRo: Option[PerusteluUoRo] = None
+)
+
+case class PerusteluUoRo(
+  id: UUID,
+  perusteluId: UUID,
+  koulutuksenSisalto: Option[String] = None,
+  opettajatEroMonialaisetOpinnotSisalto: Boolean = false,
+  opettajatEroMonialaisetOpinnotLaajuus: Boolean = false,
+  opettajatEroPedagogisetOpinnotSisalto: Boolean = false,
+  opettajatEroPedagogisetOpinnotLaajuus: Boolean = false,
+  opettajatEroKasvatustieteellisetOpinnotSisalto: Boolean = false,
+  opettajatEroKasvatustieteellisetOpinnotVaativuus: Boolean = false,
+  opettajatEroKasvatustieteellisetOpinnotLaajuus: Boolean = false,
+  opettajatEroOpetettavatAineetOpinnotSisalto: Boolean = false,
+  opettajatEroOpetettavatAineetOpinnotVaativuus: Boolean = false,
+  opettajatEroOpetettavatAineetOpinnotLaajuus: Boolean = false,
+  opettajatEroErityisopettajanOpinnotSisalto: Boolean = false,
+  opettajatEroErityisopettajanOpinnotLaajuus: Boolean = false,
+  opettajatMuuEro: Boolean = false,
+  opettajatMuuEroSelite: Option[String] = None,
+  vkOpettajatEroKasvatustieteellisetOpinnotSisalto: Boolean = false,
+  vkOpettajatEroKasvatustieteellisetOpinnotLaajuus: Boolean = false,
+  vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotSisalto: Boolean = false,
+  vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus: Boolean = false,
+  vkOpettajatMuuEro: Boolean = false,
+  vkOpettajatMuuEroSelite: Option[String] = None,
+  otmEroOpinnotSisalto: Boolean = false,
+  otmEroOpinnotVaativuus: Boolean = false,
+  otmEroOpinnotLaajuus: Boolean = false,
+  otmMuuEro: Boolean = false,
+  otmMuuEroSelite: Option[String] = None,
+  sovellettuOpettajanPedagogisetOpinnot: Boolean = false,
+  sovellettuOpetettavanAineenOpinnot: Boolean = false,
+  sovellettuMonialaisetOpinnot: Boolean = false,
+  sovellettuErityisopetus: Boolean = false,
+  sovellettuVarhaiskasvatus: Boolean = false,
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: Boolean = false,
+  sovellettuRiittavatOpinnot: Boolean = false,
+  sovellettuRinnastaminenOtmTutkintoon: Boolean = false,
+  sovellettuLuokanopettaja: Boolean = false,
+  sovellettuMuuTilanne: Boolean = false,
+  sovellettuMuuTilanneSelite: Boolean = false,
+  tarkempiaSelvityksia: Option[String] = None,
+  luotu: LocalDateTime,
+  luoja: String,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
