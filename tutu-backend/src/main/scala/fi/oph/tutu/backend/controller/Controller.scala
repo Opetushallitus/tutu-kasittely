@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.repository.HakemusRepository
 import fi.oph.tutu.backend.utils.AuditOperation.{
   CreateHakemus,
   CreateMuistio,
+  CreatePerustelu,
   ReadEsittelija,
   ReadHakemukset,
   ReadHakemus,
@@ -170,6 +171,20 @@ class Controller(
             CreateHakemus,
             hakemus.toString
           )
+          val perustelu = perusteluService
+            .tallennaPerustelu(
+              hakemusOid,
+              Perustelu(),
+              "Hakemuspalvelu"
+            )
+            .forEach((perustelu: Perustelu) => {
+              auditLog.logCreate(
+                AuditLog.getUser(request),
+                Map("hakemusId" -> perustelu.hakemusId),
+                CreatePerustelu,
+                perustelu.toString
+              )
+            })
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
         }
       }
