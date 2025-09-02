@@ -6,8 +6,6 @@ import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import java.util.UUID
-
 @Component
 @Service
 class PerusteluService(
@@ -24,9 +22,9 @@ class PerusteluService(
       .flatMap { dbHakemus =>
         perusteluRepository.haePerustelu(dbHakemus.id).flatMap { perustelu =>
           perusteluRepository.haePerusteluUoRo(perustelu.id) match {
-            case None                => Some(perustelu)
             case Some(perusteluUoRo) =>
               Some(perustelu.copy(perusteluUoRo = Some(perusteluUoRo)))
+            case _ => Some(perustelu)
           }
         }
       }

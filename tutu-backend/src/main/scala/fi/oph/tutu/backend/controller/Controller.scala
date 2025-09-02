@@ -6,19 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.utils.AuditOperation.{
-  CreateHakemus,
-  CreateMuistio,
-  CreatePerustelu,
-  ReadEsittelija,
-  ReadHakemukset,
-  ReadHakemus,
-  ReadKoodisto,
-  ReadLiitteenTiedot,
-  ReadMuistio,
-  UpdateHakemus
-}
-import fi.oph.tutu.backend.utils.AuditUtil
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
@@ -559,7 +546,6 @@ class Controller(
       koodistoService.getKoodisto(koodisto)
     } match {
       case Success(koodisto) =>
-        auditLog.logRead("koodisto/{koodisto}", koodisto.toString(), ReadKoodisto, request)
         val response = mapper.writeValueAsString(koodisto)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>

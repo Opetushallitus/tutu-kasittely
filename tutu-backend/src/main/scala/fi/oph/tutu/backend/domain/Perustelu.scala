@@ -68,5 +68,5 @@ case class PerusteluUoRoSisalto(
   sovellettuRinnastaminenOtmTutkintoon: Boolean = false,
   sovellettuLuokanopettaja: Boolean = false,
   sovellettuMuuTilanne: Boolean = false,
-  sovellettuMuuTilanneSelite: Boolean = false
+  sovellettuMuuTilanneSelite: Option[String] = None
 )
