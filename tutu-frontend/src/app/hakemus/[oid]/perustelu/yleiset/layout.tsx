@@ -64,7 +64,7 @@ export default function PerusteluYleisetLayout({
         label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
         hakemus={hakemus}
         sisainen={true}
-        hakemuksenOsa={'asiakirjat'}
+        hakemuksenOsa={'perustelut-yleiset'}
       />
     </Stack>
   );
