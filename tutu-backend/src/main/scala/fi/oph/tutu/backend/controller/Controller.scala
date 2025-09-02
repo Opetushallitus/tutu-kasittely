@@ -166,7 +166,7 @@ class Controller(
         } else {
           val hakemusOid = hakemusService.tallennaHakemus(hakemus)
           auditLog.logCreate(
-            AuditLog.getUser(request),
+            auditLog.getUser(request),
             Map("hakemusOid" -> hakemusOid.toString),
             CreateHakemus,
             hakemus.toString
@@ -179,7 +179,7 @@ class Controller(
             )
             .foreach((perustelu: Perustelu) => {
               auditLog.logCreate(
-                AuditLog.getUser(request),
+                auditLog.getUser(request),
                 Map("perusteluId" -> perustelu.id.toString),
                 CreatePerustelu,
                 perustelu.toString
@@ -452,7 +452,7 @@ class Controller(
                 )
               )
             auditLog.logCreate(
-              AuditLog.getUser(request),
+              auditLog.getUser(request),
               Map("hakemusOid" -> hakemusOid),
               CreateMuistio,
               params
