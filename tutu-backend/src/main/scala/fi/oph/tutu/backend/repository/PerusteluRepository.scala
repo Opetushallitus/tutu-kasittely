@@ -224,7 +224,7 @@ class PerusteluRepository {
     perusteluId: UUID,
     perusteluUoRo: PerusteluUoRo,
     luoja: String
-  ): UUID = {
+  ): PerusteluUoRo = {
     try {
       db.run(
         sql"""
@@ -353,8 +353,8 @@ class PerusteluRepository {
               sovellettu_muu_tilanne_selite = ${perusteluUoRo.sovellettuMuuTilanneSelite},
               tarkempia_selvityksia = ${perusteluUoRo.tarkempiaSelvityksia},
               muokkaaja = $luoja
-            RETURNING id
-          """.as[UUID].head,
+            RETURNING *
+          """.as[PerusteluUoRo].head,
         "tallenna_perustelu_uo_ro"
       )
     } catch {
