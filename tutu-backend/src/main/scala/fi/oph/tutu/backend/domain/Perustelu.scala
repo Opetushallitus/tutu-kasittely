@@ -24,6 +24,14 @@ case class Perustelu(
 case class PerusteluUoRo(
   id: UUID,
   perusteluId: UUID,
+  perustelunSisalto: PerusteluUoRoSisalto,
+  luotu: LocalDateTime,
+  luoja: String,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None
+)
+
+case class PerusteluUoRoSisalto(
   koulutuksenSisalto: Option[String] = None,
   opettajatEroMonialaisetOpinnotSisalto: Boolean = false,
   opettajatEroMonialaisetOpinnotLaajuus: Boolean = false,
@@ -60,10 +68,5 @@ case class PerusteluUoRo(
   sovellettuRinnastaminenOtmTutkintoon: Boolean = false,
   sovellettuLuokanopettaja: Boolean = false,
   sovellettuMuuTilanne: Boolean = false,
-  sovellettuMuuTilanneSelite: Boolean = false,
-  tarkempiaSelvityksia: Option[String] = None,
-  luotu: LocalDateTime,
-  luoja: String,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None
+  sovellettuMuuTilanneSelite: Boolean = false
 )

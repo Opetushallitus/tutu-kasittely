@@ -6,18 +6,15 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
 import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myonteinen}
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
-import org.mockito.Mockito.{times, verify}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.{eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -858,12 +855,6 @@ class ControllerTest extends IntegrationTestBase {
   def paivitaPartialHakemusWithValmistumisenVahvistusValidRequestReturns200(): Unit = {
     initAtaruHakemusRequests()
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006670")
-    println(
-      "!!!!!!!!!!!!!!!!!!!!! Current asiakirja: " + asiakirjaRepository
-        .haeKaikkiAsiakirjaTiedot(hakemusRepository.haeHakemus(hakemusOid).get.asiakirjaId)
-        .get
-        ._1
-    )
 
     var updatedHakemus = PartialHakemus(
       asiakirja = Some(
