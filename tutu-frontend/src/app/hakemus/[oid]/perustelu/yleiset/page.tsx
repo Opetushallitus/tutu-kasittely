@@ -1,3 +1,5 @@
-export default function YleisetPage() {
-  return <span>Tämä on yleiset / lausunto -sivu</span>;
+import { redirect } from 'next/navigation';
+
+export default function CatchAllPage() {
+  redirect('yleiset/perustelut');
 }
