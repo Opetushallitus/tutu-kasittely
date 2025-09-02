@@ -10,18 +10,18 @@ import java.util.UUID
 import scala.annotation.meta.field
 
 case class Perustelu(
-  id: UUID,
-  hakemusId: UUID,
-  virallinenTutkinnonMyontaja: Option[Boolean],
-  virallinenTutkinto: Option[Boolean],
+  id: UUID = null,
+  hakemusId: UUID = null,
+  virallinenTutkinnonMyontaja: Option[Boolean] = None,
+  virallinenTutkinto: Option[Boolean] = None,
   lahdeLahtomaanKansallinenLahde: Boolean = false,
   lahdeLahtomaanVirallinenVastaus: Boolean = false,
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = false,
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = "",
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String],
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = "",
-  luotu: LocalDateTime,
-  luoja: String,
+  luotu: LocalDateTime = null,
+  luoja: String = null,
   muokattu: Option[LocalDateTime] = None,
-  muokkaaja: String
+  muokkaaja: Option[String] = None
 )

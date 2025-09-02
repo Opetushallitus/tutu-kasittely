@@ -40,7 +40,7 @@ class PerusteluRepository {
         r.nextTimestamp().toLocalDateTime,
         r.nextString(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextString()
+        Option(r.nextString())
       )
     )
   }
@@ -63,7 +63,7 @@ class PerusteluRepository {
     try {
       db.run(
         sql"""
-          INSERT INTO perustelu_yleinen (
+          INSERT INTO perustelu_yleiset (
             hakemus_id,
             virallinen_tutkinnon_myontaja,
             virallinen_tutkinto,
@@ -95,7 +95,7 @@ class PerusteluRepository {
             lahde_lahtomaan_virallinen_vastaus = ${perustelu.lahdeLahtomaanVirallinenVastaus},
             lahde_kansainvalinen_hakuteos_tai_verkkosivusto = ${perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto},
             selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta = ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
-            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa},
+            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
             selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
             muokkaaja = $luoja
           RETURNING id
@@ -144,7 +144,7 @@ class PerusteluRepository {
               p.muokattu,
               p.muokkaaja
             FROM
-              perustelu p
+              perustelu_yleiset p
             WHERE
               p.hakemus_id =  ${hakemusId.toString}::uuid
           """.as[Perustelu].headOption,
