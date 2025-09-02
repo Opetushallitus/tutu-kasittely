@@ -51,7 +51,7 @@ const LinkedTab = (props: TabLinkProps) => {
     expanded,
     expandable,
   } = props;
-  const pagePath = (targetPage || value!).replace(/\./, '/');
+  const pagePath = (targetPage || value!).replace(/\./g, '/');
   const href = `/hakemus/${hakemusOid}/${pagePath}`;
   const subTabSx = { marginLeft: theme.spacing(3), ...SMALL_FONT };
   const sx = {
@@ -133,7 +133,7 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
         <LinkedTab value="tutkinnot" hakemusOid={hakemusOid} />
         <LinkedTab
           value="perustelu.ylataso"
-          targetPage="perustelu.yleiset"
+          targetPage="perustelu.yleiset.lausuntotiedot"
           hakemusOid={hakemusOid}
           expandable={true}
           expanded={showSubTabs}
