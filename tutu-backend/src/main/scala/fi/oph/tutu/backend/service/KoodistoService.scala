@@ -16,7 +16,7 @@ import org.json4s.native.JsonMethods.*
 
 @Component
 @Service
-class KoodistoService(httpService: HttpService) extends TutuJsonFormats {
+class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[KoodistoService])
 
   @Value("${opintopolku.virkailija.url}")
@@ -47,8 +47,8 @@ class KoodistoService(httpService: HttpService) extends TutuJsonFormats {
   )
 
   @Cacheable(value = Array("koodisto"))
-  def getKoodisto(koodisto: String): Seq[KoodistoItem] =
-    httpService.get(
+  def getKoodisto(koodisto: String): Seq[KoodistoItem] = {
+    val items = httpService.get(
       koodistoCasClient,
       s"$opintopolku_virkailija_domain/koodisto-service/rest/json/$koodisto/koodi"
     ) match {
@@ -62,6 +62,15 @@ class KoodistoService(httpService: HttpService) extends TutuJsonFormats {
           case _ => throw new MappingException(s"Cannot deserialize koodisto response")
         }
     }
+    if (koodisto == "maatjavaltiot2") {
+      try {
+        maakoodiService.syncMaakoodit(items, "system")
+      } catch {
+        case e: Exception => LOG.error("Maakoodi sync failed after koodisto fetch", e)
+      }
+    }
+    items
+  }
 
   @CacheEvict(value = Array("koodisto"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
