@@ -44,7 +44,7 @@ val perustelu = Perustelu(
   luotu = LocalDateTime.now(),
   luoja = "Hakemuspalvelu",
   muokattu = None,
-  muokkaaja = ""
+  muokkaaja = Option("")
 )
 val somePerustelu = Some(perustelu)
 val perusteluId   = perustelu.id

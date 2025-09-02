@@ -20,8 +20,8 @@ case class Perustelu(
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = "",
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = "",
-  luotu: LocalDateTime,
-  luoja: String,
+  luotu: LocalDateTime = null,
+  luoja: String = null,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )

@@ -40,7 +40,7 @@ class PerusteluRepository {
         r.nextTimestamp().toLocalDateTime,
         r.nextString(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextString()
+        Option(r.nextString())
       )
     )
   }

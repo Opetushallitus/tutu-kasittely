@@ -81,7 +81,7 @@ def makePerustelu(
     LocalDateTime.now(),
     "Hakemuspalvelu",
     Option(LocalDateTime.now()),
-    "Hakemuspalvelu"
+    Option("Hakemuspalvelu")
   )
 }
 
