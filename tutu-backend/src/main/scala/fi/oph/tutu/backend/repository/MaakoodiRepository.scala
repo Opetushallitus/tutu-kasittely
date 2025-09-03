@@ -67,6 +67,42 @@ class MaakoodiRepository {
         muokattu = now()
     """
 
+  /**
+   * Creates or updates a maakoodi entry
+   *
+   * @param koodi maakoodi value
+   * @param nimi name for the maakoodi
+   * @param muokkaajaTaiLuoja creator or modifier of the entry
+   * @return the created or updated maakoodi
+   */
+  def upsertMaakoodi(
+    koodi: String,
+    nimi: String,
+    muokkaajaTaiLuoja: String,
+    esittelijaId: Option[UUID] = None
+  ): Option[DbMaakoodi] = {
+    try {
+      val esittelijaIdSql = esittelijaId.map(id => s"'$id'::uuid").getOrElse("NULL")
+      val query           = sql"""
+        INSERT INTO maakoodi (koodi, nimi, luoja, esittelija_id)
+        VALUES ($koodi, $nimi, $muokkaajaTaiLuoja, #$esittelijaIdSql)
+        ON CONFLICT (koodi) DO
+        UPDATE SET
+          nimi = EXCLUDED.nimi,
+          muokkaaja = EXCLUDED.luoja,
+          esittelija_id = #$esittelijaIdSql,
+          muokattu = now()
+        RETURNING id, esittelija_id, koodi, nimi
+        """.as[DbMaakoodi]
+      val maakoodi: DbMaakoodi = db.run(query.head, "upsertMaakoodi")
+      Some(maakoodi)
+    } catch {
+      case e: Exception =>
+        LOG.warn(s"Failed to upsert maakoodi with koodi: $koodi", e)
+        None
+    }
+  }
+
   def deleteByKoodi(koodi: String): DBIO[Int] =
     sqlu"""
       DELETE FROM maakoodi WHERE koodi = $koodi

@@ -4,7 +4,7 @@ import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { HomeIcon } from '@/src/components/HomeLink';
-import { HomeStyledChevron } from '@/src/components/HomeStyledChevron';
+import { HomeStyledChevron } from '@/src/components/HomeLink';
 
 export default function HeaderPage() {
   const { t } = useTranslations();

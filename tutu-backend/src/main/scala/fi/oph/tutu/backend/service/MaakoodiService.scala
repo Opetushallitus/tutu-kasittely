@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Kieli, KoodistoItem}
+import fi.oph.tutu.backend.domain.{Kieli, KoodistoItem, Maakoodi}
 import fi.oph.tutu.backend.repository.MaakoodiRepository
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
@@ -23,5 +23,11 @@ class MaakoodiService(
       },
       muokkaajaTaiLuoja
     )
+  }
+
+  def listMaakoodit(): Seq[Maakoodi] = {
+    maakoodiRepository
+      .listAll()
+      .map(db => Maakoodi(db.id, db.esittelijaId, db.koodi, db.nimi))
   }
 }

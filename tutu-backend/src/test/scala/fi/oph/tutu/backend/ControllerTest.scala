@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
 import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myonteinen}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, DbMaakoodi, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -65,6 +67,7 @@ class ControllerTest extends IntegrationTestBase {
   val xffOriginalHeaderValue    = "127.0.0.1"
 
   var esittelija: Option[DbEsittelija] = None
+  var maakoodi: Option[DbMaakoodi]     = None
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -72,7 +75,8 @@ class ControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-    esittelija = esittelijaRepository.upsertEsittelija("752", UserOid(esittelijaOidString), "testi")
+    esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
+    maakoodi = maakoodiRepository.upsertMaakoodi("752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
   }
 
   @BeforeEach
