@@ -17,9 +17,7 @@ case class DbMaakoodi(
   id: UUID,
   esittelijaId: Option[UUID],
   koodi: String,
-  lyhytnimi: Option[String],
-  nimi: String,
-  lisatieto: Option[String]
+  nimi: String
 )
 
 @Component
@@ -37,16 +35,14 @@ class MaakoodiRepository {
         UUID.fromString(r.nextString()),
         Option(r.nextString()).map(UUID.fromString),
         r.nextString(),
-        Option(r.nextString()),
-        r.nextString(),
-        Option(r.nextString())
+        r.nextString()
       )
     )
 
   def listAll(): Seq[DbMaakoodi] =
     db.run(
       sql"""
-        SELECT id, esittelija_id, koodi, lyhytnimi, nimi, lisatieto
+        SELECT id, esittelija_id, koodi, nimi
         FROM maakoodi
       """.as[DbMaakoodi],
       "list_all_maakoodi"
@@ -54,25 +50,19 @@ class MaakoodiRepository {
 
   def upsertMaakoodi(
     koodi: String,
-    lyhytnimi: Option[String],
     nimi: String,
-    lisatieto: Option[String],
     muokkaajaTaiLuoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO maakoodi (koodi, lyhytnimi, nimi, lisatieto, luoja)
+      INSERT INTO maakoodi (koodi, nimi, luoja)
       VALUES (
         $koodi,
-        ${lyhytnimi.orNull},
         $nimi,
-        ${lisatieto.orNull},
         $muokkaajaTaiLuoja
       )
       ON CONFLICT (koodi)
       DO UPDATE SET
-        lyhytnimi = EXCLUDED.lyhytnimi,
         nimi = EXCLUDED.nimi,
-        lisatieto = EXCLUDED.lisatieto,
         muokkaaja = EXCLUDED.luoja,
         muokattu = now()
     """
@@ -90,8 +80,8 @@ class MaakoodiRepository {
     val incoming = items.map(_.koodiArvo).toSet
 
     val toInsertOrUpdate = items.map { item =>
-      val nameFi = item.nimi.get(Kieli.fi).getOrElse("")
-      upsertMaakoodi(item.koodiArvo, None, nameFi, None, muokkaajaTaiLuoja)
+      val nameFi = item.nimi.getOrElse(Kieli.fi, "")
+      upsertMaakoodi(item.koodiArvo, nameFi, muokkaajaTaiLuoja)
     }
 
     val toDelete = (existing -- incoming).toSeq.map(deleteByKoodi)

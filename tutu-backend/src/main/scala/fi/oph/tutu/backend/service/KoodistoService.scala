@@ -64,9 +64,9 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
     }
     if (koodisto == "maatjavaltiot2") {
       try {
-        maakoodiService.syncMaakoodit(items, "system")
+        maakoodiService.syncMaakoodit(items, "Koodistopalvelu")
       } catch {
-        case e: Exception => LOG.error("Maakoodi sync failed after koodisto fetch", e)
+        case e: Exception => LOG.error("Maakoodi DB sync failed after koodisto fetch", e)
       }
     }
     items

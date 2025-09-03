@@ -272,6 +272,10 @@
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"
   },
+  "maajako": {
+    "otsikko": "Esittelijöiden maajako",
+    "kuvaus": "Hallinnoi maajakoa, jonka perusteella hakemukset ohjautuvat oikealle esittelijälle. Kukin maa voi olla valittuna vain yhdelle esittelijälle. Hakemukset ohjautuvat sen perusteella, minkä maan hakija on ilmoittanut hakemuslomakkeella tutkinnon suoritusmaaksi kohdassa Tutkinto 1."
+  },
   "puuttuu": "Puuttuu",
   "virhe": {
     "eiTutuOikeuksia": "Sinulla ei ole oikeuksia TUTU -hakemuksiin.",

@@ -14,13 +14,11 @@ class MaakoodiService(
 
   def syncMaakoodit(items: Seq[KoodistoItem], muokkaajaTaiLuoja: String): Unit = {
     val mapped = items.map { item =>
-      val nimiFi: Option[String]      = item.nimi.get(Kieli.fi)
-      val lyhytNimiFi: Option[String] = None
-      val kuvausFi: Option[String]    = None
-      (item.koodiArvo, lyhytNimiFi, nimiFi.getOrElse(""), kuvausFi)
+      val nimiFi: Option[String] = item.nimi.get(Kieli.fi)
+      (item.koodiArvo, nimiFi.getOrElse(""))
     }
     maakoodiRepository.syncFromKoodisto(
-      mapped.map { case (koodi, _, nimi, _) =>
+      mapped.map { case (koodi, nimi) =>
         KoodistoItem(koodiUri = "", koodiArvo = koodi, nimi = Map(Kieli.fi -> nimi))
       },
       muokkaajaTaiLuoja
