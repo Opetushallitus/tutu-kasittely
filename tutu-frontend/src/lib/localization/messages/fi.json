@@ -202,7 +202,6 @@
         "otsikko": "Vahvista tutkinnon poisto",
         "teksti": "Olet poistamassa tutkintoa. Vahvista tutkinnon poistaminen."
       },
-
       "tutkinto": {
         "tutkintoOtsikko": "Tutkinto",
         "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
@@ -217,6 +216,20 @@
         "tutkinnonKoulutusala": "Tutkinnon koulutusala",
         "muuTutkintoHuomio": "Huomiot muista tutkinnoista päätökseen",
         "muuTutkintoHuomioSelite": "Tiedot tutkinnoista tai opintosuorituksista: tutkinnon tai opintosuorituksen nimi, korkeakoulun tai oppilaitoksen nimi, sijaintimaa sekä todistuksen päivämäärä"
+      }
+    },
+    "perustelu": {
+      "yleiset": {
+        "otsikko": "TODO",
+        "muistio": "Tarkempia selvityksiä (ei näy muistiossa)"
+      },
+      "uoro": {
+        "otsikko": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
+        "koulutuksenSisalto": "Koulutuksen sisältö",
+        "koulutuksenSisaltoSelite": "Mihin ammattiin koulutus on valmistanut ja mahdollisia lisäselvityksiä koulutuksen sisällöstä"
+      },
+      "ap": {
+        "otsikko": "TODO"
       }
     }
   },
@@ -238,7 +251,7 @@
       "ylataso": "Perustelu",
       "yleiset": "Yleiset perustelut / Lausuntotiedot",
       "uoro": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
-      "ar": "AR -päätöksen perustelut"
+      "ap": "AP -päätöksen perustelut"
     },
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"

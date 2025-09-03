@@ -32,7 +32,6 @@ case class PerusteluUoRo(
 )
 
 case class PerusteluUoRoSisalto(
-  koulutuksenSisalto: Option[String] = None,
   opettajatEroMonialaisetOpinnotSisalto: Boolean = false,
   opettajatEroMonialaisetOpinnotLaajuus: Boolean = false,
   opettajatEroPedagogisetOpinnotSisalto: Boolean = false,

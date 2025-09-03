@@ -115,7 +115,6 @@ def makePerusteluWithUoro(
         UUID.randomUUID(),
         perusteluId,
         PerusteluUoRoSisalto(
-          Some("sisältöä elämään"),
           false,
           false,
           true,
@@ -282,7 +281,6 @@ class PerusteluControllerUnitTest {
       .andExpect(jsonPath("$.perusteluUoRo.id").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perusteluId").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto").isNotEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.koulutuksenSisalto").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroMonialaisetOpinnotSisalto").isBoolean)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroMonialaisetOpinnotLaajuus").isBoolean)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroPedagogisetOpinnotSisalto").isBoolean)
@@ -425,7 +423,6 @@ class PerusteluControllerUnitTest {
       .andExpect(jsonPath("$.perusteluUoRo.id").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perusteluId").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto").isNotEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.koulutuksenSisalto").isString)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroMonialaisetOpinnotSisalto").isBoolean)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroMonialaisetOpinnotLaajuus").isBoolean)
       .andExpect(jsonPath("$.perusteluUoRo.perustelunSisalto.opettajatEroPedagogisetOpinnotSisalto").isBoolean)

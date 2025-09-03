@@ -4,20 +4,19 @@ import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/Pe
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 
-export default function YleisetPage() {
+export default function ApPage() {
   const { t } = useTranslations();
   const { hakemus, isLoading, error } = useHakemus();
-
   return (
     <PerusteluLayout
-      showTabs={true}
-      title="hakemus.perustelu.yleiset.otsikko"
+      showTabs={false}
+      title="hakemus.perustelu.ap.otsikko"
       t={t}
       hakemus={hakemus}
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      <span>Tämä on yleiset / lausunto -sivu</span>
+      <span>Tämä on AP -päätöksen perustelusivu</span>
     </PerusteluLayout>
   );
 }
