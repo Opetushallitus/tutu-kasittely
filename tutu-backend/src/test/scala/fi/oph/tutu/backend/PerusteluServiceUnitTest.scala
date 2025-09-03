@@ -32,7 +32,6 @@ val perusteluUoRo = PerusteluUoRo(
   id = UUID.randomUUID(),
   perusteluId = perusteluId,
   perustelunSisalto = PerusteluUoRoSisalto(
-    koulutuksenSisalto = Some("Sisältöä elämään"),
     opettajatEroMonialaisetOpinnotLaajuus = true,
     opettajatEroOpetettavatAineetOpinnotLaajuus = true,
     opettajatMuuEro = true,

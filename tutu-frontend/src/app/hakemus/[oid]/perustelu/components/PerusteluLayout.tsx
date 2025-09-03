@@ -3,8 +3,10 @@
 import { ReactNode, useEffect } from 'react';
 
 import { Stack, useTheme } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
 import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
@@ -17,7 +19,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
-import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -86,25 +88,25 @@ const Tabs = () => {
 
 interface PerusteluYleisetLayoutProps {
   showTabs: boolean;
+  title: string;
+  t: TFunction;
+  hakemus: Hakemus | undefined;
+  isHakemusLoading: boolean;
+  hakemusError: Error | null;
   children: ReactNode;
 }
 
 export const PerusteluLayout = ({
   showTabs,
+  title,
+  t,
+  hakemus,
+  isHakemusLoading,
+  hakemusError,
   children,
 }: PerusteluYleisetLayoutProps) => {
   const theme = useTheme();
-  const { t } = useTranslations();
   const { addToast } = useToaster();
-
-  const {
-    isLoading: hakemusIsLoading,
-    hakemus,
-    error: hakemusError,
-  } = useHakemus();
-
-  const { perustelu, isPerusteluLoading } = usePerustelu(hakemus?.hakemusOid);
-  console.log('Perustelu', perustelu);
 
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
@@ -114,24 +116,21 @@ export const PerusteluLayout = ({
     return null;
   }
 
-  if (hakemusIsLoading || !hakemus || isPerusteluLoading || !perustelu)
-    return <FullSpinner></FullSpinner>;
+  if (isHakemusLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
   return (
     <Stack
       gap={theme.spacing(3)}
       sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
     >
-      <OphTypography variant={'h2'}>
-        {t('hakemus.perustelu.yleiset.otsikko')}
-      </OphTypography>
+      <OphTypography variant={'h2'}>{t(title)}</OphTypography>
 
       {showTabs && <Tabs />}
 
       {children}
 
       <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
+        label={t('hakemus.perustelu.yleiset.muistio')}
         hakemus={hakemus}
         sisainen={true}
         hakemuksenOsa={'perustelut-yleiset'}

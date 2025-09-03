@@ -30,7 +30,7 @@ type TabLinkProps = {
   wrapText?: boolean;
 } & Omit<LinkProps, 'href'>;
 
-const SUB_TAB_NAMES = ['perustelu.yleiset', 'perustelu.uoro', 'perustelu.ar'];
+const SUB_TAB_NAMES = ['perustelu.yleiset', 'perustelu.uoro', 'perustelu.ap'];
 
 const TabLink = (props: TabLinkProps) => {
   const ref = useRef<HTMLAnchorElement>(null);
@@ -155,7 +155,7 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
         )}
         {showSubTabs && (
           <LinkedTab
-            value="perustelu.ar"
+            value="perustelu.ap"
             hakemusOid={hakemusOid}
             isSubTab={true}
           />
