@@ -2,10 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PerusteluRepository}
-import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import org.json4s.*
-import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
@@ -22,9 +19,15 @@ class PerusteluService(
   ): Option[Perustelu] = {
     hakemusRepository
       .haeHakemus(hakemusOid)
-      .flatMap((dbHakemus: DbHakemus) => {
-        perusteluRepository.haePerustelu(dbHakemus.id)
-      })
+      .flatMap { dbHakemus =>
+        perusteluRepository.haePerustelu(dbHakemus.id).flatMap { perustelu =>
+          perusteluRepository.haePerusteluUoRo(perustelu.id) match {
+            case Some(perusteluUoRo) =>
+              Some(perustelu.copy(perusteluUoRo = Some(perusteluUoRo)))
+            case _ => Some(perustelu)
+          }
+        }
+      }
   }
 
   def tallennaPerustelu(
@@ -40,7 +43,19 @@ class PerusteluService(
           perustelu,
           luoja
         )
-        perusteluRepository.haePerustelu(dbHakemus.id)
+        perusteluRepository.haePerustelu(dbHakemus.id) match {
+          case None                       => None
+          case Some(tallennettuPerustelu) => {
+            perustelu.perusteluUoRo match {
+              case None                               => Some(tallennettuPerustelu)
+              case Some(perusteluUoRo: PerusteluUoRo) => {
+                val tallennettuPerusteluUoRo =
+                  perusteluRepository.tallennaPerusteluUoRo(tallennettuPerustelu.id, perusteluUoRo, luoja)
+                Some(tallennettuPerustelu.copy(perusteluUoRo = Some(tallennettuPerusteluUoRo)))
+              }
+            }
+          }
+        }
       })
   }
 }

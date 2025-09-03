@@ -1,0 +1,67 @@
+export type Perustelu = {
+  id: string;
+  hakemusId: string;
+  virallinenTutkinnonMyontaja?: boolean;
+  virallinenTutkinto?: boolean;
+  lahdeLahtomaanKansallinenLahde: boolean;
+  lahdeLahtomaanVirallinenVastaus: boolean;
+  lahdeKansainvalinenHakuteosTaiVerkkosivusto: boolean;
+  selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: string;
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa?: string;
+  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: string;
+  luotu: string;
+  luoja: string;
+  muokattu?: string;
+  muokkaaja?: string;
+  perusteluUoRo?: PerusteluUoRo;
+};
+
+export type PerusteluUoRo = {
+  id: string;
+  perusteluId: string;
+  perustelunSisalto: PerusteluUoRoSisalto;
+  luotu: string;
+  luoja: string;
+  muokattu?: string;
+  muokkaaja?: string;
+};
+
+export type PerusteluUoRoSisalto = {
+  koulutuksenSisalto?: string;
+  opettajatEroMonialaisetOpinnotSisalto: boolean;
+  opettajatEroMonialaisetOpinnotLaajuus: boolean;
+  opettajatEroPedagogisetOpinnotSisalto: boolean;
+  opettajatEroPedagogisetOpinnotLaajuus: boolean;
+  opettajatEroKasvatustieteellisetOpinnotSisalto: boolean;
+  opettajatEroKasvatustieteellisetOpinnotVaativuus: boolean;
+  opettajatEroKasvatustieteellisetOpinnotLaajuus: boolean;
+  opettajatEroOpetettavatAineetOpinnotSisalto: boolean;
+  opettajatEroOpetettavatAineetOpinnotVaativuus: boolean;
+  opettajatEroOpetettavatAineetOpinnotLaajuus: boolean;
+  opettajatEroErityisopettajanOpinnotSisalto: boolean;
+  opettajatEroErityisopettajanOpinnotLaajuus: boolean;
+  opettajatMuuEro: boolean;
+  opettajatMuuEroSelite?: string;
+  vkOpettajatEroKasvatustieteellisetOpinnotSisalto: boolean;
+  vkOpettajatEroKasvatustieteellisetOpinnotLaajuus: boolean;
+  vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotSisalto: boolean;
+  vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus: boolean;
+  vkOpettajatMuuEro: boolean;
+  vkOpettajatMuuEroSelite?: string;
+  otmEroOpinnotSisalto: boolean;
+  otmEroOpinnotVaativuus: boolean;
+  otmEroOpinnotLaajuus: boolean;
+  otmMuuEro: boolean;
+  otmMuuEroSelite?: string;
+  sovellettuOpettajanPedagogisetOpinnot: boolean;
+  sovellettuOpetettavanAineenOpinnot: boolean;
+  sovellettuMonialaisetOpinnot: boolean;
+  sovellettuErityisopetus: boolean;
+  sovellettuVarhaiskasvatus: boolean;
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: boolean;
+  sovellettuRiittavatOpinnot: boolean;
+  sovellettuRinnastaminenOtmTutkintoon: boolean;
+  sovellettuLuokanopettaja: boolean;
+  sovellettuMuuTilanne: boolean;
+  sovellettuMuuTilanneSelite?: string;
+};

@@ -1,16 +1,17 @@
 package fi.oph.tutu.backend.repository
 
 import fi.oph.tutu.backend.domain.*
+import org.json4s.{DefaultFormats, Formats}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
-import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
+implicit val jsonFormats: Formats = DefaultFormats
+
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -42,6 +43,18 @@ class PerusteluRepository {
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextString())
       )
+    )
+  }
+
+  implicit val getPerusteluUoRoResult: GetResult[PerusteluUoRo] = GetResult { r =>
+    PerusteluUoRo(
+      id = UUID.fromString(r.nextString()),
+      perusteluId = UUID.fromString(r.nextString()),
+      perustelunSisalto = org.json4s.jackson.Serialization.read[PerusteluUoRoSisalto](r.nextString()),
+      luotu = r.nextTimestamp().toLocalDateTime,
+      luoja = r.nextString(),
+      muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+      muokkaaja = Option(r.nextString())
     )
   }
 
@@ -117,8 +130,6 @@ class PerusteluRepository {
    *
    * @param hakemusId
    *   hakemuksen uuid
-   * @param hakemuksenOsa
-   * @param sisainen
    * @return
    *   perustelu
    */
@@ -152,11 +163,93 @@ class PerusteluRepository {
       )
     } catch {
       case e: Exception =>
+        LOG.error(s"Perustelun haku epäonnistui (hakemusId: ${hakemusId}): ${e}")
         throw new RuntimeException(
-          s"Perustelun haku epäonnistui: ${e.getMessage}",
+          s"Perustelun haku epäonnistui (hakemusId: ${hakemusId}): ${e.getMessage}",
           e
         )
     }
   }
 
+  /**
+   * Tallentaa uuden UO/RO-perustelun
+   *
+   * @param perusteluId
+   * Perustelun uuid
+   * @param perusteluUoRo
+   * UO/RO-perustelun
+   * @param luoja
+   * perustelun luoja
+   * @return
+   * tallennetun perustelun id
+   */
+  def tallennaPerusteluUoRo(
+    perusteluId: UUID,
+    perusteluUoRo: PerusteluUoRo,
+    luoja: String
+  ): PerusteluUoRo = {
+    val sisaltoJson: String = org.json4s.jackson.Serialization.write(perusteluUoRo.perustelunSisalto)
+    try {
+      db.run(
+        sql"""
+            INSERT INTO perustelu_uo_ro (
+              perustelu_id,
+              perustelu_sisalto,
+              luoja
+            )
+            VALUES (
+              ${perusteluId.toString}::uuid,
+               ${sisaltoJson}::jsonb,
+              $luoja
+            )
+            ON CONFLICT (perustelu_id)
+            DO UPDATE SET
+              perustelun_sisalto = ${sisaltoJson}::jsonb,
+              muokkaaja = $luoja
+            RETURNING *
+          """.as[PerusteluUoRo].head,
+        "tallenna_perustelu_uo_ro"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"UO/RO-perustelun tallennus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"UO/RO-perustelun tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Palauttaa yksittäisen UO/RO-perustelun
+   *
+   * @param perusteluId
+   * perustelun uuid
+   *
+   * @return
+   * perusteluUoRo
+   */
+  def haePerusteluUoRo(
+    perusteluId: UUID
+  ): Option[PerusteluUoRo] = {
+    try {
+      db.run(
+        sql"""
+              SELECT *
+              FROM
+                perustelu_uo_ro p
+              WHERE
+                p.perustelu_id =  ${perusteluId.toString}::uuid
+            """.as[PerusteluUoRo].headOption,
+        "hae_perustelu_uo_ro"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"UO/RO-perustelun haku epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"UO/RO-perustelun haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 }

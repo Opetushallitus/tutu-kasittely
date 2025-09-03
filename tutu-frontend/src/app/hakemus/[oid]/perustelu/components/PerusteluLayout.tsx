@@ -17,58 +17,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
-
-export default function PerusteluYleisetLayout({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
-  const theme = useTheme();
-  const { t } = useTranslations();
-  const { addToast } = useToaster();
-
-  /* -------------------------- */
-  /* Haetaan hakemuksen  tiedot */
-  const {
-    isLoading: hakemusIsLoading,
-    hakemus,
-    error: hakemusError,
-  } = useHakemus();
-
-  /* ----------------------------------------- */
-  /* Käsitellään virheet ja puutteellinen data */
-  useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-  }, [hakemusError, addToast, t]);
-
-  if (hakemusError) {
-    return null;
-  }
-
-  if (hakemusIsLoading || !hakemus) return <FullSpinner></FullSpinner>;
-
-  return (
-    <Stack
-      gap={theme.spacing(3)}
-      sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
-    >
-      <OphTypography variant={'h2'}>
-        {t('hakemus.perustelu.yleiset.otsikko')}
-      </OphTypography>
-
-      <Tabs />
-
-      {children}
-
-      <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
-        hakemus={hakemus}
-        sisainen={true}
-        hakemuksenOsa={'perustelut-yleiset'}
-      />
-    </Stack>
-  );
-}
+import { usePerustelu } from '@/src/hooks/usePerustelu';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -131,6 +80,62 @@ const Tabs = () => {
     >
       <TabButton linkPath="perustelut" tabName="perustelut" />
       <TabButton linkPath="lausunto" tabName="lausunto" />
+    </Stack>
+  );
+};
+
+interface PerusteluYleisetLayoutProps {
+  showTabs: boolean;
+  children: ReactNode;
+}
+
+export const PerusteluLayout = ({
+  showTabs,
+  children,
+}: PerusteluYleisetLayoutProps) => {
+  const theme = useTheme();
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
+  const {
+    isLoading: hakemusIsLoading,
+    hakemus,
+    error: hakemusError,
+  } = useHakemus();
+
+  const { perustelu, isPerusteluLoading } = usePerustelu(hakemus?.hakemusOid);
+  console.log('Perustelu', perustelu);
+
+  useEffect(() => {
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+  }, [hakemusError, addToast, t]);
+
+  if (hakemusError) {
+    return null;
+  }
+
+  if (hakemusIsLoading || !hakemus || isPerusteluLoading || !perustelu)
+    return <FullSpinner></FullSpinner>;
+
+  return (
+    <Stack
+      gap={theme.spacing(3)}
+      sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
+    >
+      <OphTypography variant={'h2'}>
+        {t('hakemus.perustelu.yleiset.otsikko')}
+      </OphTypography>
+
+      {showTabs && <Tabs />}
+
+      {children}
+
+      <Muistio
+        label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
+        hakemus={hakemus}
+        sisainen={true}
+        hakemuksenOsa={'perustelut-yleiset'}
+      />
     </Stack>
   );
 };

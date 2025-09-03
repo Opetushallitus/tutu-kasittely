@@ -6,21 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.HakemusRepository
-import fi.oph.tutu.backend.utils.AuditOperation.{
-  CreateHakemus,
-  CreateMuistio,
-  CreatePerustelu,
-  ReadEsittelija,
-  ReadHakemukset,
-  ReadHakemus,
-  ReadKoodisto,
-  ReadLiitteenTiedot,
-  ReadMuistio,
-  UpdateHakemus
-}
-import fi.oph.tutu.backend.utils.AuditUtil
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
+import fi.oph.tutu.backend.utils.AuditOperation.*
+import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -485,7 +473,7 @@ class Controller(
             LOG.info(s"Perustelua ei löytynyt")
             errorMessageMapper.mapPlainErrorMessage("Perustelua ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(perustelu) =>
-            auditLog.logRead("muistio", hakemusOid, ReadMuistio, request)
+            auditLog.logRead("perustelu", hakemusOid, ReadPerustelu, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
         }
       }
@@ -544,7 +532,7 @@ class Controller(
       }
       case Failure(e) => {
         LOG.error("Perustelun tallennus epäonnistui", e.getMessage)
-        return errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)
       }
     }
   }
@@ -558,7 +546,6 @@ class Controller(
       koodistoService.getKoodisto(koodisto)
     } match {
       case Success(koodisto) =>
-        auditLog.logRead("koodisto/{koodisto}", koodisto.toString(), ReadKoodisto, request)
         val response = mapper.writeValueAsString(koodisto)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
