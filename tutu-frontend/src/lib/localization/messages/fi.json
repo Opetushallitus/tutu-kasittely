@@ -202,6 +202,7 @@
         "otsikko": "Vahvista tutkinnon poisto",
         "teksti": "Olet poistamassa tutkintoa. Vahvista tutkinnon poistaminen."
       },
+
       "tutkinto": {
         "tutkintoOtsikko": "Tutkinto",
         "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
@@ -220,8 +221,34 @@
     },
     "perustelu": {
       "yleiset": {
-        "otsikko": "TODO",
-        "muistio": "Tarkempia selvityksiä (ei näy muistiossa)"
+        "otsikko": "Yleiset perustelut",
+        "tab": {
+          "perustelut": "Yleiset perustelut",
+          "lausunto": "Lausuntotiedot"
+        },
+        "muistio": {
+          "selvitysTutkinnonAsemasta": "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä",
+          "selvitysTutkinnonMyontajastaJaVirallisuudesta": "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta",
+          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)"
+        },
+        "perustelut": {
+          "lahde": {
+            "otsikko": "Lähde",
+            "lahtomaanKansallinenLahde": "Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)",
+            "lahtomaanVirallinenVastaus": "Lähtömaan viranomaisen vastaus",
+            "kansainvalinenHakuteosTaiVerkkosivusto": "Kansainvälinen hakuteos tai verkkosivusto"
+          },
+          "virallinenTutkinnonMyontaja": "Virallinen tutkinnon myöntäjä ",
+          "virallinenTutkinto": "Virallinen tutkinto",
+          "ylimmanTutkinnonAsema": {
+            "otsikko": "Ylimmän tutkinnon asema lähtömaan järjestelmässä",
+            "alempi_korkeakouluaste": "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto",
+            "ylempi_korkeakouluaste": "Toisen vaiheen korkeakoulututkinto",
+            "alempi_ja_ylempi_korkeakouluaste": "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot",
+            "tutkijakoulutusaste": "Tieteellinen jatkotutkinto",
+            "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
+          }
+        }
       },
       "uoro": {
         "otsikko": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
@@ -251,7 +278,7 @@
       "ylataso": "Perustelu",
       "yleiset": "Yleiset perustelut / Lausuntotiedot",
       "uoro": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
-      "ap": "AP -päätöksen perustelut"
+      "ar": "AR -päätöksen perustelut"
     },
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"

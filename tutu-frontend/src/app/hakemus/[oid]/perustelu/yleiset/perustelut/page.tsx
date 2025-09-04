@@ -1,23 +1,25 @@
 'use client';
 
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
+import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinnonMyontaja';
+import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
+import { Lahde } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/Lahde';
+import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
+import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
+import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
 
 export default function YleisetPage() {
-  const { t } = useTranslations();
-  const { hakemus, isLoading, error } = useHakemus();
-
   return (
-    <PerusteluLayout
-      showTabs={true}
-      title="hakemus.perustelu.yleiset.otsikko"
-      t={t}
-      hakemus={hakemus}
-      isHakemusLoading={isLoading}
-      hakemusError={error}
-    >
-      <span>Tämä on yleiset / lausunto -sivu</span>
-    </PerusteluLayout>
+    <>
+      <VirallinenTutkinnonMyontaja />
+      <VirallinenTutkinto />
+      <Lahde />
+      <SelvitysTutkinnonMyontajastaJaVirallisuudesta />
+      <YlimmanTutkinnonAsema />
+      <SelvitysTutkinnonAsemasta />
+
+      {/* Tutkintokohtaiset tiedot */}
+
+      {/* Jatko-opintokelpoisuus ja muut perustelut */}
+    </>
   );
 }
