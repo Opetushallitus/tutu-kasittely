@@ -226,7 +226,50 @@
       "uoro": {
         "otsikko": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
         "koulutuksenSisalto": "Koulutuksen sisältö",
-        "koulutuksenSisaltoSelite": "Mihin ammattiin koulutus on valmistanut ja mahdollisia lisäselvityksiä koulutuksen sisällöstä"
+        "koulutuksenSisaltoSelite": "Mihin ammattiin koulutus on valmistanut ja mahdollisia lisäselvityksiä koulutuksen sisällöstä",
+        "erotKoulutuksenSisallossa": "Erot koulutuksen sisällössä",
+        "muuEro": "Muu ero",
+        "muuTutkinto": "Muu tutkinto tai opintosuoritus, täsmennä",
+        "opettajat": {
+          "otsikko": "Opettajat",
+          "monialaisetOpinnotSisalto": "Ero monialaisten opintojen sisällössä",
+          "monialaisetOpinnotLaajuus": "Ero monialaisten opintojen laajuudessa",
+          "pedagogisetOpinnotSisalto": "Ero pedagogisten opintojen sisällössä",
+          "pedagogisetOpinnotLaajuus": "Ero pedagogisten opintojen laajuudessa",
+          "kasvatustieteellisetOpinnotSisalto": "Ero kasvatustieteellisten opintojen sisällössä (LO)",
+          "kasvatustieteellisetOpinnotVaativuus": "Ero kasvatustieteellisten opintojen vaativuudessa (LO)",
+          "kasvatustieteellisetOpinnotLaajuus": "Ero kasvatustieteellisten opintojen laajuudessa (LO)",
+          "opetettavatAineetOpinnotSisalto": "Ero opetettavan aineen opintojen sisällössä",
+          "opetettavatAineetOpinnotVaativuus": "Ero opetettavan aineen opintojen vaativuudessa",
+          "opetettavatAineetOpinnotLaajuus": "Ero opetettavan aineen opintojen laajuudessa",
+          "erityisopettajanOpinnotSisalto": "Ero erityisopettajan opintojen sisällössä",
+          "erityisopettajanOpinnotLaajuus": "Ero erityisopettajan opintojen laajuudessa"
+        },
+        "opettajatVk": {
+          "otsikko": "Varhaiskasvatuksen opettajat / esiopetusta antavat opettajat",
+          "kasvatustieteellisetOpinnotSisalto": "Ero kasvatustieteellisten opintojen sisällössä",
+          "kasvatustieteellisetOpinnotLaajuus": "Ero kasvatustieteellisten opintojen laajuudessa",
+          "varhaiskasvatusEsiopetusOpinnotSisalto": "Ero varhaiskasvatuksen ja esiopetuksen opintojen sisällössä",
+          "varhaiskasvatusEsiopetusOpinnotLaajuus": "Ero varhaiskasvatuksen ja esiopetuksen opintojen laajuudessa"
+        },
+        "otm": {
+          "otsikko": "Oikeustieteen maisterin tutkinto",
+          "opinnotSisalto": "Ero oikeustieteellisten opintojen sisällössä",
+          "opinnotVaativuus": "Ero oikeustieteellisten opintojen vaativuudessa",
+          "opinnotLaajuus": "Ero oikeustieteellisten opintojen laajuudessa"
+        },
+        "sovellettuTilanne": {
+          "otsikko": "Sovellettu tilanne",
+          "opettajanPedagogisetOpinnot": "Opettajan pedagogiset opinnot",
+          "opetettavanAineenOpinnot": "Opetettavan aineen opinnot",
+          "monialaisetOpinnot": "Monialaiset opinnot",
+          "erityisopetus": "Erityisopetus",
+          "varhaiskasvatus": "Varhaiskasvatus",
+          "rinnastaminenKasvatustieteelliseenTutkintoon": "Rinnastaminen kasvatustieteelliseen tutkintoon",
+          "riittavatOpinnot": "Riittävät opinnot",
+          "rinnastaminenOtmTutkintoon": "Rinnastaminen oikeustieteen maisterin tutkintoon",
+          "luokanopettaja": "Luokanopettaja"
+        }
       },
       "ap": {
         "otsikko": "TODO"
@@ -294,6 +337,7 @@
     "ei": "Ei",
     "paivamaaraFormaatti": "pp.kk.vvvv",
     "peruuta": "Peruuta",
-    "valitse": "Valitse..."
+    "valitse": "Valitse...",
+    "tasmenna": "Täsmennä"
   }
 }

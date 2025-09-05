@@ -35,7 +35,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
         checked={checked}
         onChange={() => setLisatieto(checked ? null : '')}
       />
-      {checked ? (
+      {checked && (
         <OphInputFormField
           multiline={true}
           label={t(
@@ -44,7 +44,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
           value={lisatieto}
           onChange={(event) => setLisatieto(event.target.value)}
         />
-      ) : null}
+      )}
     </>
   );
 };
