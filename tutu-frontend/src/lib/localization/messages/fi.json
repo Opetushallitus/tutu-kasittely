@@ -230,6 +230,22 @@
       },
       "ap": {
         "otsikko": "TODO"
+      },
+      "lausuntotiedot": {
+        "lausuntopyynnot": "Lausuntopyynnöt",
+        "lausuntopyynto": "Lausuntopyyntö {numero, number}",
+        "lausunnonAntaja": "Lausunnon antaja",
+        "pyyntoLahetetty": "Lähetetty",
+        "pyyntoSaapunut": "Saapunut",
+        "lisaaLausuntopyynto": "Lisää lausuntopyyntö",
+        "poistaLausuntopyynto": "Poista lausuntopyyntö",
+        "modal": {
+          "otsikko": "Vahvista lausuntopyynnön poisto",
+          "teksti": "Olet poistamassa lausuntopyyntöä. Vahvista lausuntopyynnön poistaminen."
+        },
+        "pyyntojenLisatiedot": "Lisätiedot lausuntopyynnoistä",
+        "lausunto": "Lausunto",
+        "sisalto": "Lausunnon sisältö"
       }
     }
   },

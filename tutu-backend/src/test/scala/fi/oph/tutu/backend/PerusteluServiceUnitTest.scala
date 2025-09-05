@@ -12,10 +12,14 @@ import org.mockito.Mockito.*
 import java.time.LocalDateTime
 import java.util.UUID
 
-val perusteluId   = UUID.randomUUID()
+val perusteluId = UUID.randomUUID()
+val hakemusId   = UUID.fromString("de4ffbea-1763-4a43-a24d-50ee48b81ff1")
+val luoja       = "Hakemuspalvelu"
+val muokkaaja   = Some("Traktoripalvelu")
+
 val someDbHakemus = Some(
   DbHakemus(
-    id = UUID.fromString("de4ffbea-1763-4a43-a24d-50ee48b81ff1"),
+    id = hakemusId,
     hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666"),
     hakemusKoskee = 1,
     esittelijaId = Option(UUID.fromString("de4ffbea-1763-4a43-a24d-50ee48b81ff1")),
@@ -29,7 +33,6 @@ val someDbHakemus = Some(
 )
 
 val perusteluUoRo = PerusteluUoRo(
-  id = UUID.randomUUID(),
   perusteluId = perusteluId,
   perustelunSisalto = PerusteluUoRoSisalto(
     opettajatEroMonialaisetOpinnotLaajuus = true,
@@ -44,32 +47,73 @@ val perusteluUoRo = PerusteluUoRo(
     otmMuuEroSelite = Some("Juu ei kyl"),
     sovellettuMuuTilanne = true,
     sovellettuMuuTilanneSelite = Some("Muutamia muita")
-  ),
-  luotu = LocalDateTime.now(),
-  luoja = "Hakemuspalvelu",
-  muokattu = None,
-  muokkaaja = Option("")
+  )
+)
+val partialPerusteluUoRo = PartialPerustelu(
+  perusteluUoRo = Some(PartialPerusteluUoRo(perustelunSisalto = Some(perusteluUoRo.perustelunSisalto)))
+)
+
+val muokattuPerusteluUoRo = PerusteluUoRo(
+  perusteluId = perusteluId,
+  perustelunSisalto = PerusteluUoRoSisalto(
+    opettajatEroMonialaisetOpinnotLaajuus = false,
+    opettajatEroOpetettavatAineetOpinnotLaajuus = false,
+    opettajatMuuEro = false,
+    opettajatMuuEroSelite = Some(""),
+    vkOpettajatEroKasvatustieteellisetOpinnotSisalto = false,
+    vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus = false,
+    vkOpettajatMuuEro = false,
+    vkOpettajatMuuEroSelite = Some(""),
+    otmMuuEro = false,
+    otmMuuEroSelite = Some(""),
+    sovellettuMuuTilanne = false,
+    sovellettuMuuTilanneSelite = Some("")
+  )
+)
+val partialMuokattuPerusteluUoRo = PartialPerustelu(
+  perusteluUoRo = Some(PartialPerusteluUoRo(perustelunSisalto = Some(muokattuPerusteluUoRo.perustelunSisalto)))
 )
 
 val perustelu = Perustelu(
-  id = perusteluId,
-  hakemusId = UUID.randomUUID(),
-  virallinenTutkinnonMyontaja = Option(true),
-  virallinenTutkinto = Option(true),
+  hakemusId = hakemusId,
+  virallinenTutkinnonMyontaja = Some(true),
+  virallinenTutkinto = Some(true),
   lahdeLahtomaanKansallinenLahde = true,
   lahdeLahtomaanVirallinenVastaus = true,
   lahdeKansainvalinenHakuteosTaiVerkkosivusto = true,
-  selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "",
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Option("alempi_korkeakouluaste"),
-  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "",
-  luotu = LocalDateTime.now(),
-  luoja = "Hakemuspalvelu",
-  muokattu = None,
-  muokkaaja = Option(""),
-  perusteluUoRo = None
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Some("alempi_korkeakouluaste")
+)
+val partialPerustelu = PartialPerustelu(
+  virallinenTutkinnonMyontaja = perustelu.virallinenTutkinnonMyontaja,
+  virallinenTutkinto = perustelu.virallinenTutkinto,
+  lahdeLahtomaanKansallinenLahde = Some(perustelu.lahdeLahtomaanKansallinenLahde),
+  lahdeLahtomaanVirallinenVastaus = Some(perustelu.lahdeLahtomaanVirallinenVastaus),
+  lahdeKansainvalinenHakuteosTaiVerkkosivusto = Some(perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto),
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
 )
 
-val somePerustelu                  = Some(perustelu)
+val muokattuPerustelu = perustelu.copy(
+  virallinenTutkinnonMyontaja = Some(false),
+  virallinenTutkinto = perustelu.virallinenTutkinto,
+  lahdeLahtomaanKansallinenLahde = false,
+  lahdeLahtomaanVirallinenVastaus = false,
+  lahdeKansainvalinenHakuteosTaiVerkkosivusto = false,
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Some("ylempi_korkeakouluaste")
+)
+val partialMuokattuPerustelu = PartialPerustelu(
+  virallinenTutkinnonMyontaja = muokattuPerustelu.virallinenTutkinnonMyontaja,
+  virallinenTutkinto = None,
+  lahdeLahtomaanKansallinenLahde = Some(muokattuPerustelu.lahdeLahtomaanKansallinenLahde),
+  lahdeLahtomaanVirallinenVastaus = Some(muokattuPerustelu.lahdeLahtomaanVirallinenVastaus),
+  lahdeKansainvalinenHakuteosTaiVerkkosivusto = Some(muokattuPerustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto),
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = muokattuPerustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
+)
+
+val somePerustelu           = Some(perustelu)
+val someMuokattuPerustelu   = Some(muokattuPerustelu)
+val somePerusteluUoRo       = Some(perusteluUoRo)
+val someMuokattuPerusteluUo = Some(muokattuPerusteluUoRo)
+
 val somePerusteluWithUoRoPerustelu = Some(perustelu.copy(perusteluUoRo = Some(perusteluUoRo)))
 
 class PerusteluServiceUnitTest extends UnitTestBase {
@@ -141,32 +185,32 @@ class PerusteluServiceUnitTest extends UnitTestBase {
 
   @Test
   def tallennaPerustelu(): Unit = {
-    Seq(
-      (someDbHakemus, perusteluId, somePerustelu, somePerustelu),
-      (someDbHakemus, perusteluId, None, None),
-      (None, perusteluId, somePerustelu, None),
-      (None, perusteluId, None, None)
+    Seq[(Option[DbHakemus], Option[Perustelu], PartialPerustelu, Option[Perustelu])](
+      (someDbHakemus, None, partialPerustelu, somePerustelu),
+      (someDbHakemus, somePerustelu, partialMuokattuPerustelu, someMuokattuPerustelu),
+      (None, somePerustelu, partialPerustelu, None),
+      (None, None, partialPerustelu, None)
     ).foreach(values => {
-      val hakemusResult     = values(0)
-      val perusteluIdResult = values(1)
-      val perusteluResult   = values(2)
-      val expectedResult    = values(3)
+      val hakemusResult                     = values(0)
+      val existingPerustelu                 = values(1)
+      val perusteluRequest                  = values(2)
+      val expectedResult: Option[Perustelu] = values(3)
 
       // Setup mock behavior
       when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(hakemusResult)
-      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(perusteluResult)
+      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(existingPerustelu)
       when(
         perusteluRepository.tallennaPerustelu(
-          any[UUID],
-          any[Perustelu],
-          any[String]
+          hakemusId,
+          expectedResult.orNull,
+          luoja
         )
-      ).thenReturn(perusteluIdResult)
+      ).thenReturn(expectedResult.orNull)
 
       val result = perusteluService.tallennaPerustelu(
         HakemusOid("1.2.246.562.11.00000000000000006666"),
-        perustelu,
-        "Hakemuspalvelu"
+        perusteluRequest,
+        luoja
       )
       assertEquals(expectedResult, result)
     })
@@ -174,41 +218,37 @@ class PerusteluServiceUnitTest extends UnitTestBase {
 
   @Test
   def tallennaPerusteluWithUoro(): Unit = {
-    Seq(
-      (someDbHakemus, perusteluId, somePerusteluWithUoRoPerustelu, somePerusteluWithUoRoPerustelu),
-      (someDbHakemus, perusteluId, None, None),
-      (None, perusteluId, somePerusteluWithUoRoPerustelu, None),
-      (None, perusteluId, None, None)
+    Seq[(Option[DbHakemus], Option[PerusteluUoRo], PartialPerustelu, Option[Perustelu], Option[PerusteluUoRo])](
+      (someDbHakemus, None, partialPerusteluUoRo, somePerustelu, somePerusteluUoRo),
+      (someDbHakemus, somePerusteluUoRo, partialMuokattuPerusteluUoRo, somePerustelu, someMuokattuPerusteluUo),
+      (None, None, partialMuokattuPerusteluUoRo, None, None)
     ).foreach(values => {
-      val hakemusResult     = values(0)
-      val perusteluIdResult = values(1)
-      val perusteluResult   = values(2)
-      val expectedResult    = values(3)
+      val hakemusResult                        = values(0)
+      val existingPerusteluUoRo                = values(1)
+      val perusteluRequest                     = values(2)
+      val expectedPerustelu: Option[Perustelu] = values(3)
+      val expectedUoRo: Option[PerusteluUoRo]  = values(4)
+
+      val expectedPerusteluWithId = expectedPerustelu.flatMap(per => Some(per.copy(id = perusteluId)))
 
       // Setup mock behavior
       when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(hakemusResult)
-      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(perusteluResult)
-      when(
-        perusteluRepository.tallennaPerustelu(
-          any[UUID],
-          any[Perustelu],
-          any[String]
-        )
-      ).thenReturn(perusteluIdResult)
+      when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(expectedPerusteluWithId)
+      when(perusteluRepository.haePerusteluUoRo(perusteluId)).thenReturn(existingPerusteluUoRo)
       when(
         perusteluRepository.tallennaPerusteluUoRo(
-          any[UUID],
-          any[PerusteluUoRo],
-          any[String]
+          perusteluId,
+          expectedUoRo.orNull,
+          luoja
         )
-      ).thenReturn(perusteluUoRo)
+      ).thenReturn(expectedUoRo.orNull)
 
       val result = perusteluService.tallennaPerustelu(
         HakemusOid("1.2.246.562.11.00000000000000006666"),
-        perustelu,
+        perusteluRequest,
         "Hakemuspalvelu"
       )
-      assertEquals(expectedResult, result)
+      assertEquals(expectedPerusteluWithId.flatMap(per => Some(per.copy(perusteluUoRo = expectedUoRo))), result)
     })
   }
 }

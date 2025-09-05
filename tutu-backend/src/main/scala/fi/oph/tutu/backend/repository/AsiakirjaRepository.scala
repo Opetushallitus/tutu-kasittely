@@ -77,11 +77,6 @@ class AsiakirjaRepository extends BaseResultHandlers {
       )
     )
 
-  def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    DBIO.fold(ints, 0)(_ + _)
-  }
-
   def haeKaikkiAsiakirjaTiedot(
     asiakirjaId: Option[UUID]
   ): Option[(DbAsiakirja, Seq[PyydettavaAsiakirja], Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta])] = {
@@ -255,7 +250,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     val actions = modifyData.uudet.map(ak => luoPyydettavaAsiakirja(asiakirjaId, ak.asiakirjanTyyppi, virkailijaOid)) ++
       modifyData.muutetut.map(ak => paivitaPyydettavaAsiakirja(ak.id.get, ak.asiakirjanTyyppi, virkailijaOid)) ++
       modifyData.poistetut.map(poistaPyydettavaAsiakirja)
-    val combined = combineIntDBIOs(actions)
+    val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_pyydettavien_asiakirjojen_modifiointi") match {
       case Success(_) => ()
       case Failure(e) =>
@@ -356,7 +351,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     val actions = modifyData.uudetMallit.values.toSeq.map(lisaaAsiakirjamalli(asiakirjaId, _, virkailijaOid)) ++
       modifyData.muutetutMallit.values.toSeq.map(muokkaaAsiakirjamallia(asiakirjaId, _, virkailijaOid)) ++
       modifyData.poistetutMallit.map(poistaAsiakirjamalli(asiakirjaId, _))
-    val combined = combineIntDBIOs(actions)
+    val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_asiakirjamallien_modifiointi") match {
       case Success(_) => ()
       case Failure(e) =>

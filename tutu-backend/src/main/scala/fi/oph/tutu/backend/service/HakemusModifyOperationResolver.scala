@@ -4,6 +4,8 @@ import fi.oph.tutu.backend.domain.{
   AsiakirjamalliLahde,
   AsiakirjamalliModifyData,
   AsiakirjamalliTutkinnosta,
+  Lausuntopyynto,
+  LausuntopyyntoModifyData,
   PyydettavaAsiakirja,
   PyydettavaAsiakirjaModifyData
 }
@@ -27,6 +29,14 @@ object HakemusModifyOperationResolver {
     }
   }
 
+  private def lausuntopyyntoModified(
+    currentPyynto: Lausuntopyynto,
+    toBePyynto: Lausuntopyynto
+  ): Boolean = currentPyynto.id == toBePyynto.id &&
+    (currentPyynto.lausunnonAntaja != toBePyynto.lausunnonAntaja ||
+      currentPyynto.lahetetty != toBePyynto.lahetetty ||
+      currentPyynto.saapunut != toBePyynto.saapunut)
+
   def resolvePyydettavatAsiakirjatModifyOperations(
     currentAsiakirjat: Seq[PyydettavaAsiakirja],
     toBeAsiakirjat: Seq[PyydettavaAsiakirja]
@@ -49,10 +59,17 @@ object HakemusModifyOperationResolver {
       .filterKeys(lahde => asiakirjamalliModified(currentAsiakirjamallit.get(lahde), toBeAsiakirjamallit(lahde)))
       .toMap
 
-    AsiakirjamalliModifyData(
-      uudetMallit = uudetMallit,
-      muutetutMallit = muutetutMallit,
-      poistetutMallit = poistetutMallit
-    )
+    AsiakirjamalliModifyData(uudetMallit, muutetutMallit, poistetutMallit)
+  }
+
+  def resolveLausuntopyyntoModifyOperations(
+    currentLausuntopyynnot: Seq[Lausuntopyynto],
+    toBeLausuntopyynnot: Seq[Lausuntopyynto]
+  ): LausuntopyyntoModifyData = {
+    val uudet     = toBeLausuntopyynnot.filterNot(pyynto => currentLausuntopyynnot.exists(_.id == pyynto.id))
+    val poistetut = currentLausuntopyynnot.filterNot(pyynto => toBeLausuntopyynnot.exists(_.id == pyynto.id)).map(_.id)
+    val muutetut  =
+      toBeLausuntopyynnot.filter(pyynto => currentLausuntopyynnot.exists(lausuntopyyntoModified(_, pyynto)))
+    LausuntopyyntoModifyData(uudet, muutetut, poistetut)
   }
 }

@@ -143,7 +143,7 @@ class IntegrationTestBase {
       virkailijaOid
     )
     asiakirjaRepository.db.run(
-      asiakirjaRepository.combineIntDBIOs(Seq(apAction1, apAction2, malliAction1, malliAction2)),
+      asiakirjaRepository.db.combineIntDBIOs(Seq(apAction1, apAction2, malliAction1, malliAction2)),
       "lisaaPyydettavatAsiakirjatJaAsiakirjamalli"
     )
     asiakirjaId
