@@ -5,9 +5,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.AuditLog
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.{times, verify}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -75,6 +77,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$[0].koodi").value("752"))
       .andExpect(jsonPath("$[0].nimi").value("Ruotsi"))
       .andExpect(jsonPath("$[0].esittelijaId").isNotEmpty)
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadMaakoodit), any())
   }
 
   @Test

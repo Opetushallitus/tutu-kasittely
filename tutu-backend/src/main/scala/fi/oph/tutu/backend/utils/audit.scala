@@ -163,6 +163,10 @@ object AuditOperation {
     val name = "MUISTION_LUKU"
   }
 
+  case object ReadMaakoodit extends AuditOperation {
+    val name = "MAAKOODIEN_LUKU"
+  }
+
   case object CreatePerustelu extends AuditOperation {
     val name = "PERUSTELUN_LUONTI"
   }

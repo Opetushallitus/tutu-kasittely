@@ -48,25 +48,6 @@ class MaakoodiRepository {
       "list_all_maakoodi"
     )
 
-  def upsertMaakoodi(
-    koodi: String,
-    nimi: String,
-    muokkaajaTaiLuoja: String
-  ): DBIO[Int] =
-    sqlu"""
-      INSERT INTO maakoodi (koodi, nimi, luoja)
-      VALUES (
-        $koodi,
-        $nimi,
-        $muokkaajaTaiLuoja
-      )
-      ON CONFLICT (koodi)
-      DO UPDATE SET
-        nimi = EXCLUDED.nimi,
-        muokkaaja = EXCLUDED.luoja,
-        muokattu = now()
-    """
-
   /**
    * Creates or updates a maakoodi entry
    *
@@ -103,7 +84,26 @@ class MaakoodiRepository {
     }
   }
 
-  def deleteByKoodi(koodi: String): DBIO[Int] =
+  private def syncInsert(
+    koodi: String,
+    nimi: String,
+    muokkaajaTaiLuoja: String
+  ): DBIO[Int] =
+    sqlu"""
+      INSERT INTO maakoodi (koodi, nimi, luoja)
+      VALUES (
+        $koodi,
+        $nimi,
+        $muokkaajaTaiLuoja
+      )
+      ON CONFLICT (koodi)
+      DO UPDATE SET
+        nimi = EXCLUDED.nimi,
+        muokkaaja = EXCLUDED.luoja,
+        muokattu = now()
+    """
+
+  private def syncDelete(koodi: String): DBIO[Int] =
     sqlu"""
       DELETE FROM maakoodi WHERE koodi = $koodi
     """
@@ -117,10 +117,10 @@ class MaakoodiRepository {
 
     val toInsertOrUpdate = items.map { item =>
       val nameFi = item.nimi.getOrElse(Kieli.fi, "")
-      upsertMaakoodi(item.koodiArvo, nameFi, muokkaajaTaiLuoja)
+      syncInsert(item.koodiArvo, nameFi, muokkaajaTaiLuoja)
     }
 
-    val toDelete = (existing -- incoming).toSeq.map(deleteByKoodi)
+    val toDelete = (existing -- incoming).toSeq.map(syncDelete)
 
     val actions: Seq[DBIO[Int]] = toInsertOrUpdate ++ toDelete
 

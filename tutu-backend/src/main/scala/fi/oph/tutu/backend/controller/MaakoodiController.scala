@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, Ser
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.service.MaakoodiService
-import fi.oph.tutu.backend.utils.ErrorMessageMapper
+import fi.oph.tutu.backend.utils.AuditOperation.{ReadLiitteenTiedot, ReadMaakoodit}
+import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
@@ -17,7 +18,8 @@ import scala.util.{Failure, Success, Try}
 @RestController
 @RequestMapping(path = Array("api"))
 class MaakoodiController(
-  maakoodiService: MaakoodiService
+  maakoodiService: MaakoodiService,
+  val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[MaakoodiController])
 
@@ -32,17 +34,20 @@ class MaakoodiController(
 
   @GetMapping(path = Array("maakoodit"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
-    summary = "Listaa maakoodit",
+    summary = "Listaa maakoodit ja esittelijöiden maajaon",
     responses = Array(
       new ApiResponse(responseCode = "200", description = "Pyyntö vastaanotettu"),
       new ApiResponse(responseCode = "500", description = "Palvelinvirhe")
     )
   )
-  def listMaakoodit(): ResponseEntity[Any] = {
+  def listMaakoodit(
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
     Try {
       maakoodiService.listMaakoodit()
     } match {
       case Success(maakoodit) =>
+        auditLog.logRead("maakoodit", "kaikki", ReadMaakoodit, request)
         val response = mapper.writeValueAsString(maakoodit)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
