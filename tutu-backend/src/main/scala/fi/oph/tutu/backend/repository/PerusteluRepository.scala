@@ -144,7 +144,7 @@ class PerusteluRepository {
             ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
             selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
             muokkaaja = $luoja
-          RETURNING id
+          RETURNING *
         """.as[Perustelu].head,
         "tallenna_perustelu"
       )
