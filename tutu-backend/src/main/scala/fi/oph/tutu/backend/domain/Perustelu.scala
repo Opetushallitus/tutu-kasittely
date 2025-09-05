@@ -83,6 +83,7 @@ case class PerusteluUoRo(
 }
 
 case class PartialPerusteluUoRo(
+  perusteluId: UUID,
   perustelunSisalto: Option[PerusteluUoRoSisalto] = None
 )
 

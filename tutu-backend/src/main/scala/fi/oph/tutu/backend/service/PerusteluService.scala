@@ -90,7 +90,10 @@ class PerusteluService(
         val newlySavedPerustelyUoRo = partialPerustelu.perusteluUoRo.flatMap(uoRo => {
           val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id) match {
             case Some(existing) => existing.mergeWith(uoRo)
-            case _              => PerusteluUoRo().mergeWith(uoRo).copy(perusteluId = latestSavedPerustelu.id)
+            case _              =>
+              PerusteluUoRo(perusteluId = latestSavedPerustelu.id)
+                .mergeWith(uoRo)
+                .copy(perusteluId = latestSavedPerustelu.id)
           }
           Some(perusteluRepository.tallennaPerusteluUoRo(latestSavedPerustelu.id, newOrUpdatedUoRo, luojaTaiMuokkaaja))
         })

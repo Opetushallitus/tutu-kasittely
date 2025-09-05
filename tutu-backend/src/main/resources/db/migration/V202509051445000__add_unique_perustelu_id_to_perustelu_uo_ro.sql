@@ -1,0 +1,1 @@
+ALTER TABLE perustelu_uo_ro ADD CONSTRAINT unique_perustelu_id UNIQUE (perustelu_id);
