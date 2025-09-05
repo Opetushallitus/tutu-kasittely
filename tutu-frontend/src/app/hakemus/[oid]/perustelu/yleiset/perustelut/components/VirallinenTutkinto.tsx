@@ -1,4 +1,5 @@
-import { /*useEffect,*/ useState } from 'react';
+import { useEffect, useState } from 'react';
+import { isNonNullish } from 'remeda';
 
 import { Stack, useTheme, Link } from '@mui/material';
 import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
@@ -6,32 +7,43 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ophColors } from '@/src/lib/theme';
 
 import { EditOffOutlined } from '@mui/icons-material';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
-export const VirallinenTutkinto = () => {
+interface Props {
+  perustelu: Perustelu | undefined;
+  updatePerustelu: (perustelu: Perustelu) => void;
+}
+
+export const VirallinenTutkinto = ({ perustelu, updatePerustelu }: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
   const [isVirallinenTutkinto, setIsVirallinenTutkinto] = useState<
-    boolean | undefined | null
+    boolean | undefined
   >();
 
-  const updateIsVirallinenTutkinto = (val: boolean | undefined | null) => {
+  const updateIsVirallinenTutkinto = (val: boolean | undefined) => {
     if (val !== isVirallinenTutkinto) {
       setIsVirallinenTutkinto(val);
-      // Call update function passed in as param
+      const _perustelu = perustelu ?? ({} as Perustelu);
+      updatePerustelu({
+        ..._perustelu,
+        virallinenTutkinto: val,
+      });
     }
   };
 
-  // Add effect to set initial value
+  useEffect(() => {
+    setIsVirallinenTutkinto(perustelu?.virallinenTutkinto);
+  }, [perustelu?.virallinenTutkinto]);
 
   const poistopainike = (
-    <Link href="" onClick={() => updateIsVirallinenTutkinto(null)}>
+    <Link href="" onClick={() => updateIsVirallinenTutkinto(undefined)}>
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>
   );
 
-  const naytaPoisto =
-    isVirallinenTutkinto !== undefined && isVirallinenTutkinto !== null;
+  const naytaPoisto = isNonNullish(isVirallinenTutkinto);
 
   return (
     <Stack direction="column" gap={theme.spacing(1)}>

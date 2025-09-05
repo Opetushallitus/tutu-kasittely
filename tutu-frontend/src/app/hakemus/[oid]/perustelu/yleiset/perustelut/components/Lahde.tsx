@@ -1,10 +1,16 @@
-import { /*useEffect,*/ useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Stack, useTheme } from '@mui/material';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
-export const Lahde = () => {
+interface Props {
+  perustelu: Perustelu | undefined;
+  updatePerustelu: (perustelu: Perustelu) => void;
+}
+
+export const Lahde = ({ perustelu, updatePerustelu }: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
@@ -21,20 +27,46 @@ export const Lahde = () => {
 
   const updateIsLahtomaanKansallinenLahde = (val: boolean) => {
     setIsLahtomaanKansallinenLahde(val);
-    // Call update function passed in as param
+    const _perustelu = perustelu ?? ({} as Perustelu);
+    updatePerustelu({
+      ..._perustelu,
+      lahdeLahtomaanKansallinenLahde: val,
+    });
   };
 
   const updateIsLahtomaanVirallinenVastaus = (val: boolean) => {
     setIsLahtomaanVirallinenVastaus(val);
-    // Call update function passed in as param
+    const _perustelu = perustelu ?? ({} as Perustelu);
+    updatePerustelu({
+      ..._perustelu,
+      lahdeLahtomaanVirallinenVastaus: val,
+    });
   };
 
   const updateIsKansainvalinenHakuteosTaiVerkkosivusto = (val: boolean) => {
     setIsKansainvalinenHakuteosTaiVerkkosivusto(val);
-    // Call update function passed in as param
+    const _perustelu = perustelu ?? ({} as Perustelu);
+    updatePerustelu({
+      ..._perustelu,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto: val,
+    });
   };
 
-  // Add effect to set initial value
+  useEffect(() => {
+    setIsLahtomaanKansallinenLahde(
+      perustelu?.lahdeLahtomaanKansallinenLahde ?? false,
+    );
+    setIsLahtomaanVirallinenVastaus(
+      perustelu?.lahdeLahtomaanVirallinenVastaus ?? false,
+    );
+    setIsKansainvalinenHakuteosTaiVerkkosivusto(
+      perustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto ?? false,
+    );
+  }, [
+    perustelu?.lahdeLahtomaanKansallinenLahde,
+    perustelu?.lahdeLahtomaanVirallinenVastaus,
+    perustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto,
+  ]);
 
   return (
     <Stack direction="column" gap={theme.spacing(1)}>

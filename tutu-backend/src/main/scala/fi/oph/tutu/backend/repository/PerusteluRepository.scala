@@ -30,8 +30,8 @@ class PerusteluRepository {
       Perustelu(
         UUID.fromString(r.nextString()),
         UUID.fromString(r.nextString()),
-        Option(r.nextBoolean()),
-        Option(r.nextBoolean()),
+        r.nextBooleanOption(),
+        r.nextBooleanOption(),
         r.nextBoolean(),
         r.nextBoolean(),
         r.nextBoolean(),

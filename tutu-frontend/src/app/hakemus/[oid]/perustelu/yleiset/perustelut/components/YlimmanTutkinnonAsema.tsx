@@ -1,10 +1,19 @@
-import { /*useEffect,*/ useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Stack, useTheme } from '@mui/material';
 import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
-export const YlimmanTutkinnonAsema = () => {
+interface Props {
+  perustelu: Perustelu | undefined;
+  updatePerustelu: (perustelu: Perustelu) => void;
+}
+
+export const YlimmanTutkinnonAsema = ({
+  perustelu,
+  updatePerustelu,
+}: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
@@ -15,11 +24,19 @@ export const YlimmanTutkinnonAsema = () => {
   const updateYlimmanTutkinnonAsema = (val: string | undefined) => {
     if (val !== ylimmanTutkinnonAsema) {
       setYlimmanTutkinnonAsema(val);
-      // Call update function passed in as param
+      const _perustelu = perustelu ?? ({} as Perustelu);
+      updatePerustelu({
+        ..._perustelu,
+        ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: val,
+      });
     }
   };
 
-  // Add effect to set initial value
+  useEffect(() => {
+    setYlimmanTutkinnonAsema(
+      perustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
+    );
+  }, [perustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa]);
 
   const tutkinnonAsemat = [
     'alempi_korkeakouluaste',

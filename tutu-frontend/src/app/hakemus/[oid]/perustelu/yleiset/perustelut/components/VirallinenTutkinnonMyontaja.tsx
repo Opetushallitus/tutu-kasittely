@@ -1,4 +1,5 @@
-import { /*useEffect,*/ useState } from 'react';
+import { useEffect, useState } from 'react';
+import { isNonNullish } from 'remeda';
 
 import { Stack, useTheme, Link } from '@mui/material';
 import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
@@ -6,34 +7,48 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ophColors } from '@/src/lib/theme';
 
 import { EditOffOutlined } from '@mui/icons-material';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
-export const VirallinenTutkinnonMyontaja = () => {
+interface Props {
+  perustelu: Perustelu | undefined;
+  updatePerustelu: (perustelu: Perustelu) => void;
+}
+
+export const VirallinenTutkinnonMyontaja = ({
+  perustelu,
+  updatePerustelu,
+}: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
   const [isVirallinenTutkinnonMyontaja, setIsVirallinenTutkinnonMyontaja] =
-    useState<boolean | undefined | null>();
+    useState<boolean | undefined>();
 
-  const updateIsVirallinenTutkinnonMyontaja = (
-    val: boolean | undefined | null,
-  ) => {
+  const updateIsVirallinenTutkinnonMyontaja = (val: boolean | undefined) => {
     if (val !== isVirallinenTutkinnonMyontaja) {
       setIsVirallinenTutkinnonMyontaja(val);
-      // Call update function passed in as param
+      const _perustelu = perustelu ?? ({} as Perustelu);
+      updatePerustelu({
+        ..._perustelu,
+        virallinenTutkinnonMyontaja: val,
+      });
     }
   };
 
-  // Add effect to set initial value
+  useEffect(() => {
+    setIsVirallinenTutkinnonMyontaja(perustelu?.virallinenTutkinnonMyontaja);
+  }, [perustelu?.virallinenTutkinnonMyontaja]);
 
   const poistopainike = (
-    <Link href="" onClick={() => updateIsVirallinenTutkinnonMyontaja(null)}>
+    <Link
+      href=""
+      onClick={() => updateIsVirallinenTutkinnonMyontaja(undefined)}
+    >
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>
   );
 
-  const naytaPoisto =
-    isVirallinenTutkinnonMyontaja !== undefined &&
-    isVirallinenTutkinnonMyontaja !== null;
+  const naytaPoisto = isNonNullish(isVirallinenTutkinnonMyontaja);
 
   return (
     <Stack direction="column" gap={theme.spacing(1)}>
