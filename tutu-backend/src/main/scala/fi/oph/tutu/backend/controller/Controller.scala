@@ -162,7 +162,7 @@ class Controller(
           val perustelu = perusteluService
             .tallennaPerustelu(
               hakemus.hakemusOid,
-              Perustelu(),
+              PartialPerustelu(),
               "Hakemuspalvelu"
             )
             .foreach((perustelu: Perustelu) => {
@@ -495,8 +495,8 @@ class Controller(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user                 = userService.getEnrichedUserDetails(true)
-      val perustelu: Perustelu = mapper.readValue(perusteluBytes, classOf[Perustelu])
+      val user                        = userService.getEnrichedUserDetails(true)
+      val perustelu: PartialPerustelu = mapper.readValue(perusteluBytes, classOf[PartialPerustelu])
 
       perusteluService.tallennaPerustelu(
         HakemusOid(hakemusOid),

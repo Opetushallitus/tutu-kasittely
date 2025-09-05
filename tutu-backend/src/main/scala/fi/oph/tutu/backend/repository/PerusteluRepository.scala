@@ -12,6 +12,7 @@ implicit val jsonFormats: Formats = DefaultFormats
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -58,6 +59,38 @@ class PerusteluRepository {
     )
   }
 
+  implicit val getLausuntotietoResult: GetResult[Lausuntotieto] = {
+    GetResult(r =>
+      Lausuntotieto(
+        UUID.fromString(r.nextString()),
+        UUID.fromString(r.nextString()),
+        r.nextStringOption(),
+        r.nextStringOption(),
+        r.nextTimestamp().toLocalDateTime,
+        r.nextString(),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextString()),
+        Seq.empty
+      )
+    )
+  }
+
+  implicit val getLausuntopyyntoResult: GetResult[Lausuntopyynto] = {
+    GetResult(r =>
+      Lausuntopyynto(
+        UUID.fromString(r.nextString()),
+        UUID.fromString(r.nextString()),
+        r.nextStringOption(),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        r.nextTimestamp().toLocalDateTime,
+        r.nextString(),
+        Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        Option(r.nextString())
+      )
+    )
+  }
+
   /**
    * Tallentaa uuden perustelun
    *
@@ -72,7 +105,7 @@ class PerusteluRepository {
     hakemusId: UUID,
     perustelu: Perustelu,
     luoja: String
-  ): UUID = {
+  ): Perustelu = {
     try {
       db.run(
         sql"""
@@ -112,7 +145,7 @@ class PerusteluRepository {
             selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
             muokkaaja = $luoja
           RETURNING id
-        """.as[UUID].head,
+        """.as[Perustelu].head,
         "tallenna_perustelu"
       )
     } catch {
@@ -172,12 +205,12 @@ class PerusteluRepository {
   }
 
   /**
-   * Tallentaa uuden UO/RO-perustelun
+   * Tallentaa uuden tai modifioidun UO/RO-perustelun
    *
    * @param perusteluId
    * Perustelun uuid
    * @param perusteluUoRo
-   * UO/RO-perustelun
+   * UO/RO-perustelu
    * @param luoja
    * perustelun luoja
    * @return
@@ -213,10 +246,7 @@ class PerusteluRepository {
     } catch {
       case e: Exception =>
         LOG.error(s"UO/RO-perustelun tallennus epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"UO/RO-perustelun tallennus epäonnistui: ${e.getMessage}",
-          e
-        )
+        throw new RuntimeException(s"UO/RO-perustelun tallennus epäonnistui: ${e.getMessage}", e)
     }
   }
 
@@ -225,7 +255,6 @@ class PerusteluRepository {
    *
    * @param perusteluId
    * perustelun uuid
-   *
    * @return
    * perusteluUoRo
    */
@@ -252,4 +281,189 @@ class PerusteluRepository {
         )
     }
   }
+
+  /**
+   * Tallentaa uuden tai modifioidun lausuntotiedon
+   *
+   * @param perusteluId
+   * Perustelun uuid
+   * @param lausuntotieto
+   * Uusi tai modifioitu lausuntotieto
+   * @param luojaTaiMuokkaaja
+   * perustelun luoja tai muokkaaja
+   * @return
+   * tallennetun perustelun id
+   */
+  def tallennaLausuntotieto(
+    perusteluId: UUID,
+    lausuntotieto: Lausuntotieto,
+    luojaTaiMuokkaaja: String
+  ): Lausuntotieto = {
+    try {
+      db.run(
+        sql"""
+            INSERT INTO lausuntotieto (
+              perustelu_id,
+              pyyntojen_lisatiedot,
+              sisalto,
+              luoja
+            )
+            VALUES (
+              ${perusteluId.toString}::uuid,
+              ${lausuntotieto.pyyntojenLisatiedot.orNull},
+              ${lausuntotieto.sisalto.orNull},
+              $luojaTaiMuokkaaja
+            )
+            ON CONFLICT (perustelu_id)
+            DO UPDATE SET
+              pyyntojen_lisatiedot = ${lausuntotieto.pyyntojenLisatiedot.orNull},
+              sisalto = ${lausuntotieto.sisalto.orNull},
+              muokkaaja = $luojaTaiMuokkaaja
+            RETURNING *
+          """.as[Lausuntotieto].head,
+        "tallenna_lausuntotieto"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Lausuntotiedon tallennus epäonnistui: $e")
+        throw new RuntimeException(s"Lausuntotiedon tallennus epäonnistui: ${e.getMessage}", e)
+    }
+  }
+
+  /**
+   * Palauttaa yksittäisen lausuntotiedon
+   *
+   * @param perusteluId
+   * vastaavan perustelutiedon uuid
+   * @return
+   * lausuntotieto
+   */
+  def haeLausuntotieto(perusteluId: UUID): Option[Lausuntotieto] = {
+    try {
+      db.run(
+        sql"""
+            SELECT
+              lt.id,
+              lt.perustelu_id,
+              lt.pyyntojen_lisatiedot,
+              lt.sisalto,
+              lt.luotu,
+              lt.luoja,
+              lt.muokattu,
+              lt.muokkaaja
+            FROM
+              lausuntotieto lt
+            WHERE
+              lt.perustelu_id =  ${perusteluId.toString}::uuid
+          """.as[Lausuntotieto].headOption,
+        "hae_lausuntotieto"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Lausuntotiedon haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Palauttaa lausuntotietoon liittyvät lausuntopyynnöt
+   *
+   * @param lausuntotietoId
+   * vastaavan lausuntotiedon uuid
+   * @return
+   * lausuntopyynnot
+   */
+  def haeLausuntopyynnot(lausuntotietoId: UUID): Seq[Lausuntopyynto] = {
+    try {
+      db.run(
+        sql"""
+            SELECT
+              lp.id,
+              lp.lausuntotieto_id,
+              lp.lausunnon_antaja,
+              lp.lahetetty,
+              lp.saapunut,
+              lp.luotu,
+              lp.luoja,
+              lp.muokattu,
+              lp.muokkaaja
+            FROM
+              lausuntopyynto lp
+            WHERE
+              lp.lausuntotieto_id =  ${lausuntotietoId.toString}::uuid
+          """.as[Lausuntopyynto],
+        "hae_lausuntopyynnot"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Lausuntopyyntöjen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Tallentaa uudet/muuttu tai modifioidun lausuntotiedon ja siihen liittyvät lausuntopyynnöt
+   *
+   * @param lausuntotietoId
+   * vastaavan lausuntotiedon uuid
+   * @param modifyData
+   * lausuntopyyntöjen muokkaustiedot
+   * @param luojaTaiMuokkaaja
+   * pyynnön luoja tai muokkaaja
+   */
+  def suoritaLausuntopyyntojenModifiointi(
+    lausuntotietoId: UUID,
+    modifyData: LausuntopyyntoModifyData,
+    luojaTaiMuokkaaja: String
+  ): Unit = {
+    val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(lausuntotietoId, lp, luojaTaiMuokkaaja)) ++
+      modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja)) ++
+      modifyData.poistetut.map(poistaLausuntopyynto)
+    val combined = db.combineIntDBIOs(actions)
+    db.runTransactionally(combined, "suorita_lausuntopyyntojen_modifiointi") match {
+      case Success(_) => ()
+      case Failure(e) =>
+        LOG.error(s"Virhe lausuntopyyntöjen modifioinnissa: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe lausuntopyyntöjen modifioinnissa: ${e.getMessage}", e)
+    }
+  }
+
+  def lisaaLausuntopyynto(
+    lausuntotietoId: UUID,
+    lausuntopyynto: Lausuntopyynto,
+    luoja: String
+  ): DBIO[Int] =
+    sqlu"""
+      INSERT INTO lausuntopyynto (lausuntotieto_id, lausunnon_antaja, lahetetty, saapunut, luoja)
+      VALUES (
+        ${lausuntotietoId.toString}::uuid,
+        ${lausuntopyynto.lausunnonAntaja.orNull},
+        ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
+        ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
+        $luoja
+      )"""
+
+  def paivitaLausuntoPyynto(
+    lausuntopyynto: Lausuntopyynto,
+    muokkaaja: String
+  ): DBIO[Int] =
+    sqlu"""
+      UPDATE lausuntopyynto
+      SET
+        lausunnon_antaja = ${lausuntopyynto.lausunnonAntaja.orNull},
+        lahetetty = ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
+        saapunut = ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
+        muokkaaja = $muokkaaja
+      WHERE id = ${lausuntopyynto.id.toString}::uuid
+    """
+
+  def poistaLausuntopyynto(id: UUID): DBIO[Int] =
+    sqlu"""
+      DELETE FROM lausuntopyynto
+      WHERE id = ${id.toString}::uuid
+    """
 }

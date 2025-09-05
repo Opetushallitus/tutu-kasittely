@@ -80,8 +80,7 @@ def makePerustelu(
     LocalDateTime.now(),
     "Hakemuspalvelu",
     Option(LocalDateTime.now()),
-    Option("Hakemuspalvelu"),
-    None
+    Option("Hakemuspalvelu")
   )
 }
 
@@ -110,6 +109,7 @@ def makePerusteluWithUoro(
     "Hakemuspalvelu",
     Option(LocalDateTime.now()),
     Option("Hakemuspalvelu"),
+    None,
     Some(
       PerusteluUoRo(
         UUID.randomUUID(),

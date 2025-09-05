@@ -80,4 +80,9 @@ class TutuDatabase(
       timeout
     )
   }
+
+  def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    DBIO.fold(ints, 0)(_ + _)
+  }
 }
