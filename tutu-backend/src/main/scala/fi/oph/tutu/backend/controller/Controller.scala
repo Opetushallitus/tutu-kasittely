@@ -12,6 +12,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMes
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.json4s.native.JsonMethods
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -523,7 +524,7 @@ class Controller(
             auditLog.logCreate(
               auditLog.getUser(request),
               Map("hakemusOid" -> hakemusOid),
-              CreateMuistio,
+              CreatePerustelu,
               params
             )
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
