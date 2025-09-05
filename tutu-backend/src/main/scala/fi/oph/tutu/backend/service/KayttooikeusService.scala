@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.UserOid
+import fi.oph.tutu.backend.repository.EsittelijaRepository
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -19,7 +20,10 @@ case class KayttooikeusServiceException(message: String = "", cause: Throwable =
 
 @Component
 @Service
-class KayttooikeusService(httpService: HttpService) {
+class KayttooikeusService(
+  httpService: HttpService,
+  esittelijaRepository: EsittelijaRepository
+) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[KayttooikeusService])
 
   @Value("${opintopolku.virkailija.url}")
@@ -70,7 +74,15 @@ class KayttooikeusService(httpService: HttpService) {
           esittelija_oidit ++= oids
       }
     }
-    Right(esittelija_oidit)
+
+    try {
+      esittelijaRepository.syncFromKayttooikeusService(esittelija_oidit, "KayttooikeusService")
+      Right(esittelija_oidit)
+    } catch {
+      case e: Exception =>
+        LOG.error("Failed to sync esittelijat with database", e)
+        Right(esittelija_oidit)
+    }
   }
 
   @CacheEvict(value = Array("esittelijat"), allEntries = true)

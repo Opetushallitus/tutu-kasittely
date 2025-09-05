@@ -3,7 +3,7 @@ package fi.oph.tutu.backend
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.domain.{Asiakirja, AsiakirjamalliTutkinnosta, AtaruHakemus, HakemusOid, Hakija, UserOid}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository, MaakoodiRepository}
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -67,6 +67,9 @@ class IntegrationTestBase {
 
   @Autowired
   var esittelijaRepository: EsittelijaRepository = _
+
+  @Autowired
+  var maakoodiRepository: MaakoodiRepository = _
 
   @Autowired
   var hakemusRepository: HakemusRepository = _

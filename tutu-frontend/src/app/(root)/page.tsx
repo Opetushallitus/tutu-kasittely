@@ -1,13 +1,15 @@
 'use client';
 
 import { PageLayout } from '@/src/components/PageLayout';
-import { OphTypography } from '@opetushallitus/oph-design-system';
+import { OphTypography, OphButton } from '@opetushallitus/oph-design-system';
 import { HakemusList } from '@/src/app/(root)/components/HakemusList';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 import HakemusListFilters from '@/src/app/(root)/components/HakemusListFilters';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import Link from 'next/link';
+import { Box } from '@mui/material';
 
 export default function ListViewPage() {
   const { t } = useTranslations();
@@ -26,9 +28,20 @@ export default function ListViewPage() {
       {hasTutuUserRights ? (
         <>
           <BoxWrapper sx={{ borderBottom: 'none' }}>
-            <OphTypography variant={'h2'}>
-              {t('hakemuslista.hakemukset')}
-            </OphTypography>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <OphTypography variant={'h2'}>
+                {t('hakemuslista.hakemukset')}
+              </OphTypography>
+              <Link href="/maajako" style={{ textDecoration: 'none' }}>
+                <OphButton variant="text">{t('maajako.otsikko')}</OphButton>
+              </Link>
+            </Box>
           </BoxWrapper>
           <BoxWrapper>
             <HakemusListFilters></HakemusListFilters>

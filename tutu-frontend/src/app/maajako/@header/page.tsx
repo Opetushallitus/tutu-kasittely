@@ -14,7 +14,7 @@ export default function HeaderPage() {
       <HomeIcon href={`/`} />
       <HomeStyledChevron />
       <OphTypography variant={'h2'} component={'h1'}>
-        {t('hakemus.otsikko')}
+        {t('maajako.otsikko')}
       </OphTypography>
     </PageHeaderRow>
   );
