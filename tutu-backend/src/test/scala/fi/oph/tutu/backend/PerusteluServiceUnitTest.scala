@@ -33,19 +33,20 @@ val someDbHakemus = Some(
 )
 
 val perusteluUoRo = PerusteluUoRo(
+  id = Some(UUID.randomUUID()),
   perusteluId = perusteluId,
   perustelunSisalto = PerusteluUoRoSisalto(
-    opettajatEroMonialaisetOpinnotLaajuus = true,
-    opettajatEroOpetettavatAineetOpinnotLaajuus = true,
-    opettajatMuuEro = true,
+    opettajatEroMonialaisetOpinnotLaajuus = Some(true),
+    opettajatEroOpetettavatAineetOpinnotLaajuus = Some(true),
+    opettajatMuuEro = Some(true),
     opettajatMuuEroSelite = Some("Väärennetyt todistukset"),
-    vkOpettajatEroKasvatustieteellisetOpinnotSisalto = true,
-    vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus = true,
-    vkOpettajatMuuEro = true,
+    vkOpettajatEroKasvatustieteellisetOpinnotSisalto = Some(true),
+    vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus = Some(true),
+    vkOpettajatMuuEro = Some(true),
     vkOpettajatMuuEroSelite = Some("Ei tää mikää opettaja oo"),
-    otmMuuEro = true,
+    otmMuuEro = Some(true),
     otmMuuEroSelite = Some("Juu ei kyl"),
-    sovellettuMuuTilanne = true,
+    sovellettuMuuTilanne = Some(true),
     sovellettuMuuTilanneSelite = Some("Muutamia muita")
   )
 )

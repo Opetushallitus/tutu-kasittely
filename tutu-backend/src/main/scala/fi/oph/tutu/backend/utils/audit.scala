@@ -1,10 +1,10 @@
 package fi.oph.tutu.backend.utils
 
-import com.google.gson.{JsonArray, JsonParser}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.google.gson.{JsonArray, JsonParser}
 import fi.vm.sade.auditlog.*
 import fi.vm.sade.javautils.http.HttpServletRequestUtils
 import jakarta.servlet.http.HttpServletRequest
@@ -12,6 +12,7 @@ import org.ietf.jgss.Oid
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+
 import java.net.InetAddress
 
 object AuditLogger extends Logger {
@@ -139,6 +140,7 @@ object AuditOperation {
   case object CreateMuistio extends AuditOperation {
     val name = "MUISTION_LUONTI"
   }
+
   case object UpdateHakemus extends AuditOperation {
     val name = "HAKEMUKSEN_PAIVITYS"
   }
@@ -173,10 +175,6 @@ object AuditOperation {
 
   case object ReadPerustelu extends AuditOperation {
     val name = "PERUSTELUN_LUKU"
-  }
-
-  case object ReadKoodisto extends AuditOperation {
-    val name = "KOODISTON_LUKU"
   }
 }
 
