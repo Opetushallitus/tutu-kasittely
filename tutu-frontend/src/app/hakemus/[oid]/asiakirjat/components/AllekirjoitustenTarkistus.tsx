@@ -35,14 +35,14 @@ const StatelessAllekirjoitustenTarkistus = ({
         checked={checked}
         onChange={() => setLisatieto(checked ? null : '')}
       />
-      {checked ? (
+      {checked && (
         <OphInputFormField
           multiline={true}
           label={t('hakemus.asiakirjat.allekirjoituksetTarkistettuLisatietoja')}
           value={lisatieto}
           onChange={(event) => setLisatieto(event.target.value)}
         />
-      ) : null}
+      )}
     </>
   );
 };
