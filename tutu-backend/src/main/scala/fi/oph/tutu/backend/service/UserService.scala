@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.{Esittelija, User}
 import fi.oph.tutu.backend.security.AuthenticationFacade
 import fi.oph.tutu.backend.utils.AuthoritiesUtil
+import fi.oph.tutu.backend.repository.EsittelijaRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.{Component, Service}
 
@@ -11,7 +12,8 @@ import org.springframework.stereotype.{Component, Service}
 class UserService(
   onrService: OnrService,
   authenticationFacade: AuthenticationFacade,
-  kayttooikeusService: KayttooikeusService
+  kayttooikeusService: KayttooikeusService,
+  esittelijaRepository: EsittelijaRepository
 ) {
 
   def getEnrichedUserDetails(throwOnrException: Boolean = false): User = {
@@ -41,16 +43,28 @@ class UserService(
   def haeEsittelijat: Seq[Esittelija] = {
     kayttooikeusService.haeEsittelijat match {
       case Left(error) =>
-        throw KayttooikeusServiceException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error);
+        throw KayttooikeusServiceException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error)
       case Right(esittelijaOidit) =>
-        val esittelijat = esittelijaOidit.map(oid =>
+        // Get all esittelijat data in a single query
+        val dbEsittelijat = esittelijaRepository.haeKaikkiEsittelijat()
+
+        // Combine with ONR data for the active esittelijat
+        esittelijaOidit.flatMap(oid => {
           onrService.haeHenkilo(oid) match {
             case Left(error) =>
               throw OnrServiceException(s"Henkilön tietojen haku epäonnistui OID:lla $oid", error)
-            case Right(esittelija) => Esittelija(esittelija.oidHenkilo, esittelija.kutsumanimi, esittelija.sukunimi)
+            case Right(esittelija) =>
+              val dbEsittelijaId = dbEsittelijat.find(_.esittelijaOid.toString == oid).map(_.esittelijaId)
+              Some(
+                Esittelija(
+                  esittelija.oidHenkilo,
+                  esittelija.kutsumanimi,
+                  esittelija.sukunimi,
+                  dbEsittelijaId
+                )
+              )
           }
-        )
-        esittelijat
+        })
     }
   }
 }

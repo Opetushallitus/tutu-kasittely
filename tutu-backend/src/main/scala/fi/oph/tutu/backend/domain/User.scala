@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.domain
 
+import java.util.UUID
 import scala.beans.BeanProperty
 
 case class User(

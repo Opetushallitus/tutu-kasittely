@@ -25,5 +25,6 @@ case class DbEsittelija(
 case class Esittelija(
   esittelijaOid: String,
   etunimi: String,
-  sukunimi: String
+  sukunimi: String,
+  id: Option[UUID] = None
 )
