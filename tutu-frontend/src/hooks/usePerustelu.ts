@@ -13,10 +13,7 @@ export const getPerustelu = async (
 
 export const postPerustelu = (hakemusOid: string, perustelu: Perustelu) => {
   const url = `perustelu/${hakemusOid}`;
-  const body = {
-    perustelu,
-  };
-  return doApiPost(url, body);
+  return doApiPost(url, perustelu);
 };
 
 export const usePerustelu = (hakemusOid: string | undefined) => {

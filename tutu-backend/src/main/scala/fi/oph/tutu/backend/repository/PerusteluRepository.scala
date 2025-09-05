@@ -227,7 +227,7 @@ class PerusteluRepository {
         sql"""
             INSERT INTO perustelu_uo_ro (
               perustelu_id,
-              perustelu_sisalto,
+              perustelun_sisalto,
               luoja
             )
             VALUES (
