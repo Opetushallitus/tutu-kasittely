@@ -56,7 +56,6 @@ val partialPerusteluUoRo = PartialPerustelu(
 val muokattuPerusteluUoRo = PerusteluUoRo(
   perusteluId = perusteluId,
   perustelunSisalto = PerusteluUoRoSisalto(
-    koulutuksenSisalto = Some("Lisää sisältöä elämään"),
     opettajatEroMonialaisetOpinnotLaajuus = false,
     opettajatEroOpetettavatAineetOpinnotLaajuus = false,
     opettajatMuuEro = false,
