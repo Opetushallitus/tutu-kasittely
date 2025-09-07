@@ -52,10 +52,10 @@ export default function UoroPage() {
         };
 
     setPerusteluUoRo(modifiedPerusteluUoRo);
-    debouncedUUpdatePerusteluUoRo(modifiedPerusteluUoRo);
+    debouncedUpdatePerusteluUoRo(modifiedPerusteluUoRo);
   };
 
-  const debouncedUUpdatePerusteluUoRo = useDebounce((next: PerusteluUoRo) => {
+  const debouncedUpdatePerusteluUoRo = useDebounce((next: PerusteluUoRo) => {
     updatePerustelu({ ...perustelu!, perusteluUoRo: next });
   }, 1000);
   return (
@@ -94,6 +94,7 @@ export default function UoroPage() {
         ))}
         {perusteluUoRo?.perustelunSisalto.opettajatMuuEro && (
           <OphInputFormField
+            data-testid="opettajatMuuEroSelite"
             sx={{ paddingLeft: 4 }}
             multiline={true}
             minRows={5}
@@ -148,6 +149,7 @@ export default function UoroPage() {
         ))}
         {perusteluUoRo?.perustelunSisalto.otmMuuEro && (
           <OphInputFormField
+            data-testid="otmMuuEroSelite"
             sx={{ paddingLeft: 4 }}
             multiline={true}
             minRows={5}
