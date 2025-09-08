@@ -11,9 +11,8 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinnonMyontaja';
 import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
 import { Lahde } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/Lahde';
-import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
 import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
-import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
+import { Muistio } from '@/src/components/Muistio';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
@@ -38,6 +37,7 @@ interface YleisetPerustelutProps {
 }
 
 const YleisetPerustelut = ({ hakemus }: YleisetPerustelutProps) => {
+  const { t } = useTranslations();
   const { perustelu, updatePerustelu, isPerusteluLoading } = usePerustelu(
     hakemus?.hakemusOid,
   );
@@ -55,12 +55,24 @@ const YleisetPerustelut = ({ hakemus }: YleisetPerustelutProps) => {
         updatePerustelu={updatePerustelu}
       />
       <Lahde perustelu={perustelu} updatePerustelu={updatePerustelu} />
-      <SelvitysTutkinnonMyontajastaJaVirallisuudesta />
+      <Muistio
+        label={t(
+          'hakemus.perustelu.yleiset.muistio.selvitysTutkinnonMyontajastaJaVirallisuudesta',
+        )}
+        hakemus={hakemus}
+        sisainen={false}
+        hakemuksenOsa={'perustelut-yleiset--selvitys-tutkinnon-myontajasta'}
+      />
       <YlimmanTutkinnonAsema
         perustelu={perustelu}
         updatePerustelu={updatePerustelu}
       />
-      <SelvitysTutkinnonAsemasta />
+      <Muistio
+        label={t('hakemus.perustelu.yleiset.muistio.selvitysTutkinnonAsemasta')}
+        hakemus={hakemus}
+        sisainen={false}
+        hakemuksenOsa={'perustelut-yleiset--selvitys-tutkinnon-asemasta'}
+      />
 
       {/* Tutkintokohtaiset tiedot */}
 

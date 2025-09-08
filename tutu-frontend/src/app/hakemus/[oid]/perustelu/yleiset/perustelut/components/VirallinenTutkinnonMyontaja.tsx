@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const VirallinenTutkinnonMyontaja = ({
-  perustelu,
+  perustelu: maybePerustelu,
   updatePerustelu,
 }: Props) => {
   const { t } = useTranslations();
@@ -27,17 +27,19 @@ export const VirallinenTutkinnonMyontaja = ({
   const updateIsVirallinenTutkinnonMyontaja = (val: boolean | undefined) => {
     if (val !== isVirallinenTutkinnonMyontaja) {
       setIsVirallinenTutkinnonMyontaja(val);
-      const _perustelu = perustelu ?? ({} as Perustelu);
+      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ..._perustelu,
+        ...perustelu,
         virallinenTutkinnonMyontaja: val,
       });
     }
   };
 
   useEffect(() => {
-    setIsVirallinenTutkinnonMyontaja(perustelu?.virallinenTutkinnonMyontaja);
-  }, [perustelu?.virallinenTutkinnonMyontaja]);
+    setIsVirallinenTutkinnonMyontaja(
+      maybePerustelu?.virallinenTutkinnonMyontaja,
+    );
+  }, [maybePerustelu?.virallinenTutkinnonMyontaja]);
 
   const poistopainike = (
     <Link

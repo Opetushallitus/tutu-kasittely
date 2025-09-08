@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const YlimmanTutkinnonAsema = ({
-  perustelu,
+  perustelu: maybePerustelu,
   updatePerustelu,
 }: Props) => {
   const { t } = useTranslations();
@@ -24,9 +24,9 @@ export const YlimmanTutkinnonAsema = ({
   const updateYlimmanTutkinnonAsema = (val: string | undefined) => {
     if (val !== ylimmanTutkinnonAsema) {
       setYlimmanTutkinnonAsema(val);
-      const _perustelu = perustelu ?? ({} as Perustelu);
+      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ..._perustelu,
+        ...perustelu,
         ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: val,
       });
     }
@@ -34,9 +34,9 @@ export const YlimmanTutkinnonAsema = ({
 
   useEffect(() => {
     setYlimmanTutkinnonAsema(
-      perustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
+      maybePerustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
     );
-  }, [perustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa]);
+  }, [maybePerustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa]);
 
   const tutkinnonAsemat = [
     'alempi_korkeakouluaste',

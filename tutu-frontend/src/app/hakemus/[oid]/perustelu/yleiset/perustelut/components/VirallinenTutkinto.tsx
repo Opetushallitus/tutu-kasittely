@@ -14,7 +14,10 @@ interface Props {
   updatePerustelu: (perustelu: Perustelu) => void;
 }
 
-export const VirallinenTutkinto = ({ perustelu, updatePerustelu }: Props) => {
+export const VirallinenTutkinto = ({
+  perustelu: maybePerustelu,
+  updatePerustelu,
+}: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
@@ -25,17 +28,17 @@ export const VirallinenTutkinto = ({ perustelu, updatePerustelu }: Props) => {
   const updateIsVirallinenTutkinto = (val: boolean | undefined) => {
     if (val !== isVirallinenTutkinto) {
       setIsVirallinenTutkinto(val);
-      const _perustelu = perustelu ?? ({} as Perustelu);
+      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ..._perustelu,
+        ...perustelu,
         virallinenTutkinto: val,
       });
     }
   };
 
   useEffect(() => {
-    setIsVirallinenTutkinto(perustelu?.virallinenTutkinto);
-  }, [perustelu?.virallinenTutkinto]);
+    setIsVirallinenTutkinto(maybePerustelu?.virallinenTutkinto);
+  }, [maybePerustelu?.virallinenTutkinto]);
 
   const poistopainike = (
     <Link href="" onClick={() => updateIsVirallinenTutkinto(undefined)}>

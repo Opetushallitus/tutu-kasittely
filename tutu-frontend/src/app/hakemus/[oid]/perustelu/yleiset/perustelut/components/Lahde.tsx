@@ -10,62 +10,46 @@ interface Props {
   updatePerustelu: (perustelu: Perustelu) => void;
 }
 
-export const Lahde = ({ perustelu, updatePerustelu }: Props) => {
+export const Lahde = ({
+  perustelu: maybePerustelu,
+  updatePerustelu,
+}: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
-  const [isLahtomaanKansallinenLahde, setIsLahtomaanKansallinenLahde] =
-    useState<boolean>(false);
+  const [state, setState] = useState({
+    lahdeLahtomaanKansallinenLahde: false,
+    lahdeLahtomaanVirallinenVastaus: false,
+    lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+  });
 
-  const [isLahtomaanVirallinenVastaus, setIsLahtomaanVirallinenVastaus] =
-    useState<boolean>(false);
-
-  const [
-    isKansainvalinenHakuteosTaiVerkkosivusto,
-    setIsKansainvalinenHakuteosTaiVerkkosivusto,
-  ] = useState<boolean>(false);
-
-  const updateIsLahtomaanKansallinenLahde = (val: boolean) => {
-    setIsLahtomaanKansallinenLahde(val);
-    const _perustelu = perustelu ?? ({} as Perustelu);
+  const updateValue = (field: string, value: boolean) => {
+    const newState = {
+      ...state,
+      [field]: value,
+    };
+    setState(newState);
+    const perustelu = maybePerustelu ?? ({} as Perustelu);
     updatePerustelu({
-      ..._perustelu,
-      lahdeLahtomaanKansallinenLahde: val,
-    });
-  };
-
-  const updateIsLahtomaanVirallinenVastaus = (val: boolean) => {
-    setIsLahtomaanVirallinenVastaus(val);
-    const _perustelu = perustelu ?? ({} as Perustelu);
-    updatePerustelu({
-      ..._perustelu,
-      lahdeLahtomaanVirallinenVastaus: val,
-    });
-  };
-
-  const updateIsKansainvalinenHakuteosTaiVerkkosivusto = (val: boolean) => {
-    setIsKansainvalinenHakuteosTaiVerkkosivusto(val);
-    const _perustelu = perustelu ?? ({} as Perustelu);
-    updatePerustelu({
-      ..._perustelu,
-      lahdeKansainvalinenHakuteosTaiVerkkosivusto: val,
+      ...perustelu,
+      [field]: value,
     });
   };
 
   useEffect(() => {
-    setIsLahtomaanKansallinenLahde(
-      perustelu?.lahdeLahtomaanKansallinenLahde ?? false,
-    );
-    setIsLahtomaanVirallinenVastaus(
-      perustelu?.lahdeLahtomaanVirallinenVastaus ?? false,
-    );
-    setIsKansainvalinenHakuteosTaiVerkkosivusto(
-      perustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto ?? false,
-    );
+    const newState = {
+      lahdeLahtomaanKansallinenLahde:
+        maybePerustelu?.lahdeLahtomaanKansallinenLahde ?? false,
+      lahdeLahtomaanVirallinenVastaus:
+        maybePerustelu?.lahdeLahtomaanVirallinenVastaus ?? false,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto:
+        maybePerustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto ?? false,
+    };
+    setState(newState);
   }, [
-    perustelu?.lahdeLahtomaanKansallinenLahde,
-    perustelu?.lahdeLahtomaanVirallinenVastaus,
-    perustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto,
+    maybePerustelu?.lahdeLahtomaanKansallinenLahde,
+    maybePerustelu?.lahdeLahtomaanVirallinenVastaus,
+    maybePerustelu?.lahdeKansainvalinenHakuteosTaiVerkkosivusto,
   ]);
 
   return (
@@ -74,30 +58,33 @@ export const Lahde = ({ perustelu, updatePerustelu }: Props) => {
         {t('hakemus.perustelu.yleiset.perustelut.lahde.otsikko')}
       </OphTypography>
       <OphCheckbox
-        checked={isLahtomaanKansallinenLahde}
+        checked={state.lahdeLahtomaanKansallinenLahde}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.lahtomaanKansallinenLahde',
         )}
         onChange={(event) =>
-          updateIsLahtomaanKansallinenLahde(event.target.checked)
+          updateValue('lahdeLahtomaanKansallinenLahde', event.target.checked)
         }
       />
       <OphCheckbox
-        checked={isLahtomaanVirallinenVastaus}
+        checked={state.lahdeLahtomaanVirallinenVastaus}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.lahtomaanVirallinenVastaus',
         )}
         onChange={(event) =>
-          updateIsLahtomaanVirallinenVastaus(event.target.checked)
+          updateValue('lahdeLahtomaanVirallinenVastaus', event.target.checked)
         }
       />
       <OphCheckbox
-        checked={isKansainvalinenHakuteosTaiVerkkosivusto}
+        checked={state.lahdeKansainvalinenHakuteosTaiVerkkosivusto}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.kansainvalinenHakuteosTaiVerkkosivusto',
         )}
         onChange={(event) =>
-          updateIsKansainvalinenHakuteosTaiVerkkosivusto(event.target.checked)
+          updateValue(
+            'lahdeKansainvalinenHakuteosTaiVerkkosivusto',
+            event.target.checked,
+          )
         }
       />
     </Stack>
