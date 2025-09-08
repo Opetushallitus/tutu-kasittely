@@ -113,49 +113,63 @@ export const otmBooleanFields: {
   { key: 'otmMuuEro', labelKey: 'hakemus.perustelu.uoro.muuEro' },
 ];
 
-export const sovellettuBooleanFields: {
+export const sovellettuTilanneBooleanFields: {
+  type: 'sovellettuTilanne' | 'boolean'; //todo: tähän tulee lisää
   key: keyof PerusteluUoRoSisalto;
   labelKey: string;
 }[] = [
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuOpettajanPedagogisetOpinnot',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.opettajanPedagogisetOpinnot',
+    labelKey:
+      'hakemus.perustelu.uoro.sovellettuTilanne.opettajanPedagogisetOpinnot',
   },
   {
+    type: 'boolean',
     key: 'sovellettuOpetettavanAineenOpinnot',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.opetettavanAineenOpinnot',
+    labelKey:
+      'hakemus.perustelu.uoro.sovellettuTilanne.opetettavanAineenOpinnot',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuMonialaisetOpinnot',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.monialaisetOpinnot',
+    labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.monialaisetOpinnot',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuErityisopetus',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.erityisopetus',
+    labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.erityisopetus',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuVarhaiskasvatus',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.varhaiskasvatus',
+    labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.varhaiskasvatus',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuRinnastaminenKasvatustieteelliseenTutkintoon',
     labelKey:
-      'hakemus.perustelu.uoro.sovellettu.rinnastaminenKasvatustieteelliseenTutkintoon',
+      'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenKasvatustieteelliseenTutkintoon',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuRiittavatOpinnot',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.riittavatOpinnot',
+    labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.riittavatOpinnot',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuRinnastaminenOtmTutkintoon',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.rinnastaminenOtmTutkintoon',
+    labelKey:
+      'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenOtmTutkintoon',
   },
   {
+    type: 'sovellettuTilanne',
     key: 'sovellettuLuokanopettaja',
-    labelKey: 'hakemus.perustelu.uoro.sovellettu.luokanopettaja',
+    labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.luokanopettaja',
   },
   {
+    type: 'boolean',
     key: 'sovellettuMuuTilanne',
-    labelKey: 'hakemus.perustelu.uoro.muuTilanne',
+    labelKey: 'hakemus.perustelu.uoro.muuEro',
   },
 ];

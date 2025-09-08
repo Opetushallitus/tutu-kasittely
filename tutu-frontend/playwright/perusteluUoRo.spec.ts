@@ -32,7 +32,7 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   const checkboxes = page.locator('[data-testid^="checkbox-"]');
   await expect
     .poll(async () => await checkboxes.count(), { timeout: 15000 })
-    .toEqual(22);
+    .toEqual(32);
   await expect(checkboxes.first()).toBeVisible();
 
   const otmMuuEro = page.getByTestId('checkbox-otmMuuEro');

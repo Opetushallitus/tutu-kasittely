@@ -8,6 +8,11 @@ export type PerusteluUoRo = {
   muokkaaja?: string;
 };
 
+export type SovellettuTilanne = {
+  checked?: boolean;
+  value?: string | null;
+};
+
 export type PerusteluUoRoSisalto = {
   opettajatEroMonialaisetOpinnotSisalto?: boolean;
   opettajatEroMonialaisetOpinnotLaajuus?: boolean;
@@ -34,15 +39,17 @@ export type PerusteluUoRoSisalto = {
   otmEroOpinnotLaajuus?: boolean;
   otmMuuEro?: boolean;
   otmMuuEroSelite?: string;
-  sovellettuOpettajanPedagogisetOpinnot?: boolean;
+
+  sovellettuOpettajanPedagogisetOpinnot?: SovellettuTilanne;
+  // TODO: sovellettuAineOption
   sovellettuOpetettavanAineenOpinnot?: boolean;
-  sovellettuMonialaisetOpinnot?: boolean;
-  sovellettuErityisopetus?: boolean;
-  sovellettuVarhaiskasvatus?: boolean;
-  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: boolean;
-  sovellettuRiittavatOpinnot?: boolean;
-  sovellettuRinnastaminenOtmTutkintoon?: boolean;
-  sovellettuLuokanopettaja?: boolean;
+  sovellettuMonialaisetOpinnot?: SovellettuTilanne;
+  sovellettuErityisopetus?: SovellettuTilanne;
+  sovellettuVarhaiskasvatus?: SovellettuTilanne;
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: SovellettuTilanne;
+  sovellettuRiittavatOpinnot?: SovellettuTilanne;
+  sovellettuRinnastaminenOtmTutkintoon?: SovellettuTilanne;
+  sovellettuLuokanopettaja?: SovellettuTilanne;
   sovellettuMuuTilanne?: boolean;
   sovellettuMuuTilanneSelite?: string;
 };
