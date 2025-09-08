@@ -41,7 +41,11 @@ export const VirallinenTutkinto = ({
   }, [maybePerustelu?.virallinenTutkinto]);
 
   const poistopainike = (
-    <Link href="" onClick={() => updateIsVirallinenTutkinto(undefined)}>
+    <Link
+      data-testid={`virallinen-tutkinto__none`}
+      href=""
+      onClick={() => updateIsVirallinenTutkinto(undefined)}
+    >
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>
   );
@@ -58,6 +62,7 @@ export const VirallinenTutkinto = ({
       </Stack>
       <Stack direction="row" gap={theme.spacing(3)}>
         <OphRadio
+          data-testid={`virallinen-tutkinto__on`}
           value={'true'}
           checked={isVirallinenTutkinto === true}
           label={t('yleiset.kylla')}
@@ -65,6 +70,7 @@ export const VirallinenTutkinto = ({
           onChange={() => updateIsVirallinenTutkinto(true)}
         ></OphRadio>
         <OphRadio
+          data-testid={`virallinen-tutkinto__off`}
           value={'false'}
           checked={isVirallinenTutkinto === false}
           label={t('yleiset.ei')}

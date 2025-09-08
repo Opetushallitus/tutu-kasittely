@@ -58,6 +58,7 @@ export const Lahde = ({
         {t('hakemus.perustelu.yleiset.perustelut.lahde.otsikko')}
       </OphTypography>
       <OphCheckbox
+        data-testid={`lahde__lahtomaan-kansallinen-lahde`}
         checked={state.lahdeLahtomaanKansallinenLahde}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.lahtomaanKansallinenLahde',
@@ -67,6 +68,7 @@ export const Lahde = ({
         }
       />
       <OphCheckbox
+        data-testid={`lahde__lahtomaan-virallinen-vastaus`}
         checked={state.lahdeLahtomaanVirallinenVastaus}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.lahtomaanVirallinenVastaus',
@@ -76,6 +78,7 @@ export const Lahde = ({
         }
       />
       <OphCheckbox
+        data-testid={`lahde__kansainvalinen-hakuteos-tai-verkkosivusto`}
         checked={state.lahdeKansainvalinenHakuteosTaiVerkkosivusto}
         label={t(
           'hakemus.perustelu.yleiset.perustelut.lahde.kansainvalinenHakuteosTaiVerkkosivusto',

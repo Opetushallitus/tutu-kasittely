@@ -43,6 +43,7 @@ export const VirallinenTutkinnonMyontaja = ({
 
   const poistopainike = (
     <Link
+      data-testid={`virallinen-tutkinnon-myontaja__none`}
       href=""
       onClick={() => updateIsVirallinenTutkinnonMyontaja(undefined)}
     >
@@ -64,6 +65,7 @@ export const VirallinenTutkinnonMyontaja = ({
       </Stack>
       <Stack direction="row" gap={theme.spacing(3)}>
         <OphRadio
+          data-testid={`virallinen-tutkinnon-myontaja__on`}
           value={'true'}
           checked={isVirallinenTutkinnonMyontaja === true}
           label={t('yleiset.kylla')}
@@ -71,6 +73,7 @@ export const VirallinenTutkinnonMyontaja = ({
           onChange={() => updateIsVirallinenTutkinnonMyontaja(true)}
         ></OphRadio>
         <OphRadio
+          data-testid={`virallinen-tutkinnon-myontaja__off`}
           value={'false'}
           checked={isVirallinenTutkinnonMyontaja === false}
           label={t('yleiset.ei')}

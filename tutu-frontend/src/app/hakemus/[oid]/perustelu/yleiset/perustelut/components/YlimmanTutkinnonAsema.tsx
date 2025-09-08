@@ -57,6 +57,7 @@ export const YlimmanTutkinnonAsema = ({
         return (
           <OphRadio
             key={`checkboxTutkinnonAsema.${tutkinnonAsema}`}
+            data-testid={`tutkinnon-asema--${tutkinnonAsema}`}
             value={'tutkinnonAsema'}
             checked={ylimmanTutkinnonAsema === tutkinnonAsema}
             label={t(
