@@ -91,7 +91,7 @@ class PerusteluService(
           val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id) match {
             case Some(existing) => existing.mergeWith(uoRo)
             case _              =>
-              PerusteluUoRo(perusteluId = latestSavedPerustelu.id)
+              PerusteluUoRo()
                 .mergeWith(uoRo)
                 .copy(perusteluId = latestSavedPerustelu.id)
           }

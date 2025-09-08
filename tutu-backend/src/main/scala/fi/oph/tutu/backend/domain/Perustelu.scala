@@ -68,7 +68,7 @@ case class PartialPerustelu(
 
 case class PerusteluUoRo(
   id: Option[UUID] = None,
-  perusteluId: UUID,
+  perusteluId: UUID = null,
   perustelunSisalto: PerusteluUoRoSisalto = PerusteluUoRoSisalto(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
