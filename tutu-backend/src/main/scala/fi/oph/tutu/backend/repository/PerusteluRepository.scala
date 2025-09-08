@@ -49,11 +49,11 @@ class PerusteluRepository {
 
   implicit val getPerusteluUoRoResult: GetResult[PerusteluUoRo] = GetResult { r =>
     PerusteluUoRo(
-      id = UUID.fromString(r.nextString()),
+      id = Option(r.nextString()).map(UUID.fromString),
       perusteluId = UUID.fromString(r.nextString()),
       perustelunSisalto = org.json4s.jackson.Serialization.read[PerusteluUoRoSisalto](r.nextString()),
-      luotu = r.nextTimestamp().toLocalDateTime,
-      luoja = r.nextString(),
+      luotu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+      luoja = Option(r.nextString()),
       muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
       muokkaaja = Option(r.nextString())
     )
@@ -227,7 +227,7 @@ class PerusteluRepository {
         sql"""
             INSERT INTO perustelu_uo_ro (
               perustelu_id,
-              perustelu_sisalto,
+              perustelun_sisalto,
               luoja
             )
             VALUES (

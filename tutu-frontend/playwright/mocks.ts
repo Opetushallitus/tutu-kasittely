@@ -11,6 +11,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
   mockHakemusLista(page);
   mockUser(page);
   mockHakemus(page);
+  mockPerustelu(page);
 };
 
 export const mockBasicForLista = async ({ page }: { page: Page }) => {
@@ -284,4 +285,28 @@ export const mockKoodistot = (page: Page) => {
       });
     },
   );
+};
+
+export const mockPerustelu = (page: Page) => {
+  page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 'mock-perustelu-id',
+        hakemusId: 'mock-hakemus-id',
+        lahdeLahtomaanKansallinenLahde: false,
+        lahdeLahtomaanVirallinenVastaus: false,
+        lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+        selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
+        selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
+        luotu: '2025-09-02T16:08:42.083643',
+        luoja: 'Hakemuspalvelu',
+        perusteluUoRo: {
+          perusteluId: 'mock-perustelu-id',
+          perustelunSisalto: {},
+        },
+      }),
+    });
+  });
 };
