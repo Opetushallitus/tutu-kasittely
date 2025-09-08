@@ -3,8 +3,8 @@ import { PerusteluUoRo } from '@/src/lib/types/perusteluUoRo';
 export type Perustelu = {
   id: string;
   hakemusId: string;
-  virallinenTutkinnonMyontaja?: boolean;
-  virallinenTutkinto?: boolean;
+  virallinenTutkinnonMyontaja?: boolean | undefined;
+  virallinenTutkinto?: boolean | undefined;
   lahdeLahtomaanKansallinenLahde: boolean;
   lahdeLahtomaanVirallinenVastaus: boolean;
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: boolean;
