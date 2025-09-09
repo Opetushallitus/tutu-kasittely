@@ -6,7 +6,11 @@ export const getMaakoodit = async (): Promise<Maakoodi[]> => {
   return await doApiFetch('maakoodit', undefined, 'no-store');
 };
 
-export const useMaakoodit = () => {
+interface UseMaakooditOptions {
+  enabled?: boolean;
+}
+
+export const useMaakoodit = (options?: UseMaakooditOptions) => {
   const {
     data = [],
     isLoading,
@@ -16,6 +20,7 @@ export const useMaakoodit = () => {
     queryFn: getMaakoodit,
     staleTime: Infinity,
     throwOnError: false,
+    enabled: options?.enabled,
   });
 
   return { data, isLoading, error };

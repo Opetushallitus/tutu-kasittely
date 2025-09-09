@@ -9,6 +9,8 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useMaakoodit } from '@/src/hooks/useMaakoodit';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import { useQuery } from '@tanstack/react-query';
+import { getKoodisto } from '@/src/hooks/useKoodistoOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -32,23 +34,55 @@ export default function MaajakoPage() {
   const { t } = useTranslations();
   const theme = useTheme();
   const { addToast } = useToaster();
-  const { data: maakoodit, isLoading, error } = useMaakoodit();
+
+  const {
+    data: maakoodisynced,
+    isLoading: maakooditKoodistoSyncIsLoading,
+    error: maakooditKoodistoSyncError,
+  } = useQuery({
+    queryKey: ['getKoodisto', 'maatjavaltiot2'],
+    queryFn: () => getKoodisto('maatjavaltiot2'),
+    staleTime: 0,
+  });
+
+  const {
+    data: maakoodit,
+    isLoading: maakooditIsLoading,
+    error: maakooditError,
+  } = useMaakoodit({
+    enabled: !!maakoodisynced,
+  });
   const {
     data: esittelijat,
-    isLoading: esittelijatLoading,
+    isLoading: esittelijatIsLoading,
     error: esittelijatError,
-  } = useEsittelijat();
+  } = useEsittelijat({
+    enabled: !!maakoodisynced,
+  });
   const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.maakoodiLataus', t);
-  }, [error, addToast, t]);
+    handleFetchError(
+      addToast,
+      maakooditKoodistoSyncError,
+      'virhe.maatjavaltiotLataus',
+      t,
+    );
+  }, [maakooditKoodistoSyncError, addToast, t]);
+
+  useEffect(() => {
+    handleFetchError(addToast, maakooditError, 'virhe.maakoodiLataus', t);
+  }, [maakooditError, addToast, t]);
 
   useEffect(() => {
     handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
   }, [esittelijatError, addToast, t]);
 
-  if (isLoading || esittelijatLoading) {
+  if (
+    maakooditKoodistoSyncIsLoading ||
+    maakooditIsLoading ||
+    esittelijatIsLoading
+  ) {
     return <FullSpinner />;
   }
 
@@ -60,7 +94,7 @@ export default function MaajakoPage() {
   return (
     <BoxWrapper sx={{ borderBottom: 'none' }}>
       <Stack
-        gap={theme.spacing(3)}
+        gap={theme.spacing(2)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
         <OphTypography variant={'h3'}>
