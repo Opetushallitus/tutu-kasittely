@@ -4,18 +4,20 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useMaakoodit } from '@/src/hooks/useMaakoodit';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import useToaster from '@/src/hooks/useToaster';
+import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { Divider, Stack, Theme, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { AlertBox } from '@/src/components/AlertBox';
-
-import { Esittelija } from '@/src/lib/types/esittelija';
+import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
+import { EsittelijaSection } from '@/src/components/EsittelijaSection';
 
 interface Maakoodi {
   koodi: string;
@@ -23,92 +25,13 @@ interface Maakoodi {
   esittelijaId: string | null;
 }
 
-const filterMaakooditByEsittelija = (
-  maakoodit: Maakoodi[] | undefined,
-  esittelijaId: string | null | undefined,
-) =>
-  maakoodit
-    ?.filter((maakoodi) => maakoodi.esittelijaId === esittelijaId)
-    .map((maakoodi) => maakoodi.nimi) || [];
-
 const sortMaakoodit = (maakoodit: Maakoodi[] | undefined) =>
   maakoodit?.slice().sort((a, b) => a.nimi.localeCompare(b.nimi)) || [];
-
-const SelectedMaakoodiInfo = ({
-  maakoodit,
-  selectedMaakoodi,
-  esittelijat,
-}: {
-  maakoodit: Maakoodi[] | undefined;
-  selectedMaakoodi: string;
-  esittelijat: Esittelija[] | undefined;
-}) => {
-  const filteredMaakoodit =
-    maakoodit?.filter(
-      (maakoodi) =>
-        maakoodi.esittelijaId != null && maakoodi.koodi === selectedMaakoodi,
-    ) || [];
-
-  if (filteredMaakoodit.length > 0) {
-    const esittelijaId = filteredMaakoodit[0].esittelijaId;
-    const esittelija = esittelijat?.find((e) => e.id === esittelijaId);
-
-    if (esittelija) {
-      return (
-        <div>
-          <OphTypography variant={'h4'}>Esittelijä</OphTypography>
-          <OphTypography variant={'body1'}>
-            {esittelija.etunimi} {esittelija.sukunimi}
-          </OphTypography>
-        </div>
-      );
-    }
-  }
-  return null;
-};
-
-const EsittelijaSection = ({
-  esittelija,
-  maakoodit,
-  t,
-  theme,
-}: {
-  esittelija: Esittelija;
-  maakoodit: Maakoodi[] | undefined;
-  t: (key: string) => string;
-  theme: Theme;
-}) => {
-  const maakooditForEsittelija = filterMaakooditByEsittelija(
-    maakoodit,
-    esittelija.id,
-  );
-
-  return (
-    <div>
-      <OphTypography variant={'h4'} sx={{ marginBottom: theme.spacing(2) }}>
-        {esittelija.etunimi} {esittelija.sukunimi}
-      </OphTypography>
-
-      <OphTypography variant={'label'}>
-        {t('maajako.tutkinnonsuoritusmaat')}
-      </OphTypography>
-
-      <OphTypography variant={'body1'} sx={{ marginBottom: theme.spacing(1) }}>
-        {maakooditForEsittelija.length > 0
-          ? maakooditForEsittelija.join(', ')
-          : '-'}
-      </OphTypography>
-
-      <Divider
-        sx={{ marginTop: theme.spacing(3), marginBottom: theme.spacing(3) }}
-      />
-    </div>
-  );
-};
 
 export default function MaajakoPage() {
   const { t } = useTranslations();
   const theme = useTheme();
+  const { addToast } = useToaster();
   const { data: maakoodit, isLoading, error } = useMaakoodit();
   const {
     data: esittelijat,
@@ -117,18 +40,16 @@ export default function MaajakoPage() {
   } = useEsittelijat();
   const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
 
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.maakoodiLataus', t);
+  }, [error, addToast, t]);
+
+  useEffect(() => {
+    handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
+  }, [esittelijatError, addToast, t]);
+
   if (isLoading || esittelijatLoading) {
     return <FullSpinner />;
-  }
-
-  if (error || esittelijatError) {
-    return (
-      <BoxWrapper sx={{ borderBottom: 'none' }}>
-        <OphTypography variant={'body2'} color="error">
-          {t('virhe.maakoodi')}
-        </OphTypography>
-      </BoxWrapper>
-    );
   }
 
   const sortedMaakooditOptions = sortMaakoodit(maakoodit).map((maakoodi) => ({
@@ -142,7 +63,9 @@ export default function MaajakoPage() {
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
-        <OphTypography variant={'h3'}>{t('maajako.otsikko2')}</OphTypography>
+        <OphTypography variant={'h3'}>
+          {t('maajako.kenellevalittu')}
+        </OphTypography>
         <OphSelectFormField
           placeholder={t('yleiset.valitse')}
           label={t('maajako.suoritusmaa')}
@@ -162,7 +85,7 @@ export default function MaajakoPage() {
         />
         <Divider />
 
-        <OphTypography variant={'h3'}>{t('maajako.otsikko3')}</OphTypography>
+        <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
         <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
 
         {(() => {
