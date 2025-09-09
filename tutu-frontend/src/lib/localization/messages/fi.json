@@ -350,7 +350,9 @@
     "suoritusmaa": "Tutkinnon suoritusmaa",
     "kaikkiValittu": "Kaikki suoritusmaat on valittu jollekin esittelijälle",
     "tutkinnonsuoritusmaat": "Tutkinnon suoritusmaat",
-    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään"
+    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään",
+    "muokkaamaajakoa": "Muokkaa maajakoa",
+    "poistumuokkaustilasta": "Poistu muokkaustilasta"
   },
   "puuttuu": "Puuttuu",
   "virhe": {

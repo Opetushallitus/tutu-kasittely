@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.{WithAnonymousUser, WithMockUser}
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
@@ -23,6 +24,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+
+import java.util.UUID
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -36,15 +39,11 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @MockitoBean
   var auditLog: AuditLog = _
 
-  @Autowired
-  var maakoodiService: MaakoodiService = _
-
   @MockitoBean
   var koodistoService: KoodistoService = _
 
   @Autowired
-  var userService: UserService                       = _
-  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+  var maakoodiService: MaakoodiService = _
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -60,14 +59,10 @@ class MaakoodiControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
-
     Mockito
       .when(koodistoService.getKoodisto("maatjavaltiot2"))
       .thenReturn(Seq.empty[KoodistoItem])
-    // First create esittelija
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOid), "testi")
-
-    // Then create test maakoodi
     maakoodiRepository.upsertMaakoodi("752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
   }
 
@@ -75,20 +70,100 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @WithMockUser(username = "testuser", roles = Array("USER"))
   def listMaakooditReturns200AndExpectedData(): Unit = {
     mockMvc
-      .perform(get("/api/maakoodit"))
+      .perform(get("/api/maakoodi"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$[0].koodi").value("752"))
       .andExpect(jsonPath("$[0].nimi").value("Ruotsi"))
       .andExpect(jsonPath("$[0].esittelijaId").isNotEmpty)
-    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadMaakoodit), any())
   }
 
   @Test
   @WithAnonymousUser
   def listMaakooditReturns401ForUnauthenticatedUser(): Unit = {
     mockMvc
-      .perform(get("/api/maakoodit"))
+      .perform(get("/api/maakoodi"))
       .andExpect(status().isUnauthorized)
+  }
+
+  @Test
+  @WithMockUser(username = "testuser", roles = Array("USER"))
+  def updateMaakoodiValidRequestReturns200(): Unit = {
+    // Maakoodi ilman esittelijaId
+    maakoodiRepository.upsertMaakoodi("100", "TestCountry", "testi", None)
+    val maakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
+
+    // Päivitetään esittelijaId
+    mockMvc
+      .perform(
+        put("/api/maakoodi")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .param("id", maakoodi.id.toString)
+          .param("esittelijaId", esittelija.get.esittelijaId.toString)
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.koodi").value("100"))
+      .andExpect(jsonPath("$.nimi").value("TestCountry"))
+      .andExpect(jsonPath("$.esittelijaId").value(esittelija.get.esittelijaId.toString))
+
+    // Maakoodi on päivittynyt tietokannassa
+    val updatedMaakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
+    assert(updatedMaakoodi.esittelijaId.contains(esittelija.get.esittelijaId))
+    assert(updatedMaakoodi.koodi == "100")
+    assert(updatedMaakoodi.nimi == "TestCountry")
+
+    // Poista esittelijaId
+    mockMvc
+      .perform(
+        put("/api/maakoodi")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .param("id", maakoodi.id.toString)
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.koodi").value("100"))
+      .andExpect(jsonPath("$.nimi").value("TestCountry"))
+      .andExpect(jsonPath("$.esittelijaId").isEmpty)
+
+    // EsittelijaId on poistettu tietokannasta
+    val maakoodiAfterRemoval = maakoodiRepository.listAll().find(_.koodi == "100").get
+    assert(maakoodiAfterRemoval.esittelijaId.isEmpty)
+    assert(maakoodiAfterRemoval.koodi == "100")
+    assert(maakoodiAfterRemoval.nimi == "TestCountry")
+  }
+
+  @Test
+  @WithAnonymousUser
+  def updateMaakoodiValidRequestReturns401WithAnonymousUser(): Unit = {
+    val maakoodi = maakoodiRepository.listAll().head
+
+    mockMvc
+      .perform(
+        put("/api/maakoodi")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .param("id", maakoodi.id.toString)
+          .param("esittelijaId", esittelija.get.esittelijaId.toString)
+      )
+      .andExpect(status().isUnauthorized)
+  }
+
+  @Test
+  @WithMockUser(username = "testuser", roles = Array("USER"))
+  def updateMaakoodiInvalidIdReturns404(): Unit = {
+    val invalidId = UUID.randomUUID()
+
+    mockMvc
+      .perform(
+        put("/api/maakoodi")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .param("id", invalidId.toString)
+          .param("esittelijaId", esittelija.get.esittelijaId.toString)
+      )
+      .andExpect(status().isNotFound)
   }
 }

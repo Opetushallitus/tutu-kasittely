@@ -135,4 +135,29 @@ class MaakoodiRepository {
         throw new RuntimeException(s"Maakoodi sync failed: ${e.getMessage}", e)
     }
   }
+
+  def updateMaakoodi(
+    id: UUID,
+    esittelijaId: Option[UUID],
+    muokkaaja: String
+  ): Option[DbMaakoodi] = {
+    try {
+      val esittelijaIdSql = esittelijaId.map(uuid => s"'$uuid'::uuid").getOrElse("NULL")
+      val query           = sql"""
+        UPDATE maakoodi
+        SET
+          esittelija_id = #$esittelijaIdSql,
+          muokkaaja = $muokkaaja,
+          muokattu = now()
+        WHERE id = ${id.toString}::uuid
+        RETURNING id, esittelija_id, koodi, nimi
+      """.as[DbMaakoodi]
+      val maakoodi: DbMaakoodi = db.run(query.head, "updateMaakoodi")
+      Some(maakoodi)
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Maakoodin paivitys epäonnistui id: $id", e)
+        None
+    }
+  }
 }
