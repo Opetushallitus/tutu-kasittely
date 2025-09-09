@@ -114,7 +114,7 @@ export const otmBooleanFields: {
 ];
 
 export const sovellettuTilanneBooleanFields: {
-  type: 'sovellettuTilanne' | 'boolean'; //todo: tähän tulee lisää
+  type: 'sovellettuTilanne' | 'boolean' | 'sovellettuOpetettavanAineenOpinnot';
   key: keyof PerusteluUoRoSisalto;
   labelKey: string;
 }[] = [
@@ -125,7 +125,7 @@ export const sovellettuTilanneBooleanFields: {
       'hakemus.perustelu.uoro.sovellettuTilanne.opettajanPedagogisetOpinnot',
   },
   {
-    type: 'boolean',
+    type: 'sovellettuOpetettavanAineenOpinnot',
     key: 'sovellettuOpetettavanAineenOpinnot',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.opetettavanAineenOpinnot',

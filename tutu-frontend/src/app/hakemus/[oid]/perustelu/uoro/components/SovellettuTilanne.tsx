@@ -1,7 +1,11 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { OphCheckbox, OphRadioGroup } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphInputFormField,
+  OphRadioGroup,
+} from '@opetushallitus/oph-design-system';
 import {
   PerusteluUoRo,
   PerusteluUoRoSisalto,
@@ -70,6 +74,8 @@ export const SovellettuTilanne = ({
           label={t(labelKey)}
           data-testid={`checkbox-${key as string}`}
           checked={checked}
+          //todo: väliaikaisesti disabloitu, tehdään seuraavassa tiketissä.
+          disabled={key === 'sovellettuOpetettavanAineenOpinnot'}
           onChange={(e) =>
             type === 'boolean'
               ? updatePerusteluUoRoAction(key, !checked)
@@ -87,7 +93,7 @@ export const SovellettuTilanne = ({
         {checked && typeof fieldValue !== 'boolean' && (
           <OphRadioGroup
             labelId="imiPyynto-radio-group-label"
-            data-testid="imiPyynto-radio-group"
+            data-testid={`radio-group-${key as string}`}
             sx={{ paddingLeft: 4 }}
             options={sovellettuTilanneRadioOptions}
             row
@@ -97,6 +103,24 @@ export const SovellettuTilanne = ({
                 checked: true,
                 value: e.target.value,
               })
+            }
+          />
+        )}
+        {perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanne && (
+          <OphInputFormField
+            data-testid="otmMuuEroSelite"
+            sx={{ paddingLeft: 4 }}
+            multiline={true}
+            minRows={5}
+            label={t('yleiset.tasmenna')}
+            value={
+              perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanneSelite || ''
+            }
+            onChange={(event) =>
+              updatePerusteluUoRoAction(
+                'sovellettuMuuTilanneSelite',
+                event.target.value,
+              )
             }
           />
         )}
