@@ -62,14 +62,10 @@ class PerusteluRepository {
   implicit val getLausuntotietoResult: GetResult[Lausuntotieto] = {
     GetResult(r =>
       Lausuntotieto(
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
         UUID.fromString(r.nextString()),
         r.nextStringOption(),
         r.nextStringOption(),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString()),
         Seq.empty
       )
     )
@@ -78,15 +74,11 @@ class PerusteluRepository {
   implicit val getLausuntopyyntoResult: GetResult[Lausuntopyynto] = {
     GetResult(r =>
       Lausuntopyynto(
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
         UUID.fromString(r.nextString()),
         r.nextStringOption(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString())
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
   }
@@ -346,11 +338,7 @@ class PerusteluRepository {
               lt.id,
               lt.perustelu_id,
               lt.pyyntojen_lisatiedot,
-              lt.sisalto,
-              lt.luotu,
-              lt.luoja,
-              lt.muokattu,
-              lt.muokkaaja
+              lt.sisalto
             FROM
               lausuntotieto lt
             WHERE
@@ -384,11 +372,7 @@ class PerusteluRepository {
               lp.lausuntotieto_id,
               lp.lausunnon_antaja,
               lp.lahetetty,
-              lp.saapunut,
-              lp.luotu,
-              lp.luoja,
-              lp.muokattu,
-              lp.muokkaaja
+              lp.saapunut
             FROM
               lausuntopyynto lp
             WHERE
@@ -422,7 +406,7 @@ class PerusteluRepository {
   ): Unit = {
     val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(lausuntotietoId, lp, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja)) ++
-      modifyData.poistetut.map(poistaLausuntopyynto)
+      modifyData.poistetut.map(id => poistaLausuntopyynto(Some(id)))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_lausuntopyyntojen_modifiointi") match {
       case Success(_) => ()
@@ -458,12 +442,12 @@ class PerusteluRepository {
         lahetetty = ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
         saapunut = ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $muokkaaja
-      WHERE id = ${lausuntopyynto.id.toString}::uuid
+      WHERE id = ${lausuntopyynto.id.get.toString}::uuid
     """
 
-  def poistaLausuntopyynto(id: UUID): DBIO[Int] =
+  def poistaLausuntopyynto(id: Option[UUID]): DBIO[Int] =
     sqlu"""
       DELETE FROM lausuntopyynto
-      WHERE id = ${id.toString}::uuid
+      WHERE id = ${id.get.toString}::uuid
     """
 }

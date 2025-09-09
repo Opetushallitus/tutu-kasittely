@@ -3,8 +3,14 @@ package fi.oph.tutu.backend
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.domain.{Asiakirja, AsiakirjamalliTutkinnosta, AtaruHakemus, HakemusOid, Hakija, UserOid}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository, MaakoodiRepository}
-import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService}
+import fi.oph.tutu.backend.repository.{
+  AsiakirjaRepository,
+  EsittelijaRepository,
+  HakemusRepository,
+  MaakoodiRepository,
+  PerusteluRepository
+}
+import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{AfterAll, BeforeAll, TestInstance}
@@ -77,6 +83,9 @@ class IntegrationTestBase {
   @Autowired
   var asiakirjaRepository: AsiakirjaRepository = _
 
+  @Autowired
+  var perusteluRepository: PerusteluRepository = _
+
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   val POSTGRES_DATABASENAME = "tutu"
@@ -85,6 +94,8 @@ class IntegrationTestBase {
 
   val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
 
+  @MockitoBean
+  var kayttooikeusService: KayttooikeusService = _
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
   @MockitoBean

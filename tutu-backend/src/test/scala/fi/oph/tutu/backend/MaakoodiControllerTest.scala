@@ -40,9 +40,6 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   var maakoodiService: MaakoodiService = _
 
   @MockitoBean
-  var kayttooikeusService: KayttooikeusService = _
-
-  @MockitoBean
   var koodistoService: KoodistoService = _
 
   @Autowired

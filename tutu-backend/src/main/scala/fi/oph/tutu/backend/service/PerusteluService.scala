@@ -30,7 +30,7 @@ class PerusteluService(
             withUoRo.flatMap { withUoRo =>
               perusteluRepository.haeLausuntotieto(perustelu.id) match {
                 case Some(lausuntotieto) =>
-                  val lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(lausuntotieto.id)
+                  val lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(lausuntotieto.id.orNull)
                   Some(
                     withUoRo.copy(
                       lausuntotieto = Some(lausuntotieto.copy(lausuntopyynnot = lausuntopyynnot))
@@ -67,7 +67,7 @@ class PerusteluService(
         val newlySavedLausuntotieto = partialPerustelu.lausuntotieto.flatMap(lausuntotieto => {
           val currentLausuntotieto   = perusteluRepository.haeLausuntotieto(latestSavedPerustelu.id)
           val currentLausuntopyynnot =
-            currentLausuntotieto.map(lt => perusteluRepository.haeLausuntopyynnot(lt.id)).getOrElse(Seq())
+            currentLausuntotieto.map(lt => perusteluRepository.haeLausuntopyynnot(lt.id.orNull)).getOrElse(Seq())
           val newOrUpdatedLausuntotieto = currentLausuntotieto match {
             case Some(existing) => existing.mergeWith(lausuntotieto)
             case _              => Lausuntotieto().mergeWith(lausuntotieto).copy(perusteluId = latestSavedPerustelu.id)
@@ -81,11 +81,13 @@ class PerusteluService(
             )
             .getOrElse(LausuntopyyntoModifyData())
           perusteluRepository.suoritaLausuntopyyntojenModifiointi(
-            dbLausuntotieto.id,
+            dbLausuntotieto.id.orNull,
             lausuntopyyntoModifyData,
             luojaTaiMuokkaaja
           )
-          Some(dbLausuntotieto.copy(lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(dbLausuntotieto.id)))
+          Some(
+            dbLausuntotieto.copy(lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(dbLausuntotieto.id.orNull))
+          )
         })
         val newlySavedPerustelyUoRo = partialPerustelu.perusteluUoRo.flatMap(uoRo => {
           val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id) match {

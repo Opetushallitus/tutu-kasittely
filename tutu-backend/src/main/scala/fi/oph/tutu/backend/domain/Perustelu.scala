@@ -127,14 +127,10 @@ case class PerusteluUoRoSisalto(
 )
 
 case class Lausuntotieto(
-  id: UUID = null,
+  id: Option[UUID] = None,
   perusteluId: UUID = null,
   pyyntojenLisatiedot: Option[String] = None,
   sisalto: Option[String] = None,
-  luotu: LocalDateTime = null,
-  luoja: String = null,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
 ) {
   def mergeWith(partial: PartialLausuntotieto): Lausuntotieto = {
@@ -152,15 +148,11 @@ case class PartialLausuntotieto(
 )
 
 case class Lausuntopyynto(
-  id: UUID = null,
+  id: Option[UUID] = None,
   lausuntotietoId: UUID = null,
   lausunnonAntaja: Option[String] = None,
   lahetetty: Option[LocalDateTime] = None,
-  saapunut: Option[LocalDateTime] = None,
-  luotu: LocalDateTime = null,
-  luoja: String = null,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None
+  saapunut: Option[LocalDateTime] = None
 )
 
 case class LausuntopyyntoModifyData(

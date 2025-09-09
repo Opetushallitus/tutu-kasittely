@@ -18,3 +18,5 @@ case class Tutkinto(
   todistusOtsikko: Option[String] = None,
   muuTutkintoMuistioId: Option[UUID] = None
 )
+
+case class TutkintoModifyData(uudet: Seq[Tutkinto], muutetut: Seq[Tutkinto], poistetut: Seq[UUID])
