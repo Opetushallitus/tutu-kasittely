@@ -179,24 +179,6 @@ export default function UoroPage() {
           updatePerusteluUoRoAction={updatePerusteluUoRo}
           t={t}
         />
-        {perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanne && (
-          <OphInputFormField
-            data-testid="otmMuuEroSelite"
-            sx={{ paddingLeft: 4 }}
-            multiline={true}
-            minRows={5}
-            label={t('yleiset.tasmenna')}
-            value={
-              perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanneSelite || ''
-            }
-            onChange={(event) =>
-              updatePerusteluUoRo(
-                'sovellettuMuuTilanneSelite',
-                event.target.value,
-              )
-            }
-          />
-        )}
       </Stack>
     </PerusteluLayout>
   );
