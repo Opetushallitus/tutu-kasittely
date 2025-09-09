@@ -344,8 +344,13 @@
   },
   "maajako": {
     "otsikko": "Esittelijöiden maajako",
-    "otsikko2": "Maajako",
-    "kuvaus": "Hallinnoi maajakoa, jonka perusteella hakemukset ohjautuvat oikealle esittelijälle. Kukin maa voi olla valittuna vain yhdelle esittelijälle. Hakemukset ohjautuvat sen perusteella, minkä maan hakija on ilmoittanut hakemuslomakkeella tutkinnon suoritusmaaksi kohdassa Tutkinto 1."
+    "kenellevalittu": "Tarkista kenelle maa on valittu",
+    "maajako": "Maajako",
+    "kuvaus": "Hallinnoi maajakoa, jonka perusteella hakemukset ohjautuvat oikealle esittelijälle. Kukin maa voi olla valittuna vain yhdelle esittelijälle. Hakemukset ohjautuvat sen perusteella, minkä maan hakija on ilmoittanut hakemuslomakkeella tutkinnon suoritusmaaksi kohdassa Tutkinto 1.",
+    "suoritusmaa": "Tutkinnon suoritusmaa",
+    "kaikkiValittu": "Kaikki suoritusmaat on valittu jollekin esittelijälle",
+    "tutkinnonsuoritusmaat": "Tutkinnon suoritusmaat",
+    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään"
   },
   "puuttuu": "Puuttuu",
   "virhe": {

@@ -29,6 +29,7 @@ export const useEsittelijat = () => {
           (esittelija) => ({
             value: esittelija.esittelijaOid,
             label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+            ...(esittelija.id ? { id: esittelija.id } : {}),
           }),
         );
 

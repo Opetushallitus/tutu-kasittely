@@ -119,6 +119,22 @@ class EsittelijaRepository {
     }
   }
 
+  def haeKaikkiEsittelijat(): Seq[DbEsittelija] = {
+    try {
+      db.run(
+        sql"""
+        SELECT id, esittelija_oid from esittelija
+        WHERE esittelija_oid IS NOT NULL
+        """.as[DbEsittelija],
+        "haeKaikkiEsittelijat"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.warn("Esittelijöiden haku epäonnistui", e)
+        Seq.empty
+    }
+  }
+
   private def syncInsert(oid: String, muokkaajaTaiLuoja: String): DBIO[Int] =
     sqlu"""
       INSERT INTO esittelija (esittelija_oid, luoja)
