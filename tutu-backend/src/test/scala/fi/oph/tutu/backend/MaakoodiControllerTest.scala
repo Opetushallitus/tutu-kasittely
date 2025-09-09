@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -41,6 +42,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
 
+  @MockitoBean
+  var koodistoService: KoodistoService = _
+
   @Autowired
   var userService: UserService                       = _
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -60,6 +64,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
 
+    Mockito
+      .when(koodistoService.getKoodisto("maatjavaltiot2"))
+      .thenReturn(Seq.empty[KoodistoItem])
     // First create esittelija
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOid), "testi")
 

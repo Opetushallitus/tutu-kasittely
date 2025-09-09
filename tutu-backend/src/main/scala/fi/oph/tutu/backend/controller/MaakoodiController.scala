@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.service.MaakoodiService
+import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadLiitteenTiedot, ReadMaakoodit}
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -19,6 +19,7 @@ import scala.util.{Failure, Success, Try}
 @RequestMapping(path = Array("api"))
 class MaakoodiController(
   maakoodiService: MaakoodiService,
+  koodistoService: KoodistoService,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[MaakoodiController])
@@ -44,6 +45,8 @@ class MaakoodiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
+      // Varmistetaan, että maakoodit on synkattu koodistosta ennen hakua
+      koodistoService.getKoodisto("maatjavaltiot2")
       maakoodiService.listMaakoodit()
     } match {
       case Success(maakoodit) =>
