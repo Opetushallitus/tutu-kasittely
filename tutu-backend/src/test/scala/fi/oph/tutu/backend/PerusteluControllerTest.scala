@@ -76,8 +76,8 @@ def makePerustelu(
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
 ): Perustelu = {
   Perustelu(
-    null,
-    UUID.fromString(uuidTemplate1),
+    None,
+    Option(UUID.fromString(uuidTemplate1)),
     virallinenTutkinnonMyontaja,
     virallinenTutkinto,
     lahdeLahtomaanKansallinenLahde,
@@ -86,8 +86,8 @@ def makePerustelu(
     selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
     ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
-    LocalDateTime.now(),
-    "test user",
+    Option(LocalDateTime.now()),
+    Option("test user"),
     Option(LocalDateTime.now()),
     Option("test user")
   )
@@ -104,8 +104,8 @@ def makePerusteluWithUoro(
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
 ): Perustelu = {
   Perustelu(
-    null,
-    UUID.randomUUID(),
+    None,
+    Option(UUID.randomUUID()),
     virallinenTutkinnonMyontaja,
     virallinenTutkinto,
     lahdeLahtomaanKansallinenLahde,
@@ -114,8 +114,8 @@ def makePerusteluWithUoro(
     selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
     ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
-    LocalDateTime.now(),
-    "test user",
+    Option(LocalDateTime.now()),
+    Option("test user"),
     Option(LocalDateTime.now()),
     Option("test user"),
     None,
@@ -276,11 +276,11 @@ class PerusteluControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mvc = intermediate.build()
     hakemusId = Some(hakemusRepository.tallennaHakemus(hakemusOid, 1, None, "testi"))
-    perustelu = perustelu.copy(hakemusId = hakemusId.get)
+    perustelu = perustelu.copy(hakemusId = Some(hakemusId.get))
     hakemusId2 = Some(hakemusRepository.tallennaHakemus(hakemusOid2, 1, None, "testi"))
-    perustelu2 = perustelu2.copy(hakemusId = hakemusId2.get)
+    perustelu2 = perustelu2.copy(hakemusId = Some(hakemusId2.get))
     hakemusId3 = Some(hakemusRepository.tallennaHakemus(hakemusOid3, 1, None, "testi"))
-    perustelu3 = perustelu3.copy(hakemusId = hakemusId3.get)
+    perustelu3 = perustelu3.copy(hakemusId = Some(hakemusId3.get))
   }
 
   @Test
@@ -347,7 +347,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def tallennaMuokattuPerusteluPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
     val perusteluJSON = perustelu2Json(
-      makePerustelu().copy(id = perusteluId, hakemusId = hakemusId.get),
+      makePerustelu().copy(id = perusteluId, hakemusId = Some(hakemusId.get)),
       "luotu",
       "muokattu",
       "muokkaaja"
@@ -431,7 +431,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(6)
   def haePerusteluWithUoroPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId2.get).get.id
-    val uoroId        = perusteluRepository.haePerusteluUoRo(perusteluId).get.id
+    val uoroId        = perusteluRepository.haePerusteluUoRo(perusteluId.get).get.id
     val uoro          = perustelu2.perusteluUoRo.get.copy(id = uoroId, perusteluId = perusteluId)
     val perustelu     = perustelu2.copy(id = perusteluId, perusteluUoRo = Some(uoro))
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
@@ -455,8 +455,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(7)
   def tallennaMuokattuPerusteluWithUoRoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId = perusteluRepository.haePerustelu(hakemusId2.get).get.id
-    val uoroId      = perusteluRepository.haePerusteluUoRo(perusteluId).get.id
-    var perustelu   = makePerusteluWithUoro().copy(hakemusId = hakemusId2.get)
+    val uoroId      = perusteluRepository.haePerusteluUoRo(perusteluId.get).get.id
+    var perustelu   = makePerusteluWithUoro().copy(hakemusId = Some(hakemusId2.get))
     val uoro        = perustelu.perusteluUoRo.get.copy(id = uoroId, perusteluId = perusteluId)
     perustelu = perustelu.copy(id = perusteluId, perusteluUoRo = Some(uoro))
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
@@ -530,11 +530,11 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(9)
   def haePerusteluWithLausuntotietoPalauttaa200(): Unit = {
     val perusteluId         = perusteluRepository.haePerustelu(hakemusId3.get).get.id
-    val lausuntotietoId     = perusteluRepository.haeLausuntotieto(perusteluId).get.id
+    val lausuntotietoId     = perusteluRepository.haeLausuntotieto(perusteluId.get).get.id
     val lausuntopyynnotInDb = perusteluRepository.haeLausuntopyynnot(lausuntotietoId.get)
     val lausuntopyynnot     = perustelu3.lausuntotieto.get.lausuntopyynnot.map(lp =>
       lp.copy(
-        lausuntotietoId = lausuntotietoId.get,
+        lausuntotietoId = Some(lausuntotietoId.get),
         id = lausuntopyynnotInDb.find(_.lausunnonAntaja == lp.lausunnonAntaja).get.id
       )
     )
@@ -569,12 +569,12 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(10)
   def tallennaMuokattuPerusteluWithLausuntotietoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId                 = perusteluRepository.haePerustelu(hakemusId3.get).get.id
-    val lausuntotietoId             = perusteluRepository.haeLausuntotieto(perusteluId).get.id
+    val lausuntotietoId             = perusteluRepository.haeLausuntotieto(perusteluId.get).get.id
     val lausuntopyynnotInDbIterator = perusteluRepository.haeLausuntopyynnot(lausuntotietoId.get).iterator
-    val perustelu       = makePerusteluWithLausuntotieto().copy(id = perusteluId, hakemusId = hakemusId3.get)
+    val perustelu       = makePerusteluWithLausuntotieto().copy(id = perusteluId, hakemusId = Some(hakemusId3.get))
     var lausuntopyynnot = perustelu.lausuntotieto.get.lausuntopyynnot.map(lp =>
       lp.copy(
-        lausuntotietoId = lausuntotietoId.get,
+        lausuntotietoId = Some(lausuntotietoId.get),
         id = lausuntopyynnotInDbIterator.next().id
       )
     )

@@ -29,8 +29,8 @@ class PerusteluRepository {
   implicit val getPerusteluResult: GetResult[Perustelu] = {
     GetResult(r =>
       Perustelu(
-        UUID.fromString(r.nextString()),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
+        Option(UUID.fromString(r.nextString())),
         r.nextBooleanOption(),
         r.nextBooleanOption(),
         r.nextBoolean(),
@@ -39,8 +39,8 @@ class PerusteluRepository {
         r.nextString(),
         Option(r.nextString()),
         r.nextString(),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
+        Option(r.nextTimestamp().toLocalDateTime),
+        Option(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextString())
       )
@@ -49,8 +49,8 @@ class PerusteluRepository {
 
   implicit val getPerusteluUoRoResult: GetResult[PerusteluUoRo] = GetResult { r =>
     PerusteluUoRo(
-      id = Option(r.nextString()).map(UUID.fromString),
-      perusteluId = UUID.fromString(r.nextString()),
+      id = Option(UUID.fromString(r.nextString())),
+      perusteluId = Option(UUID.fromString(r.nextString())),
       perustelunSisalto = org.json4s.jackson.Serialization.read[PerusteluUoRoSisalto](r.nextString()),
       luotu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
       luoja = Option(r.nextString()),
@@ -63,7 +63,7 @@ class PerusteluRepository {
     GetResult(r =>
       Lausuntotieto(
         Option(UUID.fromString(r.nextString())),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
         r.nextStringOption(),
         r.nextStringOption(),
         Seq.empty
@@ -75,7 +75,7 @@ class PerusteluRepository {
     GetResult(r =>
       Lausuntopyynto(
         Option(UUID.fromString(r.nextString())),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
         r.nextStringOption(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime)
@@ -406,7 +406,7 @@ class PerusteluRepository {
   ): Unit = {
     val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(lausuntotietoId, lp, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja)) ++
-      modifyData.poistetut.map(id => poistaLausuntopyynto(Some(id)))
+      modifyData.poistetut.map(poistaLausuntopyynto)
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_lausuntopyyntojen_modifiointi") match {
       case Success(_) => ()
@@ -445,9 +445,9 @@ class PerusteluRepository {
       WHERE id = ${lausuntopyynto.id.get.toString}::uuid
     """
 
-  def poistaLausuntopyynto(id: Option[UUID]): DBIO[Int] =
+  def poistaLausuntopyynto(id: UUID): DBIO[Int] =
     sqlu"""
       DELETE FROM lausuntopyynto
-      WHERE id = ${id.get.toString}::uuid
+      WHERE id = ${id.toString}::uuid
     """
 }

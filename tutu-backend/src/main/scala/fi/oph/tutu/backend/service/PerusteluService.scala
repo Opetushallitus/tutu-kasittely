@@ -22,13 +22,13 @@ class PerusteluService(
       .flatMap { dbHakemus =>
         perusteluRepository.haePerustelu(dbHakemus.id).flatMap { perustelu =>
           {
-            val withUoRo = perusteluRepository.haePerusteluUoRo(perustelu.id) match {
+            val withUoRo = perusteluRepository.haePerusteluUoRo(perustelu.id.get) match {
               case Some(perusteluUoRo) =>
                 Some(perustelu.copy(perusteluUoRo = Some(perusteluUoRo)))
               case _ => Some(perustelu)
             }
             withUoRo.flatMap { withUoRo =>
-              perusteluRepository.haeLausuntotieto(perustelu.id) match {
+              perusteluRepository.haeLausuntotieto(perustelu.id.get) match {
                 case Some(lausuntotieto) =>
                   val lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(lausuntotieto.id.orNull)
                   Some(
@@ -60,12 +60,12 @@ class PerusteluService(
           case _              =>
             perusteluRepository.tallennaPerustelu(
               dbHakemus.id,
-              Perustelu().mergeWith(partialPerustelu).copy(hakemusId = dbHakemus.id),
+              Perustelu().mergeWith(partialPerustelu).copy(hakemusId = Some(dbHakemus.id)),
               luojaTaiMuokkaaja
             )
         }
         val newlySavedLausuntotieto = partialPerustelu.lausuntotieto.flatMap(lausuntotieto => {
-          val currentLausuntotieto   = perusteluRepository.haeLausuntotieto(latestSavedPerustelu.id)
+          val currentLausuntotieto   = perusteluRepository.haeLausuntotieto(latestSavedPerustelu.id.get)
           val currentLausuntopyynnot =
             currentLausuntotieto.map(lt => perusteluRepository.haeLausuntopyynnot(lt.id.orNull)).getOrElse(Seq())
           val newOrUpdatedLausuntotieto = currentLausuntotieto match {
@@ -74,7 +74,7 @@ class PerusteluService(
           }
           val dbLausuntotieto =
             perusteluRepository
-              .tallennaLausuntotieto(latestSavedPerustelu.id, newOrUpdatedLausuntotieto, luojaTaiMuokkaaja)
+              .tallennaLausuntotieto(latestSavedPerustelu.id.get, newOrUpdatedLausuntotieto, luojaTaiMuokkaaja)
           val lausuntopyyntoModifyData = lausuntotieto.lausuntopyynnot
             .map(pyynnot =>
               HakemusModifyOperationResolver.resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, pyynnot)
@@ -90,14 +90,16 @@ class PerusteluService(
           )
         })
         val newlySavedPerustelyUoRo = partialPerustelu.perusteluUoRo.flatMap(uoRo => {
-          val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id) match {
+          val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id.get) match {
             case Some(existing) => existing.mergeWith(uoRo)
             case _              =>
               PerusteluUoRo()
                 .mergeWith(uoRo)
                 .copy(perusteluId = latestSavedPerustelu.id)
           }
-          Some(perusteluRepository.tallennaPerusteluUoRo(latestSavedPerustelu.id, newOrUpdatedUoRo, luojaTaiMuokkaaja))
+          Some(
+            perusteluRepository.tallennaPerusteluUoRo(latestSavedPerustelu.id.get, newOrUpdatedUoRo, luojaTaiMuokkaaja)
+          )
         })
         Some(
           latestSavedPerustelu.copy(
