@@ -1,8 +1,10 @@
 package fi.oph.tutu.backend
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.security.SecurityConstants
@@ -27,8 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.{Random, UUID}
 
 val uuidTemplate1 = "11111111-2222-3333-4444-555555555555"
@@ -228,8 +230,13 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
   val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
-  mapper.registerModule(new JavaTimeModule())
-  mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+  val javaTimeModule               = new JavaTimeModule()
+  javaTimeModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
+  javaTimeModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
+  mapper.registerModule(javaTimeModule)
+  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
   var hakemusId: Option[UUID] = None
@@ -490,6 +497,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perusteluJSON =
       perustelu2Json(perustelu3, "id", "perusteluId", "lausuntotietoId", "luotu", "muokattu", "muokkaaja")
 
+    println("!!!!!!!!!!!!!!!!!!!!!!!!! " + perusteluJSON)
     when(
       userService.getEnrichedUserDetails(any)
     ).thenReturn(
