@@ -15,7 +15,17 @@ case class LomakeContentItem(
   fieldType: String,
   label: Kielistetty,
   children: Seq[LomakeContentItem] = Seq(),
-  options: Seq[Valinta] = Seq()
+  options: Seq[Valinta] = Seq(),
+  params: Option[ItemParams] = None
+)
+
+case class ItemParams(
+  `info-text`: Option[InfoText] = None
+)
+
+case class InfoText(
+  label: Option[Kielistetty] = None,
+  value: Option[Kielistetty] = None
 )
 
 case class Valinta(
@@ -29,7 +39,8 @@ case class SisaltoItem(
   fieldType: String,
   value: Seq[SisaltoValue],
   label: Kielistetty,
-  children: Seq[SisaltoItem] = Seq()
+  children: Seq[SisaltoItem] = Seq(),
+  infoText: Option[InfoText] = None
 )
 
 case class SisaltoValue(
