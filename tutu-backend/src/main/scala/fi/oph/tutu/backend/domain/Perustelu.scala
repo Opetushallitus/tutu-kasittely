@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 case class Perustelu(
-  id: UUID = null,
-  hakemusId: UUID = null,
+  id: Option[UUID] = None,
+  hakemusId: Option[UUID] = None,
   virallinenTutkinnonMyontaja: Option[Boolean] = None,
   virallinenTutkinto: Option[Boolean] = None,
   lahdeLahtomaanKansallinenLahde: Boolean = false,
@@ -14,8 +14,8 @@ case class Perustelu(
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = "",
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = "",
-  luotu: LocalDateTime = null,
-  luoja: String = null,
+  luotu: Option[LocalDateTime] = None,
+  luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
   lausuntotieto: Option[Lausuntotieto] = None,
@@ -68,7 +68,7 @@ case class PartialPerustelu(
 
 case class PerusteluUoRo(
   id: Option[UUID] = None,
-  perusteluId: UUID = null,
+  perusteluId: Option[UUID] = null,
   perustelunSisalto: PerusteluUoRoSisalto = PerusteluUoRoSisalto(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
@@ -127,14 +127,10 @@ case class PerusteluUoRoSisalto(
 )
 
 case class Lausuntotieto(
-  id: UUID = null,
-  perusteluId: UUID = null,
+  id: Option[UUID] = None,
+  perusteluId: Option[UUID] = None,
   pyyntojenLisatiedot: Option[String] = None,
   sisalto: Option[String] = None,
-  luotu: LocalDateTime = null,
-  luoja: String = null,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
 ) {
   def mergeWith(partial: PartialLausuntotieto): Lausuntotieto = {
@@ -152,15 +148,11 @@ case class PartialLausuntotieto(
 )
 
 case class Lausuntopyynto(
-  id: UUID = null,
-  lausuntotietoId: UUID = null,
+  id: Option[UUID] = None,
+  lausuntotietoId: Option[UUID] = None,
   lausunnonAntaja: Option[String] = None,
   lahetetty: Option[LocalDateTime] = None,
-  saapunut: Option[LocalDateTime] = None,
-  luotu: LocalDateTime = null,
-  luoja: String = null,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None
+  saapunut: Option[LocalDateTime] = None
 )
 
 case class LausuntopyyntoModifyData(

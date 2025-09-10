@@ -9,6 +9,7 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
+import scala.util.{Failure, Success}
 import scala.concurrent.duration.DurationInt
 
 @Component
@@ -308,66 +309,6 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
-    val nimiOrNull                  = tutkinto.nimi.map(_.toString).orNull
-    val oppilaitosOrNull            = tutkinto.oppilaitos.map(_.toString).orNull
-    val aloitusVuosi                = tutkinto.aloitusVuosi
-    val paattymisVuosi              = tutkinto.paattymisVuosi
-    val maakoodi                    = tutkinto.maakoodi
-    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(_.toString).orNull
-    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(_.toString).orNull
-    val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
-    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(_.toString).orNull
-    val todistusOtsikko             = tutkinto.todistusOtsikko.map(_.toString).orNull
-    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
-    try
-      db.run(
-        sql"""
-          INSERT INTO tutkinto (
-            hakemus_id,
-            jarjestys,
-            nimi,
-            oppilaitos,
-            aloitus_vuosi,
-            paattymis_vuosi,
-            maakoodi,
-            muu_tutkinto_tieto,
-            todistuksen_paivamaara,
-            koulutusala_koodi,
-            paaaine_tai_erikoisala,
-            todistusotsikko,
-            muu_tutkinto_muistio_id,
-            luoja
-          )
-          VALUES (
-            ${hakemusId.toString}::uuid,
-            ${tutkinto.jarjestys},
-            ${nimiOrNull},
-            ${oppilaitosOrNull},
-            ${aloitusVuosi},
-            ${paattymisVuosi},
-            ${maakoodi},
-            ${muuTutkintoTietoOrNull},
-            ${todistuksenPaivamaaraOrNull},
-            ${koulutusalaKoodi},
-            ${paaaineTaiErikoisala},
-            ${todistusOtsikko},
-            ${muuTutkintoMuistioId}::uuid,
-            ${luoja}
-          )
-    """.asUpdate,
-        "tallenna_tutkinto"
-      )
-    catch {
-      case e: Exception =>
-        LOG.error(s"Tutkinnon tallennus epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Tutkinnon tallennus epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
   /**
    * Hakee hakemuksen tutkinnot
    *
@@ -410,55 +351,116 @@ class HakemusRepository extends BaseResultHandlers {
           e
         )
     }
+  }
 
+  def suoritaTutkintojenModifiointi(
+    hakemusId: UUID,
+    modifyData: TutkintoModifyData,
+    luojaTaiMuokkaja: UserOid
+  ): Unit = {
+    val actions = modifyData.uudet.map(t => lisaaTutkinto(hakemusId, t, luojaTaiMuokkaja.toString)) ++
+      modifyData.poistetut.map(poistaTutkinto) ++
+      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja))
+    val combined = db.combineIntDBIOs(actions)
+    db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
+      case Success(_) => ()
+      case Failure(e) =>
+        LOG.error(s"Virhe tutkintojen modifioinnissa: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe tutkintojen modifioinnissa: ${e.getMessage}", e)
+    }
+  }
+
+  def lisaaTutkintoSeparately(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
+    try {
+      db.run(lisaaTutkinto(hakemusId, tutkinto, luoja), "lisaa_tutkinto")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon lisääminen epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Tutkinnon lisääminen epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
+    val nimiOrNull                  = tutkinto.nimi.map(identity).orNull
+    val oppilaitosOrNull            = tutkinto.oppilaitos.map(identity).orNull
+    val aloitusVuosi                = tutkinto.aloitusVuosi
+    val paattymisVuosi              = tutkinto.paattymisVuosi
+    val maakoodi                    = tutkinto.maakoodi
+    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(identity).orNull
+    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(identity).orNull
+    val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
+    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(identity).orNull
+    val todistusOtsikko             = tutkinto.todistusOtsikko.map(identity).orNull
+    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
+    sqlu"""
+      INSERT INTO tutkinto (
+        hakemus_id,
+        jarjestys,
+        nimi,
+        oppilaitos,
+        aloitus_vuosi,
+        paattymis_vuosi,
+        maakoodi,
+        muu_tutkinto_tieto,
+        todistuksen_paivamaara,
+        koulutusala_koodi,
+        paaaine_tai_erikoisala,
+        todistusotsikko,
+        muu_tutkinto_muistio_id,
+        luoja
+      )
+      VALUES (
+        ${hakemusId.toString}::uuid,
+        ${tutkinto.jarjestys},
+        ${nimiOrNull},
+        ${oppilaitosOrNull},
+        ${aloitusVuosi},
+        ${paattymisVuosi},
+        ${maakoodi},
+        ${muuTutkintoTietoOrNull},
+        ${todistuksenPaivamaaraOrNull},
+        ${koulutusalaKoodi},
+        ${paaaineTaiErikoisala},
+        ${todistusOtsikko},
+        ${muuTutkintoMuistioId}::uuid,
+        $luoja
+      )
+    """
   }
 
   /**
    * Päivittää hakemuksen tutkinnon
    *
-   * @param id
-   * tutkinnon id
    * @param tutkinto
    * muokattava tutkinto
    * @param virkailijaOid
    * päivittävän virkailijan oid
    */
   def paivitaTutkinto(
-    id: UUID,
     tutkinto: Tutkinto,
-    virkailijaOid: UserOid
-  ): Unit = {
-    try {
-      db.run(
-        sql"""
-              UPDATE tutkinto
-              SET
-                jarjestys = ${tutkinto.jarjestys},
-                nimi = ${tutkinto.nimi.orNull},
-                oppilaitos = ${tutkinto.oppilaitos.orNull},
-                aloitus_vuosi = ${tutkinto.aloitusVuosi},
-                paattymis_vuosi = ${tutkinto.paattymisVuosi},
-                maakoodi = ${tutkinto.maakoodi},
-                muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
-                todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
-                koulutusala_koodi = ${tutkinto.koulutusalaKoodi},
-                paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
-                todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
-                muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
-                muokkaaja = ${virkailijaOid.toString}
-              WHERE id = ${id.toString}::uuid
-            """.asUpdate,
-        "paivita_pyydettava_asiakirja"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Tutkinnon $id päivitys epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Tutkinnon $id päivitys epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
+    muokkaaja: UserOid
+  ): DBIO[Int] =
+    sqlu"""
+      UPDATE tutkinto
+      SET
+        jarjestys = ${tutkinto.jarjestys},
+        nimi = ${tutkinto.nimi.orNull},
+        oppilaitos = ${tutkinto.oppilaitos.orNull},
+        aloitus_vuosi = ${tutkinto.aloitusVuosi},
+        paattymis_vuosi = ${tutkinto.paattymisVuosi},
+        maakoodi = ${tutkinto.maakoodi},
+        muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
+        todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
+        koulutusala_koodi = ${tutkinto.koulutusalaKoodi},
+        paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
+        todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
+        muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
+        muokkaaja = ${muokkaaja.toString}
+      WHERE id = ${tutkinto.id.get.toString}::uuid
+    """
 
   /**
    * Poistaa hakemuksen tutkinnon
@@ -468,22 +470,9 @@ class HakemusRepository extends BaseResultHandlers {
    */
   def poistaTutkinto(
     id: UUID
-  ): Unit = {
-    try {
-      db.run(
-        sqlu"""
-            DELETE FROM tutkinto
-            WHERE id = ${id.toString}::uuid
-          """,
-        "poista_tutkinto"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Tutkinnon $id poisto epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Tutkinnon $id poisto epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
+  ): DBIO[Int] =
+    sqlu"""
+      DELETE FROM tutkinto
+      WHERE id = ${id.toString}::uuid
+    """
 }

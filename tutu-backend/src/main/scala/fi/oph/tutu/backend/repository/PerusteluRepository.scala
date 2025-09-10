@@ -29,8 +29,8 @@ class PerusteluRepository {
   implicit val getPerusteluResult: GetResult[Perustelu] = {
     GetResult(r =>
       Perustelu(
-        UUID.fromString(r.nextString()),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
+        Option(UUID.fromString(r.nextString())),
         r.nextBooleanOption(),
         r.nextBooleanOption(),
         r.nextBoolean(),
@@ -39,8 +39,8 @@ class PerusteluRepository {
         r.nextString(),
         Option(r.nextString()),
         r.nextString(),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
+        Option(r.nextTimestamp().toLocalDateTime),
+        Option(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextString())
       )
@@ -49,8 +49,8 @@ class PerusteluRepository {
 
   implicit val getPerusteluUoRoResult: GetResult[PerusteluUoRo] = GetResult { r =>
     PerusteluUoRo(
-      id = Option(r.nextString()).map(UUID.fromString),
-      perusteluId = UUID.fromString(r.nextString()),
+      id = Option(UUID.fromString(r.nextString())),
+      perusteluId = Option(UUID.fromString(r.nextString())),
       perustelunSisalto = org.json4s.jackson.Serialization.read[PerusteluUoRoSisalto](r.nextString()),
       luotu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
       luoja = Option(r.nextString()),
@@ -62,14 +62,10 @@ class PerusteluRepository {
   implicit val getLausuntotietoResult: GetResult[Lausuntotieto] = {
     GetResult(r =>
       Lausuntotieto(
-        UUID.fromString(r.nextString()),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
+        Option(UUID.fromString(r.nextString())),
         r.nextStringOption(),
         r.nextStringOption(),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString()),
         Seq.empty
       )
     )
@@ -78,15 +74,11 @@ class PerusteluRepository {
   implicit val getLausuntopyyntoResult: GetResult[Lausuntopyynto] = {
     GetResult(r =>
       Lausuntopyynto(
-        UUID.fromString(r.nextString()),
-        UUID.fromString(r.nextString()),
+        Option(UUID.fromString(r.nextString())),
+        Option(UUID.fromString(r.nextString())),
         r.nextStringOption(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextTimestamp().toLocalDateTime,
-        r.nextString(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString())
+        Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
   }
@@ -346,11 +338,7 @@ class PerusteluRepository {
               lt.id,
               lt.perustelu_id,
               lt.pyyntojen_lisatiedot,
-              lt.sisalto,
-              lt.luotu,
-              lt.luoja,
-              lt.muokattu,
-              lt.muokkaaja
+              lt.sisalto
             FROM
               lausuntotieto lt
             WHERE
@@ -384,11 +372,7 @@ class PerusteluRepository {
               lp.lausuntotieto_id,
               lp.lausunnon_antaja,
               lp.lahetetty,
-              lp.saapunut,
-              lp.luotu,
-              lp.luoja,
-              lp.muokattu,
-              lp.muokkaaja
+              lp.saapunut
             FROM
               lausuntopyynto lp
             WHERE
@@ -458,7 +442,7 @@ class PerusteluRepository {
         lahetetty = ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
         saapunut = ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $muokkaaja
-      WHERE id = ${lausuntopyynto.id.toString}::uuid
+      WHERE id = ${lausuntopyynto.id.get.toString}::uuid
     """
 
   def poistaLausuntopyynto(id: UUID): DBIO[Int] =

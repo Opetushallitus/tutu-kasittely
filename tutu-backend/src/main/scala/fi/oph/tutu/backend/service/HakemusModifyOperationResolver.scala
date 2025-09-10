@@ -7,8 +7,12 @@ import fi.oph.tutu.backend.domain.{
   Lausuntopyynto,
   LausuntopyyntoModifyData,
   PyydettavaAsiakirja,
-  PyydettavaAsiakirjaModifyData
+  PyydettavaAsiakirjaModifyData,
+  Tutkinto,
+  TutkintoModifyData
 }
+
+import java.util.UUID
 
 object HakemusModifyOperationResolver {
   private def pyydettavaAsiakirjaModified(
@@ -67,9 +71,42 @@ object HakemusModifyOperationResolver {
     toBeLausuntopyynnot: Seq[Lausuntopyynto]
   ): LausuntopyyntoModifyData = {
     val uudet     = toBeLausuntopyynnot.filterNot(pyynto => currentLausuntopyynnot.exists(_.id == pyynto.id))
-    val poistetut = currentLausuntopyynnot.filterNot(pyynto => toBeLausuntopyynnot.exists(_.id == pyynto.id)).map(_.id)
-    val muutetut  =
+    val poistetut = currentLausuntopyynnot
+      .filterNot(pyynto => toBeLausuntopyynnot.exists(_.id == pyynto.id))
+      .map(_.id.orNull)
+      .filter(_ != null)
+    val muutetut =
       toBeLausuntopyynnot.filter(pyynto => currentLausuntopyynnot.exists(lausuntopyyntoModified(_, pyynto)))
     LausuntopyyntoModifyData(uudet, muutetut, poistetut)
+  }
+
+  private def resolveReIndexedTutkinnot(
+    startIndex: Int,
+    toBeTutkinnot: Seq[Tutkinto],
+    poistetutTutkinnot: Seq[UUID]
+  ): Seq[Tutkinto] = {
+    val uudelleenNumerointiIterator = (startIndex to (startIndex + toBeTutkinnot.size)).iterator
+    val startIndexStr               = startIndex.toString
+    toBeTutkinnot
+      .filter(t => t.jarjestys > startIndexStr && t.jarjestys != "MUU" && !poistetutTutkinnot.contains(t.id.orNull))
+      .map(t => t.copy(jarjestys = uudelleenNumerointiIterator.next().toString))
+  }
+
+  def resolveTutkintoModifyOperations(
+    currentTutkinnot: Seq[Tutkinto],
+    toBeTutkinnot: Seq[Tutkinto]
+  ): TutkintoModifyData = {
+    val uudet     = toBeTutkinnot.filterNot(t => currentTutkinnot.exists(_.id == t.id))
+    val poistetut =
+      currentTutkinnot.filterNot(t => toBeTutkinnot.exists(_.id == t.id)).map(_.id.orNull).filter(_ != null)
+    val muutetut = toBeTutkinnot.filter(t => currentTutkinnot.exists(ct => ct.id == t.id && ct != t))
+
+    val pieninPoistettuJarjestysNumero =
+      currentTutkinnot.find(t => poistetut.contains(t.id.orNull)).map(_.jarjestys).getOrElse("")
+    val muutetutJaUudelleenNumeroitavat =
+      if (pieninPoistettuJarjestysNumero.nonEmpty)
+        muutetut ++ resolveReIndexedTutkinnot(pieninPoistettuJarjestysNumero.toInt, toBeTutkinnot, poistetut)
+      else muutetut
+    TutkintoModifyData(uudet, muutetutJaUudelleenNumeroitavat, poistetut)
   }
 }

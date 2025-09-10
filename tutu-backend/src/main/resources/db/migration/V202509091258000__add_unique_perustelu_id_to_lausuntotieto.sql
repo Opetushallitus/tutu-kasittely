@@ -1,0 +1,1 @@
+ALTER TABLE lausuntotieto ADD CONSTRAINT unique_lausuntotieto_perustelu_id UNIQUE (perustelu_id);

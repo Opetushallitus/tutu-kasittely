@@ -53,9 +53,6 @@ class ControllerTest extends IntegrationTestBase {
   @Autowired
   var hakemusService: HakemusService = _
 
-  @MockitoBean
-  var kayttooikeusService: KayttooikeusService = _
-
   @Autowired
   var userService: UserService                       = _
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -163,7 +160,7 @@ class ControllerTest extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadEsittelija), any())
   }
 
-  // @Test
+  @Test
   @Order(1)
   @WithMockUser(
     value = esittelijaOidString,
@@ -267,7 +264,7 @@ class ControllerTest extends IntegrationTestBase {
       .andExpect(status().isUnauthorized)
   }
 
-  // @Test
+  @Test
   @Order(6)
   @WithMockUser(
     value = esittelijaOidString,
@@ -302,7 +299,7 @@ class ControllerTest extends IntegrationTestBase {
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
 
-  // @Test
+  @Test
   @Order(7)
   @WithMockUser(
     value = esittelijaOidString,
@@ -378,7 +375,7 @@ class ControllerTest extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
   }
 
-  // @Test
+  @Test
   @Order(8)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
@@ -414,7 +411,7 @@ class ControllerTest extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
   }
 
-  // @Test
+  @Test
   @Order(9)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
@@ -741,7 +738,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(13)
+  @Order(14)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -851,7 +848,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(13)
+  @Order(15)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -936,7 +933,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(14)
+  @Order(16)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -1014,7 +1011,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(15)
+  @Order(17)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -1207,7 +1204,7 @@ class ControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(16)
+  @Order(18)
   @WithMockUser(
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
