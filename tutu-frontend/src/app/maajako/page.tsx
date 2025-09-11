@@ -5,7 +5,7 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
@@ -75,11 +75,13 @@ export default function MaajakoPage() {
     handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
   }, [esittelijatError, addToast, t]);
 
+  const sortedMaakoodit = useMemo(() => sortMaakoodit(maakoodit), [maakoodit]);
+
   if (maakooditIsLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
 
-  const sortedMaakooditOptions = sortMaakoodit(maakoodit).map((maakoodi) => ({
+  const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
     label: maakoodi.nimi,
     value: maakoodi.koodi,
   }));
@@ -126,7 +128,8 @@ export default function MaajakoPage() {
 
           return (
             <AlertBox
-              infoText={sortMaakoodit(maakooditWithoutEsittelija)
+              infoText={sortedMaakoodit
+                .filter((maakoodi) => maakoodi.esittelijaId == null)
                 .map((maakoodi) => maakoodi.nimi)
                 .join(', ')}
               headingText={t('maajako.varoitus')}
@@ -165,21 +168,19 @@ export default function MaajakoPage() {
                   multiple
                   data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
                   options={
-                    sortMaakoodit(
-                      maakoodit?.filter(
-                        (maakoodi) => maakoodi.esittelijaId == null,
-                      ),
-                    ).map((maakoodi) => ({
-                      label: maakoodi.nimi,
-                      value: maakoodi.koodi,
-                    })) || []
+                    sortedMaakoodit
+                      .filter((maakoodi) => maakoodi.esittelijaId == null)
+                      .map((maakoodi) => ({
+                        label: maakoodi.nimi,
+                        value: maakoodi.koodi,
+                      })) || []
                   }
                   value={
-                    (sortMaakoodit(
-                      maakoodit?.filter(
+                    (sortedMaakoodit
+                      .filter(
                         (maakoodi) => maakoodi.esittelijaId === esittelija.id,
-                      ),
-                    ).map((maakoodi) => maakoodi.koodi) as never) || ''
+                      )
+                      .map((maakoodi) => maakoodi.koodi) as never) || ''
                   }
                   onChange={(event: SelectChangeEvent) => {
                     const selectedValues = Array.isArray(event.target.value)
@@ -203,30 +204,30 @@ export default function MaajakoPage() {
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {Array.isArray(selected) &&
-                        sortMaakoodit(
-                          maakoodit?.filter((maakoodi) =>
+                        sortedMaakoodit
+                          .filter((maakoodi) =>
                             selected.includes(maakoodi.koodi),
-                          ),
-                        ).map((maakoodi) => (
-                          <Chip
-                            key={maakoodi.koodi}
-                            label={maakoodi.nimi}
-                            sx={{ borderRadius: '0px' }}
-                            data-testid={`maakoodi-chip-${maakoodi.koodi}`}
-                            onDelete={() => {
-                              if (maakoodi && esittelija.id) {
-                                setMaakoodiToUpdate({
-                                  id: maakoodi.id,
-                                  esittelijaId: undefined,
-                                });
-                                updateMaakoodi();
-                              }
-                            }}
-                            onMouseDown={(event) => {
-                              event.stopPropagation();
-                            }}
-                          />
-                        ))}
+                          )
+                          .map((maakoodi) => (
+                            <Chip
+                              key={maakoodi.koodi}
+                              label={maakoodi.nimi}
+                              sx={{ borderRadius: '0px' }}
+                              data-testid={`maakoodi-chip-${maakoodi.koodi}`}
+                              onDelete={() => {
+                                if (maakoodi && esittelija.id) {
+                                  setMaakoodiToUpdate({
+                                    id: maakoodi.id,
+                                    esittelijaId: undefined,
+                                  });
+                                  updateMaakoodi();
+                                }
+                              }}
+                              onMouseDown={(event) => {
+                                event.stopPropagation();
+                              }}
+                            />
+                          ))}
                     </Box>
                   )}
                 ></OphSelectFormField>
