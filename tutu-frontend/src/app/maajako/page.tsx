@@ -1,25 +1,29 @@
 'use client';
 
 import {
+  OphButton,
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { useMaakoodit } from '@/src/hooks/useMaakoodit';
+import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+
 import useToaster from '@/src/hooks/useToaster';
 import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { Divider, Stack, useTheme } from '@mui/material';
+import { Box, Chip, Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { AlertBox } from '@/src/components/AlertBox';
 import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
+import React from 'react';
 import { EsittelijaSection } from '@/src/components/EsittelijaSection';
 
 interface Maakoodi {
+  id: string;
   koodi: string;
   nimi: string;
   esittelijaId: string | null;
@@ -32,27 +36,52 @@ export default function MaajakoPage() {
   const { t } = useTranslations();
   const theme = useTheme();
   const { addToast } = useToaster();
-  const { data: maakoodit, isLoading, error } = useMaakoodit();
+
+  const {
+    data: maakoodit,
+    isLoading: maakooditIsLoading,
+    error: maakooditError,
+  } = useMaakoodit();
   const {
     data: esittelijat,
-    isLoading: esittelijatLoading,
+    isLoading: esittelijatIsLoading,
     error: esittelijatError,
   } = useEsittelijat();
+
+  const [maakoodiToUpdate, setMaakoodiToUpdate] = useState<{
+    id: string;
+    esittelijaId?: string;
+  }>();
+
+  const updateMaakoodi = useUpdateMaakoodi(
+    maakoodiToUpdate?.id,
+    maakoodiToUpdate?.esittelijaId,
+    {
+      enabled: !!maakoodiToUpdate,
+      onSuccess: () => {
+        setMaakoodiToUpdate(undefined);
+      },
+    },
+  );
+
   const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.maakoodiLataus', t);
-  }, [error, addToast, t]);
+    handleFetchError(addToast, maakooditError, 'virhe.maakoodiLataus', t);
+  }, [maakooditError, addToast, t]);
 
   useEffect(() => {
     handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
   }, [esittelijatError, addToast, t]);
 
-  if (isLoading || esittelijatLoading) {
+  const sortedMaakoodit = useMemo(() => sortMaakoodit(maakoodit), [maakoodit]);
+
+  if (maakooditIsLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
 
-  const sortedMaakooditOptions = sortMaakoodit(maakoodit).map((maakoodi) => ({
+  const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
     label: maakoodi.nimi,
     value: maakoodi.koodi,
   }));
@@ -60,7 +89,7 @@ export default function MaajakoPage() {
   return (
     <BoxWrapper sx={{ borderBottom: 'none' }}>
       <Stack
-        gap={theme.spacing(3)}
+        gap={theme.spacing(2)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
         <OphTypography variant={'h3'}>
@@ -69,7 +98,7 @@ export default function MaajakoPage() {
         <OphSelectFormField
           placeholder={t('yleiset.valitse')}
           label={t('maajako.suoritusmaa')}
-          sx={{ width: '50%' }}
+          sx={{ width: '50%', marginBottom: theme.spacing(1) }}
           options={sortedMaakooditOptions}
           value={selectedMaakoodi}
           onChange={(event: SelectChangeEvent) =>
@@ -83,7 +112,7 @@ export default function MaajakoPage() {
           selectedMaakoodi={selectedMaakoodi}
           esittelijat={esittelijat}
         />
-        <Divider />
+        <Divider sx={{ marginBottom: theme.spacing(1) }} />
 
         <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
         <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
@@ -99,7 +128,8 @@ export default function MaajakoPage() {
 
           return (
             <AlertBox
-              infoText={maakooditWithoutEsittelija
+              infoText={sortedMaakoodit
+                .filter((maakoodi) => maakoodi.esittelijaId == null)
                 .map((maakoodi) => maakoodi.nimi)
                 .join(', ')}
               headingText={t('maajako.varoitus')}
@@ -107,14 +137,115 @@ export default function MaajakoPage() {
           );
         })()}
 
+        <OphButton
+          sx={{
+            width: '15%',
+            marginBottom: theme.spacing(1),
+            marginTop: theme.spacing(1),
+          }}
+          variant="outlined"
+          color="primary"
+          data-testid="toggle-edit"
+          onClick={() => {
+            setIsEditing((prev) => !prev);
+          }}
+        >
+          {isEditing
+            ? t('maajako.poistumuokkaustilasta')
+            : t('maajako.muokkaamaajakoa')}
+        </OphButton>
+
         {esittelijat?.map((esittelija, index) => (
-          <EsittelijaSection
-            key={`${esittelija.id}-${index}`}
-            esittelija={esittelija}
-            maakoodit={maakoodit}
-            t={t}
-            theme={theme}
-          />
+          <React.Fragment key={index}>
+            {isEditing ? (
+              <>
+                <OphTypography variant={'h4'}>
+                  {esittelija.etunimi} {esittelija.sukunimi}
+                </OphTypography>
+                <OphSelectFormField
+                  placeholder="yleiset.valitse"
+                  label={t('maajako.tutkinnonsuoritusmaat')}
+                  multiple
+                  data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
+                  options={
+                    sortedMaakoodit
+                      .filter((maakoodi) => maakoodi.esittelijaId == null)
+                      .map((maakoodi) => ({
+                        label: maakoodi.nimi,
+                        value: maakoodi.koodi,
+                      })) || []
+                  }
+                  value={
+                    (sortedMaakoodit
+                      .filter(
+                        (maakoodi) => maakoodi.esittelijaId === esittelija.id,
+                      )
+                      .map((maakoodi) => maakoodi.koodi) as never) || ''
+                  }
+                  onChange={(event: SelectChangeEvent) => {
+                    const selectedValues = Array.isArray(event.target.value)
+                      ? event.target.value
+                      : [event.target.value];
+
+                    const newMaakoodi = maakoodit?.find(
+                      (maakoodi) =>
+                        selectedValues.includes(maakoodi.koodi) &&
+                        maakoodi.esittelijaId === null,
+                    );
+
+                    if (newMaakoodi && esittelija.id) {
+                      setMaakoodiToUpdate({
+                        id: newMaakoodi.id,
+                        esittelijaId: esittelija.id,
+                      });
+                    }
+                  }}
+                  sx={{ width: '100%' }}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {Array.isArray(selected) &&
+                        sortedMaakoodit
+                          .filter((maakoodi) =>
+                            selected.includes(maakoodi.koodi),
+                          )
+                          .map((maakoodi) => (
+                            <Chip
+                              key={maakoodi.koodi}
+                              label={maakoodi.nimi}
+                              sx={{ borderRadius: '0px' }}
+                              data-testid={`maakoodi-chip-${maakoodi.koodi}`}
+                              onDelete={() => {
+                                if (maakoodi && esittelija.id) {
+                                  setMaakoodiToUpdate({
+                                    id: maakoodi.id,
+                                    esittelijaId: undefined,
+                                  });
+                                  updateMaakoodi();
+                                }
+                              }}
+                              onMouseDown={(event) => {
+                                event.stopPropagation();
+                              }}
+                            />
+                          ))}
+                    </Box>
+                  )}
+                ></OphSelectFormField>
+              </>
+            ) : (
+              <EsittelijaSection
+                esittelija={esittelija}
+                maakoodit={maakoodit}
+                t={t}
+              />
+            )}
+            <Divider
+              sx={{
+                marginTop: theme.spacing(2),
+                marginBottom: theme.spacing(2),
+              }}
+            />
+          </React.Fragment>
         ))}
       </Stack>
     </BoxWrapper>

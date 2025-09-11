@@ -350,7 +350,9 @@
     "suoritusmaa": "Tutkinnon suoritusmaa",
     "kaikkiValittu": "Kaikki suoritusmaat on valittu jollekin esittelijälle",
     "tutkinnonsuoritusmaat": "Tutkinnon suoritusmaat",
-    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään"
+    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään",
+    "muokkaamaajakoa": "Muokkaa maajakoa",
+    "poistumuokkaustilasta": "Poistu muokkaustilasta"
   },
   "puuttuu": "Puuttuu",
   "virhe": {
@@ -361,7 +363,8 @@
     "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
     "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
-    "maakoodi": "Virhe maakoodien lataamisessa"
+    "maakoodi": "Virhe maakoodien lataamisessa",
+    "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui"
   },
   "yleiset": {
     "poista": "Poista",

@@ -18,7 +18,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 export const SuccessBox = ({ infoText }: { infoText: string }) => {
   return (
-    <StyledBox>
+    <StyledBox data-testid="success-box">
       <InfoIconBlue />
       {infoText}
     </StyledBox>

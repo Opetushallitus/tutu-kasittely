@@ -180,3 +180,24 @@ export async function doApiPost(
     cache,
   );
 }
+
+export async function doApiPut(
+  resource: string,
+  body: object,
+  options?: Options,
+  cache?: string,
+) {
+  return apiFetch(
+    resource,
+    {
+      ...options,
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers: {
+        ...options?.headers,
+        'Content-Type': 'application/json',
+      },
+    },
+    cache,
+  );
+}
