@@ -105,10 +105,8 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   // Sulje pudotusvalikko, jotta tausta ei estä klikkauksia.
   await page.keyboard.press('Escape');
 
-  // After PUT + refetch -> all assigned -> SuccessBox
+  // Wait for success message and the chip to appear
   await expect(page.getByTestId('success-box')).toBeVisible();
-
-  // Ruotsi näkyvissä muokatussa valinnassa.
   await expect(page.getByTestId('maakoodi-chip-002')).toBeVisible();
 
   // Remove assignment by deleting chip -> becomes unassigned -> Alert shown again
