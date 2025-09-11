@@ -133,7 +133,7 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
         <LinkedTab value="tutkinnot" hakemusOid={hakemusOid} />
         <LinkedTab
           value="perustelu.ylataso"
-          targetPage="perustelu.yleiset.lausuntotiedot"
+          targetPage="perustelu.yleiset"
           hakemusOid={hakemusOid}
           expandable={true}
           expanded={showSubTabs}

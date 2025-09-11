@@ -93,6 +93,7 @@ export const TutkintoComponent = ({
         open={deleteModalOpen}
         header={t('hakemus.tutkinnot.modal.otsikko')}
         content={t('hakemus.tutkinnot.modal.teksti')}
+        confirmButtonText={t('hakemus.tutkinnot.poistaTutkinto')}
         handleConfirm={confirmDelete}
         handleClose={closeModal}
         t={t}

@@ -82,22 +82,18 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
       },
     };
     if (callCount == 1) {
-      console.log('Call 1');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = false;
     }
     if (callCount == 2) {
-      console.log('Call 2');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
     }
     if (callCount == 3) {
-      console.log('Call 3');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
         dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
     }
 
     if (callCount == 4) {
-      console.log('Call 4');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
         dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -106,7 +102,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     }
 
     if (callCount == 5) {
-      console.log('Call 5');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
         dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -117,7 +112,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     }
 
     if (callCount == 6) {
-      console.log('Call 6');
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
         dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");

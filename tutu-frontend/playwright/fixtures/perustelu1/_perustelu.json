@@ -1,0 +1,30 @@
+{
+  "id": "d9f8f6f1-9a2b-4c59-b6a7-b1d942df45ff",
+  "hakemusId": "97d34dea-0770-4f35-8b9f-4b5ce5e7a7f1",
+  "virallinenTutkinnonMyontaja": false,
+  "virallinenTutkinto": false,
+  "lahdeLahtomaanKansallinenLahde": false,
+  "lahdeLahtomaanVirallinenVastaus": false,
+  "lahdeKansainvalinenHakuteosTaiVerkkosivusto": false,
+  "selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta": "",
+  "ylimmanTutkinnonAsemaLahtomaanJarjestelmassa": "",
+  "selvitysTutkinnonAsemastaLahtomaanJarjestelmassa": "",
+  "luoja": "testi",
+  "luotu": "2025-06-01T00:00:00",
+  "lausuntotieto": {
+    "pyyntojenLisatiedot": "pyynö",
+    "sisalto": "sisältö",
+    "lausuntopyynnot": [
+      {
+        "lausunnonAntaja": "Kostaja",
+        "lahetetty": "2025-09-01T00:00:00",
+        "saapunut": "2025-09-30T00:00:00"
+      },
+      {
+        "lausunnonAntaja": "Aas Weckström",
+        "lahetetty": "2025-11-01T00:00:00",
+        "saapunut": "2025-11-30T00:00:00"
+      }
+    ]
+  }
+}

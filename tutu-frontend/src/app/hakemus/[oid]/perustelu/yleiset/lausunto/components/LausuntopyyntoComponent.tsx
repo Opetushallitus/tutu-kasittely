@@ -28,18 +28,14 @@ export const LausuntopyyntoComponent = ({
   t,
   theme,
 }: LausuntopyyntoProps) => {
-  const [currentLausuntopyynto, setCurrentLausuntopyynto] =
-    useState<Lausuntopyynto>(lausuntopyynto);
-
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const updateCurrentLausuntopyynto = (fieldValue: Partial<Lausuntopyynto>) => {
     const updatedLausuntopyynto: Lausuntopyynto = {
-      ...currentLausuntopyynto,
+      ...lausuntopyynto,
       ...fieldValue,
     };
     updateLausuntopyyntoAction(updatedLausuntopyynto);
-    setCurrentLausuntopyynto(updatedLausuntopyynto);
   };
 
   const closeModal = () => {
@@ -47,49 +43,62 @@ export const LausuntopyyntoComponent = ({
   };
 
   const confirmDelete = () => {
-    deleteLausuntopyyntoAction(lausuntopyynto.jarjestys);
+    deleteLausuntopyyntoAction(lausuntopyynto.jarjestys!);
     closeModal();
   };
 
-  const lahetetty = currentLausuntopyynto.lahetetty
-    ? new Date(currentLausuntopyynto.lahetetty)
+  const lahetetty = lausuntopyynto.lahetetty
+    ? new Date(lausuntopyynto.lahetetty)
     : null;
-  const saapunut = currentLausuntopyynto.saapunut
-    ? new Date(currentLausuntopyynto.saapunut)
+  const saapunut = lausuntopyynto.saapunut
+    ? new Date(lausuntopyynto.saapunut)
     : null;
 
   return (
     <Stack gap={theme.spacing(3)}>
       <ModalComponent
         open={deleteModalOpen}
-        header={t('hakemus.perustelu.yleiset.lausuntotiedot.modal.otsikko')}
-        content={t('hakemus.perustelu.yleiset.lausuntotiedot.modal.teksti')}
+        header={t('hakemus.perustelu.lausuntotiedot.modal.otsikko')}
+        content={t('hakemus.perustelu.lausuntotiedot.modal.teksti')}
+        confirmButtonText={t(
+          'hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto',
+        )}
         handleConfirm={confirmDelete}
         handleClose={closeModal}
         t={t}
       />
       <Stack direction="row" justifyContent="space-between">
-        <OphTypography variant={'h4'}>
-          {t('hakemus.perustelu.yleiset.lausuntotiedot.lausuntopyynto', '', {
+        <OphTypography
+          variant={'h4'}
+          data-testid={`lausuntopyynto-otsikko-${lausuntopyynto.jarjestys}`}
+        >
+          {t('hakemus.perustelu.lausuntotiedot.lausuntopyynto', '', {
             numero: lausuntopyynto.jarjestys,
           })}
         </OphTypography>
-        {currentLausuntopyynto.jarjestys !== 1 && (
+        {lausuntopyynto.jarjestys !== 1 && (
           <OphButton
             sx={{
               alignSelf: 'flex-end',
             }}
-            data-testid={`poista-lausuntopyynto-button-${currentLausuntopyynto.jarjestys}`}
+            data-testid={`poista-lausuntopyynto-button-${lausuntopyynto.jarjestys}`}
             variant="text"
             startIcon={<DeleteOutline />}
             onClick={() => setDeleteModalOpen(true)}
           >
-            {t('hakemus.perustelu.yleiset.lausuntotiedot.poistaLausuntopyynto')}
+            {t('hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto')}
           </OphButton>
         )}
       </Stack>
       <OphInputFormField
-        label={t('hakemus.perustelu.yleiset.lausuntotiedot.lausunnonAntaja')}
+        label={t('hakemus.perustelu.lausuntotiedot.lausunnonAntaja')}
+        value={lausuntopyynto.lausunnonAntaja || ''}
+        onChange={(e) =>
+          updateCurrentLausuntopyynto({ lausunnonAntaja: e.target.value })
+        }
+        inputProps={{
+          'data-testid': `lausunnon-antaja-${lausuntopyynto.jarjestys}`,
+        }}
       />
       <Stack direction="row" gap={theme.spacing(5)}>
         <CalendarComponent
@@ -102,8 +111,8 @@ export const LausuntopyyntoComponent = ({
           }
           selectedValue={lahetetty}
           maxDate={saapunut}
-          label={t('hakemus.perustelu.yleiset.lausuntotiedot.pyyntoLahetetty')}
-          dataTestId="lausuntoPyyntoLahetetty-calendar"
+          label={t('hakemus.perustelu.lausuntotiedot.pyyntoLahetetty')}
+          dataTestId={`lausuntoPyyntoLahetetty-calendar-${lausuntopyynto.jarjestys}`}
         />
         <CalendarComponent
           setDate={(date: Date | null) =>
@@ -115,8 +124,8 @@ export const LausuntopyyntoComponent = ({
           }
           selectedValue={saapunut}
           minDate={lahetetty}
-          label={t('hakemus.perustelu.yleiset.lausuntotiedot.pyyntoSaapunut')}
-          dataTestId="lausuntoPyyntoVastattu-calendar"
+          label={t('hakemus.perustelu.lausuntotiedot.pyyntoSaapunut')}
+          dataTestId={`lausuntoPyyntoVastattu-calendar-${lausuntopyynto.jarjestys}`}
         />
       </Stack>
     </Stack>

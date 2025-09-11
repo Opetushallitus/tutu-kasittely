@@ -33,6 +33,7 @@ export type ModalComponentProps = {
   open: boolean;
   header: string;
   content: string;
+  confirmButtonText: string;
   handleConfirm: () => void;
   handleClose: () => void;
   t: TFunction;
@@ -41,6 +42,7 @@ export const ModalComponent = ({
   open,
   header,
   content,
+  confirmButtonText,
   handleConfirm,
   handleClose,
   t,
@@ -67,7 +69,7 @@ export const ModalComponent = ({
               variant="contained"
               onClick={handleConfirm}
             >
-              {t('hakemus.tutkinnot.poistaTutkinto')}
+              {confirmButtonText}
             </OphButton>
           </Stack>
         </Stack>

@@ -1,4 +1,5 @@
 import { PerusteluUoRo } from '@/src/lib/types/perusteluUoRo';
+import { Lausuntotieto } from '@/src/lib/types/lausuntotieto';
 
 export type Perustelu = {
   id: string;
@@ -15,5 +16,6 @@ export type Perustelu = {
   luoja: string;
   muokattu?: string;
   muokkaaja?: string;
+  lausuntotieto?: Lausuntotieto;
   perusteluUoRo?: PerusteluUoRo;
 };
