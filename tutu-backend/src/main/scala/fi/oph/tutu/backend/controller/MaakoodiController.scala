@@ -5,15 +5,17 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, Ser
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{ReadLiitteenTiedot, ReadMaakoodit}
+import fi.oph.tutu.backend.utils.AuditOperation.{ReadMaakoodit, UpdateMaakoodi}
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
+import fi.vm.sade.auditlog.Changes
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation._
 
 import scala.util.{Failure, Success, Try}
+import java.util.UUID
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -75,16 +77,22 @@ class MaakoodiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val maakoodiId = java.util.UUID.fromString(id)
-      val esittelija = Option(esittelijaId).map(java.util.UUID.fromString)
-      // val user       = userService.getEnrichedUserDetails(true)
-      maakoodiService.updateMaakoodi(maakoodiId, esittelija, "user.userOid")
+      val maakoodiId = UUID.fromString(id)
+      val esittelija = Option(esittelijaId).map(UUID.fromString)
+      val user       = userService.getEnrichedUserDetails(true)
+      maakoodiService.updateMaakoodi(maakoodiId, esittelija, user.userOid)
     } match {
       case Success(result) =>
         result match {
           case None =>
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
           case Some(maakoodi) =>
+            auditLog.logChanges(
+              auditLog.getUser(request),
+              Map("maakoodiId" -> id, "esittelijaId" -> Option(esittelijaId).getOrElse("")),
+              UpdateMaakoodi,
+              Changes.EMPTY
+            )
             val response = mapper.writeValueAsString(maakoodi)
             ResponseEntity.status(HttpStatus.OK).body(response)
         }

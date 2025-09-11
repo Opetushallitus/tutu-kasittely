@@ -155,8 +155,17 @@ class MaakoodiRepository {
       val maakoodi: DbMaakoodi = db.run(query.head, "updateMaakoodi")
       Some(maakoodi)
     } catch {
+      case e: java.util.NoSuchElementException =>
+        LOG.error(s"Maakoodi not found with id: $id")
+        None
+      case e: java.sql.SQLException =>
+        LOG.error(
+          s"SQL virhe maakoodin päivityksessä - id: $id, SQL State: ${e.getSQLState}, Error Code: ${e.getErrorCode}",
+          e
+        )
+        None
       case e: Exception =>
-        LOG.error(s"Maakoodin paivitys epäonnistui id: $id", e)
+        LOG.error(s"Maakoodin päivitys epäonnistui - id: $id", e)
         None
     }
   }
