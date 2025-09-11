@@ -42,6 +42,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @MockitoBean
   var koodistoService: KoodistoService = _
 
+  @MockitoBean
+  var userService: UserService = _
+
   @Autowired
   var maakoodiService: MaakoodiService = _
 
@@ -52,6 +55,14 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
   val esittelijaOid                    = "1.2.246.562.24.00000000000000006666"
   var esittelija: Option[DbEsittelija] = None
+  val mockUser                         = User(esittelijaOid, List("ROLE_USER"), Some("fi"))
+
+  @BeforeEach
+  def setupEach(): Unit = {
+    Mockito
+      .when(userService.getEnrichedUserDetails(any()))
+      .thenReturn(mockUser)
+  }
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -89,11 +100,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
   def updateMaakoodiValidRequestReturns200(): Unit = {
-    // Maakoodi ilman esittelijaId
     maakoodiRepository.upsertMaakoodi("100", "TestCountry", "testi", None)
     val maakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
 
-    // Päivitetään esittelijaId
     mockMvc
       .perform(
         put("/api/maakoodi")
@@ -108,13 +117,20 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.nimi").value("TestCountry"))
       .andExpect(jsonPath("$.esittelijaId").value(esittelija.get.esittelijaId.toString))
 
-    // Maakoodi on päivittynyt tietokannassa
+    verify(auditLog, times(1)).logChanges(
+      any(),
+      eqTo(Map("maakoodiId" -> maakoodi.id.toString, "esittelijaId" -> esittelija.get.esittelijaId.toString)),
+      eqTo(AuditOperation.UpdateMaakoodi),
+      any()
+    )
+
     val updatedMaakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
     assert(updatedMaakoodi.esittelijaId.contains(esittelija.get.esittelijaId))
     assert(updatedMaakoodi.koodi == "100")
     assert(updatedMaakoodi.nimi == "TestCountry")
 
-    // Poista esittelijaId
+    Mockito.reset(auditLog)
+
     mockMvc
       .perform(
         put("/api/maakoodi")
@@ -128,7 +144,13 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.nimi").value("TestCountry"))
       .andExpect(jsonPath("$.esittelijaId").isEmpty)
 
-    // EsittelijaId on poistettu tietokannasta
+    verify(auditLog, times(1)).logChanges(
+      any(),
+      eqTo(Map("maakoodiId" -> maakoodi.id.toString, "esittelijaId" -> "")),
+      eqTo(AuditOperation.UpdateMaakoodi),
+      any()
+    )
+
     val maakoodiAfterRemoval = maakoodiRepository.listAll().find(_.koodi == "100").get
     assert(maakoodiAfterRemoval.esittelijaId.isEmpty)
     assert(maakoodiAfterRemoval.koodi == "100")

@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import fi.oph.tutu.backend.domain.Maakoodi
 import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadMaakoodit, UpdateMaakoodi}
-import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
+import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import fi.vm.sade.auditlog.Changes
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -77,13 +78,15 @@ class MaakoodiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val maakoodiId = UUID.fromString(id)
-      val esittelija = Option(esittelijaId).map(UUID.fromString)
-      val user       = userService.getEnrichedUserDetails(true)
-      maakoodiService.updateMaakoodi(maakoodiId, esittelija, user.userOid)
+      val maakoodiId    = UUID.fromString(id)
+      val esittelija    = Option(esittelijaId).map(UUID.fromString)
+      val user          = userService.getEnrichedUserDetails(true)
+      val vanhaMaakoodi = maakoodiService.getMaakoodi(maakoodiId)
+      val uusiMaakoodi  = maakoodiService.updateMaakoodi(maakoodiId, esittelija, user.userOid)
+      (vanhaMaakoodi, uusiMaakoodi)
     } match {
-      case Success(result) =>
-        result match {
+      case Success((vanhaMaakoodi, uusiMaakoodi)) =>
+        uusiMaakoodi match {
           case None =>
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
           case Some(maakoodi) =>
@@ -91,7 +94,10 @@ class MaakoodiController(
               auditLog.getUser(request),
               Map("maakoodiId" -> id, "esittelijaId" -> Option(esittelijaId).getOrElse("")),
               UpdateMaakoodi,
-              Changes.EMPTY
+              AuditUtil.getChanges(
+                vanhaMaakoodi.map(m => mapper.writeValueAsString(m)),
+                Some(mapper.writeValueAsString(maakoodi))
+              )
             )
             val response = mapper.writeValueAsString(maakoodi)
             ResponseEntity.status(HttpStatus.OK).body(response)

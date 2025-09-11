@@ -136,6 +136,31 @@ class MaakoodiRepository {
     }
   }
 
+  def getMaakoodi(id: UUID): Option[DbMaakoodi] = {
+    try {
+      val query = sql"""
+        SELECT id, esittelija_id, koodi, nimi
+        FROM maakoodi
+        WHERE id = ${id.toString}::uuid
+      """.as[DbMaakoodi]
+      val maakoodi = db.run(query.head, "getMaakoodi")
+      Some(maakoodi)
+    } catch {
+      case e: java.util.NoSuchElementException =>
+        LOG.error(s"Maakoodi not found with id: $id")
+        None
+      case e: java.sql.SQLException =>
+        LOG.error(
+          s"SQL virhe maakoodin haussa - id: $id, SQL State: ${e.getSQLState}, Error Code: ${e.getErrorCode}",
+          e
+        )
+        None
+      case e: Exception =>
+        LOG.error(s"Maakoodin haku epäonnistui - id: $id", e)
+        None
+    }
+  }
+
   def updateMaakoodi(
     id: UUID,
     esittelijaId: Option[UUID],

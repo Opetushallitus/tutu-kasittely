@@ -31,6 +31,12 @@ class MaakoodiService(
       .map(db => Maakoodi(db.id, db.esittelijaId, db.koodi, db.nimi))
   }
 
+  def getMaakoodi(id: java.util.UUID): Option[Maakoodi] = {
+    maakoodiRepository
+      .getMaakoodi(id)
+      .map(db => Maakoodi(db.id, db.esittelijaId, db.koodi, db.nimi))
+  }
+
   def updateMaakoodi(id: java.util.UUID, esittelijaId: Option[java.util.UUID], muokkaaja: String): Option[Maakoodi] = {
     maakoodiRepository
       .updateMaakoodi(id, esittelijaId, muokkaaja)
