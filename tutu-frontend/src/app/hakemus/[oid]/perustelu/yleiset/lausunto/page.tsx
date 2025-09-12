@@ -86,8 +86,9 @@ export default function Lausuntotiedot() {
   const addLausuntopyynto = () => {
     const newJarjestys =
       lausuntotieto.lausuntopyynnot.length > 0
-        ? Math.max(
-            ...lausuntotieto.lausuntopyynnot.map((p) => p.jarjestys || 0),
+        ? lausuntotieto.lausuntopyynnot.reduce(
+            (max, p) => Math.max(max, p.jarjestys || 0),
+            0,
           ) + 1
         : 1;
     const newLausuntopyynto = emptyLausuntopyynto(newJarjestys);
