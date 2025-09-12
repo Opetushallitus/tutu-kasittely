@@ -1,6 +1,5 @@
 import { Hakija } from '@/src/lib/types/hakija';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
-import { Lausuntotieto } from '@/src/lib/types/lausuntotieto';
 
 export type MuutosHistoriaItem = {
   role: 'Esittelija' | 'Hakija' | 'Irrelevant';
@@ -28,11 +27,6 @@ export type Hakemus = {
   asiakirja?: AsiakirjaTieto;
   yhteistutkinto: boolean;
   tutkinnot: Tutkinto[];
-  perustelu: Perustelu;
-};
-
-export type Perustelu = {
-  lausuntotieto: Lausuntotieto;
 };
 
 export type PartialHakemus = Partial<Omit<Hakemus, 'asiakirja'>> & {

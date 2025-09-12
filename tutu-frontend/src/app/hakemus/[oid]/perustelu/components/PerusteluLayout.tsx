@@ -132,7 +132,7 @@ export const PerusteluLayout = ({
       {children}
 
       <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio')}
+        label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
         hakemus={hakemus}
         sisainen={true}
         hakemuksenOsa={'perustelut-yleiset'}
