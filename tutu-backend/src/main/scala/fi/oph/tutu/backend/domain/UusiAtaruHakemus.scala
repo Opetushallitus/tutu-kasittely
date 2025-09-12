@@ -14,12 +14,6 @@ case class UusiAtaruHakemus(
   )
   @BeanProperty hakemusOid: HakemusOid,
   @(Schema @field)(
-    example = "752",
-    requiredMode = RequiredMode.REQUIRED,
-    maxLength = 4
-  )
-  @BeanProperty maakoodi: String,
-  @(Schema @field)(
     example = "0",
     requiredMode = RequiredMode.REQUIRED
   )
