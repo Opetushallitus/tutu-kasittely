@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { SisaltoItem } from '@/src/lib/types/hakemus';
 import * as R from 'remeda';
@@ -6,9 +6,19 @@ import { styled } from '@mui/material';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 import { sisaltoItemMatchesToAny } from '@/src/lib/hakemuspalveluUtils';
 
-const Indented = styled((props) => (
-  <div {...props} className={`${props.className} indented`} />
-))({
+interface IndentedProps {
+  className?: string;
+  children: ReactNode;
+}
+
+const Indented = styled((props: IndentedProps) => {
+  const { children, ...rest } = props;
+  return (
+    <div {...rest} className={`${props.className} indented`}>
+      {children}
+    </div>
+  );
+})({
   //backgroundColor: `#0033cc11`,
   '.indented .indented': {
     paddingLeft: `1em`,
@@ -18,16 +28,52 @@ const Indented = styled((props) => (
   },
 });
 
-const EntryLabel = styled((props) => (
-  <OphTypography variant={'label'} {...props} />
-))({
+interface EntryLabelProps {
+  children: ReactNode;
+}
+
+const EntryLabel = styled((props: EntryLabelProps) => {
+  const { children, ...rest } = props;
+  return (
+    <OphTypography variant={'label'} {...rest}>
+      {children}
+    </OphTypography>
+  );
+})({
   display: 'block',
 });
 
-const EntryValue = styled((props) => (
-  <OphTypography variant={'body1'} {...props} />
-))({
+interface EntryInfoProps {
+  children: ReactNode;
+}
+
+const EntryInfo = styled((props: EntryInfoProps) => {
+  const { children, ...rest } = props;
+  return (
+    <OphTypography variant={'body2'} {...rest}>
+      {children}
+    </OphTypography>
+  );
+})({
   paddingLeft: `1em`,
+  paddingBottom: `0.5em`,
+  display: 'block',
+});
+
+interface EntryValueProps {
+  children: ReactNode;
+}
+
+const EntryValue = styled((props: EntryValueProps) => {
+  const { children, ...rest } = props;
+  return (
+    <OphTypography variant={'body1'} {...rest}>
+      {children}
+    </OphTypography>
+  );
+})({
+  paddingLeft: `1em`,
+  paddingBottom: `1em`,
   display: 'block',
 });
 
@@ -53,14 +99,20 @@ export const Sisalto = ({
 };
 
 export const renderItem = (item: SisaltoItem) => {
-  const label = R.pathOr(item, ['label', 'fi'], null);
+  const label = item.label?.fi || null;
   const renderedLabel =
-    label != null ? <EntryLabel>{label}</EntryLabel> : <></>;
+    label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
+
+  const infoTextTranslations =
+    item.infoText?.label ?? item.infoText?.value ?? null;
+  const infoText = infoTextTranslations?.fi ?? null;
+
+  const renderedInfoText = infoText && <EntryInfo>{infoText}</EntryInfo>;
 
   const renderedValues = item.value.map((value) => (
     <Fragment key={`${value.value}--item`}>
       <EntryValue key={`${value.value}--value`}>
-        {`- ${R.pathOr(value, ['label', 'fi'], null)}`}
+        {`- ${R.pathOr(value, ['label', 'fi'], '')}`}
       </EntryValue>
       <Subsection key={`${value.value}--followups`}>
         {value.followups.map(renderItem)}
@@ -75,6 +127,7 @@ export const renderItem = (item: SisaltoItem) => {
   return (
     <Indented key={`${item.key}`}>
       {renderedLabel}
+      {renderedInfoText}
       {renderedValues}
       {renderedChildren}
     </Indented>

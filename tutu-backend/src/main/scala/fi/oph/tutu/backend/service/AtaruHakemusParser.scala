@@ -244,6 +244,7 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
     fieldType = item.fieldType,
     value = sisaltoValues,
     label = itemLabel,
+    infoText = item.params.flatMap(_.`info-text`),
     children = Seq()
   )
 }
