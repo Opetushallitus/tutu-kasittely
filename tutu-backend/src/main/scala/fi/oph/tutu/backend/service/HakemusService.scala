@@ -27,20 +27,29 @@ class HakemusService(
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
-    val tallennettuAtaruHakemusId = esittelijaRepository.haeEsittelijaMaakoodilla(hakemus.maakoodi) match {
-      case Some(esittelija) =>
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+
+    val tutkinto_1_maakoodi = ataruHakemusParser.parseTutkinto1Maakoodi(ataruHakemus)
+
+    val esittelija = tutkinto_1_maakoodi match {
+      case Some(maakoodi) if maakoodi.nonEmpty => esittelijaRepository.haeEsittelijaMaakoodilla(maakoodi)
+      case _                                   => None
+    }
+
+    val tallennettuAtaruHakemusId = (tutkinto_1_maakoodi, esittelija) match {
+      case (Some(maakoodi), Some(esittelija)) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
           hakemus.hakemusKoskee,
           Some(esittelija.esittelijaId),
           "Hakemuspalvelu"
         )
-      case None => hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
-    }
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
-      case Left(error: Throwable) =>
-        throw error
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
+      case _ =>
+        hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
     }
 
     val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)

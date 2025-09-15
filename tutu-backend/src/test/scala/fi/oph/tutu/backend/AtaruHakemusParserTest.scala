@@ -622,4 +622,11 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, muuTutkinto.muuTutkintoMuistioId)
   }
 
+  @Test
+  def parseTutkinto1MaakoodiTest(): Unit = {
+    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+    val maakoodi                   = ataruHakemusParser.parseTutkinto1Maakoodi(hakemusWithKaikkiTutkinnot)
+    assertEquals(Some("152"), maakoodi)
+  }
+
 }

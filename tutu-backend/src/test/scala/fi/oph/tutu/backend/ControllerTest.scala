@@ -65,6 +65,8 @@ class ControllerTest extends IntegrationTestBase {
 
   var esittelija: Option[DbEsittelija] = None
   var maakoodi: Option[DbMaakoodi]     = None
+  var maakoodi2: Option[DbMaakoodi]    = None
+  var maakoodi3: Option[DbMaakoodi]    = None
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -74,6 +76,8 @@ class ControllerTest extends IntegrationTestBase {
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
     maakoodi = maakoodiRepository.upsertMaakoodi("752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi2 = maakoodiRepository.upsertMaakoodi("834", "Tansania", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi3 = maakoodiRepository.upsertMaakoodi("152", "Chile", "testi", Some(esittelija.get.esittelijaId))
   }
 
   @BeforeEach
@@ -166,9 +170,10 @@ class ControllerTest extends IntegrationTestBase {
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
-  def luoHakemusValidRequestWithoutEsittelijaReturns200(): Unit = {
+  def luoHakemusValidRequestReturns200(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6666.json")))
+    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
@@ -197,9 +202,9 @@ class ControllerTest extends IntegrationTestBase {
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), "752", 1)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1)
     val requestJson = mapper.writeValueAsString(hakemus)
-
+    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
     mockMvc
       .perform(
         post("/api/ataru-hakemus")
@@ -234,7 +239,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(4)
   @WithMockUser(value = "kyttääjä", authorities = Array("ROLE_APP_NADA"))
   def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -251,7 +256,7 @@ class ControllerTest extends IntegrationTestBase {
   @Order(5)
   @WithAnonymousUser
   def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "752", 0)
+    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0)
     val requestJson = mapper.writeValueAsString(hakemus)
 
     mockMvc
@@ -273,11 +278,11 @@ class ControllerTest extends IntegrationTestBase {
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("752"))
 
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006665",
-          "maakoodi": "752",
           "hakemusKoskee": 0
           }"""
 
@@ -307,6 +312,7 @@ class ControllerTest extends IntegrationTestBase {
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
     initAtaruHakemusRequests()
+    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))
 
@@ -355,16 +361,15 @@ class ControllerTest extends IntegrationTestBase {
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : null,
-                                "esittelijaKutsumanimi": null,
-                                "esittelijaSukunimi": null,
+                                "esittelijaOid" : 1.2.246.562.24.00000000000000006666,
+                                "esittelijaKutsumanimi": Esko,
+                                "esittelijaSukunimi": Esittelijä,
                                 "kasittelyVaihe": "AlkukasittelyKesken",
                                 "taydennyspyyntoLahetetty": null
                               } ]"""
 
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), "000", 0))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), "752", 1))
-
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), 1))
     val result = mockMvc
       .perform(
         get("/api/hakemuslista")
@@ -456,7 +461,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "kirjausPvm": "2025-05-14T10:59:47.597",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
-                                "esittelijaOid": null,
+                                "esittelijaOid": 1.2.246.562.24.00000000000000006666,
                                 "ataruHakemuksenTila": "KasittelyMaksettu",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
                                 "muutosHistoria": [{
@@ -538,7 +543,7 @@ class ControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests()
 
     // maakoodi 0000 -> esittelijaOid = null
-    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), "0000", 0)
+    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006670"), 0)
     hakemusService.tallennaHakemus(originalHakemus)
 
     // Päivitetään esittelijaOid
@@ -669,7 +674,7 @@ class ControllerTest extends IntegrationTestBase {
   def paivitaHakemusValidRequestReturns200WithChangedAsiakirjamallit(): Unit = {
     initAtaruHakemusRequests()
 
-    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), "0000", 0)
+    val originalHakemus = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"), 0)
     hakemusService.tallennaHakemus(originalHakemus)
     val dbHakemus = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006671"))
 
