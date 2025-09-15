@@ -59,6 +59,7 @@ export type SisaltoItem = {
   value: SisaltoValue[];
   label: TranslatedName;
   children: SisaltoItem[];
+  params?: SisaltoItemInfoText;
 };
 
 export type SisaltoValue = {
@@ -66,6 +67,11 @@ export type SisaltoValue = {
   value: string;
   followups: SisaltoItem[];
   formId?: string;
+};
+
+export type SisaltoItemInfoText = {
+  label?: TranslatedName;
+  value?: TranslatedName;
 };
 
 export type AsiakirjaMetadata = {
