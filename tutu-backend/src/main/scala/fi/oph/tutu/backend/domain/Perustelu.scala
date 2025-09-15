@@ -14,6 +14,9 @@ case class Perustelu(
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = "",
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = "",
+  aikaisemmatPaatokset: Option[Boolean] = None,
+  jatkoOpintoKelpoisuus: Option[String] = None,
+  jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
@@ -37,7 +40,13 @@ case class Perustelu(
       ylimmanTutkinnonAsemaLahtomaanJarjestelmassa =
         partial.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.orElse(this.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa),
       selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = partial.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
-        .getOrElse(this.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa)
+        .getOrElse(this.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa),
+      aikaisemmatPaatokset = partial.aikaisemmatPaatokset
+        .orElse(this.aikaisemmatPaatokset),
+      jatkoOpintoKelpoisuus = partial.jatkoOpintoKelpoisuus
+        .orElse(this.jatkoOpintoKelpoisuus),
+      jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
+        .orElse(this.jatkoOpintoKelpoisuusLisatieto)
     )
 }
 
@@ -51,7 +60,10 @@ case class PartialPerustelu(
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: Option[String] = None,
   lausuntotieto: Option[PartialLausuntotieto] = None,
-  perusteluUoRo: Option[PartialPerusteluUoRo] = None
+  perusteluUoRo: Option[PartialPerusteluUoRo] = None,
+  aikaisemmatPaatokset: Option[Boolean] = None,
+  jatkoOpintoKelpoisuus: Option[String] = None,
+  jatkoOpintoKelpoisuusLisatieto: Option[String] = None
 ) {
   def topLevelFieldsModified(): Boolean =
     Seq(
@@ -62,7 +74,10 @@ case class PartialPerustelu(
       lahdeKansainvalinenHakuteosTaiVerkkosivusto,
       selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
       ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
-      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
+      aikaisemmatPaatokset,
+      jatkoOpintoKelpoisuus,
+      jatkoOpintoKelpoisuusLisatieto
     ).exists(_.isDefined)
 }
 

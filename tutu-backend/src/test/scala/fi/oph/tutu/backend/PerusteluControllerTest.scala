@@ -53,6 +53,10 @@ def randomString: String = {
   UUID.randomUUID().toString
 }
 
+def randomStringOption: Option[String] = {
+  Option(UUID.randomUUID().toString)
+}
+
 def pickTutkinnonAsema: Option[String] = {
   pick(
     Seq(
@@ -65,6 +69,16 @@ def pickTutkinnonAsema: Option[String] = {
   )
 }
 
+def pickJatkoOpintoKelpoisuus: Option[String] = {
+  pick(
+    Seq(
+      Some("toisen_vaiheen_korkeakouluopintoihin"),
+      Some("tieteellisiin_jatko-opintoihin"),
+      Some("muu")
+    )
+  )
+}
+
 def makePerustelu(
   virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
   virallinenTutkinto: Option[Boolean] = pickBooleanOption,
@@ -73,7 +87,10 @@ def makePerustelu(
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = randomString,
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
-  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
+  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString,
+  aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
+  jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
+  jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption
 ): Perustelu = {
   Perustelu(
     None,
@@ -86,6 +103,9 @@ def makePerustelu(
     selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
     ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
+    aikaisemmatPaatokset,
+    jatkoOpintoKelpoisuus,
+    jatkoOpintoKelpoisuusLisatieto,
     Option(LocalDateTime.now()),
     Option("test user"),
     Option(LocalDateTime.now()),
@@ -103,23 +123,8 @@ def makePerusteluWithUoro(
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
 ): Perustelu = {
-  Perustelu(
-    None,
-    Option(UUID.randomUUID()),
-    virallinenTutkinnonMyontaja,
-    virallinenTutkinto,
-    lahdeLahtomaanKansallinenLahde,
-    lahdeLahtomaanVirallinenVastaus,
-    lahdeKansainvalinenHakuteosTaiVerkkosivusto,
-    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
-    ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
-    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
-    Option(LocalDateTime.now()),
-    Option("test user"),
-    Option(LocalDateTime.now()),
-    Option("test user"),
-    None,
-    Some(
+  makePerustelu().copy(
+    perusteluUoRo = Some(
       PerusteluUoRo(
         Some(UUID.randomUUID()),
         null,
