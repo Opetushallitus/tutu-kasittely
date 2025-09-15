@@ -18,4 +18,7 @@ export type Perustelu = {
   muokkaaja?: string;
   lausuntotieto?: Lausuntotieto;
   perusteluUoRo?: PerusteluUoRo;
+  jatkoOpintoKelpoisuus?: string | undefined;
+  jatkoOpintoKelpoisuusLisatieto?: string | undefined;
+  aikaisemmatPaatokset?: boolean | undefined;
 };
