@@ -1,5 +1,7 @@
 'use client';
 
+import { OphTypography } from '@opetushallitus/oph-design-system';
+
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -13,6 +15,8 @@ import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/pe
 import { Lahde } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/Lahde';
 import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
 import { Muistio } from '@/src/components/Muistio';
+import { JatkoOpintoKelpoisuus } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/JatkoOpintoKelpoisuus';
+import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
@@ -76,7 +80,23 @@ const YleisetPerustelut = ({ hakemus }: YleisetPerustelutProps) => {
 
       {/* Tutkintokohtaiset tiedot */}
 
-      {/* Jatko-opintokelpoisuus ja muut perustelut */}
+      <OphTypography variant={'h2'}>
+        {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
+      </OphTypography>
+      <JatkoOpintoKelpoisuus
+        perustelu={perustelu}
+        updatePerustelu={updatePerustelu}
+      />
+      <AikaisemmatPaatokset
+        perustelu={perustelu}
+        updatePerustelu={updatePerustelu}
+      />
+      <Muistio
+        label={t('hakemus.perustelu.yleiset.muistio.muuPerustelu')}
+        hakemus={hakemus}
+        sisainen={false}
+        hakemuksenOsa={'perustelut-yleiset--muu-perustelu'}
+      />
     </>
   );
 

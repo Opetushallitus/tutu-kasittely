@@ -29,20 +29,23 @@ class PerusteluRepository {
   implicit val getPerusteluResult: GetResult[Perustelu] = {
     GetResult(r =>
       Perustelu(
-        Option(UUID.fromString(r.nextString())),
-        Option(UUID.fromString(r.nextString())),
-        r.nextBooleanOption(),
-        r.nextBooleanOption(),
-        r.nextBoolean(),
-        r.nextBoolean(),
-        r.nextBoolean(),
-        r.nextString(),
-        Option(r.nextString()),
-        r.nextString(),
-        Option(r.nextTimestamp().toLocalDateTime),
-        Option(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextString())
+        id = Option(UUID.fromString(r.nextString())),
+        hakemusId = Option(UUID.fromString(r.nextString())),
+        virallinenTutkinnonMyontaja = r.nextBooleanOption(),
+        virallinenTutkinto = r.nextBooleanOption(),
+        lahdeLahtomaanKansallinenLahde = r.nextBoolean(),
+        lahdeLahtomaanVirallinenVastaus = r.nextBoolean(),
+        lahdeKansainvalinenHakuteosTaiVerkkosivusto = r.nextBoolean(),
+        selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = r.nextString(),
+        ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Option(r.nextString()),
+        selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = r.nextString(),
+        aikaisemmatPaatokset = r.nextBooleanOption(),
+        jatkoOpintoKelpoisuus = Option(r.nextString()),
+        jatkoOpintoKelpoisuusLisatieto = Option(r.nextString()),
+        luotu = Option(r.nextTimestamp().toLocalDateTime),
+        luoja = Option(r.nextString()),
+        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        muokkaaja = Option(r.nextString())
       )
     )
   }
@@ -111,6 +114,9 @@ class PerusteluRepository {
             selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
             ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
             selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
+            aikaisemmat_paatokset,
+            jatko_opinto_kelpoisuus,
+            jatko_opinto_kelpoisuus_lisatieto,
             luoja
           )
           VALUES (
@@ -123,6 +129,9 @@ class PerusteluRepository {
             ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
             ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
             ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
+            ${perustelu.aikaisemmatPaatokset},
+            ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
+            ${perustelu.jatkoOpintoKelpoisuusLisatieto},
             $luoja
           )
           ON CONFLICT (hakemus_id)
@@ -135,8 +144,28 @@ class PerusteluRepository {
             selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta = ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
             ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
             selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
+            aikaisemmat_paatokset = ${perustelu.aikaisemmatPaatokset},
+            jatko_opinto_kelpoisuus = ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
+            jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
             muokkaaja = $luoja
-          RETURNING *
+          RETURNING
+            id,
+            hakemus_id,
+            virallinen_tutkinnon_myontaja,
+            virallinen_tutkinto,
+            lahde_lahtomaan_kansallinen_lahde,
+            lahde_lahtomaan_virallinen_vastaus,
+            lahde_kansainvalinen_hakuteos_tai_verkkosivusto,
+            selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
+            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
+            selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
+            aikaisemmat_paatokset,
+            jatko_opinto_kelpoisuus,
+            jatko_opinto_kelpoisuus_lisatieto,
+            luotu,
+            luoja,
+            muokattu,
+            muokkaaja
         """.as[Perustelu].head,
         "tallenna_perustelu"
       )
@@ -175,6 +204,9 @@ class PerusteluRepository {
               p.selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
               p.ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
               p.selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
+              p.aikaisemmat_paatokset,
+              p.jatko_opinto_kelpoisuus,
+              p.jatko_opinto_kelpoisuus_lisatieto,
               p.luotu,
               p.luoja,
               p.muokattu,

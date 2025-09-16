@@ -229,7 +229,8 @@
         "muistio": {
           "selvitysTutkinnonAsemasta": "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä",
           "selvitysTutkinnonMyontajastaJaVirallisuudesta": "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta",
-          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)"
+          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)",
+          "muuPerustelu": "Ratkaisun tai päätöksen muut perustelut"
         },
         "perustelut": {
           "lahde": {
@@ -247,6 +248,21 @@
             "alempi_ja_ylempi_korkeakouluaste": "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot",
             "tutkijakoulutusaste": "Tieteellinen jatkotutkinto",
             "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
+          }
+        },
+        "muutPerustelut": {
+          "otsikko": "Jatko-opintokelpoisuus ja muut perustelut",
+          "jatkoOpintoKelpoisuus": {
+            "otsikko": "Jatko-opintokelpoisuus",
+            "toisen_vaiheen_korkeakouluopintoihin": "Toisen vaiheen korkeakouluopintoihin",
+            "tieteellisiin_jatko-opintoihin": "Tieteellisiin jatko-opintoihin",
+            "muu": "Muu",
+            "lisatieto": "Täsmennä"
+          },
+          "aikaisemmatPaatokset": {
+            "otsikko": "Aikaisemmat päätökset",
+            "kylla": "Opetushallitus on tehnyt vastaavia päätöksiä",
+            "ei": "Ei aikaisempia päätöksiä"
           }
         }
       },

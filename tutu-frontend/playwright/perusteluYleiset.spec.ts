@@ -30,6 +30,9 @@ test.describe('Yleiset perustelut', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
+    // Tuodaan piilotetut lomakkeen osat esiin
+    await page.getByTestId('jatko-opintokelpoisuus--muu').click();
+
     const checks = [
       'lahde__lahtomaan-kansallinen-lahde',
       'lahde__lahtomaan-virallinen-vastaus',
@@ -43,6 +46,10 @@ test.describe('Yleiset perustelut', () => {
       'tutkinnon-asema--alempi_ja_ylempi_korkeakouluaste',
       'tutkinnon-asema--tutkijakoulutusaste',
       'tutkinnon-asema--ei_korkeakouluaste',
+      'jatko-opintokelpoisuus--toisen_vaiheen_korkeakouluopintoihin',
+      'jatko-opintokelpoisuus--tieteellisiin_jatko-opintoihin',
+      'jatko-opintokelpoisuus--muu',
+      'jatko-opintokelpoisuus--lisatiedot',
     ].map((testId) => {
       return expect(page.getByTestId(testId)).toBeAttached();
     });
@@ -164,5 +171,42 @@ test.describe('Yleiset perustelut', () => {
         { ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: tutkintoaste },
       );
     }, Promise.resolve());
+
+    await [
+      'toisen_vaiheen_korkeakouluopintoihin',
+      'tieteellisiin_jatko-opintoihin',
+      'muu',
+    ].reduce(async (acc, kelpoisuus) => {
+      await acc;
+      return expectRequestData(
+        page,
+        page.getByTestId(`jatko-opintokelpoisuus--${kelpoisuus}`).click(),
+        { jatkoOpintoKelpoisuus: kelpoisuus },
+      );
+    }, Promise.resolve());
+
+    await expectRequestData(
+      page,
+      page
+        .getByTestId('jatko-opintokelpoisuus--lisatiedot')
+        .getByRole('textbox')
+        .fill('Kelpoisuus jatkaa kandidaatinopintoihin'),
+      {
+        jatkoOpintoKelpoisuusLisatieto:
+          'Kelpoisuus jatkaa kandidaatinopintoihin',
+      },
+    );
+
+    await expectRequestData(
+      page,
+      page.getByTestId('aiemmat-paatokset--kylla').click(),
+      { aikaisemmatPaatokset: true },
+    );
+
+    await expectRequestData(
+      page,
+      page.getByTestId('aiemmat-paatokset--ei').click(),
+      { aikaisemmatPaatokset: false },
+    );
   });
 });
