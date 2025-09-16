@@ -163,7 +163,9 @@ class Controller(
           val perustelu = perusteluService
             .tallennaPerustelu(
               hakemus.hakemusOid,
-              PartialPerustelu(),
+              PartialPerustelu(
+                jatkoOpintoKelpoisuusLisatieto = Some("")
+              ),
               "Hakemuspalvelu"
             )
             .foreach((perustelu: Perustelu) => {
