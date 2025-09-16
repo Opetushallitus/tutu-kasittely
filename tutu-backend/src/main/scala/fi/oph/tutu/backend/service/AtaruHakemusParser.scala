@@ -81,10 +81,10 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     }
   }
 
-  def parseTutkinto1Maakoodi(hakemus: AtaruHakemus): Option[String] = {
+  def parseTutkinto1MaakoodiUri(hakemus: AtaruHakemus): Option[String] = {
     val answers     = hakemus.content.answers
     val paatosKieli = findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, answers)
-    findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers)
+    findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).map(value => s"maatjavaltiot2_$value")
   }
 
   def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {
@@ -102,7 +102,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
         paattymisVuosi =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
-        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers),
+        maakoodiUri =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).map(value => s"maatjavaltiot2_$value"),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
@@ -127,7 +128,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
           _.toIntOption
         ),
-        maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers),
+        maakoodiUri =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers).map(value => s"maatjavaltiot2_$value"),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodi = None,
@@ -152,7 +154,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
           paattymisVuosi =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_LOPETUS_VUOSI, answers).flatMap(_.toIntOption),
-          maakoodi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers),
+          maakoodiUri =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers).map(value => s"maatjavaltiot2_$value"),
           muuTutkintoTieto = None,
           todistuksenPaivamaara = None,
           koulutusalaKoodi = None,
@@ -171,7 +174,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           oppilaitos = None,
           aloitusVuosi = None,
           paattymisVuosi = None,
-          maakoodi = None,
+          maakoodiUri = None,
           jarjestys = "MUU",
           muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
           todistuksenPaivamaara = None,

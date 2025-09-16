@@ -164,11 +164,11 @@ export const TutkintoComponent = ({
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
         sx={{ width: '50%' }}
         options={maatJaValtiotOptions}
-        value={String(currentTutkinto.maakoodi) || ''}
+        value={String(currentTutkinto.maakoodiUri) || ''}
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,
-            maakoodi: event.target.value,
+            maakoodiUri: event.target.value,
           })
         }
         data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}

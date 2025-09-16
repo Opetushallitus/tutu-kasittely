@@ -74,7 +74,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       .when(koodistoService.getKoodisto("maatjavaltiot2"))
       .thenReturn(Seq.empty[KoodistoItem])
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOid), "testi")
-    maakoodiRepository.upsertMaakoodi("752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
+    maakoodiRepository.upsertMaakoodi("maatjavaltiot2_752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
   }
 
   @Test
@@ -84,7 +84,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       .perform(get("/api/maakoodi"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$[0].koodi").value("752"))
+      .andExpect(jsonPath("$[0].koodiUri").value("maatjavaltiot2_752"))
       .andExpect(jsonPath("$[0].nimi").value("Ruotsi"))
       .andExpect(jsonPath("$[0].esittelijaId").isNotEmpty)
   }
@@ -100,8 +100,8 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
   def updateMaakoodiValidRequestReturns200(): Unit = {
-    maakoodiRepository.upsertMaakoodi("100", "TestCountry", "testi", None)
-    val maakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
+    maakoodiRepository.upsertMaakoodi("maatjavaltiot2_100", "TestCountry", "testi", None)
+    val maakoodi = maakoodiRepository.listAll().find(_.koodiUri == "maatjavaltiot2_100").get
 
     mockMvc
       .perform(
@@ -113,7 +113,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$.koodi").value("100"))
+      .andExpect(jsonPath("$.koodiUri").value("maatjavaltiot2_100"))
       .andExpect(jsonPath("$.nimi").value("TestCountry"))
       .andExpect(jsonPath("$.esittelijaId").value(esittelija.get.esittelijaId.toString))
 
@@ -124,9 +124,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       any()
     )
 
-    val updatedMaakoodi = maakoodiRepository.listAll().find(_.koodi == "100").get
+    val updatedMaakoodi = maakoodiRepository.listAll().find(_.koodiUri == "maatjavaltiot2_100").get
     assert(updatedMaakoodi.esittelijaId.contains(esittelija.get.esittelijaId))
-    assert(updatedMaakoodi.koodi == "100")
+    assert(updatedMaakoodi.koodiUri == "maatjavaltiot2_100")
     assert(updatedMaakoodi.nimi == "TestCountry")
 
     Mockito.reset(auditLog)
@@ -140,7 +140,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$.koodi").value("100"))
+      .andExpect(jsonPath("$.koodiUri").value("maatjavaltiot2_100"))
       .andExpect(jsonPath("$.nimi").value("TestCountry"))
       .andExpect(jsonPath("$.esittelijaId").isEmpty)
 
@@ -151,9 +151,9 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       any()
     )
 
-    val maakoodiAfterRemoval = maakoodiRepository.listAll().find(_.koodi == "100").get
+    val maakoodiAfterRemoval = maakoodiRepository.listAll().find(_.koodiUri == "maatjavaltiot2_100").get
     assert(maakoodiAfterRemoval.esittelijaId.isEmpty)
-    assert(maakoodiAfterRemoval.koodi == "100")
+    assert(maakoodiAfterRemoval.koodiUri == "maatjavaltiot2_100")
     assert(maakoodiAfterRemoval.nimi == "TestCountry")
   }
 

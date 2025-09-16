@@ -19,7 +19,7 @@ const getKoodistoOptions = (
 ): Option[] => {
   return koodisto
     .map((koodistoItem) => ({
-      value: koodistoItem.koodiArvo,
+      value: koodistoItem.koodiUri,
       label: koodistoItem.nimi[lang as keyof KoodistoItem['nimi']],
     }))
     .sort((a, b) => a.label.localeCompare(b.label)) as Option[];

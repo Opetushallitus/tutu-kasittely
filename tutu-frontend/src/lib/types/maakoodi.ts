@@ -1,6 +1,6 @@
 export interface Maakoodi {
   id: string;
   esittelijaId: string | null;
-  koodi: string;
+  koodiUri: string;
   nimi: string;
 }

@@ -10,7 +10,7 @@ case class Tutkinto(
   oppilaitos: Option[String],
   aloitusVuosi: Option[Int] = None,
   paattymisVuosi: Option[Int] = None,
-  maakoodi: Option[String] = None,
+  maakoodiUri: Option[String] = None,
   muuTutkintoTieto: Option[String] = None,
   todistuksenPaivamaara: Option[String] = None,
   koulutusalaKoodi: Option[String] = None,

@@ -69,7 +69,7 @@ class HakemusRepository extends BaseResultHandlers {
         oppilaitos = r.nextStringOption(),
         aloitusVuosi = r.nextIntOption(),
         paattymisVuosi = r.nextIntOption(),
-        maakoodi = r.nextStringOption(),
+        maakoodiUri = r.nextStringOption(),
         muuTutkintoTieto = r.nextStringOption(),
         todistuksenPaivamaara = r.nextStringOption(),
         koulutusalaKoodi = r.nextStringOption(),
@@ -329,7 +329,7 @@ class HakemusRepository extends BaseResultHandlers {
       oppilaitos,
       aloitus_vuosi,
       paattymis_vuosi,
-      maakoodi,
+      maakoodiuri,
       muu_tutkinto_tieto,
       todistuksen_paivamaara,
       koulutusala_koodi,
@@ -388,7 +388,7 @@ class HakemusRepository extends BaseResultHandlers {
     val oppilaitosOrNull            = tutkinto.oppilaitos.map(identity).orNull
     val aloitusVuosi                = tutkinto.aloitusVuosi
     val paattymisVuosi              = tutkinto.paattymisVuosi
-    val maakoodi                    = tutkinto.maakoodi
+    val maakoodiUri                 = tutkinto.maakoodiUri
     val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(identity).orNull
     val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(identity).orNull
     val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
@@ -403,7 +403,7 @@ class HakemusRepository extends BaseResultHandlers {
         oppilaitos,
         aloitus_vuosi,
         paattymis_vuosi,
-        maakoodi,
+        maakoodiuri,
         muu_tutkinto_tieto,
         todistuksen_paivamaara,
         koulutusala_koodi,
@@ -419,7 +419,7 @@ class HakemusRepository extends BaseResultHandlers {
         ${oppilaitosOrNull},
         ${aloitusVuosi},
         ${paattymisVuosi},
-        ${maakoodi},
+        ${maakoodiUri},
         ${muuTutkintoTietoOrNull},
         ${todistuksenPaivamaaraOrNull},
         ${koulutusalaKoodi},
@@ -451,7 +451,7 @@ class HakemusRepository extends BaseResultHandlers {
         oppilaitos = ${tutkinto.oppilaitos.orNull},
         aloitus_vuosi = ${tutkinto.aloitusVuosi},
         paattymis_vuosi = ${tutkinto.paattymisVuosi},
-        maakoodi = ${tutkinto.maakoodi},
+        maakoodiuri = ${tutkinto.maakoodiUri},
         muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
         todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
         koulutusala_koodi = ${tutkinto.koulutusalaKoodi},

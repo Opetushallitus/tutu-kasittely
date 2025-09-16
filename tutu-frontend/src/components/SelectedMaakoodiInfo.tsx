@@ -2,7 +2,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { Esittelija } from '@/src/lib/types/esittelija';
 
 interface Maakoodi {
-  koodi: string;
+  koodiUri: string;
   nimi: string;
   esittelijaId: string | null;
 }
@@ -21,7 +21,7 @@ export const SelectedMaakoodiInfo = ({
   const filteredMaakoodit =
     maakoodit?.filter(
       (maakoodi) =>
-        maakoodi.esittelijaId != null && maakoodi.koodi === selectedMaakoodi,
+        maakoodi.esittelijaId != null && maakoodi.koodiUri === selectedMaakoodi,
     ) || [];
 
   if (filteredMaakoodit.length > 0) {

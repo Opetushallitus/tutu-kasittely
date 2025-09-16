@@ -494,7 +494,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2003), tutkinto1.paattymisVuosi)
     assertEquals("1", tutkinto1.jarjestys)
     assertEquals(None, tutkinto1.muuTutkintoTieto)
-    assertEquals(Some("152"), tutkinto1.maakoodi)
+    assertEquals(Some("maatjavaltiot2_152"), tutkinto1.maakoodiUri)
     assertEquals(None, tutkinto1.todistuksenPaivamaara)
     assertEquals(None, tutkinto1.koulutusalaKoodi)
     assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
@@ -508,7 +508,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2005), tutkinto2.paattymisVuosi)
     assertEquals("2", tutkinto2.jarjestys)
     assertEquals(None, tutkinto2.muuTutkintoTieto)
-    assertEquals(Some("531"), tutkinto2.maakoodi)
+    assertEquals(Some("maatjavaltiot2_531"), tutkinto2.maakoodiUri)
     assertEquals(None, tutkinto2.todistuksenPaivamaara)
     assertEquals(None, tutkinto2.koulutusalaKoodi)
     assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
@@ -522,7 +522,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2025), tutkinto3.paattymisVuosi)
     assertEquals("3", tutkinto3.jarjestys)
     assertEquals(None, tutkinto3.muuTutkintoTieto)
-    assertEquals(Some("826"), tutkinto3.maakoodi)
+    assertEquals(Some("maatjavaltiot2_826"), tutkinto3.maakoodiUri)
     assertEquals(None, tutkinto3.todistuksenPaivamaara)
     assertEquals(None, tutkinto3.koulutusalaKoodi)
     assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
@@ -541,7 +541,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
         "Mä oon suorittanut tutkintoja ainakin:\n\n-Norja\n-Oulu\n-Peräseinäjoki\n\nVannon kautta kiven ja kannon, bro."
       )
     )
-    assertEquals(None, muuTutkinto.maakoodi)
+    assertEquals(None, muuTutkinto.maakoodiUri)
     assertEquals(None, muuTutkinto.todistuksenPaivamaara)
     assertEquals(None, muuTutkinto.koulutusalaKoodi)
     assertEquals(None, muuTutkinto.paaaaineTaiErikoisala)
@@ -567,7 +567,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2000), tutkinto1.paattymisVuosi)
     assertEquals("1", tutkinto1.jarjestys)
     assertEquals(None, tutkinto1.muuTutkintoTieto)
-    assertEquals(Some("064"), tutkinto1.maakoodi)
+    assertEquals(Some("maatjavaltiot2_064"), tutkinto1.maakoodiUri)
     assertEquals(None, tutkinto1.todistuksenPaivamaara)
     assertEquals(None, tutkinto1.koulutusalaKoodi)
     assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
@@ -581,7 +581,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2007), tutkinto2.paattymisVuosi)
     assertEquals("2", tutkinto2.jarjestys)
     assertEquals(None, tutkinto2.muuTutkintoTieto)
-    assertEquals(Some("288"), tutkinto2.maakoodi)
+    assertEquals(Some("maatjavaltiot2_288"), tutkinto2.maakoodiUri)
     assertEquals(None, tutkinto2.todistuksenPaivamaara)
     assertEquals(None, tutkinto2.koulutusalaKoodi)
     assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
@@ -595,7 +595,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some(2011), tutkinto3.paattymisVuosi)
     assertEquals("3", tutkinto3.jarjestys)
     assertEquals(None, tutkinto3.muuTutkintoTieto)
-    assertEquals(Some("218"), tutkinto3.maakoodi)
+    assertEquals(Some("maatjavaltiot2_218"), tutkinto3.maakoodiUri)
     assertEquals(None, tutkinto3.todistuksenPaivamaara)
     assertEquals(None, tutkinto3.koulutusalaKoodi)
     assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
@@ -614,7 +614,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
       )
     )
     assertEquals(muuTutkinto.jarjestys, "MUU")
-    assertEquals(None, muuTutkinto.maakoodi)
+    assertEquals(None, muuTutkinto.maakoodiUri)
     assertEquals(None, muuTutkinto.todistuksenPaivamaara)
     assertEquals(None, muuTutkinto.koulutusalaKoodi)
     assertEquals(None, muuTutkinto.paaaaineTaiErikoisala)
@@ -625,8 +625,8 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
   @Test
   def parseTutkinto1MaakoodiTest(): Unit = {
     val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
-    val maakoodi                   = ataruHakemusParser.parseTutkinto1Maakoodi(hakemusWithKaikkiTutkinnot)
-    assertEquals(Some("152"), maakoodi)
+    val maakoodi                   = ataruHakemusParser.parseTutkinto1MaakoodiUri(hakemusWithKaikkiTutkinnot)
+    assertEquals(Some("maatjavaltiot2_152"), maakoodi)
   }
 
 }
