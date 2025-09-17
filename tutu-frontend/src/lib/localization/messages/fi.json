@@ -229,7 +229,8 @@
         "otsikko": "Yleiset perustelut",
         "tab": {
           "perustelut": "Yleiset perustelut",
-          "lausunto": "Lausuntotiedot"
+          "lausunto": "Lausuntotiedot",
+          "ap": "AP-päätöksen perustelut"
         },
         "muistio": {
           "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)"
@@ -342,7 +343,7 @@
         }
       },
       "ap": {
-        "otsikko": "TODO"
+        "otsikko": "AP-päätöksen perustelut"
       },
       "lausuntotiedot": {
         "lausuntopyynnot": "Lausuntopyynnöt",
@@ -415,7 +416,7 @@
       "ylataso": "Perustelu",
       "yleiset": "Yleiset perustelut / Lausuntotiedot",
       "uoro": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
-      "ap": "AP -päätöksen perustelut"
+      "ap": "AP-päätöksen perustelut"
     },
     "tutkinnot": "Tutkinnot",
     "valitustiedot": "Valitustiedot"
