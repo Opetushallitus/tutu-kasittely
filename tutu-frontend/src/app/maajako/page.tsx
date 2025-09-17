@@ -24,7 +24,7 @@ import { EsittelijaSection } from '@/src/components/EsittelijaSection';
 
 interface Maakoodi {
   id: string;
-  koodi: string;
+  koodiUri: string;
   nimi: string;
   esittelijaId: string | null;
 }
@@ -83,7 +83,7 @@ export default function MaajakoPage() {
 
   const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
     label: maakoodi.nimi,
-    value: maakoodi.koodi,
+    value: maakoodi.koodiUri,
   }));
 
   return (
@@ -172,7 +172,7 @@ export default function MaajakoPage() {
                       .filter((maakoodi) => maakoodi.esittelijaId == null)
                       .map((maakoodi) => ({
                         label: maakoodi.nimi,
-                        value: maakoodi.koodi,
+                        value: maakoodi.koodiUri,
                       })) || []
                   }
                   value={
@@ -180,7 +180,7 @@ export default function MaajakoPage() {
                       .filter(
                         (maakoodi) => maakoodi.esittelijaId === esittelija.id,
                       )
-                      .map((maakoodi) => maakoodi.koodi) as never) || ''
+                      .map((maakoodi) => maakoodi.koodiUri) as never) || ''
                   }
                   onChange={(event: SelectChangeEvent) => {
                     const selectedValues = Array.isArray(event.target.value)
@@ -189,7 +189,7 @@ export default function MaajakoPage() {
 
                     const newMaakoodi = maakoodit?.find(
                       (maakoodi) =>
-                        selectedValues.includes(maakoodi.koodi) &&
+                        selectedValues.includes(maakoodi.koodiUri) &&
                         maakoodi.esittelijaId === null,
                     );
 
@@ -206,14 +206,14 @@ export default function MaajakoPage() {
                       {Array.isArray(selected) &&
                         sortedMaakoodit
                           .filter((maakoodi) =>
-                            selected.includes(maakoodi.koodi),
+                            selected.includes(maakoodi.koodiUri),
                           )
                           .map((maakoodi) => (
                             <Chip
-                              key={maakoodi.koodi}
+                              key={maakoodi.koodiUri}
                               label={maakoodi.nimi}
                               sx={{ borderRadius: '0px' }}
-                              data-testid={`maakoodi-chip-${maakoodi.koodi}`}
+                              data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
                               onDelete={() => {
                                 if (maakoodi && esittelija.id) {
                                   setMaakoodiToUpdate({

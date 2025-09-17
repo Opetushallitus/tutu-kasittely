@@ -33,15 +33,16 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruHakemus]
     }
 
-    val tutkinto_1_maakoodi = ataruHakemusParser.parseTutkinto1Maakoodi(ataruHakemus)
+    val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
 
-    val esittelija = tutkinto_1_maakoodi match {
-      case Some(maakoodi) if maakoodi.nonEmpty => esittelijaRepository.haeEsittelijaMaakoodilla(maakoodi)
-      case _                                   => None
+    val esittelija = tutkinto_1_maakoodiUri match {
+      case Some(tutkinto_1_maakoodiUri) if tutkinto_1_maakoodiUri.nonEmpty =>
+        esittelijaRepository.haeEsittelijaMaakoodiUrilla(tutkinto_1_maakoodiUri)
+      case _ => None
     }
 
-    val tallennettuAtaruHakemusId = (tutkinto_1_maakoodi, esittelija) match {
-      case (Some(maakoodi), Some(esittelija)) =>
+    val tallennettuAtaruHakemusId = (tutkinto_1_maakoodiUri, esittelija) match {
+      case (Some(tutkinto_1_maakoodiUri), Some(esittelija)) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
           hakemus.hakemusKoskee,

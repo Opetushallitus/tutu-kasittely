@@ -74,7 +74,7 @@ export default function TutkintoPage() {
     oppilaitos: '',
     aloitusVuosi: undefined,
     paattymisVuosi: undefined,
-    maakoodi: '',
+    maakoodiUri: '',
     muuTutkintoTieto: '',
     todistuksenPaivamaara: '',
   });

@@ -15,7 +15,7 @@ const setupMaakoodiApi = (
   page: Page,
   initial: Array<{
     id: string;
-    koodi: string;
+    koodiUri: string;
     nimi: string;
     esittelijaId: string | null;
   }>,
@@ -63,8 +63,18 @@ test('Näytä AlertBox, kun jotkin maakoodit ovat määrittämättä, ja Success
   page,
 }) => {
   setupMaakoodiApi(page, [
-    { id: 'M1', koodi: '001', nimi: 'Suomi', esittelijaId: 'E1' },
-    { id: 'M2', koodi: '002', nimi: 'Ruotsi', esittelijaId: null },
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      nimi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      nimi: 'Ruotsi',
+      esittelijaId: null,
+    },
   ]);
 
   await gotoMaajako(page);
@@ -88,8 +98,18 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   page,
 }) => {
   setupMaakoodiApi(page, [
-    { id: 'M1', koodi: '001', nimi: 'Suomi', esittelijaId: 'E1' },
-    { id: 'M2', koodi: '002', nimi: 'Ruotsi', esittelijaId: null },
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      nimi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      nimi: 'Ruotsi',
+      esittelijaId: null,
+    },
   ]);
 
   await gotoMaajako(page);
@@ -107,20 +127,38 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
 
   // Wait for success message and the chip to appear
   await expect(page.getByTestId('success-box')).toBeVisible();
-  await expect(page.getByTestId('maakoodi-chip-002')).toBeVisible();
+  await expect(
+    page.getByTestId('maakoodi-chip-maatjavaltiot2_002'),
+  ).toBeVisible();
 
   // Remove assignment by deleting chip -> becomes unassigned -> Alert shown again
-  await page
-    .getByTestId('maakoodi-chip-002')
-    .locator('svg[data-testid="CancelIcon"]')
-    .click();
+  const chip = page.getByTestId('maakoodi-chip-maatjavaltiot2_002');
+  await expect(chip).toBeVisible();
+
+  // Wait for the chip to be stable and the cancel icon to be clickable
+  const cancelIcon = chip.locator('svg[data-testid="CancelIcon"]');
+  await expect(cancelIcon).toBeVisible();
+  await expect(cancelIcon).toBeEnabled();
+
+  // Force click the cancel icon to ensure the click happens
+  await cancelIcon.click({ force: true });
 
   // Workaround, API vastaa esittelijaId null
   // Poista määritys poistamalla maavalinta → muuttuu määrittämättömäksi → Alertbox näytetään jälleen.
   await page.unroute('**/tutu-backend/api/maakoodi*');
   setupMaakoodiApi(page, [
-    { id: 'M1', koodi: '001', nimi: 'Suomi', esittelijaId: 'E1' },
-    { id: 'M2', koodi: '002', nimi: 'Ruotsi', esittelijaId: null },
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      nimi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      nimi: 'Ruotsi',
+      esittelijaId: null,
+    },
   ]);
   await page.reload();
   await expect(page.getByTestId('alert-box')).toBeVisible();
@@ -140,5 +178,7 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   await page.keyboard.press('Escape');
 
   await expect(page.getByTestId('success-box')).toBeVisible();
-  await expect(page.getByTestId('maakoodi-chip-002')).toBeVisible();
+  await expect(
+    page.getByTestId('maakoodi-chip-maatjavaltiot2_002'),
+  ).toBeVisible();
 });

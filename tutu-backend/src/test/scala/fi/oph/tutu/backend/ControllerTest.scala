@@ -75,9 +75,12 @@ class ControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
-    maakoodi = maakoodiRepository.upsertMaakoodi("752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
-    maakoodi2 = maakoodiRepository.upsertMaakoodi("834", "Tansania", "testi", Some(esittelija.get.esittelijaId))
-    maakoodi3 = maakoodiRepository.upsertMaakoodi("152", "Chile", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi =
+      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi2 =
+      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_834", "Tansania", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi3 =
+      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_152", "Chile", "testi", Some(esittelija.get.esittelijaId))
   }
 
   @BeforeEach
@@ -173,11 +176,10 @@ class ControllerTest extends IntegrationTestBase {
   def luoHakemusValidRequestReturns200(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6666.json")))
-    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     val requestJson =
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
-          "maakoodi": "752",
           "hakemusKoskee": 1
           }"""
 
@@ -204,7 +206,7 @@ class ControllerTest extends IntegrationTestBase {
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
     val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1)
     val requestJson = mapper.writeValueAsString(hakemus)
-    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     mockMvc
       .perform(
         post("/api/ataru-hakemus")
@@ -278,7 +280,7 @@ class ControllerTest extends IntegrationTestBase {
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6665.json")))
-    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("752"))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_752"))
 
     val requestJson =
       """{
@@ -312,7 +314,7 @@ class ControllerTest extends IntegrationTestBase {
   )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
     initAtaruHakemusRequests()
-    when(ataruHakemusParser.parseTutkinto1Maakoodi(any())).thenReturn(Some("834"))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))
 
@@ -973,7 +975,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto1.oppilaitos.contains("Butan Amattikoulu"))
     assert(tutkinto1.aloitusVuosi.contains(1999))
     assert(tutkinto1.paattymisVuosi.contains(2000))
-    assert(tutkinto1.maakoodi.contains("762"))
+    assert(tutkinto1.maakoodiUri.contains("maatjavaltiot2_762"))
     assert(tutkinto1.todistusOtsikko.contains("examensbevis"))
     assert(tutkinto1.muuTutkintoTieto.isEmpty)
 
@@ -984,7 +986,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto2.oppilaitos.contains("Johto koulu"))
     assert(tutkinto2.aloitusVuosi.contains(2006))
     assert(tutkinto2.paattymisVuosi.contains(2007))
-    assert(tutkinto2.maakoodi.contains("762"))
+    assert(tutkinto2.maakoodiUri.contains("maatjavaltiot2_762"))
     assert(tutkinto2.todistusOtsikko.contains("ovrigbevis"))
     assert(tutkinto2.muuTutkintoTieto.isEmpty)
 
@@ -995,7 +997,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(tutkinto3.oppilaitos.contains("Apu koulu"))
     assert(tutkinto3.aloitusVuosi.contains(2010))
     assert(tutkinto3.paattymisVuosi.contains(2011))
-    assert(tutkinto3.maakoodi.contains("762"))
+    assert(tutkinto3.maakoodiUri.contains("maatjavaltiot2_762"))
     assert(tutkinto3.todistusOtsikko.isEmpty)
     assert(tutkinto3.muuTutkintoTieto.isEmpty)
 
@@ -1006,7 +1008,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(muuTutkinto.oppilaitos.isEmpty)
     assert(muuTutkinto.aloitusVuosi.isEmpty)
     assert(muuTutkinto.paattymisVuosi.isEmpty)
-    assert(muuTutkinto.maakoodi.isEmpty)
+    assert(muuTutkinto.maakoodiUri.isEmpty)
     assert(muuTutkinto.todistusOtsikko.isEmpty)
     assert(
       muuTutkinto.muuTutkintoTieto.contains(
@@ -1141,7 +1143,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Butan Amattikoulu",
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
-         |      "maakoodi" : "762",
+         |      "maakoodiUri" : "maatjavaltiot2_762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1156,7 +1158,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Johto koulu",
          |      "aloitusVuosi" : 2006,
          |      "paattymisVuosi" : 2007,
-         |      "maakoodi" : "762",
+         |      "maakoodiUri" : "maatjavaltiot2_762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1171,7 +1173,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Apu koulu",
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
-         |      "maakoodi": "762",
+         |      "maakoodiUri": "maatjavaltiot2_762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1186,7 +1188,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : null,
          |      "aloitusVuosi" : null,
          |      "paattymisVuosi" : null,
-         |      "maakoodi" : null,
+         |      "maakoodiUri" : null,
          |      "muuTutkintoTieto" : "olem lisäksi suorittanut onnistunesti\n\n- elämän koulun perus ja ja jatko opintoja monia kymmeniä,,,, opintoviikoja\n\n\nsekä:\n\nesi merkiksi rippi koulun!!!!111",
          |      "todistuksenPaivamaara" : null,
          |      "koulutusalaKoodi" : null,
@@ -1233,7 +1235,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Butan Amattikoulu",
          |      "aloitusVuosi" : 1999,
          |      "paattymisVuosi" : 2000,
-         |      "maakoodi" : "762",
+         |      "maakoodiUri" : "maatjavaltiot2_762",
          |      "muuTutkintoTieto" : null,
          |      "todistuksenPaivamaara": "Helmikuu 2000",
          |      "koulutusalaKoodi" : "13",
@@ -1249,7 +1251,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Hankken Johto koulu",
          |      "aloitusVuosi" : 2024,
          |      "paattymisVuosi" : 2025,
-         |      "maakoodi" : "100",
+         |      "maakoodiUri" : "maatjavaltiot2_100",
          |      "muuTutkintoTieto" : null
          |    },
          |    {
@@ -1260,7 +1262,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : "Apu koulu",
          |      "aloitusVuosi" : 2010,
          |      "paattymisVuosi" : 2011,
-         |      "maakoodi": "762",
+         |      "maakoodiUri": "maatjavaltiot2_762",
          |      "muuTutkintoTieto" : null
          |    },
          |    {
@@ -1271,7 +1273,7 @@ class ControllerTest extends IntegrationTestBase {
          |      "oppilaitos" : null,
          |      "aloitusVuosi" : null,
          |      "paattymisVuosi" : null,
-         |      "maakoodi" : null,
+         |      "maakoodiUri" : null,
          |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta"
          |    }
          |  ]}}""".stripMargin
@@ -1295,7 +1297,7 @@ class ControllerTest extends IntegrationTestBase {
     assert(paivitettyHakemus.get.tutkinnot(1).oppilaitos.contains("Hankken Johto koulu"))
     assert(paivitettyHakemus.get.tutkinnot(1).aloitusVuosi.contains(2024))
     assert(paivitettyHakemus.get.tutkinnot(1).paattymisVuosi.contains(2025))
-    assert(paivitettyHakemus.get.tutkinnot(1).maakoodi.contains("100"))
+    assert(paivitettyHakemus.get.tutkinnot(1).maakoodiUri.contains("maatjavaltiot2_100"))
 
     requestJson = s"""{"tutkinnot" : [
                      |    {
@@ -1306,7 +1308,7 @@ class ControllerTest extends IntegrationTestBase {
                      |      "oppilaitos" : "Butan Amattikoulu",
                      |      "aloitusVuosi" : 1999,
                      |      "paattymisVuosi" : 2000,
-                     |      "maakoodi" : "762",
+                     |      "maakoodiUri" : "maatjavaltiot2_762",
                      |      "muuTutkintoTieto" : null,
                      |      "todistuksenPaivamaara" : null,
                      |      "koulutusalaKoodi" : null,
@@ -1322,7 +1324,7 @@ class ControllerTest extends IntegrationTestBase {
                      |      "oppilaitos" : "Apu koulu",
                      |      "aloitusVuosi" : 2010,
                      |      "paattymisVuosi" : 2011,
-                     |      "maakoodi": "762",
+                     |      "maakoodiUri": "maatjavaltiot2_762",
                      |      "muuTutkintoTieto" : null,
                      |      "todistuksenPaivamaara" : null,
                      |      "koulutusalaKoodi" : null,
@@ -1338,7 +1340,7 @@ class ControllerTest extends IntegrationTestBase {
                      |      "oppilaitos" : null,
                      |      "aloitusVuosi" : null,
                      |      "paattymisVuosi" : null,
-                     |      "maakoodi" : null,
+                     |      "maakoodiUri" : "maatjavaltiot2_762",
                      |      "muuTutkintoTieto" : "En olekaan suorittanutkoulutusta",
                      |      "todistuksenPaivamaara" : null,
                      |      "koulutusalaKoodi" : null,

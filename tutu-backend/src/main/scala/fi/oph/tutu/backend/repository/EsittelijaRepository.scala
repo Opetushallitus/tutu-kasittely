@@ -28,19 +28,19 @@ class EsittelijaRepository {
   /**
    * Hakee esittelijän maakoodin perusteella
    *
-   * @param maakoodi
+   * @param maakoodiUri
    * esittelijän maakoodi
    * @return
    * Esittelija
    */
-  def haeEsittelijaMaakoodilla(maakoodi: String): Option[DbEsittelija] = {
+  def haeEsittelijaMaakoodiUrilla(maakoodiUri: String): Option[DbEsittelija] = {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
       SELECT e.id, e.esittelija_oid
       FROM esittelija e
       INNER JOIN maakoodi m ON m.esittelija_id = e.id
-      WHERE m.koodi = $maakoodi
+      WHERE m.koodiuri = $maakoodiUri
       AND m.esittelija_id IS NOT NULL
       AND e.esittelija_oid IS NOT NULL
       """.as[DbEsittelija].head,
@@ -49,7 +49,7 @@ class EsittelijaRepository {
       Some(esittelija)
     } catch {
       case e: Exception =>
-        LOG.warn(s"Esittelijän haku epäonnistui maakoodilla: $maakoodi")
+        LOG.warn(s"Esittelijän haku epäonnistui maakoodilla: $maakoodiUri")
         None
     }
   }

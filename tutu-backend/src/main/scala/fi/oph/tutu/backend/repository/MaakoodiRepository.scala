@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 case class DbMaakoodi(
   id: UUID,
   esittelijaId: Option[UUID],
-  koodi: String,
+  koodiUri: String,
   nimi: String
 )
 
@@ -42,7 +42,7 @@ class MaakoodiRepository {
   def listAll(): Seq[DbMaakoodi] =
     db.run(
       sql"""
-        SELECT id, esittelija_id, koodi, nimi
+        SELECT id, esittelija_id, koodiuri, nimi
         FROM maakoodi
       """.as[DbMaakoodi],
       "list_all_maakoodi"
@@ -51,13 +51,13 @@ class MaakoodiRepository {
   /**
    * Creates or updates a maakoodi entry
    *
-   * @param koodi maakoodi value
+   * @param koodiUri maakoodi value in format maatjavaltiot2_XXX
    * @param nimi name for the maakoodi
    * @param muokkaajaTaiLuoja creator or modifier of the entry
    * @return the created or updated maakoodi
    */
   def upsertMaakoodi(
-    koodi: String,
+    koodiUri: String,
     nimi: String,
     muokkaajaTaiLuoja: String,
     esittelijaId: Option[UUID] = None
@@ -65,59 +65,59 @@ class MaakoodiRepository {
     try {
       val esittelijaIdSql = esittelijaId.map(id => s"'$id'::uuid").getOrElse("NULL")
       val query           = sql"""
-        INSERT INTO maakoodi (koodi, nimi, luoja, esittelija_id)
-        VALUES ($koodi, $nimi, $muokkaajaTaiLuoja, #$esittelijaIdSql)
-        ON CONFLICT (koodi) DO
+        INSERT INTO maakoodi (koodiuri, nimi, luoja, esittelija_id)
+        VALUES ($koodiUri, $nimi, $muokkaajaTaiLuoja, #$esittelijaIdSql)
+        ON CONFLICT (koodiuri) DO
         UPDATE SET
           nimi = EXCLUDED.nimi,
           muokkaaja = EXCLUDED.luoja,
           esittelija_id = #$esittelijaIdSql,
           muokattu = now()
-        RETURNING id, esittelija_id, koodi, nimi
+        RETURNING id, esittelija_id, koodiuri, nimi
         """.as[DbMaakoodi]
       val maakoodi: DbMaakoodi = db.run(query.head, "upsertMaakoodi")
       Some(maakoodi)
     } catch {
       case e: Exception =>
-        LOG.warn(s"Failed to upsert maakoodi with koodi: $koodi", e)
+        LOG.warn(s"Failed to upsert maakoodi with koodiUri: $koodiUri", e)
         None
     }
   }
 
   private def syncInsert(
-    koodi: String,
+    koodiUri: String,
     nimi: String,
     muokkaajaTaiLuoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO maakoodi (koodi, nimi, luoja)
+      INSERT INTO maakoodi (koodiuri, nimi, luoja)
       VALUES (
-        $koodi,
+        $koodiUri,
         $nimi,
         $muokkaajaTaiLuoja
       )
-      ON CONFLICT (koodi)
+      ON CONFLICT (koodiuri)
       DO UPDATE SET
         nimi = EXCLUDED.nimi,
         muokkaaja = EXCLUDED.luoja,
         muokattu = now()
     """
 
-  private def syncDelete(koodi: String): DBIO[Int] =
+  private def syncDelete(koodiUri: String): DBIO[Int] =
     sqlu"""
-      DELETE FROM maakoodi WHERE koodi = $koodi
+      DELETE FROM maakoodi WHERE koodiuri = $koodiUri
     """
 
   def syncFromKoodisto(
     items: Seq[KoodistoItem],
     muokkaajaTaiLuoja: String
   ): Unit = {
-    val existing = listAll().map(_.koodi).toSet
-    val incoming = items.map(_.koodiArvo).toSet
+    val existing = listAll().map(_.koodiUri).toSet
+    val incoming = items.map(_.koodiUri).toSet
 
     val toInsertOrUpdate = items.map { item =>
       val nameFi = item.nimi.getOrElse(Kieli.fi, "")
-      syncInsert(item.koodiArvo, nameFi, muokkaajaTaiLuoja)
+      syncInsert(item.koodiUri, nameFi, muokkaajaTaiLuoja)
     }
 
     val toDelete = (existing -- incoming).toSeq.map(syncDelete)
@@ -139,7 +139,7 @@ class MaakoodiRepository {
   def getMaakoodi(id: UUID): Option[DbMaakoodi] = {
     try {
       val query = sql"""
-        SELECT id, esittelija_id, koodi, nimi
+        SELECT id, esittelija_id, koodiuri, nimi
         FROM maakoodi
         WHERE id = ${id.toString}::uuid
       """.as[DbMaakoodi]
@@ -175,7 +175,7 @@ class MaakoodiRepository {
           muokkaaja = $muokkaaja,
           muokattu = now()
         WHERE id = ${id.toString}::uuid
-        RETURNING id, esittelija_id, koodi, nimi
+        RETURNING id, esittelija_id, koodiuri, nimi
       """.as[DbMaakoodi]
       val maakoodi: DbMaakoodi = db.run(query.head, "updateMaakoodi")
       Some(maakoodi)

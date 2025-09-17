@@ -2,7 +2,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { Esittelija } from '@/src/lib/types/esittelija';
 
 interface Maakoodi {
-  koodi: string;
+  koodiUri: string;
   nimi: string;
   esittelijaId: string | null;
 }
