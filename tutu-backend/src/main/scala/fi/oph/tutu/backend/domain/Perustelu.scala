@@ -128,17 +128,23 @@ case class PerusteluUoRoSisalto(
   otmEroOpinnotLaajuus: Option[Boolean] = None,
   otmMuuEro: Option[Boolean] = None,
   otmMuuEroSelite: Option[String] = None,
-  sovellettuOpettajanPedagogisetOpinnot: Option[Boolean] = None,
+  sovellettuOpettajanPedagogisetOpinnot: SovellettuTilanne = SovellettuTilanne(),
+  // TODO: sovellettuAineOption
   sovellettuOpetettavanAineenOpinnot: Option[Boolean] = None,
-  sovellettuMonialaisetOpinnot: Option[Boolean] = None,
-  sovellettuErityisopetus: Option[Boolean] = None,
-  sovellettuVarhaiskasvatus: Option[Boolean] = None,
-  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: Option[Boolean] = None,
-  sovellettuRiittavatOpinnot: Option[Boolean] = None,
-  sovellettuRinnastaminenOtmTutkintoon: Option[Boolean] = None,
-  sovellettuLuokanopettaja: Option[Boolean] = None,
+  sovellettuMonialaisetOpinnot: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuErityisopetus: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuVarhaiskasvatus: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuRiittavatOpinnot: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuRinnastaminenOtmTutkintoon: SovellettuTilanne = SovellettuTilanne(),
+  sovellettuLuokanopettaja: SovellettuTilanne = SovellettuTilanne(),
   sovellettuMuuTilanne: Option[Boolean] = None,
   sovellettuMuuTilanneSelite: Option[String] = None
+)
+
+case class SovellettuTilanne(
+  checked: Option[Boolean] = None,
+  value: Option[String] = None
 )
 
 case class Lausuntotieto(

@@ -17,8 +17,9 @@ import {
   opettajatBooleanFields,
   otmBooleanFields,
   vkBooleanFields,
-} from '@/src/constants/perusteluUoRoBooleanFields';
+} from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import { useDebounce } from '@/src/hooks/useDebounce';
+import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
 
 export default function UoroPage() {
   const { t } = useTranslations();
@@ -34,9 +35,13 @@ export default function UoroPage() {
     setPerusteluUoRo(perustelu.perusteluUoRo);
   }, [perustelu, setPerusteluUoRo]);
 
-  const updatePerusteluUoRo = (field: string, value: boolean | string) => {
+  const updatePerusteluUoRo = (
+    field: string,
+    value: boolean | string | object,
+  ) => {
     const isMuuUnchecked =
-      value === false && (value.toString() === 'muuEro' || 'muuSelite');
+      value === false &&
+      (field.endsWith('MuuEro') || field === 'sovellettuMuuTilanne');
     const modifiedPerusteluUoRo = perusteluUoRo
       ? {
           ...perusteluUoRo,
@@ -165,6 +170,14 @@ export default function UoroPage() {
           hakemus={hakemus}
           sisainen={false}
           hakemuksenOsa={'perustelut-uo-ro-muu-tutkinto'}
+        />
+        <OphTypography variant={'h4'}>
+          {t('hakemus.perustelu.uoro.sovellettuTilanne.otsikko')}
+        </OphTypography>
+        <SovellettuTilanne
+          perusteluUoRo={perusteluUoRo}
+          updatePerusteluUoRoAction={updatePerusteluUoRo}
+          t={t}
         />
       </Stack>
     </PerusteluLayout>
