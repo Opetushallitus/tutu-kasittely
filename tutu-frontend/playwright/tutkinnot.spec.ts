@@ -68,6 +68,11 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-paaaine-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-paaaine-1')).toHaveText('');
 
+  await expect(page.getByTestId('tutkinto-oppilaitos-1')).toBeVisible();
+  await expect(page.getByTestId('tutkinto-oppilaitos-1')).toHaveValue(
+    'Butan Amattikoulu',
+  );
+
   await expect(page.getByTestId('tutkinto-maa-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-maa-1')).toHaveText('Tadžikistan');
 
