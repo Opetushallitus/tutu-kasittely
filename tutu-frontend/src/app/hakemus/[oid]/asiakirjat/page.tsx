@@ -35,21 +35,26 @@ import {
 } from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
 import {
+  alemmatTutkinnot,
+  henkilotietojenLiitteet,
+  muutTutkinnot,
   oikeellisuusJaAitous,
   todistusAitoustarkistusLupa,
   tutkintoTaiKoulutus,
+  ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
 import {
   findSisaltoQuestionAndAnswer,
+  findSisaltoValuesByItem,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
 
-const sisallonOsiot = [
-  tutkintoTaiKoulutus, // Tutkinto tai koulutus
-];
+const sisallonSuoratYlatasonOsiot = [henkilotietojenLiitteet];
+const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
+const tutkintojenAliOsiot = [ylinTutkinto, alemmatTutkinnot, muutTutkinnot];
 
 const ExternalLink = ({
   href,
@@ -68,31 +73,6 @@ const ExternalLink = ({
       </CenteredRow>
     </StyledLink>
   );
-};
-
-const emptyAsiakirjaTieto: AsiakirjaTieto = {
-  pyydettavatAsiakirjat: [],
-  allekirjoituksetTarkistettu: false,
-  allekirjoituksetTarkistettuLisatiedot: null,
-  alkuperaisetAsiakirjatSaatuNahtavaksi: false,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: null,
-  selvityksetSaatu: false,
-  asiakirjamallitTutkinnoista: {},
-  imiPyynto: {
-    imiPyynto: null,
-    imiPyyntoNumero: null,
-    imiPyyntoLahetetty: null,
-    imiPyyntoVastattu: null,
-  },
-  apHakemus: false,
-  suostumusVahvistamiselleSaatu: false,
-  valmistumisenVahvistus: {
-    valmistumisenVahvistus: false,
-    valmistumisenVahvistusPyyntoLahetetty: null,
-    valmistumisenVahvistusSaatu: null,
-    valmistumisenVahvistusVastaus: null,
-    valmistumisenVahvistusLisatieto: null,
-  },
 };
 
 export default function AsiakirjaPage() {
@@ -136,10 +116,16 @@ const AsiakirjaHookLayer = ({
   /* -------------------------- */
   /* Haetaan liitteiden  tiedot */
   const sisalto = hakemus?.sisalto || [];
-  const rajattuSisalto = sisalto.filter((item) =>
-    sisaltoItemMatchesToAny(item, sisallonOsiot),
+  const tutkintojenYlaOsio = sisalto.find((item) =>
+    sisaltoItemMatchesToAny(item, [tutkintojenYlatasonOsio]),
+  )!;
+  const tutkintoSisalto = tutkintojenAliOsiot.flatMap((osio) =>
+    findSisaltoValuesByItem(osio, tutkintojenYlaOsio),
   );
-  const asiakirjat = haeAsiakirjat(rajattuSisalto);
+  const rajattuSisalto = sisalto.filter((item) =>
+    sisaltoItemMatchesToAny(item, sisallonSuoratYlatasonOsiot),
+  );
+  const asiakirjat = haeAsiakirjat([...rajattuSisalto, ...tutkintoSisalto]);
 
   const {
     isLoading: asiakirjatIsLoading,
@@ -203,9 +189,10 @@ const AsiakirjaPagePure = ({
       );
       return {
         asiakirja,
+        saapumisaika: hakemus.kirjausPvm,
         metadata,
         liitteenTila,
-        key: asiakirja.label.fi || crypto.randomUUID(),
+        key: asiakirja.label.fi!,
       };
     },
   );
@@ -217,7 +204,7 @@ const AsiakirjaPagePure = ({
       getLanguage(),
     );
 
-  const asiakirja = hakemus.asiakirja || emptyAsiakirjaTieto;
+  const asiakirja = hakemus.asiakirja;
 
   return (
     <Stack
@@ -240,11 +227,6 @@ const AsiakirjaPagePure = ({
         updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />
-      <ImiPyyntoComponent
-        imiPyynto={asiakirja.imiPyynto}
-        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
-      ></ImiPyyntoComponent>
-      <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>
@@ -257,7 +239,6 @@ const AsiakirjaPagePure = ({
         hakemusKoskee={hakemus.hakemusKoskee}
         updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
       />
-
       <Muistio
         label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
         helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
@@ -271,6 +252,12 @@ const AsiakirjaPagePure = ({
         sisainen={false}
         hakemuksenOsa={'asiakirjat'}
       />
+
+      <ImiPyyntoComponent
+        imiPyynto={asiakirja.imiPyynto}
+        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
+      ></ImiPyyntoComponent>
+      <Divider orientation={'horizontal'} />
 
       <OphTypography variant={'h3'}>
         {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}

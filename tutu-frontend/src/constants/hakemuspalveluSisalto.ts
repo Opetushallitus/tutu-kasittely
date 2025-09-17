@@ -34,6 +34,21 @@ export const tutkintoTaiKoulutus: HakemuspalveluSisaltoId = createId(
   'tutkinto-tai-koulutus',
 );
 
+export const ylinTutkinto: HakemuspalveluSisaltoId = createId(
+  'f1882e83-2836-440d-a197-4950571e798a',
+  'ylin-tutkinto',
+);
+
+export const alemmatTutkinnot: HakemuspalveluSisaltoId = createId(
+  '216fb38b-7864-4eec-84be-356b420c9167',
+  'alemmat-tutkinnot',
+);
+
+export const muutTutkinnot: HakemuspalveluSisaltoId = createId(
+  '142b4364-1b26-4c95-a98c-d500edf2fcfa',
+  'muut-tutkinnot',
+);
+
 export const perustietoOsiot = [
   tutkintoTaiKoulutus,
   paatosJaAsiointikieli,
@@ -47,6 +62,11 @@ export const perustietoOsiot = [
 export const todistusAitoustarkistusLupa: HakemuspalveluSisaltoId = createId(
   'c20bb2dc-fc8c-41a9-8897-b08fbfc3c705',
   'todistus-aitoustarkistus-lupa',
+);
+
+export const henkilotietojenLiitteet: HakemuspalveluSisaltoId = createId(
+  'c3b22d35-514f-4cf6-9a89-dcdba6aedb55',
+  'henkilotietojen-liitteet',
 );
 
 /*

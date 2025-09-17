@@ -280,11 +280,35 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val intermediate: DefaultMockMvcBuilder =
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mvc = intermediate.build()
-    hakemusId = Some(hakemusRepository.tallennaHakemus(hakemusOid, 1, None, "testi"))
+    hakemusId = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOid,
+        1,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        "testi"
+      )
+    )
     perustelu = perustelu.copy(hakemusId = Some(hakemusId.get))
-    hakemusId2 = Some(hakemusRepository.tallennaHakemus(hakemusOid2, 1, None, "testi"))
+    hakemusId2 = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOid2,
+        1,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        "testi"
+      )
+    )
     perustelu2 = perustelu2.copy(hakemusId = Some(hakemusId2.get))
-    hakemusId3 = Some(hakemusRepository.tallennaHakemus(hakemusOid3, 1, None, "testi"))
+    hakemusId3 = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOid3,
+        1,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        "testi"
+      )
+    )
     perustelu3 = perustelu3.copy(hakemusId = Some(hakemusId3.get))
   }
 

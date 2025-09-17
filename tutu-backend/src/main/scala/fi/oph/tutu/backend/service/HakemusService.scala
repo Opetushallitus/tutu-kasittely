@@ -41,16 +41,28 @@ class HakemusService(
       case _ => None
     }
 
+    val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
+      new Asiakirja(PartialAsiakirja()),
+      "Hakemuspalvelu"
+    )
+
     val tallennettuAtaruHakemusId = (tutkinto_1_maakoodiUri, esittelija) match {
       case (Some(tutkinto_1_maakoodiUri), Some(esittelija)) =>
         hakemusRepository.tallennaHakemus(
           hakemus.hakemusOid,
           hakemus.hakemusKoskee,
           Some(esittelija.esittelijaId),
+          asiakirjaId,
           "Hakemuspalvelu"
         )
       case _ =>
-        hakemusRepository.tallennaHakemus(hakemus.hakemusOid, hakemus.hakemusKoskee, None, "Hakemuspalvelu")
+        hakemusRepository.tallennaHakemus(
+          hakemus.hakemusOid,
+          hakemus.hakemusKoskee,
+          None,
+          asiakirjaId,
+          "Hakemuspalvelu"
+        )
     }
 
     val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
@@ -357,7 +369,7 @@ class HakemusService(
       case None =>
         val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
           new Asiakirja(toBeAsiakirjaTiedot),
-          luojaTaiMuokkaaja
+          luojaTaiMuokkaaja.toString()
         )
         toBeAsiakirjaTiedot.pyydettavatAsiakirjat.foreach { pyydettavatAsiakirjat =>
           asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(

@@ -24,7 +24,7 @@ export type Hakemus = {
   taydennyspyyntoLahetetty: string;
   sisalto: SisaltoItem[];
   liitteidenTilat: TarkistuksenTila[];
-  asiakirja?: AsiakirjaTieto;
+  asiakirja: AsiakirjaTieto;
   yhteistutkinto: boolean;
   tutkinnot: Tutkinto[];
 };
@@ -53,6 +53,13 @@ export type AsiakirjaTieto = {
   valmistumisenVahvistus: ValmistumisenVahvistus;
 };
 
+export type InfoText = {
+  label?: TranslatedName;
+  value?: TranslatedName;
+};
+
+export type SisaltoPathNode = SisaltoItem | SisaltoValue;
+
 export type SisaltoItem = {
   key: string;
   fieldType: string;
@@ -60,6 +67,8 @@ export type SisaltoItem = {
   label: TranslatedName;
   children: SisaltoItem[];
   params?: SisaltoItemInfoText;
+  previous?: SisaltoPathNode;
+  infoText?: InfoText;
 };
 
 export type SisaltoValue = {
@@ -67,6 +76,7 @@ export type SisaltoValue = {
   value: string;
   followups: SisaltoItem[];
   formId?: string;
+  previous?: SisaltoPathNode;
 };
 
 export type SisaltoItemInfoText = {
