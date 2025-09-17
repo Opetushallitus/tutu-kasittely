@@ -8,9 +8,25 @@ export type PerusteluUoRo = {
   muokkaaja?: string;
 };
 
+export type Aine = {
+  aine: string;
+  value: string;
+};
+
+export type KieliAine = {
+  aine: string;
+  values: string[];
+};
+
 export type SovellettuTilanne = {
   checked?: boolean;
   value?: string | null;
+};
+
+export type SovellettuTilanneOpetettavatAineet = {
+  checked?: boolean;
+  kieliAine?: KieliAine;
+  aineet?: Aine[];
 };
 
 export type PerusteluUoRoSisalto = {
@@ -39,10 +55,8 @@ export type PerusteluUoRoSisalto = {
   otmEroOpinnotLaajuus?: boolean;
   otmMuuEro?: boolean;
   otmMuuEroSelite?: string;
-
   sovellettuOpettajanPedagogisetOpinnot?: SovellettuTilanne;
-  // TODO: sovellettuAineOption
-  sovellettuOpetettavanAineenOpinnot?: boolean;
+  sovellettuOpetettavanAineenOpinnot?: SovellettuTilanneOpetettavatAineet;
   sovellettuMonialaisetOpinnot?: SovellettuTilanne;
   sovellettuErityisopetus?: SovellettuTilanne;
   sovellettuVarhaiskasvatus?: SovellettuTilanne;

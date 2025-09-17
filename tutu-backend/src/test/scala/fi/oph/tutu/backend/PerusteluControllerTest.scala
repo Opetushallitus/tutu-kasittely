@@ -155,7 +155,7 @@ def makePerusteluWithUoro(
           Some(true),
           Some("ei voi"),
           SovellettuTilanne(Some(false)),
-          Some(true),
+          SovellettuTilanneOpetettavatAineet(Some(false)),
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),

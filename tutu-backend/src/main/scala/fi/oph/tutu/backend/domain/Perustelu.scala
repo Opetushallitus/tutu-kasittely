@@ -129,8 +129,7 @@ case class PerusteluUoRoSisalto(
   otmMuuEro: Option[Boolean] = None,
   otmMuuEroSelite: Option[String] = None,
   sovellettuOpettajanPedagogisetOpinnot: SovellettuTilanne = SovellettuTilanne(),
-  // TODO: sovellettuAineOption
-  sovellettuOpetettavanAineenOpinnot: Option[Boolean] = None,
+  sovellettuOpetettavanAineenOpinnot: SovellettuTilanneOpetettavatAineet = SovellettuTilanneOpetettavatAineet(),
   sovellettuMonialaisetOpinnot: SovellettuTilanne = SovellettuTilanne(),
   sovellettuErityisopetus: SovellettuTilanne = SovellettuTilanne(),
   sovellettuVarhaiskasvatus: SovellettuTilanne = SovellettuTilanne(),
@@ -140,6 +139,22 @@ case class PerusteluUoRoSisalto(
   sovellettuLuokanopettaja: SovellettuTilanne = SovellettuTilanne(),
   sovellettuMuuTilanne: Option[Boolean] = None,
   sovellettuMuuTilanneSelite: Option[String] = None
+)
+
+case class Aine(
+  aine: String,
+  value: String
+)
+
+case class KieliAine(
+  aine: String,
+  values: Seq[String]
+)
+
+case class SovellettuTilanneOpetettavatAineet(
+  checked: Option[Boolean] = None,
+  kieliAine: Option[KieliAine] = None,
+  aineet: Option[Seq[Aine]] = None
 )
 
 case class SovellettuTilanne(
