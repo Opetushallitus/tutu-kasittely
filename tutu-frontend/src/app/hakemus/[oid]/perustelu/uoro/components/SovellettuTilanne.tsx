@@ -52,6 +52,7 @@ export const SovellettuTilanne = ({
   updatePerusteluUoRoAction,
   t,
 }: SovellettuTilanneProps) => {
+  //TODO: sovellettu tilanne stateen.
   return sovellettuTilanneBooleanFields.map(({ type, key, labelKey }) => {
     const fieldValue =
       perusteluUoRo?.perustelunSisalto?.[key as keyof PerusteluUoRoSisalto];
@@ -123,6 +124,36 @@ export const SovellettuTilanne = ({
       });
     };
 
+    const updatePerusteluUoRoKAine = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      aine: string,
+      value: string,
+    ) => {
+      const aineet =
+        perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
+          ?.aineet || [];
+
+      const aineetToUpdate = e.target.checked
+        ? (() => {
+            const idx = aineet.findIndex((item) => item.aine === aine);
+            if (idx >= 0) {
+              const next = [...aineet];
+              next[idx] = { aine, value };
+              return next;
+            }
+            return [...aineet, { aine, value }];
+          })()
+        : aineet.filter((item) => item.aine !== aine);
+
+      updatePerusteluUoRoAction('sovellettuOpetettavanAineenOpinnot', {
+        checked: true,
+        kieliAine:
+          perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
+            ?.kieliAine || [],
+        aineet: aineetToUpdate,
+      });
+    };
+
     return (
       <React.Fragment key={key as string}>
         <OphCheckbox
@@ -176,32 +207,33 @@ export const SovellettuTilanne = ({
               )}
             </Stack>
             {Object.entries(SovellettuTilanneOpetettavatAineetOptions).map(
-              ([subject, options]) => (
+              ([key, options]) => (
                 <Stack
-                  key={subject}
+                  key={key}
                   direction="row"
                   sx={{ paddingLeft: 4 }}
                   spacing={2}
                 >
                   <OphTypography variant="body1" sx={{ minWidth: 150 }}>
                     {t(
-                      `hakemus.perustelu.uoro.sovellettuTilanne.aineet.${subject}`,
+                      `hakemus.perustelu.uoro.sovellettuTilanne.aineet.${key}`,
                     )}
                   </OphTypography>
                   <OphRadioGroup
-                    key={subject}
-                    labelId={`sovellettu-tilanne-radio-group-label-${subject}`}
-                    data-testid={`radio-group-${subject}`}
+                    key={key}
+                    labelId={`sovellettu-tilanne-radio-group-label-${key}`}
+                    data-testid={`radio-group-${key}`}
                     options={options}
                     row
-                    value={radioValue || ''}
-                    onChange={(e) =>
-                      updatePerusteluUoRoAction(subject, {
-                        checked: true,
-                        value: e.target.value,
-                      })
+                    value={
+                      perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.aineet?.find(
+                        (item) => item?.aine === key,
+                      )?.value || ''
                     }
-                  />
+                    onChange={(e) =>
+                      updatePerusteluUoRoKAine(e, key, e.target.value)
+                    }
+                  />{' '}
                 </Stack>
               ),
             )}
