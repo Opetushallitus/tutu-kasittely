@@ -80,7 +80,7 @@ export const SovellettuTilanne = ({
           if (e.target.checked) {
             updatePerusteluUoRoAction(key, {
               checked: true,
-              kieliAine: { values: [] },
+              kieliAine: [],
               aineet: [],
             });
           } else
@@ -102,6 +102,25 @@ export const SovellettuTilanne = ({
               value: null,
             });
       }
+    };
+
+    const updatePerusteluUoRoKieliAine = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      value: string,
+    ) => {
+      const kieliAineet =
+        perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
+          ?.kieliAine || [];
+      const kieliAineetToUpdate = e.target.checked
+        ? [...kieliAineet, value]
+        : kieliAineet.filter((kieli) => kieli !== value);
+      updatePerusteluUoRoAction('sovellettuOpetettavanAineenOpinnot', {
+        checked: true,
+        kieliAine: kieliAineetToUpdate,
+        aineet:
+          perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
+            ?.aineet,
+      });
     };
 
     return (
@@ -143,13 +162,15 @@ export const SovellettuTilanne = ({
                     checked={
                       !!(
                         perusteluUoRo?.perustelunSisalto
-                          ?.sovellettuOpetettavanAineenOpinnot &&
-                        perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.kieliAine?.values?.includes?.(
+                          ?.sovellettuOpetettavanAineenOpinnot?.kieliAine &&
+                        perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.kieliAine?.includes?.(
                           option.value,
                         )
                       )
                     }
-                    onChange={() => null}
+                    onChange={(e) =>
+                      updatePerusteluUoRoKieliAine(e, option.value)
+                    }
                   />
                 ),
               )}
@@ -171,7 +192,6 @@ export const SovellettuTilanne = ({
                     key={subject}
                     labelId={`sovellettu-tilanne-radio-group-label-${subject}`}
                     data-testid={`radio-group-${subject}`}
-                    // sx={{ paddingLeft: 4 }}
                     options={options}
                     row
                     value={radioValue || ''}

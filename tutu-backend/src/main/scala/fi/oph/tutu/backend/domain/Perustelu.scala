@@ -146,14 +146,9 @@ case class Aine(
   value: String
 )
 
-case class KieliAine(
-  aine: String,
-  values: Seq[String]
-)
-
 case class SovellettuTilanneOpetettavatAineet(
   checked: Option[Boolean] = None,
-  kieliAine: Option[KieliAine] = None,
+  kieliAine: Option[Seq[String]] = None,
   aineet: Option[Seq[Aine]] = None
 )
 

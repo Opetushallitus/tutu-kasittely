@@ -13,11 +13,6 @@ export type Aine = {
   value: string;
 };
 
-export type KieliAine = {
-  aine: string;
-  values: string[];
-};
-
 export type SovellettuTilanne = {
   checked?: boolean;
   value?: string | null;
@@ -25,7 +20,7 @@ export type SovellettuTilanne = {
 
 export type SovellettuTilanneOpetettavatAineet = {
   checked?: boolean;
-  kieliAine?: KieliAine;
+  kieliAine?: string[];
   aineet?: Aine[];
 };
 
