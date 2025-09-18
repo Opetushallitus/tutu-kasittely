@@ -311,7 +311,20 @@
           "rinnastaminenKasvatustieteelliseenTutkintoon": "Rinnastaminen kasvatustieteelliseen tutkintoon",
           "riittavatOpinnot": "Riittävät opinnot",
           "rinnastaminenOtmTutkintoon": "Rinnastaminen oikeustieteen maisterin tutkintoon",
-          "luokanopettaja": "Luokanopettaja"
+          "luokanopettaja": "Luokanopettaja",
+          "vieraatKielet": "Vieraat kielet",
+          "aineet": {
+            "liikunta": "Liikunta",
+            "musiikki": "Musiikki",
+            "kuvataide": "Kuvataide",
+            "kemia": "Kemia",
+            "matematiikka": "Matematiikka",
+            "fysiikka": "Fysiikka",
+            "biologia": "Biologia",
+            "maantiede": "Maantiede",
+            "historia": "Historia",
+            "yhteiskuntaoppi": "Yhteiskuntaoppi"
+          }
         }
       },
       "ap": {

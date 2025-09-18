@@ -5,6 +5,7 @@ import {
   OphCheckbox,
   OphInputFormField,
   OphRadioGroup,
+  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import {
   PerusteluUoRo,
@@ -12,7 +13,12 @@ import {
 } from '@/src/lib/types/perusteluUoRo';
 import { sovellettuTilanneBooleanFields } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import React from 'react';
-import { OphRadioOption } from '@/src/lib/types/common';
+import {
+  SovellettuTilanneOpetettavatAineetOptions,
+  sovellettuTilanneOpetettavatAineetVieraatKieletOptions,
+  sovellettuTilanneOptions,
+} from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/SovellettuTilanneOptions';
+import { Stack } from '@mui/material';
 
 export type SovellettuTilanneProps = {
   perusteluUoRo?: PerusteluUoRo;
@@ -46,13 +52,6 @@ export const SovellettuTilanne = ({
   updatePerusteluUoRoAction,
   t,
 }: SovellettuTilanneProps) => {
-  const sovellettuTilanneRadioOptions: OphRadioOption<string>[] = [
-    { value: 'A', label: 'A' },
-    { value: 'B', label: 'B' },
-    { value: 'C', label: 'C' },
-    { value: 'D', label: 'D' },
-  ];
-
   return sovellettuTilanneBooleanFields.map(({ type, key, labelKey }) => {
     const fieldValue =
       perusteluUoRo?.perustelunSisalto?.[key as keyof PerusteluUoRoSisalto];
@@ -68,34 +67,57 @@ export const SovellettuTilanne = ({
       ? String(fieldValue.value)
       : null;
 
+    const updatePerusteluUoRoChecked = (
+      type: string,
+      key: string,
+      e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      switch (type) {
+        case 'boolean':
+          updatePerusteluUoRoAction(key, !checked);
+          break;
+        case 'sovellettuTilanneOpetettavatAineet':
+          if (e.target.checked) {
+            updatePerusteluUoRoAction(key, {
+              checked: true,
+              kieliAine: { values: [] },
+              aineet: [],
+            });
+          } else
+            updatePerusteluUoRoAction(key, {
+              checked: false,
+              kieliAine: null,
+              aineet: null,
+            });
+          break;
+        default:
+          if (e.target.checked) {
+            updatePerusteluUoRoAction(key, {
+              checked: true,
+              value: e.target.value,
+            });
+          } else
+            updatePerusteluUoRoAction(key, {
+              checked: false,
+              value: null,
+            });
+      }
+    };
+
     return (
       <React.Fragment key={key as string}>
         <OphCheckbox
           label={t(labelKey)}
           data-testid={`checkbox-${key as string}`}
           checked={checked}
-          //todo: väliaikaisesti disabloitu, tehdään seuraavassa tiketissä.
-          disabled={key === 'sovellettuOpetettavanAineenOpinnot'}
-          onChange={(e) =>
-            type === 'boolean'
-              ? updatePerusteluUoRoAction(key, !checked)
-              : updatePerusteluUoRoAction(
-                  key,
-                  e.target.checked
-                    ? {
-                        checked: true,
-                        value: e.target.value,
-                      }
-                    : { checked: false, value: null },
-                )
-          }
+          onChange={(e) => updatePerusteluUoRoChecked(type, key, e)}
         />
-        {checked && typeof fieldValue !== 'boolean' && (
+        {checked && type === 'sovellettuTilanne' && (
           <OphRadioGroup
-            labelId="imiPyynto-radio-group-label"
+            labelId="sovellettu-tilanne-radio-group-label"
             data-testid={`radio-group-${key as string}`}
             sx={{ paddingLeft: 4 }}
-            options={sovellettuTilanneRadioOptions}
+            options={sovellettuTilanneOptions}
             row
             value={radioValue || ''}
             onChange={(e) =>
@@ -106,7 +128,66 @@ export const SovellettuTilanne = ({
             }
           />
         )}
-        {perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanne && (
+        {checked && type === 'sovellettuTilanneOpetettavatAineet' && (
+          <>
+            <Stack direction="row" sx={{ paddingLeft: 4 }} spacing={2}>
+              <OphTypography variant="body1" sx={{ minWidth: 150 }}>
+                {t('hakemus.perustelu.uoro.sovellettuTilanne.vieraatKielet')}
+              </OphTypography>
+              {sovellettuTilanneOpetettavatAineetVieraatKieletOptions.map(
+                (option) => (
+                  <OphCheckbox
+                    key={option.value}
+                    label={option.label}
+                    data-testid={`opetettavatAineetVieraatKielet-${option.value}-checkBox`}
+                    checked={
+                      !!(
+                        perusteluUoRo?.perustelunSisalto
+                          ?.sovellettuOpetettavanAineenOpinnot &&
+                        perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.kieliAine?.values?.includes?.(
+                          option.value,
+                        )
+                      )
+                    }
+                    onChange={() => null}
+                  />
+                ),
+              )}
+            </Stack>
+            {Object.entries(SovellettuTilanneOpetettavatAineetOptions).map(
+              ([subject, options]) => (
+                <Stack
+                  key={subject}
+                  direction="row"
+                  sx={{ paddingLeft: 4 }}
+                  spacing={2}
+                >
+                  <OphTypography variant="body1" sx={{ minWidth: 150 }}>
+                    {t(
+                      `hakemus.perustelu.uoro.sovellettuTilanne.aineet.${subject}`,
+                    )}
+                  </OphTypography>
+                  <OphRadioGroup
+                    key={subject}
+                    labelId={`sovellettu-tilanne-radio-group-label-${subject}`}
+                    data-testid={`radio-group-${subject}`}
+                    // sx={{ paddingLeft: 4 }}
+                    options={options}
+                    row
+                    value={radioValue || ''}
+                    onChange={(e) =>
+                      updatePerusteluUoRoAction(subject, {
+                        checked: true,
+                        value: e.target.value,
+                      })
+                    }
+                  />
+                </Stack>
+              ),
+            )}
+          </>
+        )}
+        {checked && type == 'boolean' && (
           <OphInputFormField
             data-testid="otmMuuEroSelite"
             sx={{ paddingLeft: 4 }}
