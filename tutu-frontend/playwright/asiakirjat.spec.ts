@@ -29,25 +29,29 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
   );
 
-  const asiakirjaId1 = '#asiakirja__c95d7c76-5a4c-4ce5-a173-5c848664e6ed';
-  const asiakirjaId2 = '#asiakirja__7046e83e-b780-42c4-bbd5-a55b798050dd';
-  const asiakirjaId3 = '#asiakirja__582be518-e3ea-4692-8a2c-8370b40213e5';
-  const asiakirjaId4 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25f';
-  const asiakirjaId5 = '#asiakirja__0443f1ca-6fd0-4919-812f-eaed4ae87933';
+  const asiakirjaId1 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25fx';
+  const asiakirjaId2 = '#asiakirja__c95d7c76-5a4c-4ce5-a173-5c848664e6ed';
+  const asiakirjaId3 = '#asiakirja__7046e83e-b780-42c4-bbd5-a55b798050dd';
+  const asiakirjaId4 = '#asiakirja__582be518-e3ea-4692-8a2c-8370b40213e5';
+  const asiakirjaId5 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25f';
+  const asiakirjaId6 = '#asiakirja__0443f1ca-6fd0-4919-812f-eaed4ae87933';
 
   const asiakirjarivit = page.locator('.asiakirja-row');
+  const hakemuksenLuontiaika = '14.05.2025 10:59';
 
-  await expect(asiakirjarivit).toHaveCount(5);
+  await expect(asiakirjarivit).toHaveCount(6);
 
   const row1_otsake_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__otsake`),
-  ).toContainText('Tutkinto 1: Tutkintotodistus');
+  ).toContainText(
+    'Henkilötietojen liitteet: Todistus kansalaisuudesta (esimerkiksi passin henkilötietosivu tai ote väestötietojärjestelmästä)',
+  );
   const row1_tiedostonimi_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__tiedostonimi`),
   ).toContainText('testiliite1.txt');
   const row1_saapumisaika_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__saapumisaika`),
-  ).toContainText('19.05.2025 09:31');
+  ).toContainText(hakemuksenLuontiaika);
   const row1_uusiliite_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__uusi-liite`),
   ).not.toBeAttached();
@@ -57,66 +61,82 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
 
   const row2_otsake_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__otsake`),
-  ).toContainText('Tutkinto 1: Opintosuoritusote');
+  ).toContainText('Tutkinto 1: Tutkintotodistus');
   const row2_tiedostonimi_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__tiedostonimi`),
   ).toContainText('testiliite2.txt');
   const row2_saapumisaika_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__saapumisaika`),
-  ).toContainText('19.05.2025 09:32');
+  ).toContainText(hakemuksenLuontiaika);
   const row2_uusiliite_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__uusi-liite`),
   ).not.toBeAttached();
   const row2_tarkistuksentila_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__tarkistuksen-tila`),
-  ).toContainText('Liite puuttuu');
+  ).toContainText('Tarkistettu');
 
   const row3_otsake_check = expect(
     page.locator(`${asiakirjaId3} .asiakirja-row__otsake`),
-  ).toContainText('Tutkinto 1: Muu liite');
+  ).toContainText('Tutkinto 1: Opintosuoritusote');
   const row3_tiedostonimi_check = expect(
     page.locator(`${asiakirjaId3} .asiakirja-row__tiedostonimi`),
   ).toContainText('testiliite3.txt');
   const row3_saapumisaika_check = expect(
     page.locator(`${asiakirjaId3} .asiakirja-row__saapumisaika`),
-  ).toContainText('19.05.2025 09:33');
+  ).toContainText(hakemuksenLuontiaika);
   const row3_uusiliite_check = expect(
     page.locator(`${asiakirjaId3} .asiakirja-row__uusi-liite`),
-  ).toBeAttached();
+  ).not.toBeAttached();
   const row3_tarkistuksentila_check = expect(
     page.locator(`${asiakirjaId3} .asiakirja-row__tarkistuksen-tila`),
-  ).toContainText('Tarkastamatta');
+  ).toContainText('Liite puuttuu');
 
   const row4_otsake_check = expect(
     page.locator(`${asiakirjaId4} .asiakirja-row__otsake`),
-  ).toContainText('Tutkinto 1: Lisäliite');
+  ).toContainText('Tutkinto 1: Muu liite');
   const row4_tiedostonimi_check = expect(
     page.locator(`${asiakirjaId4} .asiakirja-row__tiedostonimi`),
   ).toContainText('testiliite4.txt');
   const row4_saapumisaika_check = expect(
     page.locator(`${asiakirjaId4} .asiakirja-row__saapumisaika`),
-  ).toContainText('19.05.2025 09:34');
+  ).toContainText(hakemuksenLuontiaika);
   const row4_uusiliite_check = expect(
     page.locator(`${asiakirjaId4} .asiakirja-row__uusi-liite`),
-  ).not.toBeAttached();
+  ).toBeAttached();
   const row4_tarkistuksentila_check = expect(
     page.locator(`${asiakirjaId4} .asiakirja-row__tarkistuksen-tila`),
-  ).toContainText('Puutteellinen liite');
+  ).toContainText('Tarkastamatta');
 
   const row5_otsake_check = expect(
     page.locator(`${asiakirjaId5} .asiakirja-row__otsake`),
-  ).toContainText('Ei: Liitä käännökset');
+  ).toContainText('Tutkinto 1: Lisäliite');
   const row5_tiedostonimi_check = expect(
     page.locator(`${asiakirjaId5} .asiakirja-row__tiedostonimi`),
   ).toContainText('testiliite5.txt');
   const row5_saapumisaika_check = expect(
     page.locator(`${asiakirjaId5} .asiakirja-row__saapumisaika`),
-  ).toContainText('19.05.2025 09:35');
+  ).toContainText(hakemuksenLuontiaika);
   const row5_uusiliite_check = expect(
     page.locator(`${asiakirjaId5} .asiakirja-row__uusi-liite`),
   ).not.toBeAttached();
   const row5_tarkistuksentila_check = expect(
     page.locator(`${asiakirjaId5} .asiakirja-row__tarkistuksen-tila`),
+  ).toContainText('Puutteellinen liite');
+
+  const row6_otsake_check = expect(
+    page.locator(`${asiakirjaId6} .asiakirja-row__otsake`),
+  ).toContainText('Tutkinto 1: Liitä käännökset');
+  const row6_tiedostonimi_check = expect(
+    page.locator(`${asiakirjaId6} .asiakirja-row__tiedostonimi`),
+  ).toContainText('testiliite6.txt');
+  const row6_saapumisaika_check = expect(
+    page.locator(`${asiakirjaId6} .asiakirja-row__saapumisaika`),
+  ).toContainText(hakemuksenLuontiaika);
+  const row6_uusiliite_check = expect(
+    page.locator(`${asiakirjaId6} .asiakirja-row__uusi-liite`),
+  ).not.toBeAttached();
+  const row6_tarkistuksentila_check = expect(
+    page.locator(`${asiakirjaId6} .asiakirja-row__tarkistuksen-tila`),
   ).toContainText('Myöhässä');
 
   await Promise.all([
@@ -149,6 +169,12 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     row5_saapumisaika_check,
     row5_uusiliite_check,
     row5_tarkistuksentila_check,
+
+    row6_otsake_check,
+    row6_tiedostonimi_check,
+    row6_saapumisaika_check,
+    row6_uusiliite_check,
+    row6_tarkistuksentila_check,
   ]);
 });
 

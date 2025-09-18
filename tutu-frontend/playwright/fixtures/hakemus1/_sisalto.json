@@ -672,7 +672,7 @@
           }
         ],
         "label": {
-          "fi": "Todistus kansalaisuudesta (esimerkiksi passin henkilötietosivu tai ote väestötietojärjestelmästä). Syntymäpaikka tai matkustusasiakirja ei todista kansalaisuutta.",
+          "fi": "Todistus kansalaisuudesta (esimerkiksi passin henkilötietosivu tai ote väestötietojärjestelmästä)",
           "sv": "Handling som bestyrker medborgarskap (t.ex. passets personuppgiftssida eller utdrag ur befolkningsdatasystemet)",
           "en": "Document proving your citizenship (for example, the ID page of your passport or an extract from a population register) "
         },
