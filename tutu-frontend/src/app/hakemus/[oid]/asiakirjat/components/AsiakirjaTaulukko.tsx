@@ -215,7 +215,6 @@ export const haeAsiakirjat = (sisalto: SisaltoPathNode[]): SisaltoValue[] => {
 
   traverseSisaltoTree(sisalto, handleItem);
 
-  console.log('!!!!!!!!!!!!! ', sisalto);
   return acc;
 };
 
