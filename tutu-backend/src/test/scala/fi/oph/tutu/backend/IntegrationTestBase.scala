@@ -135,7 +135,7 @@ class IntegrationTestBase {
   }
 
   def addAsiakirjaStuffToHakemus(virkailijaOid: UserOid): UUID = {
-    val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), virkailijaOid)
+    val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), virkailijaOid.toString())
     val apAction1   = asiakirjaRepository.luoPyydettavaAsiakirja(
       asiakirjaId,
       "tutkintotodistustenjaljennokset",

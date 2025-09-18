@@ -26,10 +26,10 @@ export const KaikkiSelvityksetSaatu = ({
   );
 
   const [viimeinenAsiakirjaHakijalta, setViimeinenAsiakirjaHakijalta] =
-    useState<Date>(new Date());
+    useState<Date | null>(new Date());
 
   useEffect(() => {
-    setSelvityksetSaatu(asiakirjaTieto?.selvityksetSaatu || false);
+    setSelvityksetSaatu(asiakirjaTieto.selvityksetSaatu);
   }, [asiakirjaTieto.selvityksetSaatu]);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export const KaikkiSelvityksetSaatu = ({
     <>
       <OphCheckbox
         label={t('hakemus.asiakirjat.kaikkiSelvityksetSaatu')}
-        checked={selvityksetSaatu || false}
+        checked={selvityksetSaatu}
         onChange={() => {
           setSelvityksetSaatu(!selvityksetSaatu);
           updateAsiakirjaTieto({

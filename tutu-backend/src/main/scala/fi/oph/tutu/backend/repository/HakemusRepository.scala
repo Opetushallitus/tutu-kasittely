@@ -87,14 +87,20 @@ class HakemusRepository extends BaseResultHandlers {
    * @return
    *   tallennetun hakemuksen id
    */
-  def tallennaHakemus(hakemusOid: HakemusOid, hakemusKoskee: Int, esittelijaId: Option[UUID], luoja: String): UUID =
+  def tallennaHakemus(
+    hakemusOid: HakemusOid,
+    hakemusKoskee: Int,
+    esittelijaId: Option[UUID],
+    asiakirjaId: UUID,
+    luoja: String
+  ): UUID =
     val hakemusOidString   = hakemusOid.toString
     val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     try
       db.run(
         sql"""
-      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, luoja)
-      VALUES ($hakemusOidString, $hakemusKoskee, ${esittelijaIdOrNull}::uuid, $luoja)
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, asiakirja_id, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head,
         "tallenna_hakemus"

@@ -70,7 +70,7 @@ export const AllekirjoitustenTarkistus = ({
       : null;
     setLisatieto(lisatieto);
   }, [
-    asiakirjaTieto?.allekirjoituksetTarkistettu,
+    asiakirjaTieto.allekirjoituksetTarkistettu,
     asiakirjaTieto.allekirjoituksetTarkistettuLisatiedot,
     setLisatieto,
   ]);

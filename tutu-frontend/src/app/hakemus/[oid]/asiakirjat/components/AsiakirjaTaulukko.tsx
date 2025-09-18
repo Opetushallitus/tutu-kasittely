@@ -1,13 +1,13 @@
 import {
+  Chip,
+  Stack,
   styled,
-  useTheme,
   Table,
-  TableCell,
   TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  Stack,
-  Chip,
+  useTheme,
 } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -16,14 +16,13 @@ import AlarmIcon from '@mui/icons-material/Alarm';
 import { ophColors } from '@/src/lib/theme';
 import {
   AsiakirjaMetadata,
-  SisaltoItem,
+  SisaltoPathNode,
   SisaltoValue,
   TarkistuksenTila,
 } from '@/src/lib/types/hakemus';
-import { LiiteItem } from '@/src/lib/types/liiteItem';
 import {
-  useTranslations,
   TFunction,
+  useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import * as dateFns from 'date-fns';
@@ -45,7 +44,8 @@ const UusiBadge = styled(Chip)(() => ({
 
 export type AsiakirjaTaulukkoData = {
   key: string;
-  asiakirja?: SisaltoValue;
+  saapumisaika: string;
+  asiakirja: SisaltoValue;
   metadata?: AsiakirjaMetadata;
   liitteenTila?: TarkistuksenTila;
 };
@@ -85,7 +85,7 @@ const AsiakirjaTableHeader = () => {
   );
 };
 
-const AsiakirjaTableRow = ({ data }) => {
+const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
   const { t } = useTranslations();
   const theme = useTheme();
   return (
@@ -103,7 +103,7 @@ const AsiakirjaTableRow = ({ data }) => {
       <TableCell>
         <Stack direction="row" gap={theme.spacing(1)}>
           <NoWrap className="asiakirja-row__saapumisaika">
-            {saapumisAika(data.metadata)}
+            {saapumisAika(data.saapumisaika)}
           </NoWrap>
           {uusiLiite(t, data)}
         </Stack>
@@ -124,33 +124,32 @@ const AsiakirjaTableRow = ({ data }) => {
 /* Funktiot tietojen hakemiseen asiakirjasta */
 
 const lomakeOtsake = (asiakirja: SisaltoValue) => {
-  const lastItems = pathToRoot(asiakirja).slice(1, 3);
-  return R.reverse(lastItems)
-    .map(
-      (item) =>
-        item.label.fi.charAt(0).toUpperCase() +
-        item.label.fi.slice(1).toLowerCase(),
-    )
+  const rootPath = pathToRoot(asiakirja);
+  const itemsForOtsake = R.reverse([rootPath.at(1), rootPath.at(-1)]);
+  return itemsForOtsake
+    .map((item) => {
+      const label = item?.label?.fi || '';
+      return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+    })
     .join(': ');
 };
 
-const saapumisAika = (metadata: LiiteItem) => {
-  const timeStr = metadata?.uploaded;
-  return timeStr ? dateFns.format(timeStr, 'dd.MM.yyyy HH:mm') : '-';
+const saapumisAika = (saapumisAika: string) => {
+  return dateFns.format(saapumisAika, 'dd.MM.yyyy HH:mm');
 };
 
-const tiedostoNimi = (metadata: LiiteItem) => {
+const tiedostoNimi = (metadata?: AsiakirjaMetadata) => {
   return metadata?.filename || '-';
 };
 
-const tarkistuksenTila = (t: TFunction, data) => {
+const tarkistuksenTila = (t: TFunction, data: AsiakirjaTaulukkoData) => {
   const translationKey = `hakemus.asiakirjat.tarkistuksenTila.${data.liitteenTila?.state}`;
   const result = t(translationKey);
 
   return result !== translationKey ? result : '-';
 };
 
-const tarkistuksenTilaIcon = (data) => {
+const tarkistuksenTilaIcon = (data: AsiakirjaTaulukkoData) => {
   switch (data.liitteenTila?.state) {
     case 'checked':
       return <CheckCircleOutlineIcon sx={{ color: ophColors.alias.success }} />;
@@ -166,7 +165,7 @@ const tarkistuksenTilaIcon = (data) => {
   }
 };
 
-const uusiLiite = (t: TFunction, data) => {
+const uusiLiite = (t: TFunction, data: AsiakirjaTaulukkoData) => {
   switch (data.liitteenTila?.state) {
     case 'not-checked':
       return (
@@ -181,9 +180,9 @@ const uusiLiite = (t: TFunction, data) => {
   }
 };
 
-const pathToRoot = (value: SisaltoValue): (SisaltoItem | SisaltoValue)[] => {
+const pathToRoot = (value: SisaltoValue): SisaltoPathNode[] => {
   const path = [];
-  let current = value;
+  let current: SisaltoPathNode | undefined = value;
 
   while (current) {
     path.push(current);
@@ -196,11 +195,16 @@ const pathToRoot = (value: SisaltoValue): (SisaltoItem | SisaltoValue)[] => {
 /* ------------------------------------------------------------ */
 /* Korkean tason funktio asiakirjojen etsimiseen puurakenteesta */
 
-export const haeAsiakirjat = (sisalto: SisaltoItem[]): SisaltoValue[] => {
+export const haeAsiakirjat = (sisalto: SisaltoPathNode[]): SisaltoValue[] => {
   const acc: SisaltoValue[] = [];
 
-  const handleItem = (item: (SisaltoItem | SisaltoValue)[]) => {
-    if (item.previous?.fieldType === 'attachment') {
+  const handleItem = (item: SisaltoPathNode) => {
+    if (
+      'followups' in item && // this is a SisaltoValue
+      item.previous &&
+      'fieldType' in item.previous &&
+      item.previous?.fieldType === 'attachment'
+    ) {
       const newItem = {
         ...item,
         formId: item.previous.key,
@@ -218,34 +222,31 @@ export const haeAsiakirjat = (sisalto: SisaltoItem[]): SisaltoValue[] => {
 /* Sisalto-rakenteelle määritetyt puun kulkufunktiot */
 
 const traverseSisaltoTree = (
-  openList: (SisaltoItem | SisaltoValue)[],
-  handleItem: (item: SisaltoItem | SisaltoValue) => void,
+  openList: SisaltoPathNode[],
+  handleItem: (item: SisaltoPathNode) => void,
 ) => {
   traverseTree(expand, combine, handleItem, openList);
 };
 
-const expand = (
-  item: SisaltoItem | SisaltoValue,
-): (SisaltoItem | SisaltoValue)[] => {
-  const { children = [], followups = [] } = item;
+const expand = (item: SisaltoPathNode): SisaltoPathNode[] => {
+  const children = 'children' in item ? item.children : [];
+  const followups = 'followups' in item ? item.followups : [];
   const value = getValueList(item);
 
-  const expanded = [...followups, ...value, ...children].map((childItem) => ({
+  return [...followups, ...value, ...children].map((childItem) => ({
     ...childItem,
     previous: item,
   }));
-
-  return expanded;
 };
 
 const combine = (
-  items: (SisaltoItem | SisaltoValue)[],
-  newItems: (SisaltoItem | SisaltoValue)[],
-): (SisaltoItem | SisaltoValue)[] => {
+  items: SisaltoPathNode[],
+  newItems: SisaltoPathNode[],
+): SisaltoPathNode[] => {
   return [...newItems, ...items];
 };
 
-const getValueList = (item: SisaltoItem | SisaltoValue): SisaltoValue[] => {
+const getValueList = (item: SisaltoPathNode): SisaltoValue[] => {
   const value = item.value;
   return Array.isArray(value) ? value : [];
 };
@@ -253,13 +254,14 @@ const getValueList = (item: SisaltoItem | SisaltoValue): SisaltoValue[] => {
 /* ------------------------------ */
 /* Geneerinen puun kulkumenetelmä */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const traverseTree = (
-  expand: (item: any) => any[],
-  combine: (openList: any[], newList: any[]) => any[],
-  handleItem: (item: any) => void,
-  openList: any[],
+  expand: (item: SisaltoPathNode) => SisaltoPathNode[],
+  combine: (
+    openList: SisaltoPathNode[],
+    newList: SisaltoPathNode[],
+  ) => SisaltoPathNode[],
+  handleItem: (item: SisaltoPathNode) => void,
+  openList: SisaltoPathNode[],
 ) => {
   const [currentItem, ...restList] = openList;
 
@@ -275,7 +277,3 @@ const traverseTree = (
 
   traverseTree(expand, combine, handleItem, combinedList);
 };
-
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
-/* ------------------------------ */

@@ -1,4 +1,4 @@
-import { SisaltoItem } from '@/src/lib/types/hakemus';
+import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 
@@ -44,4 +44,20 @@ export const findSisaltoQuestionAndAnswer = (
     return [label, answer];
   }
   return [undefined, undefined];
+};
+
+export const findSisaltoValuesByItem = (
+  sisaltoId: HakemuspalveluSisaltoId,
+  sisalto: SisaltoItem,
+): SisaltoValue[] => {
+  if (sisaltoItemMatches(sisalto, sisaltoId)) {
+    return sisalto.value;
+  }
+  for (const child of sisalto.children) {
+    const result = findSisaltoValuesByItem(sisaltoId, child);
+    if (result.length > 0) {
+      return result;
+    }
+  }
+  return [];
 };

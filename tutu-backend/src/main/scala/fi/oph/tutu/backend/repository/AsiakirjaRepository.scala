@@ -132,7 +132,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     }
   }
 
-  def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: UserOid): UUID = {
+  def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: String): UUID = {
     val valmistumisenVahvistusVastausOrNull = asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus
       .map(_.toString)
       .orNull
