@@ -182,3 +182,80 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
     page.getByTestId('maakoodi-chip-maatjavaltiot2_002'),
   ).toBeVisible();
 });
+
+test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', async ({
+  page,
+}) => {
+  setupMaakoodiApi(page, [
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      nimi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      nimi: 'Ruotsi',
+      esittelijaId: null,
+    },
+  ]);
+
+  await gotoMaajako(page);
+
+  // Valitse Ruotsi suoritusmaaksi
+  const suoritusmaaSelect = page.getByTestId('suoritusmaa');
+  await suoritusmaaSelect.click();
+  await page.getByRole('option', { name: 'Ruotsi' }).click();
+
+  // Aluksi maakoodilla ei ole esittelijää - ei pitäisi näyttää esittelijän nimeä
+  await expect(
+    page.getByTestId('selected-maakoodi-esittelija'),
+  ).not.toBeVisible();
+
+  // Siirry muokkaustilaan ja aseta esittelijä
+  await page.getByTestId('toggle-edit').click();
+  const firstSelect = page.getByTestId('esittelija-maaselection-E1');
+  await firstSelect.click();
+  await page.getByRole('option', { name: 'Ruotsi' }).click();
+  await page.keyboard.press('Escape');
+
+  // Tarkista että SelectedMaakoodiInfo näyttää uuden esittelijän
+  const esittelijaElement = page.getByTestId('selected-maakoodi-esittelija');
+  await expect(esittelijaElement).toBeVisible();
+  await expect(esittelijaElement).toHaveText('Kari Karibia');
+
+  // Poista esittelijä
+  const chip = page.getByTestId('maakoodi-chip-maatjavaltiot2_002');
+  await expect(chip).toBeVisible();
+  const cancelIcon = chip.locator('svg[data-testid="CancelIcon"]');
+  await cancelIcon.click({ force: true });
+
+  // Päivitä API-tila vastaamaan esittelijän poistoa
+  await page.unroute('**/tutu-backend/api/maakoodi*');
+  setupMaakoodiApi(page, [
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      nimi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      nimi: 'Ruotsi',
+      esittelijaId: null,
+    },
+  ]);
+  await page.reload();
+
+  // Valitse Ruotsi uudelleen suoritusmaaksi uudelleenlatauksen jälkeen
+  const suoritusmaaSelectAfterReload = page.getByTestId('suoritusmaa');
+  await suoritusmaaSelectAfterReload.click();
+  await page.getByRole('option', { name: 'Ruotsi' }).click();
+
+  // Tarkista että esittelijän nimi ei ole enää näkyvissä
+  await expect(
+    page.getByTestId('selected-maakoodi-esittelija'),
+  ).not.toBeVisible();
+});

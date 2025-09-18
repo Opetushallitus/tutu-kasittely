@@ -32,7 +32,10 @@ export const SelectedMaakoodiInfo = ({
       return (
         <>
           <OphTypography variant={'h4'}>Esittelijä</OphTypography>
-          <OphTypography variant={'body1'}>
+          <OphTypography
+            variant={'body1'}
+            data-testid="selected-maakoodi-esittelija"
+          >
             {esittelija.etunimi} {esittelija.sukunimi}
           </OphTypography>
         </>

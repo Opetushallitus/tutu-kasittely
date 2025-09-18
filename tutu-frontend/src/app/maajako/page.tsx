@@ -5,7 +5,7 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
@@ -75,12 +75,15 @@ export default function MaajakoPage() {
     handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
   }, [esittelijatError, addToast, t]);
 
-  const sortedMaakoodit = useMemo(() => sortMaakoodit(maakoodit), [maakoodit]);
-
   if (maakooditIsLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
 
+  // Sortataan maakoodit kerran per render
+  const sortedMaakoodit = sortMaakoodit(maakoodit);
+  const maakooditWithoutEsittelija = sortedMaakoodit.filter(
+    (maakoodi) => maakoodi.esittelijaId == null,
+  );
   const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
     label: maakoodi.nimi,
     value: maakoodi.koodiUri,
@@ -108,7 +111,7 @@ export default function MaajakoPage() {
         ></OphSelectFormField>
 
         <SelectedMaakoodiInfo
-          maakoodit={maakoodit}
+          maakoodit={sortedMaakoodit}
           selectedMaakoodi={selectedMaakoodi}
           esittelijat={esittelijat}
         />
@@ -117,25 +120,16 @@ export default function MaajakoPage() {
         <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
         <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
 
-        {(() => {
-          const maakooditWithoutEsittelija =
-            maakoodit?.filter((maakoodi) => maakoodi.esittelijaId == null) ||
-            [];
-
-          if (maakooditWithoutEsittelija.length === 0) {
-            return <SuccessBox infoText={t('maajako.kaikkiValittu')} />;
-          }
-
-          return (
-            <AlertBox
-              infoText={sortedMaakoodit
-                .filter((maakoodi) => maakoodi.esittelijaId == null)
-                .map((maakoodi) => maakoodi.nimi)
-                .join(', ')}
-              headingText={t('maajako.varoitus')}
-            />
-          );
-        })()}
+        {maakooditWithoutEsittelija.length === 0 ? (
+          <SuccessBox infoText={t('maajako.kaikkiValittu')} />
+        ) : (
+          <AlertBox
+            infoText={maakooditWithoutEsittelija
+              .map((maakoodi) => maakoodi.nimi)
+              .join(', ')}
+            headingText={t('maajako.varoitus')}
+          />
+        )}
 
         <OphButton
           sx={{
@@ -167,14 +161,10 @@ export default function MaajakoPage() {
                   label={t('maajako.tutkinnonsuoritusmaat')}
                   multiple
                   data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
-                  options={
-                    sortedMaakoodit
-                      .filter((maakoodi) => maakoodi.esittelijaId == null)
-                      .map((maakoodi) => ({
-                        label: maakoodi.nimi,
-                        value: maakoodi.koodiUri,
-                      })) || []
-                  }
+                  options={maakooditWithoutEsittelija.map((maakoodi) => ({
+                    label: maakoodi.nimi,
+                    value: maakoodi.koodiUri,
+                  }))}
                   value={
                     (sortedMaakoodit
                       .filter(
@@ -235,7 +225,7 @@ export default function MaajakoPage() {
             ) : (
               <EsittelijaSection
                 esittelija={esittelija}
-                maakoodit={maakoodit}
+                maakoodit={sortedMaakoodit}
                 t={t}
               />
             )}
