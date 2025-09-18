@@ -159,6 +159,19 @@ export const TutkintoComponent = ({
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
         }}
       />
+      <OphInputFormField
+        label={t('hakemus.tutkinnot.tutkinto.oppilaitos')}
+        onChange={(event) =>
+          updateCurrentTutkinto({
+            ...currentTutkinto,
+            oppilaitos: event.target.value,
+          })
+        }
+        value={currentTutkinto.oppilaitos || ''}
+        inputProps={{
+          'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
+        }}
+      />
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
