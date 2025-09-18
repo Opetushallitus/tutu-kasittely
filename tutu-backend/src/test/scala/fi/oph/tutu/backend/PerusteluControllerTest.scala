@@ -285,7 +285,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         hakemusOid,
         1,
         None,
-        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
         "testi"
       )
     )
@@ -295,7 +295,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         hakemusOid2,
         1,
         None,
-        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
         "testi"
       )
     )
@@ -305,7 +305,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         hakemusOid3,
         1,
         None,
-        asiakirjaRepository.tallennaUudetAsiakirjatiedot(new Asiakirja(PartialAsiakirja()), "testi"),
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
         "testi"
       )
     )
