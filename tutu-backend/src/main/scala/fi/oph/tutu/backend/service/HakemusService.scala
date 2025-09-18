@@ -42,7 +42,7 @@ class HakemusService(
     }
 
     val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
-      new Asiakirja(PartialAsiakirja()),
+      Asiakirja(),
       "Hakemuspalvelu"
     )
 
