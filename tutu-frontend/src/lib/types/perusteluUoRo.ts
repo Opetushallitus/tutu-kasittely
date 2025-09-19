@@ -24,6 +24,11 @@ export type SovellettuTilanneOpetettavatAineet = {
   aineet?: Aine[];
 };
 
+export type SovellettuTilanneKasvatustieteellinen = {
+  checked?: boolean;
+  values?: string[];
+};
+
 export type PerusteluUoRoSisalto = {
   opettajatEroMonialaisetOpinnotSisalto?: boolean;
   opettajatEroMonialaisetOpinnotLaajuus?: boolean;
@@ -55,7 +60,7 @@ export type PerusteluUoRoSisalto = {
   sovellettuMonialaisetOpinnot?: SovellettuTilanne;
   sovellettuErityisopetus?: SovellettuTilanne;
   sovellettuVarhaiskasvatus?: SovellettuTilanne;
-  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: SovellettuTilanne;
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: SovellettuTilanneKasvatustieteellinen;
   sovellettuRiittavatOpinnot?: SovellettuTilanne;
   sovellettuRinnastaminenOtmTutkintoon?: SovellettuTilanne;
   sovellettuLuokanopettaja?: SovellettuTilanne;
