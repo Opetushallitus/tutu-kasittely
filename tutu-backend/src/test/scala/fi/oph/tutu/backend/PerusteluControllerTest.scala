@@ -159,7 +159,7 @@ def makePerusteluWithUoro(
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
+          SovellettuTilanneKasvatustieteellinen(Some(false)),
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),
           SovellettuTilanne(Some(false)),
