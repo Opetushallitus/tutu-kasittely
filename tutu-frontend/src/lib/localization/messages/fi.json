@@ -250,6 +250,9 @@
             "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
           }
         },
+        "tutkinnot": {
+          "tutkintoOtsake": "Tutkinto {jarjestys}"
+        },
         "muutPerustelut": {
           "otsikko": "Jatko-opintokelpoisuus ja muut perustelut",
           "jatkoOpintoKelpoisuus": {

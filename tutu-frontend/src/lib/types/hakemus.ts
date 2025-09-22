@@ -153,4 +153,9 @@ export type Tutkinto = {
   paaaaineTaiErikoisala?: string;
   todistusOtsikko?: string;
   muuTutkintoMuistioId?: string;
+
+  ohjeellinenLaajuus?: string;
+  opinnaytetyo?: boolean | undefined;
+  harjoittelu?: boolean | undefined;
+  perustelunLisatietoja?: string | undefined;
 };
