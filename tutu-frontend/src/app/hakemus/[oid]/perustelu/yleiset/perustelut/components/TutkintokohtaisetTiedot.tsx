@@ -28,7 +28,7 @@ const OhjeellinenLaajuus = ({ tutkinto, updateTutkinto }: FieldProps) => {
       multiline={false}
       data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--ohjeellinen-laajuus`}
       label={t('hakemus.perustelu.yleiset.tutkinnot.ohjeellinenLaajuus')}
-      value={tutkinto.ohjeellinenLaajuus}
+      value={tutkinto.ohjeellinenLaajuus || ''}
       onChange={(event) =>
         updateTutkinto({ ohjeellinenLaajuus: event.target.value })
       }
@@ -137,7 +137,7 @@ const Lisatietoja = ({ tutkinto, updateTutkinto }: FieldProps) => {
       multiline={true}
       data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--lisatietoja`}
       label={t('hakemus.perustelu.yleiset.tutkinnot.lisatietoja')}
-      value={tutkinto.perustelunLisatietoja}
+      value={tutkinto.perustelunLisatietoja || ''}
       onChange={(event) =>
         updateTutkinto({ perustelunLisatietoja: event.target.value })
       }

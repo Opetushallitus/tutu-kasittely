@@ -75,7 +75,11 @@ class HakemusRepository extends BaseResultHandlers {
         koulutusalaKoodi = r.nextStringOption(),
         paaaaineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
-        muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString)
+        muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
+        ohjeellinenLaajuus = r.nextStringOption(),
+        opinnaytetyo = r.nextBooleanOption(),
+        harjoittelu = r.nextBooleanOption(),
+        perustelunLisatietoja = r.nextStringOption()
       )
     )
 
@@ -341,7 +345,11 @@ class HakemusRepository extends BaseResultHandlers {
       koulutusala_koodi,
       paaaine_tai_erikoisala,
       todistusotsikko,
-      muu_tutkinto_muistio_id
+      muu_tutkinto_muistio_id,
+      ohjeellinen_laajuus,
+      opinnaytetyo,
+      harjoittelu,
+      perustelun_lisatietoja
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
@@ -401,6 +409,10 @@ class HakemusRepository extends BaseResultHandlers {
     val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(identity).orNull
     val todistusOtsikko             = tutkinto.todistusOtsikko.map(identity).orNull
     val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
+    val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.map(_.toString).orNull
+    val opinnaytetyo                = tutkinto.opinnaytetyo
+    val harjoittelu                 = tutkinto.harjoittelu
+    val perustelunLisatietoja       = tutkinto.perustelunLisatietoja.map(_.toString).orNull
     sqlu"""
       INSERT INTO tutkinto (
         hakemus_id,
@@ -416,6 +428,10 @@ class HakemusRepository extends BaseResultHandlers {
         paaaine_tai_erikoisala,
         todistusotsikko,
         muu_tutkinto_muistio_id,
+        ohjeellinen_laajuus,
+        opinnaytetyo,
+        harjoittelu,
+        perustelun_lisatietoja,
         luoja
       )
       VALUES (
@@ -432,6 +448,10 @@ class HakemusRepository extends BaseResultHandlers {
         ${paaaineTaiErikoisala},
         ${todistusOtsikko},
         ${muuTutkintoMuistioId}::uuid,
+        ${ohjeellinenLaajuus},
+        ${opinnaytetyo},
+        ${harjoittelu},
+        ${perustelunLisatietoja},
         $luoja
       )
     """
@@ -464,6 +484,10 @@ class HakemusRepository extends BaseResultHandlers {
         paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
         todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
         muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
+        ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus},
+        opinnaytetyo = ${tutkinto.opinnaytetyo},
+        harjoittelu = ${tutkinto.harjoittelu},
+        perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja},
         muokkaaja = ${muokkaaja.toString}
       WHERE id = ${tutkinto.id.get.toString}::uuid
     """
