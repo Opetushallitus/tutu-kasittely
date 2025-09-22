@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   OphTypography,
   OphRadio,
@@ -158,16 +158,28 @@ export const TutkintokohtaisetTiedot = ({
   const theme = useTheme();
   const { t } = useTranslations();
 
-  const updateTutkinto = useDebounce((next: Tutkinto) => {
+  const [tutkinnot, setTutkinnot] = useState<Tutkinto[]>([]);
+
+  useEffect(() => {
+    setTutkinnot(hakemus?.tutkinnot || []);
+  }, [hakemus?.tutkinnot]);
+
+  const debouncedUpdateTutkinto = useDebounce((newTutkinnot: Tutkinto[]) => {
+    updateHakemus({ tutkinnot: newTutkinnot });
+  }, 1000);
+
+  const updateTutkinto = (next: Tutkinto) => {
     const oldTutkinnot = hakemus!.tutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
-    updateHakemus({ tutkinnot: [...oldTutkinnot, next] });
-  }, 1000);
+    const newTutkinnot = [...oldTutkinnot, next].sort((a, b) =>
+      a?.jarjestys.localeCompare(b?.jarjestys),
+    );
+    setTutkinnot(newTutkinnot);
+    debouncedUpdateTutkinto(newTutkinnot);
+  };
 
-  const kaikkiTutkinnot: Tutkinto[] = hakemus?.tutkinnot || [];
-
-  const varsinaisetTutkinnot = kaikkiTutkinnot.filter(
+  const varsinaisetTutkinnot = tutkinnot.filter(
     (tutkinto) => tutkinto.jarjestys !== 'MUU',
   );
 
