@@ -9,8 +9,9 @@ import {
   THIN_BOX_BORDER,
 } from '@/src/lib/theme';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Link, { LinkProps } from 'next/link';
+import { usePathname } from 'next/navigation';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const InnerBoxWrapper = styled(Box)(() => ({
@@ -31,6 +32,43 @@ type TabLinkProps = {
 } & Omit<LinkProps, 'href'>;
 
 const SUB_TAB_NAMES = ['perustelu.yleiset', 'perustelu.uoro', 'perustelu.ap'];
+
+const TAB_ROUTES = {
+  perustiedot: 'perustiedot',
+  asiakirjat: 'asiakirjat',
+  tutkinnot: 'tutkinnot',
+  paatostiedot: 'paatostiedot',
+  valitustiedot: 'valitustiedot',
+  'perustelu.yleiset': 'perustelu/yleiset',
+  'perustelu.uoro': 'perustelu/uoro',
+  'perustelu.ap': 'perustelu/ap',
+} as const;
+
+const useActiveTabFromPath = () => {
+  const pathname = usePathname();
+
+  if (pathname.includes('/perustelu/')) {
+    if (pathname.includes('/perustelu/yleiset')) {
+      return 'perustelu.yleiset';
+    } else if (pathname.includes('/perustelu/uoro')) {
+      return 'perustelu.uoro';
+    } else if (pathname.includes('/perustelu/ap')) {
+      return 'perustelu.ap';
+    } else {
+      return 'perustelu.yleiset';
+    }
+  }
+
+  const lastPart = pathname.split('/').at(-1);
+
+  for (const [tabName, route] of Object.entries(TAB_ROUTES)) {
+    if (route === lastPart) {
+      return tabName;
+    }
+  }
+
+  return 'perustiedot';
+};
 
 const TabLink = (props: TabLinkProps) => {
   const ref = useRef<HTMLAnchorElement>(null);
@@ -99,13 +137,18 @@ const LinkedTab = (props: TabLinkProps) => {
 
 export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
   const { t } = useTranslations();
+  const activeTab = useActiveTabFromPath();
+  const [selectedTabName, setSelectedTabName] = React.useState(activeTab);
 
-  const [selectedTabName, setSelectedTabName] = React.useState('perustiedot');
+  useEffect(() => {
+    setSelectedTabName(activeTab);
+  }, [activeTab]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setSelectedTabName(
-      newValue === 'perustelu.ylataso' ? 'perustelu.yleiset' : newValue,
-    ); // When selecting 'Perustelu' -> select first subitem instead
+    const newTabName =
+      newValue === 'perustelu.ylataso' ? 'perustelu.yleiset' : newValue;
+    setSelectedTabName(newTabName);
+    // When selecting 'Perustelu' -> select first subitem instead
   };
 
   const showSubTabs = SUB_TAB_NAMES.includes(selectedTabName);
