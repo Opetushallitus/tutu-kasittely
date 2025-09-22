@@ -32,6 +32,7 @@ const OhjeellinenLaajuus = ({ tutkinto, updateTutkinto }: FieldProps) => {
       onChange={(event) =>
         updateTutkinto({ ohjeellinenLaajuus: event.target.value })
       }
+      inputProps={{ size: 40 }}
     />
   );
 };
@@ -48,7 +49,7 @@ const Suoritusvuodet = ({ tutkinto, updateTutkinto }: FieldProps) => {
         <OphInputFormField
           multiline={false}
           data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--suoritusvuodet-alku`}
-          value={tutkinto.aloitusVuosi}
+          value={tutkinto.aloitusVuosi || ''}
           onChange={(event) =>
             updateTutkinto({ aloitusVuosi: Number(event.target.value) })
           }
@@ -58,7 +59,7 @@ const Suoritusvuodet = ({ tutkinto, updateTutkinto }: FieldProps) => {
         <OphInputFormField
           multiline={false}
           data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--suoritusvuodet-loppu`}
-          value={tutkinto.paattymisVuosi}
+          value={tutkinto.paattymisVuosi || ''}
           onChange={(event) =>
             updateTutkinto({ paattymisVuosi: Number(event.target.value) })
           }
@@ -164,17 +165,7 @@ export const TutkintokohtaisetTiedot = ({
     updateHakemus({ tutkinnot: [...oldTutkinnot, next] });
   }, 1000);
 
-  const kaikkiTutkinnot: Tutkinto[] = [
-    {
-      jarjestys: '1',
-    } as Tutkinto,
-    {
-      jarjestys: '2',
-    } as Tutkinto,
-    {
-      jarjestys: 'MUU',
-    } as Tutkinto,
-  ];
+  const kaikkiTutkinnot: Tutkinto[] = hakemus?.tutkinnot || [];
 
   const varsinaisetTutkinnot = kaikkiTutkinnot.filter(
     (tutkinto) => tutkinto.jarjestys !== 'MUU',
@@ -194,7 +185,7 @@ export const TutkintokohtaisetTiedot = ({
             jarjestys: tutkinto.jarjestys,
           })}
         </OphTypography>
-        <Stack direction="row" gap={theme.spacing(1)}>
+        <Stack direction="row" gap={theme.spacing(4)}>
           <OhjeellinenLaajuus
             updateTutkinto={updateTutkintoWithPartial}
             tutkinto={tutkinto}
