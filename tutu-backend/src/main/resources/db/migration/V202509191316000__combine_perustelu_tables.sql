@@ -32,5 +32,5 @@ SET lausunto_sisalto           = l.sisalto,
 FROM lausuntotieto l
 WHERE perustelu.id = l.perustelu_id;
 
-DROP TABLE perustelu_uo_ro;
+-- DROP TABLE perustelu_uo_ro;
 DROP TABLE lausuntotieto;

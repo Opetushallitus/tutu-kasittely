@@ -17,11 +17,13 @@ case class Perustelu(
   aikaisemmatPaatokset: Option[Boolean] = None,
   jatkoOpintoKelpoisuus: Option[String] = None,
   jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
+  lausuntoPyyntojenLisatiedot: Option[String] = None,
+  lausunnonSisalto: Option[String] = None,
+  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
-  lausuntotieto: Option[Lausuntotieto] = None,
   perusteluUoRo: Option[PerusteluUoRo] = None
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
@@ -46,7 +48,9 @@ case class Perustelu(
       jatkoOpintoKelpoisuus = partial.jatkoOpintoKelpoisuus
         .orElse(this.jatkoOpintoKelpoisuus),
       jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
-        .orElse(this.jatkoOpintoKelpoisuusLisatieto)
+        .orElse(this.jatkoOpintoKelpoisuusLisatieto),
+      lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
+      lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto)
     )
 }
 
@@ -59,11 +63,13 @@ case class PartialPerustelu(
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: Option[String] = None,
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: Option[String] = None,
-  lausuntotieto: Option[PartialLausuntotieto] = None,
   perusteluUoRo: Option[PartialPerusteluUoRo] = None,
   aikaisemmatPaatokset: Option[Boolean] = None,
   jatkoOpintoKelpoisuus: Option[String] = None,
-  jatkoOpintoKelpoisuusLisatieto: Option[String] = None
+  jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
+  lausuntoPyyntojenLisatiedot: Option[String] = None,
+  lausunnonSisalto: Option[String] = None,
+  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
 ) {
   def topLevelFieldsModified(): Boolean =
     Seq(
@@ -77,7 +83,9 @@ case class PartialPerustelu(
       selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
       aikaisemmatPaatokset,
       jatkoOpintoKelpoisuus,
-      jatkoOpintoKelpoisuusLisatieto
+      jatkoOpintoKelpoisuusLisatieto,
+      lausuntoPyyntojenLisatiedot,
+      lausunnonSisalto
     ).exists(_.isDefined)
 }
 
@@ -163,30 +171,9 @@ case class SovellettuTilanne(
   value: Option[String] = None
 )
 
-case class Lausuntotieto(
-  id: Option[UUID] = None,
-  perusteluId: Option[UUID] = None,
-  pyyntojenLisatiedot: Option[String] = None,
-  sisalto: Option[String] = None,
-  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
-) {
-  def mergeWith(partial: PartialLausuntotieto): Lausuntotieto = {
-    this.copy(
-      pyyntojenLisatiedot = partial.pyyntojenLisatiedot.orElse(this.pyyntojenLisatiedot),
-      sisalto = partial.sisalto.orElse(this.sisalto)
-    )
-  }
-}
-
-case class PartialLausuntotieto(
-  pyyntojenLisatiedot: Option[String] = None,
-  sisalto: Option[String] = None,
-  lausuntopyynnot: Option[Seq[Lausuntopyynto]] = None
-)
-
 case class Lausuntopyynto(
   id: Option[UUID] = None,
-  lausuntotietoId: Option[UUID] = None,
+  perusteluId: Option[UUID] = None,
   lausunnonAntaja: Option[String] = None,
   lahetetty: Option[LocalDateTime] = None,
   saapunut: Option[LocalDateTime] = None
