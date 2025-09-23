@@ -74,12 +74,10 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
 
   const menuItems = page.locator('[role="option"]');
   await menuItems.last().click();
-  await page.waitForTimeout(1000); // debounce
 
   await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
 
   await page.getByTestId('poista-asiakirja-button-0').click();
-  await page.waitForTimeout(1000); // debounce
   await page.getByTestId('pyyda-asiakirja-button').click();
   await page.getByTestId('poista-asiakirja-button-undefined').click();
 

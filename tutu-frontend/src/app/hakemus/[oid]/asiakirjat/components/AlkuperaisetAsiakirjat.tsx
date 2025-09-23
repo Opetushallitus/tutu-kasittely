@@ -17,7 +17,7 @@ import {
 
 interface StatelessAlkuperaisetAsiakirjatProps {
   lisatieto: string | null | undefined;
-  setLisatieto: (lisatieto: string | null) => void;
+  setLisatieto: (lisatieto: string | null, useDebounce: boolean) => void;
   t: TFunction;
 }
 
@@ -33,7 +33,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
       <OphCheckbox
         label={t('hakemus.asiakirjat.alkuperaisetAsiakirjatSaatuNahtavaksi')}
         checked={checked}
-        onChange={() => setLisatieto(checked ? null : '')}
+        onChange={() => setLisatieto(checked ? null : '', false)}
       />
       {checked && (
         <OphInputFormField
@@ -42,7 +42,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
             'hakemus.asiakirjat.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot',
           )}
           value={lisatieto}
-          onChange={(event) => setLisatieto(event.target.value)}
+          onChange={(event) => setLisatieto(event.target.value, true)}
         />
       )}
     </>
@@ -51,12 +51,14 @@ const StatelessAlkuperaisetAsiakirjat = ({
 
 interface AlkuperaisetAsiakirjatProps {
   asiakirja: AsiakirjaTieto;
-  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
+  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
 export const AlkuperaisetAsiakirjat = ({
   asiakirja,
-  updateAsiakirjaTieto,
+  instantUpdateAsiakirjaTietoAction,
+  debouncedUpdateAsiakirjaTietoAction,
 }: AlkuperaisetAsiakirjatProps) => {
   const { t } = useTranslations();
 
@@ -80,12 +82,17 @@ export const AlkuperaisetAsiakirjat = ({
   return (
     <StatelessAlkuperaisetAsiakirjat
       lisatieto={lisatieto}
-      setLisatieto={(lisatieto: string | null) => {
+      setLisatieto={(lisatieto: string | null, useDebounce: boolean) => {
         setLisatieto(lisatieto);
-        updateAsiakirjaTieto({
+        const toBeAsiakirjatieto: Partial<AsiakirjaTieto> = {
           alkuperaisetAsiakirjatSaatuNahtavaksi: isDefined(lisatieto),
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: lisatieto,
-        });
+        };
+        if (useDebounce) {
+          debouncedUpdateAsiakirjaTietoAction(toBeAsiakirjatieto);
+        } else {
+          instantUpdateAsiakirjaTietoAction(toBeAsiakirjatieto);
+        }
       }}
       t={t}
     />

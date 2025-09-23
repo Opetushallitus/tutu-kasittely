@@ -90,23 +90,23 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     if (callCount == 3) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
     }
 
     if (callCount == 4) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date('2025-08-27'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
     }
 
     if (callCount == 5) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date('2025-08-27'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus =
         'Myonteinen';
     }
@@ -114,9 +114,9 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     if (callCount == 6) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date('2025-08-25'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date('2025-08-27'), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus =
         'Myonteinen';
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto =
@@ -151,7 +151,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(vastattu).toBeVisible();
   await expect(radio).toBeVisible();
   await expect(lisatieto).not.toBeVisible();
-  await page.waitForTimeout(1000); // debounce
 
   const lahetettyInput = lahetetty.locator('input');
   await lahetetty.click();
@@ -159,7 +158,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(lahetettyInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
-  await page.waitForTimeout(1000); // debounce
 
   const vastattuInput = vastattu.locator('input');
   await vastattu.click();
@@ -167,25 +165,21 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(vastattuInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
-  await page.waitForTimeout(1000); // debounce
 
   const myonteinenRadio = page.locator(
     '[data-testid="valmistumisenVahvistus-radio-group"] input[type="radio"][value="Myonteinen"]',
   );
   await myonteinenRadio.check();
   await expect(lisatieto).toBeVisible();
-  await page.waitForTimeout(1000); // debounce
 
   const lisatietoInput = lisatieto.locator('input');
   await lisatietoInput.fill('Hyvin meni');
 
-  await page.waitForTimeout(1000); // debounce
-
   await expect(lahetettyInput).toHaveValue(
-    dateFns.format(new Date('2025-08-25'), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
   await expect(vastattuInput).toHaveValue(
-    dateFns.format(new Date('2025-08-27'), 'dd.MM.yyyy'),
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
   await expect(myonteinenRadio).toBeChecked();
   await expect(lisatietoInput).toHaveValue('Hyvinhän se meni');

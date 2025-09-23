@@ -36,6 +36,7 @@ export type PartialHakemus = Partial<Omit<Hakemus, 'asiakirja'>> & {
 export type HakemusUpdateCallback = (patch: PartialHakemus) => void;
 export type AsiakirjaTietoUpdateCallback = (
   patch: Partial<AsiakirjaTieto>,
+  showUpdateIndicator?: boolean,
 ) => void;
 
 export type AsiakirjaTieto = {

@@ -6,26 +6,19 @@ import _muutoshistoria from './_muutoshistoria.json';
 import _asiakirjamallit from './_asiakirjamallit.json';
 
 import { clone } from 'remeda';
-import { AsiakirjaPyynto } from '@/src/lib/types/hakemus';
 
 export const getHakemus = () => {
   const hakemus = { ..._hakemus };
   const sisalto = [..._sisalto];
   const liitteidenTilat = [..._liitteidenTilat];
   const muutoshistoria = [..._muutoshistoria];
-  const pyydettavatAsiakirjat = [] as AsiakirjaPyynto[];
   const asiakirjamallit = { ..._asiakirjamallit };
 
   hakemus.sisalto = sisalto;
   hakemus.liitteidenTilat = liitteidenTilat;
   hakemus.muutoshistoria = muutoshistoria;
-  hakemus.asiakirja.pyydettavatAsiakirjat = pyydettavatAsiakirjat;
   hakemus.asiakirja.asiakirjamallitTutkinnoista = asiakirjamallit;
   hakemus.asiakirja.imiPyynto = {};
-
-  hakemus.asiakirja.valmistumisenVahvistus = {
-    valmistumisenVahvistus: false,
-  };
 
   return hakemus;
 };

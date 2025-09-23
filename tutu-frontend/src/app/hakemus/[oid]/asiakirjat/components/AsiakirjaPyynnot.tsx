@@ -27,7 +27,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { IconButton } from '@/src/components/IconButton';
 
 interface AsiakirjaPyynnotProps {
-  asiakirjaPyynnot: AsiakirjaPyynto[] | [];
+  asiakirjaPyynnot: AsiakirjaPyynto[];
   updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
@@ -43,9 +43,8 @@ export const AsiakirjaPyynnot = ({
   const { t } = useTranslations();
   const theme = useTheme();
 
-  const [currentAsiakirjaPyynnot, setCurrentAsiakirjaPyynnot] = React.useState<
-    AsiakirjaPyynto[]
-  >(asiakirjaPyynnot || []);
+  const [currentAsiakirjaPyynnot, setCurrentAsiakirjaPyynnot] =
+    React.useState<AsiakirjaPyynto[]>(asiakirjaPyynnot);
   const [toolTipOpen, setToolTipOpen] = React.useState(false);
   const [
     showEmptyAsiakirjaPyyntoDropdown,
@@ -61,13 +60,13 @@ export const AsiakirjaPyynnot = ({
       ? { id: id, asiakirjanTyyppi: selectedValue }
       : { asiakirjanTyyppi: selectedValue };
 
-    const pyynnot = id
-      ? currentAsiakirjaPyynnot.filter((pyynto) => pyynto.id !== id)
-      : currentAsiakirjaPyynnot;
+    const toBePyynnot = id
+      ? currentAsiakirjaPyynnot.map((p) => (p.id === id ? pyynto : p))
+      : [...currentAsiakirjaPyynnot, pyynto];
 
-    setCurrentAsiakirjaPyynnot([...pyynnot, pyynto]);
+    setCurrentAsiakirjaPyynnot(toBePyynnot);
     updateAsiakirjaTietoAction({
-      pyydettavatAsiakirjat: [...pyynnot, pyynto],
+      pyydettavatAsiakirjat: toBePyynnot,
     });
     setShowEmptyAsiakirjaPyyntoDropdown(false);
   };

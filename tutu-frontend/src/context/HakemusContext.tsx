@@ -12,6 +12,7 @@ type HakemusContextValue = {
   isLoading: boolean;
   isError?: boolean;
   error: Error | null;
+  updateOngoing?: boolean;
 };
 
 export const HAKEMUS_MUUTOSHISTORIA_SORT_KEY = 'hakemus-muutoshistoria-sort';
@@ -51,7 +52,7 @@ export const HakemusProvider = ({
     throwOnError: false,
   });
 
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (patchHakemus: PartialHakemus) =>
       doApiPatch(`hakemus/${hakemus?.hakemusOid}`, patchHakemus),
     onSuccess: async (response) => {
@@ -65,12 +66,18 @@ export const HakemusProvider = ({
   });
 
   const updateHakemus = (patchHakemus: PartialHakemus) => {
-    mutation.mutate(patchHakemus);
+    mutate(patchHakemus);
   };
 
   return (
     <HakemusContext.Provider
-      value={{ hakemus, updateHakemus, isLoading, error }}
+      value={{
+        hakemus,
+        updateHakemus,
+        isLoading,
+        error,
+        updateOngoing: isPending,
+      }}
     >
       {children}
     </HakemusContext.Provider>

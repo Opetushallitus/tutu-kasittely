@@ -158,6 +158,7 @@ const ContentRow = ({
         setVastaavuus={(updatedVastaavuus: boolean) =>
           handleChange({
             lahde: id,
+            useDebounce: false,
             vastaavuus: updatedVastaavuus,
           })
         }
@@ -167,6 +168,7 @@ const ContentRow = ({
         setKuvaus={(updatedKuvaus: string) =>
           handleChange({
             lahde: id,
+            useDebounce: true,
             kuvaus: updatedKuvaus,
           })
         }
@@ -178,16 +180,19 @@ const ContentRow = ({
 
 interface AsiakirjamalliPyynto {
   lahde: AsiakirjamalliLahde;
+  useDebounce: boolean;
   vastaavuus?: boolean;
   kuvaus?: string;
 }
 
 export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   asiakirjaTieto,
-  updateAsiakirjaTieto,
+  instantUpdateAsiakirjaTietoAction,
+  debouncedUpdateAsiakirjaTietoAction,
 }: {
   asiakirjaTieto: AsiakirjaTieto;
-  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
+  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -210,7 +215,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
       changeRequest.kuvaus,
     ])
       .with([P._, P.not(P.nullish), P._], ([, newVal]) => newVal)
-      .with([P.not(P.nullish), P.nullish, P._], ([origVal, ,]) => origVal)
+      .with([P.not(P.nullish), P.nullish, P._], ([origVal]) => origVal)
       .with([P.nullish, P.nullish, P.not(P.nullish)], () => false)
       .with([P.nullish, P.nullish, P.nullish], () => undefined)
       .exhaustive();
@@ -232,7 +237,15 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
         [changedLahde]: updatedMalli,
       };
       setCurrentMallit(updatedMallit);
-      updateAsiakirjaTieto({ asiakirjamallitTutkinnoista: updatedMallit });
+      if (changeRequest.useDebounce) {
+        debouncedUpdateAsiakirjaTietoAction({
+          asiakirjamallitTutkinnoista: updatedMallit,
+        });
+      } else {
+        instantUpdateAsiakirjaTietoAction({
+          asiakirjamallitTutkinnoista: updatedMallit,
+        });
+      }
     }
   };
 

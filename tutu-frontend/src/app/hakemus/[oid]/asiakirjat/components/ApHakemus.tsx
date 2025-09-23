@@ -8,7 +8,6 @@ import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
-import { isDefined } from 'remeda';
 
 interface ApHakemusProps {
   asiakirjaTieto: AsiakirjaTieto;
@@ -33,10 +32,7 @@ export const ApHakemus = ({
   };
 
   useEffect(() => {
-    const apHakemus = asiakirjaTieto.apHakemus;
-    if (isDefined(apHakemus)) {
-      setIsApHakemus(apHakemus);
-    }
+    setIsApHakemus(asiakirjaTieto.apHakemus);
   }, [asiakirjaTieto.apHakemus]);
 
   const theme = useTheme();

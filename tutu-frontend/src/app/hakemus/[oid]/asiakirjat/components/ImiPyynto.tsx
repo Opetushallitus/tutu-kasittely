@@ -22,7 +22,8 @@ import { OphRadioOption } from '@/src/lib/types/common';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
-  updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
 const StyledEditOffIcon = styled(EditOffIcon)({
@@ -31,7 +32,8 @@ const StyledEditOffIcon = styled(EditOffIcon)({
 
 export const ImiPyyntoComponent = ({
   imiPyynto,
-  updateAsiakirjaTietoAction,
+  instantUpdateAsiakirjaTietoAction,
+  debouncedUpdateAsiakirjaTietoAction,
 }: ImiPyyntoProps) => {
   const { t } = useTranslations();
 
@@ -45,7 +47,11 @@ export const ImiPyyntoComponent = ({
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
     setCurrentImiPyynto(updatedImiPyynto);
-    updateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+    if (key === 'imiPyyntoNumero') {
+      debouncedUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+    } else {
+      instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+    }
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {
