@@ -47,8 +47,11 @@ export const ImiPyyntoComponent = ({
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
     setCurrentImiPyynto(updatedImiPyynto);
-    key === 'imiPyyntoNumero' ? debouncedUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto }) : instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
-    
+    if (key === 'imiPyyntoNumero') {
+      debouncedUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+    } else {
+      instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+    }
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {
