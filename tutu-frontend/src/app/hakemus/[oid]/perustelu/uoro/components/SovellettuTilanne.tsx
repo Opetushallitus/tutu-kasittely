@@ -7,10 +7,7 @@ import {
   OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import {
-  PerusteluUoRo,
-  PerusteluUoRoSisalto,
-} from '@/src/lib/types/perusteluUoRo';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 import { sovellettuTilanneBooleanFields } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import React from 'react';
 import {
@@ -21,7 +18,7 @@ import { Stack } from '@mui/material';
 import { OphRadioOption } from '@/src/lib/types/common';
 
 export type SovellettuTilanneProps = {
-  perusteluUoRo?: PerusteluUoRo;
+  uoRoSisalto?: UoRoSisalto;
   updatePerusteluUoRoAction: (
     field: string,
     value: boolean | string | object,
@@ -48,14 +45,13 @@ function hasValueProp(v: unknown): v is { value: string | number } {
 }
 
 export const SovellettuTilanne = ({
-  perusteluUoRo,
+  uoRoSisalto,
   updatePerusteluUoRoAction,
   t,
 }: SovellettuTilanneProps) => {
   return sovellettuTilanneBooleanFields.map(
     ({ type, key, labelKey, options }) => {
-      const fieldValue =
-        perusteluUoRo?.perustelunSisalto?.[key as keyof PerusteluUoRoSisalto];
+      const fieldValue = uoRoSisalto?.[key as keyof UoRoSisalto];
 
       const checked =
         type === 'boolean'
@@ -110,17 +106,14 @@ export const SovellettuTilanne = ({
         value: string,
       ) => {
         const kieliAineet =
-          perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
-            ?.kieliAine || [];
+          uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.kieliAine || [];
         const kieliAineetToUpdate = e.target.checked
           ? [...kieliAineet, value]
           : kieliAineet.filter((kieli) => kieli !== value);
         updatePerusteluUoRoAction('sovellettuOpetettavanAineenOpinnot', {
           checked: true,
           kieliAine: kieliAineetToUpdate,
-          aineet:
-            perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
-              ?.aineet,
+          aineet: uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.aineet,
         });
       };
 
@@ -130,8 +123,7 @@ export const SovellettuTilanne = ({
         value: string,
       ) => {
         const aineet =
-          perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
-            ?.aineet || [];
+          uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.aineet || [];
 
         const aineetToUpdate = e.target.checked
           ? (() => {
@@ -148,8 +140,7 @@ export const SovellettuTilanne = ({
         updatePerusteluUoRoAction('sovellettuOpetettavanAineenOpinnot', {
           checked: true,
           kieliAine:
-            perusteluUoRo?.perustelunSisalto?.sovellettuOpetettavanAineenOpinnot
-              ?.kieliAine || [],
+            uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.kieliAine || [],
           aineet: aineetToUpdate,
         });
       };
@@ -159,9 +150,8 @@ export const SovellettuTilanne = ({
         value: string,
       ) => {
         const values =
-          perusteluUoRo?.perustelunSisalto
-            ?.sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?.values ||
-          [];
+          uoRoSisalto?.sovellettuRinnastaminenKasvatustieteelliseenTutkintoon
+            ?.values || [];
 
         const valuesToUpdate = e.target.checked
           ? (() => {
@@ -222,10 +212,10 @@ export const SovellettuTilanne = ({
                       data-testid={`sovellettuTilanneKasvatustieteellinen-${option.value}-checkBox`}
                       checked={
                         !!(
-                          perusteluUoRo?.perustelunSisalto
+                          uoRoSisalto
                             ?.sovellettuRinnastaminenKasvatustieteelliseenTutkintoon
                             ?.values &&
-                          perusteluUoRo?.perustelunSisalto.sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?.values?.includes?.(
+                          uoRoSisalto?.sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?.values?.includes?.(
                             option.value,
                           )
                         )
@@ -252,9 +242,9 @@ export const SovellettuTilanne = ({
                       data-testid={`opetettavatAineetVieraatKielet-${option.value}-checkBox`}
                       checked={
                         !!(
-                          perusteluUoRo?.perustelunSisalto
-                            ?.sovellettuOpetettavanAineenOpinnot?.kieliAine &&
-                          perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.kieliAine?.includes?.(
+                          uoRoSisalto?.sovellettuOpetettavanAineenOpinnot
+                            ?.kieliAine &&
+                          uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.kieliAine?.includes?.(
                             option.value,
                           )
                         )
@@ -286,7 +276,7 @@ export const SovellettuTilanne = ({
                       options={options}
                       row
                       value={
-                        perusteluUoRo?.perustelunSisalto.sovellettuOpetettavanAineenOpinnot?.aineet?.find(
+                        uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.aineet?.find(
                           (item) => item?.aine === key,
                         )?.value || ''
                       }
@@ -306,10 +296,7 @@ export const SovellettuTilanne = ({
               multiline={true}
               minRows={5}
               label={t('yleiset.tasmenna')}
-              value={
-                perusteluUoRo?.perustelunSisalto.sovellettuMuuTilanneSelite ||
-                ''
-              }
+              value={uoRoSisalto?.sovellettuMuuTilanneSelite || ''}
               onChange={(event) =>
                 updatePerusteluUoRoAction(
                   'sovellettuMuuTilanneSelite',

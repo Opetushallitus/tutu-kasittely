@@ -6,7 +6,7 @@ import { Stack } from '@mui/material';
 import { Muistio } from '@/src/components/Muistio';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { PerusteluUoRo } from '@/src/lib/types/perusteluUoRo';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 import React, { useEffect } from 'react';
 import {
   OphCheckbox,
@@ -25,15 +25,15 @@ export default function UoroPage() {
   const { t } = useTranslations();
   const { hakemus, isLoading, error } = useHakemus();
   const { perustelu, updatePerustelu } = usePerustelu(hakemus?.hakemusOid);
-  const [perusteluUoRo, setPerusteluUoRo] = React.useState<
-    PerusteluUoRo | undefined
+  const [uoRoSisalto, setUoRoSisalto] = React.useState<
+    UoRoSisalto | undefined
   >();
 
   useEffect(() => {
     if (!perustelu) return;
 
-    setPerusteluUoRo(perustelu.perusteluUoRo);
-  }, [perustelu, setPerusteluUoRo]);
+    setUoRoSisalto(perustelu.uoRoSisalto);
+  }, [perustelu, setUoRoSisalto]);
 
   const updatePerusteluUoRo = (
     field: string,
@@ -42,26 +42,21 @@ export default function UoroPage() {
     const isMuuUnchecked =
       value === false &&
       (field.endsWith('MuuEro') || field === 'sovellettuMuuTilanne');
-    const modifiedPerusteluUoRo = perusteluUoRo
-      ? {
-          ...perusteluUoRo,
-          perustelunSisalto: {
-            ...perusteluUoRo.perustelunSisalto,
-            [field]: value,
-            ...(isMuuUnchecked ? { [`${field}Selite`]: '' } : {}),
-          },
-        }
-      : {
-          perusteluId: perustelu!.id,
-          perustelunSisalto: { [field]: value },
-        };
 
-    setPerusteluUoRo(modifiedPerusteluUoRo);
-    debouncedUpdatePerusteluUoRo(modifiedPerusteluUoRo);
+    const modifiedUoRoSisalto = uoRoSisalto
+      ? {
+          ...uoRoSisalto,
+          [field]: value,
+          ...(isMuuUnchecked ? { [`${field}Selite`]: '' } : {}),
+        }
+      : { [field]: value };
+
+    setUoRoSisalto(modifiedUoRoSisalto);
+    debouncedUpdatePerusteluUoRo(modifiedUoRoSisalto);
   };
 
-  const debouncedUpdatePerusteluUoRo = useDebounce((next: PerusteluUoRo) => {
-    updatePerustelu({ ...perustelu!, perusteluUoRo: next });
+  const debouncedUpdatePerusteluUoRo = useDebounce((next: UoRoSisalto) => {
+    updatePerustelu({ ...perustelu!, uoRoSisalto: next });
   }, 1000);
   return (
     <PerusteluLayout
@@ -91,20 +86,18 @@ export default function UoroPage() {
             key={key as string}
             label={t(labelKey)}
             data-testid={`checkbox-${key as string}`}
-            checked={!!perusteluUoRo?.perustelunSisalto?.[key]}
-            onChange={() =>
-              updatePerusteluUoRo(key, !perusteluUoRo?.perustelunSisalto?.[key])
-            }
+            checked={!!uoRoSisalto?.[key]}
+            onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
           />
         ))}
-        {perusteluUoRo?.perustelunSisalto.opettajatMuuEro && (
+        {uoRoSisalto?.opettajatMuuEro && (
           <OphInputFormField
             data-testid="opettajatMuuEroSelite"
             sx={{ paddingLeft: 4 }}
             multiline={true}
             minRows={5}
             label={t('yleiset.tasmenna')}
-            value={perusteluUoRo?.perustelunSisalto.opettajatMuuEroSelite || ''}
+            value={uoRoSisalto?.opettajatMuuEroSelite || ''}
             onChange={(event) =>
               updatePerusteluUoRo('opettajatMuuEroSelite', event.target.value)
             }
@@ -118,21 +111,17 @@ export default function UoroPage() {
             key={key as string}
             label={t(labelKey)}
             data-testid={`checkbox-${key as string}`}
-            checked={!!perusteluUoRo?.perustelunSisalto?.[key]}
-            onChange={() =>
-              updatePerusteluUoRo(key, !perusteluUoRo?.perustelunSisalto?.[key])
-            }
+            checked={!!uoRoSisalto?.[key]}
+            onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
           />
         ))}
-        {perusteluUoRo?.perustelunSisalto.vkOpettajatMuuEro && (
+        {uoRoSisalto?.vkOpettajatMuuEro && (
           <OphInputFormField
             sx={{ paddingLeft: 4 }}
             multiline={true}
             minRows={5}
             label={t('yleiset.tasmenna')}
-            value={
-              perusteluUoRo?.perustelunSisalto.vkOpettajatMuuEroSelite || ''
-            }
+            value={uoRoSisalto?.vkOpettajatMuuEroSelite || ''}
             onChange={(event) =>
               updatePerusteluUoRo('vkOpettajatMuuEroSelite', event.target.value)
             }
@@ -146,20 +135,18 @@ export default function UoroPage() {
             key={key as string}
             label={t(labelKey)}
             data-testid={`checkbox-${key as string}`}
-            checked={!!perusteluUoRo?.perustelunSisalto?.[key]}
-            onChange={() =>
-              updatePerusteluUoRo(key, !perusteluUoRo?.perustelunSisalto?.[key])
-            }
+            checked={!!uoRoSisalto?.[key]}
+            onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
           />
         ))}
-        {perusteluUoRo?.perustelunSisalto.otmMuuEro && (
+        {uoRoSisalto?.otmMuuEro && (
           <OphInputFormField
             data-testid="otmMuuEroSelite"
             sx={{ paddingLeft: 4 }}
             multiline={true}
             minRows={5}
             label={t('yleiset.tasmenna')}
-            value={perusteluUoRo?.perustelunSisalto.otmMuuEroSelite || ''}
+            value={uoRoSisalto?.otmMuuEroSelite || ''}
             onChange={(event) =>
               updatePerusteluUoRo('otmMuuEroSelite', event.target.value)
             }
@@ -175,7 +162,7 @@ export default function UoroPage() {
           {t('hakemus.perustelu.uoro.sovellettuTilanne.otsikko')}
         </OphTypography>
         <SovellettuTilanne
-          perusteluUoRo={perusteluUoRo}
+          uoRoSisalto={uoRoSisalto}
           updatePerusteluUoRoAction={updatePerusteluUoRo}
           t={t}
         />

@@ -1,4 +1,4 @@
-import { PerusteluUoRoSisalto } from '@/src/lib/types/perusteluUoRo';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 import {
   sovellettuErityisOpetusOptions,
   sovellettuLuokanOpettajaOptions,
@@ -11,7 +11,7 @@ import {
 import { OphRadioOption } from '@/src/lib/types/common';
 
 export const opettajatBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -75,7 +75,7 @@ export const opettajatBooleanFields: {
 ];
 
 export const vkBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -105,7 +105,7 @@ export const vkBooleanFields: {
 ];
 
 export const otmBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -129,7 +129,7 @@ export const sovellettuTilanneBooleanFields: {
     | 'sovellettuTilanne'
     | 'sovellettuTilanneOpetettavatAineet'
     | 'sovellettuTilanneKasvatustieteellinen';
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
   options?:
     | OphRadioOption<string>[]

@@ -325,10 +325,7 @@ export const mockPerustelu = (page: Page) => {
         selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
         luotu: '2025-09-02T16:08:42.083643',
         luoja: 'Hakemuspalvelu',
-        perusteluUoRo: {
-          perusteluId: 'mock-perustelu-id',
-          perustelunSisalto: {},
-        },
+        uoRoSisalto: {},
       }),
     });
   });

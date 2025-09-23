@@ -1,13 +1,3 @@
-export type PerusteluUoRo = {
-  id?: string;
-  perusteluId: string;
-  perustelunSisalto: PerusteluUoRoSisalto;
-  luotu?: string;
-  luoja?: string;
-  muokattu?: string;
-  muokkaaja?: string;
-};
-
 export type Aine = {
   aine: string;
   value: string;
@@ -29,7 +19,7 @@ export type SovellettuTilanneKasvatustieteellinen = {
   values?: string[];
 };
 
-export type PerusteluUoRoSisalto = {
+export type UoRoSisalto = {
   opettajatEroMonialaisetOpinnotSisalto?: boolean;
   opettajatEroMonialaisetOpinnotLaajuus?: boolean;
   opettajatEroPedagogisetOpinnotSisalto?: boolean;
