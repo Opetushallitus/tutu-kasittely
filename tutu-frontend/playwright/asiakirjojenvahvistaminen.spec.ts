@@ -84,41 +84,25 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     if (callCount == 1) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = false;
     }
-    if (callCount == 2) {
+    if (callCount >= 2) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
     }
-    if (callCount == 3) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
+    if (callCount >= 3) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
         dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
     }
 
-    if (callCount == 4) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+    if (callCount >= 4) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
         dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
     }
 
-    if (callCount == 5) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+    if (callCount >= 5) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus =
         'Myonteinen';
     }
 
-    if (callCount == 6) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus =
-        'Myonteinen';
+    if (callCount >= 6) {
       body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto =
         'Hyvinhän se meni';
     }

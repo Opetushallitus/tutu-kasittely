@@ -23,6 +23,9 @@ import {
 import * as R from 'remeda';
 import React, { useEffect } from 'react';
 import { match, P } from 'ts-pattern';
+import { Theme } from '@mui/material/styles';
+import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
+import { IconButton } from '@/src/components/IconButton';
 
 type LahdeOption = {
   id: AsiakirjamalliLahde;
@@ -143,16 +146,32 @@ const ContentRow = ({
   value,
   handleChange,
   kuvausLabel,
+  theme,
 }: {
   id: AsiakirjamalliLahde;
   label: string;
   value?: AsiakirjamalliTutkinnosta;
   handleChange: (changeRequest: AsiakirjamalliPyynto) => void;
   kuvausLabel?: string;
+  theme: Theme;
 }) => {
   return (
     <TableRow data-testid={`asiakirjamallit-tutkinnoista-${id}`}>
-      <TableCell>{label}</TableCell>
+      <TableCell>
+        <Stack direction="row" gap={theme.spacing(1)}>
+          <OphTypography>{label}</OphTypography>
+          {value?.vastaavuus !== undefined && (
+            <IconButton
+              data-testid={`asiakirjamalli-delete-${id}`}
+              onClick={() =>
+                handleChange({ lahde: id, clear: true, useDebounce: false })
+              }
+            >
+              <ClearSelectionIcon />
+            </IconButton>
+          )}
+        </Stack>
+      </TableCell>
       <RadioGroup
         vastaavuus={value?.vastaavuus}
         setVastaavuus={(updatedVastaavuus: boolean) =>
@@ -183,6 +202,7 @@ interface AsiakirjamalliPyynto {
   useDebounce: boolean;
   vastaavuus?: boolean;
   kuvaus?: string;
+  clear?: boolean;
 }
 
 export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
@@ -208,6 +228,14 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   }, [asiakirjaTieto.asiakirjamallitTutkinnoista]);
 
   const handleChange = (changeRequest: AsiakirjamalliPyynto) => {
+    const changedLahde = changeRequest.lahde;
+    if (changeRequest.clear) {
+      return handleDelete(changedLahde);
+    }
+    handleModify(changeRequest);
+  };
+
+  const handleModify = (changeRequest: AsiakirjamalliPyynto) => {
     const changedLahde = changeRequest.lahde;
     const toBeVastaavuus = match([
       asiakirjaTieto.asiakirjamallitTutkinnoista?.[changedLahde]?.vastaavuus,
@@ -249,6 +277,17 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
     }
   };
 
+  const handleDelete = (deletedLahde: AsiakirjamalliLahde) => {
+    const updatedMallit: AsiakirjamallitTutkinnoista = R.omit(
+      asiakirjaTieto.asiakirjamallitTutkinnoista || {},
+      [deletedLahde],
+    );
+    setCurrentMallit(updatedMallit);
+    instantUpdateAsiakirjaTietoAction({
+      asiakirjamallitTutkinnoista: updatedMallit,
+    });
+  };
+
   return (
     <Stack gap={theme.spacing(3)}>
       <OphTypography
@@ -267,6 +306,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
               label={t(option.lKey)}
               value={currentMallit?.[option.id]}
               handleChange={handleChange}
+              theme={theme}
             />
           ))}
           <ContentRow
@@ -275,6 +315,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
             value={currentMallit?.muu}
             handleChange={handleChange}
             kuvausLabel={t('hakemus.asiakirjat.mallejaTutkinnoista.muuSelite')}
+            theme={theme}
           />
         </TableBody>
       </Table>
