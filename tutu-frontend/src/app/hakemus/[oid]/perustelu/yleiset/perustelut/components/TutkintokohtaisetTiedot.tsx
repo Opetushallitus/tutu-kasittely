@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   OphTypography,
   OphRadio,
@@ -80,7 +80,7 @@ const Opinnaytetyo = ({ tutkinto, updateTutkinto }: FieldProps) => {
       </OphTypography>
       <Stack direction="row" gap={theme.spacing(1)}>
         <OphRadio
-          data-testid={`opinnaytetyo__on`}
+          data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo__on`}
           value={'true'}
           checked={tutkinto.opinnaytetyo === true}
           label={t('yleiset.kylla')}
@@ -88,7 +88,7 @@ const Opinnaytetyo = ({ tutkinto, updateTutkinto }: FieldProps) => {
           onChange={() => updateTutkinto({ opinnaytetyo: true })}
         ></OphRadio>
         <OphRadio
-          data-testid={`opinnaytetyo__off`}
+          data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo__off`}
           value={'false'}
           checked={tutkinto.opinnaytetyo === false}
           label={t('yleiset.ei')}
@@ -110,7 +110,7 @@ const Harjoittelu = ({ tutkinto, updateTutkinto }: FieldProps) => {
       </OphTypography>
       <Stack direction="row" gap={theme.spacing(1)}>
         <OphRadio
-          data-testid={`harjoittelu__on`}
+          data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--harjoittelu__on`}
           value={'true'}
           checked={tutkinto.harjoittelu === true}
           label={t('yleiset.kylla')}
@@ -118,7 +118,7 @@ const Harjoittelu = ({ tutkinto, updateTutkinto }: FieldProps) => {
           onChange={() => updateTutkinto({ harjoittelu: true })}
         ></OphRadio>
         <OphRadio
-          data-testid={`harjoittelu__off`}
+          data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--harjoittelu__off`}
           value={'false'}
           checked={tutkinto.harjoittelu === false}
           label={t('yleiset.ei')}
@@ -151,6 +151,10 @@ interface TutkintokohtaisetTiedotProps {
   updateHakemus: (patchHakemus: PartialHakemus) => void;
 }
 
+const sortTutkinnot = (tutkinnot: Tutkinto[]) => {
+  return tutkinnot.sort((a, b) => a?.jarjestys.localeCompare(b?.jarjestys));
+};
+
 export const TutkintokohtaisetTiedot = ({
   hakemus,
   updateHakemus,
@@ -158,23 +162,19 @@ export const TutkintokohtaisetTiedot = ({
   const theme = useTheme();
   const { t } = useTranslations();
 
-  const [tutkinnot, setTutkinnot] = useState<Tutkinto[]>([]);
-
-  useEffect(() => {
-    setTutkinnot(hakemus?.tutkinnot || []);
-  }, [hakemus?.tutkinnot]);
+  const [tutkinnot, setTutkinnot] = useState<Tutkinto[]>(
+    sortTutkinnot(hakemus?.tutkinnot || []),
+  );
 
   const debouncedUpdateTutkinto = useDebounce((newTutkinnot: Tutkinto[]) => {
     updateHakemus({ tutkinnot: newTutkinnot });
   }, 1000);
 
   const updateTutkinto = (next: Tutkinto) => {
-    const oldTutkinnot = hakemus!.tutkinnot.filter(
+    const oldTutkinnot = tutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
-    const newTutkinnot = [...oldTutkinnot, next].sort((a, b) =>
-      a?.jarjestys.localeCompare(b?.jarjestys),
-    );
+    const newTutkinnot = sortTutkinnot([...oldTutkinnot, next]);
     setTutkinnot(newTutkinnot);
     debouncedUpdateTutkinto(newTutkinnot);
   };
@@ -185,6 +185,7 @@ export const TutkintokohtaisetTiedot = ({
 
   return varsinaisetTutkinnot.map((tutkinto: Tutkinto) => {
     const updateTutkintoWithPartial = (muutos: Partial<Tutkinto>) => {
+      console.log(tutkinto?.id, muutos);
       return updateTutkinto({ ...tutkinto, ...muutos });
     };
 

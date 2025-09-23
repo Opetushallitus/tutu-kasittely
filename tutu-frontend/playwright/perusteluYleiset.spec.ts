@@ -50,6 +50,22 @@ test.describe('Yleiset perustelut', () => {
       'jatko-opintokelpoisuus--tieteellisiin_jatko-opintoihin',
       'jatko-opintokelpoisuus--muu',
       'jatko-opintokelpoisuus--lisatiedot',
+      'yleiset-perustelut__tutkinto-1--ohjeellinen-laajuus',
+      'yleiset-perustelut__tutkinto-1--suoritusvuodet-alku',
+      'yleiset-perustelut__tutkinto-1--suoritusvuodet-loppu',
+      'yleiset-perustelut__tutkinto-1--opinnaytetyo__on',
+      'yleiset-perustelut__tutkinto-1--opinnaytetyo__off',
+      'yleiset-perustelut__tutkinto-1--harjoittelu__on',
+      'yleiset-perustelut__tutkinto-1--harjoittelu__off',
+      'yleiset-perustelut__tutkinto-1--lisatietoja',
+      'yleiset-perustelut__tutkinto-2--ohjeellinen-laajuus',
+      'yleiset-perustelut__tutkinto-2--suoritusvuodet-alku',
+      'yleiset-perustelut__tutkinto-2--suoritusvuodet-loppu',
+      'yleiset-perustelut__tutkinto-2--opinnaytetyo__on',
+      'yleiset-perustelut__tutkinto-2--opinnaytetyo__off',
+      'yleiset-perustelut__tutkinto-2--harjoittelu__on',
+      'yleiset-perustelut__tutkinto-2--harjoittelu__off',
+      'yleiset-perustelut__tutkinto-2--lisatietoja',
     ].map((testId) => {
       return expect(page.getByTestId(testId)).toBeAttached();
     });
@@ -208,5 +224,133 @@ test.describe('Yleiset perustelut', () => {
       page.getByTestId('aiemmat-paatokset--ei').click(),
       { aikaisemmatPaatokset: false },
     );
+  });
+
+  test('Syötetyt tutkintotiedot päivitetään hakemuksen kautta', async ({
+    page,
+  }) => {
+    await page.goto(
+      '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
+    );
+    page.on('console', (msg) => console.log(msg.text()));
+    const tutkintoJarjestykset = ['1', '2'];
+
+    const resultPromise = tutkintoJarjestykset.reduce(
+      // @ts-expect-error TS does not understand Array.prototype.reduce
+      async (acc, jarjestys) => {
+        await acc;
+
+        const requestPromise = page.waitForRequest(
+          (req) => req.url().includes(`/hakemus/`) && req.method() === 'PATCH',
+        );
+
+        await page
+          .getByTestId(
+            `yleiset-perustelut__tutkinto-${jarjestys}--ohjeellinen-laajuus`,
+          )
+          .getByRole('textbox')
+          .fill('120 op');
+
+        await page
+          .getByTestId(
+            `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-alku`,
+          )
+          .getByRole('textbox')
+          .fill('2020');
+
+        await page
+          .getByTestId(
+            `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-loppu`,
+          )
+          .getByRole('textbox')
+          .fill('2023');
+
+        await page
+          .getByTestId(
+            `yleiset-perustelut__tutkinto-${jarjestys}--opinnaytetyo__on`,
+          )
+          .click();
+
+        await page
+          .getByTestId(
+            `yleiset-perustelut__tutkinto-${jarjestys}--harjoittelu__off`,
+          )
+          .click();
+
+        await page
+          .getByTestId(`yleiset-perustelut__tutkinto-${jarjestys}--lisatietoja`)
+          .getByRole('textbox')
+          .fill('Vastaa kandidaatintutkinnon perus- ja aineopintoja');
+
+        return requestPromise;
+      },
+      Promise.resolve(),
+    );
+
+    const results = await resultPromise;
+
+    // @ts-expect-error TS does not understand results of Array.prototype.reduce
+    expect(results?.postDataJSON()).toMatchObject({
+      tutkinnot: [
+        {
+          id: '$18732268-07ca-4898-a21f-e49b9dd68275',
+          hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+          jarjestys: '1',
+          nimi: 'Päälikkö',
+          oppilaitos: 'Butan Amattikoulu',
+          aloitusVuosi: 2020,
+          paattymisVuosi: 2023,
+          maakoodiUri: 'maatjavaltiot2_762',
+          muuTutkintoTieto: null,
+          todistuksenPaivamaara: null,
+          koulutusalaKoodi: null,
+          paaaaineTaiErikoisala: null,
+          todistusOtsikko: 'tutkintotodistus',
+          muuTutkintoMuistioId: null,
+          ohjeellinenLaajuus: '120 op',
+          opinnaytetyo: true,
+          harjoittelu: false,
+          perustelunLisatietoja:
+            'Vastaa kandidaatintutkinnon perus- ja aineopintoja',
+        },
+        {
+          id: '589038c5-00eb-465b-98bf-3b9ce62bb94d',
+          hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+          jarjestys: '2',
+          nimi: 'Apu poika',
+          oppilaitos: 'Apu koulu',
+          aloitusVuosi: 2020,
+          paattymisVuosi: 2023,
+          maakoodiUri: 'maatjavaltiot2_762',
+          muuTutkintoTieto: null,
+          todistuksenPaivamaara: null,
+          koulutusalaKoodi: null,
+          paaaaineTaiErikoisala: null,
+          todistusOtsikko: 'muutodistus',
+          muuTutkintoMuistioId: null,
+          ohjeellinenLaajuus: '120 op',
+          opinnaytetyo: true,
+          harjoittelu: false,
+          perustelunLisatietoja:
+            'Vastaa kandidaatintutkinnon perus- ja aineopintoja',
+        },
+        {
+          id: '07f503b7-7cf4-4437-b4c6-97512bd44450',
+          hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
+          jarjestys: 'MUU',
+          nimi: null,
+          oppilaitos: null,
+          aloitusVuosi: null,
+          paattymisVuosi: null,
+          maakoodiUri: null,
+          muuTutkintoTieto: 'En olekaan suorittanutkoulutusta',
+          todistuksenPaivamaara: null,
+          koulutusalaKoodi: null,
+          paaaaineTaiErikoisala: null,
+          todistusOtsikko: null,
+          muuTutkintoMuistioId: null,
+        },
+      ],
+    });
   });
 });
