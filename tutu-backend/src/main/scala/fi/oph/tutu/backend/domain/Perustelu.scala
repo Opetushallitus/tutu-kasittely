@@ -24,7 +24,7 @@ case class Perustelu(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
-  perusteluUoRo: Option[PerusteluUoRo] = None
+  uoRoSisalto: Option[UoRoSisalto] = None
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
     this.copy(
@@ -49,6 +49,7 @@ case class Perustelu(
         .orElse(this.jatkoOpintoKelpoisuus),
       jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
+      uoRoSisalto = partial.uoRoSisalto.orElse(this.uoRoSisalto),
       lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
       lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto)
     )
@@ -63,10 +64,10 @@ case class PartialPerustelu(
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: Option[String] = None,
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: Option[String] = None,
-  perusteluUoRo: Option[PartialPerusteluUoRo] = None,
   aikaisemmatPaatokset: Option[Boolean] = None,
   jatkoOpintoKelpoisuus: Option[String] = None,
   jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
+  uoRoSisalto: Option[UoRoSisalto] = None,
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
@@ -89,28 +90,7 @@ case class PartialPerustelu(
     ).exists(_.isDefined)
 }
 
-case class PerusteluUoRo(
-  id: Option[UUID] = None,
-  perusteluId: Option[UUID] = null,
-  perustelunSisalto: PerusteluUoRoSisalto = PerusteluUoRoSisalto(),
-  luotu: Option[LocalDateTime] = None,
-  luoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None
-) {
-  def mergeWith(partial: PartialPerusteluUoRo): PerusteluUoRo = {
-    this.copy(
-      perustelunSisalto = partial.perustelunSisalto.getOrElse(this.perustelunSisalto)
-    )
-  }
-}
-
-case class PartialPerusteluUoRo(
-  perusteluId: UUID,
-  perustelunSisalto: Option[PerusteluUoRoSisalto] = None
-)
-
-case class PerusteluUoRoSisalto(
+case class UoRoSisalto(
   opettajatEroMonialaisetOpinnotSisalto: Option[Boolean] = None,
   opettajatEroMonialaisetOpinnotLaajuus: Option[Boolean] = None,
   opettajatEroPedagogisetOpinnotSisalto: Option[Boolean] = None,

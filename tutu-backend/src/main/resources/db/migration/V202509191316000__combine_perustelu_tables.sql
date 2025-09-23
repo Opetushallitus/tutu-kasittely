@@ -2,7 +2,7 @@ ALTER TABLE perustelu_yleiset
     RENAME TO perustelu;
 
 ALTER TABLE perustelu
-    ADD COLUMN IF NOT EXISTS perustelu_uo_ro_sisalto JSONB DEFAULT '{}'::jsonb NOT NULL;
+    ADD COLUMN IF NOT EXISTS uo_ro_sisalto JSONB DEFAULT '{}'::jsonb NOT NULL;
 
 ALTER TABLE perustelu
     ADD COLUMN IF NOT EXISTS lausunto_pyynto_lisatiedot TEXT;
@@ -10,12 +10,12 @@ ALTER TABLE perustelu
 ALTER TABLE perustelu
     ADD COLUMN IF NOT EXISTS lausunto_sisalto TEXT;
 
-COMMENT ON COLUMN perustelu.perustelu_uo_ro_sisalto IS 'Perustelun UO/RO sisältö (JSONB)';
+COMMENT ON COLUMN perustelu.uo_ro_sisalto IS 'Perustelun UO/RO sisältö (JSONB)';
 COMMENT ON COLUMN perustelu.lausunto_pyynto_lisatiedot IS 'Lausuntopyyntöjen lisätiedot';
 COMMENT ON COLUMN perustelu.lausunto_sisalto IS 'Lausunnon sisältö';
 
 UPDATE perustelu
-SET perustelu_uo_ro_sisalto = pu.perustelun_sisalto
+SET uo_ro_sisalto = pu.perustelun_sisalto
 FROM perustelu_uo_ro pu
 WHERE perustelu.id = pu.perustelu_id;
 
@@ -32,5 +32,5 @@ SET lausunto_sisalto           = l.sisalto,
 FROM lausuntotieto l
 WHERE perustelu.id = l.perustelu_id;
 
--- DROP TABLE perustelu_uo_ro;
+DROP TABLE perustelu_uo_ro;
 DROP TABLE lausuntotieto;

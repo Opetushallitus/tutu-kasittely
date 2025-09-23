@@ -22,19 +22,12 @@ class PerusteluService(
       .flatMap { dbHakemus =>
         perusteluRepository.haePerustelu(dbHakemus.id).flatMap { perustelu =>
           {
-            val withUoRo = perusteluRepository.haePerusteluUoRo(perustelu.id.get) match {
-              case Some(perusteluUoRo) =>
-                Some(perustelu.copy(perusteluUoRo = Some(perusteluUoRo)))
+            perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
+              case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
+                Some(
+                  perustelu.copy(lausuntopyynnot = lausuntoPyynnot)
+                )
               case _ => Some(perustelu)
-            }
-            withUoRo.flatMap { withUoRo =>
-              perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
-                case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
-                  Some(
-                    withUoRo.copy(lausuntopyynnot = lausuntoPyynnot)
-                  )
-                case _ => Some(withUoRo)
-              }
             }
           }
         }
@@ -79,26 +72,13 @@ class PerusteluService(
         val newlySavedLausuntoPyynnot =
           perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
 
-        val newlySavedPerustelyUoRo = partialPerustelu.perusteluUoRo.flatMap(uoRo => {
-          val newOrUpdatedUoRo = perusteluRepository.haePerusteluUoRo(latestSavedPerustelu.id.get) match {
-            case Some(existing) => existing.mergeWith(uoRo)
-            case _              =>
-              PerusteluUoRo()
-                .mergeWith(uoRo)
-                .copy(perusteluId = latestSavedPerustelu.id)
-          }
-          Some(
-            perusteluRepository.tallennaPerusteluUoRo(latestSavedPerustelu.id.get, newOrUpdatedUoRo, luojaTaiMuokkaaja)
-          )
-        })
         Some(
           latestSavedPerustelu.copy(
             lausuntopyynnot =
               if (newlySavedLausuntoPyynnot.nonEmpty)
                 newlySavedLausuntoPyynnot
               else
-                latestSavedPerustelu.lausuntopyynnot,
-            perusteluUoRo = newlySavedPerustelyUoRo.orElse(latestSavedPerustelu.perusteluUoRo)
+                latestSavedPerustelu.lausuntopyynnot
           )
         )
       })
