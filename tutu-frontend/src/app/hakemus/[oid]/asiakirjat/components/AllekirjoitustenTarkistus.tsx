@@ -17,7 +17,7 @@ import {
 
 interface StatelessAllekirjoitustenTarkistusProps {
   lisatieto: string | null | undefined;
-  setLisatieto: (lisatieto: string | null) => void;
+  setLisatieto: (lisatieto: string | null, useDebounce: boolean) => void;
   t: TFunction;
 }
 
@@ -33,14 +33,14 @@ const StatelessAllekirjoitustenTarkistus = ({
       <OphCheckbox
         label={t('hakemus.asiakirjat.allekirjoituksetTarkistettu')}
         checked={checked}
-        onChange={() => setLisatieto(checked ? null : '')}
+        onChange={() => setLisatieto(checked ? null : '', false)}
       />
       {checked && (
         <OphInputFormField
           multiline={true}
           label={t('hakemus.asiakirjat.allekirjoituksetTarkistettuLisatietoja')}
           value={lisatieto}
-          onChange={(event) => setLisatieto(event.target.value)}
+          onChange={(event) => setLisatieto(event.target.value, true)}
         />
       )}
     </>
@@ -49,12 +49,14 @@ const StatelessAllekirjoitustenTarkistus = ({
 
 interface AllekirjoitustenTarkistusProps {
   asiakirjaTieto: AsiakirjaTieto;
-  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
+  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
 
 export const AllekirjoitustenTarkistus = ({
   asiakirjaTieto,
-  updateAsiakirjaTieto,
+  instantUpdateAsiakirjaTietoAction,
+  debouncedUpdateAsiakirjaTietoAction,
 }: AllekirjoitustenTarkistusProps) => {
   const { t } = useTranslations();
 
@@ -72,18 +74,22 @@ export const AllekirjoitustenTarkistus = ({
   }, [
     asiakirjaTieto.allekirjoituksetTarkistettu,
     asiakirjaTieto.allekirjoituksetTarkistettuLisatiedot,
-    setLisatieto,
   ]);
 
   return (
     <StatelessAllekirjoitustenTarkistus
       lisatieto={lisatieto}
-      setLisatieto={(lisatieto: string | null) => {
+      setLisatieto={(lisatieto: string | null, useDebounce) => {
         setLisatieto(lisatieto);
-        updateAsiakirjaTieto({
+        const toBeAsiakirjaTieto: Partial<AsiakirjaTieto> = {
           allekirjoituksetTarkistettu: isDefined(lisatieto),
           allekirjoituksetTarkistettuLisatiedot: lisatieto,
-        });
+        };
+        if (useDebounce) {
+          debouncedUpdateAsiakirjaTietoAction(toBeAsiakirjaTieto);
+        } else {
+          instantUpdateAsiakirjaTietoAction(toBeAsiakirjaTieto);
+        }
       }}
       t={t}
     />

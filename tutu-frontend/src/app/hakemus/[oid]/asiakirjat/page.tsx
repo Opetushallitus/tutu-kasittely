@@ -21,7 +21,7 @@ import { CenteredRow } from '@/src/components/CenteredRow';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { handleFetchError } from '@/src/lib/utils';
 import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
@@ -86,6 +86,7 @@ export default function AsiakirjaPage() {
     hakemus,
     updateHakemus,
     error: hakemusError,
+    updateOngoing,
   } = useHakemus();
 
   /* ----------------------------------------- */
@@ -100,15 +101,23 @@ export default function AsiakirjaPage() {
 
   if (hakemusIsLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
-  return <AsiakirjaHookLayer hakemus={hakemus} updateHakemus={updateHakemus} />;
+  return (
+    <AsiakirjaHookLayer
+      hakemus={hakemus}
+      updateHakemus={updateHakemus}
+      updateOngoing={updateOngoing || false}
+    />
+  );
 }
 
 const AsiakirjaHookLayer = ({
   hakemus,
   updateHakemus,
+  updateOngoing,
 }: {
   hakemus: Hakemus;
   updateHakemus: HakemusUpdateCallback;
+  updateOngoing: boolean;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -155,23 +164,31 @@ const AsiakirjaHookLayer = ({
   return (
     <AsiakirjaPagePure
       hakemus={hakemus}
+      asiakirjaTietoUpdateAction={(next: Partial<AsiakirjaTieto>) =>
+        updateHakemus({ asiakirja: next })
+      }
       debouncedAsiakirjaTietoUpdateAction={debouncedAsiakirjaTietoUpdateAction}
       asiakirjat={asiakirjat}
       asiakirjaMetadata={asiakirjaMetadata}
+      updateOngoing={updateOngoing}
     />
   );
 };
 
 const AsiakirjaPagePure = ({
   hakemus,
+  asiakirjaTietoUpdateAction,
   debouncedAsiakirjaTietoUpdateAction,
   asiakirjat = [],
   asiakirjaMetadata = [],
+  updateOngoing,
 }: {
   hakemus: Hakemus;
+  asiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
   debouncedAsiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
   asiakirjat: SisaltoValue[];
   asiakirjaMetadata: AsiakirjaMetadata[];
+  updateOngoing: boolean;
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
@@ -209,7 +226,11 @@ const AsiakirjaPagePure = ({
   return (
     <Stack
       gap={theme.spacing(3)}
-      sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
+      sx={{
+        flexGrow: 1,
+        marginRight: theme.spacing(3),
+        pointerEvents: updateOngoing ? 'none' : 'auto',
+      }}
     >
       <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
         <OphTypography variant={'h2'}>
@@ -222,9 +243,10 @@ const AsiakirjaPagePure = ({
         />
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
+      {updateOngoing && <FullSpinner float={true}></FullSpinner>}
       <AsiakirjaPyynnot
         asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
-        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
+        updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />
       <OphTypography variant={'h3'}>
@@ -232,12 +254,12 @@ const AsiakirjaPagePure = ({
       </OphTypography>
       <KaikkiSelvityksetSaatu
         asiakirjaTieto={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
       />
       <ApHakemus
         asiakirjaTieto={asiakirja}
         hakemusKoskee={hakemus.hakemusKoskee}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
       />
       <Muistio
         label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
@@ -255,7 +277,10 @@ const AsiakirjaPagePure = ({
 
       <ImiPyyntoComponent
         imiPyynto={asiakirja.imiPyynto}
-        updateAsiakirjaTietoAction={debouncedAsiakirjaTietoUpdateAction}
+        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        debouncedUpdateAsiakirjaTietoAction={
+          debouncedAsiakirjaTietoUpdateAction
+        }
       ></ImiPyyntoComponent>
       <Divider orientation={'horizontal'} />
 
@@ -278,23 +303,35 @@ const AsiakirjaPagePure = ({
       </Stack>
       <SuostumusVahvistamiselle
         asiakirjaTieto={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
       />
       <ValmistumisenVahvistusComponent
         asiakirjaTieto={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        debouncedUpdateAsiakirjaTietoAction={
+          debouncedAsiakirjaTietoUpdateAction
+        }
       />
       <AllekirjoitustenTarkistus
         asiakirjaTieto={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        debouncedUpdateAsiakirjaTietoAction={
+          debouncedAsiakirjaTietoUpdateAction
+        }
       />
       <AlkuperaisetAsiakirjat
         asiakirja={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        debouncedUpdateAsiakirjaTietoAction={
+          debouncedAsiakirjaTietoUpdateAction
+        }
       />
       <AsiakirjaMallejaVastaavistaTutkinnoista
         asiakirjaTieto={asiakirja}
-        updateAsiakirjaTieto={debouncedAsiakirjaTietoUpdateAction}
+        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        debouncedUpdateAsiakirjaTietoAction={
+          debouncedAsiakirjaTietoUpdateAction
+        }
       />
     </Stack>
   );

@@ -6,7 +6,7 @@ export const sisaltoItemMatches = (
   item: SisaltoItem,
   key: HakemuspalveluSisaltoId,
 ): boolean => {
-  return item.key === key.generatedId || item.key === key.definedId;
+  return item && (item.key === key.generatedId || item.key === key.definedId);
 };
 
 export const sisaltoItemMatchesToAny = (
@@ -53,7 +53,8 @@ export const findSisaltoValuesByItem = (
   if (sisaltoItemMatches(sisalto, sisaltoId)) {
     return sisalto.value;
   }
-  for (const child of sisalto.children) {
+  const children = sisalto?.children || [];
+  for (const child of children) {
     const result = findSisaltoValuesByItem(sisaltoId, child);
     if (result.length > 0) {
       return result;
