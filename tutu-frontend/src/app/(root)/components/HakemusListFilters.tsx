@@ -5,6 +5,7 @@ import {
   Chip,
   Grid2 as Grid,
   SelectChangeEvent,
+  Stack,
   ToggleButton,
   ToggleButtonGroup,
   useTheme,
@@ -38,6 +39,7 @@ import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
+import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
@@ -74,9 +76,11 @@ export default function HakemusListFilters() {
     parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
   );
 
-  const [esittelija, setEsittelija] = useQueryState(
+  const [esittelijat, setEsittelijat] = useQueryState(
     'esittelija',
-    parseAsString.withDefault(''),
+    parseAsArrayOf(
+      parseAsStringLiteral(R.map(esittelijaOptions, (opt) => opt.value)),
+    ).withDefault([]),
   );
 
   const searchParams = useSearchParams();
@@ -210,21 +214,27 @@ export default function HakemusListFilters() {
         </Grid>
         {naytaKaikki && (
           <Grid size={3}>
-            <OphSelectFormField
-              placeholder={t('yleiset.valitse')}
-              label={t('hakemuslista.esittelija')}
-              options={esittelijaOptions}
-              value={esittelija}
-              onChange={(event: SelectChangeEvent) =>
-                setQueryStateAndLocalStorage(
-                  queryClient,
-                  setEsittelija,
-                  event.target.value,
-                )
-              }
-              sx={{ width: '100%' }}
-              data-testid={'esittelija'}
-            ></OphSelectFormField>
+            <Stack direction={'column'} sx={{ width: '100%' }}>
+              <OphFormFieldWrapper
+                label={t('hakemuslista.esittelija')}
+                renderInput={() => (
+                  <OphSelectMultiple
+                    placeholder={t('yleiset.valitse')}
+                    options={esittelijaOptions}
+                    value={esittelijat}
+                    onChange={(event) =>
+                      setQueryStateAndLocalStorage(
+                        queryClient,
+                        setEsittelijat,
+                        event.target.value,
+                      )
+                    }
+                    sx={{ width: '100%' }}
+                    data-testid={'esittelija'}
+                  />
+                )}
+              />
+            </Stack>
           </Grid>
         )}
       </Grid>
