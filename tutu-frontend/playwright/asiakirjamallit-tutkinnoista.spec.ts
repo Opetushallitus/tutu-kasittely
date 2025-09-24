@@ -33,6 +33,7 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(cellsOfEce.nth(3).locator('input[type="text"]')).toHaveValue(
     'Jotain kuvausta',
   );
+  await expect(page.getByTestId('asiakirjamalli-delete-ece')).toBeVisible();
 
   const cellsOfNuffic = page
     .getByTestId('asiakirjamallit-tutkinnoista-nuffic')
@@ -42,6 +43,7 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
     cellsOfNuffic.nth(2).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
   await expect(cellsOfNuffic.nth(3).locator('input[type="text"]')).toBeEmpty();
+  await expect(page.getByTestId('asiakirjamalli-delete-nuffic')).toBeVisible();
 
   const cellsOfAacrao = page
     .getByTestId('asiakirjamallit-tutkinnoista-aacrao')
@@ -53,6 +55,15 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(cellsOfAacrao.nth(3).locator('input[type="text"]')).toHaveValue(
     'Jotain muuta kuvausta',
   );
+  await expect(page.getByTestId('asiakirjamalli-delete-aacrao')).toBeVisible();
+
+  await expect(
+    page.getByTestId('asiakirjamalli-delete-UK_enic'),
+  ).not.toBeVisible();
+  await expect(
+    page.getByTestId('asiakirjamalli-delete-naric_portal'),
+  ).not.toBeVisible();
+  await expect(page.getByTestId('asiakirjamalli-delete-muu')).not.toBeVisible();
 });
 
 test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
@@ -104,4 +115,16 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
       .vastaavuus,
   ).toEqual(false);
+
+  [request] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
+        req.method() === 'PATCH',
+    ),
+    page.getByTestId('asiakirjamalli-delete-aacrao').click(),
+  ]);
+  expect(
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
+  ).toBeUndefined();
 });

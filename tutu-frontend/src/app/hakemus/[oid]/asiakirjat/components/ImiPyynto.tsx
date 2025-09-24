@@ -5,30 +5,24 @@ import {
   ImiPyynto,
 } from '@/src/lib/types/hakemus';
 import { Stack } from '@mui/material';
-import EditOffIcon from '@mui/icons-material/EditOff';
 import {
-  ophColors,
   OphInputFormField,
   OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { styled } from '@/src/lib/theme';
 import { IconButton } from '@/src/components/IconButton';
 import * as dateFns from 'date-fns';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { OphRadioOption } from '@/src/lib/types/common';
+import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
   instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
   debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
 }
-
-const StyledEditOffIcon = styled(EditOffIcon)({
-  color: ophColors.blue2,
-});
 
 export const ImiPyyntoComponent = ({
   imiPyynto,
@@ -73,6 +67,13 @@ export const ImiPyyntoComponent = ({
     { value: 'false', label: t('yleiset.ei') },
   ];
 
+  const pyyntoLahetetty = currentImiPyynto.imiPyyntoLahetetty
+    ? new Date(currentImiPyynto.imiPyyntoLahetetty)
+    : null;
+  const pyyntoVastattu = currentImiPyynto.imiPyyntoVastattu
+    ? new Date(currentImiPyynto.imiPyyntoVastattu)
+    : null;
+
   return (
     <Stack direction="column" spacing={2}>
       <OphTypography variant="h2" data-testid="imiPyynto-otsikko">
@@ -87,7 +88,7 @@ export const ImiPyyntoComponent = ({
           data-testid="imiPyynto-delete"
           onClick={() => setField('imiPyynto', null)}
         >
-          <StyledEditOffIcon />
+          <ClearSelectionIcon />
         </IconButton>
       </Stack>
 
@@ -115,11 +116,8 @@ export const ImiPyyntoComponent = ({
           <Stack direction="row" spacing={2}>
             <CalendarComponent
               setDate={updateImiPyyntoLahetetty}
-              selectedValue={
-                currentImiPyynto.imiPyyntoLahetetty
-                  ? new Date(currentImiPyynto.imiPyyntoLahetetty)
-                  : null
-              }
+              selectedValue={pyyntoLahetetty}
+              maxDate={pyyntoVastattu}
               label={t('hakemus.asiakirjat.imiPyynnot.imiPyyntoLahetetty')}
               dataTestId="imiPyyntoLahetetty-calendar"
             />
@@ -127,11 +125,8 @@ export const ImiPyyntoComponent = ({
             <CalendarComponent
               dataTestId="imiPyyntoVastattu-calendar"
               setDate={updateImiPyyntoVastattu}
-              selectedValue={
-                currentImiPyynto.imiPyyntoVastattu
-                  ? new Date(currentImiPyynto.imiPyyntoVastattu)
-                  : null
-              }
+              selectedValue={pyyntoVastattu}
+              minDate={pyyntoLahetetty}
               label={t('hakemus.asiakirjat.imiPyynnot.imiPyyntoVastattu')}
             />
           </Stack>
