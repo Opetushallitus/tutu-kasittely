@@ -1,11 +1,7 @@
 'use client';
 
 import {
-  Box,
-  Chip,
   Grid2 as Grid,
-  SelectChangeEvent,
-  Stack,
   ToggleButton,
   ToggleButtonGroup,
   useTheme,
@@ -13,7 +9,6 @@ import {
 import {
   OphFormFieldWrapper,
   OphInputFormField,
-  OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import {
   parseAsArrayOf,
@@ -24,7 +19,6 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import {
-  hakemusKoskeeQueryStates,
   kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
@@ -40,6 +34,7 @@ import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
@@ -73,13 +68,17 @@ export default function HakemusListFilters() {
 
   const [hakemusKoskee, setHakemusKoskee] = useQueryState(
     'hakemuskoskee',
-    parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
+    parseAsArrayOf(
+      parseAsStringLiteral(
+        R.map(hakemusKoskeeOptions, (option) => option.value),
+      ),
+    ).withDefault([]),
   );
 
-  const [esittelijat, setEsittelijat] = useQueryState(
+  const [esittelija, setEsittelija] = useQueryState(
     'esittelija',
     parseAsArrayOf(
-      parseAsStringLiteral(R.map(esittelijaOptions, (opt) => opt.value)),
+      parseAsStringLiteral(R.map(esittelijaOptions, (option) => option.value)),
     ).withDefault([]),
   );
 
@@ -151,90 +150,81 @@ export default function HakemusListFilters() {
       </Grid>
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
-          <OphSelectFormField
-            placeholder={t('yleiset.valitse')}
+          <OphFormFieldWrapper
             label={t('hakemuslista.kasittelyvaihe')}
-            multiple
-            options={R.map(kasittelyVaiheet, (vaihe) => ({
-              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
-              value: vaihe,
-            }))}
-            value={vaiheet as never}
-            onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(
-                queryClient,
-                setVaiheet,
-                event.target.value,
-              )
-            }
             sx={{ width: '100%' }}
-            data-testid={'kasittelyvaihe'}
-            renderValue={() => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {R.map(vaiheet, (value) => (
-                  <Chip
-                    key={value}
-                    label={t(`hakemus.kasittelyvaihe.${value.toLowerCase()}`)}
-                    sx={{ borderRadius: '0px' }}
-                    onDelete={() =>
-                      setQueryStateAndLocalStorage(
-                        queryClient,
-                        setVaiheet,
-                        R.filter(vaiheet, (val) => val !== value),
-                      )
-                    }
-                    onMouseDown={(event) => {
-                      event.stopPropagation();
-                    }}
-                  />
-                ))}
-              </Box>
+            renderInput={() => (
+              <OphSelectMultiple
+                placeholder={t('yleiset.valitse')}
+                options={R.map(kasittelyVaiheet, (vaihe) => ({
+                  label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+                  value: vaihe,
+                }))}
+                value={vaiheet}
+                sx={{ width: '100%' }}
+                onChange={(event) =>
+                  setQueryStateAndLocalStorage(
+                    queryClient,
+                    setVaiheet,
+                    event.target.value,
+                  )
+                }
+                data-testid={'kasittelyvaihe'}
+              />
             )}
-          ></OphSelectFormField>
+          />
         </Grid>
         <Grid size={3}>
-          <OphSelectFormField
-            placeholder={t('yleiset.valitse')}
+          <OphFormFieldWrapper
             label={t('hakemuslista.hakemusKoskee')}
-            options={R.map(hakemusKoskeeOptions, (option) => ({
-              label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
-              value: option.value,
-            }))}
-            value={hakemusKoskee}
-            onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(
-                queryClient,
-                setHakemusKoskee,
-                event.target.value,
-              )
-            }
             sx={{ width: '100%' }}
-            data-testid={'hakemus-koskee'}
-          ></OphSelectFormField>
+            renderInput={() => (
+              <OphSelectMultiple
+                placeholder={t('yleiset.valitse')}
+                options={R.map(hakemusKoskeeOptions, (option) => ({
+                  label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
+                  value: option.value,
+                }))}
+                value={hakemusKoskee}
+                sx={{ width: '100%' }}
+                onChange={(event) =>
+                  setQueryStateAndLocalStorage(
+                    queryClient,
+                    setHakemusKoskee,
+                    event.target.value,
+                  )
+                }
+                data-testid={'hakemus-koskee'}
+              />
+            )}
+          />
         </Grid>
         {naytaKaikki && (
           <Grid size={3}>
-            <Stack direction={'column'} sx={{ width: '100%' }}>
-              <OphFormFieldWrapper
-                label={t('hakemuslista.esittelija')}
-                renderInput={() => (
-                  <OphSelectMultiple
-                    placeholder={t('yleiset.valitse')}
-                    options={esittelijaOptions}
-                    value={esittelijat}
-                    onChange={(event) =>
-                      setQueryStateAndLocalStorage(
-                        queryClient,
-                        setEsittelijat,
-                        event.target.value,
-                      )
-                    }
-                    sx={{ width: '100%' }}
-                    data-testid={'esittelija'}
-                  />
-                )}
-              />
-            </Stack>
+            <OphFormFieldWrapper
+              label={t('hakemuslista.esittelija')}
+              sx={{ width: '100%' }}
+              renderInput={() => (
+                <OphSelectMultiple
+                  placeholder={t('yleiset.valitse')}
+                  options={R.map(
+                    esittelijaOptions,
+                    (option: OphSelectOption<string>) => ({
+                      label: option.label,
+                      value: option.value,
+                    }),
+                  )}
+                  value={esittelija}
+                  onChange={(event) =>
+                    setQueryStateAndLocalStorage(
+                      queryClient,
+                      setEsittelija,
+                      event.target.value,
+                    )
+                  }
+                />
+              )}
+            />
           </Grid>
         )}
       </Grid>
