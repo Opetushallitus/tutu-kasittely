@@ -49,17 +49,14 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 
   await otmMuuEroSeliteField.scrollIntoViewIfNeeded();
   await expect(otmMuuEroSeliteField).toBeVisible();
-  await otmMuuEroSeliteField.fill('Härköneeeeeen');
-  await expect(otmMuuEroSeliteField).toHaveValue('Härköneeeeeen');
-
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
         r.method() === 'POST',
     ),
+    otmMuuEroSeliteField.fill('Härköneeeeeen'),
   ]);
-
   const payload = req.postDataJSON();
 
   const updatedItem = payload.uoRoSisalto;
@@ -112,11 +109,7 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
   const firstOptionLabel = sovellettuLuokanopettajaRadioGroup
     .locator('label:has(input[type="radio"]:not([disabled]))')
     .first();
-  await firstOptionLabel.click();
-
-  await expect(
-    sovellettuLuokanopettajaRadioGroup.locator('input[type="radio"]').first(),
-  ).toBeChecked();
+  await expect(firstOptionLabel).toBeVisible();
 
   let [req] = await Promise.all([
     page.waitForRequest(
@@ -124,6 +117,7 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
         r.method() === 'POST',
     ),
+    firstOptionLabel.click(),
   ]);
 
   let payload = req.postDataJSON();
@@ -135,8 +129,6 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
       value: 'A',
     },
   });
-  await sovellettuLuokanopettajaCheckbox.uncheck();
-  await expect(sovellettuLuokanopettajaCheckbox).not.toBeChecked();
 
   [req] = await Promise.all([
     page.waitForRequest(
@@ -144,6 +136,7 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
         r.method() === 'POST',
     ),
+    sovellettuLuokanopettajaCheckbox.uncheck(),
   ]);
 
   payload = req.postDataJSON();

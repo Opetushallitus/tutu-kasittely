@@ -52,7 +52,14 @@ export default function UoroPage() {
       : { [field]: value };
 
     setUoRoSisalto(modifiedUoRoSisalto);
-    debouncedUpdatePerusteluUoRo(modifiedUoRoSisalto);
+
+    if (typeof value === 'string')
+      debouncedUpdatePerusteluUoRo(modifiedUoRoSisalto);
+    else
+      updatePerustelu({
+        ...perustelu!,
+        uoRoSisalto: modifiedUoRoSisalto,
+      });
   };
 
   const debouncedUpdatePerusteluUoRo = useDebounce((next: UoRoSisalto) => {
