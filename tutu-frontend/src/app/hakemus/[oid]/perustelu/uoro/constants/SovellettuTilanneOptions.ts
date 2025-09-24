@@ -34,7 +34,7 @@ export const sovellettuLuokanOpettajaOptions: OphRadioOption<string>[] = [
   { value: 'B', label: 'B' },
 ];
 
-export const sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: OphRadioOption<string>[][] =
+export const sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions: OphRadioOption<string>[][] =
   [
     [
       { value: 'KK1', label: 'KK1' },
@@ -54,7 +54,7 @@ export const sovellettuRinnastaminenKasvatustieteelliseenTutkintoon: OphRadioOpt
     ],
   ];
 
-export const sovellettuRinnastaminenOikeustieteenMaisterinTutkintoon: OphRadioOption<string>[] =
+export const sovellettuRinnastaminenOikeustieteenMaisterinTutkintoonOptions: OphRadioOption<string>[] =
   [
     { value: '1', label: '1' },
     { value: '1A', label: '1A' },

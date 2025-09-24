@@ -291,7 +291,7 @@ export const SovellettuTilanne = ({
           )}
           {checked && type == 'boolean' && (
             <OphInputFormField
-              data-testid="otmMuuEroSelite"
+              data-testid="sovellettuMuuEroSelite"
               sx={{ paddingLeft: 4 }}
               multiline={true}
               minRows={5}

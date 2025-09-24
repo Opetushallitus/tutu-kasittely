@@ -4,8 +4,8 @@ import {
   sovellettuLuokanOpettajaOptions,
   sovellettuMonialaisetOpinnotOptions,
   sovellettuPedagogisetOpinnotOptions,
-  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon,
-  sovellettuRinnastaminenOikeustieteenMaisterinTutkintoon,
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions,
+  sovellettuRinnastaminenOikeustieteenMaisterinTutkintoonOptions,
   sovellettuVarhaiskasvatusOptions,
 } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/SovellettuTilanneOptions';
 import { OphRadioOption } from '@/src/lib/types/common';
@@ -173,7 +173,7 @@ export const sovellettuTilanneBooleanFields: {
     key: 'sovellettuRinnastaminenKasvatustieteelliseenTutkintoon',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenKasvatustieteelliseenTutkintoon',
-    options: sovellettuRinnastaminenKasvatustieteelliseenTutkintoon,
+    options: sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions,
   },
   {
     type: 'sovellettuTilanne',
@@ -186,7 +186,7 @@ export const sovellettuTilanneBooleanFields: {
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenOtmTutkintoon',
 
-    options: sovellettuRinnastaminenOikeustieteenMaisterinTutkintoon,
+    options: sovellettuRinnastaminenOikeustieteenMaisterinTutkintoonOptions,
   },
   {
     type: 'sovellettuTilanne',
