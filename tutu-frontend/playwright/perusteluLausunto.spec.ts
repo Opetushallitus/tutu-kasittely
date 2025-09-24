@@ -79,7 +79,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     lausuntopyyntoLisatietoInput.fill('lisääää'),
   ]).then((req) =>
-    expect(req[0].postDataJSON().lausuntotieto.pyyntojenLisatiedot).toEqual(
+    expect(req[0].postDataJSON().lausuntoPyyntojenLisatiedot).toEqual(
       'lisääää',
     ),
   );
@@ -88,18 +88,16 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     lausuntoSisaltoInput.fill('sisältöä elämähän'),
   ]).then((req) =>
-    expect(req[0].postDataJSON().lausuntotieto.sisalto).toEqual(
-      'sisältöä elämähän',
-    ),
+    expect(req[0].postDataJSON().lausunnonSisalto).toEqual('sisältöä elämähän'),
   );
 
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     lausunnonAntaja1.fill('Esko Mörkö'),
   ]).then((req) =>
-    expect(
-      req[0].postDataJSON().lausuntotieto.lausuntopyynnot[0].lausunnonAntaja,
-    ).toEqual('Esko Mörkö'),
+    expect(req[0].postDataJSON().lausuntopyynnot[0].lausunnonAntaja).toEqual(
+      'Esko Mörkö',
+    ),
   );
 
   await Promise.all([
@@ -107,9 +105,9 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     lahetetty1.click(),
     page.locator('.react-datepicker__day--026').click(),
   ]).then((req) =>
-    expect(
-      req[0].postDataJSON().lausuntotieto.lausuntopyynnot[0].lahetetty,
-    ).toEqual(matchingDate()),
+    expect(req[0].postDataJSON().lausuntopyynnot[0].lahetetty).toEqual(
+      matchingDate(),
+    ),
   );
 
   await Promise.all([
@@ -117,9 +115,9 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     vastattu1.click(),
     page.locator('.react-datepicker__day--026').click(),
   ]).then((req) =>
-    expect(
-      req[0].postDataJSON().lausuntotieto.lausuntopyynnot[0].saapunut,
-    ).toEqual(matchingDate()),
+    expect(req[0].postDataJSON().lausuntopyynnot[0].saapunut).toEqual(
+      matchingDate(),
+    ),
   );
 });
 
@@ -137,7 +135,7 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     page.getByTestId('lausunnon-antaja-3').fill('Pertti Keinonen'),
   ]).then((req) => {
-    const pyynnot = req[0].postDataJSON().lausuntotieto.lausuntopyynnot;
+    const pyynnot = req[0].postDataJSON().lausuntopyynnot;
     expect(pyynnot.length).toEqual(3);
     expect(pyynnot[0].lausunnonAntaja).toEqual('Kostaja');
     expect(pyynnot[1].lausunnonAntaja).toEqual('Aas Weckström');
@@ -153,7 +151,7 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
       await page.getByTestId('modal-confirm-button').click();
     })(),
   ]).then((req) => {
-    const pyynnot = req[0].postDataJSON().lausuntotieto.lausuntopyynnot;
+    const pyynnot = req[0].postDataJSON().lausuntopyynnot;
     expect(pyynnot.length).toEqual(2);
     expect(pyynnot[0].lausunnonAntaja).toEqual('Kostaja');
     expect(pyynnot[1].lausunnonAntaja).toEqual('Pertti Keinonen');

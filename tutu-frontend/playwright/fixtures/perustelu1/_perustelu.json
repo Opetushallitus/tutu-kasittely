@@ -11,20 +11,18 @@
   "selvitysTutkinnonAsemastaLahtomaanJarjestelmassa": "",
   "luoja": "testi",
   "luotu": "2025-06-01T00:00:00",
-  "lausuntotieto": {
-    "pyyntojenLisatiedot": "pyynö",
-    "sisalto": "sisältö",
-    "lausuntopyynnot": [
-      {
-        "lausunnonAntaja": "Kostaja",
-        "lahetetty": "2025-09-01T00:00:00",
-        "saapunut": "2025-09-30T00:00:00"
-      },
-      {
-        "lausunnonAntaja": "Aas Weckström",
-        "lahetetty": "2025-11-01T00:00:00",
-        "saapunut": "2025-11-30T00:00:00"
-      }
-    ]
-  }
+  "lausuntoPyyntojenLisatiedot": "pyynö",
+  "lausunnonSisalto": "sisältö",
+  "lausuntopyynnot": [
+    {
+      "lausunnonAntaja": "Kostaja",
+      "lahetetty": "2025-09-01T00:00:00",
+      "saapunut": "2025-09-30T00:00:00"
+    },
+    {
+      "lausunnonAntaja": "Aas Weckström",
+      "lahetetty": "2025-11-01T00:00:00",
+      "saapunut": "2025-11-30T00:00:00"
+    }
+  ]
 }

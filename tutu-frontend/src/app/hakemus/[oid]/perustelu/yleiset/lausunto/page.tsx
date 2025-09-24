@@ -7,14 +7,15 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect, useState } from 'react';
-import { Lausuntopyynto, Lausuntotieto } from '@/src/lib/types/lausuntotieto';
+import React, { useEffect } from 'react';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { Add } from '@mui/icons-material';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -22,12 +23,6 @@ const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   saapunut: null,
   lausunnonAntaja: null,
 });
-
-const emptyLausuntoTieto: Lausuntotieto = {
-  lausuntopyynnot: [emptyLausuntopyynto(1)],
-  pyyntojenLisatiedot: null,
-  sisalto: null,
-};
 
 export default function Lausuntotiedot() {
   const { t } = useTranslations();
@@ -38,32 +33,32 @@ export default function Lausuntotiedot() {
     hakemus?.hakemusOid,
   );
 
-  const [lausuntotieto, setLausuntotieto] =
-    useState<Lausuntotieto>(emptyLausuntoTieto);
+  const [lausuntoPyyntojenLisatiedot, setLausuntoPyyntojenLisatiedot] =
+    React.useState<string | undefined>(undefined);
+  const [lausunnonSisalto, setLausunnonSisalto] = React.useState<
+    string | undefined
+  >(undefined);
+  const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
+    Lausuntopyynto[]
+  >([]);
 
   useEffect(() => {
     if (!perustelu) return;
-    const receivedLausuntotieto =
-      perustelu!.lausuntotieto || emptyLausuntoTieto;
-    const indexedLausuntopyynnot = receivedLausuntotieto.lausuntopyynnot.map(
+    const indexedLausuntopyynnot = perustelu.lausuntopyynnot.map(
       (pyynto, index) => ({
         ...pyynto,
         jarjestys: index + 1,
       }),
     );
 
-    setLausuntotieto({
-      ...receivedLausuntotieto,
-      lausuntopyynnot: indexedLausuntopyynnot,
-    });
-  }, [perustelu, perustelu?.lausuntotieto]);
+    setLausunnonSisalto(perustelu!.lausunnonSisalto);
+    setLausuntoPyyntojenLisatiedot(perustelu!.lausuntoPyyntojenLisatiedot);
+    setLausuntopyynnot(indexedLausuntopyynnot);
+  }, [perustelu, setLausuntopyynnot]);
 
   const debouncedUpdatePerusteluLausuntotieto = useDebounce(
-    (next: Lausuntotieto) => {
-      updatePerustelu({
-        ...perustelu!,
-        lausuntotieto: next,
-      });
+    (next: Perustelu) => {
+      updatePerustelu(next);
     },
     1000,
   );
@@ -72,34 +67,36 @@ export default function Lausuntotiedot() {
     field: string,
     value: string | Lausuntopyynto[] | null,
   ) => {
-    const updatedLausuntotieto: Lausuntotieto = {
-      ...lausuntotieto,
-      [field]: value,
-    };
-    setLausuntotieto(updatedLausuntotieto);
+    switch (field) {
+      case 'lausuntoPyyntojenLisatiedot':
+        setLausuntoPyyntojenLisatiedot(value as string);
+        break;
+      case 'lausunnonSisalto':
+        setLausunnonSisalto(value as string);
+        break;
+      case 'lausuntopyynnot':
+        setLausuntopyynnot(value as Lausuntopyynto[]);
+    }
     debouncedUpdatePerusteluLausuntotieto({
-      ...perustelu!.lausuntotieto,
+      ...perustelu!,
       [field]: value,
     });
   };
 
   const addLausuntopyynto = () => {
     const newJarjestys =
-      lausuntotieto.lausuntopyynnot.length > 0
-        ? lausuntotieto.lausuntopyynnot.reduce(
+      lausuntopyynnot.length > 0
+        ? lausuntopyynnot.reduce(
             (max, p) => Math.max(max, p.jarjestys || 0),
             0,
           ) + 1
         : 1;
-    const newLausuntopyynto = emptyLausuntopyynto(newJarjestys);
-    setLausuntotieto({
-      ...lausuntotieto,
-      lausuntopyynnot: [...lausuntotieto.lausuntopyynnot, newLausuntopyynto],
-    });
+    const newLausuntopyynto: Lausuntopyynto = emptyLausuntopyynto(newJarjestys);
+    setLausuntopyynnot([...lausuntopyynnot, newLausuntopyynto]);
   };
 
   const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
-    const updatedLausuntopyynnot = lausuntotieto.lausuntopyynnot
+    const updatedLausuntopyynnot = lausuntopyynnot
       .filter((p) => p.jarjestys !== jarjestysNumberToBeDeleted)
       .map((pyynto, index) => ({
         ...pyynto,
@@ -121,12 +118,12 @@ export default function Lausuntotiedot() {
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
-        {lausuntotieto.lausuntopyynnot.map((lausuntopyynto, index) => (
+        {lausuntopyynnot.map((lausuntopyynto, index) => (
           <LausuntopyyntoComponent
             lausuntopyynto={lausuntopyynto}
             updateLausuntopyyntoAction={(pyynto: Lausuntopyynto) => {
-              const updatedLausuntopyynnot = lausuntotieto.lausuntopyynnot.map(
-                (p) => (p.jarjestys === pyynto.jarjestys ? pyynto : p),
+              const updatedLausuntopyynnot = lausuntopyynnot.map((p) =>
+                p.jarjestys === pyynto.jarjestys ? pyynto : p,
               );
               updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
             }}
@@ -150,9 +147,9 @@ export default function Lausuntotiedot() {
         </OphButton>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.pyyntojenLisatiedot')}
-          value={lausuntotieto.pyyntojenLisatiedot || ''}
+          value={lausuntoPyyntojenLisatiedot || ''}
           onChange={(e) =>
-            updateLausuntotieto('pyyntojenLisatiedot', e.target.value)
+            updateLausuntotieto('lausuntoPyyntojenLisatiedot', e.target.value)
           }
           multiline
           minRows={4}
@@ -164,8 +161,10 @@ export default function Lausuntotiedot() {
         </OphTypography>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.sisalto')}
-          value={lausuntotieto.sisalto || ''}
-          onChange={(e) => updateLausuntotieto('sisalto', e.target.value)}
+          value={lausunnonSisalto || ''}
+          onChange={(e) =>
+            updateLausuntotieto('lausunnonSisalto', e.target.value)
+          }
           multiline
           minRows={4}
           inputProps={{ 'data-testid': 'lausunnonSisalto-input' }}

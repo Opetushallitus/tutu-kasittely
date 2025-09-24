@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend
 
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
@@ -16,7 +15,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.{AutoConfigureMockMvc, WebMvcTest}
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
@@ -34,7 +33,7 @@ import java.time.format.DateTimeFormatter
 import java.util.{Random, UUID}
 
 val uuidTemplate1 = "11111111-2222-3333-4444-555555555555"
-val r             = new Random();
+val r             = new Random()
 
 def pick[T](items: Seq[T]): T = {
   val index = r.nextInt(items.length)
@@ -90,7 +89,10 @@ def makePerustelu(
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString,
   aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
   jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
-  jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption
+  jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption,
+  lausuntoPyyntojenLisatiedot: Option[String] = None,
+  lausunnonSisalto: Option[String] = None,
+  lausuntoPyynnot: Seq[Lausuntopyynto] = Seq.empty
 ): Perustelu = {
   Perustelu(
     None,
@@ -106,6 +108,9 @@ def makePerustelu(
     aikaisemmatPaatokset,
     jatkoOpintoKelpoisuus,
     jatkoOpintoKelpoisuusLisatieto,
+    lausuntoPyyntojenLisatiedot,
+    lausunnonSisalto,
+    lausuntoPyynnot,
     Option(LocalDateTime.now()),
     Option("test user"),
     Option(LocalDateTime.now()),
@@ -124,85 +129,73 @@ def makePerusteluWithUoro(
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
 ): Perustelu = {
   makePerustelu().copy(
-    perusteluUoRo = Some(
-      PerusteluUoRo(
-        Some(UUID.randomUUID()),
-        null,
-        PerusteluUoRoSisalto(
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some("eipä vissii"),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(true),
-          Some("näin on"),
-          Some(true),
-          Some(false),
-          Some(true),
-          Some(true),
-          Some("ei voi"),
-          SovellettuTilanne(Some(false)),
-          Some(true),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          Some(true),
-          Some("se on just nii")
-        ),
-        Some(LocalDateTime.now()),
-        Some("test user"),
-        Option(LocalDateTime.now()),
-        Option("test user")
+    uoRoSisalto = Some(
+      UoRoSisalto(
+        Some(false),
+        Some(false),
+        Some(true),
+        Some(false),
+        Some(true),
+        Some(false),
+        Some(false),
+        Some(true),
+        Some(false),
+        Some(false),
+        Some(false),
+        Some(false),
+        Some(true),
+        Some("eipä vissii"),
+        Some(false),
+        Some(false),
+        Some(false),
+        Some(true),
+        Some(true),
+        Some("näin on"),
+        Some(true),
+        Some(false),
+        Some(true),
+        Some(true),
+        Some("ei voi"),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanneOpetettavatAineet(Some(false)),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanneKasvatustieteellinen(Some(false)),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanne(Some(false)),
+        SovellettuTilanne(Some(false)),
+        Some(true),
+        Some("se on just nii")
       )
     )
   )
 }
 
 def makePerusteluWithLausuntotieto(): Perustelu = {
-  makePerustelu().copy(lausuntotieto =
-    Some(
-      Lausuntotieto(
-        pyyntojenLisatiedot = Some(randomString),
-        sisalto = Some(randomString),
-        lausuntopyynnot = Seq(
-          Lausuntopyynto(
-            lausunnonAntaja = Some(randomString),
-            lahetetty = Option(LocalDateTime.now()),
-            saapunut = Option(LocalDateTime.now())
-          ),
-          Lausuntopyynto(
-            lausunnonAntaja = Some(randomString),
-            lahetetty = None,
-            saapunut = None
-          ),
-          Lausuntopyynto(
-            lausunnonAntaja = Some(randomString),
-            lahetetty = Option(LocalDateTime.now()),
-            saapunut = None
-          ),
-          Lausuntopyynto(
-            lausunnonAntaja = Some(randomString),
-            lahetetty = None,
-            saapunut = Some(LocalDateTime.now())
-          )
-        )
+  makePerustelu().copy(
+    lausuntoPyyntojenLisatiedot = Some(randomString),
+    lausunnonSisalto = Some(randomString),
+    lausuntopyynnot = Seq(
+      Lausuntopyynto(
+        lausunnonAntaja = Some(randomString),
+        lahetetty = Option(LocalDateTime.now()),
+        saapunut = Option(LocalDateTime.now())
+      ),
+      Lausuntopyynto(
+        lausunnonAntaja = Some(randomString),
+        lahetetty = None,
+        saapunut = None
+      ),
+      Lausuntopyynto(
+        lausunnonAntaja = Some(randomString),
+        lahetetty = Option(LocalDateTime.now()),
+        saapunut = None
+      ),
+      Lausuntopyynto(
+        lausunnonAntaja = Some(randomString),
+        lahetetty = None,
+        saapunut = Some(LocalDateTime.now())
       )
     )
   )
@@ -256,21 +249,21 @@ class PerusteluControllerTest extends IntegrationTestBase {
   var perustelu3: Perustelu    = makePerusteluWithLausuntotieto()
 
   def perustelu2Json(perustelu: Perustelu, ignoreFields: String*): String = {
-    val lausuntotieto      = perustelu.lausuntotieto.orNull
-    val lausuntotietoAsMap =
-      if (lausuntotieto != null)
-        lausuntotieto.productElementNames.toList
-          .zip(lausuntotieto.productIterator.toList)
-          .toMap -- ignoreFields + ("lausuntopyynnot" -> lausuntotieto.lausuntopyynnot
-          .map(lp => lp.productElementNames.toList.zip(lp.productIterator.toList).toMap -- ignoreFields))
-      else null
+    val lausuntopyynnotAsMap =
+      if (perustelu.lausuntopyynnot.nonEmpty)
+        perustelu.lausuntopyynnot.map { lp =>
+          lp.productElementNames.toList.zip(lp.productIterator.toList).toMap -- ignoreFields
+        }
+      else
+        Seq.empty
 
-    val uoro      = perustelu.perusteluUoRo.orNull
+    val uoro      = perustelu.uoRoSisalto.orNull
     val uoroAsMap =
       if (uoro != null) uoro.productElementNames.toList.zip(uoro.productIterator.toList).toMap -- ignoreFields else null
+
     val perusteluAsMap = perustelu.productElementNames.toList
       .zip(perustelu.productIterator.toList)
-      .toMap -- ignoreFields + ("lausuntotieto" -> lausuntotietoAsMap, "perusteluUoRo" -> uoroAsMap)
+      .toMap -- ignoreFields + ("lausuntopyynnot" -> lausuntopyynnotAsMap, "uoRoSisalto" -> uoroAsMap)
     mapper.writeValueAsString(perusteluAsMap)
   }
 
@@ -339,13 +332,15 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.aikaisemmatPaatokset").isBoolean)
       .andExpect(jsonPath("$.jatkoOpintoKelpoisuus").isString)
       .andExpect(jsonPath("$.jatkoOpintoKelpoisuusLisatieto").isString)
+      .andExpect(jsonPath("$.lausuntoPyyntojenLisatiedot").isEmpty)
+      .andExpect(jsonPath("$.lausunnonSisalto").isEmpty)
+      .andExpect(jsonPath("$.lausuntopyynnot").isEmpty)
       .andExpect(jsonPath("$.hakemusId").isString)
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(jsonPath("$.luoja").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.lausuntotieto").isEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo").isEmpty)
+      .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
   }
@@ -367,8 +362,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.luoja").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.lausuntotieto").isEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo").isEmpty)
+      .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPerustelu), any())
   }
@@ -453,7 +447,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.lausuntotieto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
   }
@@ -463,9 +456,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(6)
   def haePerusteluWithUoroPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId2.get).get.id
-    val uoroId        = perusteluRepository.haePerusteluUoRo(perusteluId.get).get.id
-    val uoro          = perustelu2.perusteluUoRo.get.copy(id = uoroId, perusteluId = perusteluId)
-    val perustelu     = perustelu2.copy(id = perusteluId, perusteluUoRo = Some(uoro))
+    val uoro          = perustelu2.uoRoSisalto.orNull
+    val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = Some(uoro))
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
     mvc
@@ -477,7 +469,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.lausuntotieto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPerustelu), any())
   }
@@ -487,10 +478,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(7)
   def tallennaMuokattuPerusteluWithUoRoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId = perusteluRepository.haePerustelu(hakemusId2.get).get.id
-    val uoroId      = perusteluRepository.haePerusteluUoRo(perusteluId.get).get.id
     var perustelu   = makePerusteluWithUoro().copy(hakemusId = Some(hakemusId2.get))
-    val uoro        = perustelu.perusteluUoRo.get.copy(id = uoroId, perusteluId = perusteluId)
-    perustelu = perustelu.copy(id = perusteluId, perusteluUoRo = Some(uoro))
+    val uoro        = perustelu.uoRoSisalto.orNull
+    perustelu = perustelu.copy(id = perusteluId, uoRoSisalto = Some(uoro))
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
     when(
       userService.getEnrichedUserDetails(any)
@@ -511,7 +501,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.muokattu").isString)
       .andExpect(jsonPath("$.muokkaaja").isString)
-      .andExpect(jsonPath("$.lausuntotieto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
@@ -525,11 +514,10 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(8)
-  def tallennaPerusteluWithLausuntotietoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
+  def tallennaPerusteluWithLausuntopyynnotPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluJSON =
-      perustelu2Json(perustelu3, "id", "perusteluId", "lausuntotietoId", "luotu", "muokattu", "muokkaaja")
+      perustelu2Json(perustelu3, "id", "perusteluId", "luotu", "muokattu", "muokkaaja")
 
-    println("!!!!!!!!!!!!!!!!!!!!!!!!! " + perusteluJSON)
     when(
       userService.getEnrichedUserDetails(any)
     ).thenReturn(
@@ -552,7 +540,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo").isEmpty)
+      .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
   }
@@ -562,21 +550,15 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(9)
   def haePerusteluWithLausuntotietoPalauttaa200(): Unit = {
     val perusteluId         = perusteluRepository.haePerustelu(hakemusId3.get).get.id
-    val lausuntotietoId     = perusteluRepository.haeLausuntotieto(perusteluId.get).get.id
-    val lausuntopyynnotInDb = perusteluRepository.haeLausuntopyynnot(lausuntotietoId.get)
-    val lausuntopyynnot     = perustelu3.lausuntotieto.get.lausuntopyynnot.map(lp =>
+    val lausuntopyynnotInDb = perusteluRepository.haeLausuntopyynnot(perusteluId.get)
+    val lausuntopyynnot     = perustelu3.lausuntopyynnot.map(lp =>
       lp.copy(
-        lausuntotietoId = Some(lausuntotietoId.get),
+        perusteluId = Some(perusteluId.get),
         id = lausuntopyynnotInDb.find(_.lausunnonAntaja == lp.lausunnonAntaja).get.id
       )
     )
-    val lausuntotieto = perustelu3.lausuntotieto.get.copy(
-      id = lausuntotietoId,
-      perusteluId = perusteluId,
-      lausuntopyynnot = lausuntopyynnot
-    )
     val perusteluJSON = perustelu2Json(
-      perustelu3.copy(id = perusteluId, lausuntotieto = Some(lausuntotieto)),
+      perustelu3.copy(id = perusteluId, lausuntopyynnot = lausuntopyynnot),
       "luotu",
       "muokattu",
       "muokkaaja"
@@ -591,7 +573,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
-      .andExpect(jsonPath("$.perusteluUoRo").isEmpty)
+      .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPerustelu), any())
   }
@@ -600,24 +582,12 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(10)
   def tallennaMuokattuPerusteluWithLausuntotietoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
-    val perusteluId                 = perusteluRepository.haePerustelu(hakemusId3.get).get.id
-    val lausuntotietoId             = perusteluRepository.haeLausuntotieto(perusteluId.get).get.id
-    val lausuntopyynnotInDbIterator = perusteluRepository.haeLausuntopyynnot(lausuntotietoId.get).iterator
+    val perusteluId     = perusteluRepository.haePerustelu(hakemusId3.get).get.id
     val perustelu       = makePerusteluWithLausuntotieto().copy(id = perusteluId, hakemusId = Some(hakemusId3.get))
-    var lausuntopyynnot = perustelu.lausuntotieto.get.lausuntopyynnot.map(lp =>
-      lp.copy(
-        lausuntotietoId = Some(lausuntotietoId.get),
-        id = lausuntopyynnotInDbIterator.next().id
-      )
-    )
+    var lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(perusteluId.get)
     lausuntopyynnot = lausuntopyynnot.take(3)
-    val lausuntotieto = perustelu.lausuntotieto.get.copy(
-      id = lausuntotietoId,
-      perusteluId = perusteluId,
-      lausuntopyynnot = lausuntopyynnot
-    )
     val perusteluJSON = perustelu2Json(
-      perustelu.copy(id = perusteluId, lausuntotieto = Some(lausuntotieto)),
+      perustelu.copy(id = perusteluId, lausuntopyynnot = lausuntopyynnot),
       "luotu",
       "muokattu",
       "muokkaaja"
@@ -642,7 +612,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.muokattu").isString)
       .andExpect(jsonPath("$.muokkaaja").isString)
-      .andExpect(jsonPath("$.perusteluUoRo").isEmpty)
+      .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(

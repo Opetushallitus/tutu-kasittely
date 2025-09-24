@@ -42,34 +42,13 @@ class PerusteluRepository {
         aikaisemmatPaatokset = r.nextBooleanOption(),
         jatkoOpintoKelpoisuus = Option(r.nextString()),
         jatkoOpintoKelpoisuusLisatieto = Option(r.nextString()),
+        uoRoSisalto = Option(org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString())),
+        lausuntoPyyntojenLisatiedot = r.nextStringOption(),
+        lausunnonSisalto = r.nextStringOption(),
         luotu = Option(r.nextTimestamp().toLocalDateTime),
         luoja = Option(r.nextString()),
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         muokkaaja = Option(r.nextString())
-      )
-    )
-  }
-
-  implicit val getPerusteluUoRoResult: GetResult[PerusteluUoRo] = GetResult { r =>
-    PerusteluUoRo(
-      id = Option(UUID.fromString(r.nextString())),
-      perusteluId = Option(UUID.fromString(r.nextString())),
-      perustelunSisalto = org.json4s.jackson.Serialization.read[PerusteluUoRoSisalto](r.nextString()),
-      luotu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-      luoja = Option(r.nextString()),
-      muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-      muokkaaja = Option(r.nextString())
-    )
-  }
-
-  implicit val getLausuntotietoResult: GetResult[Lausuntotieto] = {
-    GetResult(r =>
-      Lausuntotieto(
-        Option(UUID.fromString(r.nextString())),
-        Option(UUID.fromString(r.nextString())),
-        r.nextStringOption(),
-        r.nextStringOption(),
-        Seq.empty
       )
     )
   }
@@ -102,9 +81,10 @@ class PerusteluRepository {
     luoja: String
   ): Perustelu = {
     try {
+      val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto.orNull)
       db.run(
         sql"""
-          INSERT INTO perustelu_yleiset (
+          INSERT INTO perustelu (
             hakemus_id,
             virallinen_tutkinnon_myontaja,
             virallinen_tutkinto,
@@ -117,6 +97,9 @@ class PerusteluRepository {
             aikaisemmat_paatokset,
             jatko_opinto_kelpoisuus,
             jatko_opinto_kelpoisuus_lisatieto,
+            uo_ro_sisalto,
+            lausunto_pyynto_lisatiedot,
+            lausunto_sisalto,
             luoja
           )
           VALUES (
@@ -132,6 +115,9 @@ class PerusteluRepository {
             ${perustelu.aikaisemmatPaatokset},
             ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
             ${perustelu.jatkoOpintoKelpoisuusLisatieto},
+            ${uoRoJson}::jsonb,
+            ${perustelu.lausuntoPyyntojenLisatiedot},
+            ${perustelu.lausunnonSisalto},
             $luoja
           )
           ON CONFLICT (hakemus_id)
@@ -147,6 +133,9 @@ class PerusteluRepository {
             aikaisemmat_paatokset = ${perustelu.aikaisemmatPaatokset},
             jatko_opinto_kelpoisuus = ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
             jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
+            uo_ro_sisalto = ${uoRoJson}::jsonb,
+            lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
+            lausunto_sisalto = ${perustelu.lausunnonSisalto},
             muokkaaja = $luoja
           RETURNING
             id,
@@ -162,6 +151,9 @@ class PerusteluRepository {
             aikaisemmat_paatokset,
             jatko_opinto_kelpoisuus,
             jatko_opinto_kelpoisuus_lisatieto,
+            uo_ro_sisalto,
+            lausunto_pyynto_lisatiedot,
+            lausunto_sisalto,
             luotu,
             luoja,
             muokattu,
@@ -207,12 +199,15 @@ class PerusteluRepository {
               p.aikaisemmat_paatokset,
               p.jatko_opinto_kelpoisuus,
               p.jatko_opinto_kelpoisuus_lisatieto,
+              p.uo_ro_sisalto,
+              p.lausunto_pyynto_lisatiedot,
+              p.lausunto_sisalto,
               p.luotu,
               p.luoja,
               p.muokattu,
               p.muokkaaja
             FROM
-              perustelu_yleiset p
+              perustelu p
             WHERE
               p.hakemus_id =  ${hakemusId.toString}::uuid
           """.as[Perustelu].headOption,
@@ -229,186 +224,27 @@ class PerusteluRepository {
   }
 
   /**
-   * Tallentaa uuden tai modifioidun UO/RO-perustelun
-   *
-   * @param perusteluId
-   * Perustelun uuid
-   * @param perusteluUoRo
-   * UO/RO-perustelu
-   * @param luoja
-   * perustelun luoja
-   * @return
-   * tallennetun perustelun id
-   */
-  def tallennaPerusteluUoRo(
-    perusteluId: UUID,
-    perusteluUoRo: PerusteluUoRo,
-    luoja: String
-  ): PerusteluUoRo = {
-    val sisaltoJson: String = org.json4s.jackson.Serialization.write(perusteluUoRo.perustelunSisalto)
-    try {
-      db.run(
-        sql"""
-            INSERT INTO perustelu_uo_ro (
-              perustelu_id,
-              perustelun_sisalto,
-              luoja
-            )
-            VALUES (
-              ${perusteluId.toString}::uuid,
-               ${sisaltoJson}::jsonb,
-              $luoja
-            )
-            ON CONFLICT (perustelu_id)
-            DO UPDATE SET
-              perustelun_sisalto = ${sisaltoJson}::jsonb,
-              muokkaaja = $luoja
-            RETURNING *
-          """.as[PerusteluUoRo].head,
-        "tallenna_perustelu_uo_ro"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"UO/RO-perustelun tallennus epäonnistui: ${e}")
-        throw new RuntimeException(s"UO/RO-perustelun tallennus epäonnistui: ${e.getMessage}", e)
-    }
-  }
-
-  /**
-   * Palauttaa yksittäisen UO/RO-perustelun
-   *
-   * @param perusteluId
-   * perustelun uuid
-   * @return
-   * perusteluUoRo
-   */
-  def haePerusteluUoRo(
-    perusteluId: UUID
-  ): Option[PerusteluUoRo] = {
-    try {
-      db.run(
-        sql"""
-              SELECT *
-              FROM
-                perustelu_uo_ro p
-              WHERE
-                p.perustelu_id =  ${perusteluId.toString}::uuid
-            """.as[PerusteluUoRo].headOption,
-        "hae_perustelu_uo_ro"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"UO/RO-perustelun haku epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"UO/RO-perustelun haku epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * Tallentaa uuden tai modifioidun lausuntotiedon
-   *
-   * @param perusteluId
-   * Perustelun uuid
-   * @param lausuntotieto
-   * Uusi tai modifioitu lausuntotieto
-   * @param luojaTaiMuokkaaja
-   * perustelun luoja tai muokkaaja
-   * @return
-   * tallennetun perustelun id
-   */
-  def tallennaLausuntotieto(
-    perusteluId: UUID,
-    lausuntotieto: Lausuntotieto,
-    luojaTaiMuokkaaja: String
-  ): Lausuntotieto = {
-    try {
-      db.run(
-        sql"""
-            INSERT INTO lausuntotieto (
-              perustelu_id,
-              pyyntojen_lisatiedot,
-              sisalto,
-              luoja
-            )
-            VALUES (
-              ${perusteluId.toString}::uuid,
-              ${lausuntotieto.pyyntojenLisatiedot.orNull},
-              ${lausuntotieto.sisalto.orNull},
-              $luojaTaiMuokkaaja
-            )
-            ON CONFLICT (perustelu_id)
-            DO UPDATE SET
-              pyyntojen_lisatiedot = ${lausuntotieto.pyyntojenLisatiedot.orNull},
-              sisalto = ${lausuntotieto.sisalto.orNull},
-              muokkaaja = $luojaTaiMuokkaaja
-            RETURNING *
-          """.as[Lausuntotieto].head,
-        "tallenna_lausuntotieto"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Lausuntotiedon tallennus epäonnistui: $e")
-        throw new RuntimeException(s"Lausuntotiedon tallennus epäonnistui: ${e.getMessage}", e)
-    }
-  }
-
-  /**
-   * Palauttaa yksittäisen lausuntotiedon
-   *
-   * @param perusteluId
-   * vastaavan perustelutiedon uuid
-   * @return
-   * lausuntotieto
-   */
-  def haeLausuntotieto(perusteluId: UUID): Option[Lausuntotieto] = {
-    try {
-      db.run(
-        sql"""
-            SELECT
-              lt.id,
-              lt.perustelu_id,
-              lt.pyyntojen_lisatiedot,
-              lt.sisalto
-            FROM
-              lausuntotieto lt
-            WHERE
-              lt.perustelu_id =  ${perusteluId.toString}::uuid
-          """.as[Lausuntotieto].headOption,
-        "hae_lausuntotieto"
-      )
-    } catch {
-      case e: Exception =>
-        throw new RuntimeException(
-          s"Lausuntotiedon haku epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
    * Palauttaa lausuntotietoon liittyvät lausuntopyynnöt
    *
-   * @param lausuntotietoId
+   * @param perusteluId
    * vastaavan lausuntotiedon uuid
    * @return
    * lausuntopyynnot
    */
-  def haeLausuntopyynnot(lausuntotietoId: UUID): Seq[Lausuntopyynto] = {
+  def haeLausuntopyynnot(perusteluId: UUID): Seq[Lausuntopyynto] = {
     try {
       db.run(
         sql"""
             SELECT
               lp.id,
-              lp.lausuntotieto_id,
+              lp.perustelu_id,
               lp.lausunnon_antaja,
               lp.lahetetty,
               lp.saapunut
             FROM
               lausuntopyynto lp
             WHERE
-              lp.lausuntotieto_id =  ${lausuntotietoId.toString}::uuid
+              lp.perustelu_id =  ${perusteluId.toString}::uuid
           """.as[Lausuntopyynto],
         "hae_lausuntopyynnot"
       )
@@ -424,7 +260,7 @@ class PerusteluRepository {
   /**
    * Tallentaa uudet/muuttu tai modifioidun lausuntotiedon ja siihen liittyvät lausuntopyynnöt
    *
-   * @param lausuntotietoId
+   * @param perusteluId
    * vastaavan lausuntotiedon uuid
    * @param modifyData
    * lausuntopyyntöjen muokkaustiedot
@@ -432,11 +268,11 @@ class PerusteluRepository {
    * pyynnön luoja tai muokkaaja
    */
   def suoritaLausuntopyyntojenModifiointi(
-    lausuntotietoId: UUID,
+    perusteluId: UUID,
     modifyData: LausuntopyyntoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(lausuntotietoId, lp, luojaTaiMuokkaaja)) ++
+    val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(perusteluId, lp, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaLausuntopyynto)
     val combined = db.combineIntDBIOs(actions)
@@ -449,21 +285,21 @@ class PerusteluRepository {
   }
 
   def lisaaLausuntopyynto(
-    lausuntotietoId: UUID,
+    perusteluId: UUID,
     lausuntopyynto: Lausuntopyynto,
     luoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO lausuntopyynto (lausuntotieto_id, lausunnon_antaja, lahetetty, saapunut, luoja)
+      INSERT INTO lausuntopyynto (perustelu_id, lausunnon_antaja, lahetetty, saapunut, luoja)
       VALUES (
-        ${lausuntotietoId.toString}::uuid,
+        ${perusteluId.toString}::uuid,
         ${lausuntopyynto.lausunnonAntaja.orNull},
         ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
         ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         $luoja
       )"""
 
-  def paivitaLausuntoPyynto(
+  private def paivitaLausuntoPyynto(
     lausuntopyynto: Lausuntopyynto,
     muokkaaja: String
   ): DBIO[Int] =
@@ -477,7 +313,7 @@ class PerusteluRepository {
       WHERE id = ${lausuntopyynto.id.get.toString}::uuid
     """
 
-  def poistaLausuntopyynto(id: UUID): DBIO[Int] =
+  private def poistaLausuntopyynto(id: UUID): DBIO[Int] =
     sqlu"""
       DELETE FROM lausuntopyynto
       WHERE id = ${id.toString}::uuid

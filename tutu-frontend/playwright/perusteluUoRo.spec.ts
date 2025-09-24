@@ -62,11 +62,11 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 
   const payload = req.postDataJSON();
 
-  const updatedItem = payload.perusteluUoRo;
+  const updatedItem = payload.uoRoSisalto;
 
   expect(updatedItem).toEqual({
-    perusteluId: 'mock-perustelu-id',
-    perustelunSisalto: { otmMuuEro: true, otmMuuEroSelite: 'Härköneeeeeen' },
+    otmMuuEro: true,
+    otmMuuEroSelite: 'Härköneeeeeen',
   });
 });
 
@@ -127,15 +127,12 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
   ]);
 
   let payload = req.postDataJSON();
-  let updatedItem = payload.perusteluUoRo;
+  let updatedItem = payload.uoRoSisalto;
 
   expect(updatedItem).toEqual({
-    perusteluId: 'mock-perustelu-id',
-    perustelunSisalto: {
-      sovellettuLuokanopettaja: {
-        checked: true,
-        value: 'A',
-      },
+    sovellettuLuokanopettaja: {
+      checked: true,
+      value: 'A',
     },
   });
   await sovellettuLuokanopettajaCheckbox.uncheck();
@@ -150,15 +147,12 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
   ]);
 
   payload = req.postDataJSON();
-  updatedItem = payload.perusteluUoRo;
+  updatedItem = payload.uoRoSisalto;
 
   expect(updatedItem).toEqual({
-    perusteluId: 'mock-perustelu-id',
-    perustelunSisalto: {
-      sovellettuLuokanopettaja: {
-        checked: false,
-        value: null,
-      },
+    sovellettuLuokanopettaja: {
+      checked: false,
+      value: null,
     },
   });
 });

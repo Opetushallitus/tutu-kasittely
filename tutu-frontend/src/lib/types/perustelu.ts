@@ -1,5 +1,5 @@
-import { PerusteluUoRo } from '@/src/lib/types/perusteluUoRo';
-import { Lausuntotieto } from '@/src/lib/types/lausuntotieto';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
 export type Perustelu = {
   id: string;
@@ -16,9 +16,11 @@ export type Perustelu = {
   luoja: string;
   muokattu?: string;
   muokkaaja?: string;
-  lausuntotieto?: Lausuntotieto;
-  perusteluUoRo?: PerusteluUoRo;
+  uoRoSisalto?: UoRoSisalto;
   jatkoOpintoKelpoisuus?: string | undefined;
   jatkoOpintoKelpoisuusLisatieto?: string | undefined;
   aikaisemmatPaatokset?: boolean | undefined;
+  lausuntoPyyntojenLisatiedot?: string;
+  lausunnonSisalto?: string;
+  lausuntopyynnot: Lausuntopyynto[];
 };

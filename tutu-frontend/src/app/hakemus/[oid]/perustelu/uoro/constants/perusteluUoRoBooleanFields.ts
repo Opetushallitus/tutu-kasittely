@@ -1,7 +1,17 @@
-import { PerusteluUoRoSisalto } from '@/src/lib/types/perusteluUoRo';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
+import {
+  sovellettuErityisOpetusOptions,
+  sovellettuLuokanOpettajaOptions,
+  sovellettuMonialaisetOpinnotOptions,
+  sovellettuPedagogisetOpinnotOptions,
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions,
+  sovellettuRinnastaminenOikeustieteenMaisterinTutkintoonOptions,
+  sovellettuVarhaiskasvatusOptions,
+} from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/SovellettuTilanneOptions';
+import { OphRadioOption } from '@/src/lib/types/common';
 
 export const opettajatBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -65,7 +75,7 @@ export const opettajatBooleanFields: {
 ];
 
 export const vkBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -95,7 +105,7 @@ export const vkBooleanFields: {
 ];
 
 export const otmBooleanFields: {
-  key: keyof PerusteluUoRoSisalto;
+  key: keyof UoRoSisalto;
   labelKey: string;
 }[] = [
   {
@@ -114,18 +124,28 @@ export const otmBooleanFields: {
 ];
 
 export const sovellettuTilanneBooleanFields: {
-  type: 'sovellettuTilanne' | 'boolean' | 'sovellettuOpetettavanAineenOpinnot';
-  key: keyof PerusteluUoRoSisalto;
+  type:
+    | 'boolean'
+    | 'sovellettuTilanne'
+    | 'sovellettuTilanneOpetettavatAineet'
+    | 'sovellettuTilanneKasvatustieteellinen';
+  key: keyof UoRoSisalto;
   labelKey: string;
+  options?:
+    | OphRadioOption<string>[]
+    | OphRadioOption<string>[][]
+    | Record<string, OphRadioOption<string>[]>
+    | undefined;
 }[] = [
   {
     type: 'sovellettuTilanne',
     key: 'sovellettuOpettajanPedagogisetOpinnot',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.opettajanPedagogisetOpinnot',
+    options: sovellettuPedagogisetOpinnotOptions,
   },
   {
-    type: 'sovellettuOpetettavanAineenOpinnot',
+    type: 'sovellettuTilanneOpetettavatAineet',
     key: 'sovellettuOpetettavanAineenOpinnot',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.opetettavanAineenOpinnot',
@@ -134,22 +154,26 @@ export const sovellettuTilanneBooleanFields: {
     type: 'sovellettuTilanne',
     key: 'sovellettuMonialaisetOpinnot',
     labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.monialaisetOpinnot',
+    options: sovellettuMonialaisetOpinnotOptions,
   },
   {
     type: 'sovellettuTilanne',
     key: 'sovellettuErityisopetus',
     labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.erityisopetus',
+    options: sovellettuErityisOpetusOptions,
   },
   {
     type: 'sovellettuTilanne',
     key: 'sovellettuVarhaiskasvatus',
     labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.varhaiskasvatus',
+    options: sovellettuVarhaiskasvatusOptions,
   },
   {
-    type: 'sovellettuTilanne',
+    type: 'sovellettuTilanneKasvatustieteellinen',
     key: 'sovellettuRinnastaminenKasvatustieteelliseenTutkintoon',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenKasvatustieteelliseenTutkintoon',
+    options: sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions,
   },
   {
     type: 'sovellettuTilanne',
@@ -161,11 +185,14 @@ export const sovellettuTilanneBooleanFields: {
     key: 'sovellettuRinnastaminenOtmTutkintoon',
     labelKey:
       'hakemus.perustelu.uoro.sovellettuTilanne.rinnastaminenOtmTutkintoon',
+
+    options: sovellettuRinnastaminenOikeustieteenMaisterinTutkintoonOptions,
   },
   {
     type: 'sovellettuTilanne',
     key: 'sovellettuLuokanopettaja',
     labelKey: 'hakemus.perustelu.uoro.sovellettuTilanne.luokanopettaja',
+    options: sovellettuLuokanOpettajaOptions,
   },
   {
     type: 'boolean',

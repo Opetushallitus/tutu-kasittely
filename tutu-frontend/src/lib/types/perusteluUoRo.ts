@@ -1,11 +1,6 @@
-export type PerusteluUoRo = {
-  id?: string;
-  perusteluId: string;
-  perustelunSisalto: PerusteluUoRoSisalto;
-  luotu?: string;
-  luoja?: string;
-  muokattu?: string;
-  muokkaaja?: string;
+export type Aine = {
+  aine: string;
+  value: string;
 };
 
 export type SovellettuTilanne = {
@@ -13,7 +8,18 @@ export type SovellettuTilanne = {
   value?: string | null;
 };
 
-export type PerusteluUoRoSisalto = {
+export type SovellettuTilanneOpetettavatAineet = {
+  checked?: boolean;
+  kieliAine?: string[];
+  aineet?: Aine[];
+};
+
+export type SovellettuTilanneKasvatustieteellinen = {
+  checked?: boolean;
+  values?: string[];
+};
+
+export type UoRoSisalto = {
   opettajatEroMonialaisetOpinnotSisalto?: boolean;
   opettajatEroMonialaisetOpinnotLaajuus?: boolean;
   opettajatEroPedagogisetOpinnotSisalto?: boolean;
@@ -39,14 +45,12 @@ export type PerusteluUoRoSisalto = {
   otmEroOpinnotLaajuus?: boolean;
   otmMuuEro?: boolean;
   otmMuuEroSelite?: string;
-
   sovellettuOpettajanPedagogisetOpinnot?: SovellettuTilanne;
-  // TODO: sovellettuAineOption
-  sovellettuOpetettavanAineenOpinnot?: boolean;
+  sovellettuOpetettavanAineenOpinnot?: SovellettuTilanneOpetettavatAineet;
   sovellettuMonialaisetOpinnot?: SovellettuTilanne;
   sovellettuErityisopetus?: SovellettuTilanne;
   sovellettuVarhaiskasvatus?: SovellettuTilanne;
-  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: SovellettuTilanne;
+  sovellettuRinnastaminenKasvatustieteelliseenTutkintoon?: SovellettuTilanneKasvatustieteellinen;
   sovellettuRiittavatOpinnot?: SovellettuTilanne;
   sovellettuRinnastaminenOtmTutkintoon?: SovellettuTilanne;
   sovellettuLuokanopettaja?: SovellettuTilanne;
