@@ -37,6 +37,7 @@ import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
+import { useHakemukset } from '@/src/hooks/useHakemukset';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
@@ -44,6 +45,11 @@ export default function HakemusListFilters() {
   const queryClient = useQueryClient();
   const { options: esittelijaOptions, error } = useEsittelijat();
   const { addToast } = useToaster();
+  const { data: hakemukset, error: hakemuksetError } = useHakemukset();
+
+  useEffect(() => {
+    handleFetchError(addToast, hakemuksetError, 'virhe.hakemuslistanLataus', t);
+  }, [hakemuksetError, addToast, t]);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.esittelijoidenLataus', t);
@@ -228,7 +234,9 @@ export default function HakemusListFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        <Grid size={'auto'}>256 hakemusta</Grid>
+        <Grid size={'auto'}>
+          {hakemukset?.length} {t('hakemuslista.hakemusta')}
+        </Grid>
         <Grid size={'auto'}>
           <div>sivutus</div>
         </Grid>
