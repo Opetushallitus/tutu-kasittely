@@ -21,7 +21,9 @@ export default function ApPage() {
   const theme = useTheme();
   const { hakemus, isLoading, error } = useHakemus();
   const hakija = hakemus?.hakija;
-  const { perustelu, updatePerustelu } = usePerustelu(hakemus?.hakemusOid);
+  const { perustelu, isPerusteluLoading, updatePerustelu } = usePerustelu(
+    hakemus?.hakemusOid,
+  );
   const [perusteluAP, setPerusteluAP] = useState<PerusteluAP>(
     perustelu?.perusteluAP ?? {},
   );
@@ -46,7 +48,7 @@ export default function ApPage() {
     updatePerusteluAP({ ...perusteluAP, [key]: value });
   };
 
-  return isLoading ? (
+  return isLoading || isPerusteluLoading ? (
     <FullSpinner></FullSpinner>
   ) : (
     <PerusteluLayout

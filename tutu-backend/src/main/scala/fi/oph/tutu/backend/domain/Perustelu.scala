@@ -25,7 +25,8 @@ case class Perustelu(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
-  uoRoSisalto: Option[UoRoSisalto] = None
+  uoRoSisalto: Option[UoRoSisalto] = None,
+  perusteluAP: Option[PerusteluAP] = None
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
     this.copy(
@@ -54,7 +55,10 @@ case class Perustelu(
         .orElse(this.muuPerustelu),
       uoRoSisalto = partial.uoRoSisalto.orElse(this.uoRoSisalto),
       lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
-      lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto)
+      lausunnonSisalto = partial.lausunnonSisalto
+        .orElse(this.lausunnonSisalto)
+        .orElse(this.jatkoOpintoKelpoisuusLisatieto),
+      perusteluAP = partial.perusteluAP.orElse(this.perusteluAP)
     )
 }
 
@@ -74,7 +78,8 @@ case class PartialPerustelu(
   uoRoSisalto: Option[UoRoSisalto] = None,
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
-  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
+  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
+  perusteluAP: Option[PerusteluAP] = None
 )
 
 case class UoRoSisalto(
@@ -150,4 +155,23 @@ case class LausuntopyyntoModifyData(
   uudet: Seq[Lausuntopyynto] = Seq.empty,
   muutetut: Seq[Lausuntopyynto] = Seq.empty,
   poistetut: Seq[UUID] = Seq.empty
+)
+
+case class PerusteluAP(
+  lakiperusteToisessaJasenmaassaSaannelty: Option[Boolean] = None,
+  lakiperustePatevyysLahtomaanOikeuksilla: Option[Boolean] = None,
+  lakiperusteToinenEUmaaTunnustanut: Option[Boolean] = None,
+  lakiperusteLahtomaassaSaantelematon: Option[Boolean] = None,
+  todistusEUKansalaisuuteenRinnasteisestaAsemasta: Option[String] = None,
+  ammattiJohonPatevoitynyt: Option[String] = None,
+  ammattitoiminnanPaaAsiallinenSisalto: Option[String] = None,
+  koulutuksenKestoJaSisalto: Option[String] = None,
+  selvityksetLahtomaanViranomaiselta: Option[Boolean] = None,
+  selvityksetLahtomaanLainsaadannosta: Option[Boolean] = None,
+  selvityksetAikaisempiTapaus: Option[Boolean] = None,
+  selvityksetIlmeneeAsiakirjoista: Option[Boolean] = None,
+  lisatietoja: Option[String] = None,
+  IMIHalytysTarkastettu: Option[Boolean] = None,
+  muutAPPerustelut: Option[String] = None,
+  SEUTArviointi: Option[String] = None
 )

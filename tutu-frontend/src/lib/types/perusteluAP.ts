@@ -3,7 +3,7 @@ export type PerusteluAP = Partial<{
   lakiperustePatevyysLahtomaanOikeuksilla?: boolean;
   lakiperusteToinenEUmaaTunnustanut?: boolean;
   lakiperusteLahtomaassaSaantelematon?: boolean;
-  todistusEUKansalaisuuteenRinnasteisestaAsemasta: string;
+  todistusEUKansalaisuuteenRinnasteisestaAsemasta?: string;
   ammattiJohonPatevoitynyt?: string;
   ammattitoiminnanPaaAsiallinenSisalto?: string;
   koulutuksenKestoJaSisalto?: string;
