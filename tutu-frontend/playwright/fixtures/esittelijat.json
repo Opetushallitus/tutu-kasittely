@@ -1,10 +1,12 @@
 [
   {
+    "id": "E1",
     "esittelijaOid": "1.2.246.562.24.999999999998",
     "etunimi": "Kari",
     "sukunimi": "Karibia"
   },
   {
+    "id": "E2",
     "esittelijaOid": "1.2.246.562.24.999999999999",
     "etunimi": "Janne",
     "sukunimi": "Jamaika"

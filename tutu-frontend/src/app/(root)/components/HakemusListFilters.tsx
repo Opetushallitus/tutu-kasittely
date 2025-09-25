@@ -77,9 +77,7 @@ export default function HakemusListFilters() {
 
   const [esittelija, setEsittelija] = useQueryState(
     'esittelija',
-    parseAsArrayOf(
-      parseAsStringLiteral(R.map(esittelijaOptions, (option) => option.value)),
-    ).withDefault([]),
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const searchParams = useSearchParams();
@@ -170,6 +168,7 @@ export default function HakemusListFilters() {
                   )
                 }
                 data-testid={'kasittelyvaihe'}
+                inputProps={{ 'aria-label': t('hakemuslista.kasittelyvaihe') }}
               />
             )}
           />
@@ -195,6 +194,7 @@ export default function HakemusListFilters() {
                   )
                 }
                 data-testid={'hakemus-koskee'}
+                inputProps={{ 'aria-label': t('hakemuslista.hakemusKoskee') }}
               />
             )}
           />
@@ -222,6 +222,8 @@ export default function HakemusListFilters() {
                       event.target.value,
                     )
                   }
+                  data-testid={'esittelija'}
+                  inputProps={{ 'aria-label': t('hakemuslista.esittelija') }}
                 />
               )}
             />
