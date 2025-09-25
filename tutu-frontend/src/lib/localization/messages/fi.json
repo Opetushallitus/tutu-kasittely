@@ -250,6 +250,14 @@
             "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
           }
         },
+        "tutkinnot": {
+          "tutkintoOtsake": "Tutkinto {jarjestys}",
+          "ohjeellinenLaajuus": "Ohjeellinen laajuus",
+          "suoritusvuodet": "Suoritusvuodet",
+          "opinnaytetyo": "Sisältyikö tutkintoon opinnäytetyö?",
+          "harjoittelu": "Sisältyikö tutkintoon harjoittelu?",
+          "lisatietoja": "Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"
+        },
         "muutPerustelut": {
           "otsikko": "Jatko-opintokelpoisuus ja muut perustelut",
           "jatkoOpintoKelpoisuus": {

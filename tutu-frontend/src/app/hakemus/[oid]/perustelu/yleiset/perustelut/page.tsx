@@ -5,7 +5,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { Hakemus, PartialHakemus } from '@/src/lib/types/hakemus';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -17,10 +17,11 @@ import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset
 import { Muistio } from '@/src/components/Muistio';
 import { JatkoOpintoKelpoisuus } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/JatkoOpintoKelpoisuus';
 import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
+import { TutkintokohtaisetTiedot } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/TutkintokohtaisetTiedot';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemus, isLoading, error } = useHakemus();
+  const { hakemus, updateHakemus, isLoading, error } = useHakemus();
 
   return (
     <PerusteluLayout
@@ -31,16 +32,20 @@ export default function YleisetPage() {
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      <YleisetPerustelut hakemus={hakemus} />
+      <YleisetPerustelut hakemus={hakemus} updateHakemus={updateHakemus} />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
   hakemus: Hakemus | undefined;
+  updateHakemus: (patchHakemus: PartialHakemus) => void;
 }
 
-const YleisetPerustelut = ({ hakemus }: YleisetPerustelutProps) => {
+const YleisetPerustelut = ({
+  hakemus,
+  updateHakemus,
+}: YleisetPerustelutProps) => {
   const { t } = useTranslations();
   const { perustelu, updatePerustelu, isPerusteluLoading } = usePerustelu(
     hakemus?.hakemusOid,
@@ -78,7 +83,10 @@ const YleisetPerustelut = ({ hakemus }: YleisetPerustelutProps) => {
         hakemuksenOsa={'perustelut-yleiset--selvitys-tutkinnon-asemasta'}
       />
 
-      {/* Tutkintokohtaiset tiedot */}
+      <TutkintokohtaisetTiedot
+        hakemus={hakemus}
+        updateHakemus={updateHakemus}
+      />
 
       <OphTypography variant={'h2'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}

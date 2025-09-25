@@ -16,7 +16,11 @@ case class Tutkinto(
   koulutusalaKoodi: Option[String] = None,
   paaaaineTaiErikoisala: Option[String] = None,
   todistusOtsikko: Option[String] = None,
-  muuTutkintoMuistioId: Option[UUID] = None
+  muuTutkintoMuistioId: Option[UUID] = None,
+  ohjeellinenLaajuus: Option[String] = None,
+  opinnaytetyo: Option[Boolean] = None,
+  harjoittelu: Option[Boolean] = None,
+  perustelunLisatietoja: Option[String] = None
 )
 
 case class TutkintoModifyData(uudet: Seq[Tutkinto], muutetut: Seq[Tutkinto], poistetut: Seq[UUID])
