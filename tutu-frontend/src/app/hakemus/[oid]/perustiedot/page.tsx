@@ -6,12 +6,11 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { LabeledValue } from '@/src/components/LabeledValue';
-import { Muutoshistoria } from '@/src/app/hakemus/[oid]/perustiedot/components/Muutoshistoria';
 import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
 import { Sisalto } from '@/src/components/Sisalto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { handleFetchError } from '@/src/lib/utils';
 import {
   asiointiKieli,
@@ -20,6 +19,7 @@ import {
   perustietoOsiot,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import { Muistio } from '@/src/components/Muistio';
 
 export default function PerustietoPage() {
   const theme = useTheme();
@@ -68,8 +68,13 @@ export default function PerustietoPage() {
         value={t(hakemusKoskee)}
       ></LabeledValue>
       <Sisalto osiot={perustietoOsiot} sisalto={hakemus.sisalto} />
+      <Muistio
+        label={t('hakemus.perustiedot.esittelijanHuomioita')}
+        hakemus={hakemus}
+        sisainen={true}
+        hakemuksenOsa={'asiakirjat'}
+      />
       <Stack gap={theme.spacing(3)} width={'60%'}>
-        <Muutoshistoria muutosHistoria={hakemus.muutosHistoria} />
         <Henkilotiedot
           hakija={hakemus.hakija}
           paatosKieli={paatosKieliVal || ''}

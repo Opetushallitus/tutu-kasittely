@@ -1,4 +1,8 @@
-import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
+import {
+  SisaltoItem,
+  SisaltoPathNode,
+  SisaltoValue,
+} from '@/src/lib/types/hakemus';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 
@@ -61,4 +65,94 @@ export const findSisaltoValuesByItem = (
     }
   }
   return [];
+};
+
+export const isAttachmentField = (item: SisaltoItem): boolean => {
+  return item.fieldType === 'attachment';
+};
+
+/* ------------------------------------------------------------ */
+/* Korkean tason funktio asiakirjojen etsimiseen puurakenteesta */
+
+export const haeAsiakirjat = (sisalto: SisaltoPathNode[]): SisaltoValue[] => {
+  const acc: SisaltoValue[] = [];
+
+  const handleItem = (item: SisaltoPathNode) => {
+    if (
+      'followups' in item && // this is a SisaltoValue
+      item.previous &&
+      'fieldType' in item.previous &&
+      isAttachmentField(item.previous)
+    ) {
+      const newItem = {
+        ...item,
+        formId: item.previous.key,
+      };
+      acc.push(newItem);
+    }
+  };
+
+  traverseSisaltoTree(sisalto, handleItem);
+
+  return acc;
+};
+
+/* ------------------------------------------------- */
+/* Sisalto-rakenteelle määritetyt puun kulkufunktiot */
+
+const traverseSisaltoTree = (
+  openList: SisaltoPathNode[],
+  handleItem: (item: SisaltoPathNode) => void,
+) => {
+  traverseTree(expand, combine, handleItem, openList);
+};
+
+const expand = (item: SisaltoPathNode): SisaltoPathNode[] => {
+  const children = 'children' in item ? item.children : [];
+  const followups = 'followups' in item ? item.followups : [];
+  const value = getValueList(item);
+
+  return [...followups, ...value, ...children].map((childItem) => ({
+    ...childItem,
+    previous: item,
+  }));
+};
+
+const combine = (
+  items: SisaltoPathNode[],
+  newItems: SisaltoPathNode[],
+): SisaltoPathNode[] => {
+  return [...newItems, ...items];
+};
+
+const getValueList = (item: SisaltoPathNode): SisaltoValue[] => {
+  const value = item.value;
+  return Array.isArray(value) ? value : [];
+};
+
+/* ------------------------------ */
+/* Geneerinen puun kulkumenetelmä */
+
+const traverseTree = (
+  expand: (item: SisaltoPathNode) => SisaltoPathNode[],
+  combine: (
+    openList: SisaltoPathNode[],
+    newList: SisaltoPathNode[],
+  ) => SisaltoPathNode[],
+  handleItem: (item: SisaltoPathNode) => void,
+  openList: SisaltoPathNode[],
+) => {
+  const [currentItem, ...restList] = openList;
+
+  // Open list exhausted, end traversal
+  if (!currentItem) {
+    return;
+  }
+
+  handleItem(currentItem);
+
+  const newList = expand(currentItem);
+  const combinedList = combine(restList, newList);
+
+  traverseTree(expand, combine, handleItem, combinedList);
 };

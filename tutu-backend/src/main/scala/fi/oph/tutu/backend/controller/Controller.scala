@@ -214,11 +214,10 @@ class Controller(
   @GetMapping(path = Array("hakemus/{hakemusOid}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeHakemus(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestParam(required = false) hakemusMuutoshistoriaSort: String = SortDef.Undefined.toString,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      hakemusService.haeHakemus(HakemusOid(hakemusOid), SortDef.fromString(hakemusMuutoshistoriaSort))
+      hakemusService.haeHakemus(HakemusOid(hakemusOid))
     } match {
       case Success(value) =>
         value match {

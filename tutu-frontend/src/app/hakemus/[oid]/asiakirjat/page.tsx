@@ -8,7 +8,6 @@ import { useLiitteet } from '@/src/hooks/useLiitteet';
 import {
   AsiakirjaTaulukko,
   AsiakirjaTaulukkoData,
-  haeAsiakirjat,
 } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaTaulukko';
 import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
 import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
@@ -46,6 +45,7 @@ import {
 import {
   findSisaltoQuestionAndAnswer,
   findSisaltoValuesByItem,
+  haeAsiakirjat,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
@@ -145,7 +145,7 @@ const AsiakirjaHookLayer = ({
   /* ----------------------------------------- */
   /* Käsitellään virheet ja puutteellinen data */
   useEffect(() => {
-    handleFetchError(addToast, asiakirjaError, 'virhe.liitteiden-lataus', t);
+    handleFetchError(addToast, asiakirjaError, 'virhe.liitteidenLataus', t);
   }, [asiakirjaError, addToast, t]);
 
   const debouncedAsiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback =

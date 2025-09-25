@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
   mockBasicForHakemus,
-  mockHakemus,
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
@@ -15,7 +14,6 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
   let callCount = 0;
 
   await mockUser(page);
-  await mockHakemus(page);
   await mockLiitteet(page);
 
   const hakemus = getHakemus();

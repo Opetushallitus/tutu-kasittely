@@ -401,7 +401,8 @@
     "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
     "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
     "maakoodi": "Virhe maakoodien lataamisessa",
-    "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui"
+    "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui",
+    "liitteidenLataus": "Liitteiden lataamisessa tapahtui virhe."
   },
   "yleiset": {
     "poista": "Poista",
