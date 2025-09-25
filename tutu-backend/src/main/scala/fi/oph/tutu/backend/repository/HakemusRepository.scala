@@ -75,7 +75,7 @@ class HakemusRepository extends BaseResultHandlers {
         koulutusalaKoodi = r.nextStringOption(),
         paaaaineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
-        muuTutkintoMuistioId = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
+        muuTutkintoMuistioId = Option(r.nextString()).map(UUID.fromString),
         ohjeellinenLaajuus = r.nextStringOption(),
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),

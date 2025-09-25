@@ -5,5 +5,5 @@ ALTER TABLE IF EXISTS tutkinto ADD COLUMN IF NOT EXISTS perustelun_lisatietoja T
 
 COMMENT ON COLUMN tutkinto.ohjeellinen_laajuus IS 'Tutkinnon perustelut: ohjeellinen laajuus';
 COMMENT ON COLUMN tutkinto.opinnaytetyo IS 'Tutkinnon perustelut: sisältyikö opinnäytetyö tutkintoon';
-COMMENT ON COLUMN tutkinto.harjoittelu IS 'Tutkinnon perustelut: sisältyikö harjoittlu tutkintoon';
+COMMENT ON COLUMN tutkinto.harjoittelu IS 'Tutkinnon perustelut: sisältyikö harjoittelu tutkintoon';
 COMMENT ON COLUMN tutkinto.perustelun_lisatietoja IS 'Tutkinnon perustelut: lisätietoja';

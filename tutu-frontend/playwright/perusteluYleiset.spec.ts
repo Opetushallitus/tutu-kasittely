@@ -34,40 +34,60 @@ test.describe('Yleiset perustelut', () => {
     await page.getByTestId('jatko-opintokelpoisuus--muu').click();
 
     const checks = [
-      'lahde__lahtomaan-kansallinen-lahde',
-      'lahde__lahtomaan-virallinen-vastaus',
-      'lahde__kansainvalinen-hakuteos-tai-verkkosivusto',
-      'virallinen-tutkinnon-myontaja__on',
-      'virallinen-tutkinnon-myontaja__off',
-      'virallinen-tutkinto__on',
-      'virallinen-tutkinto__off',
-      'tutkinnon-asema--alempi_korkeakouluaste',
-      'tutkinnon-asema--ylempi_korkeakouluaste',
-      'tutkinnon-asema--alempi_ja_ylempi_korkeakouluaste',
-      'tutkinnon-asema--tutkijakoulutusaste',
-      'tutkinnon-asema--ei_korkeakouluaste',
-      'jatko-opintokelpoisuus--toisen_vaiheen_korkeakouluopintoihin',
-      'jatko-opintokelpoisuus--tieteellisiin_jatko-opintoihin',
-      'jatko-opintokelpoisuus--muu',
-      'jatko-opintokelpoisuus--lisatiedot',
-      'yleiset-perustelut__tutkinto-1--ohjeellinen-laajuus',
-      'yleiset-perustelut__tutkinto-1--suoritusvuodet-alku',
-      'yleiset-perustelut__tutkinto-1--suoritusvuodet-loppu',
-      'yleiset-perustelut__tutkinto-1--opinnaytetyo__on',
-      'yleiset-perustelut__tutkinto-1--opinnaytetyo__off',
-      'yleiset-perustelut__tutkinto-1--harjoittelu__on',
-      'yleiset-perustelut__tutkinto-1--harjoittelu__off',
-      'yleiset-perustelut__tutkinto-1--lisatietoja',
-      'yleiset-perustelut__tutkinto-2--ohjeellinen-laajuus',
-      'yleiset-perustelut__tutkinto-2--suoritusvuodet-alku',
-      'yleiset-perustelut__tutkinto-2--suoritusvuodet-loppu',
-      'yleiset-perustelut__tutkinto-2--opinnaytetyo__on',
-      'yleiset-perustelut__tutkinto-2--opinnaytetyo__off',
-      'yleiset-perustelut__tutkinto-2--harjoittelu__on',
-      'yleiset-perustelut__tutkinto-2--harjoittelu__off',
-      'yleiset-perustelut__tutkinto-2--lisatietoja',
-    ].map((testId) => {
-      return expect(page.getByTestId(testId)).toBeAttached();
+      page.getByTestId('lahde__lahtomaan-kansallinen-lahde'),
+      page.getByTestId('lahde__lahtomaan-virallinen-vastaus'),
+      page.getByTestId('lahde__kansainvalinen-hakuteos-tai-verkkosivusto'),
+      page.getByTestId('virallinen-tutkinnon-myontaja__on'),
+      page.getByTestId('virallinen-tutkinnon-myontaja__off'),
+      page.getByTestId('virallinen-tutkinto__on'),
+      page.getByTestId('virallinen-tutkinto__off'),
+      page.getByTestId('tutkinnon-asema--alempi_korkeakouluaste'),
+      page.getByTestId('tutkinnon-asema--ylempi_korkeakouluaste'),
+      page.getByTestId('tutkinnon-asema--alempi_ja_ylempi_korkeakouluaste'),
+      page.getByTestId('tutkinnon-asema--tutkijakoulutusaste'),
+      page.getByTestId('tutkinnon-asema--ei_korkeakouluaste'),
+      page.getByTestId(
+        'jatko-opintokelpoisuus--toisen_vaiheen_korkeakouluopintoihin',
+      ),
+      page.getByTestId(
+        'jatko-opintokelpoisuus--tieteellisiin_jatko-opintoihin',
+      ),
+      page.getByTestId('jatko-opintokelpoisuus--muu'),
+      page.getByTestId('jatko-opintokelpoisuus--lisatiedot'),
+      page.getByTestId('yleiset-perustelut__tutkinto-1--ohjeellinen-laajuus'),
+      page.getByTestId('yleiset-perustelut__tutkinto-1--suoritusvuodet-alku'),
+      page.getByTestId('yleiset-perustelut__tutkinto-1--suoritusvuodet-loppu'),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-1--opinnaytetyo"]//input[@value="true"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-1--opinnaytetyo"]//input[@value="false"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-1--harjoittelu"]//input[@value="true"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-1--harjoittelu"]//input[@value="false"]',
+      ),
+      page.getByTestId('yleiset-perustelut__tutkinto-1--lisatietoja'),
+      page.getByTestId('yleiset-perustelut__tutkinto-2--ohjeellinen-laajuus'),
+      page.getByTestId('yleiset-perustelut__tutkinto-2--suoritusvuodet-alku'),
+      page.getByTestId('yleiset-perustelut__tutkinto-2--suoritusvuodet-loppu'),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-2--opinnaytetyo"]//input[@value="true"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-2--opinnaytetyo"]//input[@value="false"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-2--harjoittelu"]//input[@value="true"]',
+      ),
+      page.locator(
+        '//*[@data-testid="yleiset-perustelut__tutkinto-2--harjoittelu"]//input[@value="false"]',
+      ),
+      page.getByTestId('yleiset-perustelut__tutkinto-2--lisatietoja'),
+    ].map((locator) => {
+      return expect(locator).toBeAttached();
     });
 
     await Promise.all(checks);
@@ -266,14 +286,14 @@ test.describe('Yleiset perustelut', () => {
           .fill('2023');
 
         await page
-          .getByTestId(
-            `yleiset-perustelut__tutkinto-${jarjestys}--opinnaytetyo__on`,
+          .locator(
+            `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--opinnaytetyo"]//input[@value="true"]`,
           )
           .click();
 
         await page
-          .getByTestId(
-            `yleiset-perustelut__tutkinto-${jarjestys}--harjoittelu__off`,
+          .locator(
+            `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--harjoittelu"]//input[@value="false"]`,
           )
           .click();
 
