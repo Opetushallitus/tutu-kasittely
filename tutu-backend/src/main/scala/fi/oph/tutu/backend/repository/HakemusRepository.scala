@@ -9,8 +9,8 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
-import scala.util.{Failure, Success}
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -207,8 +207,8 @@ class HakemusRepository extends BaseResultHandlers {
    * hakuehtojen mukaisten hakemusten Oid:t
    */
   def haeHakemusOidit(
-    userOid: Option[String],
-    hakemusKoskee: Option[String],
+    userOids: Option[Seq[String]],
+    hakemusKoskee: Option[Seq[String]],
     vaiheet: Option[Seq[String]],
     apHakemus: Boolean
   ): Seq[HakemusOid] = {
@@ -216,9 +216,14 @@ class HakemusRepository extends BaseResultHandlers {
       val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
 
       val joinClauses = Seq.newBuilder[String]
-      userOid.foreach { oid =>
-        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid = '${oid}'"
+
+      userOids.foreach { oid =>
+        if (oid.nonEmpty) {
+          val oidList = oid.map(o => s"'${o}'").mkString(", ")
+          joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN (${oidList})"
+        }
       }
+
       if (apHakemus) {
         joinClauses += "INNER JOIN asiakirja a ON h.asiakirja_id = a.id AND a.ap_hakemus = true"
       }
@@ -230,8 +235,11 @@ class HakemusRepository extends BaseResultHandlers {
 
       val whereClauses = Seq.newBuilder[String]
 
-      hakemusKoskee.foreach { s =>
-        whereClauses += s"h.hakemus_koskee = ${s.toInt}"
+      hakemusKoskee.foreach { h =>
+        if (h.nonEmpty) {
+          val hakemusKoskeeList = h.map(hakemusKoskee => s"'${hakemusKoskee}'").mkString(", ")
+          whereClauses += s"h.hakemus_koskee IN (${hakemusKoskeeList})"
+        }
       }
 
       vaiheet.foreach { v =>
@@ -498,7 +506,7 @@ class HakemusRepository extends BaseResultHandlers {
    * @param id
    * tutkinnon id
    */
-  def poistaTutkinto(
+  private def poistaTutkinto(
     id: UUID
   ): DBIO[Int] =
     sqlu"""

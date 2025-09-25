@@ -380,7 +380,7 @@ class Controller(
         result match {
           case None =>
             LOG.warn(s"Muistiota ei löytynyt")
-            errorMessageMapper.mapPlainErrorMessage("Muistiota ei löytynyt", HttpStatus.NOT_FOUND)
+            ResponseEntity.status(HttpStatus.NO_CONTENT).body("Muistiota ei löytynyt")
           case Some(muistio) =>
             val params = mapper.writeValueAsString(
               Map(

@@ -189,19 +189,33 @@ class HakemusService(
       case Some(vaihe) => Some(vaihe.split(",").map(_.trim).toSeq)
     }
 
-    // jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
-    val hakemusKoskeeQueryParam = hakemuskoskee match {
-      case Some("4") => Some("1")
-      case _         => hakemuskoskee
+    val userOids: Option[Seq[String]] = userOid match {
+      case None       => None
+      case Some(oids) => Some(oids.split(",").map(_.trim).toSeq)
     }
 
-    val apHakemusQueryParam = hakemuskoskee match {
-      case Some("4") => true
-      case _         => false
+    val hakemusKoskeeParams: Option[Seq[String]] = hakemuskoskee match {
+      case None     => None
+      case Some(hk) => Some(hk.split(",").map(_.trim).toSeq)
+    }
+
+    // jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
+    val hakemusKoskeeQueryParams = hakemusKoskeeParams match {
+      case Some(params) =>
+        Some(params.map {
+          case "4"   => "1"
+          case param => param
+        }.distinct)
+      case None => hakemusKoskeeParams
+    }
+
+    val apHakemusQueryParam = hakemusKoskeeParams match {
+      case Some(params) => params.contains("4")
+      case None         => false
     }
 
     val hakemusOidit: Seq[HakemusOid] =
-      hakemusRepository.haeHakemusOidit(userOid, hakemusKoskeeQueryParam, vaiheet, apHakemusQueryParam)
+      hakemusRepository.haeHakemusOidit(userOids, hakemusKoskeeQueryParams, vaiheet, apHakemusQueryParam)
 
     // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
     if (hakemusOidit.isEmpty) {
