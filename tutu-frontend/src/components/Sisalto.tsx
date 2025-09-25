@@ -1,10 +1,23 @@
-import { Fragment, ReactNode } from 'react';
+import React, { Fragment, ReactNode, useEffect } from 'react';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { SisaltoItem } from '@/src/lib/types/hakemus';
+import {
+  AsiakirjaMetadata,
+  SisaltoItem,
+  SisaltoValue,
+} from '@/src/lib/types/hakemus';
 import * as R from 'remeda';
 import { styled } from '@mui/material';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
-import { sisaltoItemMatchesToAny } from '@/src/lib/hakemuspalveluUtils';
+import {
+  haeAsiakirjat,
+  isAttachmentField,
+  sisaltoItemMatchesToAny,
+} from '@/src/lib/hakemuspalveluUtils';
+import { useLiitteet } from '@/src/hooks/useLiitteet';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { handleFetchError } from '@/src/lib/utils';
+import { FullSpinner } from '@/src/components/FullSpinner';
 
 interface IndentedProps {
   className?: string;
@@ -62,12 +75,13 @@ const EntryInfo = styled((props: EntryInfoProps) => {
 
 interface EntryValueProps {
   children: ReactNode;
+  datatestid?: string;
 }
 
 const EntryValue = styled((props: EntryValueProps) => {
   const { children, ...rest } = props;
   return (
-    <OphTypography variant={'body1'} {...rest}>
+    <OphTypography variant={'body1'} {...rest} data-testid={props.datatestid}>
       {children}
     </OphTypography>
   );
@@ -89,16 +103,47 @@ export const Sisalto = ({
   sisalto: SisaltoItem[];
   osiot: HakemuspalveluSisaltoId[];
 }) => {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
+  const rajattuSisalto = sisalto.filter((item) =>
+    sisaltoItemMatchesToAny(item, osiot),
+  );
+  const liitteet = haeAsiakirjat(rajattuSisalto);
+  const {
+    isLoading,
+    data: liiteMetadata = [],
+    error,
+  } = useLiitteet(liitteet.map((liite) => liite.label.fi).join(','));
+
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.liitteidenLataus', t);
+  }, [error, addToast, t]);
+
+  if (isLoading) return <FullSpinner></FullSpinner>;
+
   return (
-    <div>
-      {sisalto
-        .filter((item) => sisaltoItemMatchesToAny(item, osiot))
-        .map((item) => renderItem(item))}
-    </div>
+    <div>{rajattuSisalto.map((item) => renderItem(item, liiteMetadata))}</div>
   );
 };
 
-export const renderItem = (item: SisaltoItem) => {
+const getValue = (
+  sisaltoValue: SisaltoValue,
+  sisaltoItem: SisaltoItem,
+  liiteMetadata: AsiakirjaMetadata[],
+) => {
+  let val = R.pathOr(sisaltoValue, ['label', 'fi'], '');
+  if (isAttachmentField(sisaltoItem)) {
+    const metadata = liiteMetadata.find((meta) => meta.key === val);
+    val = metadata ? metadata.filename : val;
+  }
+  return val;
+};
+
+export const renderItem = (
+  item: SisaltoItem,
+  liiteMetadata: AsiakirjaMetadata[],
+) => {
   const label = item.label?.fi || null;
   const renderedLabel =
     label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
@@ -111,17 +156,21 @@ export const renderItem = (item: SisaltoItem) => {
 
   const renderedValues = item.value.map((value) => (
     <Fragment key={`${value.value}--item`}>
-      <EntryValue key={`${value.value}--value`}>
-        {`- ${R.pathOr(value, ['label', 'fi'], '')}`}
+      <EntryValue
+        key={`${value.value}--value`}
+        datatestid={`sisalto-item-${item.key}`}
+      >
+        {`- ${getValue(value, item, liiteMetadata)}`}
       </EntryValue>
       <Subsection key={`${value.value}--followups`}>
-        {value.followups.map(renderItem)}
+        {value.followups.map((v) => renderItem(v, liiteMetadata))}
       </Subsection>
     </Fragment>
   ));
-
   const renderedChildren = (
-    <Subsection>{item.children.map((child) => renderItem(child))}</Subsection>
+    <Subsection>
+      {item.children.map((child) => renderItem(child, liiteMetadata))}
+    </Subsection>
   );
 
   return (

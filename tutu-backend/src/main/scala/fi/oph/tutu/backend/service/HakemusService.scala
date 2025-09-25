@@ -10,7 +10,7 @@ import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -68,7 +68,7 @@ class HakemusService(
     tallennettuAtaruHakemusId
   }
 
-  def haeHakemus(hakemusOid: HakemusOid, muutosHistoriaSortDef: SortDef = Undefined): Option[Hakemus] = {
+  def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
     val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
       case Left(error: Throwable) =>
         error match {
@@ -87,19 +87,7 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruLomake]
     }
 
-    val hakija         = ataruHakemusParser.parseHakija(ataruHakemus)
-    var muutosHistoria = hakemuspalveluService.haeMuutoshistoria(hakemusOid) match {
-      case Left(error: Throwable) =>
-        LOG.warn(s"Ataru-hakemuksen muutoshistorian haku epäonnistui hakemusOidille $hakemusOid: {}", error.getMessage)
-        throw error
-      case Right(response: String) =>
-        resolveMuutoshistoria(response, hakija)
-    }
-    muutosHistoria = muutosHistoriaSortDef match {
-      case Desc => muutosHistoria.sortBy(_.time)(Ordering[LocalDateTime].reverse)
-      case Asc  => muutosHistoria.sortBy(_.time)
-      case _    => muutosHistoria
-    }
+    val hakija = ataruHakemusParser.parseHakija(ataruHakemus)
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
@@ -113,7 +101,10 @@ class HakemusService(
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             kirjausPvm = Some(
-              LocalDateTime.parse(ataruHakemus.created, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+              ZonedDateTime
+                .parse(ataruHakemus.created, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+                .withZoneSameInstant(ZoneId.systemDefault())
+                .toLocalDateTime
             ),
             // TODO: esittelyPvm, paatosPvm.
             esittelyPvm = None,
@@ -129,7 +120,7 @@ class HakemusService(
             ),
             kasittelyVaihe = dbHakemus.kasittelyVaihe,
             muokattu = dbHakemus.muokattu,
-            muutosHistoria = muutosHistoria,
+            muutosHistoria = Seq(),
             taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
               case None            => None
               case Some(timestamp) =>

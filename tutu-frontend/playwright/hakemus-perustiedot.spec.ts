@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
+import {
+  mockUser,
+  mockBasicForHakemus,
+  mockHakemus,
+  mockLiitteet,
+} from '@/playwright/mocks';
+import { getHakemus } from '@/playwright/fixtures/hakemus1';
+import _sisalto from './fixtures/hakemus1/_perustietoSisalto.json';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -41,50 +48,6 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
   await expect(page.getByTestId('asiointikieli')).toHaveText('finska');
 });
 
-test('Muutoshistoriassa näkyy oikeat tiedot', async ({ page }) => {
-  mockUser(page);
-  mockHakemus(page);
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
-  );
-  const tableRows = page
-    .getByTestId('muutoshistoria-table')
-    .locator('tbody tr');
-  await expect(tableRows).toHaveCount(2);
-  await expect(tableRows.first().locator('td').last()).toHaveText(
-    'Esittelija Testi (esittelijä)',
-  );
-  await expect(tableRows.last().locator('td').last()).toHaveText(
-    'Hakija Testi (hakija)',
-  );
-});
-
-test('Muutoshistoriassa näkyy oikeat tiedot, sortattuna laskevassa järjestyksessä', async ({
-  page,
-}) => {
-  mockUser(page);
-  mockHakemus(page);
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
-  );
-  const sortableHeader = page
-    .getByTestId('muutoshistoria-table')
-    .locator('thead tr th')
-    .first();
-  await sortableHeader.click();
-  await sortableHeader.click();
-  const tableRows = page
-    .getByTestId('muutoshistoria-table')
-    .locator('tbody tr');
-  await expect(tableRows).toHaveCount(2);
-  await expect(tableRows.first().locator('td').last()).toHaveText(
-    'Hakija Testi (hakija)',
-  );
-  await expect(tableRows.last().locator('td').last()).toHaveText(
-    'Esittelija Testi (esittelijä)',
-  );
-});
-
 test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
   mockUser(page);
   page.route('**/tutu-backend/api/hakemus/*', async (route) => {
@@ -104,4 +67,29 @@ test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
   // tarkistetaan että virheviesti näkyy
   await expect(page.getByTestId('toast-message')).toBeVisible();
 });
-// TODO Testejä ainakin hakemuksen sisällölle sen mukaan mitä hakemus koskee
+
+test('Liitteiden nimet näkyvät sisällössä oikein', async ({ page }) => {
+  await mockUser(page);
+
+  await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+    const hakemus = getHakemus();
+    hakemus.sisalto = _sisalto;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(hakemus),
+    });
+  });
+  await mockLiitteet(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
+  );
+  await expect(page.getByTestId('sisalto-item-tutkintotodistus')).toHaveText(
+    '- testiliite2.txt',
+  );
+  await expect(page.getByTestId('sisalto-item-opintosuoriteote')).toHaveText(
+    '- 11111111-2222-3333-4444-555555555555',
+  );
+  await expect(page.getByTestId('sisalto-item-muuliite')).toHaveText('-');
+});

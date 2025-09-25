@@ -120,7 +120,7 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
-  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi: Unit =
+  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit =
     mockMvc
       .perform(get("/api/session"))
       .andExpect(status().isOk)
@@ -128,7 +128,7 @@ class ControllerTest extends IntegrationTestBase {
 
   @Test
   @WithAnonymousUser
-  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi: Unit =
+  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit =
     mockMvc
       .perform(get("/api/session"))
       .andExpect(status().isUnauthorized)
@@ -466,19 +466,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid": 1.2.246.562.24.00000000000000006666,
                                 "ataruHakemuksenTila": "KasittelyMaksettu",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
-                                "muutosHistoria": [{
-                                  "role": "Esittelija",
-                                  "time": "2025-06-17T10:02:20.473",
-                                  "modifiedBy": "Esko Esittelijä"
-                                  }, {
-                                  "role": "Hakija",
-                                  "time": "2025-06-17T15:19:44.23",
-                                  "modifiedBy": "Tatu Hakija"
-                                  }, {
-                                  "role": "Esittelija",
-                                  "time": "2025-06-18T05:57:18.866",
-                                  "modifiedBy": "Esko Esittelijä"}
-                                ],
+                                "muutosHistoria": [],
                                 "taydennyspyyntoLahetetty": null,
                                 "asiakirja": {
                                   "apHakemus": false,
@@ -1120,19 +1108,7 @@ class ControllerTest extends IntegrationTestBase {
          |  "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
          |  "ataruHakemuksenTila" : "KasittelyMaksettu",
          |  "kasittelyVaihe" : "AlkukasittelyKesken",
-         |  "muutosHistoria" : [ {
-         |    "role" : "Esittelija",
-         |    "time" : "2025-06-17T10:02:20.473",
-         |    "modifiedBy" : "Esko Esittelijä"
-         |  }, {
-         |    "role" : "Hakija",
-         |    "time" : "2025-06-17T15:19:44.23",
-         |    "modifiedBy" : "Tatu Hakija"
-         |  }, {
-         |    "role" : "Esittelija",
-         |    "time" : "2025-06-18T05:57:18.866",
-         |    "modifiedBy" : "Esko Esittelijä"
-         |  } ],
+         |  "muutosHistoria" : [],
          |  "taydennyspyyntoLahetetty" : null,
          |  "yhteistutkinto" : true,
          |  "tutkinnot" : [

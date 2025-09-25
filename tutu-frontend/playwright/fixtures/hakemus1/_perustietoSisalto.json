@@ -1,0 +1,153 @@
+[
+  {
+    "key": "89e89dff-25b2-4177-b078-fcaf0c9d2589",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Tutkinto tai koulutus",
+      "sv": "Examen eller utbildning",
+      "en": "Qualification or education"
+    },
+    "children": [
+      {
+        "key": "f1882e83-2836-440d-a197-4950571e798a",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "Tutkinto 1",
+              "sv": "Examen 1",
+              "en": "Qualification 1"
+            },
+            "value": "0",
+            "followups": [
+              {
+                "key": "tutkintotodistus",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed",
+                      "en": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed",
+                      "sv": "c95d7c76-5a4c-4ce5-a173-5c848664e6ed"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "TUTKINTOTODISTUS",
+                  "sv": "EXAMENSBEVIS",
+                  "en": "DEGREE / QUALIFICATION CERTIFICATE"
+                },
+                "children": []
+              },
+              {
+                "key": "opintosuoriteote",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "fi": "11111111-2222-3333-4444-555555555555",
+                      "en": "7046e83e-b780-42c4-bbd5-a55b798050dd",
+                      "sv": "7046e83e-b780-42c4-bbd5-a55b798050dd"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "TÄLLE EI LÖYDY ID:LLÄ VASTAAVAA TIEDOSTONIMEÄ",
+                  "sv": "INTE FILE MED DETTA ID",
+                  "en": "NO FILE WITH THIS ID"
+                },
+                "children": []
+              },
+              {
+                "key": "muuliite",
+                "fieldType": "attachment",
+                "value": [
+                  {
+                    "label": {
+                      "ff": "582be518-e3ea-4692-8a2c-8370b40213e5",
+                      "en": "582be518-e3ea-4692-8a2c-8370b40213e5",
+                      "sv": "582be518-e3ea-4692-8a2c-8370b40213e5"
+                    },
+                    "value": "",
+                    "followups": []
+                  }
+                ],
+                "label": {
+                  "fi": "TÄLLE EI LÖYDY ID:TÄ",
+                  "sv": "INTE ID",
+                  "en": "NO IDEA"
+                },
+                "children": []
+              }
+            ]
+          }
+        ],
+        "label": {
+          "fi": "Anna tiedot ylimmästä tutkinnosta, jonka olet suorittanut ulkomailla ja jonka perusteella haet päätöstä",
+          "sv": "Ange uppgifter om den högsta examen som du har avlagt utomlands. ",
+          "en": "Provide information on the highest foreign qualification that you have completed. "
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "key": "0d23f1d1-1aa5-4dcb-9234-28c593441935",
+    "fieldType": "fieldset",
+    "value": [],
+    "label": {
+      "fi": "Päätös- ja asiointikieli",
+      "sv": "Beslutet och kommunikationsspråk",
+      "en": "Language to be used in the decision and when contacting the applicant"
+    },
+    "children": [
+      {
+        "key": "82c7260d-ebf0-4521-8f18-ad37e5490670",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "suomeksi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "value": "finnish",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Millä kielellä haluat päätöksen?",
+          "sv": "På vilket språk vill du ha beslutet?",
+          "en": "Language of the decision"
+        },
+        "children": []
+      },
+      {
+        "key": "9b5f4057-0b3e-45ae-827d-12d877822d4a",
+        "fieldType": "singleChoice",
+        "value": [
+          {
+            "label": {
+              "fi": "suomeksi",
+              "sv": "finska",
+              "en": "Finnish"
+            },
+            "value": "0",
+            "followups": []
+          }
+        ],
+        "label": {
+          "fi": "Millä kielellä haluat asioida Opetushallituksen kanssa?",
+          "sv": "På vilket språk vill du kommunicera med Utbildningsstyrelsen?",
+          "en": "Language to be used when contacting the applicant"
+        },
+        "children": []
+      }
+    ]
+  }
+]
