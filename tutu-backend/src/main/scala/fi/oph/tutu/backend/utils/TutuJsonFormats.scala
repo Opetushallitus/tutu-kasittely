@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.domain.{
   SingleValue
 }
 import org.json4s.*
+import org.json4s.DefaultFormats
 
 import java.text.SimpleDateFormat
 
@@ -20,21 +21,19 @@ trait TutuJsonFormats {
 }
 
 object AnswerValueSerializer
-    extends CustomSerializer[AnswerValue](_ =>
+    extends CustomSerializer[AnswerValue](format =>
       (
         {
           case JString(value) =>
             SingleValue(value)
           case JArray(values) if values.forall(_.isInstanceOf[JString]) =>
-            implicit val formats: Formats = DefaultFormats
-            MultiValue(values.map(_.extract[String]))
+            MultiValue(values.map(_.extract[String](format)))
           case JArray(values) if values.forall {
                 case JArray(innerValues) => innerValues.forall(_.isInstanceOf[JString])
                 case _                   => false
               } =>
-            implicit val formats: Formats = DefaultFormats
             NestedValues(values.map {
-              case JArray(innerValues) => innerValues.map(_.extract[String])
+              case JArray(innerValues) => innerValues.map(_.extract[String](format))
               case _                   => throw new MappingException("Invalid nested structure")
             })
           case JArray(Nil) =>
@@ -111,10 +110,15 @@ object KielistettySerializer
           case unexpected =>
             throw new MappingException(s"Cannot deserialize Kielistetty from $unexpected")
         },
-        { case k: Kielistetty =>
-          val fiEntry = k.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.getOrElse(None)
-          val svEntry = k.collectFirst { case (Kieli.en, value) => Some(("sv", JString(value))) }.getOrElse(None)
-          val enEntry = k.collectFirst { case (Kieli.sv, value) => Some(("en", JString(value))) }.getOrElse(None)
+        { k =>
+          // Safe cast since we know this is a Kielistetty (Map[Kieli, String])
+          val kielistetty = k.asInstanceOf[Kielistetty]
+          val fiEntry     =
+            kielistetty.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.getOrElse(None)
+          val svEntry =
+            kielistetty.collectFirst { case (Kieli.en, value) => Some(("sv", JString(value))) }.getOrElse(None)
+          val enEntry =
+            kielistetty.collectFirst { case (Kieli.sv, value) => Some(("en", JString(value))) }.getOrElse(None)
 
           val obj = Seq(fiEntry, svEntry, enEntry)
             .flatten()

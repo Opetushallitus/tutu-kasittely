@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component
 class TutuDatabase(
@@ -82,7 +83,6 @@ class TutuDatabase(
   }
 
   def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
     DBIO.fold(ints, 0)(_ + _)
   }
 }
