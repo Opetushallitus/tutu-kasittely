@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myo
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, DbMaakoodi, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.*
@@ -32,7 +33,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
-import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -433,6 +435,12 @@ class ControllerTest extends IntegrationTestBase {
     )
     initAtaruHakemusRequests()
 
+    val kirjauspvm = ZonedDateTime
+      .parse("2025-05-14T10:59:47.597Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+      .withZoneSameInstant(ZoneId.systemDefault())
+      .toLocalDateTime
+    val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
                                 "hakija": {
@@ -460,7 +468,7 @@ class ControllerTest extends IntegrationTestBase {
                                 },
                                 "asiatunnus": null,
                                 "yhteistutkinto": false,
-                                "kirjausPvm": "2025-05-14T13:59:47.597",
+                                "kirjausPvm": "$kirjausPvmStr",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
                                 "esittelijaOid": 1.2.246.562.24.00000000000000006666,
@@ -1019,6 +1027,12 @@ class ControllerTest extends IntegrationTestBase {
     val hakemusId =
       hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006670")).get.id
 
+    val kirjauspvm = ZonedDateTime
+      .parse("2025-08-19T07:10:39.874Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+      .withZoneSameInstant(ZoneId.systemDefault())
+      .toLocalDateTime
+    val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+
     val expectedResult =
       s"""{
          |  "hakemusOid" : "1.2.246.562.11.00000000000000006670",
@@ -1102,7 +1116,7 @@ class ControllerTest extends IntegrationTestBase {
          |  } ],
          |  "hakemusKoskee" : 0,
          |  "asiatunnus" : "OPH-122-2025",
-         |  "kirjausPvm" : "2025-08-19T10:10:39.874",
+         |  "kirjausPvm" : "$kirjausPvmStr",
          |  "esittelyPvm" : null,
          |  "paatosPvm" : null,
          |  "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
