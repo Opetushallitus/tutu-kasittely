@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend
 
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
-import fi.oph.tutu.backend.domain.{Asiakirja, AsiakirjamalliTutkinnosta, AtaruHakemus, HakemusOid, Hakija, UserOid}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
 import fi.oph.tutu.backend.repository.{
   AsiakirjaRepository,

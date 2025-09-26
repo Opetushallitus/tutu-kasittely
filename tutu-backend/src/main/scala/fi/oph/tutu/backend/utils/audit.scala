@@ -129,9 +129,17 @@ trait AuditOperation extends Operation {
 }
 
 object AuditOperation {
+  // Tapahtumat
+
   case object Login extends AuditOperation {
     val name = "KIRJAUTUMINEN"
   }
+
+  case object StartMigration extends AuditOperation {
+    val name = "START_VANHATUTU_MIGRATION"
+  }
+
+  // Kirjoitus operaatiot
 
   case object CreateHakemus extends AuditOperation {
     val name = "HAKEMUKSEN_LUONTI"
@@ -141,16 +149,24 @@ object AuditOperation {
     val name = "MUISTION_LUONTI"
   }
 
+  case object CreatePerustelu extends AuditOperation {
+    val name = "PERUSTELUN_LUONTI"
+  }
+
+  // Päivitys operaatiot
+
   case object UpdateHakemus extends AuditOperation {
     val name = "HAKEMUKSEN_PAIVITYS"
   }
 
-  case object ReadLiitteenTiedot extends AuditOperation {
-    val name = "LIITTEEN_TIEDOT_LUKU"
-  }
-
   case object UpdateMaakoodi extends AuditOperation {
     val name = "MAAKOODI_PAIVITYS"
+  }
+
+  // Luku operaatiot
+
+  case object ReadLiitteenTiedot extends AuditOperation {
+    val name = "LIITTEEN_TIEDOT_LUKU"
   }
 
   case object ReadHakemus extends AuditOperation {
@@ -173,12 +189,12 @@ object AuditOperation {
     val name = "MAAKOODIEN_LUKU"
   }
 
-  case object CreatePerustelu extends AuditOperation {
-    val name = "PERUSTELUN_LUONTI"
-  }
-
   case object ReadPerustelu extends AuditOperation {
     val name = "PERUSTELUN_LUKU"
+  }
+
+  case object ReadVanhaTutu extends AuditOperation {
+    val name = "VANHA_TUTU_LUKU"
   }
 }
 

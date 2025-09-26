@@ -57,9 +57,11 @@ class HakemusService(
     val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
 
     try {
-      tutkinnot.foreach(tutkinto =>
-        hakemusRepository.lisaaTutkintoSeparately(tallennettuAtaruHakemusId, tutkinto, "Hakemuspalvelu")
-      )
+      if (tutkinnot != null) {
+        tutkinnot.foreach(tutkinto =>
+          hakemusRepository.lisaaTutkintoSeparately(tallennettuAtaruHakemusId, tutkinto, "Hakemuspalvelu")
+        )
+      }
     } catch {
       case e: Exception =>
         LOG.error(s"Virhe tutkintojen tallennuksessa hakemukselle ${hakemus.hakemusOid}: ${e.getMessage}", e)

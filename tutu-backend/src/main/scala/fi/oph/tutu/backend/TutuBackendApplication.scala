@@ -3,6 +3,7 @@ package fi.oph.tutu.backend
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.{ApplicationArguments, ApplicationRunner, SpringApplication}
 import org.springframework.context.annotation.Bean
 
@@ -14,6 +15,7 @@ object TutuBackendApplication {
 }
 
 @SpringBootApplication
+@EnableConfigurationProperties
 class TutuBackendApplication {
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[TutuBackendApplication])
