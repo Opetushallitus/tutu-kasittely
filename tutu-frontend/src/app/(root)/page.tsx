@@ -44,7 +44,7 @@ export default function ListViewPage() {
             </Box>
           </BoxWrapper>
           <BoxWrapper>
-            <HakemusListFilters></HakemusListFilters>
+            <HakemusListFilters />
             <HakemusList user={user}></HakemusList>
           </BoxWrapper>
         </>

@@ -27,13 +27,13 @@ import { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const FIELD_KEYS = {
-  hakijannimi: 'hakemuslista.hakijannimi',
-  asiatunnus: 'hakemuslista.asiatunnus',
-  esittelija: 'hakemuslista.esittelija',
-  kasittelyvaihe: 'hakemuslista.kasittelyvaihe',
-  hakemusKoskee: 'hakemuslista.hakemusKoskee',
-  kokonaisaika: 'hakemuslista.kokonaisaika',
-  hakijanaika: 'hakemuslista.hakijanaika',
+  hakijannimi: 'hakija',
+  asiatunnus: 'asiatunnus',
+  esittelija: 'esittelija',
+  kasittelyvaihe: 'kasittelyvaihe',
+  hakemusKoskee: 'hakemusKoskee',
+  kokonaisaika: 'kokonaisaika',
+  hakijanaika: 'hakijanaika',
 };
 
 const StyledTableBody = styled(TableBody)({
@@ -65,7 +65,7 @@ export function HakemusList({ user }: HakemusListProps) {
   const { addToast } = useToaster();
   const { t } = useTranslations();
   const [sortDef, setSortDef] = useQueryState(
-    'hakemuslista.sort',
+    'sort',
     parseAsString.withDefault(''),
   );
   const { isLoading, data, error } = useHakemukset();

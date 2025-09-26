@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
 import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myonteinen}
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, DbMaakoodi, EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.repository.DbMaakoodi
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc

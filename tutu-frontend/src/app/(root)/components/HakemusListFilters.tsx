@@ -1,10 +1,7 @@
 'use client';
 
 import {
-  Box,
-  Chip,
   Grid2 as Grid,
-  SelectChangeEvent,
   ToggleButton,
   ToggleButtonGroup,
   useTheme,
@@ -12,7 +9,6 @@ import {
 import {
   OphFormFieldWrapper,
   OphInputFormField,
-  OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import {
   parseAsArrayOf,
@@ -23,7 +19,6 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import {
-  hakemusKoskeeQueryStates,
   kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
@@ -37,6 +32,9 @@ import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useEffect } from 'react';
+import { useHakemukset } from '@/src/hooks/useHakemukset';
+import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 export default function HakemusListFilters() {
   const theme = useTheme();
@@ -44,6 +42,11 @@ export default function HakemusListFilters() {
   const queryClient = useQueryClient();
   const { options: esittelijaOptions, error } = useEsittelijat();
   const { addToast } = useToaster();
+  const { data: hakemukset, error: hakemuksetError } = useHakemukset();
+
+  useEffect(() => {
+    handleFetchError(addToast, hakemuksetError, 'virhe.hakemuslistanLataus', t);
+  }, [hakemuksetError, addToast, t]);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.esittelijoidenLataus', t);
@@ -65,12 +68,16 @@ export default function HakemusListFilters() {
 
   const [hakemusKoskee, setHakemusKoskee] = useQueryState(
     'hakemuskoskee',
-    parseAsStringLiteral(hakemusKoskeeQueryStates).withDefault(''),
+    parseAsArrayOf(
+      parseAsStringLiteral(
+        R.map(hakemusKoskeeOptions, (option) => option.value),
+      ),
+    ).withDefault([]),
   );
 
   const [esittelija, setEsittelija] = useQueryState(
     'esittelija',
-    parseAsString.withDefault(''),
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
 
   const searchParams = useSearchParams();
@@ -141,84 +148,85 @@ export default function HakemusListFilters() {
       </Grid>
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
-          <OphSelectFormField
-            placeholder={t('yleiset.valitse')}
+          <OphFormFieldWrapper
             label={t('hakemuslista.kasittelyvaihe')}
-            multiple
-            options={R.map(kasittelyVaiheet, (vaihe) => ({
-              label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
-              value: vaihe,
-            }))}
-            value={vaiheet as never}
-            onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(
-                queryClient,
-                setVaiheet,
-                event.target.value,
-              )
-            }
             sx={{ width: '100%' }}
-            data-testid={'kasittelyvaihe'}
-            renderValue={() => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {R.map(vaiheet, (value) => (
-                  <Chip
-                    key={value}
-                    label={t(`hakemus.kasittelyvaihe.${value.toLowerCase()}`)}
-                    sx={{ borderRadius: '0px' }}
-                    onDelete={() =>
-                      setQueryStateAndLocalStorage(
-                        queryClient,
-                        setVaiheet,
-                        R.filter(vaiheet, (val) => val !== value),
-                      )
-                    }
-                    onMouseDown={(event) => {
-                      event.stopPropagation();
-                    }}
-                  />
-                ))}
-              </Box>
+            renderInput={() => (
+              <OphSelectMultiple
+                placeholder={t('yleiset.valitse')}
+                options={R.map(kasittelyVaiheet, (vaihe) => ({
+                  label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+                  value: vaihe,
+                }))}
+                value={vaiheet}
+                sx={{ width: '100%' }}
+                onChange={(event) =>
+                  setQueryStateAndLocalStorage(
+                    queryClient,
+                    setVaiheet,
+                    event.target.value,
+                  )
+                }
+                data-testid={'kasittelyvaihe'}
+                inputProps={{ 'aria-label': t('hakemuslista.kasittelyvaihe') }}
+              />
             )}
-          ></OphSelectFormField>
+          />
         </Grid>
         <Grid size={3}>
-          <OphSelectFormField
-            placeholder={t('yleiset.valitse')}
+          <OphFormFieldWrapper
             label={t('hakemuslista.hakemusKoskee')}
-            options={R.map(hakemusKoskeeOptions, (option) => ({
-              label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
-              value: option.value,
-            }))}
-            value={hakemusKoskee}
-            onChange={(event: SelectChangeEvent) =>
-              setQueryStateAndLocalStorage(
-                queryClient,
-                setHakemusKoskee,
-                event.target.value,
-              )
-            }
             sx={{ width: '100%' }}
-            data-testid={'hakemus-koskee'}
-          ></OphSelectFormField>
+            renderInput={() => (
+              <OphSelectMultiple
+                placeholder={t('yleiset.valitse')}
+                options={R.map(hakemusKoskeeOptions, (option) => ({
+                  label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
+                  value: option.value,
+                }))}
+                value={hakemusKoskee}
+                sx={{ width: '100%' }}
+                onChange={(event) =>
+                  setQueryStateAndLocalStorage(
+                    queryClient,
+                    setHakemusKoskee,
+                    event.target.value,
+                  )
+                }
+                data-testid={'hakemus-koskee'}
+                inputProps={{ 'aria-label': t('hakemuslista.hakemusKoskee') }}
+              />
+            )}
+          />
         </Grid>
         {naytaKaikki && (
           <Grid size={3}>
-            <OphSelectFormField
-              placeholder={t('yleiset.valitse')}
+            <OphFormFieldWrapper
               label={t('hakemuslista.esittelija')}
-              options={esittelijaOptions}
-              value={esittelija}
-              onChange={(event: SelectChangeEvent) =>
-                setQueryStateAndLocalStorage(
-                  queryClient,
-                  setEsittelija,
-                  event.target.value,
-                )
-              }
               sx={{ width: '100%' }}
-              data-testid={'esittelija'}
-            ></OphSelectFormField>
+              renderInput={() => (
+                <OphSelectMultiple
+                  placeholder={t('yleiset.valitse')}
+                  options={R.map(
+                    esittelijaOptions,
+                    (option: OphSelectOption<string>) => ({
+                      label: option.label,
+                      value: option.value,
+                    }),
+                  )}
+                  value={esittelija}
+                  onChange={(event) =>
+                    setQueryStateAndLocalStorage(
+                      queryClient,
+                      setEsittelija,
+                      event.target.value,
+                    )
+                  }
+                  data-testid={'esittelija'}
+                  inputProps={{ 'aria-label': t('hakemuslista.esittelija') }}
+                />
+              )}
+            />
           </Grid>
         )}
       </Grid>
@@ -228,7 +236,9 @@ export default function HakemusListFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        <Grid size={'auto'}>256 hakemusta</Grid>
+        <Grid size={'auto'}>
+          {hakemukset?.length} {t('hakemuslista.hakemusta')}
+        </Grid>
         <Grid size={'auto'}>
           <div>sivutus</div>
         </Grid>

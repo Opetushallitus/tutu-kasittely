@@ -24,7 +24,8 @@
     "kaikki": "Kaikki",
     "kokonaisaika": "Kokonaisaika",
     "hakijanaika": "Hakijan aika",
-    "kokonaisaikaKk": "{aika, number} kk"
+    "kokonaisaikaKk": "{aika, number} kk",
+    "hakemusta": "hakemusta"
   },
   "hakemus": {
     "apHakemus": "AP-hakemus",

@@ -7,11 +7,7 @@ export const getEsittelijat = async (): Promise<Esittelija[]> => {
   return await doApiFetch('esittelijat', undefined, 'no-store');
 };
 
-interface UseEsittelijatOptions {
-  enabled?: boolean;
-}
-
-export const useEsittelijat = (options?: UseEsittelijatOptions) => {
+export const useEsittelijat = () => {
   const {
     data = [],
     isLoading,
@@ -21,7 +17,6 @@ export const useEsittelijat = (options?: UseEsittelijatOptions) => {
     queryFn: getEsittelijat,
     staleTime: Infinity,
     throwOnError: false,
-    enabled: options?.enabled,
   });
 
   const uniqueEsittelijat = R.uniqueBy(data ?? [], (e) => e.esittelijaOid);

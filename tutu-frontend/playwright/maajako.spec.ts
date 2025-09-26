@@ -3,7 +3,7 @@ import {
   mockInit,
   mockKoodistot,
   mockUser,
-  mockEsittelijatWithIds,
+  mockEsittelijat,
 } from '@/playwright/mocks';
 
 const gotoMaajako = async (page: Page) => {
@@ -56,7 +56,7 @@ test.beforeEach(async ({ page }) => {
   mockInit(page);
   mockKoodistot(page);
   mockUser(page);
-  mockEsittelijatWithIds(page);
+  mockEsittelijat(page);
 });
 
 test('Näytä AlertBox, kun jotkin maakoodit ovat määrittämättä, ja SuccessBox, kun kaikki on määritetty', async ({

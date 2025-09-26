@@ -240,6 +240,7 @@ class Controller(
     @RequestParam(required = false) hakemuskoskee: String,
     @RequestParam(required = false) esittelija: String,
     @RequestParam(required = false) vaihe: String,
+    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -253,7 +254,7 @@ class Controller(
           }
       }
 
-      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
+      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe), sort)
     } match {
       case Success(hakemukset) =>
         val params = mapper.writeValueAsString(
@@ -380,7 +381,7 @@ class Controller(
         result match {
           case None =>
             LOG.warn(s"Muistiota ei löytynyt")
-            errorMessageMapper.mapPlainErrorMessage("Muistiota ei löytynyt", HttpStatus.NOT_FOUND)
+            ResponseEntity.status(HttpStatus.NO_CONTENT).body("Muistiota ei löytynyt")
           case Some(muistio) =>
             val params = mapper.writeValueAsString(
               Map(
