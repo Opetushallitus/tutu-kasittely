@@ -106,27 +106,21 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   page,
 }) => {
   await mockSuccessfullLists({ page });
-  await page.goto(
-    '/tutu-frontend?hakemuslista.sort=hakemuslista.asiatunnus:desc',
-  );
+  await page.goto('/tutu-frontend?sort=asiatunnus:desc');
 
-  const jarjestyskentta = page.getByTestId(
-    'sortlabel--hakemuslista.asiatunnus',
-  );
+  const jarjestyskentta = page.getByTestId('sortlabel--asiatunnus');
 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
 
-  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
-    async (fieldKey) => {
-      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-      await expect(epajarjestyskentta).not.toHaveAttribute(
-        'data-active',
-        'false',
-      );
-    },
-  );
+    await expect(epajarjestyskentta).not.toHaveAttribute(
+      'data-active',
+      'false',
+    );
+  });
 
   await Promise.all(epajarjestystestit);
 });
@@ -136,28 +130,21 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
 }) => {
   await mockSuccessfullLists({ page });
   await page.addInitScript(() => {
-    localStorage.setItem(
-      'tutu-query-string',
-      'hakemuslista.sort=hakemuslista.kasittelyvaihe:asc',
-    );
+    localStorage.setItem('tutu-query-string', 'sort=kasittelyvaihe:asc');
   });
 
   await page.goto('/');
 
-  const jarjestyskentta = page.getByTestId(
-    'sortlabel--hakemuslista.kasittelyvaihe',
-  );
+  const jarjestyskentta = page.getByTestId('sortlabel--kasittelyvaihe');
 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
 
-  const epajarjestystestit = ['hakemuslista.hakijannimi'].map(
-    async (fieldKey) => {
-      const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
+  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+    const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
-      await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
-    },
-  );
+    await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
+  });
 
   await Promise.all(epajarjestystestit);
 });

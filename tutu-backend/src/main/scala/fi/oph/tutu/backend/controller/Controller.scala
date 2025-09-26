@@ -240,6 +240,7 @@ class Controller(
     @RequestParam(required = false) hakemuskoskee: String,
     @RequestParam(required = false) esittelija: String,
     @RequestParam(required = false) vaihe: String,
+    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -253,7 +254,7 @@ class Controller(
           }
       }
 
-      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe))
+      hakemusService.haeHakemusLista(userOid, Option(hakemuskoskee), Option(vaihe), sort)
     } match {
       case Success(hakemukset) =>
         val params = mapper.writeValueAsString(

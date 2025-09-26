@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -10,8 +9,8 @@ import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
 
 @Component
@@ -182,7 +181,8 @@ class HakemusService(
   def haeHakemusLista(
     userOid: Option[String],
     hakemuskoskee: Option[String],
-    vaihe: Option[String]
+    vaihe: Option[String],
+    sort: String
   ): Seq[HakemusListItem] = {
     val vaiheet: Option[Seq[String]] = vaihe match {
       case None        => None
@@ -233,7 +233,7 @@ class HakemusService(
       }
     }
 
-    hakemusRepository
+    val hakemusList = hakemusRepository
       .haeHakemusLista(hakemusOidit)
       .flatMap { item =>
         val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid)
@@ -273,6 +273,45 @@ class HakemusService(
             )
         }
       }
+    sort match {
+      case null => hakemusList
+      case _    => {
+
+        val sortParam = sort.split(":").headOption.getOrElse("undefined")
+        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
+
+        val sortedList: Seq[HakemusListItem] = sortDef match {
+          case SortDef.Asc =>
+            sortParam match {
+              case "hakija"         => hakemusList.sortBy(_.hakija)
+              case "asiatunnus"     => hakemusList.sortBy(_.asiatunnus)
+              case "esittelija"     => hakemusList.sortBy(_.esittelijaKutsumanimi)
+              case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe)
+              case "hakemusKoskee"  =>
+                hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue))
+              case "kokonaisaika" => hakemusList.sortBy(_.aika).reverse
+              case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta).reverse
+
+              case _ => hakemusList
+            }
+          case SortDef.Desc =>
+            sortParam match {
+              case "hakija"         => hakemusList.sortBy(_.hakija).reverse
+              case "asiatunnus"     => hakemusList.sortBy(_.asiatunnus).reverse
+              case "esittelija"     => hakemusList.sortBy(_.esittelijaKutsumanimi).reverse
+              case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe).reverse
+              case "hakemusKoskee"  =>
+                hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue)).reverse
+              case "kokonaisaika" => hakemusList.sortBy(_.aika)
+              case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta)
+              case _              => hakemusList
+            }
+          case SortDef.Undefined => hakemusList
+        }
+        sortedList
+      }
+    }
+
   }
 
   def paivitaHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
