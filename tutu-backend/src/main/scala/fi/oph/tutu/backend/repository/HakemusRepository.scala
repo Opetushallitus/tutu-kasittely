@@ -219,7 +219,7 @@ class HakemusRepository extends BaseResultHandlers {
 
       userOids.foreach { oid =>
         if (oid.nonEmpty) {
-          val oidList = oid.map(o => s"'${o}'").mkString(", ")
+          val oidList = oid.map(o => s"'$o'").mkString(", ")
           joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN (${oidList})"
         }
       }
