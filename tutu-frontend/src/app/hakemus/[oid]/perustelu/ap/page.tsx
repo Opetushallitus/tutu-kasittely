@@ -11,7 +11,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { APSisalto } from '@/src/lib/types/APSisalto';
@@ -24,9 +24,13 @@ export default function ApPage() {
   const { perustelu, isPerusteluLoading, updatePerustelu } = usePerustelu(
     hakemus?.hakemusOid,
   );
-  const [APSisalto, setAPSisalto] = useState<APSisalto>(
-    perustelu?.APSisalto ?? {},
-  );
+  const [APSisalto, setAPSisalto] = useState(perustelu?.APSisalto);
+
+  useEffect(() => {
+    if (perustelu) {
+      setAPSisalto(perustelu.APSisalto);
+    }
+  }, [perustelu, setAPSisalto]);
 
   const debouncedUpdateAPSisalto = useDebounce((next: APSisalto) => {
     updatePerustelu({
@@ -65,7 +69,7 @@ export default function ApPage() {
           renderInput={({ labelId }) => (
             <FormControl aria-labelledby={labelId}>
               <OphCheckbox
-                checked={!!APSisalto.lakiperusteToisessaJasenmaassaSaannelty}
+                checked={!!APSisalto?.lakiperusteToisessaJasenmaassaSaannelty}
                 label={t('lakiperusteToisessaJasenmaassaSaannelty')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -75,7 +79,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.lakiperustePatevyysLahtomaanOikeuksilla}
+                checked={!!APSisalto?.lakiperustePatevyysLahtomaanOikeuksilla}
                 label={t('lakiperustePatevyysLahtomaanOikeuksilla')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -85,7 +89,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.lakiperusteToinenEUmaaTunnustanut}
+                checked={!!APSisalto?.lakiperusteToinenEUmaaTunnustanut}
                 label={t('lakiperusteToinenEUmaaTunnustanut')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -95,7 +99,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.lakiperusteLahtomaassaSaantelematon}
+                checked={!!APSisalto?.lakiperusteLahtomaassaSaantelematon}
                 label={t('lakiperusteLahtomaassaSaantelematon')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -165,7 +169,7 @@ export default function ApPage() {
               sx={{ display: 'flex', gap: theme.spacing(1) }}
             >
               <OphCheckbox
-                checked={!!APSisalto.selvityksetLahtomaanViranomaiselta}
+                checked={!!APSisalto?.selvityksetLahtomaanViranomaiselta}
                 label={t('selvityksetLahtomaanViranomaiselta')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -175,7 +179,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.selvityksetLahtomaanLainsaadannosta}
+                checked={!!APSisalto?.selvityksetLahtomaanLainsaadannosta}
                 label={t('selvityksetLahtomaanLainsaadannosta')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -185,7 +189,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.selvityksetAikaisempiTapaus}
+                checked={!!APSisalto?.selvityksetAikaisempiTapaus}
                 label={t('selvityksetAikaisempiTapaus')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -195,7 +199,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!APSisalto.selvityksetIlmeneeAsiakirjoista}
+                checked={!!APSisalto?.selvityksetIlmeneeAsiakirjoista}
                 label={t('selvityksetIlmeneeAsiakirjoista')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -222,7 +226,10 @@ export default function ApPage() {
             <OphCheckbox
               aria-labelledby={labelId}
               label={t('IMIHalytysTarkastettu')}
-              checked={APSisalto?.IMIHalytysTarkastettu}
+              checked={!!APSisalto?.IMIHalytysTarkastettu}
+              onChange={(event) => {
+                updateCheckbox('IMIHalytysTarkastettu', event.target.checked);
+              }}
             ></OphCheckbox>
           )}
         ></OphFormFieldWrapper>
