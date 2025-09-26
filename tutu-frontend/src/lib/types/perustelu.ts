@@ -1,6 +1,6 @@
 import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
-import { PerusteluAP } from '@/src/lib/types/perusteluAP';
+import { APSisalto } from '@/src/lib/types/APSisalto';
 
 export type Perustelu = {
   id: string;
@@ -22,7 +22,7 @@ export type Perustelu = {
   jatkoOpintoKelpoisuusLisatieto?: string;
   muuPerustelu?: string;
   aikaisemmatPaatokset?: boolean;
-  perusteluAP?: PerusteluAP;
+  APSisalto?: APSisalto;
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];

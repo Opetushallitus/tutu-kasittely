@@ -1,4 +1,4 @@
-export type PerusteluAP = Partial<{
+export type APSisalto = Partial<{
   lakiperusteToisessaJasenmaassaSaannelty?: boolean;
   lakiperustePatevyysLahtomaanOikeuksilla?: boolean;
   lakiperusteToinenEUmaaTunnustanut?: boolean;

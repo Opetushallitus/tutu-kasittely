@@ -25,8 +25,8 @@ case class Perustelu(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
-  uoRoSisalto: Option[UoRoSisalto] = None,
-  perusteluAP: Option[PerusteluAP] = None
+  uoRoSisalto: UoRoSisalto = UoRoSisalto(),
+  APSisalto: APSisalto = APSisalto()
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
     this.copy(
@@ -53,12 +53,12 @@ case class Perustelu(
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
       muuPerustelu = partial.muuPerustelu
         .orElse(this.muuPerustelu),
-      uoRoSisalto = partial.uoRoSisalto.orElse(this.uoRoSisalto),
+      uoRoSisalto = partial.uoRoSisalto.getOrElse(this.uoRoSisalto),
       lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
       lausunnonSisalto = partial.lausunnonSisalto
         .orElse(this.lausunnonSisalto)
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
-      perusteluAP = partial.perusteluAP.orElse(this.perusteluAP)
+      APSisalto = partial.APSisalto.getOrElse(this.APSisalto)
     )
 }
 
@@ -79,7 +79,7 @@ case class PartialPerustelu(
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
-  perusteluAP: Option[PerusteluAP] = None
+  APSisalto: Option[APSisalto] = None
 )
 
 case class UoRoSisalto(
@@ -157,7 +157,7 @@ case class LausuntopyyntoModifyData(
   poistetut: Seq[UUID] = Seq.empty
 )
 
-case class PerusteluAP(
+case class APSisalto(
   lakiperusteToisessaJasenmaassaSaannelty: Option[Boolean] = None,
   lakiperustePatevyysLahtomaanOikeuksilla: Option[Boolean] = None,
   lakiperusteToinenEUmaaTunnustanut: Option[Boolean] = None,

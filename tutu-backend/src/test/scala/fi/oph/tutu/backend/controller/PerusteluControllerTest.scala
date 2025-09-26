@@ -110,48 +110,46 @@ class PerusteluControllerTest extends IntegrationTestBase {
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
   ): Perustelu = {
     makePerustelu().copy(
-      uoRoSisalto = Some(
-        UoRoSisalto(
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some("eipä vissii"),
-          Some(false),
-          Some(false),
-          Some(false),
-          Some(true),
-          Some(true),
-          Some("näin on"),
-          Some(true),
-          Some(false),
-          Some(true),
-          Some(true),
-          Some("ei voi"),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanneOpetettavatAineet(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanneKasvatustieteellinen(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          SovellettuTilanne(Some(false)),
-          Some(true),
-          Some("se on just nii")
-        )
-      )
+      uoRoSisalto = UoRoSisalto(
+      Some(false),
+      Some(false),
+      Some(true),
+      Some(false),
+      Some(true),
+      Some(false),
+      Some(false),
+      Some(true),
+      Some(false),
+      Some(false),
+      Some(false),
+      Some(false),
+      Some(true),
+      Some("eipä vissii"),
+      Some(false),
+      Some(false),
+      Some(false),
+      Some(true),
+      Some(true),
+      Some("näin on"),
+      Some(true),
+      Some(false),
+      Some(true),
+      Some(true),
+      Some("ei voi"),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanneOpetettavatAineet(Some(false)),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanneKasvatustieteellinen(Some(false)),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanne(Some(false)),
+      SovellettuTilanne(Some(false)),
+      Some(true),
+      Some("se on just nii")
     )
-  }
+  )
+}
 
   def makePerusteluWithLausuntotieto(): Perustelu = {
     makePerustelu().copy(
@@ -222,7 +220,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       else
         Seq.empty
 
-    val uoro      = perustelu.uoRoSisalto.orNull
+    val uoro      = perustelu.uoRoSisalto
     val uoroAsMap =
       if (uoro != null) uoro.productElementNames.toList.zip(uoro.productIterator.toList).toMap -- ignoreFields else null
 
@@ -421,8 +419,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @Order(6)
   def haePerusteluWithUoroPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId2.get).get.id
-    val uoro          = perustelu2.uoRoSisalto.orNull
-    val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = Some(uoro))
+    val uoro          = perustelu2.uoRoSisalto
+    val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = uoro)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
     mvc
@@ -444,8 +442,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def tallennaMuokattuPerusteluWithUoRoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId = perusteluRepository.haePerustelu(hakemusId2.get).get.id
     var perustelu   = makePerusteluWithUoro().copy(hakemusId = Some(hakemusId2.get))
-    val uoro        = perustelu.uoRoSisalto.orNull
-    perustelu = perustelu.copy(id = perusteluId, uoRoSisalto = Some(uoro))
+    val uoro        = perustelu.uoRoSisalto
+    perustelu = perustelu.copy(id = perusteluId, uoRoSisalto = uoro)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
     when(
       userService.getEnrichedUserDetails(any)

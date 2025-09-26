@@ -14,7 +14,7 @@ import {
 import { useState } from 'react';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useDebounce } from '@/src/hooks/useDebounce';
-import { PerusteluAP } from '@/src/lib/types/perusteluAP';
+import { APSisalto } from '@/src/lib/types/APSisalto';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations('hakemus.perustelu.ap');
@@ -24,28 +24,28 @@ export default function ApPage() {
   const { perustelu, isPerusteluLoading, updatePerustelu } = usePerustelu(
     hakemus?.hakemusOid,
   );
-  const [perusteluAP, setPerusteluAP] = useState<PerusteluAP>(
-    perustelu?.perusteluAP ?? {},
+  const [APSisalto, setAPSisalto] = useState<APSisalto>(
+    perustelu?.APSisalto ?? {},
   );
 
-  const debouncedUpdatePerusteluAP = useDebounce((next: PerusteluAP) => {
+  const debouncedUpdateAPSisalto = useDebounce((next: APSisalto) => {
     updatePerustelu({
       ...perustelu!,
-      perusteluAP: next,
+      APSisalto: next,
     });
   }, 1000);
 
-  const updatePerusteluAP = (next: PerusteluAP) => {
-    setPerusteluAP(next);
-    debouncedUpdatePerusteluAP(next);
+  const updateAPSisalto = (next: APSisalto) => {
+    setAPSisalto(next);
+    debouncedUpdateAPSisalto(next);
   };
 
-  const updateCheckbox = (key: keyof PerusteluAP, checked: boolean) => {
-    updatePerusteluAP({ ...perusteluAP, [key]: checked });
+  const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
+    updateAPSisalto({ ...APSisalto, [key]: checked });
   };
 
-  const updateTextField = (key: keyof PerusteluAP, value: string) => {
-    updatePerusteluAP({ ...perusteluAP, [key]: value });
+  const updateTextField = (key: keyof APSisalto, value: string) => {
+    updateAPSisalto({ ...APSisalto, [key]: value });
   };
 
   return isLoading || isPerusteluLoading ? (
@@ -65,7 +65,7 @@ export default function ApPage() {
           renderInput={({ labelId }) => (
             <FormControl aria-labelledby={labelId}>
               <OphCheckbox
-                checked={!!perusteluAP.lakiperusteToisessaJasenmaassaSaannelty}
+                checked={!!APSisalto.lakiperusteToisessaJasenmaassaSaannelty}
                 label={t('lakiperusteToisessaJasenmaassaSaannelty')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -75,7 +75,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.lakiperustePatevyysLahtomaanOikeuksilla}
+                checked={!!APSisalto.lakiperustePatevyysLahtomaanOikeuksilla}
                 label={t('lakiperustePatevyysLahtomaanOikeuksilla')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -85,7 +85,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.lakiperusteToinenEUmaaTunnustanut}
+                checked={!!APSisalto.lakiperusteToinenEUmaaTunnustanut}
                 label={t('lakiperusteToinenEUmaaTunnustanut')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -95,7 +95,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.lakiperusteLahtomaassaSaantelematon}
+                checked={!!APSisalto.lakiperusteLahtomaassaSaantelematon}
                 label={t('lakiperusteLahtomaassaSaantelematon')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -118,7 +118,7 @@ export default function ApPage() {
         <OphInputFormField
           label={t('todistusEUKansalaisuuteenRinnasteisestaAsemasta')}
           value={
-            perusteluAP?.todistusEUKansalaisuuteenRinnasteisestaAsemasta ?? ''
+            APSisalto?.todistusEUKansalaisuuteenRinnasteisestaAsemasta ?? ''
           }
           onChange={(event) => {
             updateTextField(
@@ -131,7 +131,7 @@ export default function ApPage() {
           label={t('ammattiJohonPatevoitynyt')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.ammattiJohonPatevoitynyt ?? ''}
+          value={APSisalto?.ammattiJohonPatevoitynyt ?? ''}
           onChange={(event) => {
             updateTextField('ammattiJohonPatevoitynyt', event.target.value);
           }}
@@ -140,7 +140,7 @@ export default function ApPage() {
           label={t('ammattitoiminnanPaaAsiallinenSisalto')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.ammattitoiminnanPaaAsiallinenSisalto ?? ''}
+          value={APSisalto?.ammattitoiminnanPaaAsiallinenSisalto ?? ''}
           onChange={(event) => {
             updateTextField(
               'ammattitoiminnanPaaAsiallinenSisalto',
@@ -152,7 +152,7 @@ export default function ApPage() {
           label={t('koulutuksenKestoJaSisalto')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.koulutuksenKestoJaSisalto ?? ''}
+          value={APSisalto?.koulutuksenKestoJaSisalto ?? ''}
           onChange={(event) => {
             updateTextField('koulutuksenKestoJaSisalto', event.target.value);
           }}
@@ -165,7 +165,7 @@ export default function ApPage() {
               sx={{ display: 'flex', gap: theme.spacing(1) }}
             >
               <OphCheckbox
-                checked={!!perusteluAP.selvityksetLahtomaanViranomaiselta}
+                checked={!!APSisalto.selvityksetLahtomaanViranomaiselta}
                 label={t('selvityksetLahtomaanViranomaiselta')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -175,7 +175,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.selvityksetLahtomaanLainsaadannosta}
+                checked={!!APSisalto.selvityksetLahtomaanLainsaadannosta}
                 label={t('selvityksetLahtomaanLainsaadannosta')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -185,7 +185,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.selvityksetAikaisempiTapaus}
+                checked={!!APSisalto.selvityksetAikaisempiTapaus}
                 label={t('selvityksetAikaisempiTapaus')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -195,7 +195,7 @@ export default function ApPage() {
                 }}
               />
               <OphCheckbox
-                checked={!!perusteluAP.selvityksetIlmeneeAsiakirjoista}
+                checked={!!APSisalto.selvityksetIlmeneeAsiakirjoista}
                 label={t('selvityksetIlmeneeAsiakirjoista')}
                 onChange={(event) => {
                   updateCheckbox(
@@ -211,7 +211,7 @@ export default function ApPage() {
           label={t('lisatietoja')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.lisatietoja ?? ''}
+          value={APSisalto?.lisatietoja ?? ''}
           onChange={(event) => {
             updateTextField('lisatietoja', event.target.value);
           }}
@@ -222,7 +222,7 @@ export default function ApPage() {
             <OphCheckbox
               aria-labelledby={labelId}
               label={t('IMIHalytysTarkastettu')}
-              checked={perusteluAP?.IMIHalytysTarkastettu}
+              checked={APSisalto?.IMIHalytysTarkastettu}
             ></OphCheckbox>
           )}
         ></OphFormFieldWrapper>
@@ -238,7 +238,7 @@ export default function ApPage() {
           label={t('muutAPPerustelut')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.muutAPPerustelut ?? ''}
+          value={APSisalto?.muutAPPerustelut ?? ''}
           onChange={(event) => {
             updateTextField('muutAPPerustelut', event.target.value);
           }}
@@ -248,7 +248,7 @@ export default function ApPage() {
           helperText={t('SEUTarviointiHelperText')}
           multiline={true}
           minRows={3}
-          value={perusteluAP?.SEUTArviointi ?? ''}
+          value={APSisalto?.SEUTArviointi ?? ''}
           onChange={(event) => {
             updateTextField('SEUTArviointi', event.target.value);
           }}
