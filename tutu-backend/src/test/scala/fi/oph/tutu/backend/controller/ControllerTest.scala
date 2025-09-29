@@ -91,7 +91,19 @@ class ControllerTest extends IntegrationTestBase {
       .thenReturn(Right("fi"))
 
     when(mockOnrService.haeHenkilo(esittelijaOidString))
-      .thenReturn(Right(OnrUser(esittelijaOidString, "Esko", "Esittelijä")))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = esittelijaOidString,
+            kutsumanimi = "Esko",
+            sukunimi = "Esittelijä",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010170-789X"),
+            syntymaaika = "1970-01-01",
+            false
+          )
+        )
+      )
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -155,9 +167,33 @@ class ControllerTest extends IntegrationTestBase {
       kayttooikeusService.haeEsittelijat
     ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
     when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
-      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000001", "Roope", "Roihuvuori")))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = "1.2.246.562.24.00000000001",
+            kutsumanimi = "Roope",
+            sukunimi = "Roihuvuori",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010171-789X"),
+            syntymaaika = "1971-01-01",
+            true
+          )
+        )
+      )
     when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
-      .thenReturn(Right(OnrUser("1.2.246.562.24.00000000002", "Jarmo", "Jakomäki")))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = "1.2.246.562.24.00000000002",
+            kutsumanimi = "Jarmo",
+            sukunimi = "Jakomäki",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010171-789X"),
+            syntymaaika = "1971-01-01",
+            false
+          )
+        )
+      )
 
     mockMvc
       .perform(
