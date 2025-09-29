@@ -27,7 +27,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     findSingleStringAnswer(key, allAnswers).getOrElse("")
   }
 
-  private def countryCode2Name(code: Option[String]): Option[Kielistetty] = {
+  def countryCode2Name(code: Option[String]): Option[Kielistetty] = {
     val country = koodistoService.getKoodisto("maatjavaltiot2").find(c => c.koodiArvo == code.getOrElse(""))
     country.map(_.nimi)
   }
@@ -43,10 +43,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val countryCodeForResidence = findSingleStringAnswer("country-of-residence", answers)
     val homeTownCode            = findSingleStringAnswer("home-town", answers)
     Hakija(
+      hakemus.`person-oid`,
       hakemus.etunimet,
       findRequiredSingleStringAnswer("preferred-name", answers),
       hakemus.sukunimi,
-      countryCode2Name(nationalityCode).getOrElse(Map()),
+      Seq(countryCode2Name(nationalityCode).getOrElse(Map())),
       hakemus.henkilotunnus,
       findRequiredSingleStringAnswer("birth-date", answers),
       findSingleStringAnswer("phone", answers),
@@ -55,7 +56,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       findRequiredSingleStringAnswer("postal-code", answers),
       findRequiredSingleStringAnswer("postal-office", answers),
       municipalityCode2Name(homeTownCode).getOrElse(Map()),
-      findSingleStringAnswer("email", answers)
+      findSingleStringAnswer("email", answers),
+      false
     )
   }
 

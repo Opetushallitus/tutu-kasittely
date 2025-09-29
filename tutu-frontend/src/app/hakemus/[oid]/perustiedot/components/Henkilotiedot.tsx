@@ -69,14 +69,25 @@ export const Henkilotiedot = ({
     return Object.keys(fieldValue).includes(lan);
   };
 
-  const arvo = (fieldValue: string | TranslatedName | undefined) => {
+  const arvo = (
+    fieldValue:
+      | string
+      | boolean
+      | TranslatedName
+      | TranslatedName[]
+      | undefined,
+  ) => {
     return match(fieldValue)
       .with(P.nullish, () => '')
       .with(P.string, (str) => str)
-      .with(P._, (fieldValue) => {
-        if (containsTranslatedName(fieldValue)) return fieldValue[lan]!;
-        return '';
-      })
+      .with(P.boolean, () => '')
+      .with(P.when(Array.isArray), (arr) =>
+        (arr as TranslatedName[])
+          .map((tn) => tn?.[lan] ?? '')
+          .filter((s) => s && s.length > 0)
+          .join(', '),
+      )
+      .with(P.when(containsTranslatedName), (tn) => tn?.[lan] ?? '')
       .otherwise(() => '');
   };
 
@@ -85,7 +96,9 @@ export const Henkilotiedot = ({
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.henkilotiedot.otsikko')}
       </OphTypography>
-      <InfoBox infoText={t('hakemus.perustiedot.henkilotiedot.huomautus')} />
+      {hakija.yksiloityVTJ && (
+        <InfoBox infoText={t('hakemus.perustiedot.henkilotiedot.huomautus')} />
+      )}
       <HenkilotietoGrid theme={theme}>
         {R.map(Object.values(HAKIJA_FIELDS_WO_SAHKOPOSTI), (fieldKey) => (
           <HenkilotietoRivi

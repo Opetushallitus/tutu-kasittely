@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.fixture
 
-import fi.oph.tutu.backend.domain.{Hakija, Kieli}
+import fi.oph.tutu.backend.domain.{Hakija, Kieli, UserOid}
 
 val suomi = Map(
   Kieli.valueOf("fi") -> "Suomi",
@@ -14,10 +14,11 @@ val kajaani = Map(
 )
 
 val hakijaFixture = Hakija(
+  "1.2.246.562.198.94192383589",
   "Testi Kolmas",
   "Tatu",
   "Hakija",
-  suomi,
+  Seq(suomi),
   Some("180462-9981"),
   "18.04.1962",
   Some("+3584411222333"),
@@ -26,5 +27,6 @@ val hakijaFixture = Hakija(
   "00800",
   "HELSINKI",
   kajaani,
-  Some("patu.kuusinen@riibasu.fi")
+  Some("patu.kuusinen@riibasu.fi"),
+  false
 )

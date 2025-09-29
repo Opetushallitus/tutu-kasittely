@@ -64,29 +64,6 @@ export const mockEsittelijat = (page: Page) => {
   });
 };
 
-export const mockEsittelijatWithIds = (page: Page) => {
-  page.route('**/tutu-backend/api/esittelijat*', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify([
-        {
-          id: 'E1',
-          esittelijaOid: '1.2.246.562.24.999999999998',
-          etunimi: 'Kari',
-          sukunimi: 'Karibia',
-        },
-        {
-          id: 'E2',
-          esittelijaOid: '1.2.246.562.24.999999999999',
-          etunimi: 'Janne',
-          sukunimi: 'Jamaika',
-        },
-      ]),
-    });
-  });
-};
-
 export const mockHakemusLista = (page: Page) => {
   page.route('**/tutu-backend/api/hakemuslista*', async (route: Route) => {
     await route.fulfill({
@@ -150,11 +127,18 @@ export const mockHakemus = (page: Page) => {
           etunimet: 'Heikki Hemuli',
           kutsumanimi: 'Hessu',
           sukunimi: 'Heittotähti',
-          kansalaisuus: {
-            fi: 'Suomi',
-            sv: 'Finland',
-            en: 'Finland',
-          },
+          kansalaisuus: [
+            {
+              fi: 'Suomi',
+              sv: 'Finland',
+              en: 'Finland',
+            },
+            {
+              fi: 'Ruotsi',
+              sv: 'Ruåtsi',
+              en: 'Sweden',
+            },
+          ],
           hetu: '121280-123A',
           syntymaaika: '1980-01-01',
           matkapuhelin: '0401234567',

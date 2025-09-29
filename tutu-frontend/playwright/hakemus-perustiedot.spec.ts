@@ -19,7 +19,7 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
   await expect(page.getByTestId('etunimet')).toHaveText('Heikki Hemuli');
   await expect(page.getByTestId('kutsumanimi')).toHaveText('Hessu');
   await expect(page.getByTestId('sukunimi')).toHaveText('Heittotähti');
-  await expect(page.getByTestId('kansalaisuus')).toHaveText('Suomi');
+  await expect(page.getByTestId('kansalaisuus')).toHaveText('Suomi, Ruotsi');
   await expect(page.getByTestId('hetu')).toHaveText('121280-123A');
   await expect(page.getByTestId('syntymaaika')).toHaveText('1980-01-01');
   await expect(page.getByTestId('matkapuhelin')).toHaveText('0401234567');
@@ -41,7 +41,7 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
-  await expect(page.getByTestId('kansalaisuus')).toHaveText('Finland');
+  await expect(page.getByTestId('kansalaisuus')).toHaveText('Finland, Ruåtsi');
   await expect(page.getByTestId('asuinmaa')).toHaveText('Finland');
   await expect(page.getByTestId('kotikunta')).toHaveText('Helsingfors');
   await expect(page.getByTestId('paatoskieli')).toHaveText('finska');

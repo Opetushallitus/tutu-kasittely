@@ -4,7 +4,7 @@ export type Hakija = {
   etunimet: string;
   kutsumanimi: string;
   sukunimi: string;
-  kansalaisuus: TranslatedName;
+  kansalaisuus: TranslatedName[];
   hetu?: string;
   syntymaaika: string;
   matkapuhelin?: string;
@@ -14,6 +14,7 @@ export type Hakija = {
   postitoimipaikka: string;
   kotikunta: TranslatedName;
   sahkopostiosoite?: string;
+  yksiloityVTJ: boolean;
 };
 
 export const HAKIJA_FIELDS_WO_SAHKOPOSTI = [
