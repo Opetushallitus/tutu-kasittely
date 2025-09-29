@@ -5,11 +5,13 @@
     "etunimet": "Heikki Hemuli",
     "kutsumanimi": "Hessu",
     "sukunimi": "Heittotähti",
-    "kansalaisuus": {
-      "fi": "Suomi",
-      "sv": "Finland",
-      "en": "Finland"
-    },
+    "kansalaisuus": [
+      {
+        "fi": "Suomi",
+        "sv": "Finland",
+        "en": "Finland"
+      }
+    ],
     "hetu": "12128-123A",
     "syntymaaika": "1980-0-01",
     "matkapuhelin": "0401234567",
