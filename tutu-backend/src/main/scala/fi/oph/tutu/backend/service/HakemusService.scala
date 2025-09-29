@@ -99,12 +99,9 @@ class HakemusService(
               kutsumanimi = ataruHakija.kutsumanimi,
               sukunimi = ataruHakija.sukunimi,
               kansalaisuus = henkilo.kansalaisuus match {
-                case Seq(koodi) =>
-                  ataruHakemusParser.countryCode2Name(Some(koodi.kansalaisuusKoodi)) match {
-                    case Some(kansalaisuus) => kansalaisuus
-                    case None               => ataruHakija.kansalaisuus
-                  }
-                case _ => ataruHakija.kansalaisuus
+                case koodit =>
+                  koodit.flatMap(koodi => ataruHakemusParser.countryCode2Name(Some(koodi.kansalaisuusKoodi)))
+                case null => ataruHakija.kansalaisuus
               },
               hetu = henkilo.hetu,
               syntymaaika = henkilo.syntymaaika,

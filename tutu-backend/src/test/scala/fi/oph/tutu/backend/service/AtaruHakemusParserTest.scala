@@ -69,7 +69,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals("HELSINKI", hakija.postitoimipaikka)
     assertEquals("patu.kuusinen@riibasu.fi", hakija.sahkopostiosoite.getOrElse(""))
     assertEquals(
-      Map(Kieli.valueOf("fi") -> "Suomi", Kieli.valueOf("sv") -> "Finland", Kieli.valueOf("en") -> "Finland"),
+      List(Map(Kieli.valueOf("fi") -> "Suomi", Kieli.valueOf("sv") -> "Finland", Kieli.valueOf("en") -> "Finland")),
       hakija.kansalaisuus
     )
     assertEquals(
@@ -103,7 +103,7 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals("HELSINKI", hakija.postitoimipaikka)
     assertEquals(None, hakija.sahkopostiosoite)
     assertEquals(
-      Map(),
+      List(Map()),
       hakija.kansalaisuus
     )
     assertEquals(

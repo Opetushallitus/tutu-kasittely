@@ -5,7 +5,7 @@ case class Hakija(
   etunimet: String,
   kutsumanimi: String,
   sukunimi: String,
-  kansalaisuus: Kielistetty,
+  kansalaisuus: Seq[Kielistetty],
   hetu: Option[String],
   syntymaaika: String,
   matkapuhelin: Option[String],

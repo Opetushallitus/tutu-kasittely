@@ -47,7 +47,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       hakemus.etunimet,
       findRequiredSingleStringAnswer("preferred-name", answers),
       hakemus.sukunimi,
-      countryCode2Name(nationalityCode).getOrElse(Map()),
+      Seq(countryCode2Name(nationalityCode).getOrElse(Map())),
       hakemus.henkilotunnus,
       findRequiredSingleStringAnswer("birth-date", answers),
       findSingleStringAnswer("phone", answers),

@@ -18,7 +18,7 @@ val hakijaFixture = Hakija(
   "Testi Kolmas",
   "Tatu",
   "Hakija",
-  suomi,
+  Seq(suomi),
   Some("180462-9981"),
   "18.04.1962",
   Some("+3584411222333"),

@@ -483,11 +483,11 @@ class ControllerTest extends IntegrationTestBase {
                                   "etunimet": "Testi Kolmas",
                                   "kutsumanimi": "Tatu",
                                   "sukunimi": "Hakija",
-                                  "kansalaisuus": {
+                                  "kansalaisuus": [{
                                     "fi": "Suomi",
                                     "sv": "Finland",
                                     "en": "Finland"
-                                  },
+                                  }],
                                   "asuinmaa": {"fi": "Suomi", "sv": "Finland", "en": "Finland"},
                                   "kotikunta": {
                                     "fi": "Kajaani",
@@ -1077,11 +1077,11 @@ class ControllerTest extends IntegrationTestBase {
          |    "etunimet" : "Testi Kolmas",
          |    "kutsumanimi" : "Tatu",
          |    "sukunimi" : "Hakija",
-         |    "kansalaisuus" : {
+         |    "kansalaisuus" : [{
          |      "fi" : "Suomi",
          |      "sv" : "Finland",
          |      "en" : "Finland"
-         |    },
+         |    }],
          |    "hetu" : "180462-9981",
          |    "syntymaaika" : "18.04.1962",
          |    "matkapuhelin" : "+3584411222333",
