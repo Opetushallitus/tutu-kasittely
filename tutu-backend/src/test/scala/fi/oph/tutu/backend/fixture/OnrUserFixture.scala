@@ -9,6 +9,5 @@ val onrUserFixture: OnrUser =
     sukunimi = "Esittelijä",
     kansalaisuus = Seq(KansalaisuusKoodi("123")),
     hetu = Some("010171-789X"),
-    syntymaaika = "1971-01-01",
     true
   )

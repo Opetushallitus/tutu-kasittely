@@ -104,7 +104,7 @@ class HakemusService(
                 case null => ataruHakija.kansalaisuus
               },
               hetu = henkilo.hetu,
-              syntymaaika = henkilo.syntymaaika,
+              syntymaaika = ataruHakija.syntymaaika,
               matkapuhelin = ataruHakija.matkapuhelin,
               asuinmaa = ataruHakija.asuinmaa,
               katuosoite = ataruHakija.katuosoite,

@@ -99,7 +99,6 @@ class ControllerTest extends IntegrationTestBase {
             sukunimi = "Esittelijä",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010170-789X"),
-            syntymaaika = "1970-01-01",
             false
           )
         )
@@ -175,7 +174,6 @@ class ControllerTest extends IntegrationTestBase {
             sukunimi = "Roihuvuori",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010171-789X"),
-            syntymaaika = "1971-01-01",
             true
           )
         )
@@ -189,7 +187,6 @@ class ControllerTest extends IntegrationTestBase {
             sukunimi = "Jakomäki",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010171-789X"),
-            syntymaaika = "1971-01-01",
             false
           )
         )

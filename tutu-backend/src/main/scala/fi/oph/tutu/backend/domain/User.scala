@@ -18,6 +18,5 @@ case class OnrUser(
   sukunimi: String,
   kansalaisuus: Seq[KansalaisuusKoodi],
   hetu: Option[String],
-  syntymaaika: String,
   yksiloityVTJ: Boolean
 )
