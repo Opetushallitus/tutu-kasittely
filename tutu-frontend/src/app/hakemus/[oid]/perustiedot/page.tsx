@@ -65,8 +65,10 @@ export default function PerustietoPage() {
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
       <LabeledValue
-        label={t('hakemus.perustiedot.mitaHakee')}
-        value={t(hakemusKoskee)}
+        label={t('hakemus.perustiedot.mitaHakee', {
+          language: hakemus.lomakkeenKieli,
+        })}
+        value={t(hakemusKoskee, { language: hakemus.lomakkeenKieli })}
       ></LabeledValue>
       <Sisalto
         osiot={perustietoOsiot}
