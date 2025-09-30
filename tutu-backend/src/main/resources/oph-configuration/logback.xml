@@ -21,6 +21,11 @@
             <maxFileSize>10MB</maxFileSize>
         </triggeringPolicy>
     </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSX} %-5p {%X{user}} [%t] %-5p %c: %m%n</pattern>
+        </encoder>
+    </appender>
     <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log_dir}/auditlog_tutu-backend.log</file>
         <append>true</append>
@@ -41,8 +46,9 @@
     <!-- Standard logging -->
     <root level="info">
         <appender-ref ref="APP" />
+        <appender-ref ref="STDOUT" />
     </root>
-    <logger name="org.springframework" level="warn" />
+    <logger name="org.springframework" level="info" />
     <logger name="org.springframework.security" level="warn" />
     <logger name="org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration" level="info" />
     <logger name="org.springframework.security.cas.web.CasAuthenticationFilter" level="error" />
