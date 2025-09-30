@@ -181,6 +181,11 @@ export class EcsServiceStack extends Stack {
                 file_path: '/logs/*_gc.log*',
                 log_group_name: `${props.serviceName}-debug`,
                 log_stream_name: '{hostname}-gc'
+              },
+              {
+                file_path: '/logs/spring.log',
+                log_group_name: `${props.serviceName}-debug`,
+                log_stream_name: '{hostname}-spring'
               }
             ]
           }
