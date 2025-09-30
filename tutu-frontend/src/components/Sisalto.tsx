@@ -17,6 +17,7 @@ import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { Language } from '@/src/lib/localization/localizationTypes';
 
 interface IndentedProps {
   className?: string;
@@ -98,7 +99,7 @@ const getValue = (
   sisaltoValue: SisaltoValue,
   sisaltoItem: SisaltoItem,
   liiteMetadata: AsiakirjaMetadata[],
-  lomakkeenKieli: string,
+  lomakkeenKieli: Language,
 ) => {
   let val =
     sisaltoValue.label?.[lomakkeenKieli as keyof typeof sisaltoValue.label] ??
@@ -113,7 +114,7 @@ const getValue = (
 export const renderItem = (
   item: SisaltoItem,
   liiteMetadata: AsiakirjaMetadata[],
-  lomakkeenKieli: string,
+  lomakkeenKieli: Language,
 ) => {
   const label = item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
   const renderedLabel =
@@ -168,7 +169,7 @@ export const Sisalto = ({
 }: {
   sisalto: SisaltoItem[];
   osiot: HakemuspalveluSisaltoId[];
-  lomakkeenKieli: string;
+  lomakkeenKieli: Language;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
