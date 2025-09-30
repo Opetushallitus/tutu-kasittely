@@ -93,7 +93,7 @@ export const mockUser = (page: Page, kieli: string = 'fi') => {
   });
 };
 
-export const mockHakemus = (page: Page) => {
+export const mockHakemus = (page: Page, lomakkeenKieli: string = 'fi') => {
   page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
@@ -123,6 +123,7 @@ export const mockHakemus = (page: Page) => {
       contentType: 'application/json',
       body: JSON.stringify({
         hakemusOid: oid,
+        lomakkeenKieli: lomakkeenKieli,
         hakija: {
           etunimet: 'Heikki Hemuli',
           kutsumanimi: 'Hessu',

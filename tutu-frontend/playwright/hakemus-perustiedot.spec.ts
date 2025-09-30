@@ -37,7 +37,7 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
 
 test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => {
   mockUser(page, 'sv');
-  mockHakemus(page);
+  mockHakemus(page, 'sv');
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );

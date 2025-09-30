@@ -5,7 +5,6 @@ import {
   SisaltoItem,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
-import * as R from 'remeda';
 import { styled } from '@mui/material';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 import {
@@ -32,7 +31,6 @@ const Indented = styled((props: IndentedProps) => {
     </div>
   );
 })({
-  //backgroundColor: `#0033cc11`,
   '.indented .indented': {
     paddingLeft: `1em`,
   },
@@ -96,12 +94,81 @@ const Subsection = styled('div')({
   display: 'block',
 });
 
+const getValue = (
+  sisaltoValue: SisaltoValue,
+  sisaltoItem: SisaltoItem,
+  liiteMetadata: AsiakirjaMetadata[],
+  lomakkeenKieli: string,
+) => {
+  let val =
+    sisaltoValue.label?.[lomakkeenKieli as keyof typeof sisaltoValue.label] ??
+    '';
+  if (isAttachmentField(sisaltoItem)) {
+    const metadata = liiteMetadata.find((meta) => meta.key === val);
+    val = metadata ? metadata.filename : val;
+  }
+  return val;
+};
+
+export const renderItem = (
+  item: SisaltoItem,
+  liiteMetadata: AsiakirjaMetadata[],
+  lomakkeenKieli: string,
+) => {
+  const label = item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
+  const renderedLabel =
+    label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
+
+  const infoTextTranslations =
+    item.infoText?.label ?? item.infoText?.value ?? null;
+  const infoText =
+    infoTextTranslations?.[
+      lomakkeenKieli as keyof typeof infoTextTranslations
+    ] ?? null;
+
+  const renderedInfoText = infoText && <EntryInfo>{infoText}</EntryInfo>;
+
+  const renderedValues = item.value.map((value) => (
+    <Fragment key={`${value.value}--item`}>
+      <EntryValue
+        key={`${value.value}--value`}
+        datatestid={`sisalto-item-${item.key}`}
+      >
+        {`- ${getValue(value, item, liiteMetadata, lomakkeenKieli)}`}
+      </EntryValue>
+      <Subsection key={`${value.value}--followups`}>
+        {value.followups.map((v) =>
+          renderItem(v, liiteMetadata, lomakkeenKieli),
+        )}
+      </Subsection>
+    </Fragment>
+  ));
+  const renderedChildren = (
+    <Subsection>
+      {item.children.map((child) =>
+        renderItem(child, liiteMetadata, lomakkeenKieli),
+      )}
+    </Subsection>
+  );
+
+  return (
+    <Indented key={`${item.key}`}>
+      {renderedLabel}
+      {renderedInfoText}
+      {renderedValues}
+      {renderedChildren}
+    </Indented>
+  );
+};
+
 export const Sisalto = ({
   sisalto = [],
   osiot = [],
+  lomakkeenKieli = 'fi',
 }: {
   sisalto: SisaltoItem[];
   osiot: HakemuspalveluSisaltoId[];
+  lomakkeenKieli: string;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -114,7 +181,7 @@ export const Sisalto = ({
     isLoading,
     data: liiteMetadata = [],
     error,
-  } = useLiitteet(liitteet.map((liite) => liite.label.fi).join(','));
+  } = useLiitteet(liitteet.map((liite) => liite.label.en).join(','));
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.liitteidenLataus', t);
@@ -123,62 +190,10 @@ export const Sisalto = ({
   if (isLoading) return <FullSpinner></FullSpinner>;
 
   return (
-    <div>{rajattuSisalto.map((item) => renderItem(item, liiteMetadata))}</div>
-  );
-};
-
-const getValue = (
-  sisaltoValue: SisaltoValue,
-  sisaltoItem: SisaltoItem,
-  liiteMetadata: AsiakirjaMetadata[],
-) => {
-  let val = R.pathOr(sisaltoValue, ['label', 'fi'], '');
-  if (isAttachmentField(sisaltoItem)) {
-    const metadata = liiteMetadata.find((meta) => meta.key === val);
-    val = metadata ? metadata.filename : val;
-  }
-  return val;
-};
-
-export const renderItem = (
-  item: SisaltoItem,
-  liiteMetadata: AsiakirjaMetadata[],
-) => {
-  const label = item.label?.fi || null;
-  const renderedLabel =
-    label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
-
-  const infoTextTranslations =
-    item.infoText?.label ?? item.infoText?.value ?? null;
-  const infoText = infoTextTranslations?.fi ?? null;
-
-  const renderedInfoText = infoText && <EntryInfo>{infoText}</EntryInfo>;
-
-  const renderedValues = item.value.map((value) => (
-    <Fragment key={`${value.value}--item`}>
-      <EntryValue
-        key={`${value.value}--value`}
-        datatestid={`sisalto-item-${item.key}`}
-      >
-        {`- ${getValue(value, item, liiteMetadata)}`}
-      </EntryValue>
-      <Subsection key={`${value.value}--followups`}>
-        {value.followups.map((v) => renderItem(v, liiteMetadata))}
-      </Subsection>
-    </Fragment>
-  ));
-  const renderedChildren = (
-    <Subsection>
-      {item.children.map((child) => renderItem(child, liiteMetadata))}
-    </Subsection>
-  );
-
-  return (
-    <Indented key={`${item.key}`}>
-      {renderedLabel}
-      {renderedInfoText}
-      {renderedValues}
-      {renderedChildren}
-    </Indented>
+    <div>
+      {rajattuSisalto.map((item) =>
+        renderItem(item, liiteMetadata, lomakkeenKieli),
+      )}
+    </div>
   );
 };
