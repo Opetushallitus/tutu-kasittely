@@ -4,6 +4,7 @@ import path from 'path';
 import { sortBy } from 'remeda';
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import _sisalto from './fixtures/hakemus1/_sisalto.json';
+import { Language } from '@/src/lib/localization/localizationTypes';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   mockInit(page);
@@ -93,7 +94,7 @@ export const mockUser = (page: Page, kieli: string = 'fi') => {
   });
 };
 
-export const mockHakemus = (page: Page) => {
+export const mockHakemus = (page: Page, lomakkeenKieli: Language = 'fi') => {
   page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
@@ -123,6 +124,7 @@ export const mockHakemus = (page: Page) => {
       contentType: 'application/json',
       body: JSON.stringify({
         hakemusOid: oid,
+        lomakkeenKieli: lomakkeenKieli,
         hakija: {
           etunimet: 'Heikki Hemuli',
           kutsumanimi: 'Hessu',

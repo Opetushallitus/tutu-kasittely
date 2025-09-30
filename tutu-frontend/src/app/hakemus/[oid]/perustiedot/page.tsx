@@ -20,10 +20,11 @@ import {
 } from '@/src/constants/hakemuspalveluSisalto';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { Muistio } from '@/src/components/Muistio';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 
 export default function PerustietoPage() {
   const theme = useTheme();
-  const { t, getLanguage } = useTranslations();
+  const { t } = useTranslations();
   const { addToast } = useToaster();
   const { isLoading, hakemus, error } = useHakemus();
 
@@ -46,13 +47,13 @@ export default function PerustietoPage() {
   const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
     hakemus.sisalto,
     [paatosJaAsiointikieli, paatosKieli],
-    getLanguage(),
+    hakemus.lomakkeenKieli as keyof TranslatedName,
   );
 
   const [, asiointiKieliVal] = findSisaltoQuestionAndAnswer(
     hakemus.sisalto,
     [paatosJaAsiointikieli, asiointiKieli],
-    getLanguage(),
+    hakemus.lomakkeenKieli as keyof TranslatedName,
   );
 
   return (
@@ -64,10 +65,16 @@ export default function PerustietoPage() {
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
       <LabeledValue
-        label={t('hakemus.perustiedot.mitaHakee')}
-        value={t(hakemusKoskee)}
+        label={t('hakemus.perustiedot.mitaHakee', {
+          language: hakemus.lomakkeenKieli,
+        })}
+        value={t(hakemusKoskee, { language: hakemus.lomakkeenKieli })}
       ></LabeledValue>
-      <Sisalto osiot={perustietoOsiot} sisalto={hakemus.sisalto} />
+      <Sisalto
+        osiot={perustietoOsiot}
+        sisalto={hakemus.sisalto}
+        lomakkeenKieli={hakemus.lomakkeenKieli}
+      />
       <Muistio
         label={t('hakemus.perustiedot.esittelijanHuomioita')}
         hakemus={hakemus}

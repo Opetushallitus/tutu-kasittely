@@ -1,5 +1,8 @@
 import { Hakija } from '@/src/lib/types/hakija';
-import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import {
+  Language,
+  TranslatedName,
+} from '@/src/lib/localization/localizationTypes';
 
 export type MuutosHistoriaItem = {
   role: 'Esittelija' | 'Hakija' | 'Irrelevant';
@@ -10,6 +13,7 @@ export type MuutosHistoriaItem = {
 export type Hakemus = {
   hakemusOid: string;
   lomakeOid: string;
+  lomakkeenKieli: Language;
   hakemusKoskee: number;
   readonly hakija: Hakija;
   asiatunnus: string;
