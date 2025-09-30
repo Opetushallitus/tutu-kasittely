@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
@@ -53,7 +54,6 @@ class HakemusService(
       asiakirjaId,
       "Hakemuspalvelu"
     )
-
     val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
 
     try {
