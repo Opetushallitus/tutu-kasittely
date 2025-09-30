@@ -10,7 +10,9 @@ import { ImiPyynto } from '@/src/lib/types/hakemus';
 
 test.beforeEach(mockBasicForHakemus);
 
-test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
+test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', async ({
+  page,
+}) => {
   let callCount = 0;
 
   await mockUser(page);
@@ -136,4 +138,32 @@ test('IMI-Pyynnön kentät toimivat oikein', async ({ page }) => {
   // hyväksytään mikä tahansa päivämäärä, joten tarkistetaan vain formaatti
   await expect(lahetettyCalendar).toHaveValue(/^\d{2}\.\d{2}\.\d{4}$/);
   await expect(vastattyCalendar).toHaveValue(/^\d{2}\.\d{2}\.\d{4}$/);
+});
+
+test('IMI-Pyynnön kentät eivät ole näkyvissä Tutkinnon tason rinnastaminen -hakemukselle', async ({
+  page,
+}) => {
+  mockUser(page);
+  await mockLiitteet(page);
+  const hakemus = getHakemus();
+
+  await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+    const body = {
+      ...hakemus,
+      hakemusKoskee: 0,
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(body),
+    });
+  });
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+  );
+
+  await expect(page.getByTestId('imiPyynto-otsikko')).not.toBeVisible();
+  await expect(page.getByTestId('imiPyynto-radio-group')).not.toBeVisible();
 });

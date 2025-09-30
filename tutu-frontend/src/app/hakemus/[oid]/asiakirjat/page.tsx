@@ -275,13 +275,15 @@ const AsiakirjaPagePure = ({
         hakemuksenOsa={'asiakirjat'}
       />
 
-      <ImiPyyntoComponent
-        imiPyynto={asiakirja.imiPyynto}
-        instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-        debouncedUpdateAsiakirjaTietoAction={
-          debouncedAsiakirjaTietoUpdateAction
-        }
-      ></ImiPyyntoComponent>
+      {hakemus.hakemusKoskee === 1 && (
+        <ImiPyyntoComponent
+          imiPyynto={asiakirja.imiPyynto}
+          instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          debouncedUpdateAsiakirjaTietoAction={
+            debouncedAsiakirjaTietoUpdateAction
+          }
+        ></ImiPyyntoComponent>
+      )}
       <Divider orientation={'horizontal'} />
 
       <OphTypography variant={'h3'}>
