@@ -7,7 +7,7 @@ import { Perustelu } from '@/src/lib/types/perustelu';
 
 interface Props {
   perustelu: Perustelu | undefined;
-  updatePerustelu: (perustelu: Perustelu) => void;
+  updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
 export const Lahde = ({
@@ -29,9 +29,7 @@ export const Lahde = ({
       [field]: value,
     };
     setState(newState);
-    const perustelu = maybePerustelu ?? ({} as Perustelu);
     updatePerustelu({
-      ...perustelu,
       [field]: value,
     });
   };

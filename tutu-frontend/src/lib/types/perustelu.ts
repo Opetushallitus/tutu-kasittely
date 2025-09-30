@@ -19,6 +19,7 @@ export type Perustelu = {
   uoRoSisalto?: UoRoSisalto;
   jatkoOpintoKelpoisuus?: string | undefined;
   jatkoOpintoKelpoisuusLisatieto?: string | undefined;
+  muuPerustelu: string;
   aikaisemmatPaatokset?: boolean | undefined;
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;

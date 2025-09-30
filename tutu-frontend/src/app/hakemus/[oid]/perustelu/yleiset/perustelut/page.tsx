@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { usePerustelu } from '@/src/hooks/usePerustelu';
@@ -14,10 +16,14 @@ import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/[oid]/perustelu/y
 import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
 import { Lahde } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/Lahde';
 import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
-import { Muistio } from '@/src/components/Muistio';
 import { JatkoOpintoKelpoisuus } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/JatkoOpintoKelpoisuus';
 import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
 import { TutkintokohtaisetTiedot } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/TutkintokohtaisetTiedot';
+import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
+import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
+import { MuuPerustelu } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/MuuPerustelu';
+import { Perustelu } from '@/src/lib/types/perustelu';
+import { useDebounce } from '@/src/hooks/useDebounce';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
@@ -47,9 +53,30 @@ const YleisetPerustelut = ({
   updateHakemus,
 }: YleisetPerustelutProps) => {
   const { t } = useTranslations();
+
+  const [parts, setParts] = useState<Partial<Perustelu>[]>([]);
+
   const { perustelu, updatePerustelu, isPerusteluLoading } = usePerustelu(
     hakemus?.hakemusOid,
   );
+
+  useEffect(() => {
+    setParts([]);
+  }, [perustelu]);
+
+  const debouncedUpdatePerustelu = useDebounce((newPerustelu: Perustelu) => {
+    updatePerustelu(newPerustelu);
+  }, 1000);
+
+  const updatePerusteluWithPartial = (part: Partial<Perustelu>) => {
+    const newParts = [...parts, part];
+    setParts(newParts);
+    const combinedParts = newParts.reduce(
+      (currentPerustelu, nextPart) => ({ ...currentPerustelu, ...nextPart }),
+      perustelu as Partial<Perustelu>,
+    );
+    debouncedUpdatePerustelu(combinedParts);
+  };
 
   const content = isPerusteluLoading ? (
     <FullSpinner></FullSpinner>
@@ -57,53 +84,46 @@ const YleisetPerustelut = ({
     <>
       <VirallinenTutkinnonMyontaja
         perustelu={perustelu}
-        updatePerustelu={updatePerustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
       <VirallinenTutkinto
         perustelu={perustelu}
-        updatePerustelu={updatePerustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
-      <Lahde perustelu={perustelu} updatePerustelu={updatePerustelu} />
-      <Muistio
-        label={t(
-          'hakemus.perustelu.yleiset.muistio.selvitysTutkinnonMyontajastaJaVirallisuudesta',
-        )}
-        hakemus={hakemus}
-        sisainen={false}
-        hakemuksenOsa={'perustelut-yleiset--selvitys-tutkinnon-myontajasta'}
+      <Lahde
+        perustelu={perustelu}
+        updatePerustelu={updatePerusteluWithPartial}
+      />
+      <SelvitysTutkinnonMyontajastaJaVirallisuudesta
+        perustelu={perustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
       <YlimmanTutkinnonAsema
         perustelu={perustelu}
-        updatePerustelu={updatePerustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
-      <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio.selvitysTutkinnonAsemasta')}
-        hakemus={hakemus}
-        sisainen={false}
-        hakemuksenOsa={'perustelut-yleiset--selvitys-tutkinnon-asemasta'}
+      <SelvitysTutkinnonAsemasta
+        perustelu={perustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
-
       <TutkintokohtaisetTiedot
         hakemus={hakemus}
         updateHakemus={updateHakemus}
       />
-
       <OphTypography variant={'h2'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
       </OphTypography>
       <JatkoOpintoKelpoisuus
         perustelu={perustelu}
-        updatePerustelu={updatePerustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
       <AikaisemmatPaatokset
         perustelu={perustelu}
-        updatePerustelu={updatePerustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
-      <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio.muuPerustelu')}
-        hakemus={hakemus}
-        sisainen={false}
-        hakemuksenOsa={'perustelut-yleiset--muu-perustelu'}
+      <MuuPerustelu
+        perustelu={perustelu}
+        updatePerustelu={updatePerusteluWithPartial}
       />
     </>
   );

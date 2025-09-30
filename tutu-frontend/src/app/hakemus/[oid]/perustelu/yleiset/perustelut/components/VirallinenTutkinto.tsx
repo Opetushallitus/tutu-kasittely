@@ -11,7 +11,7 @@ import { Perustelu } from '@/src/lib/types/perustelu';
 
 interface Props {
   perustelu: Perustelu | undefined;
-  updatePerustelu: (perustelu: Perustelu) => void;
+  updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
 export const VirallinenTutkinto = ({
@@ -28,9 +28,7 @@ export const VirallinenTutkinto = ({
   const updateIsVirallinenTutkinto = (val: boolean | undefined) => {
     if (val !== isVirallinenTutkinto) {
       setIsVirallinenTutkinto(val);
-      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ...perustelu,
         virallinenTutkinto: val,
       });
     }

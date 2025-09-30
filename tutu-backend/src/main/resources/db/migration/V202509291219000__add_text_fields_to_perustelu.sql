@@ -38,24 +38,18 @@ AND
 -- Delete unnecessary muistio data
 DELETE FROM muistio
 WHERE
-  perustelu.hakemus_id = mu.hakemus_id
+  sisainen_huomio = FALSE
 AND
-  mu.sisainen_huomio = FALSE
-AND
-  mu.hakemuksen_osa = 'perustelut-yleiset--muu-perustelu';
+  hakemuksen_osa = 'perustelut-yleiset--muu-perustelu';
 
 DELETE FROM muistio
 WHERE
-  perustelu.hakemus_id = mu.hakemus_id
+  sisainen_huomio = FALSE
 AND
-  mu.sisainen_huomio = FALSE
-AND
-  mu.hakemuksen_osa = 'perustelut-yleiset--selvitys-tutkinnon-asemasta';
+  hakemuksen_osa = 'perustelut-yleiset--selvitys-tutkinnon-asemasta';
 
 DELETE FROM muistio
 WHERE
-  perustelu.hakemus_id = mu.hakemus_id
+  sisainen_huomio = FALSE
 AND
-  mu.sisainen_huomio = FALSE
-AND
-  mu.hakemuksen_osa = 'perustelut-yleiset--selvitys-tutkinnon-myontajasta';
+  hakemuksen_osa = 'perustelut-yleiset--selvitys-tutkinnon-myontajasta';

@@ -34,19 +34,19 @@ class PerusteluRepository extends BaseResultHandlers {
         lahdeLahtomaanVirallinenVastaus = r.nextBoolean(),
         lahdeKansainvalinenHakuteosTaiVerkkosivusto = r.nextBoolean(),
         selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = r.nextString(),
-        ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Option(r.nextString()),
+        ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = r.nextStringOption(),
         selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = r.nextString(),
         aikaisemmatPaatokset = r.nextBooleanOption(),
-        jatkoOpintoKelpoisuus = Option(r.nextString()),
-        jatkoOpintoKelpoisuusLisatieto = Option(r.nextString()),
+        jatkoOpintoKelpoisuus = r.nextStringOption(),
+        jatkoOpintoKelpoisuusLisatieto = r.nextStringOption(),
         muuPerustelu = r.nextString(),
         uoRoSisalto = Option(org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString())),
         lausuntoPyyntojenLisatiedot = r.nextStringOption(),
         lausunnonSisalto = r.nextStringOption(),
         luotu = Option(r.nextTimestamp().toLocalDateTime),
-        luoja = Option(r.nextString()),
+        luoja = r.nextStringOption(),
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        muokkaaja = Option(r.nextString())
+        muokkaaja = r.nextStringOption()
       )
     )
   }
