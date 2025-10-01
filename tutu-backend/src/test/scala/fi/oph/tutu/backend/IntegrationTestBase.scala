@@ -32,6 +32,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
 import java.io.FileNotFoundException
+import java.sql.DriverManager
 import java.time.{Duration, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.{Random, UUID}
@@ -129,6 +130,24 @@ class IntegrationTestBase {
       postgres.start()
       flyway.clean()
       flyway.migrate()
+    } else {
+      val conn = DriverManager.getConnection(postgres.getJdbcUrl, postgres.getUsername, postgres.getPassword)
+      val stmt = conn.createStatement()
+
+      val rs = stmt.executeQuery(
+        """
+          SELECT tablename FROM pg_tables
+          WHERE schemaname = 'public'
+          """
+      )
+
+      val tables = Iterator.continually(rs).takeWhile(_.next()).map(_.getString(1)).toList
+      tables.foreach { t =>
+        stmt.execute(s"TRUNCATE TABLE $t CASCADE;")
+      }
+
+      stmt.close()
+      conn.close()
     }
   }
 
