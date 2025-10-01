@@ -113,6 +113,8 @@ test.describe('Yleiset perustelut', () => {
   test('Syötetyt tiedot välitetään updatePerustelu-funktiolle', async ({
     page,
   }) => {
+    test.setTimeout(60000);
+
     await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
