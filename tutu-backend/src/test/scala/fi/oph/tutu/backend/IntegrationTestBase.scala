@@ -1,6 +1,11 @@
 package fi.oph.tutu.backend
 
 import fi.oph.tutu.backend.domain.*
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
 import fi.oph.tutu.backend.repository.{
@@ -8,6 +13,7 @@ import fi.oph.tutu.backend.repository.{
   EsittelijaRepository,
   HakemusRepository,
   MaakoodiRepository,
+  PaatosRepository,
   PerusteluRepository
 }
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
@@ -26,8 +32,10 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
 import java.io.FileNotFoundException
-import java.time.Duration
-import java.util.UUID
+import java.sql.DriverManager
+import java.time.{Duration, LocalDateTime}
+import java.time.format.DateTimeFormatter
+import java.util.{Random, UUID}
 import scala.io.Source
 
 class OphPostgresContainer(dockerImageName: String)
@@ -38,6 +46,7 @@ object IntegrationTestBase extends Object {
     .withDatabaseName("tutu")
     .withUsername("app")
     .withPassword("app")
+    .withReuse(true)
     .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
 
   @DynamicPropertySource
@@ -86,6 +95,9 @@ class IntegrationTestBase {
   @Autowired
   var perusteluRepository: PerusteluRepository = _
 
+  @Autowired
+  var paatosRepository: PaatosRepository = _
+
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   val POSTGRES_DATABASENAME = "tutu"
@@ -94,12 +106,25 @@ class IntegrationTestBase {
 
   val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
 
+  val PROTECTED_TABLES: Seq[String] =
+    Seq("flyway_schema_history", "virkailija_session", "virkailija_session_attributes", "virkailija_cas_client_session")
+
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
   @MockitoBean
   var ataruHakemusParser: AtaruHakemusParser = _
+
+  val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+  val javaTimeModule               = new JavaTimeModule()
+  javaTimeModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
+  javaTimeModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
+  mapper.registerModule(javaTimeModule)
+  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   @BeforeAll
   def startContainer(): Unit = {
@@ -108,13 +133,50 @@ class IntegrationTestBase {
       postgres.start()
       flyway.clean()
       flyway.migrate()
+    } else {
+      LOG.info("PostgreSQL container already running, clearing database")
+      val conn = DriverManager.getConnection(postgres.getJdbcUrl, postgres.getUsername, postgres.getPassword)
+      val stmt = conn.createStatement()
+
+      val rs = stmt.executeQuery(
+        """
+          SELECT tablename FROM pg_tables
+          WHERE schemaname = 'public'
+          """
+      )
+
+      val tables        = Iterator.continually(rs).takeWhile(_.next()).map(_.getString(1)).toList
+      val emptiedTables = tables.filterNot(PROTECTED_TABLES.contains(_))
+      emptiedTables.foreach { t =>
+        stmt.execute(s"TRUNCATE TABLE $t CASCADE;")
+      }
+
+      stmt.close()
+      conn.close()
     }
   }
 
-  @AfterAll
-  def teardown(): Unit = {
-    LOG.info("Shutting PostgreSQL container down")
-    postgres.stop()
+  val r = new Random()
+
+  def pick[T](items: Seq[T]): T = {
+    val index = r.nextInt(items.length)
+    items(index)
+  }
+
+  def pickBooleanOption: Option[Boolean] = {
+    pick(Seq(Some(true), Some(false)))
+  }
+
+  def pickBoolean: Boolean = {
+    pick(Seq(true, false))
+  }
+
+  def randomString: String = {
+    UUID.randomUUID().toString
+  }
+
+  def randomStringOption: Option[String] = {
+    Option(UUID.randomUUID().toString)
   }
 
   def initAtaruHakemusRequests(): Unit = {

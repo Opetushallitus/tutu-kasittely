@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.view.RedirectView
@@ -33,6 +34,7 @@ class Controller(
   muistioService: MuistioService,
   perusteluService: PerusteluService,
   koodistoService: KoodistoService,
+  paatosService: PaatosService,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
@@ -51,13 +53,6 @@ class Controller(
   mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
-
-  final val RESPONSE_200_DESCRIPTION =
-    "Pyyntö vastaanotettu"
-  final val RESPONSE_400_DESCRIPTION = "Pyyntö virheellinen"
-  final val RESPONSE_403_DESCRIPTION =
-    "Käyttäjällä ei ole tarvittavia oikeuksia hakemusten luontiin"
-  final val RESPONSE_500_DESCRIPTION = "Palvelinvirhe"
 
   @Value("${tutu.ui.url}")
   val tutuUiUrl: String = null
@@ -167,12 +162,24 @@ class Controller(
               ),
               "Hakemuspalvelu"
             )
-            .foreach((perustelu: Perustelu) => {
+            ._2
+            .foreach(perustelu => {
               auditLog.logCreate(
                 auditLog.getUser(request),
                 Map("perusteluId" -> perustelu.id.toString),
                 CreatePerustelu,
                 perustelu.toString
+              )
+            })
+          paatosService
+            .tallennaPaatos(hakemus.hakemusOid, PartialPaatos(), "Hakemuspalvelu")
+            ._2
+            .foreach((paatos: Paatos) => {
+              auditLog.logCreate(
+                auditLog.getUser(request),
+                Map("paatosId" -> paatos.id.toString),
+                CreatePaatos,
+                paatos.toString
               )
             })
           ResponseEntity.status(HttpStatus.OK).body(hakemusOid)
@@ -506,32 +513,26 @@ class Controller(
         user.userOid
       )
     } match {
-      case Success(result) => {
+      case Success(result) =>
         result match {
-          case None => {
+          case (vanhaPerustelu, Some(paivitettyPerustelu)) =>
+            auditLog.logChanges(
+              auditLog.getUser(request),
+              Map("hakemusOid" -> hakemusOid),
+              UpdatePerustelu,
+              AuditUtil.getChanges(
+                vanhaPerustelu.map(h => mapper.writeValueAsString(h)),
+                Some(mapper.writeValueAsString(paivitettyPerustelu))
+              )
+            )
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paivitettyPerustelu))
+          case _ =>
             LOG.warn(s"Perustelun tallennus epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(
               "Perustelun tallennus epäonnistui",
               HttpStatus.INTERNAL_SERVER_ERROR
             )
-          }
-          case Some(perustelu) => {
-            val params = mapper
-              .writeValueAsString(
-                Map(
-                  "perustelu" -> new String(perusteluBytes)
-                )
-              )
-            auditLog.logCreate(
-              auditLog.getUser(request),
-              Map("hakemusOid" -> hakemusOid),
-              CreatePerustelu,
-              params
-            )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(perustelu))
-          }
         }
-      }
       case Failure(e) => {
         LOG.error("Perustelun tallennus epäonnistui", e.getMessage)
         errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)

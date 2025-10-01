@@ -1,10 +1,5 @@
 package fi.oph.tutu.backend.controller
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.security.SecurityConstants
@@ -30,183 +25,160 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.{Random, UUID}
 
 val uuidTemplate1 = "11111111-2222-3333-4444-555555555555"
-val r             = new Random()
-
-def pick[T](items: Seq[T]): T = {
-  val index = r.nextInt(items.length)
-  items(index)
-}
-
-def pickBooleanOption: Option[Boolean] = {
-  pick(Seq(Some(true), Some(false)))
-}
-
-def pickBoolean: Boolean = {
-  pick(Seq(true, false))
-}
-
-def randomString: String = {
-  UUID.randomUUID().toString
-}
-
-def randomStringOption: Option[String] = {
-  Option(UUID.randomUUID().toString)
-}
-
-def pickTutkinnonAsema: Option[String] = {
-  pick(
-    Seq(
-      Some("alempi_korkeakouluaste"),
-      Some("ylempi_korkeakouluaste"),
-      Some("alempi_ja_ylempi_korkeakouluaste"),
-      Some("tutkijakoulutusaste"),
-      Some("ei_korkeakouluaste")
-    )
-  )
-}
-
-def pickJatkoOpintoKelpoisuus: Option[String] = {
-  pick(
-    Seq(
-      Some("toisen_vaiheen_korkeakouluopintoihin"),
-      Some("tieteellisiin_jatko-opintoihin"),
-      Some("muu")
-    )
-  )
-}
-
-def makePerustelu(
-  virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
-  virallinenTutkinto: Option[Boolean] = pickBooleanOption,
-  lahdeLahtomaanKansallinenLahde: Boolean = pickBoolean,
-  lahdeLahtomaanVirallinenVastaus: Boolean = pickBoolean,
-  lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
-  selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = randomString,
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
-  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString,
-  aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
-  jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
-  jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption,
-  lausuntoPyyntojenLisatiedot: Option[String] = None,
-  lausunnonSisalto: Option[String] = None,
-  lausuntoPyynnot: Seq[Lausuntopyynto] = Seq.empty
-): Perustelu = {
-  Perustelu(
-    None,
-    Option(UUID.fromString(uuidTemplate1)),
-    virallinenTutkinnonMyontaja,
-    virallinenTutkinto,
-    lahdeLahtomaanKansallinenLahde,
-    lahdeLahtomaanVirallinenVastaus,
-    lahdeKansainvalinenHakuteosTaiVerkkosivusto,
-    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
-    ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
-    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
-    aikaisemmatPaatokset,
-    jatkoOpintoKelpoisuus,
-    jatkoOpintoKelpoisuusLisatieto,
-    lausuntoPyyntojenLisatiedot,
-    lausunnonSisalto,
-    lausuntoPyynnot,
-    Option(LocalDateTime.now()),
-    Option("test user"),
-    Option(LocalDateTime.now()),
-    Option("test user")
-  )
-}
-
-def makePerusteluWithUoro(
-  virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
-  virallinenTutkinto: Option[Boolean] = pickBooleanOption,
-  lahdeLahtomaanKansallinenLahde: Boolean = pickBoolean,
-  lahdeLahtomaanVirallinenVastaus: Boolean = pickBoolean,
-  lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
-  selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = randomString,
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
-  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
-): Perustelu = {
-  makePerustelu().copy(
-    uoRoSisalto = Some(
-      UoRoSisalto(
-        Some(false),
-        Some(false),
-        Some(true),
-        Some(false),
-        Some(true),
-        Some(false),
-        Some(false),
-        Some(true),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(true),
-        Some("eipä vissii"),
-        Some(false),
-        Some(false),
-        Some(false),
-        Some(true),
-        Some(true),
-        Some("näin on"),
-        Some(true),
-        Some(false),
-        Some(true),
-        Some(true),
-        Some("ei voi"),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanneOpetettavatAineet(Some(false)),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanneKasvatustieteellinen(Some(false)),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanne(Some(false)),
-        SovellettuTilanne(Some(false)),
-        Some(true),
-        Some("se on just nii")
-      )
-    )
-  )
-}
-
-def makePerusteluWithLausuntotieto(): Perustelu = {
-  makePerustelu().copy(
-    lausuntoPyyntojenLisatiedot = Some(randomString),
-    lausunnonSisalto = Some(randomString),
-    lausuntopyynnot = Seq(
-      Lausuntopyynto(
-        lausunnonAntaja = Some(randomString),
-        lahetetty = Option(LocalDateTime.now()),
-        saapunut = Option(LocalDateTime.now())
-      ),
-      Lausuntopyynto(
-        lausunnonAntaja = Some(randomString),
-        lahetetty = None,
-        saapunut = None
-      ),
-      Lausuntopyynto(
-        lausunnonAntaja = Some(randomString),
-        lahetetty = Option(LocalDateTime.now()),
-        saapunut = None
-      ),
-      Lausuntopyynto(
-        lausunnonAntaja = Some(randomString),
-        lahetetty = None,
-        saapunut = Some(LocalDateTime.now())
-      )
-    )
-  )
-}
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
 class PerusteluControllerTest extends IntegrationTestBase {
+
+  def pickTutkinnonAsema: Option[String] = {
+    pick(
+      Seq(
+        Some("alempi_korkeakouluaste"),
+        Some("ylempi_korkeakouluaste"),
+        Some("alempi_ja_ylempi_korkeakouluaste"),
+        Some("tutkijakoulutusaste"),
+        Some("ei_korkeakouluaste")
+      )
+    )
+  }
+
+  def pickJatkoOpintoKelpoisuus: Option[String] = {
+    pick(
+      Seq(
+        Some("toisen_vaiheen_korkeakouluopintoihin"),
+        Some("tieteellisiin_jatko-opintoihin"),
+        Some("muu")
+      )
+    )
+  }
+
+  def makePerustelu(
+    virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
+    virallinenTutkinto: Option[Boolean] = pickBooleanOption,
+    lahdeLahtomaanKansallinenLahde: Boolean = pickBoolean,
+    lahdeLahtomaanVirallinenVastaus: Boolean = pickBoolean,
+    lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
+    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = randomString,
+    ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
+    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString,
+    aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
+    jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
+    jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption,
+    lausuntoPyyntojenLisatiedot: Option[String] = None,
+    lausunnonSisalto: Option[String] = None,
+    lausuntoPyynnot: Seq[Lausuntopyynto] = Seq.empty
+  ): Perustelu = {
+    Perustelu(
+      None,
+      Option(UUID.fromString(uuidTemplate1)),
+      virallinenTutkinnonMyontaja,
+      virallinenTutkinto,
+      lahdeLahtomaanKansallinenLahde,
+      lahdeLahtomaanVirallinenVastaus,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto,
+      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
+      aikaisemmatPaatokset,
+      jatkoOpintoKelpoisuus,
+      jatkoOpintoKelpoisuusLisatieto,
+      lausuntoPyyntojenLisatiedot,
+      lausunnonSisalto,
+      lausuntoPyynnot,
+      Option(LocalDateTime.now()),
+      Option("test user"),
+      Option(LocalDateTime.now()),
+      Option("test user")
+    )
+  }
+
+  def makePerusteluWithUoro(
+    virallinenTutkinnonMyontaja: Option[Boolean] = pickBooleanOption,
+    virallinenTutkinto: Option[Boolean] = pickBooleanOption,
+    lahdeLahtomaanKansallinenLahde: Boolean = pickBoolean,
+    lahdeLahtomaanVirallinenVastaus: Boolean = pickBoolean,
+    lahdeKansainvalinenHakuteosTaiVerkkosivusto: Boolean = pickBoolean,
+    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: String = randomString,
+    ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = pickTutkinnonAsema,
+    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString
+  ): Perustelu = {
+    makePerustelu().copy(
+      uoRoSisalto = Some(
+        UoRoSisalto(
+          Some(false),
+          Some(false),
+          Some(true),
+          Some(false),
+          Some(true),
+          Some(false),
+          Some(false),
+          Some(true),
+          Some(false),
+          Some(false),
+          Some(false),
+          Some(false),
+          Some(true),
+          Some("eipä vissii"),
+          Some(false),
+          Some(false),
+          Some(false),
+          Some(true),
+          Some(true),
+          Some("näin on"),
+          Some(true),
+          Some(false),
+          Some(true),
+          Some(true),
+          Some("ei voi"),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanneOpetettavatAineet(Some(false)),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanneKasvatustieteellinen(Some(false)),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanne(Some(false)),
+          SovellettuTilanne(Some(false)),
+          Some(true),
+          Some("se on just nii")
+        )
+      )
+    )
+  }
+
+  def makePerusteluWithLausuntotieto(): Perustelu = {
+    makePerustelu().copy(
+      lausuntoPyyntojenLisatiedot = Some(randomString),
+      lausunnonSisalto = Some(randomString),
+      lausuntopyynnot = Seq(
+        Lausuntopyynto(
+          lausunnonAntaja = Some(randomString),
+          lahetetty = Option(LocalDateTime.now()),
+          saapunut = Option(LocalDateTime.now())
+        ),
+        Lausuntopyynto(
+          lausunnonAntaja = Some(randomString),
+          lahetetty = None,
+          saapunut = None
+        ),
+        Lausuntopyynto(
+          lausunnonAntaja = Some(randomString),
+          lahetetty = Option(LocalDateTime.now()),
+          saapunut = None
+        ),
+        Lausuntopyynto(
+          lausunnonAntaja = Some(randomString),
+          lahetetty = None,
+          saapunut = Some(LocalDateTime.now())
+        )
+      )
+    )
+  }
 
   @Autowired
   private val context: WebApplicationContext = null
@@ -226,16 +198,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   private var auditLog: AuditLog = _
-
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-
-  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-  val javaTimeModule               = new JavaTimeModule()
-  javaTimeModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
-  javaTimeModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
-  mapper.registerModule(javaTimeModule)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
   var hakemusId: Option[UUID] = None
@@ -343,7 +305,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
       .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 
   @Test
@@ -407,7 +369,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 
   @Test
@@ -449,7 +411,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 
   @Test
@@ -509,7 +471,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 
   @Test
@@ -543,7 +505,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
       .andExpect(jsonPath("$.uoRoSisalto").isEmpty)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 
   @Test
@@ -621,6 +583,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePerustelu), any())
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
 }

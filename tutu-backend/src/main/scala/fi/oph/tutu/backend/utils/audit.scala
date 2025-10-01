@@ -98,9 +98,9 @@ class AuditLog(val logger: Logger) {
     val authentication: Authentication =
       SecurityContextHolder.getContext().getAuthentication()
     if (authentication != null) {
-      try
+      try {
         new Oid(authentication.getName())
-      catch {
+      } catch {
         case e: Exception =>
           errorLogger.error(
             s"Käyttäjän oidin luonti epäonnistui: ${authentication.getName}"
@@ -195,6 +195,22 @@ object AuditOperation {
 
   case object ReadVanhaTutu extends AuditOperation {
     val name = "VANHA_TUTU_LUKU"
+  }
+
+  case object UpdatePerustelu extends AuditOperation {
+    val name = "PERUSTELUN_PAIVITYS"
+  }
+
+  case object CreatePaatos extends AuditOperation {
+    val name = "PAATOKSEN_LUONTI"
+  }
+
+  case object UpdatePaatos extends AuditOperation {
+    val name = "PAATOKSEN_MUOKKAUS"
+  }
+
+  case object ReadPaatos extends AuditOperation {
+    val name = "PAATOKSEN_LUKU"
   }
 }
 

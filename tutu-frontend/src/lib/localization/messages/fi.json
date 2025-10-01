@@ -355,6 +355,21 @@
         "lausunto": "Lausunto",
         "sisalto": "Lausunnon sisältö"
       }
+    },
+    "paatos": {
+      "otsikko": "Päätöstiedot",
+      "esikatselu": "Esikatsele päätöstekstiä",
+      "hyvaksymisPaiva": "Hyväksymispäivä",
+      "ratkaisuJaPaatos": "Ratkaisu ja päätös",
+      "seut": "SEUT-arviointi tehty",
+      "ratkaisutyyppi": {
+        "otsikko": "Ratkaisutyyppi",
+        "paatos": "Päätös",
+        "peruutusTaiRaukeaminen": "Peruutus tai raukeaminen",
+        "oikaisu": "Oikaisu",
+        "jatetaanTutkimatta": "Jätetään tutkimatta",
+        "siirto": "Siirto"
+      }
     }
   },
   "hakemusotsikko": {
@@ -403,7 +418,8 @@
     "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
     "maakoodi": "Virhe maakoodien lataamisessa",
     "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui",
-    "liitteidenLataus": "Liitteiden lataamisessa tapahtui virhe."
+    "liitteidenLataus": "Liitteiden lataamisessa tapahtui virhe.",
+    "paatoksenLataus": "Päätöstietojen lataamisessa tapahtui virhe."
   },
   "yleiset": {
     "poista": "Poista",

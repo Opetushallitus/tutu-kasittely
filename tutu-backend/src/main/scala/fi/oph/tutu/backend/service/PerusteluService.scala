@@ -38,11 +38,11 @@ class PerusteluService(
     hakemusOid: HakemusOid,
     partialPerustelu: PartialPerustelu,
     luojaTaiMuokkaaja: String
-  ): Option[Perustelu] = {
-    hakemusRepository
-      .haeHakemus(hakemusOid)
-      .flatMap((dbHakemus: DbHakemus) => {
-        val currentPerustelu     = perusteluRepository.haePerustelu(dbHakemus.id)
+  ): (Option[Perustelu], Option[Perustelu]) = {
+    val dbHakemus        = hakemusRepository.haeHakemus(hakemusOid)
+    val currentPerustelu = dbHakemus.flatMap(h => perusteluRepository.haePerustelu(h.id))
+    val newPerustelu     = dbHakemus match {
+      case Some(dbHakemus) =>
         val latestSavedPerustelu = currentPerustelu match {
           case Some(existing) if partialPerustelu.topLevelFieldsModified() =>
             perusteluRepository.tallennaPerustelu(dbHakemus.id, existing.mergeWith(partialPerustelu), luojaTaiMuokkaaja)
@@ -60,7 +60,7 @@ class PerusteluService(
             .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, partialPerustelu.lausuntopyynnot) match {
             case LausuntopyyntoModifyData(uudet, muutetut, poistetut) =>
               LausuntopyyntoModifyData(uudet, muutetut, poistetut)
-            case _ => LausuntopyyntoModifyData()
+            case null => LausuntopyyntoModifyData()
           }
 
         perusteluRepository.suoritaLausuntopyyntojenModifiointi(
@@ -81,6 +81,8 @@ class PerusteluService(
                 latestSavedPerustelu.lausuntopyynnot
           )
         )
-      })
+      case _ => None
+    }
+    (currentPerustelu, newPerustelu)
   }
 }

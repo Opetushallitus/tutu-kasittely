@@ -16,15 +16,12 @@ import scala.util.{Failure, Success}
 
 @Component
 @Repository
-class PerusteluRepository {
+class PerusteluRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[PerusteluRepository])
-
-  implicit val getUUIDResult: GetResult[UUID] =
-    GetResult(r => UUID.fromString(r.nextString()))
 
   implicit val getPerusteluResult: GetResult[Perustelu] = {
     GetResult(r =>

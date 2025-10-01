@@ -1,8 +1,5 @@
 package fi.oph.tutu.backend.controller
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
@@ -103,11 +100,6 @@ class ControllerTest extends IntegrationTestBase {
           )
         )
       )
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-  mapper.registerModule(new JavaTimeModule)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   def updateHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus): Hakemus = {
     mockMvc
