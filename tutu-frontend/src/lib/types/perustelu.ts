@@ -4,8 +4,8 @@ import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 export type Perustelu = {
   id: string;
   hakemusId: string;
-  virallinenTutkinnonMyontaja?: boolean | undefined;
-  virallinenTutkinto?: boolean | undefined;
+  virallinenTutkinnonMyontaja?: boolean | undefined | null;
+  virallinenTutkinto?: boolean | undefined | null;
   lahdeLahtomaanKansallinenLahde: boolean;
   lahdeLahtomaanVirallinenVastaus: boolean;
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: boolean;

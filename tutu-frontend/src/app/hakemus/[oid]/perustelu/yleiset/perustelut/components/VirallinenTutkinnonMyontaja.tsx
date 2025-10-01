@@ -22,9 +22,11 @@ export const VirallinenTutkinnonMyontaja = ({
   const theme = useTheme();
 
   const [isVirallinenTutkinnonMyontaja, setIsVirallinenTutkinnonMyontaja] =
-    useState<boolean | undefined>();
+    useState<boolean | undefined | null>();
 
-  const updateIsVirallinenTutkinnonMyontaja = (val: boolean | undefined) => {
+  const updateIsVirallinenTutkinnonMyontaja = (
+    val: boolean | undefined | null,
+  ) => {
     if (val !== isVirallinenTutkinnonMyontaja) {
       setIsVirallinenTutkinnonMyontaja(val);
       updatePerustelu({
@@ -43,7 +45,7 @@ export const VirallinenTutkinnonMyontaja = ({
     <Link
       data-testid={`virallinen-tutkinnon-myontaja__none`}
       href=""
-      onClick={() => updateIsVirallinenTutkinnonMyontaja(undefined)}
+      onClick={() => updateIsVirallinenTutkinnonMyontaja(null)}
     >
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>

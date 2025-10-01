@@ -22,10 +22,10 @@ export const VirallinenTutkinto = ({
   const theme = useTheme();
 
   const [isVirallinenTutkinto, setIsVirallinenTutkinto] = useState<
-    boolean | undefined
+    boolean | undefined | null
   >();
 
-  const updateIsVirallinenTutkinto = (val: boolean | undefined) => {
+  const updateIsVirallinenTutkinto = (val: boolean | undefined | null) => {
     if (val !== isVirallinenTutkinto) {
       setIsVirallinenTutkinto(val);
       updatePerustelu({
@@ -42,7 +42,7 @@ export const VirallinenTutkinto = ({
     <Link
       data-testid={`virallinen-tutkinto__none`}
       href=""
-      onClick={() => updateIsVirallinenTutkinto(undefined)}
+      onClick={() => updateIsVirallinenTutkinto(null)}
     >
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>
