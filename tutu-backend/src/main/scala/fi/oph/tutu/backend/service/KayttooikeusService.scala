@@ -13,6 +13,8 @@ import org.springframework.cache.annotation.{CacheEvict, CachePut}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
+import scala.jdk.CollectionConverters.*
+
 case class PersonOids(personOids: Seq[String])
 
 case class KayttooikeusServiceException(message: String = "", cause: Throwable = null)
@@ -35,9 +37,6 @@ class KayttooikeusService(
   @Value("${tutu-backend.cas.password}")
   val cas_password: String = null
 
-  @Value("${tutu-backend.esittelija.kayttooikeusryhma.ids}")
-  val esittelija_kayttooikeusryhma_ids: String = null
-
   @Autowired
   val cacheManager: CacheManager = null
 
@@ -59,8 +58,35 @@ class KayttooikeusService(
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
 
+  private def haeEsittelijaKayttooikeusRyhmat: Either[Throwable, Seq[Int]] = {
+    var esittelija_ids = Seq.empty[Int]
+
+    httpService.post(
+      kayttooikeusCasClient,
+      s"$opintopolku_virkailija_domain/kayttooikeus-service/kayttooikeusryhma/ryhmasByKayttooikeus",
+      """{"TUTU": "ESITTELIJA"}"""
+    ) match {
+      case Left(error: Throwable)  => Left(KayttooikeusServiceException("", error))
+      case Right(response: String) =>
+        try {
+          val node = mapper.readTree(response)
+          esittelija_ids = node.elements().asScala.map(_.get("id").asInt()).toSeq
+          Right(esittelija_ids)
+        } catch {
+          case e: Exception =>
+            LOG.error("Error parsing IDs from kayttooikeusryhma response", e)
+            Left(e)
+        }
+    }
+  }
+
   def haeEsittelijat: Either[Throwable, Seq[String]] = {
-    val ids: Seq[String] = esittelija_kayttooikeusryhma_ids.split(",").toSeq
+    val ids: Seq[Int] = haeEsittelijaKayttooikeusRyhmat match {
+      case Left(error) =>
+        LOG.error("Error fetching esittelija kayttooikeusryhma IDs", error)
+        return Left(KayttooikeusServiceException("", error))
+      case Right(ids) => ids
+    }
     var esittelija_oidit = Seq.empty[String]
 
     ids.foreach { kayttooikeusRyhmaId =>

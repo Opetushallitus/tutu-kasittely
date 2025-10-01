@@ -53,24 +53,22 @@ export const KaikkiSelvityksetSaatu = ({
         }}
         data-testid={'kaikki-selvitykset-saatu'}
       />
-      {selvityksetSaatu && (
-        <CalendarComponent
-          selectedValue={viimeinenAsiakirjaHakijalta}
-          setDate={(value) => {
-            if (value) {
-              setViimeinenAsiakirjaHakijalta(value);
-              updateAsiakirjaTieto({
-                viimeinenAsiakirjaHakijalta: dateFns.format(
-                  value,
-                  "yyyy-MM-dd'T'HH:mm",
-                ),
-              });
-            }
-          }}
-          label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
-          dataTestId={'viimeinen-asiakirja-hakijalta'}
-        />
-      )}
+      <CalendarComponent
+        selectedValue={viimeinenAsiakirjaHakijalta}
+        setDate={(value) => {
+          if (value) {
+            setViimeinenAsiakirjaHakijalta(value);
+            updateAsiakirjaTieto({
+              viimeinenAsiakirjaHakijalta: dateFns.format(
+                value,
+                "yyyy-MM-dd'T'HH:mm",
+              ),
+            });
+          }
+        }}
+        label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
+        dataTestId={'viimeinen-asiakirja-hakijalta'}
+      />
     </>
   );
 };

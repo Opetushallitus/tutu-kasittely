@@ -10,9 +10,7 @@ const matchUpdate = (url: string, method: string) =>
   url.includes('/perustelu/1.2.246.562.10.00000000001') && method === 'POST';
 
 const matchingDate = () => {
-  const testDate = new Date();
-  testDate.setDate(26);
-  testDate.setHours(0, 0);
+  const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
   return dateFns.format(testDate, DATE_TIME_STANDARD_PLACEHOLDER);
 };
 

@@ -244,7 +244,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
     ])
       .with([P._, P.not(P.nullish), P._], ([, newVal]) => newVal)
       .with([P.not(P.nullish), P.nullish, P._], ([origVal]) => origVal)
-      .with([P.nullish, P.nullish, P.not(P.nullish)], () => false)
+      .with([P.nullish, P.nullish, P.not(P.nullish)], () => true)
       .with([P.nullish, P.nullish, P.nullish], () => undefined)
       .exhaustive();
 

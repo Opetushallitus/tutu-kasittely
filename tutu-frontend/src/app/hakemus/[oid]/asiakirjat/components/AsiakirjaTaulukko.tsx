@@ -26,15 +26,7 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import * as dateFns from 'date-fns';
-
-const NoWrap = styled('div')(() => ({
-  textWrap: 'nowrap',
-}));
-
-const GrayNoWrap = styled('div')(() => ({
-  textWrap: 'nowrap',
-  color: ophColors.grey600,
-}));
+import { OphTypography } from '@opetushallitus/oph-design-system';
 
 const UusiBadge = styled(Chip)(() => ({
   color: ophColors.green1,
@@ -49,79 +41,6 @@ export type AsiakirjaTaulukkoData = {
   metadata?: AsiakirjaMetadata;
   liitteenTila?: TarkistuksenTila;
 };
-
-export const AsiakirjaTaulukko = ({
-  asiakirjat,
-}: {
-  asiakirjat: AsiakirjaTaulukkoData[];
-}) => {
-  return (
-    <Table>
-      <AsiakirjaTableHeader />
-      <TableBody>
-        {asiakirjat.map((data) => (
-          <AsiakirjaTableRow key={data.key} data={data} />
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
-const AsiakirjaTableHeader = () => {
-  const { t } = useTranslations();
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell style={{ width: '50%' }}>
-          {t('hakemus.asiakirjat.asiakirja')}
-        </TableCell>
-        <TableCell>{t('hakemus.asiakirjat.saapunut')}</TableCell>
-        <TableCell>
-          {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
-        </TableCell>
-      </TableRow>
-    </TableHead>
-  );
-};
-
-const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
-  const { t } = useTranslations();
-  const theme = useTheme();
-  return (
-    <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
-      <TableCell>
-        <Stack>
-          <NoWrap className="asiakirja-row__otsake">
-            {lomakeOtsake(data.asiakirja)}
-          </NoWrap>
-          <GrayNoWrap className="asiakirja-row__tiedostonimi">
-            {tiedostoNimi(data.metadata)}
-          </GrayNoWrap>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" gap={theme.spacing(1)}>
-          <NoWrap className="asiakirja-row__saapumisaika">
-            {saapumisAika(data.saapumisaika)}
-          </NoWrap>
-          {uusiLiite(t, data)}
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" gap={theme.spacing(1)}>
-          {tarkistuksenTilaIcon(data)}
-          <NoWrap className="asiakirja-row__tarkistuksen-tila">
-            {tarkistuksenTila(t, data)}
-          </NoWrap>
-        </Stack>
-      </TableCell>
-    </TableRow>
-  );
-};
-
-/* ----------------------------------------- */
-/* Funktiot tietojen hakemiseen asiakirjasta */
 
 const lomakeOtsake = (asiakirja: SisaltoValue) => {
   const rootPath = pathToRoot(asiakirja);
@@ -190,4 +109,81 @@ const pathToRoot = (value: SisaltoValue): SisaltoPathNode[] => {
   }
 
   return path;
+};
+
+const AsiakirjaTableHeader = () => {
+  const { t } = useTranslations();
+
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ width: '75%' }}>
+          {t('hakemus.asiakirjat.asiakirja')}
+        </TableCell>
+        <TableCell sx={{ width: '20%' }}>
+          {t('hakemus.asiakirjat.saapunut')}
+        </TableCell>
+        <TableCell sx={{ width: '15%' }}>
+          {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
+        </TableCell>
+      </TableRow>
+    </TableHead>
+  );
+};
+
+const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
+  const { t } = useTranslations();
+  const theme = useTheme();
+  return (
+    <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
+      <TableCell>
+        <Stack sx={{ width: '100%' }} gap={theme.spacing(1)}>
+          <OphTypography className="asiakirja-row__otsake">
+            {lomakeOtsake(data.asiakirja)}
+          </OphTypography>
+          <OphTypography
+            className="asiakirja-row__tiedostonimi"
+            sx={{
+              color: ophColors.grey600,
+            }}
+          >
+            {tiedostoNimi(data.metadata)}
+          </OphTypography>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" gap={theme.spacing(1)}>
+          <OphTypography className="asiakirja-row__saapumisaika">
+            {saapumisAika(data.saapumisaika)}
+          </OphTypography>
+          {uusiLiite(t, data)}
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" gap={theme.spacing(1)}>
+          {tarkistuksenTilaIcon(data)}
+          <OphTypography className="asiakirja-row__tarkistuksen-tila">
+            {tarkistuksenTila(t, data)}
+          </OphTypography>
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+};
+
+export const AsiakirjaTaulukko = ({
+  asiakirjat,
+}: {
+  asiakirjat: AsiakirjaTaulukkoData[];
+}) => {
+  return (
+    <Table style={{ tableLayout: 'fixed', width: '100%' }}>
+      <AsiakirjaTableHeader />
+      <TableBody>
+        {asiakirjat.map((data) => (
+          <AsiakirjaTableRow key={data.key} data={data} />
+        ))}
+      </TableBody>
+    </Table>
+  );
 };
