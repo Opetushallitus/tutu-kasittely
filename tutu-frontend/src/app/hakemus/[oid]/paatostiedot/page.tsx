@@ -116,6 +116,7 @@ const Paatostiedot = ({
         onChange={() => {
           updatePaatosField({ seutArviointi: !currentPaatos.seutArviointi });
         }}
+        data-testid={'paatos-seut'}
       />
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
