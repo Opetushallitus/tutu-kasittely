@@ -106,6 +106,9 @@ class IntegrationTestBase {
 
   val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
 
+  val PROTECTED_TABLES: Seq[String] =
+    Seq("flyway_schema_history", "virkailija_session", "virkailija_session_attributes", "virkailija_cas_client_session")
+
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
   @MockitoBean
@@ -131,6 +134,7 @@ class IntegrationTestBase {
       flyway.clean()
       flyway.migrate()
     } else {
+      LOG.info("PostgreSQL container already running, clearing database")
       val conn = DriverManager.getConnection(postgres.getJdbcUrl, postgres.getUsername, postgres.getPassword)
       val stmt = conn.createStatement()
 
@@ -141,8 +145,9 @@ class IntegrationTestBase {
           """
       )
 
-      val tables = Iterator.continually(rs).takeWhile(_.next()).map(_.getString(1)).toList
-      tables.foreach { t =>
+      val tables        = Iterator.continually(rs).takeWhile(_.next()).map(_.getString(1)).toList
+      val emptiedTables = tables.filterNot(PROTECTED_TABLES.contains(_))
+      emptiedTables.foreach { t =>
         stmt.execute(s"TRUNCATE TABLE $t CASCADE;")
       }
 
