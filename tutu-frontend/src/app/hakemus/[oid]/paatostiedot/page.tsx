@@ -15,10 +15,14 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
-import { PaatosUpdateCallback } from '@/src/lib/types/paatos';
+import {
+  Paatos,
+  PaatosUpdateCallback,
+  Ratkaisutyyppi,
+} from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 
-const ratkaisutyypit = (t: TFunction) => [
+const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
   {
     value: 'PeruutusTaiRaukeaminen',
@@ -53,7 +57,7 @@ export default function PaatostiedotPage() {
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
   }, [addToast, hakemusError, paatosError, t]);
 
-  if (hakemusError || paatosError) {
+  if (hakemusError || paatosError || !paatos) {
     return null;
   }
 
@@ -121,10 +125,12 @@ const Paatostiedot = ({
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
-        options={ratkaisutyypit(t)}
+        options={ratkaisutyyppiOptions(t)}
         value={currentPaatos.ratkaisutyyppi || ''}
         onChange={(event) =>
-          updatePaatosField({ ratkaisutyyppi: event.target.value })
+          updatePaatosField({
+            ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
+          })
         }
         data-testid={'paatos-ratkaisutyyppi'}
       />

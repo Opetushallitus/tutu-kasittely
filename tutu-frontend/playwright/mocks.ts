@@ -5,6 +5,7 @@ import { sortBy } from 'remeda';
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import _sisalto from './fixtures/hakemus1/_sisalto.json';
 import { Language } from '@/src/lib/localization/localizationTypes';
+import { getPaatos } from '@/playwright/fixtures/paatos1';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   mockInit(page);
@@ -314,5 +315,20 @@ export const mockPerustelu = (page: Page) => {
         uoRoSisalto: {},
       }),
     });
+  });
+};
+
+export const mockPaatos = (page: Page) => {
+  return page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
+    const paatos = getPaatos();
+    if (route.request().method() === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...paatos,
+        }),
+      });
+    }
   });
 };
