@@ -45,6 +45,7 @@ object IntegrationTestBase extends Object {
     .withDatabaseName("tutu")
     .withUsername("app")
     .withPassword("app")
+    .withReuse(true)
     .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
 
   @DynamicPropertySource
