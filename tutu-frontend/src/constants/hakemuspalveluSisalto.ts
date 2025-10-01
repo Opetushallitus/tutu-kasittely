@@ -48,8 +48,15 @@ export const muutTutkinnot: HakemuspalveluSisaltoId = createId(
   '142b4364-1b26-4c95-a98c-d500edf2fcfa',
   'muut-tutkinnot',
 );
+export const mitaHaetaan: HakemuspalveluSisaltoId = createId(
+  '68afefd2-daff-4d74-857c-1736a54eab1b',
+  'mita-haetaan',
+);
 
 export const perustietoOsiot = [
+  mitaHaetaan,
+  ylinTutkinto,
+  alemmatTutkinnot,
   tutkintoTaiKoulutus,
   paatosJaAsiointikieli,
   createId(
