@@ -114,7 +114,7 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
       .vastaavuus,
-  ).toEqual(false);
+  ).toEqual(true);
 
   [request] = await Promise.all([
     page.waitForRequest(

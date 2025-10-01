@@ -115,18 +115,18 @@ const AsiakirjaTableHeader = () => {
   const { t } = useTranslations();
 
   return (
-    <TableHead style={{ width: '100%' }}>
-      {/*<TableRow>*/}
-      <TableCell style={{ width: '60%' }}>
-        {t('hakemus.asiakirjat.asiakirja')}
-      </TableCell>
-      <TableCell style={{ width: '20%' }}>
-        {t('hakemus.asiakirjat.saapunut')}
-      </TableCell>
-      <TableCell style={{ width: '20%' }}>
-        {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
-      </TableCell>
-      {/*</TableRow>*/}
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ width: '75%' }}>
+          {t('hakemus.asiakirjat.asiakirja')}
+        </TableCell>
+        <TableCell sx={{ width: '20%' }}>
+          {t('hakemus.asiakirjat.saapunut')}
+        </TableCell>
+        <TableCell sx={{ width: '15%' }}>
+          {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
+        </TableCell>
+      </TableRow>
     </TableHead>
   );
 };
@@ -136,7 +136,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
   const theme = useTheme();
   return (
     <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
-      <TableCell style={{ width: '5%' }} data-testid="asiakirja-row-cell">
+      <TableCell>
         <Stack sx={{ width: '100%' }} gap={theme.spacing(1)}>
           <OphTypography className="asiakirja-row__otsake">
             {lomakeOtsake(data.asiakirja)}
