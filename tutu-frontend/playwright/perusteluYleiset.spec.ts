@@ -115,9 +115,6 @@ test.describe('Yleiset perustelut', () => {
   }) => {
     await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
       if (route.request().method() === 'POST') {
-        console.log('');
-        console.log(route.request().postDataJSON());
-        console.log('');
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
