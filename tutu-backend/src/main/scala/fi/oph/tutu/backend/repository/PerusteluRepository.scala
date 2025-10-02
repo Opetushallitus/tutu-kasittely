@@ -39,7 +39,7 @@ class PerusteluRepository extends BaseResultHandlers {
         aikaisemmatPaatokset = r.nextBooleanOption(),
         jatkoOpintoKelpoisuus = r.nextStringOption(),
         jatkoOpintoKelpoisuusLisatieto = r.nextStringOption(),
-        muuPerustelu = r.nextString(),
+        muuPerustelu = r.nextStringOption(),
         uoRoSisalto = Option(org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString())),
         lausuntoPyyntojenLisatiedot = r.nextStringOption(),
         lausunnonSisalto = r.nextStringOption(),

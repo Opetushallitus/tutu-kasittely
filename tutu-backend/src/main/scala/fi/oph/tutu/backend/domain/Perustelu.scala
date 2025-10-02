@@ -17,7 +17,7 @@ case class Perustelu(
   aikaisemmatPaatokset: Option[Boolean] = None,
   jatkoOpintoKelpoisuus: Option[String] = None,
   jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
-  muuPerustelu: String = "",
+  muuPerustelu: Option[String] = None,
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
@@ -51,7 +51,7 @@ case class Perustelu(
       jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
       muuPerustelu = partial.muuPerustelu
-        .getOrElse(this.muuPerustelu),
+        .orElse(this.muuPerustelu),
       uoRoSisalto = partial.uoRoSisalto.orElse(this.uoRoSisalto),
       lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
       lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto)
