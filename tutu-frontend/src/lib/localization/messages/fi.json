@@ -228,10 +228,7 @@
           "lausunto": "Lausuntotiedot"
         },
         "muistio": {
-          "selvitysTutkinnonAsemasta": "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä",
-          "selvitysTutkinnonMyontajastaJaVirallisuudesta": "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta",
-          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)",
-          "muuPerustelu": "Ratkaisun tai päätöksen muut perustelut"
+          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)"
         },
         "perustelut": {
           "lahde": {
@@ -242,6 +239,7 @@
           },
           "virallinenTutkinnonMyontaja": "Virallinen tutkinnon myöntäjä ",
           "virallinenTutkinto": "Virallinen tutkinto",
+          "selvitysTutkinnonMyontajastaJaVirallisuudesta": "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta",
           "ylimmanTutkinnonAsema": {
             "otsikko": "Ylimmän tutkinnon asema lähtömaan järjestelmässä",
             "alempi_korkeakouluaste": "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto",
@@ -249,7 +247,9 @@
             "alempi_ja_ylempi_korkeakouluaste": "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot",
             "tutkijakoulutusaste": "Tieteellinen jatkotutkinto",
             "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
-          }
+          },
+          "selvitysTutkinnonAsemasta": "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä",
+          "muuPerustelu": "Ratkaisun tai päätöksen muut perustelut"
         },
         "tutkinnot": {
           "tutkintoOtsake": "Tutkinto {jarjestys}",

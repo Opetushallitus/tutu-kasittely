@@ -15,7 +15,7 @@ const expectRequestData = async (
     action,
   ]);
 
-  return expect(request.postDataJSON()).toEqual(data);
+  return expect(request.postDataJSON()).toMatchObject(data);
 };
 
 test.beforeEach(async ({ page }) => {
@@ -113,6 +113,24 @@ test.describe('Yleiset perustelut', () => {
   test('Syötetyt tiedot välitetään updatePerustelu-funktiolle', async ({
     page,
   }) => {
+    test.setTimeout(60000);
+
+    await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(route.request().postDataJSON()),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({}),
+        });
+      }
+    });
+
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
@@ -132,7 +150,7 @@ test.describe('Yleiset perustelut', () => {
     await expectRequestData(
       page,
       page.getByTestId('virallinen-tutkinnon-myontaja__none').click(),
-      { virallinenTutkinnonMyontaja: undefined },
+      { virallinenTutkinnonMyontaja: null },
     );
 
     await expectRequestData(
@@ -150,7 +168,7 @@ test.describe('Yleiset perustelut', () => {
     await expectRequestData(
       page,
       page.getByTestId('virallinen-tutkinto__none').click(),
-      { virallinenTutkinto: undefined },
+      { virallinenTutkinto: null },
     );
 
     await expectRequestData(

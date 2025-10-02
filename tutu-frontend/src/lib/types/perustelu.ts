@@ -4,8 +4,8 @@ import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 export type Perustelu = {
   id: string;
   hakemusId: string;
-  virallinenTutkinnonMyontaja?: boolean | undefined;
-  virallinenTutkinto?: boolean | undefined;
+  virallinenTutkinnonMyontaja?: boolean | null;
+  virallinenTutkinto?: boolean | null;
   lahdeLahtomaanKansallinenLahde: boolean;
   lahdeLahtomaanVirallinenVastaus: boolean;
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: boolean;
@@ -17,9 +17,10 @@ export type Perustelu = {
   muokattu?: string;
   muokkaaja?: string;
   uoRoSisalto?: UoRoSisalto;
-  jatkoOpintoKelpoisuus?: string | undefined;
-  jatkoOpintoKelpoisuusLisatieto?: string | undefined;
-  aikaisemmatPaatokset?: boolean | undefined;
+  jatkoOpintoKelpoisuus?: string;
+  jatkoOpintoKelpoisuusLisatieto?: string;
+  muuPerustelu?: string;
+  aikaisemmatPaatokset?: boolean;
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];

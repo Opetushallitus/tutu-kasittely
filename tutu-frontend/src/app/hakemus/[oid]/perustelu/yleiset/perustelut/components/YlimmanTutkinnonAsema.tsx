@@ -7,7 +7,7 @@ import { Perustelu } from '@/src/lib/types/perustelu';
 
 interface Props {
   perustelu: Perustelu | undefined;
-  updatePerustelu: (perustelu: Perustelu) => void;
+  updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
 export const YlimmanTutkinnonAsema = ({
@@ -24,9 +24,7 @@ export const YlimmanTutkinnonAsema = ({
   const updateYlimmanTutkinnonAsema = (val: string | undefined) => {
     if (val !== ylimmanTutkinnonAsema) {
       setYlimmanTutkinnonAsema(val);
-      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ...perustelu,
         ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: val,
       });
     }

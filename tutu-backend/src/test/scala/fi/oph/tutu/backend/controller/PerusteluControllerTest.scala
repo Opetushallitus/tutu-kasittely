@@ -69,6 +69,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
     jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
     jatkoOpintoKelpoisuusLisatieto: Option[String] = randomStringOption,
+    muuPerustelu: Option[String] = None,
     lausuntoPyyntojenLisatiedot: Option[String] = None,
     lausunnonSisalto: Option[String] = None,
     lausuntoPyynnot: Seq[Lausuntopyynto] = Seq.empty
@@ -87,6 +88,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       aikaisemmatPaatokset,
       jatkoOpintoKelpoisuus,
       jatkoOpintoKelpoisuusLisatieto,
+      muuPerustelu,
       lausuntoPyyntojenLisatiedot,
       lausunnonSisalto,
       lausuntoPyynnot,

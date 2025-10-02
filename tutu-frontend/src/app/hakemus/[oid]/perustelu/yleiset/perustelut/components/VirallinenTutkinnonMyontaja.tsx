@@ -11,7 +11,7 @@ import { Perustelu } from '@/src/lib/types/perustelu';
 
 interface Props {
   perustelu: Perustelu | undefined;
-  updatePerustelu: (perustelu: Perustelu) => void;
+  updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
 export const VirallinenTutkinnonMyontaja = ({
@@ -22,14 +22,14 @@ export const VirallinenTutkinnonMyontaja = ({
   const theme = useTheme();
 
   const [isVirallinenTutkinnonMyontaja, setIsVirallinenTutkinnonMyontaja] =
-    useState<boolean | undefined>();
+    useState<boolean | undefined | null>();
 
-  const updateIsVirallinenTutkinnonMyontaja = (val: boolean | undefined) => {
+  const updateIsVirallinenTutkinnonMyontaja = (
+    val: boolean | undefined | null,
+  ) => {
     if (val !== isVirallinenTutkinnonMyontaja) {
       setIsVirallinenTutkinnonMyontaja(val);
-      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ...perustelu,
         virallinenTutkinnonMyontaja: val,
       });
     }
@@ -45,7 +45,7 @@ export const VirallinenTutkinnonMyontaja = ({
     <Link
       data-testid={`virallinen-tutkinnon-myontaja__none`}
       href=""
-      onClick={() => updateIsVirallinenTutkinnonMyontaja(undefined)}
+      onClick={() => updateIsVirallinenTutkinnonMyontaja(null)}
     >
       <EditOffOutlined sx={{ color: ophColors.blue2 }} />
     </Link>

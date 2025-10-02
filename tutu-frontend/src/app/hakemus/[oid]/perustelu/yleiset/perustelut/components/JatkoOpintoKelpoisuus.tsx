@@ -8,11 +8,10 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
-import { useDebounce } from '@/src/hooks/useDebounce';
 
 interface Props {
   perustelu: Perustelu | undefined;
-  updatePerustelu: (perustelu: Perustelu) => void;
+  updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
 export const JatkoOpintoKelpoisuus = ({
@@ -28,9 +27,7 @@ export const JatkoOpintoKelpoisuus = ({
   const updateKelpoisuus = (val: string | undefined) => {
     if (val !== selectedKelpoisuus) {
       setKelpoisuus(val);
-      const perustelu = maybePerustelu ?? ({} as Perustelu);
       updatePerustelu({
-        ...perustelu,
         jatkoOpintoKelpoisuus: val,
       });
     }
@@ -38,16 +35,10 @@ export const JatkoOpintoKelpoisuus = ({
 
   const updateLisatieto = (val: string | undefined) => {
     setLisatieto(val);
-    debouncedUpdateLisatieto(val);
-  };
-
-  const debouncedUpdateLisatieto = useDebounce((val: string | undefined) => {
-    const perustelu = maybePerustelu ?? ({} as Perustelu);
     updatePerustelu({
-      ...perustelu,
       jatkoOpintoKelpoisuusLisatieto: val,
     });
-  }, 1000);
+  };
 
   useEffect(() => {
     setKelpoisuus(maybePerustelu?.jatkoOpintoKelpoisuus);
