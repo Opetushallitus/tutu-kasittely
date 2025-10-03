@@ -1,10 +1,5 @@
 import { expect, test } from '@playwright/test';
-import {
-  mockUser,
-  mockBasicForHakemus,
-  mockHakemus,
-  mockLiitteet,
-} from '@/playwright/mocks';
+import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import _sisalto from './fixtures/hakemus1/_perustietoSisalto.json';
 
@@ -68,7 +63,7 @@ test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
   await expect(page.getByTestId('toast-message')).toBeVisible();
 });
 
-test('Liitteiden nimet näkyvät sisällössä oikein', async ({ page }) => {
+test('Hakemuksen perustiedot näkyvät sisällössä oikein', async ({ page }) => {
   await mockUser(page);
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
@@ -80,16 +75,17 @@ test('Liitteiden nimet näkyvät sisällössä oikein', async ({ page }) => {
       body: JSON.stringify(hakemus),
     });
   });
-  await mockLiitteet(page);
 
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
-  await expect(page.getByTestId('sisalto-item-tutkintotodistus')).toHaveText(
-    '- testiliite2.txt',
+  await expect(page.getByTestId('hakemus-koskee')).toHaveText(
+    'Kelpoisuus ammattiin',
   );
-  await expect(page.getByTestId('sisalto-item-opintosuoriteote')).toHaveText(
-    '- 11111111-2222-3333-4444-555555555555',
-  );
-  await expect(page.getByTestId('sisalto-item-muuliite')).toHaveText('-');
+  await expect(
+    page.getByTestId('sisalto-item-7d07bf15-79ab-4d2a-b1b9-63f03c1d0862'),
+  ).toHaveText('jesari');
+  await expect(
+    page.getByTestId('sisalto-item-cb593dfd-e361-493b-971c-09597bb54f4b'),
+  ).toHaveText('esa jesari');
 });
