@@ -34,37 +34,6 @@ const Indented = styled((props: IndentedProps) => {
   },
 });
 
-interface EntryLabelProps {
-  children: ReactNode;
-}
-
-const EntryLabel = styled((props: EntryLabelProps) => {
-  const { children, ...rest } = props;
-  return (
-    <OphTypography variant={'label'} {...rest}>
-      {children}
-    </OphTypography>
-  );
-})({
-  display: 'block',
-});
-
-interface EntryValueProps {
-  children: ReactNode;
-  datatestid?: string;
-}
-
-const EntryValue = styled((props: EntryValueProps) => {
-  const { children, ...rest } = props;
-  return (
-    <OphTypography variant={'body1'} {...rest} data-testid={props.datatestid}>
-      {children}
-    </OphTypography>
-  );
-})({
-  paddingLeft: `1em`,
-});
-
 const Subsection = styled('div')({
   paddingLeft: `1em`,
   display: 'block',
@@ -81,17 +50,22 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
   if (!isAttachmentField(item)) {
     const label =
       item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
-    const renderedLabel =
-      label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
+    const renderedLabel = label && (
+      <OphTypography variant={'label'}>{label}</OphTypography>
+    );
 
     const renderedValues = item.value.map((value) => (
       <Fragment key={`${value.value}--item`}>
-        <EntryValue
+        <OphTypography
           key={`${value.value}--value`}
-          datatestid={`sisalto-item-${item.key}`}
+          data-testid={`sisalto-item-${item.key}`}
+          variant={'body1'}
+          sx={{
+            paddingLeft: `1em`,
+          }}
         >
           {getValue(value, lomakkeenKieli)}
-        </EntryValue>
+        </OphTypography>
         <Subsection key={`${value.value}--followups`}>
           {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
         </Subsection>
