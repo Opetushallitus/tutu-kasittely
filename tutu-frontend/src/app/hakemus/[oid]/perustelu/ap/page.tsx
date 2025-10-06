@@ -4,7 +4,7 @@ import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/Pe
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { FormControl, Stack, useTheme } from '@mui/material';
+import { Box, FormControl, Stack, useTheme } from '@mui/material';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
@@ -15,9 +15,10 @@ import { useEffect, useState } from 'react';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { APSisalto } from '@/src/lib/types/APSisalto';
+import * as R from 'remeda';
 
 export default function ApPage() {
-  const { t, translateEntity } = useTranslations('hakemus.perustelu.ap');
+  const { t, translateEntity } = useTranslations();
   const theme = useTheme();
   const { hakemus, isLoading, error } = useHakemus();
   const hakija = hakemus?.hakija;
@@ -57,7 +58,7 @@ export default function ApPage() {
   ) : (
     <PerusteluLayout
       showTabs={false}
-      title="otsikko"
+      title={t('hakemus.perustelu.ap.otsikko')}
       t={t}
       hakemus={hakemus}
       isHakemusLoading={isLoading}
@@ -65,12 +66,21 @@ export default function ApPage() {
     >
       <Stack direction="column" spacing={2}>
         <OphFormFieldWrapper
-          label={t('perusteApLainSoveltamiselle')}
+          label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}
           renderInput={({ labelId }) => (
-            <FormControl aria-labelledby={labelId}>
+            <FormControl
+              aria-labelledby={labelId}
+              sx={{
+                display: 'flex',
+                gap: theme.spacing(1),
+                marginTop: theme.spacing(1),
+              }}
+            >
               <OphCheckbox
                 checked={!!APSisalto?.lakiperusteToisessaJasenmaassaSaannelty}
-                label={t('lakiperusteToisessaJasenmaassaSaannelty')}
+                label={t(
+                  'hakemus.perustelu.ap.lakiperusteToisessaJasenmaassaSaannelty',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'lakiperusteToisessaJasenmaassaSaannelty',
@@ -80,7 +90,9 @@ export default function ApPage() {
               />
               <OphCheckbox
                 checked={!!APSisalto?.lakiperustePatevyysLahtomaanOikeuksilla}
-                label={t('lakiperustePatevyysLahtomaanOikeuksilla')}
+                label={t(
+                  'hakemus.perustelu.ap.lakiperustePatevyysLahtomaanOikeuksilla',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'lakiperustePatevyysLahtomaanOikeuksilla',
@@ -90,7 +102,9 @@ export default function ApPage() {
               />
               <OphCheckbox
                 checked={!!APSisalto?.lakiperusteToinenEUmaaTunnustanut}
-                label={t('lakiperusteToinenEUmaaTunnustanut')}
+                label={t(
+                  'hakemus.perustelu.ap.lakiperusteToinenEUmaaTunnustanut',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'lakiperusteToinenEUmaaTunnustanut',
@@ -100,7 +114,9 @@ export default function ApPage() {
               />
               <OphCheckbox
                 checked={!!APSisalto?.lakiperusteLahtomaassaSaantelematon}
-                label={t('lakiperusteLahtomaassaSaantelematon')}
+                label={t(
+                  'hakemus.perustelu.ap.lakiperusteLahtomaassaSaantelematon',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'lakiperusteLahtomaassaSaantelematon',
@@ -112,15 +128,19 @@ export default function ApPage() {
           )}
         />
         <OphFormFieldWrapper
-          label={t('kansalaisuus')}
+          label={t('hakemus.perustelu.ap.kansalaisuus')}
           renderInput={({ labelId }) => (
             <OphTypography aria-labelledby={labelId}>
-              {translateEntity(hakija?.kansalaisuus)}
+              {R.map(hakija?.kansalaisuus ?? [], (k) =>
+                translateEntity(k),
+              ).join(', ')}
             </OphTypography>
           )}
         ></OphFormFieldWrapper>
         <OphInputFormField
-          label={t('todistusEUKansalaisuuteenRinnasteisestaAsemasta')}
+          label={t(
+            'hakemus.perustelu.ap.todistusEUKansalaisuuteenRinnasteisestaAsemasta',
+          )}
           value={
             APSisalto?.todistusEUKansalaisuuteenRinnasteisestaAsemasta ?? ''
           }
@@ -132,7 +152,7 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphInputFormField
-          label={t('ammattiJohonPatevoitynyt')}
+          label={t('hakemus.perustelu.ap.ammattiJohonPatevoitynyt')}
           multiline={true}
           minRows={3}
           value={APSisalto?.ammattiJohonPatevoitynyt ?? ''}
@@ -141,7 +161,7 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphInputFormField
-          label={t('ammattitoiminnanPaaAsiallinenSisalto')}
+          label={t('hakemus.perustelu.ap.ammattitoiminnanPaaAsiallinenSisalto')}
           multiline={true}
           minRows={3}
           value={APSisalto?.ammattitoiminnanPaaAsiallinenSisalto ?? ''}
@@ -153,7 +173,7 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphInputFormField
-          label={t('koulutuksenKestoJaSisalto')}
+          label={t('hakemus.perustelu.ap.koulutuksenKestoJaSisalto')}
           multiline={true}
           minRows={3}
           value={APSisalto?.koulutuksenKestoJaSisalto ?? ''}
@@ -162,15 +182,21 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphFormFieldWrapper
-          label={t('ammattipatevyysSelvitykset')}
+          label={t('hakemus.perustelu.ap.ammattipatevyysSelvitykset')}
           renderInput={({ labelId }) => (
             <FormControl
               aria-labelledby={labelId}
-              sx={{ display: 'flex', gap: theme.spacing(1) }}
+              sx={{
+                display: 'flex',
+                gap: theme.spacing(1),
+                marginTop: theme.spacing(1),
+              }}
             >
               <OphCheckbox
                 checked={!!APSisalto?.selvityksetLahtomaanViranomaiselta}
-                label={t('selvityksetLahtomaanViranomaiselta')}
+                label={t(
+                  'hakemus.perustelu.ap.selvityksetLahtomaanViranomaiselta',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'selvityksetLahtomaanViranomaiselta',
@@ -180,7 +206,9 @@ export default function ApPage() {
               />
               <OphCheckbox
                 checked={!!APSisalto?.selvityksetLahtomaanLainsaadannosta}
-                label={t('selvityksetLahtomaanLainsaadannosta')}
+                label={t(
+                  'hakemus.perustelu.ap.selvityksetLahtomaanLainsaadannosta',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'selvityksetLahtomaanLainsaadannosta',
@@ -190,7 +218,7 @@ export default function ApPage() {
               />
               <OphCheckbox
                 checked={!!APSisalto?.selvityksetAikaisempiTapaus}
-                label={t('selvityksetAikaisempiTapaus')}
+                label={t('hakemus.perustelu.ap.selvityksetAikaisempiTapaus')}
                 onChange={(event) => {
                   updateCheckbox(
                     'selvityksetAikaisempiTapaus',
@@ -198,9 +226,37 @@ export default function ApPage() {
                   );
                 }}
               />
+              {APSisalto?.selvityksetAikaisempiTapaus && (
+                <Box
+                  sx={{
+                    marginLeft: theme.spacing(4),
+                    marginBottom: theme.spacing(1),
+                  }}
+                >
+                  <OphInputFormField
+                    label={t(
+                      'hakemus.perustelu.ap.selvityksetAikaisemmanTapauksenAsiaTunnus',
+                    )}
+                    sx={{
+                      width: '100%',
+                    }}
+                    value={
+                      APSisalto?.selvityksetAikaisemmanTapauksenAsiaTunnus ?? ''
+                    }
+                    onChange={(event) => {
+                      updateTextField(
+                        'selvityksetAikaisemmanTapauksenAsiaTunnus',
+                        event.target.value,
+                      );
+                    }}
+                  />
+                </Box>
+              )}
               <OphCheckbox
                 checked={!!APSisalto?.selvityksetIlmeneeAsiakirjoista}
-                label={t('selvityksetIlmeneeAsiakirjoista')}
+                label={t(
+                  'hakemus.perustelu.ap.selvityksetIlmeneeAsiakirjoista',
+                )}
                 onChange={(event) => {
                   updateCheckbox(
                     'selvityksetIlmeneeAsiakirjoista',
@@ -212,7 +268,7 @@ export default function ApPage() {
           )}
         />
         <OphInputFormField
-          label={t('lisatietoja')}
+          label={t('hakemus.perustelu.ap.lisatietoja')}
           multiline={true}
           minRows={3}
           value={APSisalto?.lisatietoja ?? ''}
@@ -221,11 +277,11 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphFormFieldWrapper
-          label={t('IMIhalytykset')}
+          label={t('hakemus.perustelu.ap.IMIhalytykset')}
           renderInput={({ labelId }) => (
             <OphCheckbox
               aria-labelledby={labelId}
-              label={t('IMIHalytysTarkastettu')}
+              label={t('hakemus.perustelu.ap.IMIHalytysTarkastettu')}
               checked={!!APSisalto?.IMIHalytysTarkastettu}
               onChange={(event) => {
                 updateCheckbox('IMIHalytysTarkastettu', event.target.checked);
@@ -234,7 +290,7 @@ export default function ApPage() {
           )}
         ></OphFormFieldWrapper>
         <OphFormFieldWrapper
-          label={t('syntymaaika')}
+          label={t('hakemus.perustiedot.henkilotiedot.syntymaaika')}
           renderInput={({ labelId }) => (
             <OphTypography aria-labelledby={labelId}>
               {hakija?.syntymaaika}
@@ -242,7 +298,7 @@ export default function ApPage() {
           )}
         ></OphFormFieldWrapper>
         <OphInputFormField
-          label={t('muutAPPerustelut')}
+          label={t('hakemus.perustelu.ap.muutAPPerustelut')}
           multiline={true}
           minRows={3}
           value={APSisalto?.muutAPPerustelut ?? ''}
@@ -251,8 +307,8 @@ export default function ApPage() {
           }}
         ></OphInputFormField>
         <OphInputFormField
-          label={t('SEUTarviointi')}
-          helperText={t('SEUTarviointiHelperText')}
+          label={t('hakemus.perustelu.ap.SEUTarviointi')}
+          helperText={t('hakemus.perustelu.ap.SEUTarviointiHelperText')}
           multiline={true}
           minRows={3}
           value={APSisalto?.SEUTArviointi ?? ''}

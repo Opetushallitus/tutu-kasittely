@@ -169,6 +169,7 @@ case class APSisalto(
   selvityksetLahtomaanViranomaiselta: Option[Boolean] = None,
   selvityksetLahtomaanLainsaadannosta: Option[Boolean] = None,
   selvityksetAikaisempiTapaus: Option[Boolean] = None,
+  selvityksetAikaisemmanTapauksenAsiaTunnus: Option[String] = None,
   selvityksetIlmeneeAsiakirjoista: Option[Boolean] = None,
   lisatietoja: Option[String] = None,
   IMIHalytysTarkastettu: Option[Boolean] = None,

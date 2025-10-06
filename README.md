@@ -25,10 +25,10 @@ cas.url=${opintopolku.virkailija.url}/cas
 
 tutu.ui.url=https://localhost:3123
 tutu.backend.url=https://localhost:8444/tutu-backend
-tutu-backend.cas.username=<CAS-KAYTTAJATUNNUS>
-tutu-backend.cas.password=<CAS-SALASANA>
+tutu.backend.cas.username=<CAS-KAYTTAJATUNNUS>
+tutu.backend.cas.password=<CAS-SALASANA>
 # Untuvan käyttöoikeusryhmät
-tutu-backend.esittelija.kayttooikeusryhma.ids=71713274,71713307
+tutu.backend.esittelija.kayttooikeusryhma.ids=71713274,71713307
 #logging.level.org.springframework.cache=TRACE
 logger.scala.slick.jdbc.JdbcBackend.statement=DEBUG
 

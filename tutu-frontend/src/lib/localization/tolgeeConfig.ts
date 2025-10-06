@@ -16,6 +16,8 @@ export function TolgeeBase() {
     .updateDefaults({
       availableLanguages: ['fi', 'sv', 'en'],
       defaultLanguage: 'fi',
+      defaultNs: NAMESPACE,
+      ns: [NAMESPACE],
     });
 
   if (localTranslations || isTesting) {
@@ -40,8 +42,6 @@ export function TolgeeBase() {
       .updateDefaults({
         apiKey,
         apiUrl,
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
         projectId: 11100,
       });
   }

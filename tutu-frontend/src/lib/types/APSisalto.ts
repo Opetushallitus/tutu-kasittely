@@ -10,6 +10,7 @@ export type APSisalto = Partial<{
   selvityksetLahtomaanViranomaiselta?: boolean;
   selvityksetLahtomaanLainsaadannosta?: boolean;
   selvityksetAikaisempiTapaus?: boolean;
+  selvityksetAikaisemmanTapauksenAsiaTunnus?: string;
   selvityksetIlmeneeAsiakirjoista?: boolean;
   lisatietoja?: string;
   IMIHalytysTarkastettu?: boolean;

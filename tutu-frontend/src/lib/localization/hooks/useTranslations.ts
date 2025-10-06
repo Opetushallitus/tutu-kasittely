@@ -7,9 +7,9 @@ import { TFnType, useTolgee, useTranslate } from '@tolgee/react';
 
 export type TFunction = TFnType;
 
-export const useTranslations = (namespace?: string) => {
+export const useTranslations = () => {
   const { getLanguage } = useTolgee(['language']);
-  const { t } = useTranslate(namespace);
+  const { t } = useTranslate();
 
   const translateEntity = useCallback(
     (translateable?: TranslatedName) => {
