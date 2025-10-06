@@ -140,14 +140,12 @@ export default function TutkintoPage() {
         {t('hakemus.tutkinnot.lisaaTutkinto')}
       </OphButton>
       <Divider orientation={'horizontal'} />
-      {muuTutkinto && (
-        <MuuTutkintoComponent
-          tutkinto={muuTutkinto}
-          hakemus={hakemus}
-          updateTutkintoAction={debouncedTutkinnotUpdateAction}
-          t={t}
-        />
-      )}
+      <MuuTutkintoComponent
+        tutkinto={muuTutkinto}
+        hakemus={hakemus}
+        updateTutkintoAction={debouncedTutkinnotUpdateAction}
+        t={t}
+      />
     </Stack>
   );
 }

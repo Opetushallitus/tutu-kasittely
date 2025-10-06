@@ -6,12 +6,12 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Divider, Stack } from '@mui/material';
 import { Muistio } from '@/src/components/Muistio';
 
 export type TutkintoProps = {
-  tutkinto: Tutkinto;
+  tutkinto?: Tutkinto;
   hakemus: Hakemus;
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
   t: TFunction;
@@ -23,8 +23,13 @@ export const MuuTutkintoComponent = ({
   updateTutkintoAction,
   t,
 }: TutkintoProps) => {
-  const [currentTutkinto, setCurrentTutkinto] =
-    React.useState<Tutkinto>(tutkinto);
+  const [currentTutkinto, setCurrentTutkinto] = React.useState<
+    Tutkinto | undefined
+  >(tutkinto);
+
+  useEffect(() => {
+    setCurrentTutkinto(tutkinto);
+  }, [tutkinto]);
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
     updateTutkintoAction(value);
@@ -42,10 +47,12 @@ export const MuuTutkintoComponent = ({
       <OphInputFormField
         minRows={9}
         multiline={true}
-        value={currentTutkinto.muuTutkintoTieto}
+        value={currentTutkinto?.muuTutkintoTieto}
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,
+            hakemusId: currentTutkinto?.hakemusId || '',
+            jarjestys: 'MUU',
             muuTutkintoTieto: event.target.value,
           })
         }
