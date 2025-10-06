@@ -21,6 +21,7 @@ import {
   Ratkaisutyyppi,
 } from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
+import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 
 const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
@@ -134,6 +135,16 @@ const Paatostiedot = ({
         }
         data-testid={'paatos-ratkaisutyyppi'}
       />
+      {currentPaatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
+        <PeruutuksenTaiRaukeamisenSyyComponent
+          t={t}
+          theme={theme}
+          syy={currentPaatos.peruutuksenTaiRaukeamisenSyy}
+          updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
+            updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
+          }
+        />
+      )}
     </Stack>
   );
 };
