@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
@@ -46,23 +47,27 @@ class PaatosControllerTest extends IntegrationTestBase {
   var paatos: Paatos          = _
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
+    val ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None)
     Paatos(
       hakemusId = givenHakemusId,
-      ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None),
+      ratkaisutyyppi = ratkaisutyyppi,
       seutArviointi = pickBoolean,
-      peruutuksenTaiRaukeamisenSyy = noneOrSome(
-        PeruutuksenTaiRaukeamisenSyy(
-          eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = pickBooleanOption,
-          muutenTyytymatonRatkaisuun = pickBooleanOption,
-          eiApMukainenTutkintoTaiHaettuaPatevyytta = pickBooleanOption,
-          eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = pickBooleanOption,
-          epavirallinenKorkeakouluTaiTutkinto = pickBooleanOption,
-          eiEdellytyksiaRoEikaTasopaatokselle = pickBooleanOption,
-          eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = pickBooleanOption,
-          hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = pickBooleanOption,
-          muuSyy = pickBooleanOption
-        )
-      )
+      peruutuksenTaiRaukeamisenSyy =
+        if (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen))
+          Some(
+            PeruutuksenTaiRaukeamisenSyy(
+              eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = pickBooleanOption,
+              muutenTyytymatonRatkaisuun = pickBooleanOption,
+              eiApMukainenTutkintoTaiHaettuaPatevyytta = pickBooleanOption,
+              eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = pickBooleanOption,
+              epavirallinenKorkeakouluTaiTutkinto = pickBooleanOption,
+              eiEdellytyksiaRoEikaTasopaatokselle = pickBooleanOption,
+              eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = pickBooleanOption,
+              hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = pickBooleanOption,
+              muuSyy = pickBooleanOption
+            )
+          )
+        else None
     )
   }
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {
