@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
-import fi.oph.tutu.backend.domain.UserOid
+import fi.oph.tutu.backend.domain.{Kayttajatiedot, UserOid}
 import fi.oph.tutu.backend.repository.EsittelijaRepository
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
@@ -80,6 +80,53 @@ class KayttooikeusService(
     }
   }
 
+  /**
+   * Hakee käyttäjätiedot käyttöoikeus-palvelusta.
+   *
+   * @param oid
+   *   henkilön OID
+   * @return
+   *   Either joka sisältää virheen tai Kayttajatiedot
+   */
+  def haeKayttajatiedot(oid: String): Either[Throwable, Kayttajatiedot] = {
+    httpService.get(
+      kayttooikeusCasClient,
+      s"$opintopolku_virkailija_domain/kayttooikeus-service/henkilo/$oid/kayttajatiedot"
+    ) match {
+      case Left(error: Throwable) =>
+        LOG.warn(s"Käyttäjätietojen haku epäonnistui OID:lle $oid: ${error.getMessage}")
+        Left(KayttooikeusServiceException("", error))
+      case Right(response: String) =>
+        try {
+          val kayttajatiedot = mapper.readValue(response, classOf[Kayttajatiedot])
+          Right(kayttajatiedot)
+        } catch {
+          case e: Exception =>
+            LOG.error(s"Error parsing kayttajatiedot from response for OID $oid", e)
+            Left(e)
+        }
+    }
+  }
+
+  /**
+   * Tarkistaa, onko käyttäjä palvelu-käyttäjä.
+   *
+   * @param oid
+   *   henkilön OID
+   * @return
+   *   true, jos käyttäjä on palvelu-käyttäjä (kayttajaTyyppi = "PALVELU")
+   */
+  private def onPalvelukayttaja(oid: String): Boolean = {
+    haeKayttajatiedot(oid) match {
+      case Left(_) =>
+        // Jos haku epäonnistuu, oletetaan ettei ole palvelukäyttäjä
+        // jotta oikeat käyttäjät eivät jää pois
+        false
+      case Right(kayttajatiedot) =>
+        kayttajatiedot.kayttajaTyyppi == "PALVELU"
+    }
+  }
+
   def haeEsittelijat: Either[Throwable, Seq[String]] = {
     val ids: Seq[Int] = haeEsittelijaKayttooikeusRyhmat match {
       case Left(error) =>
@@ -101,13 +148,34 @@ class KayttooikeusService(
       }
     }
 
+    // Poistetaan duplikaatit ennen tietokannan synkronointia
+    val uniikit          = esittelija_oidit.toSet.toSeq
+    val duplikaattiMaara = esittelija_oidit.size - uniikit.size
+    if (duplikaattiMaara > 0) {
+      LOG.info(s"Poistettiin $duplikaattiMaara duplikaatti-OID:ia esittelijälistasta")
+    }
+
+    // Suodatetaan pois palvelukäyttäjät ennen tietokannan synkronointia
+    val eiPalvelukayttajat = uniikit.filter { oid =>
+      val onPalvelu = onPalvelukayttaja(oid)
+      if (onPalvelu) {
+        LOG.info(s"Suodatettiin pois palvelukäyttäjä: OID=$oid")
+      }
+      !onPalvelu
+    }
+
+    val palvelukayttajiaMaara = uniikit.size - eiPalvelukayttajat.size
+    if (palvelukayttajiaMaara > 0) {
+      LOG.info(s"Suodatettiin yhteensä $palvelukayttajiaMaara palvelukäyttäjää pois")
+    }
+
     try {
-      esittelijaRepository.syncFromKayttooikeusService(esittelija_oidit, "KayttooikeusService")
-      Right(esittelija_oidit)
+      esittelijaRepository.syncFromKayttooikeusService(eiPalvelukayttajat, "KayttooikeusService")
+      Right(eiPalvelukayttajat)
     } catch {
       case e: Exception =>
         LOG.error("Failed to sync esittelijat with database", e)
-        Right(esittelija_oidit)
+        Right(eiPalvelukayttajat)
     }
   }
 
