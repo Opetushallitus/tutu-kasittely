@@ -1,22 +1,17 @@
-import React, { Fragment, ReactNode, useEffect } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import {
-  AsiakirjaMetadata,
-  SisaltoItem,
-  SisaltoValue,
-} from '@/src/lib/types/hakemus';
+import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 import { styled } from '@mui/material';
-import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 import {
-  haeAsiakirjat,
+  eupatevyys,
+  HakemuspalveluSisaltoId,
+  perustiedot,
+} from '@/src/constants/hakemuspalveluSisalto';
+import {
   isAttachmentField,
+  sisaltoItemMatches,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
-import { useLiitteet } from '@/src/hooks/useLiitteet';
-import useToaster from '@/src/hooks/useToaster';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { handleFetchError } from '@/src/lib/utils';
-import { FullSpinner } from '@/src/components/FullSpinner';
 import { Language } from '@/src/lib/localization/localizationTypes';
 
 interface IndentedProps {
@@ -40,126 +35,60 @@ const Indented = styled((props: IndentedProps) => {
   },
 });
 
-interface EntryLabelProps {
-  children: ReactNode;
-}
-
-const EntryLabel = styled((props: EntryLabelProps) => {
-  const { children, ...rest } = props;
-  return (
-    <OphTypography variant={'label'} {...rest}>
-      {children}
-    </OphTypography>
-  );
-})({
-  display: 'block',
-});
-
-interface EntryInfoProps {
-  children: ReactNode;
-}
-
-const EntryInfo = styled((props: EntryInfoProps) => {
-  const { children, ...rest } = props;
-  return (
-    <OphTypography variant={'body2'} {...rest}>
-      {children}
-    </OphTypography>
-  );
-})({
-  paddingLeft: `1em`,
-  paddingBottom: `0.5em`,
-  display: 'block',
-});
-
-interface EntryValueProps {
-  children: ReactNode;
-  datatestid?: string;
-}
-
-const EntryValue = styled((props: EntryValueProps) => {
-  const { children, ...rest } = props;
-  return (
-    <OphTypography variant={'body1'} {...rest} data-testid={props.datatestid}>
-      {children}
-    </OphTypography>
-  );
-})({
-  paddingLeft: `1em`,
-  paddingBottom: `1em`,
-  display: 'block',
-});
-
 const Subsection = styled('div')({
   paddingLeft: `1em`,
   display: 'block',
 });
 
-const getValue = (
-  sisaltoValue: SisaltoValue,
-  sisaltoItem: SisaltoItem,
-  liiteMetadata: AsiakirjaMetadata[],
-  lomakkeenKieli: Language,
-) => {
-  let val =
+const getValue = (sisaltoValue: SisaltoValue, lomakkeenKieli: Language) => {
+  return (
     sisaltoValue.label?.[lomakkeenKieli as keyof typeof sisaltoValue.label] ??
-    '';
-  if (isAttachmentField(sisaltoItem)) {
-    const metadata = liiteMetadata.find((meta) => meta.key === val);
-    val = metadata ? metadata.filename : val;
-  }
-  return val;
+    ''
+  );
 };
 
-export const renderItem = (
-  item: SisaltoItem,
-  liiteMetadata: AsiakirjaMetadata[],
-  lomakkeenKieli: Language,
-) => {
-  const label = item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
-  const renderedLabel =
-    label !== null ? <EntryLabel>{label}</EntryLabel> : <></>;
+const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
+  if (!isAttachmentField(item)) {
+    const label =
+      item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
+    const renderedLabel = label && (
+      <OphTypography variant={'label'}>{label}</OphTypography>
+    );
+    const isEuPatevyys = sisaltoItemMatches(item, eupatevyys);
 
-  const infoTextTranslations =
-    item.infoText?.label ?? item.infoText?.value ?? null;
-  const infoText =
-    infoTextTranslations?.[
-      lomakkeenKieli as keyof typeof infoTextTranslations
-    ] ?? null;
-
-  const renderedInfoText = infoText && <EntryInfo>{infoText}</EntryInfo>;
-
-  const renderedValues = item.value.map((value) => (
-    <Fragment key={`${value.value}--item`}>
-      <EntryValue
-        key={`${value.value}--value`}
-        datatestid={`sisalto-item-${item.key}`}
-      >
-        {`- ${getValue(value, item, liiteMetadata, lomakkeenKieli)}`}
-      </EntryValue>
-      <Subsection key={`${value.value}--followups`}>
-        {value.followups.map((v) =>
-          renderItem(v, liiteMetadata, lomakkeenKieli),
+    const renderedValues = item.value.map((value) => (
+      <Fragment key={`${value.value}--item`}>
+        <OphTypography
+          key={`${value.value}--value`}
+          data-testid={`sisalto-item-${item.key}`}
+          variant={'body1'}
+          sx={{
+            paddingLeft: `1em`,
+          }}
+        >
+          {getValue(value, lomakkeenKieli)}
+        </OphTypography>
+        {isEuPatevyys ? null : (
+          <Subsection key={`${value.value}--followups`}>
+            {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
+          </Subsection>
         )}
+      </Fragment>
+    ));
+    const renderedChildren = (
+      <Subsection>
+        {item.children.map((child) => renderItem(child, lomakkeenKieli))}
       </Subsection>
-    </Fragment>
-  ));
-  const renderedChildren = (
-    <Subsection>
-      {item.children.map((child) =>
-        renderItem(child, liiteMetadata, lomakkeenKieli),
-      )}
-    </Subsection>
-  );
+    );
 
-  return (
-    <Indented key={`${item.key}`}>
-      {renderedLabel}
-      {renderedInfoText}
-      {renderedValues}
-      {renderedChildren}
-    </Indented>
-  );
+    return (
+      <Indented key={`${item.key}`}>
+        {renderedLabel}
+        {renderedValues}
+        {renderedChildren}
+      </Indented>
+    );
+  }
 };
 
 export const Sisalto = ({
@@ -171,30 +100,42 @@ export const Sisalto = ({
   osiot: HakemuspalveluSisaltoId[];
   lomakkeenKieli: Language;
 }) => {
-  const { t } = useTranslations();
-  const { addToast } = useToaster();
-
-  const rajattuSisalto = sisalto.filter((item) =>
-    sisaltoItemMatchesToAny(item, osiot),
+  const isPerustiedot = osiot.some(
+    (osio) =>
+      sisaltoItemMatches(
+        { key: osio.generatedId } as SisaltoItem,
+        perustiedot,
+      ) ||
+      sisaltoItemMatches({ key: osio.definedId } as SisaltoItem, perustiedot),
   );
-  const liitteet = haeAsiakirjat(rajattuSisalto);
-  const {
-    isLoading,
-    data: liiteMetadata = [],
-    error,
-  } = useLiitteet(liitteet.map((liite) => liite.label.en).join(','));
 
-  useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.liitteidenLataus', t);
-  }, [error, addToast, t]);
+  let itemsToRender: SisaltoItem[] = [];
 
-  if (isLoading) return <FullSpinner></FullSpinner>;
+  if (isPerustiedot) {
+    // Perustiedoissa ei haluta näyttää päätason kysymyksiä
+    const perustiedotItem = sisalto.find((item) =>
+      sisaltoItemMatches(item, perustiedot),
+    );
+    const perustiedotFollowups =
+      perustiedotItem?.children?.[0]?.value?.[0]?.followups ?? [];
+    itemsToRender = [...perustiedotFollowups];
+  }
 
-  return (
-    <div>
-      {rajattuSisalto.map((item) =>
-        renderItem(item, liiteMetadata, lomakkeenKieli),
-      )}
-    </div>
+  // Muut osiot
+  const otherOsiot = osiot.filter(
+    (osio) =>
+      !sisaltoItemMatches(
+        { key: osio.generatedId } as SisaltoItem,
+        perustiedot,
+      ),
   );
+
+  if (otherOsiot.length > 0) {
+    const otherItems = sisalto.filter((item) =>
+      sisaltoItemMatchesToAny(item, otherOsiot),
+    );
+    itemsToRender = [...itemsToRender, ...otherItems];
+  }
+
+  return <>{itemsToRender.map((item) => renderItem(item, lomakkeenKieli))}</>;
 };
