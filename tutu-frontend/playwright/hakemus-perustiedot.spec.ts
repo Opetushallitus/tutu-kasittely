@@ -86,6 +86,6 @@ test('Hakemuksen perustiedot näkyvät sisällössä oikein', async ({ page }) =
     page.getByTestId('sisalto-item-7d07bf15-79ab-4d2a-b1b9-63f03c1d0862'),
   ).toHaveText('jesari');
   await expect(
-    page.getByTestId('sisalto-item-cb593dfd-e361-493b-971c-09597bb54f4b'),
-  ).toHaveText('esa jesari');
+    page.getByTestId('sisalto-item-1d4bb273-0889-401e-aae1-5134a12cf238'),
+  ).toHaveText('Kyllä');
 });

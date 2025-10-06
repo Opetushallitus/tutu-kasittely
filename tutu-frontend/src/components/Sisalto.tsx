@@ -3,6 +3,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 import { styled } from '@mui/material';
 import {
+  eupatevyys,
   HakemuspalveluSisaltoId,
   perustiedot,
 } from '@/src/constants/hakemuspalveluSisalto';
@@ -53,6 +54,7 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
     const renderedLabel = label && (
       <OphTypography variant={'label'}>{label}</OphTypography>
     );
+    const isEuPatevyys = sisaltoItemMatches(item, eupatevyys);
 
     const renderedValues = item.value.map((value) => (
       <Fragment key={`${value.value}--item`}>
@@ -66,9 +68,11 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
         >
           {getValue(value, lomakkeenKieli)}
         </OphTypography>
-        <Subsection key={`${value.value}--followups`}>
-          {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
-        </Subsection>
+        {isEuPatevyys ? null : (
+          <Subsection key={`${value.value}--followups`}>
+            {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
+          </Subsection>
+        )}
       </Fragment>
     ));
     const renderedChildren = (
@@ -96,8 +100,13 @@ export const Sisalto = ({
   osiot: HakemuspalveluSisaltoId[];
   lomakkeenKieli: Language;
 }) => {
-  const isPerustiedot = osiot.some((osio) =>
-    sisaltoItemMatches({ key: osio.generatedId } as SisaltoItem, perustiedot),
+  const isPerustiedot = osiot.some(
+    (osio) =>
+      sisaltoItemMatches(
+        { key: osio.generatedId } as SisaltoItem,
+        perustiedot,
+      ) ||
+      sisaltoItemMatches({ key: osio.definedId } as SisaltoItem, perustiedot),
   );
 
   let itemsToRender: SisaltoItem[] = [];

@@ -52,19 +52,8 @@ export const perustiedot: HakemuspalveluSisaltoId = createId(
   '68afefd2-daff-4d74-857c-1736a54eab1b',
   'hakemuksen-perustiedot',
 );
-
-export const perustietoOsiot = [
-  perustiedot,
-  // ylinTutkinto,
-  // alemmatTutkinnot,
-  // tutkintoTaiKoulutus,
-  // paatosJaAsiointikieli,
-  // createId(
-  //   '3781f43c-fff7-47c7-aa7b-66f4a47395a5',
-  //   'paatoksen-lahettaminen-sahkopostilla',
-  // ),
-  // oikeellisuusJaAitous,
-];
+//TODO tähän saattaa tulla myöhemmin muutakin.
+export const perustietoOsiot = [perustiedot];
 
 export const todistusAitoustarkistusLupa: HakemuspalveluSisaltoId = createId(
   'c20bb2dc-fc8c-41a9-8897-b08fbfc3c705',
@@ -74,4 +63,9 @@ export const todistusAitoustarkistusLupa: HakemuspalveluSisaltoId = createId(
 export const henkilotietojenLiitteet: HakemuspalveluSisaltoId = createId(
   'c3b22d35-514f-4cf6-9a89-dcdba6aedb55',
   'henkilotietojen-liitteet',
+);
+
+export const eupatevyys: HakemuspalveluSisaltoId = createId(
+  '1d4bb273-0889-401e-aae1-5134a12cf238',
+  'eu-patevyys',
 );
