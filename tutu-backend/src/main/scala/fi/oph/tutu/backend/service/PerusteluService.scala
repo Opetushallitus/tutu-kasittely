@@ -44,10 +44,9 @@ class PerusteluService(
     val newPerustelu     = dbHakemus match {
       case Some(dbHakemus) =>
         val latestSavedPerustelu = currentPerustelu match {
-          case Some(existing) if partialPerustelu.topLevelFieldsModified() =>
+          case Some(existing) =>
             perusteluRepository.tallennaPerustelu(dbHakemus.id, existing.mergeWith(partialPerustelu), luojaTaiMuokkaaja)
-          case Some(existing) => existing
-          case _              =>
+          case _ =>
             perusteluRepository.tallennaPerustelu(
               dbHakemus.id,
               Perustelu().mergeWith(partialPerustelu).copy(hakemusId = Some(dbHakemus.id)),

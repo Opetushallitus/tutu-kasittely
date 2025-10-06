@@ -179,6 +179,10 @@ class IntegrationTestBase {
     Option(UUID.randomUUID().toString)
   }
 
+  def noneOrSome[T](value: T): Option[T] = {
+    pick(Seq(None, Some(value)))
+  }
+
   def initAtaruHakemusRequests(): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))

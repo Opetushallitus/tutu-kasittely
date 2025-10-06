@@ -369,6 +369,18 @@
         "oikaisu": "Oikaisu",
         "jatetaanTutkimatta": "Jätetään tutkimatta",
         "siirto": "Siirto"
+      },
+      "peruutuksenTaiRaukeamisenSyy": {
+        "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",
+        "eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada": "ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",
+        "muutenTyytymatonRatkaisuun": "on muuten tyytymätön ratkaisuun",
+        "eiApMukainenTutkintoTaiHaettuaPatevyytta": "ei AP-mukainen tutkinto tai haettua ammattipätevyyttä",
+        "eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa": "ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
+        "epavirallinenKorkeakouluTaiTutkinto": "epävirallinen korkeakoulu tai tutkinto",
+        "eiEdellytyksiaRoEikaTasopaatokselle": "ei edellytyksiä RO- eikä tasopäätökselle",
+        "eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin": "ei edellytyksiä rinnastaa tiettyihin korkeakouluopintoihin",
+        "hakijallaJoPaatosSamastaKoulutusKokonaisuudesta": "hakijalla on jo päätös samasta koulutuskokonaisuudesta",
+        "muuSyy": "muu syy, esim. aikataulu"
       }
     }
   },

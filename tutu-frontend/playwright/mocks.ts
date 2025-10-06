@@ -321,14 +321,12 @@ export const mockPerustelu = (page: Page) => {
 export const mockPaatos = (page: Page) => {
   return page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
     const paatos = getPaatos();
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...paatos,
-        }),
-      });
-    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ...paatos,
+      }),
+    });
   });
 };

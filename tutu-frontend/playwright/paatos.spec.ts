@@ -17,25 +17,54 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
   await expect(seutCheckbox).not.toBeChecked();
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(
+    page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
+  ).not.toBeVisible();
 
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     seutCheckbox.click(),
   ]).then((req) => expect(req[0].postDataJSON().seutArviointi).toEqual(true));
 
-  /*
   await ratkaisutyyppiInput.first().click();
   await expect(ratkaisutyyppiInput).toBeVisible();
-  const oikaisuOption = page
+  const peruutusOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Oikaisu');
-  await expect(oikaisuOption).toBeVisible();
+    .locator('text=Peruutus tai raukeaminen');
+  await expect(peruutusOption).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    oikaisuOption.click(),
+    peruutusOption.click(),
   ]).then((req) =>
-    expect(req[0].postDataJSON().ratkaisutyyppi).toEqual('Siirto'),
+    expect(req[0].postDataJSON().ratkaisutyyppi).toEqual(
+      'PeruutusTaiRaukeaminen',
+    ),
   );
-  
-   */
+  await expect(
+    page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
+  ).toBeVisible();
+
+  const syyt = [
+    'eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada',
+    'muutenTyytymatonRatkaisuun',
+    'eiApMukainenTutkintoTaiHaettuaPatevyytta',
+    'eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa',
+    'epavirallinenKorkeakouluTaiTutkinto',
+    'eiEdellytyksiaRoEikaTasopaatokselle',
+    'eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin',
+    'hakijallaJoPaatosSamastaKoulutusKokonaisuudesta',
+    'muuSyy',
+  ];
+  for (const syy of syyt) {
+    const syyCheckbox = page.getByTestId(syy);
+    await expect(syyCheckbox).not.toBeChecked();
+    await Promise.all([
+      page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+      syyCheckbox.click(),
+    ]).then((req) =>
+      expect(req[0].postDataJSON().peruutuksenTaiRaukeamisenSyy[syy]).toEqual(
+        true,
+      ),
+    );
+  }
 });

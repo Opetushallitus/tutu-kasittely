@@ -47,14 +47,22 @@ class PaatosControllerTest extends IntegrationTestBase {
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
     Paatos(
-      id = None,
       hakemusId = givenHakemusId,
       ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None),
       seutArviointi = pickBoolean,
-      luotu = None,
-      muokattu = None,
-      luoja = None,
-      muokkaaja = None
+      peruutuksenTaiRaukeamisenSyy = noneOrSome(
+        PeruutuksenTaiRaukeamisenSyy(
+          eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = pickBooleanOption,
+          muutenTyytymatonRatkaisuun = pickBooleanOption,
+          eiApMukainenTutkintoTaiHaettuaPatevyytta = pickBooleanOption,
+          eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = pickBooleanOption,
+          epavirallinenKorkeakouluTaiTutkinto = pickBooleanOption,
+          eiEdellytyksiaRoEikaTasopaatokselle = pickBooleanOption,
+          eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = pickBooleanOption,
+          hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = pickBooleanOption,
+          muuSyy = pickBooleanOption
+        )
+      )
     )
   }
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {

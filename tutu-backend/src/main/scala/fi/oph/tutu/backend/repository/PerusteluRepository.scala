@@ -115,7 +115,7 @@ class PerusteluRepository extends BaseResultHandlers {
             ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
             ${perustelu.jatkoOpintoKelpoisuusLisatieto},
             ${perustelu.muuPerustelu},
-            ${uoRoJson}::jsonb,
+            $uoRoJson::jsonb,
             ${perustelu.lausuntoPyyntojenLisatiedot},
             ${perustelu.lausunnonSisalto},
             $luoja
@@ -134,7 +134,7 @@ class PerusteluRepository extends BaseResultHandlers {
             jatko_opinto_kelpoisuus = ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
             jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
             muu_perustelu = ${perustelu.muuPerustelu},
-            uo_ro_sisalto = ${uoRoJson}::jsonb,
+            uo_ro_sisalto = $uoRoJson::jsonb,
             lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
             lausunto_sisalto = ${perustelu.lausunnonSisalto},
             muokkaaja = $luoja

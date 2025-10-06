@@ -75,25 +75,7 @@ case class PartialPerustelu(
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty
-) {
-  def topLevelFieldsModified(): Boolean =
-    Seq(
-      virallinenTutkinnonMyontaja,
-      virallinenTutkinto,
-      lahdeLahtomaanKansallinenLahde,
-      lahdeLahtomaanVirallinenVastaus,
-      lahdeKansainvalinenHakuteosTaiVerkkosivusto,
-      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta,
-      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa,
-      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa,
-      aikaisemmatPaatokset,
-      jatkoOpintoKelpoisuus,
-      jatkoOpintoKelpoisuusLisatieto,
-      muuPerustelu,
-      lausuntoPyyntojenLisatiedot,
-      lausunnonSisalto
-    ).exists(_.isDefined)
-}
+)
 
 case class UoRoSisalto(
   opettajatEroMonialaisetOpinnotSisalto: Option[Boolean] = None,
