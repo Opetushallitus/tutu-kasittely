@@ -155,9 +155,17 @@ class EsittelijaRepository {
 
     val actions: Seq[DBIO[Int]] = toInsert ++ toDelete
 
+    if (toInsert.nonEmpty) {
+      LOG.info(s"Syncing ${toInsert.size} new esittelijät to database")
+    }
+    if (toDelete.nonEmpty) {
+      LOG.info(s"Removing ${toDelete.size} esittelijät from database")
+    }
+
     try {
       db.runTransactionally(DBIO.sequence(actions).map(_.sum), "sync_esittelija") match {
-        case Success(_) => ()
+        case Success(rowsAffected) =>
+          LOG.info(s"Esittelija sync completed successfully. Rows affected: $rowsAffected")
         case Failure(e) => throw e
       }
     } catch {
