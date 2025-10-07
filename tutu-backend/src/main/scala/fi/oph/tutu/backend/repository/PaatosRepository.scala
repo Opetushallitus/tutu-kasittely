@@ -5,6 +5,7 @@ import org.json4s.jackson.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
+import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
@@ -34,24 +35,38 @@ class PaatosRepository extends BaseResultHandlers {
     )
   )
 
-  def tallennaPaatos(hakemusId: UUID, paatos: Paatos, luojaTaiMuokkaaja: String): Paatos = {
+  /**
+   * Tallentaa päätöksen (palauttaa DBIO-actionin transaktioita varten)
+   *
+   * @param hakemusId
+   *   hakemuksen uuid
+   * @param paatos
+   * @param luojaTaiMuokkaaja
+   * @return
+   *   DBIO action joka palauttaa tallennetun päätöksen
+   */
+  def tallennaPaatosAction(hakemusId: UUID, paatos: Paatos, luojaTaiMuokkaaja: String): DBIO[Paatos] = {
     val ratkaisutyyppiOrNull             = paatos.ratkaisutyyppi.map(_.toString).orNull
     val peruutuksenTaiRaukeamisenSyyJson = Serialization.write(paatos.peruutuksenTaiRaukeamisenSyy.orNull)
+    sql"""
+      INSERT INTO paatos (hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, luoja)
+      VALUES (${hakemusId.toString}::uuid, $ratkaisutyyppiOrNull::ratkaisutyyppi, ${paatos.seutArviointi},
+        $peruutuksenTaiRaukeamisenSyyJson::jsonb, $luojaTaiMuokkaaja)
+      ON CONFLICT (hakemus_id)
+      DO UPDATE SET
+        ratkaisutyyppi = $ratkaisutyyppiOrNull::ratkaisutyyppi,
+        seut_arviointi_tehty = ${paatos.seutArviointi},
+        peruutus_tai_raukeaminen_lisatiedot = $peruutuksenTaiRaukeamisenSyyJson::jsonb,
+        muokkaaja = $luojaTaiMuokkaaja
+      RETURNING id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty,
+        peruutus_tai_raukeaminen_lisatiedot, luotu, luoja, muokattu, muokkaaja
+    """.as[Paatos].head
+  }
+
+  def tallennaPaatos(hakemusId: UUID, paatos: Paatos, luojaTaiMuokkaaja: String): Paatos = {
     try {
       db.run(
-        sql"""
-        INSERT INTO paatos (hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, luoja)
-        VALUES (${hakemusId.toString}::uuid, $ratkaisutyyppiOrNull::ratkaisutyyppi, ${paatos.seutArviointi},
-          $peruutuksenTaiRaukeamisenSyyJson::jsonb, $luojaTaiMuokkaaja)
-        ON CONFLICT (hakemus_id) 
-        DO UPDATE SET
-          ratkaisutyyppi = $ratkaisutyyppiOrNull::ratkaisutyyppi,
-          seut_arviointi_tehty = ${paatos.seutArviointi},
-          peruutus_tai_raukeaminen_lisatiedot = $peruutuksenTaiRaukeamisenSyyJson::jsonb,
-          muokkaaja = $luojaTaiMuokkaaja
-        RETURNING id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty,
-          peruutus_tai_raukeaminen_lisatiedot, luotu, luoja, muokattu, muokkaaja
-      """.as[Paatos].head,
+        tallennaPaatosAction(hakemusId, paatos, luojaTaiMuokkaaja),
         "tallenna_paatos"
       )
     } catch {

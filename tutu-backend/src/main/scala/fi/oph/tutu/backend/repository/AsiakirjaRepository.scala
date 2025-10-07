@@ -14,6 +14,7 @@ import fi.oph.tutu.backend.domain.{
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
+import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
@@ -132,16 +133,14 @@ class AsiakirjaRepository extends BaseResultHandlers {
     }
   }
 
-  def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: String): UUID = {
+  def tallennaUudetAsiakirjatiedotAction(asiakirja: Asiakirja, luoja: String): DBIO[UUID] = {
     val valmistumisenVahvistusVastausOrNull = asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus
       .map(_.toString)
       .orNull
 
-    try
-      db.run(
-        sql"""
+    sql"""
       INSERT INTO asiakirja (
-        allekirjoitukset_tarkistettu, 
+        allekirjoitukset_tarkistettu,
         allekirjoitukset_tarkistettu_lisatiedot,
         imi_pyynto,
         imi_pyynto_numero,
@@ -161,7 +160,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
         luoja)
       VALUES (
         ${asiakirja.allekirjoituksetTarkistettu},
-        ${asiakirja.allekirjoituksetTarkistettuLisatiedot.orNull}, 
+        ${asiakirja.allekirjoituksetTarkistettuLisatiedot.orNull},
         ${asiakirja.imiPyynto.imiPyynto.getOrElse(false)},
         ${asiakirja.imiPyynto.imiPyyntoNumero.orNull},
         ${asiakirja.imiPyynto.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull},
@@ -173,15 +172,21 @@ class AsiakirjaRepository extends BaseResultHandlers {
         ${asiakirja.suostumusVahvistamiselleSaatu},
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistus},
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty
-            .map(java.sql.Timestamp.valueOf)
-            .orNull},
+        .map(java.sql.Timestamp.valueOf)
+        .orNull},
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu.map(java.sql.Timestamp.valueOf).orNull},
         $valmistumisenVahvistusVastausOrNull::valmistumisen_vahvistus_vastaus_enum,
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.orNull},
         ${asiakirja.viimeinenAsiakirjaHakijalta.map(java.sql.Timestamp.valueOf).orNull},
         ${luoja.toString})
       RETURNING id
-    """.as[UUID].head,
+    """.as[UUID].head
+  }
+
+  def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: String): UUID = {
+    try
+      db.run(
+        tallennaUudetAsiakirjatiedotAction(asiakirja, luoja),
         "tallenna_uudet_asiakirjatiedot"
       )
     catch {
