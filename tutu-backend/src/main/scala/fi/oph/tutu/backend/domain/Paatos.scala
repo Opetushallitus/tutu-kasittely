@@ -16,12 +16,16 @@ case class Paatos(
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 ) {
+  private def ratkaisutyyppiOnPeruutusTaiRaukeaminen(toBeRatkaisutyyppi: Option[Ratkaisutyyppi]): Boolean = {
+    toBeRatkaisutyyppi.contains(PeruutusTaiRaukeaminen) ||
+    (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen) && toBeRatkaisutyyppi.isEmpty)
+  }
   def mergeWith(partial: PartialPaatos): Paatos =
     this.copy(
       ratkaisutyyppi = partial.ratkaisutyyppi.orElse(this.ratkaisutyyppi),
       seutArviointi = partial.seutArviointi.getOrElse(this.seutArviointi),
       peruutuksenTaiRaukeamisenSyy =
-        if (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen))
+        if (ratkaisutyyppiOnPeruutusTaiRaukeaminen(partial.ratkaisutyyppi))
           partial.peruutuksenTaiRaukeamisenSyy.orElse(this.peruutuksenTaiRaukeamisenSyy)
         else None
     )
