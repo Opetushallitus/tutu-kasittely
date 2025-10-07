@@ -285,6 +285,7 @@
         "koulutuksenSisaltoSelite": "Mihin ammattiin koulutus on valmistanut ja mahdollisia lisäselvityksiä koulutuksen sisällöstä",
         "erotKoulutuksenSisallossa": "Erot koulutuksen sisällössä",
         "muuEro": "Muu ero",
+        "muuTilanne": "Muu tilanne",
         "muuTutkinto": "Muu tutkinto tai opintosuoritus, täsmennä",
         "opettajat": {
           "otsikko": "Opettajat",
@@ -373,6 +374,13 @@
         "oikaisu": "Oikaisu",
         "jatetaanTutkimatta": "Jätetään tutkimatta",
         "siirto": "Siirto"
+      },
+      "paatostyyppi": {
+        "otsikko": "Päätöstyyppi",
+        "taso": "Taso",
+        "kelpoisuus": "Kelpoisuus",
+        "tiettyTutkintoTaiOpinnot": "Tietty tutkinto tai opinnot",
+        "riittavatOpinnot": "Riittävät opinnot"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",

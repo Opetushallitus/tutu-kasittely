@@ -197,6 +197,6 @@ export const sovellettuTilanneBooleanFields: {
   {
     type: 'boolean',
     key: 'sovellettuMuuTilanne',
-    labelKey: 'hakemus.perustelu.uoro.muuEro',
+    labelKey: 'hakemus.perustelu.uoro.muuTilanne',
   },
 ];

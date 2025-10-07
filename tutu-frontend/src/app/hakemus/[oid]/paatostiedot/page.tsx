@@ -37,6 +37,22 @@ const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Siirto', label: t('hakemus.paatos.ratkaisutyyppi.siirto') },
 ];
 
+const paatostyyppiOptions = (t: TFunction) => [
+  { value: 'Taso', label: t('hakemus.paatos.paatostyyppi.taso') },
+  {
+    value: 'Kelpoisuus',
+    label: t('hakemus.paatos.paatostyyppi.kelpoisuus'),
+  },
+  {
+    value: 'TiettyTutkintoTaiOpinnot',
+    label: t('hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot'),
+  },
+  {
+    value: 'RiittavatOpinnot',
+    label: t('hakemus.paatos.paatostyyppi.riittavatOpinnot'),
+  },
+];
+
 export default function PaatostiedotPage() {
   const { t } = useTranslations();
   const {
@@ -100,7 +116,7 @@ const Paatostiedot = ({
       updatePaatos(newPaatos);
     }
   };
-
+  console.log({ currentPaatos });
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -143,6 +159,22 @@ const Paatostiedot = ({
           updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
             updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
           }
+        />
+      )}
+      {currentPaatos.ratkaisutyyppi === 'Paatos' && (
+        //todo: omaksi komponentiksi
+        <OphSelectFormField
+          placeholder={t('yleiset.valitse')}
+          label={t('hakemus.paatos.paatostyyppi.otsikko')}
+          options={paatostyyppiOptions(t)}
+          value={''}
+          onChange={
+            () => null
+            // updatePaatosField({
+            //   paatosTyyppi: event.target.value as Paatostyyppi,
+            // })
+          }
+          data-testid={'paatos-paatostyyppi'}
         />
       )}
     </Stack>
