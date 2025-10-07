@@ -6,9 +6,9 @@ import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -67,7 +67,8 @@ class PaatosControllerTest extends IntegrationTestBase {
               muuSyy = pickBooleanOption
             )
           )
-        else None
+        else None,
+      paatosTiedot = None
     )
   }
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {

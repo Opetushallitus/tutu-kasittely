@@ -6,6 +6,8 @@ import fi.oph.tutu.backend.domain.{
   AsiakirjamalliTutkinnosta,
   Lausuntopyynto,
   LausuntopyyntoModifyData,
+  PaatosTieto,
+  PaatosTietoModifyData,
   PyydettavaAsiakirja,
   PyydettavaAsiakirjaModifyData,
   Tutkinto,
@@ -40,6 +42,12 @@ object HakemusModifyOperationResolver {
     (currentPyynto.lausunnonAntaja != toBePyynto.lausunnonAntaja ||
       currentPyynto.lahetetty != toBePyynto.lahetetty ||
       currentPyynto.saapunut != toBePyynto.saapunut)
+
+  private def paatosTietoModified(
+    currentPaatosTieto: PaatosTieto,
+    toBePaatosTieto: PaatosTieto
+  ): Boolean = currentPaatosTieto.id == toBePaatosTieto.id &&
+    (currentPaatosTieto.paatosTyyppi != toBePaatosTieto.paatosTyyppi)
 
   def resolvePyydettavatAsiakirjatModifyOperations(
     currentAsiakirjat: Seq[PyydettavaAsiakirja],
@@ -108,5 +116,19 @@ object HakemusModifyOperationResolver {
         muutetut ++ resolveReIndexedTutkinnot(pieninPoistettuJarjestysNumero.toInt, toBeTutkinnot, poistetut)
       else muutetut
     TutkintoModifyData(uudet, muutetutJaUudelleenNumeroitavat, poistetut)
+  }
+
+  def resolvePaatosTietoModifyOperations(
+    currentPaatosTiedot: Seq[PaatosTieto],
+    toBePaatosTiedot: Seq[PaatosTieto]
+  ): PaatosTietoModifyData = {
+    val uudet     = toBePaatosTiedot.filterNot(pyynto => currentPaatosTiedot.exists(_.id == pyynto.id))
+    val poistetut = currentPaatosTiedot
+      .filterNot(pyynto => toBePaatosTiedot.exists(_.id == pyynto.id))
+      .map(_.id.orNull)
+      .filter(_ != null)
+    val muutetut =
+      toBePaatosTiedot.filter(paatosTieto => currentPaatosTiedot.exists(paatosTietoModified(_, paatosTieto)))
+    PaatosTietoModifyData(uudet, muutetut, poistetut)
   }
 }
