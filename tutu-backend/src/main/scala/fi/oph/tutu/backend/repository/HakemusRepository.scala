@@ -84,6 +84,29 @@ class HakemusRepository extends BaseResultHandlers {
     )
 
   /**
+   * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
+   *
+   * @param hakemusOid
+   *   hakemuspalvelun hakemuksen oid
+   * @return
+   *   DBIO action joka palauttaa tallennetun hakemuksen id:n
+   */
+  def tallennaHakemusAction(
+    hakemusOid: HakemusOid,
+    hakemusKoskee: Int,
+    esittelijaId: Option[UUID],
+    asiakirjaId: UUID,
+    luoja: String
+  ): DBIO[UUID] =
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
+    sql"""
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, asiakirja_id, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
+      RETURNING id
+    """.as[UUID].head
+
+  /**
    * Tallentaa uuden hakemuksen
    *
    * @param hakemusOid
@@ -98,15 +121,9 @@ class HakemusRepository extends BaseResultHandlers {
     asiakirjaId: UUID,
     luoja: String
   ): UUID =
-    val hakemusOidString   = hakemusOid.toString
-    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     try
       db.run(
-        sql"""
-      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, asiakirja_id, luoja)
-      VALUES ($hakemusOidString, $hakemusKoskee, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
-      RETURNING id
-    """.as[UUID].head,
+        tallennaHakemusAction(hakemusOid, hakemusKoskee, esittelijaId, asiakirjaId, luoja),
         "tallenna_hakemus"
       )
     catch {

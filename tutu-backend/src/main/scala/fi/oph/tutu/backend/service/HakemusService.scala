@@ -1,7 +1,14 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository}
+import fi.oph.tutu.backend.repository.{
+  AsiakirjaRepository,
+  EsittelijaRepository,
+  HakemusRepository,
+  PaatosRepository,
+  PerusteluRepository,
+  TutuDatabase
+}
 import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -9,10 +16,13 @@ import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
+import slick.dbio.DBIO
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 @Component
 @Service
@@ -20,9 +30,12 @@ class HakemusService(
   hakemusRepository: HakemusRepository,
   esittelijaRepository: EsittelijaRepository,
   asiakirjaRepository: AsiakirjaRepository,
+  perusteluRepository: PerusteluRepository,
+  paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   onrService: OnrService,
-  ataruHakemusParser: AtaruHakemusParser
+  ataruHakemusParser: AtaruHakemusParser,
+  db: TutuDatabase
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
@@ -41,32 +54,133 @@ class HakemusService(
       case _ => None
     }
 
-    val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
-      Asiakirja(),
-      "Hakemuspalvelu"
-    )
     val esittelijaId = esittelija.map(_.esittelijaId)
 
-    val tallennettuAtaruHakemusId = hakemusRepository.tallennaHakemus(
-      hakemus.hakemusOid,
-      hakemus.hakemusKoskee,
-      esittelijaId,
-      asiakirjaId,
-      "Hakemuspalvelu"
-    )
-    val tutkinnot = ataruHakemusParser.parseTutkinnot(tallennettuAtaruHakemusId, ataruHakemus)
+    // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
+    val transactionalAction = for {
+      asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
+        Asiakirja(),
+        "Hakemuspalvelu"
+      )
+      hakemusId <- hakemusRepository.tallennaHakemusAction(
+        hakemus.hakemusOid,
+        hakemus.hakemusKoskee,
+        esittelijaId,
+        asiakirjaId,
+        "Hakemuspalvelu"
+      )
+      tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
+      _ <-
+        if (tutkinnot != null && tutkinnot.nonEmpty) {
+          DBIO.sequence(
+            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, "Hakemuspalvelu"))
+          )
+        } else {
+          DBIO.successful(Seq.empty)
+        }
+    } yield hakemusId
 
-    try {
-      if (tutkinnot != null) {
-        tutkinnot.foreach(tutkinto =>
-          hakemusRepository.lisaaTutkintoSeparately(tallennettuAtaruHakemusId, tutkinto, "Hakemuspalvelu")
+    // Suoritetaan transaktio
+    db.runTransactionally(transactionalAction, "tallenna_ataru_hakemus") match {
+      case Success(hakemusId) =>
+        LOG.info(s"Ataru-hakemuksen ${hakemus.hakemusOid} tallennus onnistui")
+        hakemusId
+      case Failure(e) =>
+        LOG.error(s"Ataru-hakemuksen ${hakemus.hakemusOid} tallennus epäonnistui: ${e.getMessage}", e)
+        throw new RuntimeException(
+          s"Ataru-hakemuksen tallennus epäonnistui: ${e.getMessage}",
+          e
         )
-      }
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Virhe tutkintojen tallennuksessa hakemukselle ${hakemus.hakemusOid}: ${e.getMessage}", e)
     }
-    tallennettuAtaruHakemusId
+  }
+
+  /**
+   * Luo kokonaisen hakemuksen transaktionaalises ti (hakemus + perustelu + paatos)
+   * Käytetään Ataru-hakemuksen luonnissa, jotta kaikki tiedot tallennetaan atomisesti.
+   *
+   * @param hakemus
+   *   uusi Ataru-hakemus
+   * @param partialPerustelu
+   *   perustelu
+   * @param partialPaatos
+   *   päätös
+   * @param luoja
+   *   luojan tunniste
+   * @return
+   *   (hakemusId, perustelu, paatos) tuple
+   */
+  def luoKokonainenHakemus(
+    hakemus: UusiAtaruHakemus,
+    partialPerustelu: PartialPerustelu,
+    partialPaatos: PartialPaatos,
+    luoja: String
+  ): (UUID, Perustelu, Paatos) = {
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+
+    val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
+
+    val esittelija = tutkinto_1_maakoodiUri match {
+      case Some(tutkinto_1_maakoodiUri) if tutkinto_1_maakoodiUri.nonEmpty =>
+        esittelijaRepository.haeEsittelijaMaakoodiUrilla(tutkinto_1_maakoodiUri)
+      case _ => None
+    }
+
+    val esittelijaId = esittelija.map(_.esittelijaId)
+
+    // Rakennetaan perustelu ja paatos domain objektit
+    val perustelu = Perustelu().mergeWith(partialPerustelu)
+    val paatos    = Paatos().mergeWith(partialPaatos)
+
+    // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
+    val transactionalAction = for {
+      asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
+        Asiakirja(),
+        luoja
+      )
+      hakemusId <- hakemusRepository.tallennaHakemusAction(
+        hakemus.hakemusOid,
+        hakemus.hakemusKoskee,
+        esittelijaId,
+        asiakirjaId,
+        luoja
+      )
+      tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
+      _ <-
+        if (tutkinnot != null && tutkinnot.nonEmpty) {
+          DBIO.sequence(
+            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, luoja))
+          )
+        } else {
+          DBIO.successful(Seq.empty)
+        }
+      savedPerustelu <- perusteluRepository.tallennaPerusteluAction(
+        hakemusId,
+        perustelu.copy(hakemusId = Some(hakemusId)),
+        luoja
+      )
+      savedPaatos <- paatosRepository.tallennaPaatosAction(
+        hakemusId,
+        paatos.copy(hakemusId = Some(hakemusId)),
+        luoja
+      )
+    } yield (hakemusId, savedPerustelu, savedPaatos)
+
+    // Suoritetaan transaktio
+    db.runTransactionally(transactionalAction, "luo_kokonaishakemus") match {
+      case Success(result) =>
+        LOG.info(s"Ataru-hakemuksen ${hakemus.hakemusOid} kokonaisluonti onnistui")
+        result
+      case Failure(e) =>
+        LOG.error(s"Ataru-hakemuksen ${hakemus.hakemusOid} kokonaisluonti epäonnistui: ${e.getMessage}", e)
+        throw new RuntimeException(
+          s"Ataru-hakemuksen kokonaisluonti epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {

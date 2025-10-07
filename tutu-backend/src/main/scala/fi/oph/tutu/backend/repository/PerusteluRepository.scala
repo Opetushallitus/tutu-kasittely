@@ -5,6 +5,7 @@ import org.json4s.{DefaultFormats, Formats}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
+import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
@@ -64,6 +65,104 @@ class PerusteluRepository extends BaseResultHandlers {
   }
 
   /**
+   * Tallentaa uuden perustelun (palauttaa DBIO-actionin transaktioita varten)
+   *
+   * @param hakemusId
+   *   hakemuksen uuid
+   * @param perustelu
+   * @param luoja
+   * @return
+   *   DBIO action joka palauttaa tallennetun perustelun
+   */
+  def tallennaPerusteluAction(
+    hakemusId: UUID,
+    perustelu: Perustelu,
+    luoja: String
+  ): DBIO[Perustelu] = {
+    val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto.orNull)
+    sql"""
+      INSERT INTO perustelu (
+        hakemus_id,
+        virallinen_tutkinnon_myontaja,
+        virallinen_tutkinto,
+        lahde_lahtomaan_kansallinen_lahde,
+        lahde_lahtomaan_virallinen_vastaus,
+        lahde_kansainvalinen_hakuteos_tai_verkkosivusto,
+        selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
+        ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
+        selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
+        aikaisemmat_paatokset,
+        jatko_opinto_kelpoisuus,
+        jatko_opinto_kelpoisuus_lisatieto,
+        muu_perustelu,
+        uo_ro_sisalto,
+        lausunto_pyynto_lisatiedot,
+        lausunto_sisalto,
+        luoja
+      )
+      VALUES (
+        ${hakemusId.toString}::uuid,
+        ${perustelu.virallinenTutkinnonMyontaja},
+        ${perustelu.virallinenTutkinto},
+        ${perustelu.lahdeLahtomaanKansallinenLahde},
+        ${perustelu.lahdeLahtomaanVirallinenVastaus},
+        ${perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto},
+        ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
+        ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
+        ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
+        ${perustelu.aikaisemmatPaatokset},
+        ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
+        ${perustelu.jatkoOpintoKelpoisuusLisatieto},
+        ${perustelu.muuPerustelu},
+        $uoRoJson::jsonb,
+        ${perustelu.lausuntoPyyntojenLisatiedot},
+        ${perustelu.lausunnonSisalto},
+        $luoja
+      )
+      ON CONFLICT (hakemus_id)
+      DO UPDATE SET
+        virallinen_tutkinnon_myontaja = ${perustelu.virallinenTutkinnonMyontaja},
+        virallinen_tutkinto = ${perustelu.virallinenTutkinto},
+        lahde_lahtomaan_kansallinen_lahde = ${perustelu.lahdeLahtomaanKansallinenLahde},
+        lahde_lahtomaan_virallinen_vastaus = ${perustelu.lahdeLahtomaanVirallinenVastaus},
+        lahde_kansainvalinen_hakuteos_tai_verkkosivusto = ${perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto},
+        selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta = ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
+        ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
+        selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
+        aikaisemmat_paatokset = ${perustelu.aikaisemmatPaatokset},
+        jatko_opinto_kelpoisuus = ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
+        jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
+        muu_perustelu = ${perustelu.muuPerustelu},
+        uo_ro_sisalto = $uoRoJson::jsonb,
+        lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
+        lausunto_sisalto = ${perustelu.lausunnonSisalto},
+        muokkaaja = $luoja
+      RETURNING
+        id,
+        hakemus_id,
+        virallinen_tutkinnon_myontaja,
+        virallinen_tutkinto,
+        lahde_lahtomaan_kansallinen_lahde,
+        lahde_lahtomaan_virallinen_vastaus,
+        lahde_kansainvalinen_hakuteos_tai_verkkosivusto,
+        selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
+        ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
+        selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
+        aikaisemmat_paatokset,
+        jatko_opinto_kelpoisuus,
+        jatko_opinto_kelpoisuus_lisatieto,
+        muu_perustelu,
+        uo_ro_sisalto,
+        lausunto_pyynto_lisatiedot,
+        lausunto_sisalto,
+        luotu,
+        luoja,
+        muokattu,
+        muokkaaja
+    """.as[Perustelu].head
+  }
+
+  /**
    * Tallentaa uuden perustelun
    *
    * @param hakemusId
@@ -79,88 +178,8 @@ class PerusteluRepository extends BaseResultHandlers {
     luoja: String
   ): Perustelu = {
     try {
-      val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto.orNull)
       db.run(
-        sql"""
-          INSERT INTO perustelu (
-            hakemus_id,
-            virallinen_tutkinnon_myontaja,
-            virallinen_tutkinto,
-            lahde_lahtomaan_kansallinen_lahde,
-            lahde_lahtomaan_virallinen_vastaus,
-            lahde_kansainvalinen_hakuteos_tai_verkkosivusto,
-            selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
-            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
-            selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
-            aikaisemmat_paatokset,
-            jatko_opinto_kelpoisuus,
-            jatko_opinto_kelpoisuus_lisatieto,
-            muu_perustelu,
-            uo_ro_sisalto,
-            lausunto_pyynto_lisatiedot,
-            lausunto_sisalto,
-            luoja
-          )
-          VALUES (
-            ${hakemusId.toString}::uuid,
-            ${perustelu.virallinenTutkinnonMyontaja},
-            ${perustelu.virallinenTutkinto},
-            ${perustelu.lahdeLahtomaanKansallinenLahde},
-            ${perustelu.lahdeLahtomaanVirallinenVastaus},
-            ${perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto},
-            ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
-            ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
-            ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
-            ${perustelu.aikaisemmatPaatokset},
-            ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
-            ${perustelu.jatkoOpintoKelpoisuusLisatieto},
-            ${perustelu.muuPerustelu},
-            $uoRoJson::jsonb,
-            ${perustelu.lausuntoPyyntojenLisatiedot},
-            ${perustelu.lausunnonSisalto},
-            $luoja
-          )
-          ON CONFLICT (hakemus_id)
-          DO UPDATE SET
-            virallinen_tutkinnon_myontaja = ${perustelu.virallinenTutkinnonMyontaja},
-            virallinen_tutkinto = ${perustelu.virallinenTutkinto},
-            lahde_lahtomaan_kansallinen_lahde = ${perustelu.lahdeLahtomaanKansallinenLahde},
-            lahde_lahtomaan_virallinen_vastaus = ${perustelu.lahdeLahtomaanVirallinenVastaus},
-            lahde_kansainvalinen_hakuteos_tai_verkkosivusto = ${perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto},
-            selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta = ${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta},
-            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa = ${perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa}::tutkinnon_asema,
-            selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa = ${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa},
-            aikaisemmat_paatokset = ${perustelu.aikaisemmatPaatokset},
-            jatko_opinto_kelpoisuus = ${perustelu.jatkoOpintoKelpoisuus}::jatko_opinto_kelpoisuus,
-            jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
-            muu_perustelu = ${perustelu.muuPerustelu},
-            uo_ro_sisalto = $uoRoJson::jsonb,
-            lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
-            lausunto_sisalto = ${perustelu.lausunnonSisalto},
-            muokkaaja = $luoja
-          RETURNING
-            id,
-            hakemus_id,
-            virallinen_tutkinnon_myontaja,
-            virallinen_tutkinto,
-            lahde_lahtomaan_kansallinen_lahde,
-            lahde_lahtomaan_virallinen_vastaus,
-            lahde_kansainvalinen_hakuteos_tai_verkkosivusto,
-            selvitys_tutkinnon_myontajasta_ja_tutkinnon_virallisuudesta,
-            ylimman_tutkinnon_asema_lahtomaan_jarjestelmassa,
-            selvitys_tutkinnon_asemasta_lahtomaan_jarjestelmassa,
-            aikaisemmat_paatokset,
-            jatko_opinto_kelpoisuus,
-            jatko_opinto_kelpoisuus_lisatieto,
-            muu_perustelu,
-            uo_ro_sisalto,
-            lausunto_pyynto_lisatiedot,
-            lausunto_sisalto,
-            luotu,
-            luoja,
-            muokattu,
-            muokkaaja
-        """.as[Perustelu].head,
+        tallennaPerusteluAction(hakemusId, perustelu, luoja),
         "tallenna_perustelu"
       )
     } catch {
