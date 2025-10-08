@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { sortBy } from 'remeda';
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
-import _sisalto from './fixtures/hakemus1/_sisalto.json';
+import { _sisalto } from './fixtures/hakemus1/_sisalto';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 

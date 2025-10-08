@@ -37,5 +37,6 @@ export default defineConfig([
     'node_modules',
     'certificates',
     'test-results',
+    'next-env.d.ts',
   ]),
 ]);

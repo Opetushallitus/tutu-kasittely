@@ -160,7 +160,7 @@ export type Tutkinto = {
   muuTutkintoMuistioId?: string;
 
   ohjeellinenLaajuus?: string;
-  opinnaytetyo?: boolean | undefined;
-  harjoittelu?: boolean | undefined;
-  perustelunLisatietoja?: string | undefined;
+  opinnaytetyo?: boolean;
+  harjoittelu?: boolean;
+  perustelunLisatietoja?: string;
 };

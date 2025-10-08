@@ -23,9 +23,9 @@ export function TolgeeBase() {
   if (localTranslations || isTesting) {
     return tg.updateDefaults({
       staticData: {
-        fi: () => import('./messages/fi.json'),
-        sv: () => import('./messages/sv.json'),
-        en: () => import('./messages/en.json'),
+        'fi:tutu-kasittely': () => import('./messages/fi.json'),
+        'sv:tutu-kasittely': () => import('./messages/sv.json'),
+        'en:tutu-kasittely': () => import('./messages/en.json'),
       },
     });
   } else {

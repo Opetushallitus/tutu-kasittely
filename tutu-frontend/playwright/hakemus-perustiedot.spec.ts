@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
-import _sisalto from './fixtures/hakemus1/_perustietoSisalto.json';
+import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -68,7 +68,7 @@ test('Hakemuksen perustiedot näkyvät sisällössä oikein', async ({ page }) =
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
     const hakemus = getHakemus();
-    hakemus.sisalto = _sisalto;
+    hakemus.sisalto = _perustietoSisalto;
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

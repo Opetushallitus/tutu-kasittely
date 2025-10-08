@@ -1,29 +1,40 @@
-import _hakemus from './_hakemus.json';
-import _sisalto from './_sisalto.json';
-import _liitteet from './_liitteet.json';
-import _liitteidenTilat from './_liitteidenTilat.json';
-import _muutoshistoria from './_muutoshistoria.json';
-import _asiakirjamallit from './_asiakirjamallit.json';
+import { _hakemus } from './_hakemus';
+import { _sisalto } from './_sisalto';
+import { _liitteet } from './_liitteet';
+import { _liitteidenTilat } from './_liitteidenTilat';
+import { _muutoshistoria } from './_muutoshistoria';
+import { _asiakirjamallit } from './_asiakirjamallit';
 
 import { clone } from 'remeda';
+import {
+  AsiakirjamallitTutkinnoista,
+  Hakemus,
+  MuutosHistoriaItem,
+  SisaltoItem,
+} from '@/src/lib/types/hakemus';
+import { LiiteItem } from '@/src/lib/types/liiteItem';
 
 export const getHakemus = () => {
-  const hakemus = { ..._hakemus };
-  const sisalto = [..._sisalto];
+  const hakemus: Hakemus = { ..._hakemus };
+  const sisalto: Array<SisaltoItem> = [..._sisalto];
   const liitteidenTilat = [..._liitteidenTilat];
-  const muutoshistoria = [..._muutoshistoria];
-  const asiakirjamallit = { ..._asiakirjamallit };
+  const muutoshistoria: Array<MuutosHistoriaItem> = [..._muutoshistoria];
+  const asiakirjamallit: AsiakirjamallitTutkinnoista = { ..._asiakirjamallit };
 
   hakemus.sisalto = sisalto;
   hakemus.liitteidenTilat = liitteidenTilat;
-  hakemus.muutoshistoria = muutoshistoria;
+  hakemus.muutosHistoria = muutoshistoria;
   hakemus.asiakirja.asiakirjamallitTutkinnoista = asiakirjamallit;
-  hakemus.asiakirja.imiPyynto = {};
+  hakemus.asiakirja.imiPyynto = {
+    imiPyynto: null,
+    imiPyyntoLahetetty: null,
+    imiPyyntoNumero: null,
+    imiPyyntoVastattu: null,
+  };
 
-  return hakemus;
+  return hakemus as Hakemus;
 };
 
-export const getLiitteet = () => {
-  const liitteet = clone(_liitteet);
-  return liitteet;
+export const getLiitteet = (): Array<LiiteItem> => {
+  return clone(_liitteet);
 };

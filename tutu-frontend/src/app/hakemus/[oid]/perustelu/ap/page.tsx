@@ -225,6 +225,7 @@ export default function ApPage() {
                     event.target.checked,
                   );
                 }}
+                data-testid={'selvityksetAikaisempiTapaus'}
               />
               {APSisalto?.selvityksetAikaisempiTapaus && (
                 <Box
@@ -249,6 +250,7 @@ export default function ApPage() {
                         event.target.value,
                       );
                     }}
+                    data-testid={'selvityksetAikaisemmanTapauksenAsiaTunnus'}
                   />
                 </Box>
               )}
