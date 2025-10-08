@@ -540,6 +540,25 @@ class Controller(
     }
   }
 
+  @GetMapping(
+    path = Array("perustelu/{hakemusOid}/perustelumuistio"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haePerusteluMuistio(
+    @PathVariable hakemusOid: String
+  ): ResponseEntity[Any] = {
+    Try {
+      perusteluService.haePerusteluMuistio(HakemusOid(hakemusOid))
+    } match {
+      case Success(perusteluMuistio) =>
+        val response = mapper.writeValueAsString(perusteluMuistio)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Perustelumuistion haku epäonnistui", exception.getMessage)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
   @GetMapping(path = Array("koodisto/{koodisto}"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   def haeKoodisto(
     @PathVariable("koodisto") koodisto: String,

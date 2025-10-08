@@ -1,24 +1,18 @@
-import { Box, Stack, styled, useTheme } from '@mui/material';
+import { Stack, styled, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import PreviewIcon from '@mui/icons-material/Preview';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { KasittelyVaihe } from '@/src/components/sidebar/KasittelyVaihe';
-import { CenteredRow } from '@/src/components/CenteredRow';
-import { StyledLink } from '@/src/components/StyledLink';
 import { Paatos } from '@/src/components/sidebar/Paatos';
 import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
+import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
+import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
 
 const MailOutlineIconBlue = styled(MailOutlineIcon)({
-  color: ophColors.blue2,
-  paddingTop: '3px',
-});
-
-const PreviewIconBlue = styled(PreviewIcon)({
   color: ophColors.blue2,
   paddingTop: '3px',
 });
@@ -30,35 +24,6 @@ const CheckCircleIconBlue = styled(CheckCircleOutlineRoundedIcon)({
 
 const SHOW_EXTENDED_KASITTELYVAIHE_PATHS: string[] | [] = [];
 const SHOW_TAYDENNYSPYYNTO_PATHS = ['/asiakirjat', '/tutkinnot'];
-
-const LinkBox = styled(Box)(({ theme }) => ({
-  border: `2px solid ${ophColors.blue2}`,
-  padding: theme.spacing(1, 1),
-}));
-
-const ToimintoLinkki = ({
-  href,
-  gap,
-  icon,
-  label,
-}: {
-  href: string;
-  gap: string;
-  icon: React.ReactNode;
-  label: string;
-}) => {
-  return (
-    //TODO muutetaanko OphButtoniksi?
-    <LinkBox>
-      <StyledLink href={href}>
-        <CenteredRow gap={gap}>
-          {icon}
-          {label}
-        </CenteredRow>
-      </StyledLink>
-    </LinkBox>
-  );
-};
 
 const pathContainsOneOf = (options: string[], path: string) => {
   return options.some((opt) => path.includes(opt));
@@ -93,12 +58,7 @@ export const SideBar = () => {
         icon={<MailOutlineIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaViesti')}
       />
-      <ToimintoLinkki
-        href="/"
-        gap={theme.spacing(1)}
-        icon={<PreviewIconBlue />}
-        label={t('hakemus.sivupalkki.perustelumuistio')}
-      />
+      <AvaaPerusteluMuistioButton />
       <ToimintoLinkki
         href="/"
         gap={theme.spacing(1)}

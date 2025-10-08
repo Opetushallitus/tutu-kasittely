@@ -4,6 +4,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { doApiFetch, doApiPost } from '@/src/lib/tutu-backend/api';
 import { Perustelu } from '@/src/lib/types/perustelu';
 
+export const getPerusteluMuistio = async (
+  hakemusOid: string | undefined,
+): Promise<string> => {
+  const url = `perustelu/${hakemusOid}/perustelumuistio`;
+  return await doApiFetch(url, undefined, 'no-store');
+};
+
 export const getPerustelu = async (
   hakemusOid: string | undefined,
 ): Promise<Perustelu> => {

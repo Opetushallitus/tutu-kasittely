@@ -77,6 +77,10 @@
       "perustelumuistio": "Perustelumuistio",
       "kirjoitaPaatos": "Kirjoita päätös"
     },
+    "perustelumuistio": {
+      "otsikko": "Perustelumuistio",
+      "kopioi": "Kopioi"
+    },
     "perustiedot": {
       "otsikko": "Hakemuksen ja hakijan tiedot",
       "hakemusKoskee": "Hakemus koskee",
@@ -428,6 +432,7 @@
     "paivamaaraFormaatti": "pp.kk.vvvv",
     "peruuta": "Peruuta",
     "valitse": "Valitse...",
-    "tasmenna": "Täsmennä"
+    "tasmenna": "Täsmennä",
+    "sulje": "Sulje"
   }
 }
