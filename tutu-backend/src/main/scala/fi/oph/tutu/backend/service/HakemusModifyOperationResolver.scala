@@ -1,18 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{
-  AsiakirjamalliLahde,
-  AsiakirjamalliModifyData,
-  AsiakirjamalliTutkinnosta,
-  Lausuntopyynto,
-  LausuntopyyntoModifyData,
-  PaatosTieto,
-  PaatosTietoModifyData,
-  PyydettavaAsiakirja,
-  PyydettavaAsiakirjaModifyData,
-  Tutkinto,
-  TutkintoModifyData
-}
+import fi.oph.tutu.backend.domain.*
 
 import java.util.UUID
 
@@ -47,7 +35,15 @@ object HakemusModifyOperationResolver {
     currentPaatosTieto: PaatosTieto,
     toBePaatosTieto: PaatosTieto
   ): Boolean = currentPaatosTieto.id == toBePaatosTieto.id &&
-    (currentPaatosTieto.paatosTyyppi != toBePaatosTieto.paatosTyyppi)
+    (currentPaatosTieto.paatosTyyppi != toBePaatosTieto.paatosTyyppi ||
+      currentPaatosTieto.sovellettuLaki != toBePaatosTieto.sovellettuLaki ||
+      currentPaatosTieto.tutkintoId != toBePaatosTieto.tutkintoId ||
+      currentPaatosTieto.lisaaTutkintoPaatostekstiin != toBePaatosTieto.lisaaTutkintoPaatostekstiin ||
+      currentPaatosTieto.myonteinenPaatos != toBePaatosTieto.myonteinenPaatos ||
+      currentPaatosTieto.myonteisenPaatoksenLisavaatimukset != toBePaatosTieto.myonteisenPaatoksenLisavaatimukset ||
+      currentPaatosTieto.kielteisenPaatoksenPerustelut != toBePaatosTieto.kielteisenPaatoksenPerustelut ||
+      currentPaatosTieto.tutkintoTaso != toBePaatosTieto.tutkintoTaso ||
+      currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot != toBePaatosTieto.rinnastettavatTutkinnotTaiOpinnot)
 
   def resolvePyydettavatAsiakirjatModifyOperations(
     currentAsiakirjat: Seq[PyydettavaAsiakirja],

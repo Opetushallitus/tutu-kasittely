@@ -22,6 +22,12 @@ class PaatosRepository extends BaseResultHandlers {
 
   final val DB_TIMEOUT = 30.seconds
 
+  private def mapFromTextArray(dbValue: Option[String]): Option[Seq[String]] =
+    dbValue.map(_.replaceAll("[{}\"]", "").split(",").map(_.trim).toSeq)
+
+  private def mapToTextArray(scalaValue: Option[Seq[String]]): Option[String] =
+    scalaValue.map(_.mkString("{", ",", "}"))
+
   implicit val getPaatosResult: GetResult[Paatos] = GetResult(r =>
     Paatos(
       id = Some(r.nextObject().asInstanceOf[UUID]),
@@ -41,6 +47,14 @@ class PaatosRepository extends BaseResultHandlers {
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatosId = Some(r.nextObject().asInstanceOf[UUID]),
       paatosTyyppi = Option(PaatosTyyppi.fromString(r.nextString())),
+      sovellettuLaki = Option(SovellettuLaki.fromString(r.nextString())),
+      tutkintoId = Some(r.nextObject().asInstanceOf[UUID]),
+      lisaaTutkintoPaatostekstiin = Option(r.nextBoolean()),
+      myonteinenPaatos = Option(r.nextBoolean()),
+      myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
+      kielteisenPaatoksenPerustelut = r.nextStringOption(),
+      tutkintoTaso = Option(TutkintoTaso.fromString(r.nextString())),
+      rinnastettavatTutkinnotTaiOpinnot = mapFromTextArray(r.nextStringOption()),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -139,28 +153,32 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-//  id UUID PRIMARY KEY DEFAULT uuid_generate_v4()
-//  paatos_id UUID NOT NULL
-//  paatostyyppi paatostyyppi
-//  sovellettulaki sovellettulaki
-//  tutkinto_id UUID
-//  lisaa_tutkinto_paatostekstiin BOOLEAN
-//  myonteinen_paatos BOOLEAN
-//  myonteisen_paatoksen_lisavaatimukset JSONB DEFAULT'{}':: jsonb NOT NULL
-//  kielteisen_paatoksen_perustelut JSONB DEFAULT'{}':: jsonb NOT NULL
-//  tutkintotaso tutkintotaso
-//  rinnastettavat_tutkinnot_tai_opinnot TEXT[]
-//  luotu TIMESTAMPTZ DEFAULT now()
-//  luoja VARCHAR (255) NOT NULL
-//  muokattu TIMESTAMPTZ
-//  muokkaaja VARCHAR (255)
-
   def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] =
     sqlu"""
-        INSERT INTO paatostieto (paatos_id, paatostyyppi, luoja)
+        INSERT INTO paatostieto (
+                                  paatos_id, 
+                                  paatostyyppi, 
+                                  sovellettulaki, 
+                                  tutkinto_id, 
+                                  lisaa_tutkinto_paatostekstiin, 
+                                  myonteinen_paatos, 
+                                  myonteisen_paatoksen_lisavaatimukset, 
+                                  kielteisen_paatoksen_perustelut, 
+                                  tutkintotaso, 
+                                  rinnastettavat_tutkinnot_tai_opinnot, 
+                                  luoja
+                                )
         VALUES (
           ${paatosId.toString}::uuid,
           ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
+          ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
+          ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
+          ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
+          ${paatosTieto.myonteinenPaatos}::boolean,
+          ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+          ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
+          ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+          ${mapToTextArray(paatosTieto.rinnastettavatTutkinnotTaiOpinnot)}::text[],
           $luoja
         )"""
 
@@ -172,6 +190,16 @@ class PaatosRepository extends BaseResultHandlers {
         UPDATE paatostieto
         SET
           paatostyyppi = ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
+          sovellettulaki = ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
+          tutkinto_id = ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
+          lisaa_tutkinto_paatostekstiin = ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
+          myonteinen_paatos = ${paatosTieto.myonteinenPaatos}::boolean,
+          myonteisen_paatoksen_lisavaatimukset = ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+          kielteisen_paatoksen_perustelut = ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
+          tutkintotaso = ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+          rinnastettavat_tutkinnot_tai_opinnot = ${mapToTextArray(
+        paatosTieto.rinnastettavatTutkinnotTaiOpinnot
+      )}::text[],
           muokkaaja = $muokkaaja
         WHERE id = ${paatosTieto.id.get.toString}::uuid
       """
@@ -180,7 +208,7 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          SELECT id, paatos_id, paatostyyppi, luotu, luoja, muokattu, muokkaaja
+          SELECT *
           FROM paatostieto
           WHERE paatos_id = ${paatosId.toString}::uuid
         """.as[PaatosTieto],

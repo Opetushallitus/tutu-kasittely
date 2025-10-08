@@ -46,6 +46,22 @@ class PaatosControllerTest extends IntegrationTestBase {
   var hakemusId: Option[UUID]        = None
   var paatos: Paatos                 = _
   var paatosWithPaatosTiedot: Paatos = _
+  var paatosTiedot: Seq[PaatosTieto] =
+    Seq(
+      PaatosTieto(
+        id = None,
+        paatosId = None,
+        paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
+        sovellettuLaki = Some(SovellettuLaki.ap_seut),
+        tutkintoId = None,
+        lisaaTutkintoPaatostekstiin = Some(true),
+        myonteinenPaatos = Some(true),
+        myonteisenPaatoksenLisavaatimukset = Some("{}"),
+        kielteisenPaatoksenPerustelut = Some("{}"),
+        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu),
+        rinnastettavatTutkinnotTaiOpinnot = Some(Seq("BI", "FY", "KE"))
+      )
+    )
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
     val ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None)
@@ -74,8 +90,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   private def makePaatosWithPaatosTiedot(
-    givenHakemusId: Option[UUID],
-    paatosTiedot: Option[Seq[PaatosTieto]]
+    givenHakemusId: Option[UUID]
   ): Paatos = {
     val ratkaisutyyppi = Ratkaisutyyppi.Paatos
     Paatos(
@@ -83,7 +98,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       ratkaisutyyppi = Some(ratkaisutyyppi),
       seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = None,
-      paatosTiedot = paatosTiedot
+      paatosTiedot = Some(paatosTiedot)
     )
   }
 
@@ -119,8 +134,9 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     )
     paatos = makePaatos(hakemusId)
-    paatosWithPaatosTiedot =
-      makePaatosWithPaatosTiedot(hakemusId, Some(Seq(PaatosTieto(None, None, Some(PaatosTyyppi.Kelpoisuus)))))
+    paatosWithPaatosTiedot = makePaatosWithPaatosTiedot(
+      hakemusId
+    )
   }
 
   @BeforeEach
@@ -213,6 +229,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andDo(result => println("Returned content: " + result.getResponse.getContentAsString))
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
@@ -224,7 +241,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
       paatos2Json(
-        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user")),
+        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user"), paatosTiedot = Some(paatosTiedot)),
         "id",
         "luoja",
         "luotu",
