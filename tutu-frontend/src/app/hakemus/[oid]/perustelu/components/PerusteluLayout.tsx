@@ -80,8 +80,8 @@ const Tabs = () => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton linkPath="yleiset/perustelut" tabName="perustelut" />
-      <TabButton linkPath="yleiset/lausunto" tabName="lausunto" />
+      <TabButton linkPath="../yleiset/perustelut" tabName="perustelut" />
+      <TabButton linkPath="../yleiset/lausunto" tabName="lausunto" />
     </Stack>
   );
 };

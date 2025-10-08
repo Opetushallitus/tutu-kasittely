@@ -42,7 +42,7 @@ class PerusteluRepository extends BaseResultHandlers {
         jatkoOpintoKelpoisuusLisatieto = r.nextStringOption(),
         muuPerustelu = r.nextStringOption(),
         uoRoSisalto = org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString()),
-        APSisalto = org.json4s.jackson.Serialization.read[APSisalto](r.nextString()),
+        apSisalto = org.json4s.jackson.Serialization.read[APSisalto](r.nextString()),
         lausuntoPyyntojenLisatiedot = r.nextStringOption(),
         lausunnonSisalto = r.nextStringOption(),
         luotu = Option(r.nextTimestamp().toLocalDateTime),
@@ -81,7 +81,7 @@ class PerusteluRepository extends BaseResultHandlers {
     luoja: String
   ): DBIO[Perustelu] = {
     val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto)
-    val APJson: String   = org.json4s.jackson.Serialization.write(perustelu.APSisalto)
+    val APJson: String   = org.json4s.jackson.Serialization.write(perustelu.apSisalto)
 
     sql"""
       INSERT INTO perustelu (
@@ -119,7 +119,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ${perustelu.jatkoOpintoKelpoisuusLisatieto},
         ${perustelu.muuPerustelu},
         $uoRoJson::jsonb,
-        $APJson::jsonb
+        $APJson::jsonb,
         ${perustelu.lausuntoPyyntojenLisatiedot},
         ${perustelu.lausunnonSisalto},
         $luoja
@@ -139,7 +139,7 @@ class PerusteluRepository extends BaseResultHandlers {
         jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
         muu_perustelu = ${perustelu.muuPerustelu},
         uo_ro_sisalto = $uoRoJson::jsonb,
-        ap_sisalto = $APJson::jsonb
+        ap_sisalto = $APJson::jsonb,
         lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
         lausunto_sisalto = ${perustelu.lausunnonSisalto},
         muokkaaja = $luoja

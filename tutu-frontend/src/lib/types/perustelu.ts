@@ -22,7 +22,7 @@ export type Perustelu = {
   jatkoOpintoKelpoisuusLisatieto?: string;
   muuPerustelu?: string;
   aikaisemmatPaatokset?: boolean;
-  APSisalto?: APSisalto;
+  apSisalto?: APSisalto;
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];

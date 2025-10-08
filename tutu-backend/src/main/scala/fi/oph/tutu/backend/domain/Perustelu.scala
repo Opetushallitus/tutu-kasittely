@@ -26,7 +26,7 @@ case class Perustelu(
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
   uoRoSisalto: UoRoSisalto = UoRoSisalto(),
-  APSisalto: APSisalto = APSisalto()
+  apSisalto: APSisalto = APSisalto()
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
     this.copy(
@@ -58,7 +58,7 @@ case class Perustelu(
       lausunnonSisalto = partial.lausunnonSisalto
         .orElse(this.lausunnonSisalto)
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
-      APSisalto = partial.APSisalto.getOrElse(this.APSisalto)
+      apSisalto = partial.apSisalto.getOrElse(this.apSisalto)
     )
 }
 
@@ -79,7 +79,7 @@ case class PartialPerustelu(
   lausuntoPyyntojenLisatiedot: Option[String] = None,
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
-  APSisalto: Option[APSisalto] = None
+  apSisalto: Option[APSisalto] = None
 )
 
 case class UoRoSisalto(

@@ -78,7 +78,7 @@ const YleisetPerustelut = ({
     debouncedUpdatePerustelu(combinedParts);
   };
 
-  const content = isPerusteluLoading ? (
+  return isPerusteluLoading ? (
     <FullSpinner></FullSpinner>
   ) : (
     <>
@@ -127,6 +127,4 @@ const YleisetPerustelut = ({
       />
     </>
   );
-
-  return content;
 };

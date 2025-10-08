@@ -24,5 +24,95 @@
       "lahetetty": "2025-11-01T00:00:00",
       "saapunut": "2025-11-30T00:00:00"
     }
-  ]
+  ],
+  "a": {
+    "APSisalto": {
+      "lakiperusteToisessaJasenmaassaSaannelty": null,
+      "lakiperustePatevyysLahtomaanOikeuksilla": null,
+      "lakiperusteToinenEUmaaTunnustanut": null,
+      "lakiperusteLahtomaassaSaantelematon": null,
+      "todistusEUKansalaisuuteenRinnasteisestaAsemasta": null,
+      "ammattiJohonPatevoitynyt": null,
+      "ammattitoiminnanPaaAsiallinenSisalto": null,
+      "koulutuksenKestoJaSisalto": null,
+      "selvityksetLahtomaanViranomaiselta": null,
+      "selvityksetLahtomaanLainsaadannosta": null,
+      "selvityksetAikaisempiTapaus": null,
+      "selvityksetAikaisemmanTapauksenAsiaTunnus": null,
+      "selvityksetIlmeneeAsiakirjoista": null,
+      "lisatietoja": null,
+      "IMIHalytysTarkastettu": null,
+      "muutAPPerustelut": null,
+      "SEUTArviointi": null
+    },
+    "lausuntoPyyntojenLisatiedot": null,
+    "lahdeLahtomaanVirallinenVastaus": true,
+    "lausuntopyynnot": [],
+    "jatkoOpintoKelpoisuus": "muu",
+    "luoja": "test user",
+    "virallinenTutkinnonMyontaja": false,
+    "lahdeKansainvalinenHakuteosTaiVerkkosivusto": false,
+    "selvitysTutkinnonAsemastaLahtomaanJarjestelmassa": "06d4228f-29ca-4cc9-937c-7e76385d856d",
+    "uoRoSisalto": {
+      "otmEroOpinnotLaajuus": null,
+      "sovellettuRinnastaminenOtmTutkintoon": {
+        "checked": null,
+        "value": null
+      },
+      "opettajatEroMonialaisetOpinnotSisalto": null,
+      "opettajatEroPedagogisetOpinnotLaajuus": null,
+      "sovellettuMuuTilanne": null,
+      "otmMuuEro": null,
+      "opettajatEroOpetettavatAineetOpinnotSisalto": null,
+      "sovellettuRiittavatOpinnot": { "checked": null, "value": null },
+      "vkOpettajatMuuEroSelite": null,
+      "vkOpettajatEroKasvatustieteellisetOpinnotLaajuus": null,
+      "opettajatMuuEro": null,
+      "sovellettuRinnastaminenKasvatustieteelliseenTutkintoon": {
+        "checked": null,
+        "values": null
+      },
+      "sovellettuErityisopetus": { "checked": null, "value": null },
+      "vkOpettajatEroKasvatustieteellisetOpinnotSisalto": null,
+      "vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus": null,
+      "opettajatEroKasvatustieteellisetOpinnotSisalto": null,
+      "opettajatEroKasvatustieteellisetOpinnotLaajuus": null,
+      "sovellettuOpettajanPedagogisetOpinnot": {
+        "checked": null,
+        "value": null
+      },
+      "opettajatEroOpetettavatAineetOpinnotVaativuus": null,
+      "otmEroOpinnotVaativuus": null,
+      "otmEroOpinnotSisalto": null,
+      "vkOpettajatMuuEro": null,
+      "sovellettuVarhaiskasvatus": { "checked": null, "value": null },
+      "opettajatEroOpetettavatAineetOpinnotLaajuus": null,
+      "sovellettuMuuTilanneSelite": null,
+      "sovellettuMonialaisetOpinnot": { "checked": null, "value": null },
+      "sovellettuOpetettavanAineenOpinnot": {
+        "checked": null,
+        "kieliAine": null,
+        "aineet": null
+      },
+      "opettajatEroKasvatustieteellisetOpinnotVaativuus": null,
+      "otmMuuEroSelite": null,
+      "opettajatEroMonialaisetOpinnotLaajuus": null,
+      "opettajatEroPedagogisetOpinnotSisalto": null,
+      "opettajatMuuEroSelite": null,
+      "opettajatEroErityisopettajanOpinnotLaajuus": null,
+      "sovellettuLuokanopettaja": { "checked": null, "value": null },
+      "vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotSisalto": null,
+      "opettajatEroErityisopettajanOpinnotSisalto": null
+    },
+    "lahdeLahtomaanKansallinenLahde": false,
+    "hakemusId": "79549664-f747-4218-a8ff-b1f673eb1d75",
+    "id": "6f8f152e-ea72-4384-9811-9ef10d74d0bc",
+    "aikaisemmatPaatokset": false,
+    "virallinenTutkinto": true,
+    "muuPerustelu": null,
+    "lausunnonSisalto": null,
+    "selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta": "d37b1ae0-4ca6-4704-892f-1a8d525be3f1",
+    "ylimmanTutkinnonAsemaLahtomaanJarjestelmassa": "ei_korkeakouluaste",
+    "jatkoOpintoKelpoisuusLisatieto": "10738382-aee2-429b-9a86-7cef5504e3d4"
+  }
 }
