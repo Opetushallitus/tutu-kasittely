@@ -42,9 +42,10 @@ class PaatosControllerTest extends IntegrationTestBase {
   @MockitoBean
   private var auditLog: AuditLog = _
 
-  val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
-  var hakemusId: Option[UUID] = None
-  var paatos: Paatos          = _
+  val hakemusOid: HakemusOid         = HakemusOid("1.2.246.562.11.00000000000000006666")
+  var hakemusId: Option[UUID]        = None
+  var paatos: Paatos                 = _
+  var paatosWithPaatosTiedot: Paatos = _
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
     val ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None)
@@ -71,8 +72,33 @@ class PaatosControllerTest extends IntegrationTestBase {
       paatosTiedot = None
     )
   }
+
+  private def makePaatosWithPaatosTiedot(
+    givenHakemusId: Option[UUID],
+    paatosTiedot: Option[Seq[PaatosTieto]]
+  ): Paatos = {
+    val ratkaisutyyppi = Ratkaisutyyppi.Paatos
+    Paatos(
+      hakemusId = givenHakemusId,
+      ratkaisutyyppi = Some(ratkaisutyyppi),
+      seutArviointi = pickBoolean,
+      peruutuksenTaiRaukeamisenSyy = None,
+      paatosTiedot = paatosTiedot
+    )
+  }
+
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {
-    val paatosAsMap = paatos.productElementNames.toList.zip(paatos.productIterator.toList).toMap -- ignoreFields
+    val paatosTiedotAsMap =
+      if (paatos.paatosTiedot.nonEmpty)
+        paatos.paatosTiedot.get.map { pt =>
+          pt.productElementNames.toList.zip(pt.productIterator.toList).toMap -- ignoreFields
+        }
+      else
+        null
+
+    val paatosAsMap = paatos.productElementNames.toList
+      .zip(paatos.productIterator.toList)
+      .toMap -- ignoreFields + ("paatosTiedot" -> paatosTiedotAsMap)
     mapper.writeValueAsString(paatosAsMap)
   }
 
@@ -93,6 +119,8 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     )
     paatos = makePaatos(hakemusId)
+    paatosWithPaatosTiedot =
+      makePaatosWithPaatosTiedot(hakemusId, Some(Seq(PaatosTieto(None, None, Some(PaatosTyyppi.Kelpoisuus)))))
   }
 
   @BeforeEach
@@ -167,5 +195,52 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isInternalServerError)
     verify(auditLog, times(0)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(5)
+  def tallennaPaatosPalauttaaPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
+    val paatosJSON =
+      paatos2Json(paatosWithPaatosTiedot, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosId")
+    mvc
+      .perform(
+        post(s"/api/paatos/${hakemusOid}")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatosJSON)
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(content().json(paatosJSON))
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(6)
+  def haePaatosPalauttaaPaatosTiedonKanssa200(): Unit = {
+    val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
+    val paatosJSON =
+      paatos2Json(
+        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user")),
+        "id",
+        "luoja",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosId"
+      )
+    mvc
+      .perform(
+        get(s"/api/paatos/${hakemusOid}")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andDo(result => println("Returned content: " + result.getResponse.getContentAsString))
+      .andExpect(content().json(paatosJSON))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
 }

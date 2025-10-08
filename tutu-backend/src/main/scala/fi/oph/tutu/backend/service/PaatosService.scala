@@ -74,8 +74,6 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
                 latestSavedPaatos.paatosTiedot
           )
         )
-
-        Some(paatosRepository.tallennaPaatos(dbHakemus.id, latestSavedPaatos, luojaTaiMuokkaaja))
       case _ => None
     }
     (currentPaatos, updatedPaatos)
