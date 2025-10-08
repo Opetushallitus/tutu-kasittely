@@ -229,7 +229,6 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
-      .andDo(result => println("Returned content: " + result.getResponse.getContentAsString))
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
@@ -256,7 +255,6 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
-      .andDo(result => println("Returned content: " + result.getResponse.getContentAsString))
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }

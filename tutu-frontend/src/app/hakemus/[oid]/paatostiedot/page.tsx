@@ -7,51 +7,27 @@ import {
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
-import {
-  TFunction,
-  useTranslations,
-} from '@/src/lib/localization/hooks/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
 import {
   Paatos,
+  PaatosTieto,
   PaatosUpdateCallback,
   Ratkaisutyyppi,
 } from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
+import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
+import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 
-const ratkaisutyyppiOptions = (t: TFunction) => [
-  { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
-  {
-    value: 'PeruutusTaiRaukeaminen',
-    label: t('hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen'),
-  },
-  { value: 'Oikaisu', label: t('hakemus.paatos.ratkaisutyyppi.oikaisu') },
-  {
-    value: 'JatetaanTutkimatta',
-    label: t('hakemus.paatos.ratkaisutyyppi.jatetaanTutkimatta'),
-  },
-  { value: 'Siirto', label: t('hakemus.paatos.ratkaisutyyppi.siirto') },
-];
-
-const paatostyyppiOptions = (t: TFunction) => [
-  { value: 'Taso', label: t('hakemus.paatos.paatostyyppi.taso') },
-  {
-    value: 'Kelpoisuus',
-    label: t('hakemus.paatos.paatostyyppi.kelpoisuus'),
-  },
-  {
-    value: 'TiettyTutkintoTaiOpinnot',
-    label: t('hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot'),
-  },
-  {
-    value: 'RiittavatOpinnot',
-    label: t('hakemus.paatos.paatostyyppi.riittavatOpinnot'),
-  },
-];
+const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
+  id: undefined,
+  paatosId: paatosId,
+  paatosTyyppi: undefined,
+});
 
 export default function PaatostiedotPage() {
   const { t } = useTranslations();
@@ -116,7 +92,10 @@ const Paatostiedot = ({
       updatePaatos(newPaatos);
     }
   };
-  console.log({ currentPaatos });
+  const paatosTiedot = currentPaatos.paatosTiedot ?? [
+    emptyPaatosTieto(currentPaatos.id!),
+  ];
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -161,22 +140,15 @@ const Paatostiedot = ({
           }
         />
       )}
-      {currentPaatos.ratkaisutyyppi === 'Paatos' && (
-        //todo: omaksi komponentiksi
-        <OphSelectFormField
-          placeholder={t('yleiset.valitse')}
-          label={t('hakemus.paatos.paatostyyppi.otsikko')}
-          options={paatostyyppiOptions(t)}
-          value={''}
-          onChange={
-            () => null
-            // updatePaatosField({
-            //   paatosTyyppi: event.target.value as Paatostyyppi,
-            // })
-          }
-          data-testid={'paatos-paatostyyppi'}
-        />
-      )}
+      {currentPaatos.ratkaisutyyppi === 'Paatos' &&
+        paatosTiedot?.map((paatosTieto, index) => (
+          <>
+            <OphTypography variant={'h3'}>
+              {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
+            </OphTypography>
+            <PaatosTietoComponent key={index} t={t} paatosTieto={paatosTieto} />
+          </>
+        ))}
     </Stack>
   );
 };

@@ -36,7 +36,7 @@ case class PartialPaatos(
   ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
   seutArviointi: Option[Boolean] = None,
   peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
-  paatosTiedot: Seq[PaatosTieto] = Seq.empty
+  paatosTiedot: Seq[PaatosTieto] = Seq()
 )
 
 case class PeruutuksenTaiRaukeamisenSyy(

@@ -26,10 +26,11 @@ export type PeruutuksenTaiRaukeamisenSyy = {
 export type PaatosTieto = {
   id?: string;
   paatosId: string;
-  paatosTyyppi: PaatosTyyppi;
+  paatosTyyppi?: PaatosTyyppi;
 };
 
 export type Paatos = {
+  id?: string;
   ratkaisutyyppi?: Ratkaisutyyppi;
   seutArviointi: boolean;
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
