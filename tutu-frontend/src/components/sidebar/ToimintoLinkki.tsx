@@ -22,7 +22,6 @@ export const ToimintoLinkki = ({
   label: string;
 }) => {
   return (
-    //TODO muutetaanko OphButtoniksi?
     <LinkBox>
       <OphButton
         sx={{ flexGrow: 1, justifyContent: 'flex-start' }}
