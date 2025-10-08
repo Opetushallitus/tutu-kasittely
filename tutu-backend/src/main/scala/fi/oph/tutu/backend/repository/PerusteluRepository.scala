@@ -80,8 +80,8 @@ class PerusteluRepository extends BaseResultHandlers {
     perustelu: Perustelu,
     luoja: String
   ): DBIO[Perustelu] = {
-    val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto.orNull)
-    val APJson: String = org.json4s.jackson.Serialization.write(perustelu.APSisalto)
+    val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto)
+    val APJson: String   = org.json4s.jackson.Serialization.write(perustelu.APSisalto)
 
     sql"""
       INSERT INTO perustelu (
@@ -119,7 +119,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ${perustelu.jatkoOpintoKelpoisuusLisatieto},
         ${perustelu.muuPerustelu},
         $uoRoJson::jsonb,
-        $APJSon::jsonb
+        $APJson::jsonb
         ${perustelu.lausuntoPyyntojenLisatiedot},
         ${perustelu.lausunnonSisalto},
         $luoja
