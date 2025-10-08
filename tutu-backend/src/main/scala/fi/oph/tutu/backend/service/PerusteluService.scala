@@ -5,10 +5,12 @@ import fi.oph.tutu.backend.repository.{HakemusRepository, PerusteluRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
+import fi.oph.tutu.backend.service.perustelumuistio.{generate => generatePerusteluMuistio}
 
 @Component
 @Service
 class PerusteluService(
+  hakemusService: HakemusService,
   hakemusRepository: HakemusRepository,
   perusteluRepository: PerusteluRepository
 ) extends TutuJsonFormats {
@@ -83,5 +85,16 @@ class PerusteluService(
       case _ => None
     }
     (currentPerustelu, newPerustelu)
+  }
+
+  def haePerusteluMuistio(
+    hakemusOid: HakemusOid
+  ): Option[String] = {
+    val hakemusMaybe: Option[Hakemus]     = hakemusService.haeHakemus(hakemusOid)
+    val perusteluMaybe: Option[Perustelu] = haePerustelu(hakemusOid)
+
+    val perusteluMuistio = generatePerusteluMuistio(hakemusMaybe, perusteluMaybe)
+
+    Some(perusteluMuistio)
   }
 }
