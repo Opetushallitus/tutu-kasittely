@@ -27,6 +27,8 @@ const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
   paatosId: paatosId,
   paatosTyyppi: undefined,
+  myonteisenPaatoksenLisavaatimukset: '{}',
+  kielteisenPaatoksenPerustelut: '{}',
 });
 
 export default function PaatostiedotPage() {
@@ -92,6 +94,24 @@ const Paatostiedot = ({
       updatePaatos(newPaatos);
     }
   };
+
+  const updatePaatosTieto = (updatedPaatosTieto: PaatosTieto) => {
+    const existingPaatosTiedot = currentPaatos.paatosTiedot ?? [];
+    const index = existingPaatosTiedot.findIndex(
+      (pt) => pt.id === updatedPaatosTieto.id,
+    );
+
+    let newPaatosTiedot: PaatosTieto[];
+    if (index !== -1) {
+      newPaatosTiedot = [...existingPaatosTiedot];
+      newPaatosTiedot[index] = updatedPaatosTieto;
+    } else {
+      newPaatosTiedot = [...existingPaatosTiedot, updatedPaatosTieto];
+    }
+
+    updatePaatosField({ paatosTiedot: newPaatosTiedot });
+  };
+
   const paatosTiedot = currentPaatos.paatosTiedot ?? [
     emptyPaatosTieto(currentPaatos.id!),
   ];
@@ -124,9 +144,14 @@ const Paatostiedot = ({
         options={ratkaisutyyppiOptions(t)}
         value={currentPaatos.ratkaisutyyppi || ''}
         onChange={(event) =>
-          updatePaatosField({
-            ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
-          })
+          updatePaatosField(
+            (event.target.value as Ratkaisutyyppi) !== 'Paatos'
+              ? {
+                  ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
+                  paatosTiedot: [],
+                }
+              : { ratkaisutyyppi: event.target.value as Ratkaisutyyppi },
+          )
         }
         data-testid={'paatos-ratkaisutyyppi'}
       />
@@ -146,7 +171,12 @@ const Paatostiedot = ({
             <OphTypography variant={'h3'}>
               {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
             </OphTypography>
-            <PaatosTietoComponent key={index} t={t} paatosTieto={paatosTieto} />
+            <PaatosTietoComponent
+              key={index}
+              t={t}
+              paatosTieto={paatosTieto}
+              updatePaatosTietoAction={updatePaatosTieto}
+            />
           </>
         ))}
     </Stack>

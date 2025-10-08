@@ -5,7 +5,7 @@ export type Ratkaisutyyppi =
   | 'JatetaanTutkimatta'
   | 'Siirto';
 
-export type PaatosTyyppi =
+export type Paatostyyppi =
   | 'Taso'
   | 'Kelpoisuus'
   | 'TiettyTutkintoTaiOpinnot'
@@ -26,7 +26,9 @@ export type PeruutuksenTaiRaukeamisenSyy = {
 export type PaatosTieto = {
   id?: string;
   paatosId: string;
-  paatosTyyppi?: PaatosTyyppi;
+  paatosTyyppi?: Paatostyyppi;
+  myonteisenPaatoksenLisavaatimukset: string;
+  kielteisenPaatoksenPerustelut: string;
 };
 
 export type Paatos = {
