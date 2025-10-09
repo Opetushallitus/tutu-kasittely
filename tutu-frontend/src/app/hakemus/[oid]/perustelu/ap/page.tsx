@@ -46,7 +46,12 @@ export default function ApPage() {
   };
 
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
-    updateAPSisalto({ ...apSisalto, [key]: checked });
+    const next = { ...apSisalto, [key]: checked };
+    setAPSisalto(next);
+    updatePerustelu({
+      ...perustelu!,
+      apSisalto: next,
+    });
   };
 
   const updateTextField = (key: keyof APSisalto, value: string) => {
