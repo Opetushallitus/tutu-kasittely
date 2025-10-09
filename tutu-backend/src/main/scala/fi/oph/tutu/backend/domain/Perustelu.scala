@@ -55,9 +55,7 @@ case class Perustelu(
         .orElse(this.muuPerustelu),
       uoRoSisalto = partial.uoRoSisalto.getOrElse(this.uoRoSisalto),
       lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
-      lausunnonSisalto = partial.lausunnonSisalto
-        .orElse(this.lausunnonSisalto)
-        .orElse(this.jatkoOpintoKelpoisuusLisatieto),
+      lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto),
       apSisalto = partial.apSisalto.getOrElse(this.apSisalto)
     )
 }
