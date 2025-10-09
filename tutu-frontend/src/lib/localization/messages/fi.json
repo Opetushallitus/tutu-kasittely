@@ -382,7 +382,9 @@
         "taso": "1 Taso",
         "kelpoisuus": "2 Kelpoisuus",
         "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
-        "riittavatOpinnot": "4 Riittävät opinnot"
+        "riittavatOpinnot": "4 Riittävät opinnot",
+        "lisaaPaatos": "Lisää päätös",
+        "poistaPaatos": "Poista päätös"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",

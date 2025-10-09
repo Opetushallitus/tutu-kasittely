@@ -211,6 +211,7 @@ class PaatosRepository extends BaseResultHandlers {
           SELECT *
           FROM paatostieto
           WHERE paatos_id = ${paatosId.toString}::uuid
+          ORDER BY luotu
         """.as[PaatosTieto],
         "hae_paatostiedot"
       )
