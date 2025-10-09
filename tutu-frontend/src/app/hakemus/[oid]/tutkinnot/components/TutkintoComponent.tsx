@@ -2,7 +2,6 @@
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/hakemus';
-import { Option } from '@/src/constants/dropdownOptions';
 import {
   OphButton,
   OphInputFormField,
@@ -13,6 +12,7 @@ import React from 'react';
 import { Divider, Stack } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
 import { ModalComponent } from '@/src/components/ModalComponent';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 const primaryTutkintotodistusOtsikko = {
   fi: [
@@ -45,8 +45,8 @@ const tutkintotodistusOtsikko = {
 
 export type TutkintoProps = {
   tutkinto: Tutkinto;
-  maatJaValtiotOptions: Option[];
-  koulutusLuokitusOptions: Option[];
+  maatJaValtiotOptions: OphSelectOption<string>[];
+  koulutusLuokitusOptions: OphSelectOption<string>[];
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
   deleteTutkintoAction: (id: string | undefined) => void;
   paatosKieli: string;
@@ -100,7 +100,7 @@ export const TutkintoComponent = ({
       />
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
-          variant={'h2'}
+          variant={'h3'}
           data-testid={`tutkinto-otsikko-${tutkinto.jarjestys}`}
         >
           {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')}{' '}

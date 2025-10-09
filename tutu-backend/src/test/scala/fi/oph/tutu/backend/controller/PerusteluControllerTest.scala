@@ -68,7 +68,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: String = randomString,
     aikaisemmatPaatokset: Option[Boolean] = pickBooleanOption,
     jatkoOpintoKelpoisuus: Option[String] = pickJatkoOpintoKelpoisuus,
-    jatkoOpintoKelpoisuusLisatieto: Option[String] = Some("jatkoOpintoKelpoisuusLisatieto"),
+    jatkoOpintoKelpoisuusLisatieto: Option[String] = Some(randomString),
     muuPerustelu: Option[String] = None,
     lausuntoPyyntojenLisatiedot: Option[String] = None,
     lausunnonSisalto: Option[String] = None,
@@ -168,8 +168,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
   def makePerusteluWithLausuntotieto(): Perustelu = {
     makePerustelu().copy(
-      lausuntoPyyntojenLisatiedot = Some("zädäm1"),
-      lausunnonSisalto = Some("zädäm2"),
+      lausuntoPyyntojenLisatiedot = Some(randomString),
+      lausunnonSisalto = Some(randomString),
       lausuntopyynnot = Seq(
         Lausuntopyynto(
           lausunnonAntaja = Some(randomString),

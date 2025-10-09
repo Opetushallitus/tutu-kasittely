@@ -8,31 +8,35 @@ import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 
 export const mockAll = async ({ page }: { page: Page }) => {
-  mockInit(page);
-  mockEsittelijat(page);
-  mockHakemusLista(page);
-  mockUser(page);
-  mockHakemus(page);
-  mockPerustelu(page);
+  await Promise.all([
+    mockInit(page),
+    mockEsittelijat(page),
+    mockHakemusLista(page),
+    mockUser(page),
+    mockHakemus(page),
+    mockPerustelu(page),
+    mockLiitteet(page),
+  ]);
 };
 
 export const mockBasicForLista = async ({ page }: { page: Page }) => {
-  mockInit(page);
+  await mockInit(page);
 };
 
 export const mockSuccessfullLists = async ({ page }: { page: Page }) => {
-  mockEsittelijat(page);
-  mockHakemusLista(page);
-  mockUser(page);
+  await Promise.all([
+    mockEsittelijat(page),
+    mockHakemusLista(page),
+    mockUser(page),
+  ]);
 };
 
 export const mockBasicForHakemus = async ({ page }: { page: Page }) => {
-  mockInit(page);
-  mockEsittelijat(page);
+  await Promise.all([mockInit(page), mockEsittelijat(page)]);
 };
 
-export const mockInit = (page: Page) => {
-  page.route('**/tutu-backend/api/csrf', async (route: Route) => {
+export const mockInit = async (page: Page) => {
+  await page.route('**/tutu-backend/api/csrf', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -44,7 +48,7 @@ export const mockInit = (page: Page) => {
       }),
     });
   });
-  page.route('**/tutu-backend/api/session', async (route: Route) => {
+  await page.route('**/tutu-backend/api/session', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -56,8 +60,8 @@ export const mockInit = (page: Page) => {
   });
 };
 
-export const mockEsittelijat = (page: Page) => {
-  page.route('**/tutu-backend/api/esittelijat*', async (route: Route) => {
+export const mockEsittelijat = async (page: Page) => {
+  await page.route('**/tutu-backend/api/esittelijat*', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -66,18 +70,23 @@ export const mockEsittelijat = (page: Page) => {
   });
 };
 
-export const mockHakemusLista = (page: Page) => {
-  page.route('**/tutu-backend/api/hakemuslista*', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: await readFile(path.join(__dirname, './fixtures/hakemukset.json')),
-    });
-  });
+export const mockHakemusLista = async (page: Page) => {
+  await page.route(
+    '**/tutu-backend/api/hakemuslista*',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: await readFile(
+          path.join(__dirname, './fixtures/hakemukset.json'),
+        ),
+      });
+    },
+  );
 };
 
-export const mockUser = (page: Page, kieli: string = 'fi') => {
-  page.route('**/tutu-backend/api/user', async (route: Route) => {
+export const mockUser = async (page: Page, kieli: string = 'fi') => {
+  await page.route('**/tutu-backend/api/user', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -95,8 +104,11 @@ export const mockUser = (page: Page, kieli: string = 'fi') => {
   });
 };
 
-export const mockHakemus = (page: Page, lomakkeenKieli: Language = 'fi') => {
-  page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
+export const mockHakemus = async (
+  page: Page,
+  lomakkeenKieli: Language = 'fi',
+) => {
+  await page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
     const oid = params[0];
@@ -253,8 +265,8 @@ export const mockHakemus = (page: Page, lomakkeenKieli: Language = 'fi') => {
   });
 };
 
-export const mockLiitteet = (page: Page) => {
-  return page.route(
+export const mockLiitteet = async (page: Page) => {
+  await page.route(
     '**/tutu-backend/api/liite/metadata**',
     async (route: Route) => {
       const liitteet = getLiitteet();
@@ -267,8 +279,8 @@ export const mockLiitteet = (page: Page) => {
   );
 };
 
-export const mockKoodistot = (page: Page) => {
-  page.route(
+export const mockKoodistot = async (page: Page) => {
+  await page.route(
     '**/tutu-backend/api/koodisto/kansallinenkoulutusluokitus2016koulutusalataso1',
     async (route: Route) => {
       await route.fulfill({
@@ -297,8 +309,8 @@ export const mockKoodistot = (page: Page) => {
   );
 };
 
-export const mockPerustelu = (page: Page) => {
-  page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
+export const mockPerustelu = async (page: Page) => {
+  await page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -318,8 +330,8 @@ export const mockPerustelu = (page: Page) => {
   });
 };
 
-export const mockPaatos = (page: Page) => {
-  return page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
+export const mockPaatos = async (page: Page) => {
+  await page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
     const paatos = getPaatos();
     await route.fulfill({
       status: 200,

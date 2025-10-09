@@ -38,7 +38,7 @@ export const MuuTutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <OphTypography variant={'h2'} data-testid={'tutkinto-otsikko-MUU'}>
+      <OphTypography variant={'h3'} data-testid={'tutkinto-otsikko-MUU'}>
         {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
       </OphTypography>
       <OphTypography variant={'label'}>
