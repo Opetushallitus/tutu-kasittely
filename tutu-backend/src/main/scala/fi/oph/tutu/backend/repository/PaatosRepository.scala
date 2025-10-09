@@ -127,12 +127,12 @@ class PaatosRepository extends BaseResultHandlers {
   }
 
   /**
-   * Tallentaa uudet/muuttuneet tai modifioidun lausuntotiedon ja siihen liittyvät lausuntopyynnöt
+   * Tallentaa/poistaa uudet/muuttuneet/poistetut päätöstiedot
    *
    * @param perusteluId
-   * vastaavan lausuntotiedon uuid
+   * vastaavan perustelun uuid
    * @param modifyData
-   * lausuntopyyntöjen muokkaustiedot
+   * päätöstietojen muokkaustiedot
    * @param luojaTaiMuokkaaja
    * pyynnön luoja tai muokkaaja
    */

@@ -68,3 +68,44 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
     );
   }
 });
+
+test('Päätöskentät näkyvät oikein ja päätös-ratkaisutyypin valitseminen näyttää päätöstyyppi-dropdownin', async ({
+  page,
+}) => {
+  mockPaatos(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
+  );
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.first().click();
+
+  await expect(paatostyyppiInput).toBeVisible();
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=1 Taso');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]).then((req) =>
+    expect(req[0].postDataJSON().paatosTiedot[0].paatosTyyppi).toEqual('Taso'),
+  );
+
+  //Ratkaisutyypin vaihdon tulisi tyhjentää päätöstiedot:
+  await ratkaisutyyppiInput.first().click();
+  const peruutusOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=Peruutus tai raukeaminen');
+  await expect(peruutusOption).toBeVisible();
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    peruutusOption.click(),
+  ]).then((req) =>
+    // console.log(req[0].postDataJSON()),
+    expect(req[0].postDataJSON().paatosTiedot).toEqual([]),
+  );
+});

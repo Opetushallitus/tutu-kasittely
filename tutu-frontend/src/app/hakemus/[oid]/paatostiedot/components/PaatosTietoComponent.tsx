@@ -36,7 +36,7 @@ export const PaatosTietoComponent = ({
           paatosTyyppi: event.target.value as Paatostyyppi,
         })
       }
-      data-testid={'paatos-paatostyyppi'}
+      data-testid={'paatos-paatostyyppi-dropdown'}
     />
   );
 };
