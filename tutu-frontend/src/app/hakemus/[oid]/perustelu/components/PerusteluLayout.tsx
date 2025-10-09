@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect } from 'react';
 
-import { Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import {
   TFunction,
   useTranslations,
@@ -80,8 +80,8 @@ const Tabs = () => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton linkPath="perustelut" tabName="perustelut" />
-      <TabButton linkPath="lausunto" tabName="lausunto" />
+      <TabButton linkPath="../yleiset/perustelut" tabName="perustelut" />
+      <TabButton linkPath="../yleiset/lausunto" tabName="lausunto" />
     </Stack>
   );
 };
@@ -131,8 +131,9 @@ export const PerusteluLayout = ({
 
       {children}
 
+      <Divider orientation={'horizontal'} />
       <Muistio
-        label={t('hakemus.perustelu.yleiset.muistio.sisainenOtsake')}
+        label={t('hakemus.perustelu.muistio.sisainenOtsake')}
         hakemus={hakemus}
         sisainen={true}
         hakemuksenOsa={'perustelut-yleiset'}

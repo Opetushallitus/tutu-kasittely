@@ -41,7 +41,8 @@ class PerusteluRepository extends BaseResultHandlers {
         jatkoOpintoKelpoisuus = r.nextStringOption(),
         jatkoOpintoKelpoisuusLisatieto = r.nextStringOption(),
         muuPerustelu = r.nextStringOption(),
-        uoRoSisalto = Option(org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString())),
+        uoRoSisalto = org.json4s.jackson.Serialization.read[UoRoSisalto](r.nextString()),
+        apSisalto = org.json4s.jackson.Serialization.read[APSisalto](r.nextString()),
         lausuntoPyyntojenLisatiedot = r.nextStringOption(),
         lausunnonSisalto = r.nextStringOption(),
         luotu = Option(r.nextTimestamp().toLocalDateTime),
@@ -79,7 +80,9 @@ class PerusteluRepository extends BaseResultHandlers {
     perustelu: Perustelu,
     luoja: String
   ): DBIO[Perustelu] = {
-    val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto.orNull)
+    val uoRoJson: String = org.json4s.jackson.Serialization.write(perustelu.uoRoSisalto)
+    val APJson: String   = org.json4s.jackson.Serialization.write(perustelu.apSisalto)
+
     sql"""
       INSERT INTO perustelu (
         hakemus_id,
@@ -96,6 +99,7 @@ class PerusteluRepository extends BaseResultHandlers {
         jatko_opinto_kelpoisuus_lisatieto,
         muu_perustelu,
         uo_ro_sisalto,
+        ap_sisalto,
         lausunto_pyynto_lisatiedot,
         lausunto_sisalto,
         luoja
@@ -115,6 +119,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ${perustelu.jatkoOpintoKelpoisuusLisatieto},
         ${perustelu.muuPerustelu},
         $uoRoJson::jsonb,
+        $APJson::jsonb,
         ${perustelu.lausuntoPyyntojenLisatiedot},
         ${perustelu.lausunnonSisalto},
         $luoja
@@ -134,6 +139,7 @@ class PerusteluRepository extends BaseResultHandlers {
         jatko_opinto_kelpoisuus_lisatieto = ${perustelu.jatkoOpintoKelpoisuusLisatieto},
         muu_perustelu = ${perustelu.muuPerustelu},
         uo_ro_sisalto = $uoRoJson::jsonb,
+        ap_sisalto = $APJson::jsonb,
         lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
         lausunto_sisalto = ${perustelu.lausunnonSisalto},
         muokkaaja = $luoja
@@ -153,6 +159,7 @@ class PerusteluRepository extends BaseResultHandlers {
         jatko_opinto_kelpoisuus_lisatieto,
         muu_perustelu,
         uo_ro_sisalto,
+        ap_sisalto,
         lausunto_pyynto_lisatiedot,
         lausunto_sisalto,
         luotu,
@@ -222,6 +229,7 @@ class PerusteluRepository extends BaseResultHandlers {
               p.jatko_opinto_kelpoisuus_lisatieto,
               p.muu_perustelu,
               p.uo_ro_sisalto,
+              p.ap_sisalto,
               p.lausunto_pyynto_lisatiedot,
               p.lausunto_sisalto,
               p.luotu,

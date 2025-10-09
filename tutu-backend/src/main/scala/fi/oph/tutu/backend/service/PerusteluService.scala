@@ -58,11 +58,7 @@ class PerusteluService(
         val currentLausuntopyynnot   = perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
         val lausuntopyyntoModifyData =
           HakemusModifyOperationResolver
-            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, partialPerustelu.lausuntopyynnot) match {
-            case LausuntopyyntoModifyData(uudet, muutetut, poistetut) =>
-              LausuntopyyntoModifyData(uudet, muutetut, poistetut)
-            case null => LausuntopyyntoModifyData()
-          }
+            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, partialPerustelu.lausuntopyynnot)
 
         perusteluRepository.suoritaLausuntopyyntojenModifiointi(
           latestSavedPerustelu.id.orNull,

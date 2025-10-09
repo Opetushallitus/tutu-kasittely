@@ -78,7 +78,7 @@ const YleisetPerustelut = ({
     debouncedUpdatePerustelu(combinedParts);
   };
 
-  const content = isPerusteluLoading ? (
+  return isPerusteluLoading ? (
     <FullSpinner></FullSpinner>
   ) : (
     <>
@@ -110,7 +110,7 @@ const YleisetPerustelut = ({
         hakemus={hakemus}
         updateHakemus={updateHakemus}
       />
-      <OphTypography variant={'h2'}>
+      <OphTypography variant={'h3'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
       </OphTypography>
       <JatkoOpintoKelpoisuus
@@ -127,6 +127,4 @@ const YleisetPerustelut = ({
       />
     </>
   );
-
-  return content;
 };

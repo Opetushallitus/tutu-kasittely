@@ -4,8 +4,6 @@ import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 
-test.beforeEach(mockAll);
-
 const matchUpdate = (url: string, method: string) =>
   url.includes('/perustelu/1.2.246.562.10.00000000001') && method === 'POST';
 
@@ -32,10 +30,14 @@ const mockPerustelu = (page: Page) => {
   );
 };
 
+test.beforeEach(async ({ page }) => {
+  await mockAll({ page });
+  await mockPerustelu(page);
+});
+
 test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  mockPerustelu(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',
   );
@@ -120,7 +122,6 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
 });
 
 test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) => {
-  mockPerustelu(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',
   );

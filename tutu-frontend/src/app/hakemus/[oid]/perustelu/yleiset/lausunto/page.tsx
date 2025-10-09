@@ -133,7 +133,7 @@ export default function Lausuntotiedot() {
             key={index}
           />
         ))}
-        <Divider orientation={'horizontal'} />
+        {lausuntopyynnot.length > 0 && <Divider orientation={'horizontal'} />}
         <OphButton
           sx={{
             alignSelf: 'flex-start',
@@ -169,7 +169,6 @@ export default function Lausuntotiedot() {
           minRows={4}
           inputProps={{ 'data-testid': 'lausunnonSisalto-input' }}
         />
-        <Divider orientation={'horizontal'} />
       </Stack>
     </PerusteluLayout>
   );

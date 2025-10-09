@@ -31,10 +31,10 @@ class KayttooikeusService(
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
 
-  @Value("${tutu-backend.cas.username}")
+  @Value("${tutu.backend.cas.username}")
   val cas_username: String = null
 
-  @Value("${tutu-backend.cas.password}")
+  @Value("${tutu.backend.cas.password}")
   val cas_password: String = null
 
   @Autowired

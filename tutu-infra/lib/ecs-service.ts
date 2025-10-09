@@ -139,7 +139,8 @@ export class EcsServiceStack extends Stack {
       image: ContainerImage.fromEcrRepository(ImageRepository, props.revision),
       logging: new AwsLogDriver({
         logGroup: ServiceLogGroup,
-        streamPrefix: `${props.serviceName}`
+        streamPrefix: `${props.serviceName}`,
+        multilinePattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}'
       }),
       portMappings: [{ containerPort: 8080 }],
       containerName: `${props.serviceName}`,

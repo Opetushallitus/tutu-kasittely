@@ -16,14 +16,16 @@ export function TolgeeBase() {
     .updateDefaults({
       availableLanguages: ['fi', 'sv', 'en'],
       defaultLanguage: 'fi',
+      defaultNs: NAMESPACE,
+      ns: [NAMESPACE],
     });
 
   if (localTranslations || isTesting) {
     return tg.updateDefaults({
       staticData: {
-        fi: () => import('./messages/fi.json'),
-        sv: () => import('./messages/sv.json'),
-        en: () => import('./messages/en.json'),
+        'fi:tutu-kasittely': () => import('./messages/fi.json'),
+        'sv:tutu-kasittely': () => import('./messages/sv.json'),
+        'en:tutu-kasittely': () => import('./messages/en.json'),
       },
     });
   } else {
@@ -40,8 +42,6 @@ export function TolgeeBase() {
       .updateDefaults({
         apiKey,
         apiUrl,
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
         projectId: 11100,
       });
   }

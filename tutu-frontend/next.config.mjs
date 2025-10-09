@@ -2,13 +2,12 @@
 
 const cspHeaders = {
   'default-src': "'self'",
-  'connect-src': `'self' https://app.tolgee.io ${process.env.TUTU_BACKEND}`,
-  'script-src':
-    "'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
-  'style-src': "'self' 'unsafe-inline'",
-  'script-src-elem': `'self' 'unsafe-inline' ${process.env.VIRKAILIJA_URL}`,
+  'connect-src': `'self' app.tolgee.io ${process.env.TUTU_BACKEND} ${process.env.VIRKAILIJA_URL} ${process.env.NODE_ENV !== 'production' ? 'https://cdn.jsdelivr.net' : ''}`,
+  'script-src': "'self' 'unsafe-eval' 'unsafe-inline'",
+  'script-src-elem': `'self' 'unsafe-inline' ${process.env.VIRKAILIJA_URL} ${process.env.NODE_ENV !== 'production' ? 'https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js' : ''}`,
+  'style-src': "'self' 'unsafe-inline' fonts.googleapis.com",
   'img-src': "'self' blob: data:",
-  'font-src': "'self'",
+  'font-src': "'self' data: fonts.gstatic.com",
   'object-src': "'none'",
   'base-uri': "'self'",
   'form-action': "'self'",

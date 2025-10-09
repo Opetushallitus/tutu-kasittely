@@ -192,7 +192,7 @@ export const AsiakirjaPyynnot = ({
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <OphTypography
-          variant={'h2'}
+          variant={'h3'}
           data-testid="pyydettavat-asiakirjat-otsikko"
         >
           {t(

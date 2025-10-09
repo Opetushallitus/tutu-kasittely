@@ -1,25 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { mockAll } from '@/playwright/mocks';
-import { getHakemus } from '@/playwright/fixtures/hakemus1';
 
 test.beforeEach(mockAll);
 
 test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  await page.route(`**/perustelu/uoro**`, async (route) => {
-    const hakemus = getHakemus();
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemus,
-        }),
-      });
-    }
-  });
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
@@ -70,19 +56,6 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  await page.route(`**/perustelu/uoro**`, async (route) => {
-    const hakemus = getHakemus();
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemus,
-        }),
-      });
-    }
-  });
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
