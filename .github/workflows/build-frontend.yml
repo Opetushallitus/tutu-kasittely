@@ -45,7 +45,7 @@ jobs:
       - name: Run playwright
         working-directory: ./tutu-frontend
         env:
-          PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}
+          PLAYWRIGHT_PROJECT: ${{ matrix.browser }}
         run: npm run start-server-and-test-playwright
       - uses: actions/upload-artifact@v4
         if: always()

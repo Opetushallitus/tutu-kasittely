@@ -38,7 +38,7 @@ _playwright-in-docker:
     docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
     --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
     mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
-    npx playwright test
+    npx playwright test --project=$PLAYWRIGHT_PROJECT
 
 start-all:
     @echo "🚀 Starting tutu, hit CTRL+C few times to quit."
