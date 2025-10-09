@@ -6,9 +6,9 @@ import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,9 +42,26 @@ class PaatosControllerTest extends IntegrationTestBase {
   @MockitoBean
   private var auditLog: AuditLog = _
 
-  val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
-  var hakemusId: Option[UUID] = None
-  var paatos: Paatos          = _
+  val hakemusOid: HakemusOid         = HakemusOid("1.2.246.562.11.00000000000000006666")
+  var hakemusId: Option[UUID]        = None
+  var paatos: Paatos                 = _
+  var paatosWithPaatosTiedot: Paatos = _
+  var paatosTiedot: Seq[PaatosTieto] =
+    Seq(
+      PaatosTieto(
+        id = None,
+        paatosId = None,
+        paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
+        sovellettuLaki = Some(SovellettuLaki.ap_seut),
+        tutkintoId = None,
+        lisaaTutkintoPaatostekstiin = Some(true),
+        myonteinenPaatos = Some(true),
+        myonteisenPaatoksenLisavaatimukset = Some("{}"),
+        kielteisenPaatoksenPerustelut = Some("{}"),
+        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu),
+        rinnastettavatTutkinnotTaiOpinnot = Some(Seq("BI", "FY", "KE"))
+      )
+    )
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
     val ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None)
@@ -67,11 +84,36 @@ class PaatosControllerTest extends IntegrationTestBase {
               muuSyy = pickBooleanOption
             )
           )
-        else None
+        else None,
+      paatosTiedot = Seq.empty
     )
   }
+
+  private def makePaatosWithPaatosTiedot(
+    givenHakemusId: Option[UUID]
+  ): Paatos = {
+    val ratkaisutyyppi = Ratkaisutyyppi.Paatos
+    Paatos(
+      hakemusId = givenHakemusId,
+      ratkaisutyyppi = Some(ratkaisutyyppi),
+      seutArviointi = pickBoolean,
+      peruutuksenTaiRaukeamisenSyy = None,
+      paatosTiedot = paatosTiedot
+    )
+  }
+
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {
-    val paatosAsMap = paatos.productElementNames.toList.zip(paatos.productIterator.toList).toMap -- ignoreFields
+    val paatosTiedotAsMap =
+      if (paatos.paatosTiedot.nonEmpty)
+        paatos.paatosTiedot.map { pt =>
+          pt.productElementNames.toList.zip(pt.productIterator.toList).toMap -- ignoreFields
+        }
+      else
+        Seq.empty
+
+    val paatosAsMap = paatos.productElementNames.toList
+      .zip(paatos.productIterator.toList)
+      .toMap -- ignoreFields + ("paatosTiedot" -> paatosTiedotAsMap)
     mapper.writeValueAsString(paatosAsMap)
   }
 
@@ -92,6 +134,9 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     )
     paatos = makePaatos(hakemusId)
+    paatosWithPaatosTiedot = makePaatosWithPaatosTiedot(
+      hakemusId
+    )
   }
 
   @BeforeEach
@@ -166,5 +211,51 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isInternalServerError)
     verify(auditLog, times(0)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(5)
+  def tallennaPaatosPalauttaaPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
+    val paatosJSON =
+      paatos2Json(paatosWithPaatosTiedot, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosId")
+    mvc
+      .perform(
+        post(s"/api/paatos/${hakemusOid}")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatosJSON)
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(content().json(paatosJSON))
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(6)
+  def haePaatosPalauttaaPaatosTiedonKanssa200(): Unit = {
+    val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
+    val paatosJSON =
+      paatos2Json(
+        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user"), paatosTiedot = paatosTiedot),
+        "id",
+        "luoja",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosId"
+      )
+    mvc
+      .perform(
+        get(s"/api/paatos/${hakemusOid}")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(content().json(paatosJSON))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
 }

@@ -1,16 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{
-  AsiakirjamalliLahde,
-  AsiakirjamalliModifyData,
-  AsiakirjamalliTutkinnosta,
-  Lausuntopyynto,
-  LausuntopyyntoModifyData,
-  PyydettavaAsiakirja,
-  PyydettavaAsiakirjaModifyData,
-  Tutkinto,
-  TutkintoModifyData
-}
+import fi.oph.tutu.backend.domain.*
 
 import java.util.UUID
 
@@ -40,6 +30,20 @@ object HakemusModifyOperationResolver {
     (currentPyynto.lausunnonAntaja != toBePyynto.lausunnonAntaja ||
       currentPyynto.lahetetty != toBePyynto.lahetetty ||
       currentPyynto.saapunut != toBePyynto.saapunut)
+
+  private def paatosTietoModified(
+    currentPaatosTieto: PaatosTieto,
+    toBePaatosTieto: PaatosTieto
+  ): Boolean = currentPaatosTieto.id == toBePaatosTieto.id &&
+    (currentPaatosTieto.paatosTyyppi != toBePaatosTieto.paatosTyyppi ||
+      currentPaatosTieto.sovellettuLaki != toBePaatosTieto.sovellettuLaki ||
+      currentPaatosTieto.tutkintoId != toBePaatosTieto.tutkintoId ||
+      currentPaatosTieto.lisaaTutkintoPaatostekstiin != toBePaatosTieto.lisaaTutkintoPaatostekstiin ||
+      currentPaatosTieto.myonteinenPaatos != toBePaatosTieto.myonteinenPaatos ||
+      currentPaatosTieto.myonteisenPaatoksenLisavaatimukset != toBePaatosTieto.myonteisenPaatoksenLisavaatimukset ||
+      currentPaatosTieto.kielteisenPaatoksenPerustelut != toBePaatosTieto.kielteisenPaatoksenPerustelut ||
+      currentPaatosTieto.tutkintoTaso != toBePaatosTieto.tutkintoTaso ||
+      currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot != toBePaatosTieto.rinnastettavatTutkinnotTaiOpinnot)
 
   def resolvePyydettavatAsiakirjatModifyOperations(
     currentAsiakirjat: Seq[PyydettavaAsiakirja],
@@ -108,5 +112,19 @@ object HakemusModifyOperationResolver {
         muutetut ++ resolveReIndexedTutkinnot(pieninPoistettuJarjestysNumero.toInt, toBeTutkinnot, poistetut)
       else muutetut
     TutkintoModifyData(uudet, muutetutJaUudelleenNumeroitavat, poistetut)
+  }
+
+  def resolvePaatosTietoModifyOperations(
+    currentPaatosTiedot: Seq[PaatosTieto],
+    toBePaatosTiedot: Seq[PaatosTieto]
+  ): PaatosTietoModifyData = {
+    val uudet     = toBePaatosTiedot.filterNot(pyynto => currentPaatosTiedot.exists(_.id == pyynto.id))
+    val poistetut = currentPaatosTiedot
+      .filterNot(pyynto => toBePaatosTiedot.exists(_.id == pyynto.id))
+      .map(_.id.orNull)
+      .filter(_ != null)
+    val muutetut =
+      toBePaatosTiedot.filter(paatosTieto => currentPaatosTiedot.exists(paatosTietoModified(_, paatosTieto)))
+    PaatosTietoModifyData(uudet, muutetut, poistetut)
   }
 }

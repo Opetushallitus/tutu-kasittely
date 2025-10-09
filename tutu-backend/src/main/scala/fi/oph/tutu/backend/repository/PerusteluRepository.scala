@@ -280,7 +280,7 @@ class PerusteluRepository extends BaseResultHandlers {
   }
 
   /**
-   * Tallentaa uudet/muuttu tai modifioidun lausuntotiedon ja siihen liittyvät lausuntopyynnöt
+   * Tallentaa uudet/muuttuneet tai modifioidun lausuntotiedon ja siihen liittyvät lausuntopyynnöt
    *
    * @param perusteluId
    * vastaavan lausuntotiedon uuid

@@ -11,6 +11,7 @@ case class Paatos(
   ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
   seutArviointi: Boolean = false,
   peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
+  paatosTiedot: Seq[PaatosTieto] = Seq(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
@@ -34,7 +35,8 @@ case class Paatos(
 case class PartialPaatos(
   ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
   seutArviointi: Option[Boolean] = None,
-  peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None
+  peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
+  paatosTiedot: Option[Seq[PaatosTieto]] = None
 )
 
 case class PeruutuksenTaiRaukeamisenSyy(
@@ -47,4 +49,29 @@ case class PeruutuksenTaiRaukeamisenSyy(
   eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin: Option[Boolean] = None,
   hakijallaJoPaatosSamastaKoulutusKokonaisuudesta: Option[Boolean] = None,
   muuSyy: Option[Boolean] = None
+)
+
+case class PaatosTieto(
+  id: Option[UUID] = None,
+  paatosId: Option[UUID] = None,
+  paatosTyyppi: Option[PaatosTyyppi] = None,
+  sovellettuLaki: Option[SovellettuLaki] = None,
+  tutkintoId: Option[UUID] = None,
+  lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
+  myonteinenPaatos: Option[Boolean] = None,
+  // TODO: case classeiksi
+  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
+  kielteisenPaatoksenPerustelut: Option[String] = None,
+  tutkintoTaso: Option[TutkintoTaso],
+  rinnastettavatTutkinnotTaiOpinnot: Option[Seq[String]] = None,
+  luotu: Option[LocalDateTime] = None,
+  luoja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None
+)
+
+case class PaatosTietoModifyData(
+  uudet: Seq[PaatosTieto] = Seq.empty,
+  muutetut: Seq[PaatosTieto] = Seq.empty,
+  poistetut: Seq[UUID] = Seq.empty
 )

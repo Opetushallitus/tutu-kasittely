@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Paatos, PeruutuksenTaiRaukeamisenSyy, Ratkaisutyyppi}
+import fi.oph.tutu.backend.domain.*
 import org.json4s.jackson.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +11,7 @@ import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 
 @Component
 @Repository
@@ -21,6 +22,12 @@ class PaatosRepository extends BaseResultHandlers {
 
   final val DB_TIMEOUT = 30.seconds
 
+  private def mapFromTextArray(dbValue: Option[String]): Option[Seq[String]] =
+    dbValue.map(_.replaceAll("[{}\"]", "").split(",").map(_.trim).toSeq)
+
+  private def mapToTextArray(scalaValue: Option[Seq[String]]): Option[String] =
+    scalaValue.map(_.mkString("{", ",", "}"))
+
   implicit val getPaatosResult: GetResult[Paatos] = GetResult(r =>
     Paatos(
       id = Some(r.nextObject().asInstanceOf[UUID]),
@@ -28,6 +35,26 @@ class PaatosRepository extends BaseResultHandlers {
       ratkaisutyyppi = Option(Ratkaisutyyppi.fromString(r.nextString())),
       seutArviointi = r.nextBoolean(),
       peruutuksenTaiRaukeamisenSyy = Option(Serialization.read[PeruutuksenTaiRaukeamisenSyy](r.nextString())),
+      luotu = Some(r.nextTimestamp().toLocalDateTime),
+      luoja = Some(r.nextString()),
+      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
+      muokkaaja = r.nextStringOption()
+    )
+  )
+
+  implicit val getPaatosTietoResult: GetResult[PaatosTieto] = GetResult(r =>
+    PaatosTieto(
+      id = Some(r.nextObject().asInstanceOf[UUID]),
+      paatosId = Some(r.nextObject().asInstanceOf[UUID]),
+      paatosTyyppi = Option(PaatosTyyppi.fromString(r.nextString())),
+      sovellettuLaki = Option(SovellettuLaki.fromString(r.nextString())),
+      tutkintoId = Some(r.nextObject().asInstanceOf[UUID]),
+      lisaaTutkintoPaatostekstiin = Option(r.nextBoolean()),
+      myonteinenPaatos = Option(r.nextBoolean()),
+      myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
+      kielteisenPaatoksenPerustelut = r.nextStringOption(),
+      tutkintoTaso = Option(TutkintoTaso.fromString(r.nextString())),
+      rinnastettavatTutkinnotTaiOpinnot = mapFromTextArray(r.nextStringOption()),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -98,4 +125,108 @@ class PaatosRepository extends BaseResultHandlers {
         )
     }
   }
+
+  /**
+   * Tallentaa/poistaa uudet/muuttuneet/poistetut päätöstiedot
+   *
+   * @param perusteluId
+   * vastaavan perustelun uuid
+   * @param modifyData
+   * päätöstietojen muokkaustiedot
+   * @param luojaTaiMuokkaaja
+   * pyynnön luoja tai muokkaaja
+   */
+  def suoritaPaatosTietojenModifiointi(
+    perusteluId: UUID,
+    modifyData: PaatosTietoModifyData,
+    luojaTaiMuokkaaja: String
+  ): Unit = {
+    val actions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
+      modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
+      modifyData.poistetut.map(poistaPaatosTieto)
+    val combined = db.combineIntDBIOs(actions)
+    db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
+      case Success(_) => ()
+      case Failure(e) =>
+        LOG.error(s"Virhe paatostietojen modifioinnissa: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe paatostietojen modifioinnissa: ${e.getMessage}", e)
+    }
+  }
+
+  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] =
+    sqlu"""
+        INSERT INTO paatostieto (
+                                  paatos_id, 
+                                  paatostyyppi, 
+                                  sovellettulaki, 
+                                  tutkinto_id, 
+                                  lisaa_tutkinto_paatostekstiin, 
+                                  myonteinen_paatos, 
+                                  myonteisen_paatoksen_lisavaatimukset, 
+                                  kielteisen_paatoksen_perustelut, 
+                                  tutkintotaso, 
+                                  rinnastettavat_tutkinnot_tai_opinnot, 
+                                  luoja
+                                )
+        VALUES (
+          ${paatosId.toString}::uuid,
+          ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
+          ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
+          ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
+          ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
+          ${paatosTieto.myonteinenPaatos}::boolean,
+          ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+          ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
+          ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+          ${mapToTextArray(paatosTieto.rinnastettavatTutkinnotTaiOpinnot)}::text[],
+          $luoja
+        )"""
+
+  private def paivitaPaatosTieto(
+    paatosTieto: PaatosTieto,
+    muokkaaja: String
+  ): DBIO[Int] =
+    sqlu"""
+        UPDATE paatostieto
+        SET
+          paatostyyppi = ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
+          sovellettulaki = ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
+          tutkinto_id = ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
+          lisaa_tutkinto_paatostekstiin = ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
+          myonteinen_paatos = ${paatosTieto.myonteinenPaatos}::boolean,
+          myonteisen_paatoksen_lisavaatimukset = ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+          kielteisen_paatoksen_perustelut = ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
+          tutkintotaso = ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+          rinnastettavat_tutkinnot_tai_opinnot = ${mapToTextArray(
+        paatosTieto.rinnastettavatTutkinnotTaiOpinnot
+      )}::text[],
+          muokkaaja = $muokkaaja
+        WHERE id = ${paatosTieto.id.get.toString}::uuid
+      """
+
+  def haePaatosTiedot(paatosId: UUID): Seq[PaatosTieto] = {
+    try {
+      db.run(
+        sql"""
+          SELECT *
+          FROM paatostieto
+          WHERE paatos_id = ${paatosId.toString}::uuid
+        """.as[PaatosTieto],
+        "hae_paatostiedot"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Päätöstietojen haku epäonnistui: $e")
+        throw new RuntimeException(
+          s"Päätöstietojen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  private def poistaPaatosTieto(id: UUID): DBIO[Int] =
+    sqlu"""
+        DELETE FROM paatostieto
+        WHERE id = ${id.toString}::uuid
+      """
 }
