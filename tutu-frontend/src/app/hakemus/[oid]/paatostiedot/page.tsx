@@ -106,19 +106,13 @@ const Paatostiedot = ({
     }
   };
 
-  const updatePaatosTieto = (updatedPaatosTieto: PaatosTieto) => {
-    const existingPaatosTiedot = currentPaatos.paatosTiedot ?? [];
-    const index = existingPaatosTiedot.findIndex(
-      (pt) => pt.id === updatedPaatosTieto.id,
-    );
-
-    let newPaatosTiedot: PaatosTieto[];
-    if (index !== -1) {
-      newPaatosTiedot = [...existingPaatosTiedot];
-      newPaatosTiedot[index] = updatedPaatosTieto;
-    } else {
-      newPaatosTiedot = [...existingPaatosTiedot, updatedPaatosTieto];
-    }
+  const updatePaatosTieto = (
+    updatedPaatosTieto: PaatosTieto,
+    index: number,
+  ) => {
+    const newPaatosTiedot = [...currentPaatosTiedot];
+    newPaatosTiedot[index] = updatedPaatosTieto;
+    setCurrentPaatosTiedot(newPaatosTiedot);
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
@@ -202,7 +196,7 @@ const Paatostiedot = ({
                   sx={{
                     alignSelf: 'flex-end',
                   }}
-                  data-testid={`poista-tutkinto-button-${paatosTieto.id}`}
+                  data-testid={`poista-paatos-button`}
                   variant="text"
                   startIcon={<DeleteOutline />}
                   onClick={() => deletePaatosTieto(paatosTieto.id)}
@@ -215,7 +209,9 @@ const Paatostiedot = ({
               key={index}
               t={t}
               paatosTieto={paatosTieto}
-              updatePaatosTietoAction={updatePaatosTieto}
+              updatePaatosTietoAction={(updated) =>
+                updatePaatosTieto(updated, index)
+              }
             />
             <Divider />
           </Stack>
