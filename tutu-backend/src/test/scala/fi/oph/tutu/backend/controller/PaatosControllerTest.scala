@@ -85,7 +85,7 @@ class PaatosControllerTest extends IntegrationTestBase {
             )
           )
         else None,
-      paatosTiedot = None
+      paatosTiedot = Seq.empty
     )
   }
 
@@ -98,18 +98,18 @@ class PaatosControllerTest extends IntegrationTestBase {
       ratkaisutyyppi = Some(ratkaisutyyppi),
       seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = None,
-      paatosTiedot = Some(paatosTiedot)
+      paatosTiedot = paatosTiedot
     )
   }
 
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {
     val paatosTiedotAsMap =
       if (paatos.paatosTiedot.nonEmpty)
-        paatos.paatosTiedot.get.map { pt =>
+        paatos.paatosTiedot.map { pt =>
           pt.productElementNames.toList.zip(pt.productIterator.toList).toMap -- ignoreFields
         }
       else
-        null
+        Seq.empty
 
     val paatosAsMap = paatos.productElementNames.toList
       .zip(paatos.productIterator.toList)
@@ -240,7 +240,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
       paatos2Json(
-        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user"), paatosTiedot = Some(paatosTiedot)),
+        paatosWithPaatosTiedot.copy(id = paatosId, luoja = Some("test user"), paatosTiedot = paatosTiedot),
         "id",
         "luoja",
         "luotu",

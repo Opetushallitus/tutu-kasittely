@@ -18,7 +18,7 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
           paatosRepository.haePaatosTiedot(paatos.id.get) match {
             case paatostiedot if paatostiedot.nonEmpty =>
               Some(
-                paatos.copy(paatosTiedot = Some(paatostiedot))
+                paatos.copy(paatosTiedot = paatostiedot)
               )
             case _ => Some(paatos)
           }
@@ -50,7 +50,7 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
         val currentPaatosTiedot   = paatosRepository.haePaatosTiedot(latestSavedPaatos.id.orNull)
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
-            .resolvePaatosTietoModifyOperations(currentPaatosTiedot, partialPaatos.paatosTiedot) match {
+            .resolvePaatosTietoModifyOperations(currentPaatosTiedot, partialPaatos.paatosTiedot.getOrElse(Nil)) match {
             case PaatosTietoModifyData(uudet, muutetut, poistetut) =>
               PaatosTietoModifyData(uudet, muutetut, poistetut)
             case null => PaatosTietoModifyData()
@@ -69,7 +69,7 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
           latestSavedPaatos.copy(
             paatosTiedot =
               if (newlySavedPaatosTiedot.nonEmpty)
-                Some(newlySavedPaatosTiedot)
+                newlySavedPaatosTiedot
               else
                 latestSavedPaatos.paatosTiedot
           )
