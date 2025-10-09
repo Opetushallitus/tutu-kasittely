@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.PostgresProfile.api.*
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.TransactionIsolation.Serializable
 import slick.util.AsyncExecutor
+import software.amazon.jdbc.ds.AwsWrapperDataSource
 
+import java.util.Properties
 import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -28,12 +30,31 @@ class TutuDatabase(
 
   private def hikariConfig: HikariConfig = {
     val config = new HikariConfig()
-    config.setJdbcUrl(url)
     config.setUsername(username)
     config.setPassword(password)
     val maxPoolSize = 10
     config.setMaximumPoolSize(maxPoolSize)
     config.setMinimumIdle(1)
+    config.setDataSourceClassName(classOf[AwsWrapperDataSource].getName)
+    // Note: jdbcProtocol is required when connecting via server name// Note: jdbcProtocol is required when connecting via server name
+
+    config.addDataSourceProperty("jdbcProtocol", "jdbc:postgresql:")
+    config.addDataSourceProperty("serverName", "db-identifier.cluster-XYZ.us-east-2.rds.amazonaws.com")
+    config.addDataSourceProperty("serverPort", "5432")
+    config.addDataSourceProperty("database", "postgres")
+
+    // Alternatively, the AwsWrapperDataSource can be configured with a JDBC URL instead of individual properties as seen above.
+    config.addDataSourceProperty(
+      "jdbcUrl",
+      "jdbc:aws-wrapper:postgresql://db-identifier.cluster-XYZ.us-east-2.rds.amazonaws.com:5432/postgres"
+    )
+    config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+
+    val targetDataSourceProps = new Properties()
+    targetDataSourceProps.setProperty("socketTimeout", "10")
+    targetDataSourceProps.setProperty("wrapperLoggerLevel", "ALL")
+    config.addDataSourceProperty("targetDataSourceProperties", targetDataSourceProps)
+
     config
   }
 
