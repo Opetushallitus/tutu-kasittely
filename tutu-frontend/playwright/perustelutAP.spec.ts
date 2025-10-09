@@ -1,5 +1,6 @@
 import { expect, Route, test } from '@playwright/test';
 import { mockAll } from '@/playwright/mocks';
+import { apSisalto } from '@/playwright/fixtures/perustelu1/_perusteluApSisalto';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
@@ -20,28 +21,7 @@ test.beforeEach(async ({ page }) => {
           luotu: '2025-09-02T16:08:42.083643',
           luoja: 'Hakemuspalvelu',
           uoRoSisalto: {},
-          apSisalto: {
-            lakiperusteToisessaJasenmaassaSaannelty: true,
-            lakiperustePatevyysLahtomaanOikeuksilla: true,
-            lakiperusteToinenEUmaaTunnustanut: true,
-            lakiperusteLahtomaassaSaantelematon: true,
-            todistusEUKansalaisuuteenRinnasteisestaAsemasta:
-              'todistusEUKansalaisuuteenRinnasteisestaAsemasta',
-            ammattiJohonPatevoitynyt: 'ammattiJohonPatevoitynyt',
-            ammattitoiminnanPaaAsiallinenSisalto:
-              'ammattitoiminnanPaaAsiallinenSisalto',
-            koulutuksenKestoJaSisalto: 'koulutuksenKestoJaSisalto',
-            selvityksetLahtomaanViranomaiselta: true,
-            selvityksetLahtomaanLainsaadannosta: true,
-            selvityksetAikaisempiTapaus: true,
-            selvityksetAikaisemmanTapauksenAsiaTunnus:
-              'selvityksetAikaisemmanTapauksenAsiaTunnus',
-            selvityksetIlmeneeAsiakirjoista: true,
-            lisatietoja: 'lisatietoja',
-            IMIHalytysTarkastettu: true,
-            muutAPPerustelut: 'muutAPPerustelut',
-            SEUTArviointi: 'SEUTArviointi',
-          },
+          apSisalto: apSisalto,
         }),
       });
     },
@@ -185,25 +165,7 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
   const updatedItem = payload.apSisalto;
 
   expect(updatedItem).toEqual({
-    lakiperusteToisessaJasenmaassaSaannelty: true,
-    lakiperustePatevyysLahtomaanOikeuksilla: true,
-    lakiperusteToinenEUmaaTunnustanut: true,
-    lakiperusteLahtomaassaSaantelematon: true,
-    todistusEUKansalaisuuteenRinnasteisestaAsemasta:
-      'todistusEUKansalaisuuteenRinnasteisestaAsemasta',
-    ammattiJohonPatevoitynyt: 'ammattiJohonPatevoitynyt',
-    ammattitoiminnanPaaAsiallinenSisalto:
-      'ammattitoiminnanPaaAsiallinenSisalto',
-    koulutuksenKestoJaSisalto: 'koulutuksenKestoJaSisalto',
-    selvityksetLahtomaanViranomaiselta: true,
-    selvityksetLahtomaanLainsaadannosta: true,
-    selvityksetAikaisempiTapaus: true,
-    selvityksetAikaisemmanTapauksenAsiaTunnus:
-      'selvityksetAikaisemmanTapauksenAsiaTunnus',
-    selvityksetIlmeneeAsiakirjoista: true,
-    lisatietoja: 'lisatietoja',
-    IMIHalytysTarkastettu: true,
-    muutAPPerustelut: 'muutAPPerustelut',
+    ...apSisalto,
     SEUTArviointi: 'SEUTArviointi uusi arvo',
   });
 });

@@ -40,11 +40,6 @@ export default function ApPage() {
     });
   }, 1000);
 
-  const updateAPSisalto = (next: APSisalto) => {
-    setAPSisalto(next);
-    debouncedUpdateAPSisalto(next);
-  };
-
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
     const next = { ...apSisalto, [key]: checked };
     setAPSisalto(next);
@@ -55,7 +50,9 @@ export default function ApPage() {
   };
 
   const updateTextField = (key: keyof APSisalto, value: string) => {
-    updateAPSisalto({ ...apSisalto, [key]: value });
+    const next = { ...apSisalto, [key]: value };
+    setAPSisalto(next);
+    debouncedUpdateAPSisalto(next);
   };
 
   return isLoading || isPerusteluLoading ? (
