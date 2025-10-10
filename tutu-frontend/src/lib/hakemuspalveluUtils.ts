@@ -1,10 +1,12 @@
 import {
+  AsiakirjaMetadata,
   SisaltoItem,
   SisaltoPathNode,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
+import * as dateFns from 'date-fns';
 
 export const sisaltoItemMatches = (
   item: SisaltoItem,
@@ -155,4 +157,19 @@ const traverseTree = (
   const combinedList = combine(restList, newList);
 
   traverseTree(expand, combine, handleItem, combinedList);
+};
+
+export const setLiitteenSaapumisaika = (
+  liiteMetadata: AsiakirjaMetadata,
+  hakemuksenSaapumisaika: string,
+) => {
+  const saapumisaika = liiteMetadata.saapumisaika || hakemuksenSaapumisaika;
+  const formatoitu = dateFns.format(saapumisaika, 'dd.MM.yyyy HH:mm');
+  console.log(
+    '!!!!!!!!!!!!!!!!!!! ',
+    hakemuksenSaapumisaika,
+    saapumisaika,
+    formatoitu,
+  );
+  return { ...liiteMetadata, saapumisaika: formatoitu };
 };

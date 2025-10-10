@@ -35,6 +35,35 @@
       "label": "Sukupuoli",
       "old": "",
       "new": "nainen"
+    },
+    "582be518-e3ea-4692-8a2c-8370b40213e9": {
+      "label": "TUTKINTOTODISTUS",
+      "old": [
+        "3020c88d-eda7-4770-b351-5450c6e9abf8"
+      ],
+      "new": [
+        "3020c88d-eda7-4770-b351-5450c6e9abf8",
+        "4dd2eb91-bd62-4664-ad55-bf39dd676357",
+        "550e8400-e29b-41d4-a716-446655440000"
+      ]
+    },
+    "f47ac10b-58cc-4372-a567-0e02b2c3d479": {
+      "label": "LÄÄKÄRINTODISTUS",
+      "old": [
+        "bdbfd720-1b36-4fb9-81c8-0f00d6bce5ab",
+        "8872130f-c741-4266-9ebc-4356205f41d8"
+      ],
+      "new": [
+        "8872130f-c741-4266-9ebc-4356205f41d8"
+      ]
+    },
+    "e3f2dc6f-4de5-4a58-8e91-07e3d0e79d36": {
+      "label": "REISSUVIHKO",
+      "old": [],
+      "new": [
+        "2cfb0bfa-4938-44b1-8fa0-b3a3caa5f4bb",
+        "4e75a4ad-9e3a-476b-91de-befba64032e0"
+      ]
     }
   },
   {
@@ -44,6 +73,21 @@
       "label": "Korkeakoulun tai oppilaitoksen nimi",
       "old": "tutu academy",
       "new": "tutu koulu"
+    },
+    "9c67e5d0-2957-4b60-b86b-f2a65ee6f9c3": {
+      "label": "PAPERI",
+      "old": [
+        "f8de3845-522d-44fa-8517-d5ecf2d69b28",
+        "b8e44dbd-8ab2-4c4f-93ee-baa98c72759f"
+      ],
+      "new": [
+        "f8de3845-522d-44fa-8517-d5ecf2d69b28",
+        "b8e44dbd-8ab2-4c4f-93ee-baa98c72759f",
+        "5b9f65e0-fde7-47f5-99a1-5c8efc7b0b5e",
+        "74e42ebc-5e32-4b59-b783-f49b16f3d5cf",
+        "c3e8805d-fc7e-4c0b-b145-5a82a0ad6dbb",
+        "11b26d39-c25d-4c7b-97cd-f174048e3a0d"
+      ]
     }
   },
   {

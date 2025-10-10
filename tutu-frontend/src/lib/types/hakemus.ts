@@ -92,6 +92,7 @@ export type SisaltoItemInfoText = {
 export type AsiakirjaMetadata = {
   key: string;
   filename: string;
+  saapumisaika?: string;
 };
 
 export type TarkistuksenTila = {
