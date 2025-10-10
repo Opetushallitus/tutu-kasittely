@@ -23,7 +23,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class TutuDatabase(
   @Value("${spring.datasource.url}") url: String,
   @Value("${spring.datasource.username}") username: String,
-  @Value("${spring.datasource.password}") password: String
+  @Value("${spring.datasource.password:}") password: String,
+  @Value("${spring.profiles.active}") activeProfiles: String
 ) {
 
   val LOG = LoggerFactory.getLogger(classOf[TutuDatabase]);
@@ -31,29 +32,24 @@ class TutuDatabase(
   private def hikariConfig: HikariConfig = {
     val config = new HikariConfig()
     config.setUsername(username)
-    config.setPassword(password)
     val maxPoolSize = 10
     config.setMaximumPoolSize(maxPoolSize)
     config.setMinimumIdle(1)
-    config.setDataSourceClassName(classOf[AwsWrapperDataSource].getName)
-    // Note: jdbcProtocol is required when connecting via server name// Note: jdbcProtocol is required when connecting via server name
 
-    config.addDataSourceProperty("jdbcProtocol", "jdbc:postgresql:")
-    config.addDataSourceProperty("serverName", "db-identifier.cluster-XYZ.us-east-2.rds.amazonaws.com")
-    config.addDataSourceProperty("serverPort", "5432")
-    config.addDataSourceProperty("database", "postgres")
+    if (activeProfiles.contains("prod")) {
+      config.setDataSourceClassName(classOf[AwsWrapperDataSource].getName)
+      config.addDataSourceProperty("jdbcUrl", url)
+      config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
 
-    // Alternatively, the AwsWrapperDataSource can be configured with a JDBC URL instead of individual properties as seen above.
-    config.addDataSourceProperty(
-      "jdbcUrl",
-      "jdbc:aws-wrapper:postgresql://db-identifier.cluster-XYZ.us-east-2.rds.amazonaws.com:5432/postgres"
-    )
-    config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
-
-    val targetDataSourceProps = new Properties()
-    targetDataSourceProps.setProperty("socketTimeout", "10")
-    targetDataSourceProps.setProperty("wrapperLoggerLevel", "ALL")
-    config.addDataSourceProperty("targetDataSourceProperties", targetDataSourceProps)
+      val targetDataSourceProps = new Properties()
+      targetDataSourceProps.setProperty("socketTimeout", "10")
+      targetDataSourceProps.setProperty("wrapperLoggerLevel", "ALL")
+      targetDataSourceProps.setProperty("wrapperPlugins", "iam,failover2")
+      config.addDataSourceProperty("targetDataSourceProperties", targetDataSourceProps)
+    } else {
+      config.setJdbcUrl(url)
+      config.setPassword(password)
+    }
 
     config
   }

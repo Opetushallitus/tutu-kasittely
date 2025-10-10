@@ -39,6 +39,7 @@ import { Unit } from 'aws-cdk-lib/aws-cloudwatch'
 import { Volume } from 'aws-cdk-lib/aws-ecs/lib/base/task-definition'
 import { MountPoint } from 'aws-cdk-lib/aws-ecs/lib/container-definition'
 import { SecretEntry } from './secrets-manager-stack'
+import { DatabaseCluster } from 'aws-cdk-lib/aws-rds'
 
 interface EcsServiceStackProps extends StackProps {
   environment: string
@@ -46,6 +47,7 @@ interface EcsServiceStackProps extends StackProps {
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   env_vars: any
   cluster: ICluster
+  databaseCluster: DatabaseCluster
   vpc: IVpc
   taskCpu: string
   taskMemory: string
@@ -134,6 +136,8 @@ export class EcsServiceStack extends Stack {
         taskDefinition.addToTaskRolePolicy(statement)
       })
     }
+
+    props.databaseCluster.grantConnect(taskDefinition.taskRole, 'app_iam')
 
     const container = taskDefinition.addContainer(`${props.serviceName}`, {
       image: ContainerImage.fromEcrRepository(ImageRepository, props.revision),
