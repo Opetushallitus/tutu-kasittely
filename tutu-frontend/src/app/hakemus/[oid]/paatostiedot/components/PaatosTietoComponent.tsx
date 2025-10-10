@@ -87,7 +87,7 @@ export const PaatosTietoComponent = ({
             sovellettuLaki: event.target.value as SovellettuLaki,
           })
         }
-        data-testid={'paatos-paatostyyppi-dropdown'}
+        data-testid={'paatos-sovellettulaki-dropdown'}
       />
     </Stack>
   );
