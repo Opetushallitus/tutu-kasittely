@@ -24,7 +24,7 @@ class TutuDatabase(
   @Value("${spring.datasource.url}") url: String,
   @Value("${spring.datasource.username}") username: String,
   @Value("${spring.datasource.password:}") password: String,
-  @Value("${spring.profiles.active}") activeProfiles: String
+  @Value("${spring.profiles.active:}") activeProfiles: String
 ) {
 
   val LOG = LoggerFactory.getLogger(classOf[TutuDatabase]);
