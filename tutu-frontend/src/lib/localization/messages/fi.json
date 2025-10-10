@@ -386,6 +386,13 @@
         "lisaaPaatos": "Lisää päätös",
         "poistaPaatos": "Poista päätös"
       },
+      "sovellettuLaki": {
+        "otsikko": "Sovellettu laki",
+        "uo": "Päätös UO",
+        "ap": "Päätös AP",
+        "ap_seut": "Päätös AP/SEUT",
+        "ro": "Päätös RO"
+      },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",
         "eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada": "ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",

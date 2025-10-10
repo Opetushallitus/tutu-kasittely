@@ -11,6 +11,8 @@ export type Paatostyyppi =
   | 'TiettyTutkintoTaiOpinnot'
   | 'RiittavatOpinnot';
 
+export type SovellettuLaki = 'uo' | 'ap' | 'ap_seut' | 'ro';
+
 export type PeruutuksenTaiRaukeamisenSyy = {
   eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada?: boolean;
   muutenTyytymatonRatkaisuun?: boolean;
@@ -27,6 +29,7 @@ export type PaatosTieto = {
   id?: string;
   paatosId: string;
   paatosTyyppi?: Paatostyyppi;
+  sovellettuLaki?: SovellettuLaki;
   myonteisenPaatoksenLisavaatimukset: string;
   kielteisenPaatoksenPerustelut: string;
 };
