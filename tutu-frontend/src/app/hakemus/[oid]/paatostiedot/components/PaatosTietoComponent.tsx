@@ -23,7 +23,7 @@ export const PaatosTietoComponent = ({
   useEffect(() => {
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
-  console.log(currentPaatosTieto);
+
   return (
     <OphSelectFormField
       placeholder={t('yleiset.valitse')}
@@ -32,7 +32,7 @@ export const PaatosTietoComponent = ({
       value={currentPaatosTieto.paatosTyyppi || ''}
       onChange={(event) =>
         updatePaatosTietoAction({
-          ...paatosTieto,
+          ...currentPaatosTieto,
           paatosTyyppi: event.target.value as Paatostyyppi,
         })
       }

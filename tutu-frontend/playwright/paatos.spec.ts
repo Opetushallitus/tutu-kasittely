@@ -69,7 +69,7 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
   }
 });
 
-test('Päätöskentät näkyvät oikein ja päätös-ratkaisutyypin valitseminen näyttää päätöstyyppi-dropdownin', async ({
+test('Päätöskenttien näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
   page,
 }) => {
   mockPaatos(page);
@@ -81,8 +81,8 @@ test('Päätöskentät näkyvät oikein ja päätös-ratkaisutyypin valitseminen
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
   await expect(paatostyyppiInput).toBeVisible();
 
+  //Lisätään ensimmäinen päätöstyyppi
   await paatostyyppiInput.first().click();
-
   await expect(paatostyyppiInput).toBeVisible();
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
@@ -95,8 +95,67 @@ test('Päätöskentät näkyvät oikein ja päätös-ratkaisutyypin valitseminen
     expect(req[0].postDataJSON().paatosTiedot[0].paatosTyyppi).toEqual('Taso'),
   );
 
-  //Ratkaisutyypin vaihdon tulisi tyhjentää päätöstiedot:
-  await ratkaisutyyppiInput.first().click();
+  //Lisätään toinen päätöstyyppi
+  await page.getByTestId('lisaa-paatos-button').click();
+  const secondDropdown = page
+    .getByTestId('paatos-paatostyyppi-dropdown')
+    .nth(1);
+  await expect(secondDropdown).toBeVisible();
+  await secondDropdown.click();
+
+  const kelpoisuusOption = page
+    .locator('ul[role="listbox"]:visible li[role="option"]')
+    .filter({ hasText: 'Kelpoisuus' });
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    kelpoisuusOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot).toHaveLength(2);
+    expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
+  });
+
+  //Lisätään kolmas päätöstyyppi
+  await page.getByTestId('lisaa-paatos-button').click();
+  const thirdDropdown = page.getByTestId('paatos-paatostyyppi-dropdown').nth(2);
+  await expect(thirdDropdown).toBeVisible();
+  await thirdDropdown.click();
+
+  const riittavatOpinnotOption = page
+    .locator('ul[role="listbox"]:visible li[role="option"]')
+    .filter({ hasText: 'Riittävät opinnot' })
+    .last();
+
+  await expect(riittavatOpinnotOption).toBeVisible();
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    riittavatOpinnotOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot).toHaveLength(3);
+    expect(postData.paatosTiedot[2].paatosTyyppi).toEqual('RiittavatOpinnot');
+  });
+
+  //Poistetaan viimeisin päätöstyyppi
+
+  const deleteButton = page.getByTestId('poista-paatos-button').last();
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    deleteButton.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    console.log(postData);
+
+    expect(postData.paatosTiedot).toHaveLength(2);
+    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Taso');
+    expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
+  });
+
+  // Ratkaisutyypin vaihdon tulisi tyhjentää päätöstiedot:
+  await ratkaisutyyppiInput.click();
   const peruutusOption = page
     .locator('ul[role="listbox"] li[role="option"]')
     .locator('text=Peruutus tai raukeaminen');
@@ -104,8 +163,5 @@ test('Päätöskentät näkyvät oikein ja päätös-ratkaisutyypin valitseminen
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     peruutusOption.click(),
-  ]).then((req) =>
-    // console.log(req[0].postDataJSON()),
-    expect(req[0].postDataJSON().paatosTiedot).toEqual([]),
-  );
+  ]).then((req) => expect(req[0].postDataJSON().paatosTiedot).toEqual([]));
 });

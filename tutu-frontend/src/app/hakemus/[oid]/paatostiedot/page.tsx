@@ -5,6 +5,7 @@ import {
   OphCheckbox,
   OphTypography,
   OphSelectFormField,
+  OphButton,
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -20,8 +21,9 @@ import {
 } from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
-import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { Add } from '@mui/icons-material';
+import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -82,9 +84,17 @@ const Paatostiedot = ({
   const theme = useTheme();
 
   const [currentPaatos, setCurrentPaatos] = React.useState<Paatos>(paatos);
+  const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
+    PaatosTieto[]
+  >([]);
 
   useEffect(() => {
     setCurrentPaatos(paatos);
+    setCurrentPaatosTiedot(
+      paatos.paatosTiedot?.length
+        ? paatos.paatosTiedot
+        : [emptyPaatosTieto(paatos.id!)],
+    );
   }, [paatos]);
 
   const updatePaatosField = (updatedPaatos: Partial<Paatos>) => {
@@ -95,26 +105,29 @@ const Paatostiedot = ({
     }
   };
 
-  const updatePaatosTieto = (updatedPaatosTieto: PaatosTieto) => {
-    const existingPaatosTiedot = currentPaatos.paatosTiedot ?? [];
-    const index = existingPaatosTiedot.findIndex(
-      (pt) => pt.id === updatedPaatosTieto.id,
-    );
-
-    let newPaatosTiedot: PaatosTieto[];
-    if (index !== -1) {
-      newPaatosTiedot = [...existingPaatosTiedot];
-      newPaatosTiedot[index] = updatedPaatosTieto;
-    } else {
-      newPaatosTiedot = [...existingPaatosTiedot, updatedPaatosTieto];
-    }
-
+  const updatePaatosTieto = (
+    updatedPaatosTieto: PaatosTieto,
+    index: number,
+  ) => {
+    const newPaatosTiedot = [...currentPaatosTiedot];
+    newPaatosTiedot[index] = updatedPaatosTieto;
+    setCurrentPaatosTiedot(newPaatosTiedot);
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
-  const paatosTiedot = currentPaatos.paatosTiedot ?? [
-    emptyPaatosTieto(currentPaatos.id!),
-  ];
+  const addPaatosTieto = () => {
+    setCurrentPaatosTiedot((oldPaatosTiedot) =>
+      oldPaatosTiedot.concat([emptyPaatosTieto(paatos.id!)]),
+    );
+  };
+
+  const deletePaatosTieto = (id: string | undefined) => {
+    const newPaatosTiedot = id
+      ? currentPaatosTiedot.filter((paatostieto) => paatostieto.id !== id)
+      : currentPaatosTiedot.slice(0, -1);
+    setCurrentPaatosTiedot(newPaatosTiedot);
+    updatePaatosField({ paatosTiedot: newPaatosTiedot });
+  };
 
   return (
     <Stack
@@ -165,20 +178,28 @@ const Paatostiedot = ({
           }
         />
       )}
-      {currentPaatos.ratkaisutyyppi === 'Paatos' &&
-        paatosTiedot?.map((paatosTieto, index) => (
-          <>
-            <OphTypography variant={'h3'}>
-              {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
-            </OphTypography>
-            <PaatosTietoComponent
-              key={index}
-              t={t}
-              paatosTieto={paatosTieto}
-              updatePaatosTietoAction={updatePaatosTieto}
-            />
-          </>
-        ))}
+      {currentPaatos.ratkaisutyyppi === 'Paatos' && (
+        <>
+          <PaatosTietoList
+            t={t}
+            paatosTiedot={currentPaatosTiedot}
+            updatePaatosTietoAction={updatePaatosTieto}
+            deletePaatosTieto={deletePaatosTieto}
+          />
+          <OphButton
+            sx={{
+              alignSelf: 'flex-start',
+            }}
+            data-testid={`lisaa-paatos-button`}
+            variant="outlined"
+            startIcon={<Add />}
+            onClick={addPaatosTieto}
+          >
+            {t('hakemus.paatos.paatostyyppi.lisaaPaatos')}
+          </OphButton>
+          <Divider />
+        </>
+      )}
     </Stack>
   );
 };
