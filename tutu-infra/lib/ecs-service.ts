@@ -137,7 +137,7 @@ export class EcsServiceStack extends Stack {
       })
     }
 
-    props.databaseCluster.grantConnect(taskDefinition.taskRole, 'app_iam')
+    props.databaseCluster.grantConnect(taskDefinition.taskRole, props.env_vars.PG_USER)
 
     const container = taskDefinition.addContainer(`${props.serviceName}`, {
       image: ContainerImage.fromEcrRepository(ImageRepository, props.revision),
