@@ -138,7 +138,7 @@ test('Päätöskenttien näkyminen, lisäys ja poisto toimii ja lähettää POST
     expect(postData.paatosTiedot[2].paatosTyyppi).toEqual('RiittavatOpinnot');
   });
 
-  //Poistetaan keskimmäinen päätöstyyppi
+  //Poistetaan viimeisin päätöstyyppi
 
   const deleteButton = page.getByTestId('poista-paatos-button').last();
 

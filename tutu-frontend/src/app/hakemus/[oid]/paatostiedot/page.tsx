@@ -21,9 +21,9 @@ import {
 } from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
-import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
-import { Add, DeleteOutline } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
+import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -97,7 +97,6 @@ const Paatostiedot = ({
     );
   }, [paatos]);
 
-  console.log(currentPaatosTiedot);
   const updatePaatosField = (updatedPaatos: Partial<Paatos>) => {
     const newPaatos: Paatos = { ...currentPaatos, ...updatedPaatos };
     setCurrentPaatos(newPaatos);
@@ -179,45 +178,14 @@ const Paatostiedot = ({
           }
         />
       )}
-      {currentPaatos.ratkaisutyyppi === 'Paatos' &&
-        currentPaatosTiedot.map((paatosTieto, index) => (
-          <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
-            <Stack
-              key={`stack-${index}`}
-              direction={'row'}
-              gap={theme.spacing(2)}
-              sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-            >
-              <OphTypography variant={'h3'}>
-                {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
-              </OphTypography>
-              {index > 0 && (
-                <OphButton
-                  sx={{
-                    alignSelf: 'flex-end',
-                  }}
-                  data-testid={`poista-paatos-button`}
-                  variant="text"
-                  startIcon={<DeleteOutline />}
-                  onClick={() => deletePaatosTieto(paatosTieto.id)}
-                >
-                  {t('hakemus.paatos.paatostyyppi.poistaPaatos')}
-                </OphButton>
-              )}
-            </Stack>
-            <PaatosTietoComponent
-              key={index}
-              t={t}
-              paatosTieto={paatosTieto}
-              updatePaatosTietoAction={(updated) =>
-                updatePaatosTieto(updated, index)
-              }
-            />
-            <Divider />
-          </Stack>
-        ))}
       {currentPaatos.ratkaisutyyppi === 'Paatos' && (
         <>
+          <PaatosTietoList
+            t={t}
+            paatosTiedot={currentPaatosTiedot}
+            updatePaatosTietoAction={updatePaatosTieto}
+            deletePaatosTieto={deletePaatosTieto}
+          />
           <OphButton
             sx={{
               alignSelf: 'flex-start',
