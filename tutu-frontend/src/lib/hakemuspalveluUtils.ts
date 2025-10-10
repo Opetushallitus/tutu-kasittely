@@ -165,11 +165,5 @@ export const setLiitteenSaapumisaika = (
 ) => {
   const saapumisaika = liiteMetadata.saapumisaika || hakemuksenSaapumisaika;
   const formatoitu = dateFns.format(saapumisaika, 'dd.MM.yyyy HH:mm');
-  console.log(
-    '!!!!!!!!!!!!!!!!!!! ',
-    hakemuksenSaapumisaika,
-    saapumisaika,
-    formatoitu,
-  );
   return { ...liiteMetadata, saapumisaika: formatoitu };
 };
