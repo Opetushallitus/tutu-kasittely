@@ -28,7 +28,9 @@ import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHtt
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
 import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
 import org.springframework.web.filter.ForwardedHeaderFilter
+import software.amazon.jdbc.ds.AwsWrapperDataSource
 
+import java.util.Properties
 import scala.collection.mutable
 import scala.jdk.javaapi.CollectionConverters.asJava
 
@@ -55,14 +57,28 @@ class SecurityConfig {
   def sessionDatasource(
     @Value("${spring.datasource.url}") url: String,
     @Value("${spring.datasource.username}") username: String,
-    @Value("${spring.datasource.password}") password: String
+    @Value("${spring.datasource.password:}") password: String,
+    @Value("${spring.profiles.active:}") activeProfiles: String
   ): HikariDataSource = {
-    val config = new HikariDataSource()
-    config.setJdbcUrl(url)
-    config.setUsername(username)
-    config.setPassword(password)
-    config.setMaximumPoolSize(2)
-    config
+    val ds = new HikariDataSource()
+    ds.setMaximumPoolSize(2)
+    ds.setUsername(username)
+
+    if (activeProfiles.contains("prod")) {
+      ds.setDataSourceClassName(classOf[AwsWrapperDataSource].getName)
+      ds.addDataSourceProperty("jdbcUrl", url)
+      ds.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
+
+      val targetDataSourceProps = new Properties()
+      targetDataSourceProps.setProperty("socketTimeout", "10")
+      targetDataSourceProps.setProperty("wrapperLoggerLevel", "ALL")
+      targetDataSourceProps.setProperty("wrapperPlugins", "iam,failover2")
+      ds.addDataSourceProperty("targetDataSourceProperties", targetDataSourceProps)
+    } else {
+      ds.setJdbcUrl(url)
+      ds.setPassword(password)
+    }
+    ds
   }
 
   @Bean

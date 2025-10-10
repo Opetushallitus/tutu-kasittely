@@ -36,7 +36,7 @@ export class CloudfrontStack extends Stack {
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-      originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+      originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER
     }
 
     if (props.requireTestAuth) {

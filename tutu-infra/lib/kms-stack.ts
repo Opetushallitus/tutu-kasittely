@@ -1,5 +1,5 @@
 // Create new CDK stack for KMS keys
-import { Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib'
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
 import { Key } from 'aws-cdk-lib/aws-kms'
 import { Construct } from 'constructs'
 import * as aws_iam from 'aws-cdk-lib/aws-iam'

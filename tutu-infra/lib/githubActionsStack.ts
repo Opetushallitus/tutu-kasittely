@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
+import { StackProps } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import * as iam from 'aws-cdk-lib/aws-iam'
-import { StackProps } from 'aws-cdk-lib'
 
 interface CommonStackProps extends StackProps {
   environment: string

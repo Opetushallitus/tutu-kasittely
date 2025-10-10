@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
+import { StackProps } from 'aws-cdk-lib'
 import * as guardduty from 'aws-cdk-lib/aws-guardduty'
 import { Construct } from 'constructs'
-import { StackProps } from 'aws-cdk-lib'
 import { Bucket } from 'aws-cdk-lib/aws-s3'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as events from 'aws-cdk-lib/aws-events'
