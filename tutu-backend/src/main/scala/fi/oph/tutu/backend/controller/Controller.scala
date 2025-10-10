@@ -184,15 +184,16 @@ class Controller(
   }
 
   @GetMapping(
-    path = Array("liite/metadata")
+    path = Array("liite/metadata/{hakemusOid}")
   )
   def haeLiitteidenTiedot(
+    @PathVariable("hakemusOid") hakemusOid: String,
     @RequestParam("avaimet") avaimet: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       val avainLista = avaimet.split(",");
-      hakemuspalveluService.haeLiitteidenTiedot(avainLista)
+      hakemuspalveluService.haeLiitteidenTiedot(HakemusOid(hakemusOid), avainLista)
     } match {
       case Success(result) =>
         result match {

@@ -25,7 +25,6 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
-import * as dateFns from 'date-fns';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 const UusiBadge = styled(Chip)(() => ({
@@ -36,7 +35,6 @@ const UusiBadge = styled(Chip)(() => ({
 
 export type AsiakirjaTaulukkoData = {
   key: string;
-  saapumisaika: string;
   asiakirja: SisaltoValue;
   metadata?: AsiakirjaMetadata;
   liitteenTila?: TarkistuksenTila;
@@ -53,8 +51,8 @@ const lomakeOtsake = (asiakirja: SisaltoValue) => {
     .join(': ');
 };
 
-const saapumisAika = (saapumisAika: string) => {
-  return dateFns.format(saapumisAika, 'dd.MM.yyyy HH:mm');
+const saapumisAika = (metadata?: AsiakirjaMetadata) => {
+  return metadata?.saapumisaika || '-';
 };
 
 const tiedostoNimi = (metadata?: AsiakirjaMetadata) => {
@@ -154,7 +152,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
       <TableCell>
         <Stack direction="row" gap={theme.spacing(1)}>
           <OphTypography className="asiakirja-row__saapumisaika">
-            {saapumisAika(data.saapumisaika)}
+            {saapumisAika(data.metadata)}
           </OphTypography>
           {uusiLiite(t, data)}
         </Stack>

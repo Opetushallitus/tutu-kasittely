@@ -462,7 +462,7 @@ class ControllerTest extends IntegrationTestBase {
 
     val kirjauspvm = ZonedDateTime
       .parse("2025-05-14T10:59:47.597Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-      .withZoneSameInstant(ZoneId.systemDefault())
+      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
       .toLocalDateTime
     val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
 
@@ -1054,7 +1054,7 @@ class ControllerTest extends IntegrationTestBase {
 
     val kirjauspvm = ZonedDateTime
       .parse("2025-08-19T07:10:39.874Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-      .withZoneSameInstant(ZoneId.systemDefault())
+      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
       .toLocalDateTime
     val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
 

@@ -46,6 +46,7 @@ import {
   findSisaltoQuestionAndAnswer,
   findSisaltoValuesByItem,
   haeAsiakirjat,
+  setLiitteenSaapumisaika,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
@@ -140,7 +141,13 @@ const AsiakirjaHookLayer = ({
     isLoading: asiakirjatIsLoading,
     data: asiakirjaMetadata,
     error: asiakirjaError,
-  } = useLiitteet(asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','));
+  } = useLiitteet(
+    hakemus.hakemusOid,
+    asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
+  );
+  const asiakirjaMetadataWithSaapumisaika = asiakirjaMetadata?.map((m) =>
+    setLiitteenSaapumisaika(m, hakemus.kirjausPvm),
+  );
 
   /* ----------------------------------------- */
   /* Käsitellään virheet ja puutteellinen data */
@@ -158,7 +165,7 @@ const AsiakirjaHookLayer = ({
     return null;
   }
 
-  if (asiakirjatIsLoading || !asiakirjaMetadata)
+  if (asiakirjatIsLoading || !asiakirjaMetadataWithSaapumisaika)
     return <FullSpinner></FullSpinner>;
 
   return (
@@ -169,7 +176,7 @@ const AsiakirjaHookLayer = ({
       }
       debouncedAsiakirjaTietoUpdateAction={debouncedAsiakirjaTietoUpdateAction}
       asiakirjat={asiakirjat}
-      asiakirjaMetadata={asiakirjaMetadata}
+      asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
       updateOngoing={updateOngoing}
     />
   );

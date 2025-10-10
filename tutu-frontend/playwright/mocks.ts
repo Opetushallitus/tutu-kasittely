@@ -267,7 +267,7 @@ export const mockHakemus = async (
 
 export const mockLiitteet = async (page: Page) => {
   await page.route(
-    '**/tutu-backend/api/liite/metadata**',
+    '**/tutu-backend/api/liite/metadata/**',
     async (route: Route) => {
       const liitteet = getLiitteet();
       await route.fulfill({
