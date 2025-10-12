@@ -74,12 +74,10 @@ export const PaatosTietoComponent = ({
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.sovellettuLaki.otsikko')}
-        options={
-          sovellettuLakiOptions(
-            currentPaatosTieto.paatosTyyppi as Paatostyyppi,
-            t,
-          ) || []
-        }
+        options={sovellettuLakiOptions(
+          currentPaatosTieto.paatosTyyppi as Paatostyyppi,
+          t,
+        )}
         value={currentPaatosTieto.sovellettuLaki || ''}
         onChange={(event) =>
           updatePaatosTietoAction({

@@ -66,5 +66,7 @@ export const sovellettuLakiOptions = (
           label: t('hakemus.paatos.sovellettuLaki.ro'),
         },
       ];
+    default:
+      return [];
   }
 };

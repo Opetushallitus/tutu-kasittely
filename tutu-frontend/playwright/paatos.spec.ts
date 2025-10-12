@@ -9,7 +9,7 @@ const matchUpdate = (url: string, method: string) =>
 test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  mockPaatos(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
@@ -72,7 +72,7 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
 test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  mockPaatos(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
@@ -168,7 +168,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
 test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownissa', async ({
   page,
 }) => {
-  mockPaatos(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
