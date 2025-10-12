@@ -1,4 +1,5 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Paatostyyppi } from '@/src/lib/types/paatos';
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
@@ -29,3 +30,43 @@ export const paatostyyppiOptions = (t: TFunction) => [
     label: t('hakemus.paatos.paatostyyppi.riittavatOpinnot'),
   },
 ];
+
+export const sovellettuLakiOptions = (
+  paatosTyyppi: Paatostyyppi,
+  t: TFunction,
+) => {
+  switch (paatosTyyppi) {
+    case 'Taso':
+    case 'TiettyTutkintoTaiOpinnot':
+      return [
+        {
+          value: 'uo',
+          label: t('hakemus.paatos.sovellettuLaki.uo'),
+        },
+      ];
+    case 'Kelpoisuus':
+      return [
+        {
+          value: 'ap',
+          label: t('hakemus.paatos.sovellettuLaki.ap'),
+        },
+        {
+          value: 'ap_seut',
+          label: t('hakemus.paatos.sovellettuLaki.ap_seut'),
+        },
+        {
+          value: 'uo',
+          label: t('hakemus.paatos.sovellettuLaki.uo'),
+        },
+      ];
+    case 'RiittavatOpinnot':
+      return [
+        {
+          value: 'ro',
+          label: t('hakemus.paatos.sovellettuLaki.ro'),
+        },
+      ];
+    default:
+      return [];
+  }
+};

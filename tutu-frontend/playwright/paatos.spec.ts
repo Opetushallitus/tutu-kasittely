@@ -9,7 +9,7 @@ const matchUpdate = (url: string, method: string) =>
 test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  mockPaatos(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
@@ -69,10 +69,10 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
   }
 });
 
-test('Päätöskenttien näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
+test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  mockPaatos(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
@@ -147,7 +147,6 @@ test('Päätöskenttien näkyminen, lisäys ja poisto toimii ja lähettää POST
     deleteButton.click(),
   ]).then((req) => {
     const postData = req[0].postDataJSON();
-    console.log(postData);
 
     expect(postData.paatosTiedot).toHaveLength(2);
     expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Taso');
@@ -164,4 +163,144 @@ test('Päätöskenttien näkyminen, lisäys ja poisto toimii ja lähettää POST
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
     peruutusOption.click(),
   ]).then((req) => expect(req[0].postDataJSON().paatosTiedot).toEqual([]));
+});
+
+test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownissa', async ({
+  page,
+}) => {
+  await mockPaatos(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
+  );
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  //Kun valitaan 1 Taso, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  let tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=1 Taso');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Taso');
+    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('uo');
+  });
+  let sovellettuLakiDropdown = page.getByTestId(
+    'paatos-sovellettulaki-dropdown',
+  );
+
+  await expect(sovellettuLakiDropdown).toBeVisible();
+  await expect(sovellettuLakiDropdown).toHaveText('Päätös UO');
+
+  await sovellettuLakiDropdown.click();
+
+  let options = page.locator('ul[role="listbox"]:visible li[role="option"]');
+  await expect(options).toHaveCount(2);
+
+  await expect(options.last()).toHaveText('Päätös UO');
+  await page.locator('body').click({ position: { x: 0, y: 0 } });
+
+  //Kun valitaan 2 Kelpoisuus, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=2 Kelpoisuus');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Kelpoisuus');
+    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual(undefined);
+  });
+
+  sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
+
+  await expect(sovellettuLakiDropdown).toBeVisible();
+  await expect(sovellettuLakiDropdown).toHaveText('Valitse...');
+
+  await sovellettuLakiDropdown.click();
+
+  options = page.locator('ul[role="listbox"]:visible li[role="option"]');
+
+  await expect(options).toHaveCount(4);
+
+  await expect(options.first()).toHaveText('Valitse...');
+  await expect(options.nth(1)).toHaveText('Päätös AP');
+  await expect(options.nth(2)).toHaveText('Päätös AP/SEUT');
+  await expect(options.last()).toHaveText('Päätös UO');
+  await page.locator('body').click({ position: { x: 0, y: 0 } });
+
+  //Kun valitaan 3 Tietty tutkinto tai opinnot, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=3  Tietty tutkinto tai opinnot');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual(
+      'TiettyTutkintoTaiOpinnot',
+    );
+    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('uo');
+  });
+
+  sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
+
+  await expect(sovellettuLakiDropdown).toBeVisible();
+  await expect(sovellettuLakiDropdown).toHaveText('Päätös UO');
+
+  await sovellettuLakiDropdown.click();
+
+  options = page.locator('ul[role="listbox"]:visible li[role="option"]');
+
+  await expect(options).toHaveCount(2);
+
+  await expect(options.first()).toHaveText('Valitse...');
+  await expect(options.last()).toHaveText('Päätös UO');
+  await page.locator('body').click({ position: { x: 0, y: 0 } });
+
+  //Kun valitaan 4 Riittävät opinnot tai opinnot, tulee olla vain Päätös RO -optio sovellettu laki-dropdownissa
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=4 Riittävät opinnot');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('RiittavatOpinnot');
+    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('ro');
+  });
+
+  sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
+
+  await expect(sovellettuLakiDropdown).toBeVisible();
+  await expect(sovellettuLakiDropdown).toHaveText('Päätös RO');
+
+  await sovellettuLakiDropdown.click();
+
+  options = page.locator('ul[role="listbox"]:visible li[role="option"]');
+
+  await expect(options).toHaveCount(2);
+
+  await expect(options.first()).toHaveText('Valitse...');
+  await expect(options.last()).toHaveText('Päätös RO');
+  await page.locator('body').click({ position: { x: 0, y: 0 } });
 });
