@@ -1,20 +1,19 @@
-import { Stack, StackProps, aws_cloudwatch_actions } from 'aws-cdk-lib'
+import * as cdk from 'aws-cdk-lib'
+import { aws_cloudwatch_actions, Stack, StackProps } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import {
   AuroraPostgresEngineVersion,
+  CaCertificate,
+  ClusterInstance,
   DatabaseCluster,
   DatabaseClusterEngine,
-  ClusterInstance,
   DBClusterStorageType,
-  SubnetGroup,
   ParameterGroup,
-  CaCertificate,
-  Endpoint
+  SubnetGroup
 } from 'aws-cdk-lib/aws-rds'
-import { IVpc, ISecurityGroup } from 'aws-cdk-lib/aws-ec2'
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2'
 import { Key } from 'aws-cdk-lib/aws-kms'
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager'
-import * as cdk from 'aws-cdk-lib'
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
 import * as sns from 'aws-cdk-lib/aws-sns'
 
@@ -34,7 +33,7 @@ interface AuroraDatabaseProps extends StackProps {
 }
 
 export class AuroraDatabaseStack extends Stack {
-  public readonly endPoint: Endpoint
+  public readonly cluster: DatabaseCluster
   constructor(scope: Construct, id: string, props: AuroraDatabaseProps) {
     super(scope, id, props)
 
@@ -99,7 +98,7 @@ export class AuroraDatabaseStack extends Stack {
       }
     })
 
-    this.endPoint = auroraCluster.clusterEndpoint
+    this.cluster = auroraCluster
 
     // Monitoring
     const alarmSnsAction = new aws_cloudwatch_actions.SnsAction(props.alarmSnsTopic)

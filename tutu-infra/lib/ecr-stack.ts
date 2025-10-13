@@ -1,5 +1,5 @@
 import { Repository, TagMutability } from 'aws-cdk-lib/aws-ecr'
-import { Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib'
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs'
 

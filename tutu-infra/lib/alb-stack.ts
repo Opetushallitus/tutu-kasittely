@@ -1,5 +1,6 @@
 // Create a new cdk stack with a public ALB and a security group for it. Add a https listener with http redirect rule to https. Create outputs for alb and listener.
 import * as cdk from 'aws-cdk-lib'
+import { aws_cloudwatch_actions } from 'aws-cdk-lib'
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as route53 from 'aws-cdk-lib/aws-route53'
@@ -7,7 +8,6 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
-import { aws_cloudwatch_actions } from 'aws-cdk-lib'
 import { Alarm, ComparisonOperator, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch'
 import { Topic } from 'aws-cdk-lib/aws-sns'
 

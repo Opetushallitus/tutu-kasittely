@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import { IKey } from 'aws-cdk-lib/aws-kms'
-import { RemovalPolicy } from 'aws-cdk-lib'
 
 interface SecretManagerStackProps extends cdk.StackProps {
   kmsKey: IKey

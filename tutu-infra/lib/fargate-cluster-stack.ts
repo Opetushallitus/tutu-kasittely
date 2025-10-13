@@ -1,7 +1,7 @@
 import { Stack, StackProps } from 'aws-cdk-lib'
 import { IVpc } from 'aws-cdk-lib/aws-ec2'
 import { Key } from 'aws-cdk-lib/aws-kms'
-import { Cluster, ExecuteCommandLogging, ICluster, ContainerInsights } from 'aws-cdk-lib/aws-ecs'
+import { Cluster, ContainerInsights, ExecuteCommandLogging, ICluster } from 'aws-cdk-lib/aws-ecs'
 import { LogGroup } from 'aws-cdk-lib/aws-logs'
 import { Construct } from 'constructs'
 

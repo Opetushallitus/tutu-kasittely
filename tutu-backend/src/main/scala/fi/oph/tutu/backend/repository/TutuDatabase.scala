@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.PostgresProfile.api.*
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.TransactionIsolation.Serializable
 import slick.util.AsyncExecutor
+import software.amazon.jdbc.ds.AwsWrapperDataSource
 
+import java.util.Properties
 import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -21,19 +23,34 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class TutuDatabase(
   @Value("${spring.datasource.url}") url: String,
   @Value("${spring.datasource.username}") username: String,
-  @Value("${spring.datasource.password}") password: String
+  @Value("${spring.datasource.password:}") password: String,
+  @Value("${spring.profiles.active:}") activeProfiles: String
 ) {
 
   val LOG = LoggerFactory.getLogger(classOf[TutuDatabase]);
 
   private def hikariConfig: HikariConfig = {
     val config = new HikariConfig()
-    config.setJdbcUrl(url)
     config.setUsername(username)
-    config.setPassword(password)
     val maxPoolSize = 10
     config.setMaximumPoolSize(maxPoolSize)
     config.setMinimumIdle(1)
+
+    if (activeProfiles.contains("prod")) {
+      config.setDataSourceClassName(classOf[AwsWrapperDataSource].getName)
+      config.addDataSourceProperty("jdbcUrl", url)
+      config.addDataSourceProperty("targetDataSourceClassName", "org.postgresql.ds.PGSimpleDataSource")
+
+      val targetDataSourceProps = new Properties()
+      targetDataSourceProps.setProperty("socketTimeout", "10")
+      targetDataSourceProps.setProperty("wrapperLoggerLevel", "ALL")
+      targetDataSourceProps.setProperty("wrapperPlugins", "iam,failover2")
+      config.addDataSourceProperty("targetDataSourceProperties", targetDataSourceProps)
+    } else {
+      config.setJdbcUrl(url)
+      config.setPassword(password)
+    }
+
     config
   }
 
