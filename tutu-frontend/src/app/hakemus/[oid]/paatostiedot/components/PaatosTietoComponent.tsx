@@ -6,24 +6,31 @@ import {
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
 import React, { useEffect, useState } from 'react';
-import { OphSelectFormField } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphSelectFormField,
+} from '@opetushallitus/oph-design-system';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   paatostyyppiOptions,
   sovellettuLakiOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Stack } from '@mui/material';
+import { Tutkinto } from '@/src/lib/types/hakemus';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 interface PaatosTietoProps {
   t: TFunction;
   paatosTieto: PaatosTieto;
   updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  tutkinnot: Tutkinto[];
 }
 
 export const PaatosTietoComponent = ({
   t,
   paatosTieto,
   updatePaatosTietoAction,
+  tutkinnot,
 }: PaatosTietoProps) => {
   const [currentPaatosTieto, setCurrentPaatosTieto] =
     useState<PaatosTieto>(paatosTieto);
@@ -31,6 +38,15 @@ export const PaatosTietoComponent = ({
   useEffect(() => {
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
+
+  const tutkintoOptions: OphSelectOption<string>[] =
+    tutkinnot.map((tutkinto) => ({
+      label:
+        tutkinto.jarjestys === 'MUU'
+          ? t('hakemus.paatos.tutkinto.muuTutkinto')
+          : tutkinto.nimi!,
+      value: tutkinto.id!,
+    })) || [];
 
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
     switch (paatosTyyppi) {
@@ -87,6 +103,35 @@ export const PaatosTietoComponent = ({
         }
         data-testid={'paatos-sovellettulaki-dropdown'}
       />
+      {currentPaatosTieto.sovellettuLaki &&
+        currentPaatosTieto.sovellettuLaki && (
+          <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
+            label={t('hakemus.paatos.tutkinto.nimi')}
+            options={tutkintoOptions}
+            value={currentPaatosTieto.tutkintoId || ''}
+            onChange={(event) =>
+              updatePaatosTietoAction({
+                ...currentPaatosTieto,
+                tutkintoId: event.target.value,
+              })
+            }
+            data-testid={'paatos-tutkintonimi-dropdown'}
+          />
+        )}
+      {currentPaatosTieto.tutkintoId && (
+        <OphCheckbox
+          data-testid={`paatos-lisaa-tutkinto-paatostekstiin-checkbox`}
+          checked={currentPaatosTieto.lisaaTutkintoPaatostekstiin}
+          label={t('hakemus.paatos.tutkinto.lisaaTutkintoPaatosTekstiin')}
+          onChange={(event) =>
+            updatePaatosTietoAction({
+              ...currentPaatosTieto,
+              lisaaTutkintoPaatostekstiin: event.target.checked,
+            })
+          }
+        />
+      )}
     </Stack>
   );
 };

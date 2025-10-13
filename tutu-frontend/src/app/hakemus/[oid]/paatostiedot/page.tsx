@@ -24,6 +24,7 @@ import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/p
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -67,6 +68,7 @@ export default function PaatostiedotPage() {
       paatos={paatos}
       updatePaatos={updatePaatos}
       updateOngoing={updateOngoing}
+      hakemus={hakemus!}
     />
   );
 }
@@ -75,10 +77,12 @@ const Paatostiedot = ({
   paatos,
   updatePaatos,
   updateOngoing,
+  hakemus,
 }: {
   paatos: Paatos;
   updatePaatos: PaatosUpdateCallback;
   updateOngoing: boolean;
+  hakemus: Hakemus;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
@@ -185,6 +189,7 @@ const Paatostiedot = ({
             paatosTiedot={currentPaatosTiedot}
             updatePaatosTietoAction={updatePaatosTieto}
             deletePaatosTieto={deletePaatosTieto}
+            tutkinnot={hakemus.tutkinnot}
           />
           <OphButton
             sx={{

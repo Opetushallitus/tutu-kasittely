@@ -393,6 +393,11 @@
         "ap_seut": "Päätös AP/SEUT",
         "ro": "Päätös RO"
       },
+      "tutkinto": {
+        "nimi": "Tutkinnon nimi, jota päätös koskee",
+        "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
+        "muuTutkinto": "Muu tutkinto"
+      },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",
         "eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada": "ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",

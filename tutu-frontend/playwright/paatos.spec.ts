@@ -1,7 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
 
-test.beforeEach(mockAll);
+test.beforeEach(async ({ page }) => {
+  await mockAll({ page });
+  await mockPaatos(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
+  );
+});
 
 const matchUpdate = (url: string, method: string) =>
   url.includes('/paatos/1.2.246.562.10.00000000001') && method === 'POST';
@@ -9,10 +15,6 @@ const matchUpdate = (url: string, method: string) =>
 test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  await mockPaatos(page);
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
-  );
   const seutCheckbox = page.getByTestId('paatos-seut');
   await expect(seutCheckbox).not.toBeChecked();
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
@@ -72,10 +74,6 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
 test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  await mockPaatos(page);
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
-  );
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
@@ -168,10 +166,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
 test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownissa', async ({
   page,
 }) => {
-  await mockPaatos(page);
-  await page.goto(
-    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
-  );
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
@@ -303,4 +297,50 @@ test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownis
   await expect(options.first()).toHaveText('Valitse...');
   await expect(options.last()).toHaveText('Päätös RO');
   await page.locator('body').click({ position: { x: 0, y: 0 } });
+});
+
+test('Päätöstiedon valinta näyttää oikeat arvot tutkinto-dropdownissa ja päivitys lähettää kutsun backendille', async ({
+  page,
+}) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=1 Taso');
+
+  tasoOption.click();
+
+  const tutkintonimiDropdown = page.getByTestId('paatos-tutkintonimi-dropdown');
+  await expect(tutkintonimiDropdown).toBeVisible();
+  await tutkintonimiDropdown.click();
+
+  const tutkintoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=Päälikkö');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tutkintoOption.first().click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].tutkintoId).toEqual(
+      '$18732268-07ca-4898-a21f-e49b9dd68275',
+    );
+  });
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    page.getByTestId('paatos-lisaa-tutkinto-paatostekstiin-checkbox').click(),
+  ]).then((req) => {
+    const postData = req[0].postDataJSON();
+    expect(postData.paatosTiedot[0].tutkintoId).toEqual(
+      '$18732268-07ca-4898-a21f-e49b9dd68275',
+    );
+    expect(postData.paatosTiedot[0].lisaaTutkintoPaatostekstiin).toEqual(true);
+  });
 });
