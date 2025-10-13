@@ -7,6 +7,7 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { DeleteOutline } from '@mui/icons-material';
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import React from 'react';
+import { Tutkinto } from '@/src/lib/types/hakemus';
 
 interface PaatosTietoListProps {
   t: TFunction;
@@ -16,6 +17,7 @@ interface PaatosTietoListProps {
     index: number,
   ) => void;
   deletePaatosTieto: (id: string | undefined) => void;
+  tutkinnot: Tutkinto[];
 }
 
 export const PaatosTietoList = ({
@@ -23,6 +25,7 @@ export const PaatosTietoList = ({
   paatosTiedot,
   updatePaatosTietoAction,
   deletePaatosTieto,
+  tutkinnot,
 }: PaatosTietoListProps) => {
   const theme = useTheme();
 
@@ -58,6 +61,7 @@ export const PaatosTietoList = ({
         updatePaatosTietoAction={(updated) =>
           updatePaatosTietoAction(updated, index)
         }
+        tutkinnot={tutkinnot}
       />
       <Divider />
     </Stack>

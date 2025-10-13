@@ -32,6 +32,7 @@ export type PaatosTieto = {
   sovellettuLaki?: SovellettuLaki;
   myonteisenPaatoksenLisavaatimukset: string;
   kielteisenPaatoksenPerustelut: string;
+  tutkintoId?: string;
 };
 
 export type Paatos = {
