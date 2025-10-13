@@ -400,7 +400,9 @@
         "myonteinenPaatos": "Päätös on",
         "myonteinen": "Myönteinen",
         "kielteinen": "Kielteinen",
-        "tutkinnonTaso": "Tutkinnon taso"
+        "tutkinnonTaso": "Tutkinnon taso",
+        "alempiKorkeakoulu": "Alempi korkeakoulututkinto",
+        "ylempiKorkeakoulu": "Ylempi korkeakoulututkinto"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",

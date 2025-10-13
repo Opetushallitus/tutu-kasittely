@@ -160,14 +160,14 @@ export const PaatosTietoComponent = ({
               placeholder={t('yleiset.valitse')}
               label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
               options={tutkinnonTasoOptions(t)}
-              value={currentPaatosTieto.tutkintoId || ''}
+              value={currentPaatosTieto.tutkintoTaso || ''}
               onChange={(event) =>
                 updatePaatosTietoAction({
                   ...currentPaatosTieto,
                   tutkintoTaso: event.target.value as TutkintoTaso,
                 })
               }
-              data-testid={'paatos-tutkintonimi-dropdown'}
+              data-testid={'paatos-tutkintotaso-dropdown'}
             />
           )}
         </>

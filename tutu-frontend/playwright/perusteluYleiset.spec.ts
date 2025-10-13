@@ -331,7 +331,7 @@ test.describe('Yleiset perustelut', () => {
     expect(results?.postDataJSON()).toMatchObject({
       tutkinnot: [
         {
-          id: '$18732268-07ca-4898-a21f-e49b9dd68275',
+          id: '18732268-07ca-4898-a21f-e49b9dd68275',
           hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
           jarjestys: '1',
           nimi: 'Päälikkö',
