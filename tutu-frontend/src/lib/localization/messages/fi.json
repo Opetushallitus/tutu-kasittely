@@ -396,7 +396,10 @@
       "tutkinto": {
         "nimi": "Tutkinnon nimi, jota päätös koskee",
         "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
-        "muuTutkinto": "Muu tutkinto"
+        "muuTutkinto": "Muu tutkinto",
+        "myonteinenPaatos": "Päätös on",
+        "myonteinen": "Myönteinen",
+        "kielteinen": "Kielteinen"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",

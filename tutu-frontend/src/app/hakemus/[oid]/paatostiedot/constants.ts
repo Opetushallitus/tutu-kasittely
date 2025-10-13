@@ -1,5 +1,6 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatostyyppi } from '@/src/lib/types/paatos';
+import { Tutkinto } from '@/src/lib/types/hakemus';
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
@@ -69,4 +70,23 @@ export const sovellettuLakiOptions = (
     default:
       return [];
   }
+};
+
+export const tutkintoOptions = (t: TFunction, tutkinnot: Tutkinto[]) => {
+  return (
+    tutkinnot.map((tutkinto) => ({
+      label:
+        tutkinto.jarjestys === 'MUU'
+          ? t('hakemus.paatos.tutkinto.muuTutkinto')
+          : tutkinto.nimi!,
+      value: tutkinto.id!,
+    })) || []
+  );
+};
+
+export const myonteinenPaatosOptions = (t: TFunction) => {
+  return [
+    { value: 'true', label: t('hakemus.paatos.tutkinto.myonteinen') },
+    { value: 'false', label: t('hakemus.paatos.tutkinto.kielteinen') },
+  ];
 };

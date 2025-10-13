@@ -77,7 +77,6 @@ const Opinnaytetyo = ({ tutkinto, updateTutkinto }: FieldProps) => {
       <OphTypography variant="h4">
         {t('hakemus.perustelu.yleiset.tutkinnot.opinnaytetyo')}
       </OphTypography>
-
       <OphRadioGroup
         labelId="opinnaytetyo-radio-group-label"
         data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo`}

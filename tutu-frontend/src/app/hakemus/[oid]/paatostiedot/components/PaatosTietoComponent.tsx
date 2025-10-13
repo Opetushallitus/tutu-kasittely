@@ -8,16 +8,19 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
   OphCheckbox,
+  OphRadioGroup,
   OphSelectFormField,
+  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
+  myonteinenPaatosOptions,
   paatostyyppiOptions,
   sovellettuLakiOptions,
+  tutkintoOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/hakemus';
-import { OphSelectOption } from '@/src/components/OphSelect';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -38,15 +41,6 @@ export const PaatosTietoComponent = ({
   useEffect(() => {
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
-
-  const tutkintoOptions: OphSelectOption<string>[] =
-    tutkinnot.map((tutkinto) => ({
-      label:
-        tutkinto.jarjestys === 'MUU'
-          ? t('hakemus.paatos.tutkinto.muuTutkinto')
-          : tutkinto.nimi!,
-      value: tutkinto.id!,
-    })) || [];
 
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
     switch (paatosTyyppi) {
@@ -108,7 +102,7 @@ export const PaatosTietoComponent = ({
           <OphSelectFormField
             placeholder={t('yleiset.valitse')}
             label={t('hakemus.paatos.tutkinto.nimi')}
-            options={tutkintoOptions}
+            options={tutkintoOptions(t, tutkinnot)}
             value={currentPaatosTieto.tutkintoId || ''}
             onChange={(event) =>
               updatePaatosTietoAction({
@@ -122,7 +116,7 @@ export const PaatosTietoComponent = ({
       {currentPaatosTieto.tutkintoId && (
         <OphCheckbox
           data-testid={`paatos-lisaa-tutkinto-paatostekstiin-checkbox`}
-          checked={currentPaatosTieto.lisaaTutkintoPaatostekstiin}
+          checked={currentPaatosTieto.lisaaTutkintoPaatostekstiin || false}
           label={t('hakemus.paatos.tutkinto.lisaaTutkintoPaatosTekstiin')}
           onChange={(event) =>
             updatePaatosTietoAction({
@@ -131,6 +125,27 @@ export const PaatosTietoComponent = ({
             })
           }
         />
+      )}
+      {currentPaatosTieto.paatosTyyppi === 'Taso' && (
+        <>
+          <OphTypography variant="h4">
+            {t('hakemus.paatos.tutkinto.myonteinenPaatos')}
+          </OphTypography>
+          <OphRadioGroup
+            labelId="myonteinenPaatos-radio-group-label"
+            data-testid="paatos-myonteinenPaatos-radio-group"
+            sx={{ width: '100%' }}
+            options={myonteinenPaatosOptions(t)}
+            row
+            value={currentPaatosTieto.myonteinenPaatos?.toString() || null}
+            onChange={(e) =>
+              updatePaatosTietoAction({
+                ...currentPaatosTieto,
+                myonteinenPaatos: e.target.value === 'true',
+              })
+            }
+          />
+        </>
       )}
     </Stack>
   );
