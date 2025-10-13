@@ -41,9 +41,10 @@ export const PaatosTietoComponent = ({
 
   const tutkintoOptions: OphSelectOption<string>[] =
     tutkinnot.map((tutkinto) => ({
-      label: tutkinto.nimi!
-        ? tutkinto.nimi!
-        : t('hakemus.paatos.tutkinto.muuTutkinto'),
+      label:
+        tutkinto.jarjestys === 'MUU'
+          ? t('hakemus.paatos.tutkinto.muuTutkinto')
+          : tutkinto.nimi!,
       value: tutkinto.id!,
     })) || [];
 
@@ -120,7 +121,7 @@ export const PaatosTietoComponent = ({
         )}
       {currentPaatosTieto.tutkintoId && (
         <OphCheckbox
-          data-testid={`lahde__lahtomaan-kansallinen-lahde`}
+          data-testid={`paatos-lisaa-tutkinto-paatostekstiin-checkbox`}
           checked={currentPaatosTieto.lisaaTutkintoPaatostekstiin}
           label={t('hakemus.paatos.tutkinto.lisaaTutkintoPaatosTekstiin')}
           onChange={(event) =>
