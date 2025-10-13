@@ -51,7 +51,7 @@ class HakemusRepository extends BaseResultHandlers {
         Option(r.nextString()),
         null,
         null,
-        r.nextString(),
+        KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextString()),
         null,
         Option(r.nextBoolean()),
@@ -316,6 +316,7 @@ class HakemusRepository extends BaseResultHandlers {
     val asiatunnusOrNull   = partialHakemus.asiatunnus.map(identity).orNull
     val hakemusKoskee      = partialHakemus.hakemusKoskee
     val yhteistutkinto     = partialHakemus.yhteistutkinto
+    val kasittelyVaihe     = partialHakemus.kasittelyVaihe.toString
 
     try
       db.run(
@@ -327,7 +328,8 @@ class HakemusRepository extends BaseResultHandlers {
           asiakirja_id = $asiakirjaIdOrNull::uuid,
           asiatunnus = $asiatunnusOrNull,
           muokkaaja = $muokkaaja,
-          yhteistutkinto = $yhteistutkinto
+          yhteistutkinto = $yhteistutkinto,
+          kasittely_vaihe = $kasittelyVaihe
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

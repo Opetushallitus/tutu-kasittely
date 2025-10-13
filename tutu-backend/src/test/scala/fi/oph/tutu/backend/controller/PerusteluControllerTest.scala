@@ -294,6 +294,22 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
     perustelu3 = perustelu3.copy(hakemusId = Some(hakemusId3.get))
+
+    setupHakemuspalveluMocks()
+  }
+
+  private def setupHakemuspalveluMocks(): Unit = {
+    val ataruHakemusJson = """{"information-request-timestamp": null}"""
+
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid)))
+      .thenReturn(Right(ataruHakemusJson))
+
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid2)))
+      .thenReturn(Right(ataruHakemusJson))
+
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid3)))
+      .thenReturn(Right(ataruHakemusJson))
+
     hakemusId4 = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOid4,

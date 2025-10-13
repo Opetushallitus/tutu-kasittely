@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.utils
 import fi.oph.tutu.backend.domain.{
   AnswerValue,
   EmptyValue,
+  KasittelyVaihe,
   Kieli,
   Kielistetty,
   KoodistoItem,
@@ -17,7 +18,7 @@ import java.text.SimpleDateFormat
 
 trait TutuJsonFormats {
   implicit val formats: Formats =
-    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer
+    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer
 }
 
 object AnswerValueSerializer
@@ -127,6 +128,20 @@ object KielistettySerializer
             )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
 
           obj
+        }
+      )
+    )
+
+object KasittelyVaiheSerializer
+    extends CustomSerializer[KasittelyVaihe](_ =>
+      (
+        {
+          case JString(value) => KasittelyVaihe.fromString(value)
+          case unexpected     =>
+            throw new MappingException(s"Cannot deserialize KasittelyVaihe from $unexpected")
+        },
+        { case vaihe: KasittelyVaihe =>
+          JString(vaihe.toString)
         }
       )
     )

@@ -163,7 +163,7 @@ export const AsiakirjaPyynnot = ({
         <Select
           sx={{ width: '100%' }}
           data-testid="pyyda-asiakirja-select"
-          value={pyynto?.asiakirjanTyyppi}
+          value={pyynto?.asiakirjanTyyppi || ''}
           onChange={(e) =>
             addOrUpdateAsiakirjapyynto(e.target.value, pyynto?.id)
           }

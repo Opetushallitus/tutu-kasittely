@@ -6,6 +6,7 @@ import fi.oph.tutu.backend.domain.{
   AsiakirjamalliModifyData,
   AsiakirjamalliTutkinnosta,
   DbAsiakirja,
+  KasittelyVaiheTiedot,
   PyydettavaAsiakirja,
   PyydettavaAsiakirjaModifyData,
   UserOid,
@@ -77,6 +78,70 @@ class AsiakirjaRepository extends BaseResultHandlers {
         Option(r.nextString())
       )
     )
+
+  implicit val getKasittelyVaiheTiedotResult: GetResult[KasittelyVaiheTiedot] =
+    GetResult(r =>
+      KasittelyVaiheTiedot(
+        selvityksetSaatu = r.nextBoolean(),
+        vahvistusPyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        vahvistusSaatu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        imiPyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        imiPyyntoVastattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        lausuntoKesken = r.nextBoolean()
+      )
+    )
+
+  /**
+   * Hakee vain ne tiedot, joita tarvitaan käsittelyvaiheen ratkaisemiseen.
+   *
+   * Tämä on optimoitu kysely, joka hakee minimaaliset tiedot yhdellä tietokantakyselyllä,
+   * sen sijaan että haettaisiin kaikki asiakirja- ja perustelutiedot useilla kyselyillä.
+   *
+   * @param asiakirjaId
+   *   Hakemuksen asiakirja ID
+   * @param hakemusId
+   *   Hakemuksen ID
+   * @return
+   *   Käsittelyvaiheen ratkaisemiseen tarvittavat tiedot
+   */
+  def haeKasittelyVaiheTiedot(
+    asiakirjaId: Option[UUID],
+    hakemusId: UUID
+  ): Option[KasittelyVaiheTiedot] = {
+    asiakirjaId match {
+      case Some(id) =>
+        try {
+          db.run(
+            sql"""
+              SELECT
+                a.selvitykset_saatu,
+                a.valmistumisen_vahvistus_pyynto_lahetetty,
+                a.valmistumisen_vahvistus_saatu,
+                a.imi_pyynto_lahetetty,
+                a.imi_pyynto_vastattu,
+                EXISTS(
+                  SELECT 1 FROM perustelu p
+                  JOIN lausuntopyynto l ON l.perustelu_id = p.id
+                  WHERE p.hakemus_id = ${hakemusId.toString}::uuid
+                    AND l.lahetetty IS NOT NULL
+                    AND l.saapunut IS NULL
+                ) as lausunto_kesken
+              FROM asiakirja a
+              WHERE a.id = ${id.toString}::uuid
+            """.as[KasittelyVaiheTiedot].headOption,
+            "hae_kasittely_vaihe_tiedot"
+          )
+        } catch {
+          case e: Exception =>
+            LOG.error(s"Käsittelyvaiheen tietojen haku epäonnistui: ${e}")
+            throw new RuntimeException(
+              s"Käsittelyvaiheen tietojen haku epäonnistui: ${e.getMessage}",
+              e
+            )
+        }
+      case None => None
+    }
+  }
 
   def haeKaikkiAsiakirjaTiedot(
     asiakirjaId: Option[UUID]

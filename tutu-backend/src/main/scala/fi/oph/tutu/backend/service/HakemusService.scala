@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.repository.{
   PerusteluRepository,
   TutuDatabase
 }
+import fi.oph.tutu.backend.domain.SortDef.{Asc, Desc, Undefined}
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
@@ -30,6 +31,7 @@ class HakemusService(
   esittelijaRepository: EsittelijaRepository,
   asiakirjaRepository: AsiakirjaRepository,
   perusteluRepository: PerusteluRepository,
+  kasittelyVaiheService: KasittelyVaiheService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   onrService: OnrService,
@@ -262,7 +264,8 @@ class HakemusService(
                 .collectFirst(review => review.state)
                 .getOrElse(AtaruHakemuksenTila.UNDEFINED)
             ),
-            kasittelyVaihe = dbHakemus.kasittelyVaihe,
+            kasittelyVaihe =
+              dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
             muokattu = dbHakemus.muokattu,
             muutosHistoria = Seq(),
             taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
@@ -289,37 +292,6 @@ class HakemusService(
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
-    }
-  }
-
-  private def resolveMuutoshistoria(jsonString: String, hakija: Hakija): Seq[MuutosHistoriaItem] = {
-    parse(jsonString) match {
-      case JArray(rawItems) =>
-        val relevant = rawItems.filter { item =>
-          MuutosHistoriaRoleType.isRelevant((item \ "type").extract[String])
-        }
-        relevant.map(item => {
-          val roleType = (item \ "type").extract[String]
-          val time = LocalDateTime.parse((item \ "time").extract[String], DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-          val esittelijaOid                       = (item \ "virkailijaOid").extractOpt[String]
-          val (etunimi: String, sukunimi: String) = esittelijaOid match {
-            case None                => (hakija.kutsumanimi, hakija.sukunimi)
-            case Some(esittelijaOid) =>
-              onrService.haeHenkilo(esittelijaOid) match {
-                case Left(error) =>
-                  LOG.warn(
-                    s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}",
-                    error.getMessage
-                  )
-                  ("", "")
-                case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
-              }
-
-          }
-          val editoija = s"$etunimi $sukunimi".trim
-          MuutosHistoriaItem(MuutosHistoriaRoleType.fromString(roleType), time, editoija)
-        })
-      case _ => throw new MappingException(s"Cannot deserialize muutoshistoria response")
     }
   }
 
@@ -498,12 +470,21 @@ class HakemusService(
           case _ => None
         }
 
+        val finalAsiakirjaId = newOrUpdatedAsiakirjaId.orElse(dbHakemus.asiakirjaId)
+
+        // Laske lopullinen kasittelyVaihe päivitettyjen tietojen perusteella
+        val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
+          finalAsiakirjaId,
+          dbHakemus.id
+        )
+
         val modifiedHakemus = dbHakemus.copy(
-          asiakirjaId = newOrUpdatedAsiakirjaId.orElse(dbHakemus.asiakirjaId),
+          asiakirjaId = finalAsiakirjaId,
           hakemusKoskee = partialHakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
           asiatunnus = partialHakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
           esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
-          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto)
+          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto),
+          kasittelyVaihe = kasittelyVaihe
         )
         hakemusRepository.paivitaPartialHakemus(
           hakemusOid,
@@ -511,6 +492,37 @@ class HakemusService(
           userOid.toString
         )
       }
+    }
+  }
+
+  private def resolveMuutoshistoria(jsonString: String, hakija: Hakija): Seq[MuutosHistoriaItem] = {
+    parse(jsonString) match {
+      case JArray(rawItems) =>
+        val relevant = rawItems.filter { item =>
+          MuutosHistoriaRoleType.isRelevant((item \ "type").extract[String])
+        }
+        relevant.map(item => {
+          val roleType = (item \ "type").extract[String]
+          val time = LocalDateTime.parse((item \ "time").extract[String], DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+          val esittelijaOid                       = (item \ "virkailijaOid").extractOpt[String]
+          val (etunimi: String, sukunimi: String) = esittelijaOid match {
+            case None                => (hakija.kutsumanimi, hakija.sukunimi)
+            case Some(esittelijaOid) =>
+              onrService.haeHenkilo(esittelijaOid) match {
+                case Left(error) =>
+                  LOG.warn(
+                    s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}",
+                    error.getMessage
+                  )
+                  ("", "")
+                case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
+              }
+
+          }
+          val editoija = s"$etunimi $sukunimi".trim
+          MuutosHistoriaItem(MuutosHistoriaRoleType.fromString(roleType), time, editoija)
+        })
+      case _ => throw new MappingException(s"Cannot deserialize muutoshistoria response")
     }
   }
 
