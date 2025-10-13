@@ -33,6 +33,7 @@ export type PaatosTieto = {
   myonteisenPaatoksenLisavaatimukset: string;
   kielteisenPaatoksenPerustelut: string;
   tutkintoId?: string;
+  lisaaTutkintoPaatostekstiin?: boolean;
 };
 
 export type Paatos = {

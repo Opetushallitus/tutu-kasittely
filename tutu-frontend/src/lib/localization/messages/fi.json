@@ -395,7 +395,7 @@
       },
       "tutkinto": {
         "nimi": "Tutkinnon nimi, jota päätös koskee",
-        "lisaaPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
+        "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
         "muuTutkinto": "Muu tutkinto"
       },
       "peruutuksenTaiRaukeamisenSyy": {

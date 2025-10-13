@@ -6,7 +6,10 @@ import {
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
 import React, { useEffect, useState } from 'react';
-import { OphSelectFormField } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphSelectFormField,
+} from '@opetushallitus/oph-design-system';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   paatostyyppiOptions,
@@ -115,6 +118,19 @@ export const PaatosTietoComponent = ({
             data-testid={'paatos-tutkintonimi-dropdown'}
           />
         )}
+      {currentPaatosTieto.tutkintoId && (
+        <OphCheckbox
+          data-testid={`lahde__lahtomaan-kansallinen-lahde`}
+          checked={currentPaatosTieto.lisaaTutkintoPaatostekstiin}
+          label={t('hakemus.paatos.tutkinto.lisaaTutkintoPaatosTekstiin')}
+          onChange={(event) =>
+            updatePaatosTietoAction({
+              ...currentPaatosTieto,
+              lisaaTutkintoPaatostekstiin: event.target.checked,
+            })
+          }
+        />
+      )}
     </Stack>
   );
 };
