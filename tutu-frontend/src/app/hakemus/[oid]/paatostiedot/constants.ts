@@ -90,3 +90,16 @@ export const myonteinenPaatosOptions = (t: TFunction) => {
     { value: 'false', label: t('hakemus.paatos.tutkinto.kielteinen') },
   ];
 };
+
+export const tutkinnonTasoOptions = (t: TFunction) => {
+  return [
+    {
+      value: 'AlempiKorkeakoulu',
+      label: t('hakemus.paatos.tutkinto.alempiKorkeakoulu'),
+    },
+    {
+      value: 'YlempiKorkeakoulu',
+      label: t('hakemus.paatos.tutkinto.ylempiKorkeakoulu'),
+    },
+  ];
+};

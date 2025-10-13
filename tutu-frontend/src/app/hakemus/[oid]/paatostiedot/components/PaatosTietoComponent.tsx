@@ -4,6 +4,7 @@ import {
   PaatosTieto,
   Paatostyyppi,
   SovellettuLaki,
+  TutkintoTaso,
 } from '@/src/lib/types/paatos';
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,6 +18,7 @@ import {
   myonteinenPaatosOptions,
   paatostyyppiOptions,
   sovellettuLakiOptions,
+  tutkinnonTasoOptions,
   tutkintoOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Stack } from '@mui/material';
@@ -139,12 +141,35 @@ export const PaatosTietoComponent = ({
             row
             value={currentPaatosTieto.myonteinenPaatos?.toString() || null}
             onChange={(e) =>
-              updatePaatosTietoAction({
-                ...currentPaatosTieto,
-                myonteinenPaatos: e.target.value === 'true',
-              })
+              updatePaatosTietoAction(
+                e.target.value === 'true'
+                  ? {
+                      ...currentPaatosTieto,
+                      myonteinenPaatos: true,
+                    }
+                  : {
+                      ...currentPaatosTieto,
+                      myonteinenPaatos: false,
+                      tutkintoTaso: undefined,
+                    },
+              )
             }
           />
+          {currentPaatosTieto.myonteinenPaatos && (
+            <OphSelectFormField
+              placeholder={t('yleiset.valitse')}
+              label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
+              options={tutkinnonTasoOptions(t)}
+              value={currentPaatosTieto.tutkintoId || ''}
+              onChange={(event) =>
+                updatePaatosTietoAction({
+                  ...currentPaatosTieto,
+                  tutkintoTaso: event.target.value as TutkintoTaso,
+                })
+              }
+              data-testid={'paatos-tutkintonimi-dropdown'}
+            />
+          )}
         </>
       )}
     </Stack>

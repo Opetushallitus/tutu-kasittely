@@ -399,7 +399,8 @@
         "muuTutkinto": "Muu tutkinto",
         "myonteinenPaatos": "Päätös on",
         "myonteinen": "Myönteinen",
-        "kielteinen": "Kielteinen"
+        "kielteinen": "Kielteinen",
+        "tutkinnonTaso": "Tutkinnon taso"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",
