@@ -79,7 +79,8 @@
     },
     "perustelumuistio": {
       "otsikko": "Perustelumuistio",
-      "kopioi": "Kopioi"
+      "kopioi": "Kopioi",
+      "kopioituToast": "Perustelumuistio kopioitu leikepöydälle"
     },
     "perustiedot": {
       "otsikko": "Hakemuksen ja hakijan tiedot",
