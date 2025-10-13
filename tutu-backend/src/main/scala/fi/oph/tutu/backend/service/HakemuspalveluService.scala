@@ -1,10 +1,11 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
-import fi.oph.tutu.backend.domain.HakemusOid
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.native.JsonMethods.{compact, parse, render}
+import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
@@ -17,9 +18,8 @@ case class HakemuspalveluServiceException(cause: Throwable = null) extends Runti
 
 @Component
 @Service
-class HakemuspalveluService(httpService: HttpService) {
-  val LOG: Logger                           = LoggerFactory.getLogger(classOf[HakemuspalveluService])
-  implicit val formats: DefaultFormats.type = DefaultFormats
+class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
+  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
@@ -59,6 +59,10 @@ class HakemuspalveluService(httpService: HttpService) {
         }
       case Right(response: String) => Right(response)
     }
+  }
+
+  def haeJaParsiHakemus(hakemusOid: HakemusOid): Either[Throwable, AtaruHakemus] = {
+    haeHakemus(hakemusOid).map(response => parse(response).extract[AtaruHakemus])
   }
 
   def haeHakemukset(hakemusOidit: Seq[HakemusOid]): Either[Throwable, String] = {

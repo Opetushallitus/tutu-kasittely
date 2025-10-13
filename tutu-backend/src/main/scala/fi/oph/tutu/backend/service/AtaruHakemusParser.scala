@@ -7,22 +7,37 @@ import org.springframework.stereotype.{Component, Service}
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 
+def findAnswer(key: String, allAnswers: Seq[Answer]): Option[AnswerValue] = {
+  allAnswers.find(_.key == key).map(_.value)
+}
+
+def findSingleStringAnswer(key: String, allAnswers: Seq[Answer]): Option[String] = {
+  findAnswer(key, allAnswers) match {
+    case Some(singleValue: SingleValue)                                                      => Some(singleValue.value)
+    case Some(multi: MultiValue) if multi.value.size == 1                                    => Some(multi.value.head)
+    case Some(nested: NestedValues) if nested.value.size == 1 && nested.value.head.size == 1 =>
+      Some(nested.value.head.head)
+    case _ => None
+  }
+}
+
+def findAnswerByAtaruKysymysId(
+  kysymysId: AtaruKysymysId,
+  allAnswers: Seq[Answer]
+): Option[String] = {
+  findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
+    case Some(answer) => Some(answer)
+    case None         =>
+      findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
+        case Some(answer) => Some(answer)
+        case None         => None
+      }
+  }
+}
+
 @Component
 @Service
 class AtaruHakemusParser(koodistoService: KoodistoService) {
-  private def findAnswer(key: String, allAnswers: Seq[Answer]): Option[AnswerValue] = {
-    allAnswers.find(_.key == key).map(_.value)
-  }
-  private def findSingleStringAnswer(key: String, allAnswers: Seq[Answer]): Option[String] = {
-    findAnswer(key, allAnswers) match {
-      case Some(singleValue: SingleValue)                   => Some(singleValue.value)
-      case Some(multi: MultiValue) if multi.value.size == 1 => Some(multi.value.head)
-      case Some(nested: NestedValues) if nested.value.size == 1 && nested.value.head.size == 1 =>
-        Some(nested.value.head.head)
-      case _ => None
-    }
-  }
-
   private def findRequiredSingleStringAnswer(key: String, allAnswers: Seq[Answer]): String = {
     findSingleStringAnswer(key, allAnswers).getOrElse("")
   }
@@ -67,20 +82,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val transformedContent = traverseContent(formContent, item => transformItem(answers, item))
 
     transformedContent
-  }
-
-  private def findAnswerByAtaruKysymysId(
-    kysymysId: AtaruKysymysId,
-    allAnswers: Seq[Answer]
-  ): Option[String] = {
-    findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
-      case Some(answer) => Some(answer)
-      case None         =>
-        findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
-          case Some(answer) => Some(answer)
-          case None         => None
-        }
-    }
   }
 
   def parseTutkinto1MaakoodiUri(hakemus: AtaruHakemus): Option[String] = {

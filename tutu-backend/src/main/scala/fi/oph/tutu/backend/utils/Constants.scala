@@ -43,4 +43,7 @@ object Constants {
 
   val ATARU_MUU_TUTKINTO_TIETO: AtaruKysymysId =
     AtaruKysymysId("743fd221-6ec7-40d8-9758-7786e7ff2458", "tutu-other-degree-text")
+
+  val ATARU_SAHKOISEN_ASIOINNIN_LUPA: AtaruKysymysId =
+    AtaruKysymysId("sahkoisen-asioinnin-lupa", "sahkoisen-asioinnin-lupa")
 }

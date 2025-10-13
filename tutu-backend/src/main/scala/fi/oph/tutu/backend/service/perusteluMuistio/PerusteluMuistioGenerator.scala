@@ -1,27 +1,48 @@
 package fi.oph.tutu.backend.service.perustelumuistio
 
-import fi.oph.tutu.backend.domain.{Hakemus, Perustelu}
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+import fi.oph.tutu.backend.utils.Constants
+import fi.oph.tutu.backend.service.findAnswerByAtaruKysymysId
+import fi.oph.tutu.backend.domain.{AtaruHakemus, Hakemus, ImiPyynto, Perustelu}
+
+def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)
+  val showImiData                  = imiPyynto.flatMap(_.imiPyynto).contains(true)
+
+  if (showImiData) {
+    val imiPyyntoNumero   = imiPyynto.flatMap(_.getNumeroIfPyyntoTrue).getOrElse(" - ")
+    val imiPyyntoVastattu = imiPyynto
+      .flatMap(_.getVastattuIfPyyntoTrue)
+      .map(date => date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+      .map(dateStr => s", vastattu ${dateStr}")
+      .getOrElse("")
+
+    Some(s"IMI-pyyntö: ${imiPyyntoNumero} ${imiPyyntoVastattu}")
+  } else {
+    None
+  }
+}
+
+def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]) = {
+  ataruHakemusMaybe match {
+    case Some(ataruHakemus) => {
+      findAnswerByAtaruKysymysId(Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA, ataruHakemus.content.answers)
+        .map(answer => s"Suostumus sähköiseen asiointiin: ${answer}")
+    }
+    case _ => None
+  }
+}
 
 def generate(
   hakemusMaybe: Option[Hakemus],
+  ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu]
 ): String = {
-  var result = ""
-  result = result ++ "Ratkaisutyyppi: RO (986/1998), päätös suomeksi"
-  result = result ++ "\n\n"
-  result =
-    result ++ "Aika kirjauspäivämäärästä esittelypäivämäärään: -,9kk\nAika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään: 4,5kk"
-  result = result ++ "\n\n"
-  result = result ++ "Hakija, Harri\n11.2.1980"
-  result = result ++ "\n\n"
-  result =
-    result ++ "Duis id maximus nulla. Sed pretium vitae tellus ac sollicitudin. Donec  sodales dapibus turpis, eget sodales urna ullamcorper at. Suspendisse  vitae dignissim velit, in porta arcu. Aenean sit amet risus sagittis,  blandit arcu et, vulputate justo. \nIn cursus consequat tellus, quis  tempor tellus ornare ut. Aenean dolor lorem, varius a purus quis, dictum  tincidunt odio. Praesent id ornare neque. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus. Sed mattis  luctus massa. Duis sodales tincidunt nibh vitae interdum. Phasellus sit  amet libero ligula. \nSed euismod lectus sit amet dolor tempor tincidunt.  Nullam hendrerit pellentesque nisl id porta. Mauris posuere quis massa  vitae vestibulum. Etiam blandit libero a lorem blandit, vitae pharetra  quam bibendum."
-  result = result ++ "\n\n"
-  result =
-    result ++ "In nec dictum est. Nam congue, quam interdum pellentesque ullamcorper,  ex lectus placerat purus, eu cursus elit felis vitae orci. \nNullam  tempus, mauris eget ultricies feugiat, enim quam tincidunt lectus, quis  iaculis risus leo non velit. Vivamus sodales blandit faucibus. Ut a diam  ac dolor pretium ullamcorper sed quis orci."
-  result = result ++ "\n\n"
-  result =
-    result ++ "nteger convallis in elit eu finibus. Vivamus egestas libero at erat  ullamcorper malesuada. Ut sit amet semper nunc, vitae egestas libero.  Nam iaculis, diam vitae auctor posuere, enim elit tempor lorem, quis  placerat felis enim vel urna. Fusce augue eros, vehicula vel mauris et,  egestas facilisis erat. \nPellentesque sit amet sapien eget neque suscipit  sagittis eget eu sem. Morbi nec auctor leo. Nam suscipit, quam  fermentum ullamcorper pulvinar, lorem lorem tristique dolor, dapibus  posuere lacus sem ac turpis. Suspendisse lobortis rutrum urna sed  ullamcorper. Pellentesque quis sodales nibh. Phasellus eu lobortis  turpis, a bibendum nisi. Vestibulum posuere pretium eros, ut ornare  risus laoreet a. Suspendisse potenti."
+  var result = Seq[String]()
+  result = haeImiPyyntoTieto(hakemusMaybe).map(part => result :+ part).getOrElse(result)
+  result = haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe).map(part => result :+ part).getOrElse(result)
 
-  result
+  result.mkString("\n\n")
 }
