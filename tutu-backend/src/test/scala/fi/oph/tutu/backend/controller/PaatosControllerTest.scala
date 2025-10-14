@@ -58,8 +58,7 @@ class PaatosControllerTest extends IntegrationTestBase {
         myonteinenPaatos = None,
         myonteisenPaatoksenLisavaatimukset = Some("{}"),
         kielteisenPaatoksenPerustelut = Some("{}"),
-        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu),
-        rinnastettavatTutkinnotTaiOpinnot = Some(Seq("BI", "FY", "KE"))
+        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
       )
     )
 
