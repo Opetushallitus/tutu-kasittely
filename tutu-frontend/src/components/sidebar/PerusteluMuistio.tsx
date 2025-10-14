@@ -128,7 +128,8 @@ export const PerusteluMuistioModal = ({
               <OphButton
                 data-testid="modal-confirm-button"
                 variant="contained"
-                onClick={isLoading ? undefined : handleCopy}
+                onClick={handleCopy}
+                disabled={!!isLoading}
                 startIcon={<CopyAllIcon />}
               >
                 {t('hakemus.perustelumuistio.kopioi')}
