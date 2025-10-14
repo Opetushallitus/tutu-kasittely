@@ -104,10 +104,15 @@ class PerusteluService(
   def haePerusteluMuistio(
     hakemusOid: HakemusOid
   ): Option[String] = {
-    val hakemusMaybe: Option[Hakemus]     = hakemusService.haeHakemus(hakemusOid)
-    val perusteluMaybe: Option[Perustelu] = haePerustelu(hakemusOid)
+    val hakemusMaybe: Option[Hakemus]           = hakemusService.haeHakemus(hakemusOid)
+    val ataruHakemusMaybe: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
+    val perusteluMaybe: Option[Perustelu]       = haePerustelu(hakemusOid)
 
-    val perusteluMuistio = generatePerusteluMuistio(hakemusMaybe, perusteluMaybe)
+    val perusteluMuistio = generatePerusteluMuistio(
+      hakemusMaybe,
+      ataruHakemusMaybe,
+      perusteluMaybe
+    )
 
     Some(perusteluMuistio)
   }

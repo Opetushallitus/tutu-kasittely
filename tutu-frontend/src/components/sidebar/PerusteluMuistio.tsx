@@ -15,6 +15,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import CloseIcon from '@mui/icons-material/Close';
 import { useHakemus } from '@/src/context/HakemusContext';
+import useToaster from '@/src/hooks/useToaster';
 
 const PreviewIconBlue = styled(PreviewIcon)({
   color: ophColors.blue2,
@@ -79,6 +80,8 @@ export const PerusteluMuistioModal = ({
 }: PerusteluMuistioModalProps) => {
   const { t } = useTranslations();
 
+  const { addToast } = useToaster();
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [muistio, setMuistio] = useState<string>('');
 
@@ -96,6 +99,11 @@ export const PerusteluMuistioModal = ({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(muistio);
+    addToast({
+      key: 'hakemus.perustelumuistio.kopioi.toaster',
+      message: t('hakemus.perustelumuistio.kopioituToast'),
+      type: 'success',
+    });
   };
 
   const content = isLoading ? (
@@ -121,6 +129,7 @@ export const PerusteluMuistioModal = ({
                 data-testid="modal-confirm-button"
                 variant="contained"
                 onClick={handleCopy}
+                disabled={!!isLoading}
                 startIcon={<CopyAllIcon />}
               >
                 {t('hakemus.perustelumuistio.kopioi')}
