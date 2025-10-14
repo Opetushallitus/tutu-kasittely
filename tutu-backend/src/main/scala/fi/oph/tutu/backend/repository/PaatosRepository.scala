@@ -49,14 +49,8 @@ class PaatosRepository extends BaseResultHandlers {
       paatosTyyppi = Option(PaatosTyyppi.fromString(r.nextString())),
       sovellettuLaki = Option(SovellettuLaki.fromString(r.nextString())),
       tutkintoId = Some(r.nextObject().asInstanceOf[UUID]),
-      lisaaTutkintoPaatostekstiin = Option(r.nextObject()) match {
-        case Some(value: java.lang.Boolean) => Some(value.booleanValue())
-        case _                              => None
-      },
-      myonteinenPaatos = Option(r.nextObject()) match {
-        case Some(value: java.lang.Boolean) => Some(value.booleanValue())
-        case _                              => None
-      },
+      lisaaTutkintoPaatostekstiin = r.nextBooleanOption(),
+      myonteinenPaatos = r.nextBooleanOption(),
       myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       tutkintoTaso = Option(TutkintoTaso.fromString(r.nextString())),
