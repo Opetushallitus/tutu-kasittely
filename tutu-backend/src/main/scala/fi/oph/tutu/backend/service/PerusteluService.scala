@@ -18,7 +18,6 @@ import java.util.UUID
 @Service
 class PerusteluService(
   hakemusService: HakemusService,
-  hakemuspalveluService: HakemuspalveluService,
   hakemusRepository: HakemusRepository,
   perusteluRepository: PerusteluRepository,
   asiakirjaRepository: AsiakirjaRepository,
