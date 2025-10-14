@@ -397,7 +397,13 @@
       "tutkinto": {
         "nimi": "Tutkinnon nimi, jota päätös koskee",
         "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
-        "muuTutkinto": "Muu tutkinto"
+        "muuTutkinto": "Muu tutkinto",
+        "myonteinenPaatos": "Päätös on",
+        "myonteinen": "Myönteinen",
+        "kielteinen": "Kielteinen",
+        "tutkinnonTaso": "Tutkinnon taso",
+        "alempiKorkeakoulu": "Alempi korkeakoulututkinto",
+        "ylempiKorkeakoulu": "Ylempi korkeakoulututkinto"
       },
       "peruutuksenTaiRaukeamisenSyy": {
         "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",

@@ -54,8 +54,8 @@ class PaatosControllerTest extends IntegrationTestBase {
         paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
         sovellettuLaki = Some(SovellettuLaki.ap_seut),
         tutkintoId = None,
-        lisaaTutkintoPaatostekstiin = Some(true),
-        myonteinenPaatos = Some(true),
+        lisaaTutkintoPaatostekstiin = None,
+        myonteinenPaatos = None,
         myonteisenPaatoksenLisavaatimukset = Some("{}"),
         kielteisenPaatoksenPerustelut = Some("{}"),
         tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu),
@@ -255,6 +255,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].lisaaTutkintoPaatostekstiin").isEmpty)
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
