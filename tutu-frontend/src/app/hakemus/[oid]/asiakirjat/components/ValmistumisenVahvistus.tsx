@@ -134,12 +134,26 @@ export const ValmistumisenVahvistusComponent = ({
         label={t('hakemus.asiakirjat.valmistumisenVahvistus.otsikko')}
         data-testid="valmistumisen-vahvistus-checkbox"
         checked={valmistumisenVahvistus.valmistumisenVahvistus}
-        onChange={() =>
-          setField(
-            'valmistumisenVahvistus',
-            !valmistumisenVahvistus.valmistumisenVahvistus,
-          )
-        }
+        onChange={() => {
+          const newValue = !valmistumisenVahvistus.valmistumisenVahvistus;
+          // Jos checkbox poistetaan käytöstä, tyhjennä myös päivämäärät
+          const updatedValmistumisenVahvistus = newValue
+            ? {
+                ...valmistumisenVahvistus,
+                valmistumisenVahvistus: newValue,
+              }
+            : {
+                valmistumisenVahvistus: false,
+                valmistumisenVahvistusPyyntoLahetetty: null,
+                valmistumisenVahvistusSaatu: null,
+                valmistumisenVahvistusVastaus: null,
+                valmistumisenVahvistusLisatieto: null,
+              };
+          setValmistumisenVahvistus(updatedValmistumisenVahvistus);
+          instantUpdateAsiakirjaTietoAction({
+            valmistumisenVahvistus: updatedValmistumisenVahvistus,
+          });
+        }}
       />
       {valmistumisenVahvistus.valmistumisenVahvistus && (
         <Stack

@@ -9,7 +9,7 @@ case class HakemusListItem(
   asiatunnus: Option[String],
   esittelijaKutsumanimi: String,
   esittelijaSukunimi: String,
-  kasittelyVaihe: String,
+  kasittelyVaihe: KasittelyVaihe,
   muokattu: Option[String],
   taydennyspyyntoLahetetty: Option[String],
   apHakemus: Option[Boolean] = None,

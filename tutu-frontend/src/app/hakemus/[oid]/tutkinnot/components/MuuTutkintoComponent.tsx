@@ -47,7 +47,7 @@ export const MuuTutkintoComponent = ({
       <OphInputFormField
         minRows={9}
         multiline={true}
-        value={currentTutkinto?.muuTutkintoTieto}
+        value={currentTutkinto?.muuTutkintoTieto || ''}
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,

@@ -360,8 +360,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken",
-                                "taydennyspyyntoLahetetty": null
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
@@ -371,8 +370,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken",
-                                "taydennyspyyntoLahetetty": "2025-07-14T11:06:38.273Z"
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
@@ -382,19 +380,17 @@ class ControllerTest extends IntegrationTestBase {
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
-                                "kasittelyVaihe": "AlkukasittelyKesken",
-                                "taydennyspyyntoLahetetty": "2025-07-21T11:06:38.273Z"
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : 1.2.246.562.24.00000000000000006666,
-                                "esittelijaKutsumanimi": Esko,
-                                "esittelijaSukunimi": Esittelijä,
-                                "kasittelyVaihe": "AlkukasittelyKesken",
-                                "taydennyspyyntoLahetetty": null
+                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaKutsumanimi": "Esko",
+                                "esittelijaSukunimi": "Esittelijä",
+                                "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0))
@@ -415,6 +411,8 @@ class ControllerTest extends IntegrationTestBase {
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")))
+      .thenReturn(Right(loadJson("ataruHakemus6668.json")))
     hakemusService.paivitaHakemus(
       HakemusOid("1.2.246.562.11.00000000000000006668"),
       PartialHakemus(asiakirja = Some(PartialAsiakirja(apHakemus = Some(true)))),

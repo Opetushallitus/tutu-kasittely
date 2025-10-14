@@ -37,8 +37,10 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
 
   const mutation = useMutation({
     mutationFn: (perustelu: Perustelu) => postPerustelu(hakemusOid!, perustelu),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
+      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
     },
   });
 

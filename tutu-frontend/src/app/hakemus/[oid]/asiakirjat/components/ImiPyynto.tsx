@@ -100,7 +100,20 @@ export const ImiPyyntoComponent = ({
           options={imiPyyntoOptions}
           row
           value={currentImiPyynto.imiPyynto?.toString() ?? ''}
-          onChange={(e) => setField('imiPyynto', e.target.value === 'true')}
+          onChange={(e) => {
+            const newValue = e.target.value === 'true';
+            // Jos IMI-pyyntö muutetaan "Ei", tyhjennä myös päivämäärät
+            const updatedImiPyynto = newValue
+              ? { ...currentImiPyynto, imiPyynto: newValue }
+              : {
+                  imiPyynto: false,
+                  imiPyyntoNumero: '',
+                  imiPyyntoLahetetty: '',
+                  imiPyyntoVastattu: '',
+                };
+            setCurrentImiPyynto(updatedImiPyynto);
+            instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+          }}
         />
       </Stack>
 

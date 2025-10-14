@@ -19,3 +19,6 @@ object KasittelyVaihe:
     case "HyvaksyttyEiLahetetty"             => HyvaksyttyEiLahetetty
     case "LoppukasittelyValmis"              => LoppukasittelyValmis
     case _                                   => throw new IllegalArgumentException(s"Tuntematon käsittelyvaihe: $value")
+
+  // Implicit ordering for sorting - uses the enum's ordinal (declaration order)
+  implicit val ordering: Ordering[KasittelyVaihe] = Ordering.by(_.ordinal)

@@ -12,13 +12,17 @@ export function useKasittelyvaiheTranslation(
     return '';
   }
 
-  if (hakemus.kasittelyVaihe === 'HakemustaTaydennetty') {
+  // Käytetään backendiltä tulevaa kasittelyVaihe-arvoa, joka lasketaan dynaamisesti
+  const kasittelyVaihe = hakemus.kasittelyVaihe;
+
+  // Käsitellään erikoismuotoilu tietyille tiloille
+  if (kasittelyVaihe === 'HakemustaTaydennetty') {
     return (
       t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
       ' ' +
       dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
     );
-  } else if (hakemus?.kasittelyVaihe === 'OdottaaTaydennysta') {
+  } else if (kasittelyVaihe === 'OdottaaTaydennysta') {
     return t(`hakemus.kasittelyvaihe.odottaataydennystamennessa`, {
       date: dateFns.format(
         dateFns.addWeeks(Date.parse(hakemus.taydennyspyyntoLahetetty), 2),
@@ -26,6 +30,6 @@ export function useKasittelyvaiheTranslation(
       ),
     });
   } else {
-    return t(`hakemus.kasittelyvaihe.${hakemus?.kasittelyVaihe.toLowerCase()}`);
+    return t(`hakemus.kasittelyvaihe.${kasittelyVaihe.toLowerCase()}`);
   }
 }

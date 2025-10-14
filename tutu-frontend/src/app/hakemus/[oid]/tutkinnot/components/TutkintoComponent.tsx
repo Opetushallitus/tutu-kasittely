@@ -141,7 +141,7 @@ export const TutkintoComponent = ({
             nimi: event.target.value,
           })
         }
-        value={currentTutkinto.nimi}
+        value={currentTutkinto.nimi || ''}
         inputProps={{
           'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
         }}
