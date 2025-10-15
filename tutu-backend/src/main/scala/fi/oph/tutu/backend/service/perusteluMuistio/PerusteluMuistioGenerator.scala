@@ -25,7 +25,7 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   }
 }
 
-def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]) = {
+def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]): Option[String] = {
   ataruHakemusMaybe match {
     case Some(ataruHakemus) => {
       findAnswerByAtaruKysymysId(Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA, ataruHakemus.content.answers)
@@ -35,14 +35,32 @@ def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]) = 
   }
 }
 
+def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val valmistumisenVahvistus: Option[ValmistumisenVahvistus] = hakemusMaybe
+    .flatMap(_.asiakirja).map(_.valmistumisenVahvistus)
+
+  val muotoiltuVastausMaybe = valmistumisenVahvistus.getVastausIfVahvistusTrue match {
+    case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
+    case ValmistumisenVahvistusVastaus.Kielteinen  => "kielteinen"
+    case ValmistumisenVahvistusVastaus.EiVastausta => "vahvistusta ei saatu"
+    case _                                         => None
+  }
+
+  muotoiltuVastausMaybe.map(
+    muotoiltuVastaus => s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
+  )
+}
+
 def generate(
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu]
 ): String = {
-  var result = Seq[String]()
-  result = haeImiPyyntoTieto(hakemusMaybe).map(part => result :+ part).getOrElse(result)
-  result = haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe).map(part => result :+ part).getOrElse(result)
+  var result = Seq[String](
+    haeImiPyyntoTieto(hakemusMaybe),
+    haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe),
+    haeValmistuminenVahvistettu(hakemusMaybe)
+  ).flatten
 
   result.mkString("\n\n")
 }
