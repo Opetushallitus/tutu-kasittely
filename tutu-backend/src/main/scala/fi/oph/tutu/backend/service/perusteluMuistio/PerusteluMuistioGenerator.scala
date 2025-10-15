@@ -37,7 +37,8 @@ def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]): O
 
 def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val valmistumisenVahvistus: Option[ValmistumisenVahvistus] = hakemusMaybe
-    .flatMap(_.asiakirja).map(_.valmistumisenVahvistus)
+    .flatMap(_.asiakirja)
+    .map(_.valmistumisenVahvistus)
 
   val muotoiltuVastausMaybe = valmistumisenVahvistus.getVastausIfVahvistusTrue match {
     case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
@@ -46,8 +47,8 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
     case _                                         => None
   }
 
-  muotoiltuVastausMaybe.map(
-    muotoiltuVastaus => s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
+  muotoiltuVastausMaybe.map(muotoiltuVastaus =>
+    s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
   )
 }
 
