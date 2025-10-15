@@ -209,9 +209,7 @@
         "teksti": "Olet poistamassa tutkintoa. Vahvista tutkinnon poistaminen."
       },
       "hakijanIlmoittamaTieto": {
-        "linkki": "Näytä hakijan ilmoittama tieto",
-        "otsikko": "Hakijan ilmoittama tieto",
-        "eiTietoa": "Ei tietoa"
+        "linkki": "Näytä hakijan ilmoittama tieto"
       },
       "tutkinto": {
         "tutkintoOtsikko": "Tutkinto",
