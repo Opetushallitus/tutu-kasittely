@@ -9,10 +9,13 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Divider, Stack } from '@mui/material';
+import { Divider, Stack, Box } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
 import { ModalComponent } from '@/src/components/ModalComponent';
 import { OphSelectOption } from '@/src/components/OphSelect';
+import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
 const primaryTutkintotodistusOtsikko = {
   fi: [
@@ -62,9 +65,24 @@ export const TutkintoComponent = ({
   paatosKieli,
   t,
 }: TutkintoProps) => {
+  const { hakemus } = useHakemus();
+  const hakijanTieto = useHakijanIlmoittamaTieto(
+    hakemus?.sisalto || [],
+    tutkinto.jarjestys,
+    hakemus?.lomakkeenKieli || 'fi',
+  );
+
   const [currentTutkinto, setCurrentTutkinto] =
     React.useState<Tutkinto>(tutkinto);
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [nimiAnchorEl, setNimiAnchorEl] = React.useState<HTMLElement | null>(
+    null,
+  );
+  const [oppilaitosAnchorEl, setOppilaitosAnchorEl] =
+    React.useState<HTMLElement | null>(null);
+  const [maaAnchorEl, setMaaAnchorEl] = React.useState<HTMLElement | null>(
+    null,
+  );
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
     setCurrentTutkinto(value);
@@ -133,19 +151,38 @@ export const TutkintoComponent = ({
         }
         data-testid={`tutkinto-todistusotsikko-${tutkinto.jarjestys}`}
       />
-      <OphInputFormField
-        label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
-        onChange={(event) =>
-          updateCurrentTutkinto({
-            ...currentTutkinto,
-            nimi: event.target.value,
-          })
-        }
-        value={currentTutkinto.nimi || ''}
-        inputProps={{
-          'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
-        }}
-      />
+      <Stack direction="column" gap={0.5}>
+        <OphInputFormField
+          label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...currentTutkinto,
+              nimi: event.target.value,
+            })
+          }
+          value={currentTutkinto.nimi || ''}
+          inputProps={{
+            'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
+          }}
+        />
+        <Box>
+          <OphButton
+            variant="text"
+            size="small"
+            sx={{
+              padding: 0,
+              minWidth: 'auto',
+              textTransform: 'none',
+              color: 'primary.main',
+              fontWeight: 400,
+            }}
+            onClick={(event) => setNimiAnchorEl(event.currentTarget)}
+            data-testid={`tutkinto-nimi-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+          >
+            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
+          </OphButton>
+        </Box>
+      </Stack>
       <OphInputFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonPaaaineTaiErikoisala')}
         onChange={(event) =>
@@ -159,33 +196,71 @@ export const TutkintoComponent = ({
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
         }}
       />
-      <OphInputFormField
-        label={t('hakemus.tutkinnot.tutkinto.oppilaitos')}
-        onChange={(event) =>
-          updateCurrentTutkinto({
-            ...currentTutkinto,
-            oppilaitos: event.target.value,
-          })
-        }
-        value={currentTutkinto.oppilaitos || ''}
-        inputProps={{
-          'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
-        }}
-      />
-      <OphSelectFormField
-        placeholder={t('yleiset.valitse')}
-        label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
-        sx={{ width: '50%' }}
-        options={maatJaValtiotOptions}
-        value={String(currentTutkinto.maakoodiUri) || ''}
-        onChange={(event) =>
-          updateCurrentTutkinto({
-            ...currentTutkinto,
-            maakoodiUri: event.target.value,
-          })
-        }
-        data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}
-      />
+      <Stack direction="column" gap={0.5}>
+        <OphInputFormField
+          label={t('hakemus.tutkinnot.tutkinto.oppilaitos')}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...currentTutkinto,
+              oppilaitos: event.target.value,
+            })
+          }
+          value={currentTutkinto.oppilaitos || ''}
+          inputProps={{
+            'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
+          }}
+        />
+        <Box>
+          <OphButton
+            variant="text"
+            size="small"
+            sx={{
+              padding: 0,
+              minWidth: 'auto',
+              textTransform: 'none',
+              color: 'primary.main',
+              fontWeight: 400,
+            }}
+            onClick={(event) => setOppilaitosAnchorEl(event.currentTarget)}
+            data-testid={`tutkinto-oppilaitos-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+          >
+            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
+          </OphButton>
+        </Box>
+      </Stack>
+      <Stack direction="column" gap={0.5}>
+        <OphSelectFormField
+          placeholder={t('yleiset.valitse')}
+          label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
+          sx={{ width: '50%' }}
+          options={maatJaValtiotOptions}
+          value={String(currentTutkinto.maakoodiUri) || ''}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...currentTutkinto,
+              maakoodiUri: event.target.value,
+            })
+          }
+          data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}
+        />
+        <Box>
+          <OphButton
+            variant="text"
+            size="small"
+            sx={{
+              padding: 0,
+              minWidth: 'auto',
+              textTransform: 'none',
+              color: 'primary.main',
+              fontWeight: 400,
+            }}
+            onClick={(event) => setMaaAnchorEl(event.currentTarget)}
+            data-testid={`tutkinto-maa-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+          >
+            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
+          </OphButton>
+        </Box>
+      </Stack>
       <Stack direction="row" gap={2}>
         <OphInputFormField
           sx={{ width: '25%' }}
@@ -243,6 +318,21 @@ export const TutkintoComponent = ({
         }
         value={currentTutkinto.koulutusalaKoodi || ''}
         data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
+      />
+      <HakijanIlmoittamaPopover
+        anchorEl={nimiAnchorEl}
+        onClose={() => setNimiAnchorEl(null)}
+        sisalto={hakijanTieto.nimi}
+      />
+      <HakijanIlmoittamaPopover
+        anchorEl={oppilaitosAnchorEl}
+        onClose={() => setOppilaitosAnchorEl(null)}
+        sisalto={hakijanTieto.oppilaitos}
+      />
+      <HakijanIlmoittamaPopover
+        anchorEl={maaAnchorEl}
+        onClose={() => setMaaAnchorEl(null)}
+        sisalto={hakijanTieto.maakoodiUri}
       />
       <Divider orientation={'horizontal'} />
     </Stack>
