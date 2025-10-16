@@ -7,6 +7,7 @@ import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.native.JsonMethods.{compact, parse, render}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.*
+import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.{Component, Service}
@@ -100,10 +101,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   }
 
   def haeJaParsiLomake(form_id: Long): Either[Throwable, AtaruLomake] = {
-    haeLomake(form_id) match {
-      case Left(error: Throwable)       => Left(error)
-      case Right(response: AtaruLomake) => parse(response).extract[AtaruLomake]
-    }
+    haeLomake(form_id).map(response => parse(response).extract[AtaruLomake])
   }
 
   def haeLiitteidenTiedot(hakemusOid: HakemusOid, avainLista: Array[String]): Option[String] = {

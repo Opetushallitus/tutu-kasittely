@@ -46,4 +46,7 @@ object Constants {
 
   val ATARU_SAHKOISEN_ASIOINNIN_LUPA: AtaruKysymysId =
     AtaruKysymysId("1098b604-115b-4e59-ba11-073c0924e473", "sahkoisen-asioinnin-lupa")
+
+  val ATARU_HAKEMUS_KOSKEE: AtaruKysymysId =
+    AtaruKysymysId("tutu-apply-reason", "tutu-apply-reason")
 }

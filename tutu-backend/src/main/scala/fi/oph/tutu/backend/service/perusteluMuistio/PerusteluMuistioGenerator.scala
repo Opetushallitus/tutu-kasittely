@@ -5,7 +5,16 @@ import java.time.format.DateTimeFormatter
 
 import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
 import fi.oph.tutu.backend.service.findAnswerByAtaruKysymysId
-import fi.oph.tutu.backend.domain.{AtaruHakemus, Hakemus, ImiPyynto, Perustelu}
+import fi.oph.tutu.backend.domain.{
+  AtaruHakemus,
+  AtaruLomake,
+  Hakemus,
+  ImiPyynto,
+  Kieli,
+  Perustelu,
+  ValmistumisenVahvistus,
+  ValmistumisenVahvistusVastaus
+}
 
 def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)
@@ -26,26 +35,29 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
 }
 
 def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]): Option[String] = {
-  ataruHakemusMaybe match {
-    case Some(ataruHakemus) => {
+  ataruHakemusMaybe
+    .flatMap(ataruHakemus => {
       findAnswerByAtaruKysymysId(Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA, ataruHakemus.content.answers)
-        .map(answer => s"Suostumus sähköiseen asiointiin: ${answer}")
-    }
-    case _ => None
-  }
+    })
+    .map(answer => s"Suostumus sähköiseen asiointiin: ${answer}")
+
 }
 
 def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  val valmistumisenVahvistus: Option[ValmistumisenVahvistus] = hakemusMaybe
+  val valmistumisenVahvistusMaybe: Option[ValmistumisenVahvistus] = hakemusMaybe
     .flatMap(_.asiakirja)
     .map(_.valmistumisenVahvistus)
 
-  val muotoiltuVastausMaybe = valmistumisenVahvistus.getVastausIfVahvistusTrue match {
-    case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
-    case ValmistumisenVahvistusVastaus.Kielteinen  => "kielteinen"
-    case ValmistumisenVahvistusVastaus.EiVastausta => "vahvistusta ei saatu"
-    case _                                         => None
-  }
+  val muotoiltuVastausMaybe =
+    valmistumisenVahvistusMaybe
+      .flatMap(_.getVastausIfVahvistusTrue)
+      .map(value => {
+        value match {
+          case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
+          case ValmistumisenVahvistusVastaus.Kielteinen  => "kielteinen"
+          case ValmistumisenVahvistusVastaus.EiVastausta => "vahvistusta ei saatu"
+        }
+      })
 
   muotoiltuVastausMaybe.map(muotoiltuVastaus =>
     s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
@@ -61,20 +73,17 @@ def hakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
 }
 
 def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  val hakemusKoskeeMaybe = hakemusMaybe match {
-    case Some(hakemus) => {
-      val hakemusKoskee = haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
-      val kieli: Kieli  = hakemus.lomakkeenKieli match {
-        case Some("sv") => Kieli.sv
-        case Some("en") => Kieli.en
-        case _          => Kieli.fi
+  hakemusMaybe
+    .flatMap(hakemus => {
+      val kieli: Kieli = hakemus.lomakkeenKieli match {
+        case "sv" => Kieli.sv
+        case "en" => Kieli.en
+        case _    => Kieli.fi
       }
-      Some(hakemusKoskeeItem.value.at(0).label.get(kieli))
-    }
-    case _ => None
-  }
-
-  hakemusKoskeeMaybe.map(hakemusKoskee => s"Hakemus koskee:\n  - ${hakemusKoskee}")
+      haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
+        .map(_.value.head.label.get(kieli))
+    })
+    .map(hakemusKoskee => s"Hakemus koskee:\n  - ${hakemusKoskee}")
 }
 
 def generate(
@@ -83,7 +92,7 @@ def generate(
   ataruLomakeMaybe: Option[AtaruLomake],
   perusteluMaybe: Option[Perustelu]
 ): String = {
-  var result = Seq[String](
+  var result: Seq[String] = Seq[Option[String]](
     hakijanNimi(hakemusMaybe),
     hakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
