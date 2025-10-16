@@ -106,14 +106,11 @@ class PerusteluService(
   ): Option[String] = {
     val hakemusMaybe: Option[Hakemus]           = hakemusService.haeHakemus(hakemusOid)
     val ataruHakemusMaybe: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val ataruLomakeMaybe: Option[AtaruLomake]   =
-      ataruHakemusMaybe.flatMap(hakemus => hakemuspalveluService.haeJaParsiLomake(hakemus.form_id).toOption)
-    val perusteluMaybe: Option[Perustelu] = haePerustelu(hakemusOid)
+    val perusteluMaybe: Option[Perustelu]       = haePerustelu(hakemusOid)
 
     val perusteluMuistio = generatePerusteluMuistio(
       hakemusMaybe,
       ataruHakemusMaybe,
-      ataruLomakeMaybe,
       perusteluMaybe
     )
 

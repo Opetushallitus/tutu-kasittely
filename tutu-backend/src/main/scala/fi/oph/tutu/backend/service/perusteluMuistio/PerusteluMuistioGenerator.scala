@@ -64,11 +64,11 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
   )
 }
 
-def hakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
+def haeHakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => s"${hakemus.hakija.etunimet} ${hakemus.hakija.sukunimi}")
 }
 
-def hakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
+def haeHakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => hakemus.hakija.syntymaaika)
 }
 
@@ -89,12 +89,11 @@ def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
 def generate(
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
-  ataruLomakeMaybe: Option[AtaruLomake],
   perusteluMaybe: Option[Perustelu]
 ): String = {
   var result: Seq[String] = Seq[Option[String]](
-    hakijanNimi(hakemusMaybe),
-    hakijanSyntymaaika(hakemusMaybe),
+    haeHakijanNimi(hakemusMaybe),
+    haeHakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
