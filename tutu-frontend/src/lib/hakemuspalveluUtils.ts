@@ -25,13 +25,39 @@ const findSisaltoItemRecursivelyFromChildren = (
   currentItem: SisaltoItem,
 ): SisaltoItem | undefined => {
   if (!childPath.length) return currentItem;
+
+  // First, try to find in children
   const child = currentItem.children.find((childCandidate) =>
     sisaltoItemMatches(childCandidate, childPath[0]),
   );
-  if (childPath.length > 1 && child) {
-    return findSisaltoItemRecursivelyFromChildren(childPath.slice(1), child);
+  if (child) {
+    if (childPath.length > 1) {
+      return findSisaltoItemRecursivelyFromChildren(childPath.slice(1), child);
+    }
+    return child;
   }
-  return child;
+
+  // If not found in children, search in followups of value items
+  if (currentItem.value && currentItem.value.length > 0) {
+    for (const valueItem of currentItem.value) {
+      if (valueItem.followups && valueItem.followups.length > 0) {
+        const followupChild = valueItem.followups.find((followup) =>
+          sisaltoItemMatches(followup, childPath[0]),
+        );
+        if (followupChild) {
+          if (childPath.length > 1) {
+            return findSisaltoItemRecursivelyFromChildren(
+              childPath.slice(1),
+              followupChild,
+            );
+          }
+          return followupChild;
+        }
+      }
+    }
+  }
+
+  return undefined;
 };
 
 export const findSisaltoQuestionAndAnswer = (

@@ -274,3 +274,42 @@ test('Tutkinnon muistion esittäminen ja tallennus', async ({ page }) => {
 
   expect(request.postDataJSON().sisalto).toEqual('EIKU!');
 });
+
+test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
+  mockUser(page);
+  mockHakemus(page);
+  mockKoodistot(page);
+
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
+  );
+
+  // Testaa nimi popover - data tulee sisalto-rakenteesta
+  const nimiLink = page.getByTestId('tutkinto-nimi-hakijan-ilmoittama-link-1');
+  await expect(nimiLink).toBeVisible();
+  await nimiLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toContainText('Tut1');
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+
+  // Testaa oppilaitos popover
+  const oppilaitosLink = page.getByTestId(
+    'tutkinto-oppilaitos-hakijan-ilmoittama-link-1',
+  );
+  await expect(oppilaitosLink).toBeVisible();
+  await oppilaitosLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toContainText('Tut 1');
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+
+  // Testaa maa popover - näyttää maan nimen sisällöstä
+  const maaLink = page.getByTestId('tutkinto-maa-hakijan-ilmoittama-link-1');
+  await expect(maaLink).toBeVisible();
+  await maaLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toContainText('Barbados');
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+});

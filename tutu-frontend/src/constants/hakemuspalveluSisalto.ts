@@ -48,6 +48,58 @@ export const muutTutkinnot: HakemuspalveluSisaltoId = createId(
   '142b4364-1b26-4c95-a98c-d500edf2fcfa',
   'muut-tutkinnot',
 );
+
+// Tutkinto field IDs for extracting original Ataru form values
+export const tutkintoNimiKeys = {
+  tutkinto1: createId(
+    'ea25df4f-52a8-4540-83b7-19dffdd353f7',
+    'tutu-first-degree-name',
+  ),
+  tutkinto2: createId(
+    'd7eb503d-44f0-4445-8eb1-5e65c22fe764',
+    'tutu-second-degree-name',
+  ),
+  tutkinto3: createId(
+    '8a75125b-0677-4695-b76a-ed058a602b0a',
+    'tutu-third-degree-name',
+  ),
+};
+
+export const tutkintoOppilaitosKeys = {
+  tutkinto1: createId(
+    'f79acf0e-d410-4948-9e0a-84596b092d32',
+    'tutu-first-degree-school',
+  ),
+  tutkinto2: createId(
+    'f369367d-300a-4b36-b19b-91f3f72c841d',
+    'tutu-second-degree-school',
+  ),
+  tutkinto3: createId(
+    '3feb11ad-354e-443f-9bcf-4cb23ca8079f',
+    'tutu-third-degree-school',
+  ),
+};
+
+export const tutkintoMaaKeys = {
+  tutkinto1: createId(
+    '6e43a241-a3bd-4625-8035-40768a109461',
+    'tutu-first-degree-country',
+  ),
+  tutkinto2: createId(
+    '38a35cad-743b-43b8-96d1-e75c9674cc5e',
+    'tutu-second-degree-country',
+  ),
+  tutkinto3: createId(
+    'cd00fb20-b4de-4a6a-888e-0aae2c0fb49d',
+    'tutu-third-degree-country',
+  ),
+};
+
+export const muuTutkintoTietoKey: HakemuspalveluSisaltoId = createId(
+  '743fd221-6ec7-40d8-9758-7786e7ff2458',
+  'tutu-other-degree-text',
+);
+
 export const perustiedot: HakemuspalveluSisaltoId = createId(
   '68afefd2-daff-4d74-857c-1736a54eab1b',
   'hakemuksen-perustiedot',
