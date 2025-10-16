@@ -149,10 +149,19 @@ class PaatosRepository extends BaseResultHandlers {
     modifyData: PaatosTietoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    val actions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
+    val paatostietoActions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
-    val combined = db.combineIntDBIOs(actions)
+
+    val modifiedTutkinnotActions = modifyData.muutetut.flatMap(pt =>
+      pt.rinnastettavatTutkinnotTaiOpinnot.map(tto =>
+        if (tto.id.isDefined) paivitaTutkintoTaiOpinto(tto, luojaTaiMuokkaaja)
+        else lisaaTutkintoTaiOpinto(pt.id.get, tto, luojaTaiMuokkaaja)
+      )
+    )
+
+    val combined = db.combineIntDBIOs(paatostietoActions ++ modifiedTutkinnotActions)
+
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
       case Success(_) => ()
       case Failure(e) =>
@@ -161,7 +170,7 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] =
+  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] = {
     sqlu"""
         INSERT INTO paatostieto (
                                   paatos_id, 
@@ -187,6 +196,24 @@ class PaatosRepository extends BaseResultHandlers {
           ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
           $luoja
         )"""
+  }
+
+  def tallennaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): PaatosTieto = {
+    try {
+      db.run(
+        lisaaPaatosTieto(paatosId, paatosTieto, luoja),
+        "tallenna_paatostieto"
+      )
+      paatosTieto
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Päätöstiedon tallennus epäonnistui: $e")
+        throw new RuntimeException(
+          s"Päätöstiedon tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 
   private def paivitaPaatosTieto(
     paatosTieto: PaatosTieto,
