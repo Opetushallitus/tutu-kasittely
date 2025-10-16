@@ -63,7 +63,7 @@ case class PaatosTieto(
   myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
   kielteisenPaatoksenPerustelut: Option[String] = None,
   tutkintoTaso: Option[TutkintoTaso],
-  rinnastettavatTutkinnotTaiOpinnot: Option[Seq[TutkintoTaiOpinto]] = None,
+  rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
