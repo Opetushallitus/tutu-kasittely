@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service.perustelumuistio
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-import fi.oph.tutu.backend.utils.Constants
+import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
 import fi.oph.tutu.backend.service.findAnswerByAtaruKysymysId
 import fi.oph.tutu.backend.domain.{AtaruHakemus, Hakemus, ImiPyynto, Perustelu}
 
@@ -52,14 +52,43 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
   )
 }
 
+def hakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  hakemusMaybe.map(hakemus => s"${hakemus.hakija.etunimet} ${hakemus.hakija.sukunimi}")
+}
+
+def hakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  hakemusMaybe.map(hakemus => hakemus.hakija.syntymaaika)
+}
+
+def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val hakemusKoskeeMaybe = hakemusMaybe match {
+    case Some(hakemus) => {
+      val hakemusKoskee = haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
+      val kieli: Kieli  = hakemus.lomakkeenKieli match {
+        case Some("sv") => Kieli.sv
+        case Some("en") => Kieli.en
+        case _          => Kieli.fi
+      }
+      Some(hakemusKoskeeItem.value.at(0).label.get(kieli))
+    }
+    case _ => None
+  }
+
+  hakemusKoskeeMaybe.map(hakemusKoskee => s"Hakemus koskee:\n  - ${hakemusKoskee}")
+}
+
 def generate(
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
+  ataruLomakeMaybe: Option[AtaruLomake],
   perusteluMaybe: Option[Perustelu]
 ): String = {
   var result = Seq[String](
-    haeImiPyyntoTieto(hakemusMaybe),
+    hakijanNimi(hakemusMaybe),
+    hakijanSyntymaaika(hakemusMaybe),
+    haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe),
+    haeImiPyyntoTieto(hakemusMaybe),
     haeValmistuminenVahvistettu(hakemusMaybe)
   ).flatten
 

@@ -99,6 +99,13 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
     }
   }
 
+  def haeJaParsiLomake(form_id: Long): Either[Throwable, AtaruLomake] = {
+    haeLomake(form_id) match {
+      case Left(error: Throwable)       => Left(error)
+      case Right(response: AtaruLomake) => parse(response).extract[AtaruLomake]
+    }
+  }
+
   def haeLiitteidenTiedot(hakemusOid: HakemusOid, avainLista: Array[String]): Option[String] = {
     val muutosHistoria = haeMuutoshistoria(hakemusOid) match {
       case Left(error: Throwable) =>
