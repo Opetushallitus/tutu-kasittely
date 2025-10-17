@@ -74,7 +74,8 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
 
   const todistusEUKansalaisuuteenRinnasteisestaAsemasta = page
     .getByTestId('todistusEUKansalaisuuteenRinnasteisestaAsemasta')
-    .locator('input');
+    .locator('textarea')
+    .first();
   await expect(todistusEUKansalaisuuteenRinnasteisestaAsemasta).toHaveValue(
     'todistusEUKansalaisuuteenRinnasteisestaAsemasta',
   );
