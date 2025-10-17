@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.domain.{
   Hakemus,
   ImiPyynto,
   Kieli,
+  Muistio,
   Perustelu,
   ValmistumisenVahvistus,
   ValmistumisenVahvistusVastaus
@@ -86,10 +87,25 @@ def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
     .map(hakemusKoskee => s"Hakemus koskee:\n  - ${hakemusKoskee}")
 }
 
+def haeKoulutuksenSisalto(uoRoMuistioMaybe: Option[Muistio]): Option[String] = {
+  uoRoMuistioMaybe
+    .map(_.sisalto)
+    .map(sisalto => s"Koulutuksen sisältö:\n${sisalto}")
+}
+
+def haeImiHalytyksetTarkastettu(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe
+    .map(_.apSisalto)
+    .flatMap(_.IMIHalytysTarkastettu)
+    .map(value => if (value) "kyllä" else "ei")
+    .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu: ${muotoiltuValinta}")
+}
+
 def generate(
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
-  perusteluMaybe: Option[Perustelu]
+  perusteluMaybe: Option[Perustelu],
+  uoRoMuistioMaybe: Option[Muistio]
 ): String = {
   var result: Seq[String] = Seq[Option[String]](
     haeHakijanNimi(hakemusMaybe),
@@ -97,7 +113,9 @@ def generate(
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
-    haeValmistuminenVahvistettu(hakemusMaybe)
+    haeValmistuminenVahvistettu(hakemusMaybe),
+    haeKoulutuksenSisalto(uoRoMuistioMaybe),
+    haeImiHalytyksetTarkastettu(perusteluMaybe)
   ).flatten
 
   result.mkString("\n\n")
