@@ -30,8 +30,13 @@ case class Perustelu(
 ) {
   def mergeWith(partial: PartialPerustelu): Perustelu =
     this.copy(
-      virallinenTutkinnonMyontaja = partial.virallinenTutkinnonMyontaja.orElse(this.virallinenTutkinnonMyontaja),
-      virallinenTutkinto = partial.virallinenTutkinto.orElse(this.virallinenTutkinto),
+      virallinenTutkinnonMyontaja =
+        if (partial.virallinenTutkinnonMyontajaDefined())
+          partial.virallinenTutkinnonMyontaja.flatMap(_.value)
+        else this.virallinenTutkinnonMyontaja,
+      virallinenTutkinto =
+        if (partial.virallinenTutkintoDefined()) partial.virallinenTutkinto.flatMap(_.value)
+        else this.virallinenTutkinto,
       lahdeLahtomaanKansallinenLahde =
         partial.lahdeLahtomaanKansallinenLahde.getOrElse(this.lahdeLahtomaanKansallinenLahde),
       lahdeLahtomaanVirallinenVastaus =
@@ -45,10 +50,12 @@ case class Perustelu(
         partial.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.orElse(this.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa),
       selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = partial.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
         .getOrElse(this.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa),
-      aikaisemmatPaatokset = partial.aikaisemmatPaatokset
-        .orElse(this.aikaisemmatPaatokset),
-      jatkoOpintoKelpoisuus = partial.jatkoOpintoKelpoisuus
-        .orElse(this.jatkoOpintoKelpoisuus),
+      aikaisemmatPaatokset =
+        if (partial.aikaisemmatPaatoksetDefined()) partial.aikaisemmatPaatokset.flatMap(_.value)
+        else this.aikaisemmatPaatokset,
+      jatkoOpintoKelpoisuus =
+        if (partial.jatkoOpintoKelpoisuusDefined()) partial.jatkoOpintoKelpoisuus.flatMap(_.jatkoOpintoKelpoisuus)
+        else this.jatkoOpintoKelpoisuus,
       jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
         .orElse(this.jatkoOpintoKelpoisuusLisatieto),
       muuPerustelu = partial.muuPerustelu
@@ -61,16 +68,16 @@ case class Perustelu(
 }
 
 case class PartialPerustelu(
-  virallinenTutkinnonMyontaja: Option[Boolean] = None,
-  virallinenTutkinto: Option[Boolean] = None,
+  virallinenTutkinnonMyontaja: Option[BooleanFieldWrapper] = None,
+  virallinenTutkinto: Option[BooleanFieldWrapper] = None,
   lahdeLahtomaanKansallinenLahde: Option[Boolean] = None,
   lahdeLahtomaanVirallinenVastaus: Option[Boolean] = None,
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: Option[Boolean] = None,
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: Option[String] = None,
   ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: Option[String] = None,
-  aikaisemmatPaatokset: Option[Boolean] = None,
-  jatkoOpintoKelpoisuus: Option[String] = None,
+  aikaisemmatPaatokset: Option[BooleanFieldWrapper] = None,
+  jatkoOpintoKelpoisuus: Option[JatkoOpintoKelpoisuusWrapper] = None,
   jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
   muuPerustelu: Option[String] = None,
   uoRoSisalto: Option[UoRoSisalto] = None,
@@ -78,7 +85,12 @@ case class PartialPerustelu(
   lausunnonSisalto: Option[String] = None,
   lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
   apSisalto: Option[APSisalto] = None
-)
+) {
+  def virallinenTutkinnonMyontajaDefined(): Boolean = virallinenTutkinnonMyontaja.isDefined
+  def virallinenTutkintoDefined(): Boolean          = virallinenTutkinto.isDefined
+  def aikaisemmatPaatoksetDefined(): Boolean        = aikaisemmatPaatokset.isDefined
+  def jatkoOpintoKelpoisuusDefined(): Boolean       = jatkoOpintoKelpoisuus.isDefined
+}
 
 case class UoRoSisalto(
   opettajatEroMonialaisetOpinnotSisalto: Option[Boolean] = None,

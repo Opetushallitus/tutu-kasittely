@@ -226,14 +226,14 @@ class AsiakirjaRepository extends BaseResultHandlers {
       VALUES (
         ${asiakirja.allekirjoituksetTarkistettu},
         ${asiakirja.allekirjoituksetTarkistettuLisatiedot.orNull},
-        ${asiakirja.imiPyynto.imiPyynto.getOrElse(false)},
+        ${asiakirja.imiPyynto.imiPyynto},
         ${asiakirja.imiPyynto.imiPyyntoNumero.orNull},
         ${asiakirja.imiPyynto.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull},
         ${asiakirja.imiPyynto.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull},
         ${asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi},
         ${asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orNull},
         ${asiakirja.selvityksetSaatu},
-        ${asiakirja.apHakemus.getOrElse(false)},
+        ${asiakirja.apHakemus},
         ${asiakirja.suostumusVahvistamiselleSaatu},
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistus},
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty
@@ -282,7 +282,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
             alkuperaiset_asiakirjat_saatu_nahtavaksi = ${updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi},
             alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = ${updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orNull},
             selvitykset_saatu = ${updatedAsiakirja.selvityksetSaatu},
-            ap_hakemus = ${updatedAsiakirja.apHakemus.getOrElse(false)},
+            ap_hakemus = ${updatedAsiakirja.apHakemus},
             suostumus_vahvistamiselle_saatu = ${updatedAsiakirja.suostumusVahvistamiselleSaatu},
             valmistumisen_vahvistus = ${updatedAsiakirja.valmistumisenVahvistus},
             valmistumisen_vahvistus_pyynto_lahetetty = ${updatedAsiakirja.valmistumisenVahvistusPyyntoLahetetty

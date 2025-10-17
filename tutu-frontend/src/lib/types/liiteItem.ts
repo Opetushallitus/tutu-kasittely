@@ -1,5 +1,5 @@
 export type LiiteItem = {
-  deleted: string?;
+  deleted?: string | null;
   key: string;
   size: number;
   uploaded: string;

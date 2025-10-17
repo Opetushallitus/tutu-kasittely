@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import {
   OphTypography,
   OphInputFormField,
-  OphRadioGroup,
 } from '@opetushallitus/oph-design-system';
 import { Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useDebounce } from '@/src/hooks/useDebounce';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 import { Hakemus, PartialHakemus, Tutkinto } from '@/src/lib/types/hakemus';
 
@@ -73,49 +73,42 @@ const Suoritusvuodet = ({ tutkinto, updateTutkinto }: FieldProps) => {
 const Opinnaytetyo = ({ tutkinto, updateTutkinto }: FieldProps) => {
   const { t } = useTranslations();
   return (
-    <>
-      <OphTypography variant="h4">
-        {t('hakemus.perustelu.yleiset.tutkinnot.opinnaytetyo')}
-      </OphTypography>
-      <OphRadioGroup
-        labelId="opinnaytetyo-radio-group-label"
-        data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo`}
-        options={[
-          { value: 'true', label: t('yleiset.kylla') },
-          { value: 'false', label: t('yleiset.ei') },
-        ]}
-        row
-        value={String(tutkinto.opinnaytetyo) || ''}
-        onChange={(e) => {
-          updateTutkinto({ opinnaytetyo: e.target.value === 'true' });
-        }}
-      />
-    </>
+    <OphRadioGroupWithClear
+      label={t('hakemus.perustelu.yleiset.tutkinnot.opinnaytetyo')}
+      labelId="opinnaytetyo-radio-group-label"
+      data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo`}
+      options={[
+        { value: 'true', label: t('yleiset.kylla') },
+        { value: 'false', label: t('yleiset.ei') },
+      ]}
+      row
+      value={tutkinto.opinnaytetyo?.toString() ?? ''}
+      onChange={(e) => {
+        updateTutkinto({ opinnaytetyo: e.target.value === 'true' });
+      }}
+      onClear={() => updateTutkinto({ opinnaytetyo: null })}
+    />
   );
 };
 
 const Harjoittelu = ({ tutkinto, updateTutkinto }: FieldProps) => {
   const { t } = useTranslations();
   return (
-    <>
-      <OphTypography variant="h4">
-        {t('hakemus.perustelu.yleiset.tutkinnot.harjoittelu')}
-      </OphTypography>
-
-      <OphRadioGroup
-        labelId="harjoittelu-radio-group-label"
-        data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--harjoittelu`}
-        options={[
-          { value: 'true', label: t('yleiset.kylla') },
-          { value: 'false', label: t('yleiset.ei') },
-        ]}
-        row
-        value={String(tutkinto.harjoittelu) || ''}
-        onChange={(e) => {
-          updateTutkinto({ harjoittelu: e.target.value === 'true' });
-        }}
-      />
-    </>
+    <OphRadioGroupWithClear
+      label={t('hakemus.perustelu.yleiset.tutkinnot.harjoittelu')}
+      labelId="harjoittelu-radio-group-label"
+      data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--harjoittelu`}
+      options={[
+        { value: 'true', label: t('yleiset.kylla') },
+        { value: 'false', label: t('yleiset.ei') },
+      ]}
+      row
+      value={tutkinto.harjoittelu?.toString() ?? ''}
+      onChange={(e) => {
+        updateTutkinto({ harjoittelu: e.target.value === 'true' });
+      }}
+      onClear={() => updateTutkinto({ harjoittelu: null })}
+    />
   );
 };
 

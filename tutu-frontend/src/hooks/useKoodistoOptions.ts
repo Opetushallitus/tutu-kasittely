@@ -1,7 +1,7 @@
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
-import { Option } from '@/src/constants/dropdownOptions';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 type KoodistoItem = {
   koodiUri: string;
@@ -16,13 +16,15 @@ type KoodistoItem = {
 const getKoodistoOptions = (
   koodisto: KoodistoItem[],
   lang: string,
-): Option[] => {
+): OphSelectOption<string>[] => {
   return koodisto
     .map((koodistoItem) => ({
       value: koodistoItem.koodiUri,
       label: koodistoItem.nimi[lang as keyof KoodistoItem['nimi']],
     }))
-    .sort((a, b) => a.label.localeCompare(b.label)) as Option[];
+    .sort((a, b) =>
+      a.label.localeCompare(b.label),
+    ) as OphSelectOption<string>[];
 };
 
 export const getKoodisto = async (

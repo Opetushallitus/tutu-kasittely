@@ -111,23 +111,24 @@ object KielistettySerializer
           case unexpected =>
             throw new MappingException(s"Cannot deserialize Kielistetty from $unexpected")
         },
-        { k =>
-          // Safe cast since we know this is a Kielistetty (Map[Kieli, String])
-          val kielistetty = k.asInstanceOf[Kielistetty]
-          val fiEntry     =
-            kielistetty.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.getOrElse(None)
-          val svEntry =
-            kielistetty.collectFirst { case (Kieli.en, value) => Some(("sv", JString(value))) }.getOrElse(None)
-          val enEntry =
-            kielistetty.collectFirst { case (Kieli.sv, value) => Some(("en", JString(value))) }.getOrElse(None)
+        {
+          case kielistetty: Map[_, _] if kielistetty.isEmpty || kielistetty.keys.head.isInstanceOf[Kieli] =>
+            // Safe cast since we verified this is a Map with Kieli keys (or empty Map)
+            val typedMap = kielistetty.asInstanceOf[Kielistetty]
+            val fiEntry  =
+              typedMap.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.getOrElse(None)
+            val svEntry =
+              typedMap.collectFirst { case (Kieli.en, value) => Some(("sv", JString(value))) }.getOrElse(None)
+            val enEntry =
+              typedMap.collectFirst { case (Kieli.sv, value) => Some(("en", JString(value))) }.getOrElse(None)
 
-          val obj = Seq(fiEntry, svEntry, enEntry)
-            .flatten()
-            .foldLeft(
-              JObject()
-            )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
+            val obj = Seq(fiEntry, svEntry, enEntry)
+              .flatten()
+              .foldLeft(
+                JObject()
+              )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
 
-          obj
+            obj
         }
       )
     )

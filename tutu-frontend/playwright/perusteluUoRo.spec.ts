@@ -25,7 +25,17 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   await otmMuuEro.scrollIntoViewIfNeeded();
   const otmMuuEroCheckbox = otmMuuEro.locator('input[type="checkbox"]');
   await expect(otmMuuEroCheckbox).toBeVisible();
-  await otmMuuEroCheckbox.check();
+
+  // Click checkbox and wait for backend update
+  await Promise.all([
+    page.waitForResponse(
+      (r) =>
+        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
+        r.request().method() === 'POST',
+    ),
+    otmMuuEroCheckbox.click(),
+  ]);
+
   await expect(otmMuuEroCheckbox).toBeChecked();
   await expect(page.getByTestId('otmMuuEroSelite')).toBeVisible();
 
@@ -69,7 +79,17 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     'input[type="checkbox"]',
   );
   await expect(sovellettuLuokanopettajaCheckbox).toBeVisible();
-  await sovellettuLuokanopettajaCheckbox.check();
+
+  // Click checkbox and wait for backend update
+  await Promise.all([
+    page.waitForResponse(
+      (r) =>
+        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
+        r.request().method() === 'POST',
+    ),
+    sovellettuLuokanopettajaCheckbox.click(),
+  ]);
+
   await expect(sovellettuLuokanopettajaCheckbox).toBeChecked();
 
   const sovellettuLuokanopettajaRadioGroup = page.getByTestId(

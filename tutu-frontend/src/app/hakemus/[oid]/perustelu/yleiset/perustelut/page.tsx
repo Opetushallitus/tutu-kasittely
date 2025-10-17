@@ -78,17 +78,22 @@ const YleisetPerustelut = ({
     debouncedUpdatePerustelu(combinedParts);
   };
 
+  // For radio buttons and checkboxes - no debounce needed (immediate feedback)
+  const updatePerusteluImmediate = (part: Partial<Perustelu>) => {
+    updatePerustelu(part);
+  };
+
   return isPerusteluLoading ? (
     <FullSpinner></FullSpinner>
   ) : (
     <>
       <VirallinenTutkinnonMyontaja
         perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        updatePerustelu={updatePerusteluImmediate}
       />
       <VirallinenTutkinto
         perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        updatePerustelu={updatePerusteluImmediate}
       />
       <Lahde
         perustelu={perustelu}
@@ -115,11 +120,12 @@ const YleisetPerustelut = ({
       </OphTypography>
       <JatkoOpintoKelpoisuus
         perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        updatePerustelu={updatePerusteluImmediate}
+        updateTextDebounced={updatePerusteluWithPartial}
       />
       <AikaisemmatPaatokset
         perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        updatePerustelu={updatePerusteluImmediate}
       />
       <MuuPerustelu
         perustelu={perustelu}
