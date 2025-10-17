@@ -10,14 +10,16 @@ import {
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 
-interface KaikkiSelvityksetSaatuProps {
+type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
-}
+  kirjausPvm: string;
+};
 
 export const KaikkiSelvityksetSaatu = ({
   asiakirjaTieto,
   updateAsiakirjaTieto,
+  kirjausPvm,
 }: KaikkiSelvityksetSaatuProps) => {
   const { t } = useTranslations();
 
@@ -68,6 +70,8 @@ export const KaikkiSelvityksetSaatu = ({
         }}
         label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
         dataTestId={'viimeinen-asiakirja-hakijalta'}
+        maxDate={new Date()}
+        minDate={new Date(kirjausPvm)}
       />
     </>
   );
