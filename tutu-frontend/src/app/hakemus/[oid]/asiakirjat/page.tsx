@@ -262,6 +262,7 @@ const AsiakirjaPagePure = ({
       <KaikkiSelvityksetSaatu
         asiakirjaTieto={asiakirja}
         updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+        kirjausPvm={hakemus.kirjausPvm}
       />
       <ApHakemus
         asiakirjaTieto={asiakirja}

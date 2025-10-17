@@ -6,15 +6,18 @@ import {
   mockUser,
 } from '@/playwright/mocks';
 
-test.beforeEach(mockBasicForHakemus);
+test.beforeEach(async ({ page }) => {
+  await Promise.all([
+    mockBasicForHakemus({ page }),
+    mockUser(page),
+    mockHakemus(page),
+    mockLiitteet(page),
+  ]);
+});
 
 test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   page,
 }) => {
-  mockUser(page);
-  mockHakemus(page);
-  await mockLiitteet(page);
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
   );
@@ -30,7 +33,7 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(
     cellsOfEce.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfEce.nth(3).locator('input[type="text"]')).toHaveValue(
+  await expect(cellsOfEce.nth(3).locator('textarea').first()).toHaveValue(
     'Jotain kuvausta',
   );
   await expect(page.getByTestId('asiakirjamalli-delete-ece')).toBeVisible();
@@ -42,7 +45,7 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(
     cellsOfNuffic.nth(2).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfNuffic.nth(3).locator('input[type="text"]')).toBeEmpty();
+  await expect(cellsOfNuffic.nth(3).locator('textarea').first()).toBeEmpty();
   await expect(page.getByTestId('asiakirjamalli-delete-nuffic')).toBeVisible();
 
   const cellsOfAacrao = page
@@ -52,7 +55,7 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(
     cellsOfAacrao.nth(2).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfAacrao.nth(3).locator('input[type="text"]')).toHaveValue(
+  await expect(cellsOfAacrao.nth(3).locator('textarea').first()).toHaveValue(
     'Jotain muuta kuvausta',
   );
   await expect(page.getByTestId('asiakirjamalli-delete-aacrao')).toBeVisible();
@@ -69,10 +72,6 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
 test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
   page,
 }) => {
-  mockUser(page);
-  mockHakemus(page);
-  await mockLiitteet(page);
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
   );
@@ -106,7 +105,7 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
         req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
         req.method() === 'PATCH',
     ),
-    cellsOfUkEnic.nth(3).locator('input[type="text"]').fill('Uusi kuvaus'),
+    cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus'),
   ]);
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,

@@ -4,8 +4,8 @@ import {
   getConfiguration,
   setConfiguration,
 } from '@/src/lib/configuration/clientConfiguration';
-import { Configuration } from '@/src/lib/configuration/configuration';
-import { createContext, useEffect, useState } from 'react';
+import { type Configuration } from '@/src/lib/configuration/configuration';
+import { createContext, useEffect, useState, type ReactNode } from 'react';
 import { isNullish } from 'remeda';
 
 export const ConfigurationContext = createContext<{
@@ -17,7 +17,7 @@ export function ConfigurationProvider({
   children,
 }: {
   configuration: Configuration;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [clientConfiguration, setClientConfiguration] =
     useState<Configuration | null>(null);
