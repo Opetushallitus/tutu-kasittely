@@ -160,6 +160,7 @@ export const TutkintoComponent = ({
               nimi: event.target.value,
             })
           }
+          multiline={true}
           value={currentTutkinto.nimi || ''}
           inputProps={{
             'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
@@ -191,6 +192,7 @@ export const TutkintoComponent = ({
             paaaaineTaiErikoisala: event.target.value,
           })
         }
+        multiline={true}
         value={currentTutkinto.paaaaineTaiErikoisala || ''}
         inputProps={{
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
@@ -205,6 +207,7 @@ export const TutkintoComponent = ({
               oppilaitos: event.target.value,
             })
           }
+          multiline={true}
           value={currentTutkinto.oppilaitos || ''}
           inputProps={{
             'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
