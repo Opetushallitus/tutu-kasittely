@@ -19,7 +19,7 @@ export const mockHakemus = (page: Page) => {
 
 test.beforeEach(async ({ page }) => {
   await mockBasicForHakemus({ page });
-  mockUser(page);
+  await mockUser(page);
   await mockHakemus(page);
   await mockLiitteet(page);
 });
