@@ -9,13 +9,10 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
   OphCheckbox,
-  OphRadioGroup,
   OphSelectFormField,
-  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
-  myonteinenPaatosOptions,
   paatostyyppiOptions,
   sovellettuLakiOptions,
   tutkinnonTasoOptions,
@@ -24,6 +21,7 @@ import {
 import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
+import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -44,6 +42,21 @@ export const PaatosTietoComponent = ({
   useEffect(() => {
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
+
+  const updateMyonteinenPaatos = (value: boolean) => {
+    updatePaatosTietoAction(
+      value
+        ? {
+            ...currentPaatosTieto,
+            myonteinenPaatos: true,
+          }
+        : {
+            ...currentPaatosTieto,
+            myonteinenPaatos: false,
+            tutkintoTaso: undefined,
+          },
+    );
+  };
 
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
     switch (paatosTyyppi) {
@@ -135,32 +148,10 @@ export const PaatosTietoComponent = ({
 
             {currentPaatosTieto.paatosTyyppi === 'Taso' && (
               <>
-                <OphTypography variant="h4">
-                  {t('hakemus.paatos.tutkinto.myonteinenPaatos')}
-                </OphTypography>
-                <OphRadioGroup
-                  labelId="myonteinenPaatos-radio-group-label"
-                  data-testid="paatos-myonteinenPaatos-radio-group"
-                  sx={{ width: '100%' }}
-                  options={myonteinenPaatosOptions(t)}
-                  row
-                  value={
-                    currentPaatosTieto.myonteinenPaatos?.toString() || null
-                  }
-                  onChange={(e) =>
-                    updatePaatosTietoAction(
-                      e.target.value === 'true'
-                        ? {
-                            ...currentPaatosTieto,
-                            myonteinenPaatos: true,
-                          }
-                        : {
-                            ...currentPaatosTieto,
-                            myonteinenPaatos: false,
-                            tutkintoTaso: undefined,
-                          },
-                    )
-                  }
+                <MyonteinenPaatos
+                  t={t}
+                  myonteinenPaatos={currentPaatosTieto.myonteinenPaatos}
+                  updateMyonteinenPaatosAction={updateMyonteinenPaatos}
                 />
                 {currentPaatosTieto.myonteinenPaatos && (
                   <OphSelectFormField

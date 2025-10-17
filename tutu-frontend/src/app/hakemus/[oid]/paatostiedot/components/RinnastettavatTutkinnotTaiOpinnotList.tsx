@@ -45,7 +45,6 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
     ]);
   };
 
-  console.log(tutkinnotTaiOpinnot);
   return (
     <>
       {tutkinnotTaiOpinnot.map((tutkintoTaiOpinto, index) => (
