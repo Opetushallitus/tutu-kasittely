@@ -383,12 +383,22 @@
       "paatostyyppi": {
         "paatos": "Päätös",
         "otsikko": "Päätöstyyppi",
-        "taso": "1 Taso",
-        "kelpoisuus": "2 Kelpoisuus",
-        "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
-        "riittavatOpinnot": "4 Riittävät opinnot",
+        "options": {
+          "taso": "1 Taso",
+          "kelpoisuus": "2 Kelpoisuus",
+          "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
+          "riittavatOpinnot": "4 Riittävät opinnot"
+        },
         "lisaaPaatos": "Lisää päätös",
-        "poistaPaatos": "Poista päätös"
+        "poistaPaatos": "Poista päätös",
+        "taso": {},
+        "kelpoisuus": {},
+        "tiettyTutkintoTaiOpinnot": {
+          "lisaa": "Lisää tutkinto tai opinnot"
+        },
+        "riittavatOpinnot": {
+          "lisaa": "Lisää opinnot"
+        }
       },
       "sovellettuLaki": {
         "otsikko": "Sovellettu laki",
