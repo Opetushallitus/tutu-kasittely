@@ -17,18 +17,18 @@ export const ratkaisutyyppiOptions = (t: TFunction) => [
 ];
 
 export const paatostyyppiOptions = (t: TFunction) => [
-  { value: 'Taso', label: t('hakemus.paatos.paatostyyppi.taso') },
+  { value: 'Taso', label: t('hakemus.paatos.paatostyyppi.options.taso') },
   {
     value: 'Kelpoisuus',
-    label: t('hakemus.paatos.paatostyyppi.kelpoisuus'),
+    label: t('hakemus.paatos.paatostyyppi.options.kelpoisuus'),
   },
   {
     value: 'TiettyTutkintoTaiOpinnot',
-    label: t('hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot'),
+    label: t('hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot'),
   },
   {
     value: 'RiittavatOpinnot',
-    label: t('hakemus.paatos.paatostyyppi.riittavatOpinnot'),
+    label: t('hakemus.paatos.paatostyyppi.options.riittavatOpinnot'),
   },
 ];
 

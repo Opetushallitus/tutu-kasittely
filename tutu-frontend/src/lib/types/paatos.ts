@@ -38,6 +38,7 @@ export type PaatosTieto = {
   lisaaTutkintoPaatostekstiin?: boolean;
   myonteinenPaatos?: boolean;
   tutkintoTaso?: TutkintoTaso;
+  rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
 };
 
 export type Paatos = {
@@ -49,3 +50,12 @@ export type Paatos = {
 };
 
 export type PaatosUpdateCallback = (paatos: Paatos) => void;
+
+export type TutkintoTaiOpinto = {
+  id?: string;
+  paatostietoId?: string;
+  tutkintoTaiOpinto?: string;
+  myonteinenPaatos?: boolean;
+  myonteisenPaatoksenLisavaatimukset?: string;
+  kielteisenPaatoksenPerustelut?: string;
+};
