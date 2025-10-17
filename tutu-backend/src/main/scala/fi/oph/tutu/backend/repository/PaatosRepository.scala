@@ -60,7 +60,7 @@ class PaatosRepository extends BaseResultHandlers {
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
       tutkintoTaiOpinto = r.nextStringOption(),
-      myonteinenPaatos = r.nextBooleanOption(),
+      myonteinenPaatos = r.nextBooleanOption().map(v => BooleanFieldWrapper(Some(v))),
       myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
@@ -195,7 +195,6 @@ class PaatosRepository extends BaseResultHandlers {
   def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] = {
     sqlu"""
         INSERT INTO paatostieto (
-<<<<<<< HEAD
                                   paatos_id,
                                   paatostyyppi,
                                   sovellettulaki,
@@ -205,18 +204,6 @@ class PaatosRepository extends BaseResultHandlers {
                                   myonteisen_paatoksen_lisavaatimukset,
                                   kielteisen_paatoksen_perustelut,
                                   tutkintotaso,
-                                  rinnastettavat_tutkinnot_tai_opinnot,
-=======
-                                  paatos_id, 
-                                  paatostyyppi, 
-                                  sovellettulaki, 
-                                  tutkinto_id, 
-                                  lisaa_tutkinto_paatostekstiin, 
-                                  myonteinen_paatos, 
-                                  myonteisen_paatoksen_lisavaatimukset, 
-                                  kielteisen_paatoksen_perustelut, 
-                                  tutkintotaso, 
->>>>>>> 0a54c16 (OPHTUTU-158-159: rinnastettava_tutkinto_tai_opinto -taulu lisätty)
                                   luoja
                                 )
         VALUES (
@@ -309,7 +296,7 @@ class PaatosRepository extends BaseResultHandlers {
           VALUES (
             ${paatostietoId.toString}::uuid,
             ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
-            ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
+            ${tutkintoTaiOpinto.myonteinenPaatosDefined()}::boolean,
             ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
             ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
             $luoja
@@ -323,7 +310,7 @@ class PaatosRepository extends BaseResultHandlers {
           UPDATE tutkinto_tai_opinto
           SET
             tutkinto_tai_opinto = ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
-            myonteinen_paatos = ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
+            myonteinen_paatos = ${tutkintoTaiOpinto.myonteinenPaatosDefined()}::boolean,
             myonteisen_paatoksen_lisavaatimukset = ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
             kielteisen_paatoksen_perustelut = ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
             muokkaaja = $muokkaaja

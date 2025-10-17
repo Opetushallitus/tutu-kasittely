@@ -68,13 +68,17 @@ case class PaatosTieto(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
-)
+) {
+  def myonteinenPaatosDefined(): Option[Boolean] = {
+    myonteinenPaatos.flatMap(_.value)
+  }
+}
 
 case class TutkintoTaiOpinto(
   id: Option[UUID] = None,
   paatostietoId: Option[UUID] = None,
   tutkintoTaiOpinto: Option[String] = None,
-  myonteinenPaatos: Option[Boolean] = None,
+  myonteinenPaatos: Option[BooleanFieldWrapper] = None,
   // TODO: case classeiksi
   myonteisenPaatoksenLisavaatimukset: Option[String] = None,
   kielteisenPaatoksenPerustelut: Option[String] = None,
