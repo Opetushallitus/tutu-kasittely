@@ -54,7 +54,10 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
             )
         }
 
-        val currentPaatosTiedot   = paatosRepository.haePaatosTiedot(latestSavedPaatos.id.orNull)
+        val currentPaatosTiedot = haePaatos(hakemusOid) match {
+          case Some(paatos) => paatos.paatosTiedot
+          case None         => Nil
+        }
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
             .resolvePaatosTietoModifyOperations(currentPaatosTiedot, partialPaatos.paatosTiedot.getOrElse(Nil)) match {
