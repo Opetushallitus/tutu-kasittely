@@ -16,6 +16,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   val noneHakemus: Option[Hakemus]           = None
   val noneAtaruHakemus: Option[AtaruHakemus] = None
   val nonePerustelu: Option[Perustelu]       = None
+  val noneMuistio: Option[Muistio]           = None
 
   val someHakemus: Option[Hakemus] = Some(
     Hakemus(
@@ -136,7 +137,20 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muokattu = None,
       muokkaaja = None,
       uoRoSisalto = UoRoSisalto(),
-      apSisalto = APSisalto()
+      apSisalto = APSisalto(
+        IMIHalytysTarkastettu = Some(true)
+      )
+    )
+  )
+
+  val someMuistio: Option[Muistio] = Some(
+    Muistio(
+      id = UUID.randomUUID,
+      hakemus_id = UUID.randomUUID,
+      sisalto = "Koulutuksen sisältö muistio -- body",
+      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
+      luoja = "",
+      muokkaaja = ""
     )
   )
 
@@ -145,7 +159,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val result = generate(
       noneHakemus,
       noneAtaruHakemus,
-      nonePerustelu
+      nonePerustelu,
+      noneMuistio
     )
     assert(result.isEmpty)
   }
@@ -155,7 +170,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val result = generate(
       someHakemus,
       someAtaruHakemus,
-      somePerustelu
+      somePerustelu,
+      someMuistio
     )
     assert(!result.isEmpty)
   }
@@ -196,5 +212,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeValmistuminenVahvistettuProducesString(): Unit = {
     val result = haeValmistuminenVahvistettu(someHakemus)
     assert(result.get.contains("myönteinen"))
+  }
+
+  @Test
+  def haeKoulutuksenSisaltoProducesString(): Unit = {
+    val result = haeKoulutuksenSisalto(someMuistio)
+    assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
+  }
+
+  @Test
+  def haeImiHalytyksetTarkastettuProducesString(): Unit = {
+    val result = haeImiHalytyksetTarkastettu(somePerustelu)
+    assert(result.get.contains("kyllä"))
   }
 }
