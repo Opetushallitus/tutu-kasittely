@@ -146,6 +146,7 @@ export default function ApPage() {
         label={t(
           'hakemus.perustelu.ap.todistusEUKansalaisuuteenRinnasteisestaAsemasta',
         )}
+        multiline={true}
         value={apSisalto?.todistusEUKansalaisuuteenRinnasteisestaAsemasta ?? ''}
         onChange={(event) => {
           updateTextField(

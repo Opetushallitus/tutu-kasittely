@@ -120,7 +120,7 @@ const KuvausInput = ({
   setKuvaus: (updatedKuvaus: string) => void;
   kuvausLabel?: string;
 }) => {
-  const [minRows, multiline] = kuvausLabel ? [3, true] : [1, false];
+  const minRows = kuvausLabel ? 3 : 1;
   return (
     <TableCell>
       <OphInputFormField
@@ -131,7 +131,7 @@ const KuvausInput = ({
           width: '100%',
         }}
         label={kuvausLabel}
-        multiline={multiline}
+        multiline={true}
         minRows={minRows}
         value={kuvaus}
         onChange={(event) => setKuvaus(event.target.value)}
