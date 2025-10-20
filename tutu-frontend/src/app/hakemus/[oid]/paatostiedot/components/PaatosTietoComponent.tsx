@@ -176,11 +176,11 @@ export const PaatosTietoComponent = ({
         currentPaatosTieto.paatosTyyppi === 'TiettyTutkintoTaiOpinnot') && (
         <RinnastettavatTutkinnotTaiOpinnotList
           t={t}
-          paatosTyyppi={currentPaatosTieto.paatosTyyppi}
-          paatostietoId={currentPaatosTieto.id!}
+          paatosTieto={currentPaatosTieto}
           rinnastettavatTutkinnotTaiOpinnot={
             currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot
           }
+          updatePaatosTietoAction={updatePaatosTietoAction}
         />
       )}
     </Stack>

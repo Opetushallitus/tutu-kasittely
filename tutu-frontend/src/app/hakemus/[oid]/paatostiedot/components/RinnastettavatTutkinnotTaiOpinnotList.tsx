@@ -1,7 +1,7 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Paatostyyppi, TutkintoTaiOpinto } from '@/src/lib/types/paatos';
+import { PaatosTieto, TutkintoTaiOpinto } from '@/src/lib/types/paatos';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { Add } from '@mui/icons-material';
 import React, { useEffect } from 'react';
@@ -9,20 +9,22 @@ import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
   paatostietoId: paatostietoId,
+  myonteisenPaatoksenLisavaatimukset: '{}',
+  kielteisenPaatoksenPerustelut: '{}',
 });
 
-interface RinnastettavatTutkinnotTaiOpinnotListProps {
+type RinnastettavatTutkinnotTaiOpinnotListProps = {
   t: TFunction;
-  paatosTyyppi: Paatostyyppi;
-  paatostietoId: string;
+  paatosTieto: PaatosTieto;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
-}
+  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+};
 
 export const RinnastettavatTutkinnotTaiOpinnotList = ({
   t,
-  paatosTyyppi,
-  paatostietoId,
+  paatosTieto,
   rinnastettavatTutkinnotTaiOpinnot,
+  updatePaatosTietoAction,
 }: RinnastettavatTutkinnotTaiOpinnotListProps) => {
   const [tutkinnotTaiOpinnot, setTutkinnotTaiOpinnot] = React.useState<
     TutkintoTaiOpinto[]
@@ -33,28 +35,57 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
     setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
   }, [rinnastettavatTutkinnotTaiOpinnot]);
   const tyyppi =
-    paatosTyyppi === 'RiittavatOpinnot'
+    paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
       ? 'riittavatOpinnot'
       : 'tiettyTutkintoTaiOpinnot';
 
-  const lisaaTutkintoTaiOpinto = () => {
-    setTutkinnotTaiOpinnot((prevTutkinnotTaiOpinnot) => [
-      ...prevTutkinnotTaiOpinnot.concat([
-        emptyTutkintoTaiOpinto(paatostietoId),
-      ]),
-    ]);
+  const updateTutkintoTaiOpinto = (
+    updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
+    index: number,
+  ) => {
+    const newTutkinnotTaiOpinnot = [...tutkinnotTaiOpinnot];
+    newTutkinnotTaiOpinnot[index] = updatedTutkintoTaiOpinto;
+    setTutkinnotTaiOpinnot(newTutkinnotTaiOpinnot);
+    updatePaatosTietoAction({
+      ...paatosTieto,
+      rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
+    });
+  };
+
+  const addTutkintoTaiOpinto = () => {
+    setTutkinnotTaiOpinnot((oldTutkinnotTaiOpinnot) =>
+      oldTutkinnotTaiOpinnot.concat([emptyTutkintoTaiOpinto(paatosTieto.id!)]),
+    );
+  };
+
+  const deleteTutkintoTaiOpinto = (id: string | undefined) => {
+    const newTutkinnotTaiOpinnot = id
+      ? tutkinnotTaiOpinnot.filter(
+          (tutkintoTaiOpinto) => tutkintoTaiOpinto.id !== id,
+        )
+      : tutkinnotTaiOpinnot.slice(0, -1);
+    setTutkinnotTaiOpinnot(newTutkinnotTaiOpinnot);
+    updatePaatosTietoAction({
+      ...paatosTieto,
+      rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
+    });
   };
 
   return (
     <>
-      {tutkinnotTaiOpinnot.map((tutkintoTaiOpinto, index) => (
-        <React.Fragment key={index}>
-          <RinnastettavaTutkintoTaiOpintoComponent
-            t={t}
-            rinnastettavaTutkintoTaiOpinto={tutkintoTaiOpinto}
-          />
-        </React.Fragment>
-      ))}
+      {tutkinnotTaiOpinnot &&
+        tutkinnotTaiOpinnot.map((tutkintoTaiOpinto, index) => (
+          <React.Fragment key={index}>
+            <RinnastettavaTutkintoTaiOpintoComponent
+              t={t}
+              index={index}
+              tutkintoTaiOpinto={tutkintoTaiOpinto}
+              paatosTyyppi={tyyppi}
+              updateTutkintoTaiOpintoAction={updateTutkintoTaiOpinto}
+              deleteTutkintoTaiOpintoAction={deleteTutkintoTaiOpinto}
+            />
+          </React.Fragment>
+        ))}
       <OphButton
         sx={{
           alignSelf: 'flex-start',
@@ -62,7 +93,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
         data-testid={`lisaa-tutkinto-button`}
         variant="outlined"
         startIcon={<Add />}
-        onClick={() => lisaaTutkintoTaiOpinto()}
+        onClick={() => addTutkintoTaiOpinto()}
       >
         {t(`hakemus.paatos.paatostyyppi.${tyyppi}.lisaa`)}
       </OphButton>

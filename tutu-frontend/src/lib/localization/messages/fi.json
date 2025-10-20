@@ -393,10 +393,16 @@
         "taso": {},
         "kelpoisuus": {},
         "tiettyTutkintoTaiOpinnot": {
-          "lisaa": "Lisää tutkinto tai opinnot"
+          "otsikko": "Tutkinto tai opinnot ",
+          "lisaa": "Lisää tutkinto tai opinnot",
+          "poista": "Poista tutkinto tai opinnot",
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettava tutkinto tai opinnot"
         },
         "riittavatOpinnot": {
-          "lisaa": "Lisää opinnot"
+          "otsikko": "Opinnot ",
+          "lisaa": "Lisää opinnot",
+          "poista": "Poista opinnot",
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettavat opinnot"
         }
       },
       "sovellettuLaki": {
