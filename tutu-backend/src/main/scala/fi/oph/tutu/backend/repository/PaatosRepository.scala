@@ -149,18 +149,40 @@ class PaatosRepository extends BaseResultHandlers {
     modifyData: PaatosTietoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
+
+    val tutkinnotTaiOpinnotActions = {
+      modifyData.muutetut.flatMap { pt =>
+        val paatostietoId     = pt.id.getOrElse(UUID.randomUUID())
+        val existingTutkinnot = haeTutkinnotTaiOpinnot(paatostietoId)
+        val existingIds       = existingTutkinnot.flatMap(_.id).toSet
+        val updatedIds        = pt.rinnastettavatTutkinnotTaiOpinnot.flatMap(_.id).toSet
+        val idsToDelete       = existingIds.diff(updatedIds)
+
+        val deleteActions = idsToDelete
+          .map(id => poistaTutkintoTaiOpinto(id)) ++
+          modifyData.poistetut.flatMap { id =>
+            haeTutkinnotTaiOpinnot(id).flatMap { tto =>
+              tto.id.map(poistaTutkintoTaiOpinto)
+            }
+          }
+
+        val updateActions = pt.rinnastettavatTutkinnotTaiOpinnot
+          .filter(tto => tto.id.isDefined)
+          .map(tto => paivitaTutkintoTaiOpinto(tto, luojaTaiMuokkaaja))
+
+        val addActions = pt.rinnastettavatTutkinnotTaiOpinnot
+          .filter(tto => tto.id.isEmpty)
+          .map(tto => lisaaTutkintoTaiOpinto(paatostietoId, tto, luojaTaiMuokkaaja))
+
+        deleteActions ++ updateActions ++ addActions
+      }
+    }
+
     val paatostietoActions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
 
-    val modifiedTutkinnotActions = modifyData.muutetut.flatMap(pt =>
-      pt.rinnastettavatTutkinnotTaiOpinnot.map(tto =>
-        if (tto.id.isDefined) paivitaTutkintoTaiOpinto(tto, luojaTaiMuokkaaja)
-        else lisaaTutkintoTaiOpinto(pt.id.get, tto, luojaTaiMuokkaaja)
-      )
-    )
-
-    val combined = db.combineIntDBIOs(paatostietoActions ++ modifiedTutkinnotActions)
+    val combined = db.combineIntDBIOs(tutkinnotTaiOpinnotActions ++ paatostietoActions)
 
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
       case Success(_) => ()
@@ -273,33 +295,6 @@ class PaatosRepository extends BaseResultHandlers {
         DELETE FROM paatostieto
         WHERE id = ${id.toString}::uuid
       """
-
-  /**
-   * Tallentaa/poistaa uudet/muuttuneet/poistetut tutkinnot tai opinnot
-   *
-   * @param paatostietoId
-   * vastaavan perustelun uuid
-   * @param modifyData
-   * päätöstietojen muokkaustiedot
-   * @param luojaTaiMuokkaaja
-   * pyynnön luoja tai muokkaaja
-   */
-  def suoritaTutkintojenTaiOpintojenModifiointi(
-    paatostietoId: UUID,
-    modifyData: TutkintoTaiOpintoModifyData,
-    luojaTaiMuokkaaja: String
-  ): Unit = {
-    val actions = modifyData.uudet.map(tto => lisaaTutkintoTaiOpinto(paatostietoId, tto, luojaTaiMuokkaaja)) ++
-      modifyData.muutetut.map(tto => paivitaTutkintoTaiOpinto(tto, luojaTaiMuokkaaja)) ++
-      modifyData.poistetut.map(poistaTutkintoTaiOpinto)
-    val combined = db.combineIntDBIOs(actions)
-    db.runTransactionally(combined, "suorita_tutkintojen_tai_opintojen_modifiointi") match {
-      case Success(_) => ()
-      case Failure(e) =>
-        LOG.error(s"Virhe tutkintojen tai opintojen modifioinnissa: ${e.getMessage}", e)
-        throw new RuntimeException(s"Virhe tutkintojen tai opintojen modifioinnissa: ${e.getMessage}", e)
-    }
-  }
 
   def lisaaTutkintoTaiOpinto(paatostietoId: UUID, tutkintoTaiOpinto: TutkintoTaiOpinto, luoja: String): DBIO[Int] =
     sqlu"""
