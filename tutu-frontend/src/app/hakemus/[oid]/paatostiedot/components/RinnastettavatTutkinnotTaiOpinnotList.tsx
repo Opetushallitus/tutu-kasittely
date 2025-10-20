@@ -90,7 +90,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
         sx={{
           alignSelf: 'flex-start',
         }}
-        data-testid={`lisaa-tutkinto-button`}
+        data-testid={`lisaa-tutkinto-tai-opinto-button`}
         variant="outlined"
         startIcon={<Add />}
         onClick={() => addTutkintoTaiOpinto()}

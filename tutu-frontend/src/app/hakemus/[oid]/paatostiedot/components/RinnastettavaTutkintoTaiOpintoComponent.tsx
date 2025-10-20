@@ -54,7 +54,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           sx={{
             alignSelf: 'flex-end',
           }}
-          data-testid={`poista-${paatosTyyppi}-button`}
+          data-testid={`poista-tutkinto-tai-opinto-button`}
           variant="text"
           startIcon={<DeleteOutline />}
           onClick={() => deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id)}
