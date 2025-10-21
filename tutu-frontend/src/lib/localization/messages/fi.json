@@ -180,6 +180,7 @@
       "mallejaTutkinnoista": {
         "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
         "lahde": "Lähde",
+        "vastaavuus": "Vastaavuus",
         "kuvaus": "Kuvaa lyhyesti, vastaako löytämäsi asiakirjamalli hakemuksen asiakirjaa",
         "ece": "ECE",
         "ukEnic": "UK Enic",

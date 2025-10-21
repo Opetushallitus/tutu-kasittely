@@ -17,8 +17,10 @@ import {
   OphFormFieldWrapper,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
-import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import React, { useEffect, useState } from 'react';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { wrapField } from '@/src/lib/types/fieldWrapper';
 import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
@@ -48,13 +50,45 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   deleteTutkintoTaiOpintoAction,
   tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const updateMyonteinenPaatos = (myonteinenPaatos: boolean) => {
+  const theme = useTheme();
+
+  // Local optimistic state for immediate UI feedback
+  const [optimisticValue, setOptimisticValue] = useState<
+    boolean | null | undefined
+  >(undefined);
+
+  // Use optimistic value if set, otherwise use prop value
+  const currentMyonteinenPaatos =
+    optimisticValue !== undefined
+      ? optimisticValue
+      : tutkintoTaiOpinto?.myonteinenPaatos;
+
+  // Clear optimistic state when prop value catches up
+  useEffect(() => {
+    if (optimisticValue !== undefined) {
+      if (tutkintoTaiOpinto?.myonteinenPaatos === optimisticValue) {
+        setOptimisticValue(undefined);
+      }
+    }
+  }, [tutkintoTaiOpinto?.myonteinenPaatos, optimisticValue]);
+
+  const updateMyonteinenPaatos = (value: boolean | null) => {
+    // Set local optimistic value immediately
+    setOptimisticValue(value);
+
+    // Send update to server
     updateTutkintoTaiOpintoAction(
-      { ...tutkintoTaiOpinto, myonteinenPaatos: myonteinenPaatos },
+      {
+        ...tutkintoTaiOpinto,
+        ...(wrapField(
+          'myonteinenPaatos',
+          value,
+        ) as unknown as Partial<TutkintoTaiOpinto>),
+      },
       index,
     );
   };
-  const theme = useTheme();
+
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
 
@@ -184,11 +218,19 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           </Select>
         )}
       />
-      <MyonteinenPaatos
-        t={t}
-        myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
-        updateMyonteinenPaatosAction={updateMyonteinenPaatos}
+
+      <OphRadioGroupWithClear
+        label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
+        labelId={`myonteinenPaatos-radio-group-${index}-label`}
+        data-testid={`paatos-myonteinenPaatos-radio-group-${index}`}
+        labelVariant="h4"
+        options={myonteinenPaatosOptions(t)}
+        row
+        value={currentMyonteinenPaatos?.toString() ?? ''}
+        onChange={(e) => updateMyonteinenPaatos(e.target.value === 'true')}
+        onClear={() => updateMyonteinenPaatos(null)}
       />
+
       <Divider orientation={'horizontal'} />
     </Stack>
   );
