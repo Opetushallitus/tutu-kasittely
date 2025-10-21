@@ -371,6 +371,11 @@
       "hyvaksymisPaiva": "Hyväksymispäivä",
       "ratkaisuJaPaatos": "Ratkaisu ja päätös",
       "seut": "SEUT-arviointi tehty",
+      "modal": {
+        "otsikko": "Vahvista päätöksen poisto",
+        "teksti": "Olet poistamassa päätöstä. Vahvista poistaminen.",
+        "poistaPaatos": "Poista päätös"
+      },
       "ratkaisutyyppi": {
         "otsikko": "Ratkaisutyyppi",
         "paatos": "Päätös",
@@ -396,13 +401,23 @@
           "otsikko": "Tutkinto tai opinnot ",
           "lisaa": "Lisää tutkinto tai opinnot",
           "poista": "Poista tutkinto tai opinnot",
-          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettava tutkinto tai opinnot"
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettava tutkinto tai opinnot",
+          "modal": {
+            "otsikko": "Vahvista tutkinnon tai opintojen poisto",
+            "teksti": "Olet poistamassa tutkintoa tai opintoja. Vahvista poistaminen.",
+            "poistaTutkintoTaiOpinnot": "Poista tutkinto tai opinnot"
+          }
         },
         "riittavatOpinnot": {
           "otsikko": "Opinnot ",
           "lisaa": "Lisää opinnot",
           "poista": "Poista opinnot",
-          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettavat opinnot"
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettavat opinnot",
+          "modal": {
+            "otsikko": "Vahvista opintojen poisto",
+            "teksti": "Olet poistamassa opintoja. Vahvista poistaminen.",
+            "poistaTutkintoTaiOpinnot": "Poista opinnot"
+          }
         }
       },
       "sovellettuLaki": {

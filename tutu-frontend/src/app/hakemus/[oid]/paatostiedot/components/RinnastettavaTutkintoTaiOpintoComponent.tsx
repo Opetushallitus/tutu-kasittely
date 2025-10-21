@@ -19,7 +19,7 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
     updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
     index: number,
   ) => void;
-  deleteTutkintoTaiOpintoAction: (id: string | undefined) => void;
+  setDeleteModalOpen: (value: React.SetStateAction<boolean>) => void;
 }
 
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
@@ -28,7 +28,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   tutkintoTaiOpinto,
   paatosTyyppi,
   updateTutkintoTaiOpintoAction,
-  deleteTutkintoTaiOpintoAction,
+  setDeleteModalOpen,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
   const updateMyonteinenPaatos = (myonteinenPaatos: boolean) => {
     updateTutkintoTaiOpintoAction(
@@ -57,7 +57,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           data-testid={`poista-tutkinto-tai-opinto-button`}
           variant="text"
           startIcon={<DeleteOutline />}
-          onClick={() => deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id)}
+          onClick={() => setDeleteModalOpen(true)}
         >
           {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
         </OphButton>
