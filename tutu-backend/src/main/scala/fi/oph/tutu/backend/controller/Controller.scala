@@ -50,6 +50,11 @@ class Controller(
   module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
   module.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
   module.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())
+  // Generic wrapper for all three-state boolean fields (NULL/true/false)
+  module.addDeserializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperDeserializer())
+  module.addSerializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperSerializer())
+  // Generic wrapper for all three-state string fields (NULL/value1/value2/...)
+  module.addDeserializer(classOf[StringFieldWrapper], new StringFieldWrapperDeserializer())
   mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)

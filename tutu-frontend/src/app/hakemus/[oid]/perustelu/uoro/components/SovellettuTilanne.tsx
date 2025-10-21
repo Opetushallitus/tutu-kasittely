@@ -4,10 +4,10 @@ import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   OphCheckbox,
   OphInputFormField,
-  OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { sovellettuTilanneBooleanFields } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import React from 'react';
 import {
@@ -91,7 +91,7 @@ export const SovellettuTilanne = ({
             if (e.target.checked) {
               updatePerusteluUoRoAction(key, {
                 checked: true,
-                value: e.target.value,
+                value: null,
               });
             } else
               updatePerusteluUoRoAction(key, {
@@ -177,17 +177,24 @@ export const SovellettuTilanne = ({
             onChange={(e) => updatePerusteluUoRoChecked(type, key, e)}
           />
           {checked && options && type === 'sovellettuTilanne' && (
-            <OphRadioGroup
+            <OphRadioGroupWithClear
               labelId="sovellettu-tilanne-radio-group-label"
               data-testid={`radio-group-${key as string}`}
               sx={{ paddingLeft: 4 }}
               options={options as OphRadioOption<string>[]}
               row
+              clearButtonPlacement="inline"
               value={radioValue || ''}
               onChange={(e) =>
                 updatePerusteluUoRoAction(key, {
                   checked: true,
                   value: e.target.value,
+                })
+              }
+              onClear={() =>
+                updatePerusteluUoRoAction(key, {
+                  checked: true,
+                  value: null,
                 })
               }
             />
@@ -258,33 +265,45 @@ export const SovellettuTilanne = ({
               </Stack>
               {Object.entries(SovellettuTilanneOpetettavatAineetOptions).map(
                 ([key, options]) => (
-                  <Stack
+                  <OphRadioGroupWithClear
                     key={key}
-                    direction="row"
+                    label={t(
+                      `hakemus.perustelu.uoro.sovellettuTilanne.aineet.${key}`,
+                    )}
+                    labelId={`sovellettu-tilanne-radio-group-label-${key}`}
+                    labelVariant="body1"
+                    data-testid={`radio-group-${key}`}
                     sx={{ paddingLeft: 4 }}
-                    spacing={2}
-                  >
-                    <OphTypography variant="body1" sx={{ minWidth: 150 }}>
-                      {t(
-                        `hakemus.perustelu.uoro.sovellettuTilanne.aineet.${key}`,
-                      )}
-                    </OphTypography>
-                    <OphRadioGroup
-                      key={key}
-                      labelId={`sovellettu-tilanne-radio-group-label-${key}`}
-                      data-testid={`radio-group-${key}`}
-                      options={options}
-                      row
-                      value={
-                        uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.aineet?.find(
-                          (item) => item?.aine === key,
-                        )?.value || ''
-                      }
-                      onChange={(e) =>
-                        updatePerusteluUoRoAine(e, key, e.target.value)
-                      }
-                    />{' '}
-                  </Stack>
+                    options={options}
+                    row
+                    clearButtonPlacement="inline"
+                    value={
+                      uoRoSisalto?.sovellettuOpetettavanAineenOpinnot?.aineet?.find(
+                        (item) => item?.aine === key,
+                      )?.value || ''
+                    }
+                    onChange={(e) =>
+                      updatePerusteluUoRoAine(e, key, e.target.value)
+                    }
+                    onClear={() => {
+                      const aineet =
+                        uoRoSisalto?.sovellettuOpetettavanAineenOpinnot
+                          ?.aineet || [];
+                      const aineetToUpdate = aineet.filter(
+                        (item) => item.aine !== key,
+                      );
+                      updatePerusteluUoRoAction(
+                        'sovellettuOpetettavanAineenOpinnot',
+                        {
+                          checked: true,
+                          kieliAine:
+                            uoRoSisalto?.sovellettuOpetettavanAineenOpinnot
+                              ?.kieliAine || [],
+                          aineet: aineetToUpdate,
+                        },
+                      );
+                    }}
+                  />
                 ),
               )}
             </>

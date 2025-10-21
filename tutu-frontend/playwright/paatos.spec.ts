@@ -396,9 +396,9 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   ]);
 
   const myonteinenPaatosPostData = req.postDataJSON();
-  expect(myonteinenPaatosPostData.paatosTiedot[0].myonteinenPaatos).toEqual(
-    true,
-  );
+  expect(myonteinenPaatosPostData.paatosTiedot[0].myonteinenPaatos).toEqual({
+    myonteinenPaatos: true,
+  });
 
   const tutkintoTasoDropdown = page.getByTestId('paatos-tutkintotaso-dropdown');
   await expect(tutkintoTasoDropdown).toBeVisible();
