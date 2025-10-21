@@ -110,7 +110,6 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   ]);
 
   const tutkintoTasoPostData = poistaTutkintoReq.postDataJSON();
-  console.log(tutkintoTasoPostData);
   expect(
     tutkintoTasoPostData.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot,
   ).toEqual([]);
