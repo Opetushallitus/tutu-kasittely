@@ -60,10 +60,24 @@ case class PaatosTieto(
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
   myonteinenPaatos: Option[Boolean] = None,
   // TODO: case classeiksi
-  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
+  myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
   kielteisenPaatoksenPerustelut: Option[String] = None,
   tutkintoTaso: Option[TutkintoTaso],
-  rinnastettavatTutkinnotTaiOpinnot: Option[Seq[String]] = None,
+  rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
+  luotu: Option[LocalDateTime] = None,
+  luoja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None
+)
+
+case class TutkintoTaiOpinto(
+  id: Option[UUID] = None,
+  paatostietoId: Option[UUID] = None,
+  tutkintoTaiOpinto: Option[String] = None,
+  myonteinenPaatos: Option[Boolean] = None,
+  // TODO: case classeiksi
+  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
+  kielteisenPaatoksenPerustelut: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
@@ -73,5 +87,11 @@ case class PaatosTieto(
 case class PaatosTietoModifyData(
   uudet: Seq[PaatosTieto] = Seq.empty,
   muutetut: Seq[PaatosTieto] = Seq.empty,
+  poistetut: Seq[UUID] = Seq.empty
+)
+
+case class TutkintoTaiOpintoModifyData(
+  uudet: Seq[TutkintoTaiOpinto] = Seq.empty,
+  muutetut: Seq[TutkintoTaiOpinto] = Seq.empty,
   poistetut: Seq[UUID] = Seq.empty
 )

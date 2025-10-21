@@ -22,12 +22,6 @@ class PaatosRepository extends BaseResultHandlers {
 
   final val DB_TIMEOUT = 30.seconds
 
-  private def mapFromTextArray(dbValue: Option[String]): Option[Seq[String]] =
-    dbValue.map(_.replaceAll("[{}\"]", "").split(",").map(_.trim).toSeq)
-
-  private def mapToTextArray(scalaValue: Option[Seq[String]]): Option[String] =
-    scalaValue.map(_.mkString("{", ",", "}"))
-
   implicit val getPaatosResult: GetResult[Paatos] = GetResult(r =>
     Paatos(
       id = Some(r.nextObject().asInstanceOf[UUID]),
@@ -54,7 +48,21 @@ class PaatosRepository extends BaseResultHandlers {
       myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       tutkintoTaso = Option(TutkintoTaso.fromString(r.nextString())),
-      rinnastettavatTutkinnotTaiOpinnot = mapFromTextArray(r.nextStringOption()),
+      luotu = Some(r.nextTimestamp().toLocalDateTime),
+      luoja = Some(r.nextString()),
+      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
+      muokkaaja = r.nextStringOption()
+    )
+  )
+
+  implicit val getTutkintoTaiOpintoResult: GetResult[TutkintoTaiOpinto] = GetResult(r =>
+    TutkintoTaiOpinto(
+      id = Some(r.nextObject().asInstanceOf[UUID]),
+      paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
+      tutkintoTaiOpinto = r.nextStringOption(),
+      myonteinenPaatos = r.nextBooleanOption(),
+      myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
+      kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -141,10 +149,41 @@ class PaatosRepository extends BaseResultHandlers {
     modifyData: PaatosTietoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    val actions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
+
+    val tutkinnotTaiOpinnotActions = {
+      modifyData.muutetut.flatMap { pt =>
+        val paatostietoId     = pt.id.getOrElse(UUID.randomUUID())
+        val existingTutkinnot = haeTutkinnotTaiOpinnot(paatostietoId)
+        val existingIds       = existingTutkinnot.flatMap(_.id).toSet
+        val updatedIds        = pt.rinnastettavatTutkinnotTaiOpinnot.flatMap(_.id).toSet
+        val idsToDelete       = existingIds.diff(updatedIds)
+
+        val deleteActions = idsToDelete
+          .map(id => poistaTutkintoTaiOpinto(id)) ++
+          modifyData.poistetut.flatMap { id =>
+            haeTutkinnotTaiOpinnot(id).flatMap { tto =>
+              tto.id.map(poistaTutkintoTaiOpinto)
+            }
+          }
+
+        val updateActions = pt.rinnastettavatTutkinnotTaiOpinnot
+          .filter(tto => tto.id.isDefined)
+          .map(tto => paivitaTutkintoTaiOpinto(tto, luojaTaiMuokkaaja))
+
+        val addActions = pt.rinnastettavatTutkinnotTaiOpinnot
+          .filter(tto => tto.id.isEmpty)
+          .map(tto => lisaaTutkintoTaiOpinto(paatostietoId, tto, luojaTaiMuokkaaja))
+
+        deleteActions ++ updateActions ++ addActions
+      }
+    }
+
+    val paatostietoActions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
-    val combined = db.combineIntDBIOs(actions)
+
+    val combined = db.combineIntDBIOs(tutkinnotTaiOpinnotActions ++ paatostietoActions)
+
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
       case Success(_) => ()
       case Failure(e) =>
@@ -153,7 +192,7 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] =
+  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] = {
     sqlu"""
         INSERT INTO paatostieto (
                                   paatos_id, 
@@ -165,7 +204,6 @@ class PaatosRepository extends BaseResultHandlers {
                                   myonteisen_paatoksen_lisavaatimukset, 
                                   kielteisen_paatoksen_perustelut, 
                                   tutkintotaso, 
-                                  rinnastettavat_tutkinnot_tai_opinnot, 
                                   luoja
                                 )
         VALUES (
@@ -178,9 +216,26 @@ class PaatosRepository extends BaseResultHandlers {
           ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
           ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
           ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
-          ${mapToTextArray(paatosTieto.rinnastettavatTutkinnotTaiOpinnot)}::text[],
           $luoja
         )"""
+  }
+
+  def tallennaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): PaatosTieto = {
+    try {
+      db.run(
+        lisaaPaatosTieto(paatosId, paatosTieto, luoja),
+        "tallenna_paatostieto"
+      )
+      paatosTieto
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Päätöstiedon tallennus epäonnistui: $e")
+        throw new RuntimeException(
+          s"Päätöstiedon tallennus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 
   private def paivitaPaatosTieto(
     paatosTieto: PaatosTieto,
@@ -197,9 +252,6 @@ class PaatosRepository extends BaseResultHandlers {
           myonteisen_paatoksen_lisavaatimukset = ${paatosTieto.myonteisenPaatoksenLisavaatimukset}::jsonb,
           kielteisen_paatoksen_perustelut = ${paatosTieto.kielteisenPaatoksenPerustelut}::jsonb,
           tutkintotaso = ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
-          rinnastettavat_tutkinnot_tai_opinnot = ${mapToTextArray(
-        paatosTieto.rinnastettavatTutkinnotTaiOpinnot
-      )}::text[],
           muokkaaja = $muokkaaja
         WHERE id = ${paatosTieto.id.get.toString}::uuid
       """
@@ -230,4 +282,65 @@ class PaatosRepository extends BaseResultHandlers {
         DELETE FROM paatostieto
         WHERE id = ${id.toString}::uuid
       """
+
+  def lisaaTutkintoTaiOpinto(paatostietoId: UUID, tutkintoTaiOpinto: TutkintoTaiOpinto, luoja: String): DBIO[Int] =
+    sqlu"""
+          INSERT INTO tutkinto_tai_opinto (
+                                            paatostieto_id,
+                                            tutkinto_tai_opinto,
+                                            myonteinen_paatos,
+                                            myonteisen_paatoksen_lisavaatimukset,
+                                            kielteisen_paatoksen_perustelut,
+                                            luoja
+                                          )
+          VALUES (
+            ${paatostietoId.toString}::uuid,
+            ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
+            ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
+            ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+            ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
+            $luoja
+          )"""
+
+  private def paivitaTutkintoTaiOpinto(
+    tutkintoTaiOpinto: TutkintoTaiOpinto,
+    muokkaaja: String
+  ): DBIO[Int] =
+    sqlu"""
+          UPDATE tutkinto_tai_opinto
+          SET
+            tutkinto_tai_opinto = ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
+            myonteinen_paatos = ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
+            myonteisen_paatoksen_lisavaatimukset = ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+            kielteisen_paatoksen_perustelut = ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
+            muokkaaja = $muokkaaja
+          WHERE id = ${tutkintoTaiOpinto.id.get.toString}::uuid
+        """
+
+  def haeTutkinnotTaiOpinnot(paatostietoId: UUID): Seq[TutkintoTaiOpinto] = {
+    try {
+      db.run(
+        sql"""
+            SELECT *
+            FROM tutkinto_tai_opinto
+            WHERE paatostieto_id = ${paatostietoId.toString}::uuid
+            ORDER BY luotu
+          """.as[TutkintoTaiOpinto],
+        "hae_tutkinnot_tai_opinnot"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Tutkintojen tai opintojen haku epäonnistui: $e")
+        throw new RuntimeException(
+          s"Tutkintojen tai opintojen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  private def poistaTutkintoTaiOpinto(id: UUID): DBIO[Int] =
+    sqlu"""
+          DELETE FROM tutkinto_tai_opinto
+          WHERE id = ${id.toString}::uuid
+        """
 }

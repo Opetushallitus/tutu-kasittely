@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{HakemusOid, Paatos, PaatosTietoModifyData, PartialPaatos}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
@@ -17,8 +17,15 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
         {
           paatosRepository.haePaatosTiedot(paatos.id.get) match {
             case paatostiedot if paatostiedot.nonEmpty =>
+              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
+                paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get) match {
+                  case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
+                    paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot)
+                  case _ => paatosTieto
+                }
+              }
               Some(
-                paatos.copy(paatosTiedot = paatostiedot)
+                paatos.copy(paatosTiedot = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot)
               )
             case _ => Some(paatos)
           }
@@ -47,7 +54,10 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
             )
         }
 
-        val currentPaatosTiedot   = paatosRepository.haePaatosTiedot(latestSavedPaatos.id.orNull)
+        val currentPaatosTiedot = haePaatos(hakemusOid) match {
+          case Some(paatos) => paatos.paatosTiedot
+          case None         => Nil
+        }
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
             .resolvePaatosTietoModifyOperations(currentPaatosTiedot, partialPaatos.paatosTiedot.getOrElse(Nil)) match {
@@ -68,9 +78,13 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
         Some(
           latestSavedPaatos.copy(
             paatosTiedot =
-              if (newlySavedPaatosTiedot.nonEmpty)
-                newlySavedPaatosTiedot
-              else
+              if (newlySavedPaatosTiedot.nonEmpty) {
+                newlySavedPaatosTiedot.map(paatosTieto =>
+                  paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot =
+                    paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get)
+                  )
+                )
+              } else
                 latestSavedPaatos.paatosTiedot
           )
         )
