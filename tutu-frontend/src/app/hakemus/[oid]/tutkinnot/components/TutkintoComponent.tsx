@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import { Divider, Stack, Box } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
-import { ModalComponent } from '@/src/components/ModalComponent';
+import { ConfirmationModal } from '@/src/components/ConfirmationModal';
 import { OphSelectOption } from '@/src/components/OphSelect';
 import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -107,7 +107,7 @@ export const TutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <ModalComponent
+      <ConfirmationModal
         open={deleteModalOpen}
         header={t('hakemus.tutkinnot.modal.otsikko')}
         content={t('hakemus.tutkinnot.modal.teksti')}

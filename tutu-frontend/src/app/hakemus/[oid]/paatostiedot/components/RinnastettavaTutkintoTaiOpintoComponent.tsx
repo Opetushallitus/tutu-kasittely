@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { DeleteOutline } from '@mui/icons-material';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
@@ -19,7 +20,8 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
     updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
     index: number,
   ) => void;
-  setDeleteModalOpen: (value: React.SetStateAction<boolean>) => void;
+  deleteTutkintoTaiOpintoAction: (id: string | undefined) => void;
+  tyyppi: string;
 }
 
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
@@ -28,7 +30,8 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   tutkintoTaiOpinto,
   paatosTyyppi,
   updateTutkintoTaiOpintoAction,
-  setDeleteModalOpen,
+  deleteTutkintoTaiOpintoAction,
+  tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
   const updateMyonteinenPaatos = (myonteinenPaatos: boolean) => {
     updateTutkintoTaiOpintoAction(
@@ -37,6 +40,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     );
   };
   const theme = useTheme();
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   return (
     <Stack direction={'column'} gap={2} sx={{ width: '100%' }}>
@@ -57,7 +61,17 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           data-testid={`poista-tutkinto-tai-opinto-button`}
           variant="text"
           startIcon={<DeleteOutline />}
-          onClick={() => setDeleteModalOpen(true)}
+          onClick={() =>
+            showConfirmation({
+              header: t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.otsikko`),
+              content: t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.teksti`),
+              confirmButtonText: t(
+                `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
+              ),
+              handleConfirm: () =>
+                deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id),
+            })
+          }
         >
           {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
         </OphButton>

@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -7,7 +8,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { Stack, styled } from '@mui/material';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@/src/components/IconButton';
 
@@ -29,24 +30,67 @@ const StyledIconButton = styled(IconButton)(() => ({
   top: '20px',
 }));
 
-export type ModalComponentProps = {
+export type ConfirmationModalProps = {
   open: boolean;
   header: string;
   content: string;
   confirmButtonText: string;
   handleConfirm: () => void;
-  handleClose: () => void;
-  t: TFunction;
+  handleClose?: () => void;
 };
-export const ModalComponent = ({
+
+type ConfirmationModalContextValue = {
+  showConfirmation: (props: Omit<ConfirmationModalProps, 'open'>) => void;
+  hideConfirmation: () => void;
+};
+
+export const ConfirmationModalContext =
+  React.createContext<ConfirmationModalContextValue | null>(null);
+
+export const ConfirmationModalProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [modalProps, setModalProps] =
+    React.useState<ConfirmationModalProps | null>(null);
+
+  const contextValue: ConfirmationModalContextValue = React.useMemo(
+    () => ({
+      showConfirmation: (props) =>
+        setModalProps({
+          ...props,
+          handleConfirm: () => {
+            props.handleConfirm();
+            setModalProps(null);
+          },
+          handleClose: () => {
+            props.handleClose?.();
+            setModalProps(null);
+          },
+          open: true,
+        }),
+      hideConfirmation: () => setModalProps(null),
+    }),
+    [setModalProps],
+  );
+
+  return (
+    <ConfirmationModalContext value={contextValue}>
+      {modalProps && <ConfirmationModal {...modalProps} />}
+      {children}
+    </ConfirmationModalContext>
+  );
+};
+export const ConfirmationModal = ({
   open,
   header,
   content,
   confirmButtonText,
   handleConfirm,
   handleClose,
-  t,
-}: ModalComponentProps) => {
+}: ConfirmationModalProps) => {
+  const { t } = useTranslations();
   return (
     <Modal open={open} onClose={handleClose} data-testid="modal-component">
       <Box sx={style}>
@@ -76,4 +120,14 @@ export const ModalComponent = ({
       </Box>
     </Modal>
   );
+};
+
+export const useGlobalConfirmationModal = () => {
+  const context = React.use(ConfirmationModalContext);
+  if (!context) {
+    throw new Error(
+      'useGlobalConfirmationModal must be used within a ConfirmationModalProvider',
+    );
+  }
+  return context;
 };

@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
-import { ModalComponent } from '@/src/components/ModalComponent';
+import { ConfirmationModal } from '@/src/components/ConfirmationModal';
 import { DeleteOutline } from '@mui/icons-material';
 
 export type LausuntopyyntoProps = {
@@ -56,7 +56,7 @@ export const LausuntopyyntoComponent = ({
 
   return (
     <Stack gap={theme.spacing(3)}>
-      <ModalComponent
+      <ConfirmationModal
         open={deleteModalOpen}
         header={t('hakemus.perustelu.lausuntotiedot.modal.otsikko')}
         content={t('hakemus.perustelu.lausuntotiedot.modal.teksti')}

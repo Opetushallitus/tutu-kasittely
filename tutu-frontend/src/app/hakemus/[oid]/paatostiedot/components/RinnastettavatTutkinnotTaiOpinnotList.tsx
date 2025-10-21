@@ -6,7 +6,6 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { Add } from '@mui/icons-material';
 import React, { useEffect } from 'react';
 import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
-import { ModalComponent } from '@/src/components/ModalComponent';
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
   paatostietoId: paatostietoId,
@@ -30,16 +29,6 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   const [tutkinnotTaiOpinnot, setTutkinnotTaiOpinnot] = React.useState<
     TutkintoTaiOpinto[]
   >([]);
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
-
-  const closeModal = () => {
-    setDeleteModalOpen(false);
-  };
-
-  const confirmDelete = (id: string | undefined) => {
-    deleteTutkintoTaiOpinto(id);
-    closeModal();
-  };
 
   useEffect(() => {
     if (!rinnastettavatTutkinnotTaiOpinnot) return;
@@ -87,24 +76,14 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
       {tutkinnotTaiOpinnot &&
         tutkinnotTaiOpinnot.map((tutkintoTaiOpinto, index) => (
           <React.Fragment key={index}>
-            <ModalComponent
-              open={deleteModalOpen}
-              header={t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.otsikko`)}
-              content={t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.teksti`)}
-              confirmButtonText={t(
-                `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
-              )}
-              handleConfirm={() => confirmDelete(tutkintoTaiOpinto.id)}
-              handleClose={closeModal}
-              t={t}
-            />
             <RinnastettavaTutkintoTaiOpintoComponent
               t={t}
               index={index}
               tutkintoTaiOpinto={tutkintoTaiOpinto}
               paatosTyyppi={tyyppi}
               updateTutkintoTaiOpintoAction={updateTutkintoTaiOpinto}
-              setDeleteModalOpen={setDeleteModalOpen}
+              deleteTutkintoTaiOpintoAction={deleteTutkintoTaiOpinto}
+              tyyppi={tyyppi}
             />
           </React.Fragment>
         ))}

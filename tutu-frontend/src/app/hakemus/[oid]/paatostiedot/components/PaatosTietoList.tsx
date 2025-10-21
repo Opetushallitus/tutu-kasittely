@@ -8,7 +8,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import React from 'react';
 import { Tutkinto } from '@/src/lib/types/hakemus';
-import { ModalComponent } from '@/src/components/ModalComponent';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 
 interface PaatosTietoListProps {
   t: TFunction;
@@ -28,30 +28,16 @@ export const PaatosTietoList = ({
   deletePaatosTieto,
   tutkinnot,
 }: PaatosTietoListProps) => {
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const theme = useTheme();
-
-  const closeModal = () => {
-    setDeleteModalOpen(false);
-  };
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   const confirmDelete = (id: string | undefined) => {
     deletePaatosTieto(id);
-    closeModal();
   };
   return (
     <>
       {paatosTiedot.map((paatosTieto, index) => (
         <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
-          <ModalComponent
-            open={deleteModalOpen}
-            header={t('hakemus.paatos.modal.otsikko')}
-            content={t('hakemus.paatos.modal.teksti')}
-            confirmButtonText={t('hakemus.paatos.modal.poistaPaatos')}
-            handleConfirm={() => confirmDelete(paatosTieto.id)}
-            handleClose={closeModal}
-            t={t}
-          />
           <Stack
             key={`stack-${index}`}
             direction={'row'}
@@ -69,7 +55,14 @@ export const PaatosTietoList = ({
                 data-testid={`poista-paatos-button`}
                 variant="text"
                 startIcon={<DeleteOutline />}
-                onClick={() => setDeleteModalOpen(true)}
+                onClick={() =>
+                  showConfirmation({
+                    header: t('hakemus.paatos.modal.otsikko'),
+                    content: t('hakemus.paatos.modal.teksti'),
+                    confirmButtonText: t('hakemus.paatos.modal.poistaPaatos'),
+                    handleConfirm: () => confirmDelete(paatosTieto.id),
+                  })
+                }
               >
                 {t('hakemus.paatos.paatostyyppi.poistaPaatos')}
               </OphButton>
