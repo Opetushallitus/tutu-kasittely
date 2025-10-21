@@ -52,7 +52,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   var paatosTietoId: Option[UUID]                                                = None
   var paatos: Paatos                                                             = _
   var paatosWithPaatosTiedot: Paatos                                             = _
-  var paatosWithPaatosTiedotJaRinnastettqvatTutkinnotTaiOpinnot: Paatos          = _
+  var paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: Paatos          = _
 
   var paatosTiedot: Seq[PaatosTieto] =
     Seq(
@@ -221,7 +221,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     paatosWithPaatosTiedot = makePaatosWithPaatosTiedot(
       hakemusId
     )
-    paatosWithPaatosTiedotJaRinnastettqvatTutkinnotTaiOpinnot =
+    paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot =
       makePaatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot(
         hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
         paatosId,
@@ -357,7 +357,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     : Unit = {
     val paatosJSON =
       paatos2Json(
-        paatosWithPaatosTiedotJaRinnastettqvatTutkinnotTaiOpinnot,
+        paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
         "luoja",
         "luotu",
         "muokattu",
@@ -385,7 +385,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosId   = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).get.id
     val paatosJSON =
       paatos2Json(
-        paatosWithPaatosTiedotJaRinnastettqvatTutkinnotTaiOpinnot.copy(id = paatosId, luoja = Some("test user")),
+        paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.copy(id = paatosId, luoja = Some("test user")),
         "id",
         "luoja",
         "luotu",
