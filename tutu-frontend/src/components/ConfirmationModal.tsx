@@ -35,8 +35,8 @@ export type ConfirmationModalProps = {
   header: string;
   content: string;
   confirmButtonText: string;
-  handleConfirm: () => void;
-  handleClose?: () => void;
+  handleConfirmAction: () => void;
+  handleCloseAction?: () => void;
 };
 
 type ConfirmationModalContextValue = {
@@ -60,12 +60,12 @@ export const ConfirmationModalProvider = ({
       showConfirmation: (props) =>
         setModalProps({
           ...props,
-          handleConfirm: () => {
-            props.handleConfirm();
+          handleConfirmAction: () => {
+            props.handleConfirmAction();
             setModalProps(null);
           },
-          handleClose: () => {
-            props.handleClose?.();
+          handleCloseAction: () => {
+            props.handleCloseAction?.();
             setModalProps(null);
           },
           open: true,
@@ -87,14 +87,18 @@ export const ConfirmationModal = ({
   header,
   content,
   confirmButtonText,
-  handleConfirm,
-  handleClose,
+  handleConfirmAction,
+  handleCloseAction,
 }: ConfirmationModalProps) => {
   const { t } = useTranslations();
   return (
-    <Modal open={open} onClose={handleClose} data-testid="modal-component">
+    <Modal
+      open={open}
+      onClose={handleCloseAction}
+      data-testid="modal-component"
+    >
       <Box sx={style}>
-        <StyledIconButton aria-label="close" onClick={handleClose}>
+        <StyledIconButton aria-label="close" onClick={handleCloseAction}>
           <CloseIcon />
         </StyledIconButton>
         <Stack direction="column" gap={2}>
@@ -104,14 +108,14 @@ export const ConfirmationModal = ({
             <OphButton
               data-testid="modal-peruuta-button"
               variant="outlined"
-              onClick={handleClose}
+              onClick={handleCloseAction}
             >
               {t('yleiset.peruuta')}
             </OphButton>
             <OphButton
               data-testid="modal-confirm-button"
               variant="contained"
-              onClick={handleConfirm}
+              onClick={handleConfirmAction}
             >
               {confirmButtonText}
             </OphButton>

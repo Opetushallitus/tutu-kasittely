@@ -68,7 +68,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
               confirmButtonText: t(
                 `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
               ),
-              handleConfirm: () =>
+              handleConfirmAction: () =>
                 deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id),
             })
           }

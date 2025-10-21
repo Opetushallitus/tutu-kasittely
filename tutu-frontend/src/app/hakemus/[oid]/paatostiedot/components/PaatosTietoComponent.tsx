@@ -145,7 +145,6 @@ export const PaatosTietoComponent = ({
                 }
               />
             )}
-
             {currentPaatosTieto.paatosTyyppi === 'Taso' && (
               <>
                 <MyonteinenPaatos

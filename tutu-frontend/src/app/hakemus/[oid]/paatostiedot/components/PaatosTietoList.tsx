@@ -31,55 +31,48 @@ export const PaatosTietoList = ({
   const theme = useTheme();
   const { showConfirmation } = useGlobalConfirmationModal();
 
-  const confirmDelete = (id: string | undefined) => {
-    deletePaatosTieto(id);
-  };
-  return (
-    <>
-      {paatosTiedot.map((paatosTieto, index) => (
-        <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
-          <Stack
-            key={`stack-${index}`}
-            direction={'row'}
-            gap={theme.spacing(2)}
-            sx={{ justifyContent: 'space-between', alignItems: 'center' }}
-          >
-            <OphTypography variant={'h3'}>
-              {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
-            </OphTypography>
-            {index > 0 && (
-              <OphButton
-                sx={{
-                  alignSelf: 'flex-end',
-                }}
-                data-testid={`poista-paatos-button`}
-                variant="text"
-                startIcon={<DeleteOutline />}
-                onClick={() =>
-                  showConfirmation({
-                    header: t('hakemus.paatos.modal.otsikko'),
-                    content: t('hakemus.paatos.modal.teksti'),
-                    confirmButtonText: t('hakemus.paatos.modal.poistaPaatos'),
-                    handleConfirm: () => confirmDelete(paatosTieto.id),
-                  })
-                }
-              >
-                {t('hakemus.paatos.paatostyyppi.poistaPaatos')}
-              </OphButton>
-            )}
-          </Stack>
-          <PaatosTietoComponent
-            key={index}
-            t={t}
-            paatosTieto={paatosTieto}
-            updatePaatosTietoAction={(updated) =>
-              updatePaatosTietoAction(updated, index)
+  return paatosTiedot.map((paatosTieto, index) => (
+    <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
+      <Stack
+        key={`stack-${index}`}
+        direction={'row'}
+        gap={theme.spacing(2)}
+        sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+      >
+        <OphTypography variant={'h3'}>
+          {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
+        </OphTypography>
+        {index > 0 && (
+          <OphButton
+            sx={{
+              alignSelf: 'flex-end',
+            }}
+            data-testid={`poista-paatos-button`}
+            variant="text"
+            startIcon={<DeleteOutline />}
+            onClick={() =>
+              showConfirmation({
+                header: t('hakemus.paatos.modal.otsikko'),
+                content: t('hakemus.paatos.modal.teksti'),
+                confirmButtonText: t('hakemus.paatos.modal.poistaPaatos'),
+                handleConfirmAction: () => deletePaatosTieto(paatosTieto.id),
+              })
             }
-            tutkinnot={tutkinnot}
-          />
-          <Divider />
-        </Stack>
-      ))}
-    </>
-  );
+          >
+            {t('hakemus.paatos.paatostyyppi.poistaPaatos')}
+          </OphButton>
+        )}
+      </Stack>
+      <PaatosTietoComponent
+        key={index}
+        t={t}
+        paatosTieto={paatosTieto}
+        updatePaatosTietoAction={(updated) =>
+          updatePaatosTietoAction(updated, index)
+        }
+        tutkinnot={tutkinnot}
+      />
+      <Divider />
+    </Stack>
+  ));
 };
