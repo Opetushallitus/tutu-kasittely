@@ -67,7 +67,7 @@ export type AsiakirjaTieto = {
   viimeinenAsiakirjaHakijalta?: string;
   asiakirjamallitTutkinnoista?: AsiakirjamallitTutkinnoista;
   imiPyynto: ImiPyynto;
-  apHakemus?: boolean;
+  apHakemus?: boolean | null;
   suostumusVahvistamiselleSaatu: boolean;
   valmistumisenVahvistus: ValmistumisenVahvistus;
 };
@@ -139,10 +139,10 @@ export type AsiakirjamallitTutkinnoista = Partial<
 >;
 
 export type ImiPyynto = {
-  imiPyynto: boolean | null;
-  imiPyyntoNumero: string | null;
-  imiPyyntoLahetetty: string | null;
-  imiPyyntoVastattu: string | null;
+  imiPyynto?: boolean | null;
+  imiPyyntoNumero?: string | null;
+  imiPyyntoLahetetty?: string | null;
+  imiPyyntoVastattu?: string | null;
 };
 
 export type ValmistumisenVahvistusVastaus =
@@ -175,7 +175,7 @@ export type Tutkinto = {
   muuTutkintoMuistioId?: string;
 
   ohjeellinenLaajuus?: string;
-  opinnaytetyo?: boolean;
-  harjoittelu?: boolean;
+  opinnaytetyo?: boolean | null;
+  harjoittelu?: boolean | null;
   perustelunLisatietoja?: string;
 };

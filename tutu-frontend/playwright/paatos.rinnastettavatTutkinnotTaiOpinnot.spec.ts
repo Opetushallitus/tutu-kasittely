@@ -78,7 +78,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   ).toEqual('Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen');
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
-    'myonteinenPaatos-radio-group',
+    'paatos-myonteinenPaatos-radio-group-0',
   );
 
   await expect(myonteinenPaatosRadioGroup).toBeVisible();
@@ -94,7 +94,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   const myonteinenPaatosPostData = myonteinenPaatosReq.postDataJSON();
   expect(
     myonteinenPaatosPostData.paatosTiedot[0]
-      .rinnastettavatTutkinnotTaiOpinnot[0].myonteinenPaatos,
+      .rinnastettavatTutkinnotTaiOpinnot[0].myonteinenPaatos.myonteinenPaatos,
   ).toEqual(true);
 
   await expect(

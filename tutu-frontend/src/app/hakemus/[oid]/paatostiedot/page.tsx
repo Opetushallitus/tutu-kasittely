@@ -70,7 +70,6 @@ export default function PaatostiedotPage() {
     <Paatostiedot
       paatos={paatos}
       updatePaatos={updatePaatos}
-      updateOngoing={updateOngoing}
       hakemus={hakemus!}
     />
   );
@@ -79,60 +78,43 @@ export default function PaatostiedotPage() {
 const Paatostiedot = ({
   paatos,
   updatePaatos,
-  updateOngoing,
   hakemus,
 }: {
   paatos: Paatos;
   updatePaatos: PaatosUpdateCallback;
-  updateOngoing: boolean;
   hakemus: Hakemus;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
-  const [currentPaatos, setCurrentPaatos] = React.useState<Paatos>(paatos);
-  const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
-    PaatosTieto[]
-  >([]);
-
-  useEffect(() => {
-    setCurrentPaatos(paatos);
-    setCurrentPaatosTiedot(
-      paatos.paatosTiedot?.length
-        ? paatos.paatosTiedot
-        : [emptyPaatosTieto(paatos.id!)],
-    );
-  }, [paatos]);
+  // No local state - use query data directly (matches Perustelu pattern)
+  const paatosTiedot = paatos.paatosTiedot?.length
+    ? paatos.paatosTiedot
+    : [emptyPaatosTieto(paatos.id!)];
 
   const updatePaatosField = (updatedPaatos: Partial<Paatos>) => {
-    const newPaatos: Paatos = { ...currentPaatos, ...updatedPaatos };
-    setCurrentPaatos(newPaatos);
-    if (!updateOngoing) {
-      updatePaatos(newPaatos);
-    }
+    const newPaatos: Paatos = { ...paatos, ...updatedPaatos };
+    updatePaatos(newPaatos);
   };
 
   const updatePaatosTieto = (
     updatedPaatosTieto: PaatosTieto,
     index: number,
   ) => {
-    const newPaatosTiedot = [...currentPaatosTiedot];
+    const newPaatosTiedot = [...paatosTiedot];
     newPaatosTiedot[index] = updatedPaatosTieto;
-    setCurrentPaatosTiedot(newPaatosTiedot);
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
   const addPaatosTieto = () => {
-    setCurrentPaatosTiedot((oldPaatosTiedot) =>
-      oldPaatosTiedot.concat([emptyPaatosTieto(paatos.id!)]),
-    );
+    const newPaatosTiedot = [...paatosTiedot, emptyPaatosTieto(paatos.id!)];
+    updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
   const deletePaatosTieto = (id: string | undefined) => {
     const newPaatosTiedot = id
-      ? currentPaatosTiedot.filter((paatostieto) => paatostieto.id !== id)
-      : currentPaatosTiedot.slice(0, -1);
-    setCurrentPaatosTiedot(newPaatosTiedot);
+      ? paatosTiedot.filter((paatostieto) => paatostieto.id !== id)
+      : paatosTiedot.slice(0, -1);
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
@@ -152,9 +134,9 @@ const Paatostiedot = ({
       </OphTypography>
       <OphCheckbox
         label={t('hakemus.paatos.seut')}
-        checked={currentPaatos.seutArviointi}
+        checked={paatos.seutArviointi}
         onChange={() => {
-          updatePaatosField({ seutArviointi: !currentPaatos.seutArviointi });
+          updatePaatosField({ seutArviointi: !paatos.seutArviointi });
         }}
         data-testid={'paatos-seut'}
       />
@@ -162,7 +144,7 @@ const Paatostiedot = ({
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
         options={ratkaisutyyppiOptions(t)}
-        value={currentPaatos.ratkaisutyyppi || ''}
+        value={paatos.ratkaisutyyppi || ''}
         onChange={(event) =>
           updatePaatosField(
             (event.target.value as Ratkaisutyyppi) !== 'Paatos'
@@ -175,21 +157,21 @@ const Paatostiedot = ({
         }
         data-testid={'paatos-ratkaisutyyppi'}
       />
-      {currentPaatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
+      {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
         <PeruutuksenTaiRaukeamisenSyyComponent
           t={t}
           theme={theme}
-          syy={currentPaatos.peruutuksenTaiRaukeamisenSyy}
+          syy={paatos.peruutuksenTaiRaukeamisenSyy}
           updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
             updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
           }
         />
       )}
-      {currentPaatos.ratkaisutyyppi === 'Paatos' && (
+      {paatos.ratkaisutyyppi === 'Paatos' && (
         <>
           <PaatosTietoList
             t={t}
-            paatosTiedot={currentPaatosTiedot}
+            paatosTiedot={paatosTiedot}
             paatosTietoOptions={paatos.paatosTietoOptions}
             updatePaatosTietoAction={updatePaatosTieto}
             deletePaatosTieto={deletePaatosTieto}

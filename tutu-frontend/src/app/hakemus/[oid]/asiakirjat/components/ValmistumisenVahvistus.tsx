@@ -9,13 +9,13 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   OphCheckbox,
   OphInputFormField,
-  OphRadioGroupFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 import { OphRadioOption } from '@/src/lib/types/common';
+import { OphRadioGroupFormFieldWithClear } from '@/src/components/OphRadioGroupFormFieldWithClear';
 
 type RadioGroupFormFieldChangeEventHandler = {
   (event: React.FormEvent<HTMLDivElement>): void;
@@ -180,7 +180,7 @@ export const ValmistumisenVahvistusComponent = ({
               dataTestId="vahvistusPyyntoVastattu-calendar"
             />
           </Stack>
-          <OphRadioGroupFormField
+          <OphRadioGroupFormFieldWithClear
             label={t('hakemus.asiakirjat.valmistumisenVahvistus.vastaus')}
             data-testid="valmistumisenVahvistus-radio-group"
             sx={{ width: '100%' }}
@@ -191,6 +191,7 @@ export const ValmistumisenVahvistusComponent = ({
               ''
             }
             onChange={radioGroupChangeHandler}
+            onClear={() => setField('valmistumisenVahvistusVastaus', null)}
           />
           {valmistumisenVahvistus.valmistumisenVahvistusVastaus && (
             <OphInputFormField

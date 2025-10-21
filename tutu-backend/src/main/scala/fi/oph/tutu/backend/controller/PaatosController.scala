@@ -1,15 +1,29 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
+import fi.oph.tutu.backend.domain.{
+  BooleanFieldWrapper,
+  BooleanFieldWrapperDeserializer,
+  BooleanFieldWrapperSerializer,
+  HakemusOid,
+  PartialPaatos,
+  StringFieldWrapper,
+  StringFieldWrapperDeserializer
+}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.{
+  GetMapping,
+  PathVariable,
+  PostMapping,
+  RequestBody,
+  RequestMapping,
+  RestController
+}
 
 import scala.util.{Failure, Success, Try}
 
@@ -23,28 +37,18 @@ class PaatosController(
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosController])
 
+  // Register custom deserializers for field wrappers
+  private val wrapperModule = new SimpleModule()
+  wrapperModule.addDeserializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperDeserializer())
+  wrapperModule.addSerializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperSerializer())
+  wrapperModule.addDeserializer(classOf[StringFieldWrapper], new StringFieldWrapperDeserializer())
+  mapper.registerModule(wrapperModule)
+
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   @GetMapping(
     path = Array("paatos/{hakemusOid}/{formId}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
-  )
-  @Operation(
-    summary = "Hae päätös hakemuksen ja lomakkeen perusteella",
-    responses = Array(
-      new ApiResponse(
-        responseCode = "200",
-        description = RESPONSE_200_DESCRIPTION
-      ),
-      new ApiResponse(
-        responseCode = "404",
-        description = "Päätöstä ei löytynyt"
-      ),
-      new ApiResponse(
-        responseCode = "500",
-        description = RESPONSE_500_DESCRIPTION
-      )
-    )
   )
   def haePaatos(
     @PathVariable("hakemusOid") hakemusOid: String,
@@ -64,37 +68,16 @@ class PaatosController(
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatos))
         }
       }
-      case Failure(exception) =>
+      case Failure(exception) => {
         LOG.error(s"Päätöksen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
+      }
     }
   }
   @PostMapping(
     path = Array("paatos/{hakemusOid}/{formId}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
-  )
-  @Operation(
-    summary = "Tallenna päätös osittain (päivittää vain pyynnössä olevat kentät)",
-    description = "POST endpoint osittaisille päivityksille. Vain pyynnössä olevat kentät päivitetään.",
-    responses = Array(
-      new ApiResponse(
-        responseCode = "200",
-        description = RESPONSE_200_DESCRIPTION
-      ),
-      new ApiResponse(
-        responseCode = "400",
-        description = RESPONSE_400_DESCRIPTION
-      ),
-      new ApiResponse(
-        responseCode = "403",
-        description = RESPONSE_403_DESCRIPTION
-      ),
-      new ApiResponse(
-        responseCode = "500",
-        description = RESPONSE_500_DESCRIPTION
-      )
-    )
   )
   def tallennaPaatos(
     @PathVariable("hakemusOid") hakemusOid: String,
@@ -103,8 +86,8 @@ class PaatosController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user           = userService.getEnrichedUserDetails(true)
-      val paatos: Paatos = mapper.readValue(paatosBytes, classOf[Paatos])
+      val user                  = userService.getEnrichedUserDetails(true)
+      val paatos: PartialPaatos = mapper.readValue(paatosBytes, classOf[PartialPaatos])
 
       paatosService.tallennaPaatos(HakemusOid(hakemusOid), formId, paatos, user.userOid)
     } match {
