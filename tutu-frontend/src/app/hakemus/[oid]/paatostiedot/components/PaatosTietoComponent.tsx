@@ -43,21 +43,6 @@ export const PaatosTietoComponent = ({
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
 
-  const updateMyonteinenPaatos = (value: boolean) => {
-    updatePaatosTietoAction(
-      value
-        ? {
-            ...currentPaatosTieto,
-            myonteinenPaatos: true,
-          }
-        : {
-            ...currentPaatosTieto,
-            myonteinenPaatos: false,
-            tutkintoTaso: undefined,
-          },
-    );
-  };
-
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
     switch (paatosTyyppi) {
       case 'Taso':
@@ -151,7 +136,8 @@ export const PaatosTietoComponent = ({
                 <MyonteinenPaatos
                   t={t}
                   myonteinenPaatos={currentPaatosTieto.myonteinenPaatos}
-                  updateMyonteinenPaatosAction={updateMyonteinenPaatos}
+                  updatePaatosTietoAction={updatePaatosTietoAction}
+                  currentPaatosTieto={currentPaatosTieto}
                 />
                 {currentPaatosTieto.myonteinenPaatos && (
                   <OphSelectFormField

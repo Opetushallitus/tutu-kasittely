@@ -415,7 +415,7 @@ class ControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruHakemus6668.json")))
     hakemusService.paivitaHakemus(
       HakemusOid("1.2.246.562.11.00000000000000006668"),
-      PartialHakemus(asiakirja = Some(PartialAsiakirja(apHakemus = Some(true)))),
+      PartialHakemus(asiakirja = Some(PartialAsiakirja(apHakemus = Some(BooleanFieldWrapper(Some(true)))))),
       UserOid(esittelijaOidString)
     )
 
@@ -500,7 +500,7 @@ class ControllerTest extends IntegrationTestBase {
                                 "muutosHistoria": [],
                                 "taydennyspyyntoLahetetty": null,
                                 "asiakirja": {
-                                  "apHakemus": false,
+                                  "apHakemus": null,
                                   "suostumusVahvistamiselleSaatu": false,
                                   "pyydettavatAsiakirjat" : [ {
                                     "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
@@ -809,7 +809,7 @@ class ControllerTest extends IntegrationTestBase {
 
     // Päivitetään AP-hakemus
     updatedHakemus = PartialHakemus(
-      asiakirja = Some(PartialAsiakirja(apHakemus = Some(true)))
+      asiakirja = Some(PartialAsiakirja(apHakemus = Some(BooleanFieldWrapper(Some(true)))))
     )
     paivitettyHakemus = updateHakemus(hakemusOid, updatedHakemus)
     assert(paivitettyHakemus.asiakirja.get.apHakemus.contains(true))

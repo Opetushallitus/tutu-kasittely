@@ -135,7 +135,8 @@ case class DbAsiakirja(
       alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
         .orElse(this.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot),
       selvityksetSaatu = updatedAsiakirja.selvityksetSaatu.getOrElse(this.selvityksetSaatu),
-      apHakemus = updatedAsiakirja.apHakemus.orElse(this.apHakemus),
+      apHakemus =
+        if (updatedAsiakirja.apHakemusDefined()) updatedAsiakirja.apHakemus.flatMap(_.value) else this.apHakemus,
       suostumusVahvistamiselleSaatu =
         updatedAsiakirja.suostumusVahvistamiselleSaatu.getOrElse(this.suostumusVahvistamiselleSaatu),
       valmistumisenVahvistus =
@@ -231,7 +232,7 @@ case class Asiakirja(
     alkuperaisetAsiakirjatSaatuNahtavaksi = partialAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(false),
     alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = partialAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
     selvityksetSaatu = partialAsiakirja.selvityksetSaatu.getOrElse(false),
-    apHakemus = partialAsiakirja.apHakemus,
+    apHakemus = BooleanFieldWrapper.fromPartial(partialAsiakirja.apHakemus).value,
     suostumusVahvistamiselleSaatu = partialAsiakirja.suostumusVahvistamiselleSaatu.getOrElse(false),
     valmistumisenVahvistus = new ValmistumisenVahvistus(partialAsiakirja.valmistumisenVahvistus),
     pyydettavatAsiakirjat = partialAsiakirja.pyydettavatAsiakirjat.getOrElse(Seq.empty),
@@ -247,7 +248,7 @@ case class PartialAsiakirja(
   alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
   alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
   selvityksetSaatu: Option[Boolean] = None,
-  apHakemus: Option[Boolean] = None,
+  apHakemus: Option[BooleanFieldWrapper] = None,
   suostumusVahvistamiselleSaatu: Option[Boolean] = None,
   pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
   asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
@@ -255,5 +256,6 @@ case class PartialAsiakirja(
   viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None
 ) {
   def imiPyyntoDefined(): Boolean              = imiPyynto.isDefined
+  def apHakemusDefined(): Boolean              = apHakemus.isDefined
   def valmistumisenVahvistusDefined(): Boolean = valmistumisenVahvistus.isDefined
 }

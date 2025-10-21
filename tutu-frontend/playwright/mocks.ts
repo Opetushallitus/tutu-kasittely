@@ -310,23 +310,66 @@ export const mockKoodistot = async (page: Page) => {
 };
 
 export const mockPerustelu = async (page: Page) => {
+  // Stateful mock data that gets updated by POST requests
+  let perusteluData: Record<string, unknown> = {
+    id: 'mock-perustelu-id',
+    hakemusId: 'mock-hakemus-id',
+    lahdeLahtomaanKansallinenLahde: false,
+    lahdeLahtomaanVirallinenVastaus: false,
+    lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
+    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
+    luotu: '2025-09-02T16:08:42.083643',
+    luoja: 'Hakemuspalvelu',
+    uoRoSisalto: {},
+  };
+
+  // Unwrap nested wrapper structures like backend does
+  // { fieldName: { fieldName: value } } => { fieldName: value }
+  const unwrapData = (
+    data: Record<string, unknown>,
+  ): Record<string, unknown> => {
+    const unwrapped: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (
+        value &&
+        typeof value === 'object' &&
+        !Array.isArray(value) &&
+        key in (value as Record<string, unknown>)
+      ) {
+        // This is a wrapped field: { fieldName: { fieldName: actualValue } }
+        unwrapped[key] = (value as Record<string, unknown>)[key];
+      } else {
+        // Regular field or nested object
+        unwrapped[key] = value;
+      }
+    }
+    return unwrapped;
+  };
+
   await page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        id: 'mock-perustelu-id',
-        hakemusId: 'mock-hakemus-id',
-        lahdeLahtomaanKansallinenLahde: false,
-        lahdeLahtomaanVirallinenVastaus: false,
-        lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
-        selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
-        selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
-        luotu: '2025-09-02T16:08:42.083643',
-        luoja: 'Hakemuspalvelu',
-        uoRoSisalto: {},
-      }),
-    });
+    if (route.request().method() === 'POST') {
+      // Merge posted data into state and unwrap nested wrapper structures
+      const postedData = route.request().postDataJSON() as Record<
+        string,
+        unknown
+      >;
+      const unwrappedData = unwrapData(postedData);
+      perusteluData = { ...perusteluData, ...unwrappedData };
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(perusteluData),
+      });
+    } else {
+      // GET request - return current state
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(perusteluData),
+      });
+    }
   });
 };
 

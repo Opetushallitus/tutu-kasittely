@@ -58,7 +58,7 @@ case class PaatosTieto(
   sovellettuLaki: Option[SovellettuLaki] = None,
   tutkintoId: Option[UUID] = None,
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
-  myonteinenPaatos: Option[Boolean] = None,
+  myonteinenPaatos: Option[BooleanFieldWrapper] = None,
   // TODO: case classeiksi
   myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
   kielteisenPaatoksenPerustelut: Option[String] = None,
@@ -74,7 +74,7 @@ case class TutkintoTaiOpinto(
   id: Option[UUID] = None,
   paatostietoId: Option[UUID] = None,
   tutkintoTaiOpinto: Option[String] = None,
-  myonteinenPaatos: Option[Boolean] = None,
+  myonteinenPaatos: Option[BooleanFieldWrapper] = None,
   // TODO: case classeiksi
   myonteisenPaatoksenLisavaatimukset: Option[String] = None,
   kielteisenPaatoksenPerustelut: Option[String] = None,

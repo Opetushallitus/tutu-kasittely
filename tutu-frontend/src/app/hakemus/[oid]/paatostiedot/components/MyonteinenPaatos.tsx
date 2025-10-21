@@ -1,39 +1,47 @@
 'use client';
+
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  OphRadioGroup,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import React from 'react';
+import { PaatosTieto } from '@/src/lib/types/paatos';
 
 interface MyonteinenPaatosProps {
   t: TFunction;
-  myonteinenPaatos?: boolean;
-  updateMyonteinenPaatosAction: (myonteinenPaatos: boolean) => void;
+  myonteinenPaatos?: boolean | null;
+  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  currentPaatosTieto: PaatosTieto;
 }
 
 export const MyonteinenPaatos = ({
   t,
   myonteinenPaatos,
-  updateMyonteinenPaatosAction,
+  updatePaatosTietoAction,
+  currentPaatosTieto,
 }: MyonteinenPaatosProps) => {
   return (
-    <>
-      <OphTypography variant="h4">
-        {t('hakemus.paatos.tutkinto.myonteinenPaatos')}
-      </OphTypography>
-      <OphRadioGroup
-        labelId="myonteinenPaatos-radio-group-label"
-        data-testid="paatos-myonteinenPaatos-radio-group"
-        sx={{ width: '100%' }}
-        options={myonteinenPaatosOptions(t)}
-        row
-        value={myonteinenPaatos?.toString() || null}
-        onChange={(e) =>
-          updateMyonteinenPaatosAction(e.target.value === 'true')
-        }
-      />
-    </>
+    <OphRadioGroupWithClear
+      label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
+      labelId="myonteinenPaatos-radio-group-label"
+      data-testid="paatos-myonteinenPaatos-radio-group"
+      labelVariant="h4"
+      options={myonteinenPaatosOptions(t)}
+      row
+      value={myonteinenPaatos?.toString() ?? ''}
+      onChange={(e) =>
+        updatePaatosTietoAction({
+          ...currentPaatosTieto,
+          myonteinenPaatos: e.target.value === 'true',
+          ...(e.target.value === 'false' && { tutkintoTaso: undefined }),
+        })
+      }
+      onClear={() =>
+        updatePaatosTietoAction({
+          ...currentPaatosTieto,
+          myonteinenPaatos: null,
+          tutkintoTaso: undefined,
+        })
+      }
+    />
   );
 };

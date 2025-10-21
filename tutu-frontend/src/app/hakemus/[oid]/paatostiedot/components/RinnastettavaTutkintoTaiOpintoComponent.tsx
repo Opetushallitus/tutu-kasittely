@@ -7,7 +7,8 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { DeleteOutline } from '@mui/icons-material';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
@@ -30,13 +31,17 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   updateTutkintoTaiOpintoAction,
   deleteTutkintoTaiOpintoAction,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const updateMyonteinenPaatos = (myonteinenPaatos: boolean) => {
+  const theme = useTheme();
+
+  const updateMyonteinenPaatos = (value: boolean | null) => {
     updateTutkintoTaiOpintoAction(
-      { ...tutkintoTaiOpinto, myonteinenPaatos: myonteinenPaatos },
+      {
+        ...tutkintoTaiOpinto,
+        myonteinenPaatos: value,
+      },
       index,
     );
   };
-  const theme = useTheme();
 
   return (
     <Stack direction={'column'} gap={2} sx={{ width: '100%' }}>
@@ -82,11 +87,19 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         data-testid={`rinnastettava-tutkinto-tai-opinto-select`}
       />
-      <MyonteinenPaatos
-        t={t}
-        myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
-        updateMyonteinenPaatosAction={updateMyonteinenPaatos}
+
+      <OphRadioGroupWithClear
+        label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
+        labelId={`myonteinenPaatos-radio-group-${index}-label`}
+        data-testid={`paatos-myonteinenPaatos-radio-group-${index}`}
+        labelVariant="h4"
+        options={myonteinenPaatosOptions(t)}
+        row
+        value={tutkintoTaiOpinto.myonteinenPaatos?.toString() ?? ''}
+        onChange={(e) => updateMyonteinenPaatos(e.target.value === 'true')}
+        onClear={() => updateMyonteinenPaatos(null)}
       />
+
       <Divider orientation={'horizontal'} />
     </Stack>
   );

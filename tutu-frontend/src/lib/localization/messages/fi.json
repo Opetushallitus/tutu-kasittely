@@ -172,6 +172,7 @@
       "mallejaTutkinnoista": {
         "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
         "lahde": "Lähde",
+        "vastaavuus": "Vastaavuus",
         "kuvaus": "Kuvaa lyhyesti, vastaako löytämäsi asiakirjamalli hakemuksen asiakirjaa",
         "ece": "ECE",
         "ukEnic": "UK Enic",
@@ -382,28 +383,12 @@
       "paatostyyppi": {
         "paatos": "Päätös",
         "otsikko": "Päätöstyyppi",
-        "options": {
-          "taso": "1 Taso",
-          "kelpoisuus": "2 Kelpoisuus",
-          "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
-          "riittavatOpinnot": "4 Riittävät opinnot"
-        },
+        "taso": "1 Taso",
+        "kelpoisuus": "2 Kelpoisuus",
+        "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
+        "riittavatOpinnot": "4 Riittävät opinnot",
         "lisaaPaatos": "Lisää päätös",
-        "poistaPaatos": "Poista päätös",
-        "taso": {},
-        "kelpoisuus": {},
-        "tiettyTutkintoTaiOpinnot": {
-          "otsikko": "Tutkinto tai opinnot ",
-          "lisaa": "Lisää tutkinto tai opinnot",
-          "poista": "Poista tutkinto tai opinnot",
-          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettava tutkinto tai opinnot"
-        },
-        "riittavatOpinnot": {
-          "otsikko": "Opinnot ",
-          "lisaa": "Lisää opinnot",
-          "poista": "Poista opinnot",
-          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettavat opinnot"
-        }
+        "poistaPaatos": "Poista päätös"
       },
       "sovellettuLaki": {
         "otsikko": "Sovellettu laki",

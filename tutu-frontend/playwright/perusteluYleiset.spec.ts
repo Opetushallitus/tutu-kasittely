@@ -1,7 +1,12 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 import { expect, Page, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
+import {
+  mockUser,
+  mockBasicForHakemus,
+  mockHakemus,
+  mockPerustelu,
+} from '@/playwright/mocks';
 
 const expectRequestData = async (
   page: Page,
@@ -22,6 +27,7 @@ test.beforeEach(async ({ page }) => {
   await mockBasicForHakemus({ page });
   mockUser(page);
   await mockHakemus(page);
+  await mockPerustelu(page);
 });
 
 test.describe('Yleiset perustelut', () => {
@@ -31,28 +37,58 @@ test.describe('Yleiset perustelut', () => {
     );
 
     // Tuodaan piilotetut lomakkeen osat esiin
-    await page.getByTestId('jatko-opintokelpoisuus--muu').click();
+    const muuRadio = page.locator(
+      '[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="muu"]',
+    );
+    await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
+          r.request().method() === 'POST',
+      ),
+      muuRadio.click(),
+    ]);
 
     const checks = [
       page.getByTestId('lahde__lahtomaan-kansallinen-lahde'),
       page.getByTestId('lahde__lahtomaan-virallinen-vastaus'),
       page.getByTestId('lahde__kansainvalinen-hakuteos-tai-verkkosivusto'),
-      page.getByTestId('virallinen-tutkinnon-myontaja__on'),
-      page.getByTestId('virallinen-tutkinnon-myontaja__off'),
-      page.getByTestId('virallinen-tutkinto__on'),
-      page.getByTestId('virallinen-tutkinto__off'),
-      page.getByTestId('tutkinnon-asema--alempi_korkeakouluaste'),
-      page.getByTestId('tutkinnon-asema--ylempi_korkeakouluaste'),
-      page.getByTestId('tutkinnon-asema--alempi_ja_ylempi_korkeakouluaste'),
-      page.getByTestId('tutkinnon-asema--tutkijakoulutusaste'),
-      page.getByTestId('tutkinnon-asema--ei_korkeakouluaste'),
-      page.getByTestId(
-        'jatko-opintokelpoisuus--toisen_vaiheen_korkeakouluopintoihin',
+      page.locator(
+        '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="true"]',
       ),
-      page.getByTestId(
-        'jatko-opintokelpoisuus--tieteellisiin_jatko-opintoihin',
+      page.locator(
+        '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="false"]',
       ),
-      page.getByTestId('jatko-opintokelpoisuus--muu'),
+      page.locator(
+        '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="true"]',
+      ),
+      page.locator(
+        '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="false"]',
+      ),
+      page.locator(
+        '[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="alempi_korkeakouluaste"]',
+      ),
+      page.locator(
+        '[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="ylempi_korkeakouluaste"]',
+      ),
+      page.locator(
+        '[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="alempi_ja_ylempi_korkeakouluaste"]',
+      ),
+      page.locator(
+        '[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="tutkijakoulutusaste"]',
+      ),
+      page.locator(
+        '[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="ei_korkeakouluaste"]',
+      ),
+      page.locator(
+        '[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="toisen_vaiheen_korkeakouluopintoihin"]',
+      ),
+      page.locator(
+        '[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="tieteellisiin_jatko-opintoihin"]',
+      ),
+      page.locator(
+        '[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="muu"]',
+      ),
       page.getByTestId('jatko-opintokelpoisuus--lisatiedot'),
       page.getByTestId('yleiset-perustelut__tutkinto-1--ohjeellinen-laajuus'),
       page.getByTestId('yleiset-perustelut__tutkinto-1--suoritusvuodet-alku'),
@@ -100,14 +136,39 @@ test.describe('Yleiset perustelut', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
-    await page.getByTestId('virallinen-tutkinnon-myontaja__on').click();
-    await page.getByTestId('virallinen-tutkinto__off').click();
+    const myontajaOn = page.locator(
+      '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="true"]',
+    );
+    await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
+          r.request().method() === 'POST',
+      ),
+      myontajaOn.click(),
+    ]);
+
+    const tutkintoOff = page.locator(
+      '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="false"]',
+    );
+    await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
+          r.request().method() === 'POST',
+      ),
+      tutkintoOff.click(),
+    ]);
 
     await expect(
-      page.getByTestId('virallinen-tutkinnon-myontaja__none'),
+      page.getByTestId(
+        'virallinen-tutkinnon-myontaja-radio-group-clear-button',
+      ),
     ).toBeAttached();
 
-    await expect(page.getByTestId('virallinen-tutkinto__none')).toBeAttached();
+    await expect(
+      page.getByTestId('virallinen-tutkinto-radio-group-clear-button'),
+    ).toBeAttached();
   });
 
   test('Syötetyt tiedot välitetään updatePerustelu-funktiolle', async ({
@@ -115,18 +176,48 @@ test.describe('Yleiset perustelut', () => {
   }) => {
     test.setTimeout(60000);
 
+    // Stateful mock data for this test
+    let testPerusteluData: Record<string, unknown> = {};
+
+    // Unwrap nested wrapper structures like backend does
+    const unwrapData = (
+      data: Record<string, unknown>,
+    ): Record<string, unknown> => {
+      const unwrapped: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (
+          value &&
+          typeof value === 'object' &&
+          !Array.isArray(value) &&
+          key in (value as Record<string, unknown>)
+        ) {
+          unwrapped[key] = (value as Record<string, unknown>)[key];
+        } else {
+          unwrapped[key] = value;
+        }
+      }
+      return unwrapped;
+    };
+
     await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
       if (route.request().method() === 'POST') {
+        const postedData = route.request().postDataJSON() as Record<
+          string,
+          unknown
+        >;
+        const unwrappedData = unwrapData(postedData);
+        testPerusteluData = { ...testPerusteluData, ...unwrappedData };
+
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(route.request().postDataJSON()),
+          body: JSON.stringify(testPerusteluData),
         });
       } else {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({}),
+          body: JSON.stringify(testPerusteluData),
         });
       }
     });
@@ -137,38 +228,60 @@ test.describe('Yleiset perustelut', () => {
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__off').click(),
-      { virallinenTutkinnonMyontaja: false },
+      page
+        .locator(
+          '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="false"]',
+        )
+        .click(),
+      { virallinenTutkinnonMyontaja: { virallinenTutkinnonMyontaja: false } },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__on').click(),
-      { virallinenTutkinnonMyontaja: true },
+      page
+        .locator(
+          '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="true"]',
+        )
+        .click(),
+      { virallinenTutkinnonMyontaja: { virallinenTutkinnonMyontaja: true } },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__none').click(),
-      { virallinenTutkinnonMyontaja: null },
+      page
+        .getByTestId('virallinen-tutkinnon-myontaja-radio-group-clear-button')
+        .click(),
+      {
+        virallinenTutkinnonMyontaja: {
+          virallinenTutkinnonMyontaja: null,
+        },
+      },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinto__off').click(),
-      { virallinenTutkinto: false },
+      page
+        .locator(
+          '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="false"]',
+        )
+        .click(),
+      { virallinenTutkinto: { virallinenTutkinto: false } },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinto__on').click(),
-      { virallinenTutkinto: true },
+      page
+        .locator(
+          '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="true"]',
+        )
+        .click(),
+      { virallinenTutkinto: { virallinenTutkinto: true } },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('virallinen-tutkinto__none').click(),
-      { virallinenTutkinto: null },
+      page.getByTestId('virallinen-tutkinto-radio-group-clear-button').click(),
+      { virallinenTutkinto: { virallinenTutkinto: null } },
     );
 
     await expectRequestData(
@@ -221,7 +334,11 @@ test.describe('Yleiset perustelut', () => {
       await acc;
       return expectRequestData(
         page,
-        page.getByTestId(`tutkinnon-asema--${tutkintoaste}`).click(),
+        page
+          .locator(
+            `[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="${tutkintoaste}"]`,
+          )
+          .click(),
         { ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: tutkintoaste },
       );
     }, Promise.resolve());
@@ -234,8 +351,12 @@ test.describe('Yleiset perustelut', () => {
       await acc;
       return expectRequestData(
         page,
-        page.getByTestId(`jatko-opintokelpoisuus--${kelpoisuus}`).click(),
-        { jatkoOpintoKelpoisuus: kelpoisuus },
+        page
+          .locator(
+            `[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="${kelpoisuus}"]`,
+          )
+          .click(),
+        { jatkoOpintoKelpoisuus: { jatkoOpintoKelpoisuus: kelpoisuus } },
       );
     }, Promise.resolve());
 
@@ -253,14 +374,22 @@ test.describe('Yleiset perustelut', () => {
 
     await expectRequestData(
       page,
-      page.getByTestId('aiemmat-paatokset--kylla').click(),
-      { aikaisemmatPaatokset: true },
+      page
+        .locator(
+          '[data-testid="aiemmat-paatokset-radio-group"] input[type="radio"][value="true"]',
+        )
+        .click(),
+      { aikaisemmatPaatokset: { aikaisemmatPaatokset: true } },
     );
 
     await expectRequestData(
       page,
-      page.getByTestId('aiemmat-paatokset--ei').click(),
-      { aikaisemmatPaatokset: false },
+      page
+        .locator(
+          '[data-testid="aiemmat-paatokset-radio-group"] input[type="radio"][value="false"]',
+        )
+        .click(),
+      { aikaisemmatPaatokset: { aikaisemmatPaatokset: false } },
     );
   });
 

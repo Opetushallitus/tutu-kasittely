@@ -55,13 +55,26 @@ export const HakemusProvider = ({
   const { mutate, isPending } = useMutation({
     mutationFn: (patchHakemus: PartialHakemus) =>
       doApiPatch(`hakemus/${hakemus?.hakemusOid}`, patchHakemus),
+    onMutate: async () => {
+      // Cancel any outgoing refetches to prevent race conditions
+      // This ensures that server responses arrive in order
+      await queryClient.cancelQueries({
+        queryKey: ['getHakemus', hakemus?.hakemusOid],
+      });
+    },
     onSuccess: async (response) => {
+      // Update cache with server response (source of truth)
       const paivitettyHakemus = await response.json();
-
       queryClient.setQueryData(
         ['getHakemus', hakemus?.hakemusOid],
         paivitettyHakemus,
       );
+    },
+    onError: () => {
+      // On error, invalidate to refetch and ensure consistency
+      queryClient.invalidateQueries({
+        queryKey: ['getHakemus', hakemus?.hakemusOid],
+      });
     },
   });
 
