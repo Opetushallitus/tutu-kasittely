@@ -16,6 +16,7 @@ import { Toaster } from '@/src/components/Toaster';
 import { ConfigurationProvider } from '@/src/components/providers/ConfigurationProvider';
 import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
 import { isTesting } from '@/src/lib/configuration/configuration';
+import { ConfirmationModalProvider } from '@/src/components/ConfirmationModal';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',
@@ -48,8 +49,10 @@ export default async function RootLayout({
                       <AuthorizedUserProvider>
                         <LocalizationProvider>
                           <LocalizedThemeProvider>
-                            <Toaster />
-                            {children}
+                            <ConfirmationModalProvider>
+                              <Toaster />
+                              {children}
+                            </ConfirmationModalProvider>
                           </LocalizedThemeProvider>
                         </LocalizationProvider>
                       </AuthorizedUserProvider>

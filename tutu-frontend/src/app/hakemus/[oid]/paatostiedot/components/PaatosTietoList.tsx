@@ -8,6 +8,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import React from 'react';
 import { Tutkinto } from '@/src/lib/types/hakemus';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 
 interface PaatosTietoListProps {
   t: TFunction;
@@ -28,6 +29,7 @@ export const PaatosTietoList = ({
   tutkinnot,
 }: PaatosTietoListProps) => {
   const theme = useTheme();
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   return paatosTiedot.map((paatosTieto, index) => (
     <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
@@ -48,7 +50,14 @@ export const PaatosTietoList = ({
             data-testid={`poista-paatos-button`}
             variant="text"
             startIcon={<DeleteOutline />}
-            onClick={() => deletePaatosTieto(paatosTieto.id)}
+            onClick={() =>
+              showConfirmation({
+                header: t('hakemus.paatos.modal.otsikko'),
+                content: t('hakemus.paatos.modal.teksti'),
+                confirmButtonText: t('hakemus.paatos.modal.poistaPaatos'),
+                handleConfirmAction: () => deletePaatosTieto(paatosTieto.id),
+              })
+            }
           >
             {t('hakemus.paatos.paatostyyppi.poistaPaatos')}
           </OphButton>

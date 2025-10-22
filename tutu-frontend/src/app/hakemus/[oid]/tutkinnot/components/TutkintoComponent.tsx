@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import { Divider, Stack, Box } from '@mui/material';
 import { DeleteOutline } from '@mui/icons-material';
-import { ModalComponent } from '@/src/components/ModalComponent';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { OphSelectOption } from '@/src/components/OphSelect';
 import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -74,7 +74,6 @@ export const TutkintoComponent = ({
 
   const [currentTutkinto, setCurrentTutkinto] =
     React.useState<Tutkinto>(tutkinto);
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [nimiAnchorEl, setNimiAnchorEl] = React.useState<HTMLElement | null>(
     null,
   );
@@ -83,19 +82,11 @@ export const TutkintoComponent = ({
   const [maaAnchorEl, setMaaAnchorEl] = React.useState<HTMLElement | null>(
     null,
   );
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
     setCurrentTutkinto(value);
     updateTutkintoAction(value);
-  };
-
-  const closeModal = () => {
-    setDeleteModalOpen(false);
-  };
-
-  const confirmDelete = () => {
-    deleteTutkintoAction(tutkinto.id);
-    closeModal();
   };
 
   function resolveTutkintoTodistusOtsikkoOptions() {
@@ -107,15 +98,6 @@ export const TutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <ModalComponent
-        open={deleteModalOpen}
-        header={t('hakemus.tutkinnot.modal.otsikko')}
-        content={t('hakemus.tutkinnot.modal.teksti')}
-        confirmButtonText={t('hakemus.tutkinnot.poistaTutkinto')}
-        handleConfirm={confirmDelete}
-        handleClose={closeModal}
-        t={t}
-      />
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
           variant={'h3'}
@@ -132,7 +114,14 @@ export const TutkintoComponent = ({
             data-testid={`poista-tutkinto-button-${currentTutkinto.jarjestys}`}
             variant="text"
             startIcon={<DeleteOutline />}
-            onClick={() => setDeleteModalOpen(true)}
+            onClick={() =>
+              showConfirmation({
+                header: t('hakemus.tutkinnot.modal.otsikko'),
+                content: t('hakemus.tutkinnot.modal.teksti'),
+                confirmButtonText: t('hakemus.tutkinnot.modal.poistaPaatos'),
+                handleConfirmAction: () => deleteTutkintoAction(tutkinto.id),
+              })
+            }
           >
             {t('hakemus.tutkinnot.poistaTutkinto')}
           </OphButton>

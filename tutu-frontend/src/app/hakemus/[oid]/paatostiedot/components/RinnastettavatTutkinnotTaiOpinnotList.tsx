@@ -83,6 +83,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
               paatosTyyppi={tyyppi}
               updateTutkintoTaiOpintoAction={updateTutkintoTaiOpinto}
               deleteTutkintoTaiOpintoAction={deleteTutkintoTaiOpinto}
+              tyyppi={tyyppi}
             />
           </React.Fragment>
         ))}

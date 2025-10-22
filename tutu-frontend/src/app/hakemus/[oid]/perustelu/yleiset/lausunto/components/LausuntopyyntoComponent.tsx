@@ -7,11 +7,11 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useState } from 'react';
+import React from 'react';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
-import { ModalComponent } from '@/src/components/ModalComponent';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { DeleteOutline } from '@mui/icons-material';
 
 export type LausuntopyyntoProps = {
@@ -28,7 +28,7 @@ export const LausuntopyyntoComponent = ({
   t,
   theme,
 }: LausuntopyyntoProps) => {
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   const updateCurrentLausuntopyynto = (fieldValue: Partial<Lausuntopyynto>) => {
     const updatedLausuntopyynto: Lausuntopyynto = {
@@ -36,15 +36,6 @@ export const LausuntopyyntoComponent = ({
       ...fieldValue,
     };
     updateLausuntopyyntoAction(updatedLausuntopyynto);
-  };
-
-  const closeModal = () => {
-    setDeleteModalOpen(false);
-  };
-
-  const confirmDelete = () => {
-    deleteLausuntopyyntoAction(lausuntopyynto.jarjestys!);
-    closeModal();
   };
 
   const lahetetty = lausuntopyynto.lahetetty
@@ -56,17 +47,6 @@ export const LausuntopyyntoComponent = ({
 
   return (
     <Stack gap={theme.spacing(3)}>
-      <ModalComponent
-        open={deleteModalOpen}
-        header={t('hakemus.perustelu.lausuntotiedot.modal.otsikko')}
-        content={t('hakemus.perustelu.lausuntotiedot.modal.teksti')}
-        confirmButtonText={t(
-          'hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto',
-        )}
-        handleConfirm={confirmDelete}
-        handleClose={closeModal}
-        t={t}
-      />
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
           variant={'h4'}
@@ -84,7 +64,17 @@ export const LausuntopyyntoComponent = ({
             data-testid={`poista-lausuntopyynto-button-${lausuntopyynto.jarjestys}`}
             variant="text"
             startIcon={<DeleteOutline />}
-            onClick={() => setDeleteModalOpen(true)}
+            onClick={() =>
+              showConfirmation({
+                header: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
+                content: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
+                confirmButtonText: t(
+                  'hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto',
+                ),
+                handleConfirmAction: () =>
+                  deleteLausuntopyyntoAction(lausuntopyynto.jarjestys!),
+              })
+            }
           >
             {t('hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto')}
           </OphButton>

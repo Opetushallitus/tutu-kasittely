@@ -140,9 +140,12 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
 
   const deleteButton = page.getByTestId('poista-paatos-button').last();
 
+  deleteButton.click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    deleteButton.click(),
+    page.getByTestId('modal-confirm-button').click(),
   ]).then((req) => {
     const postData = req[0].postDataJSON();
 

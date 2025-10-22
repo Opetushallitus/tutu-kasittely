@@ -103,10 +103,13 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   await expect(
     page.getByTestId('poista-tutkinto-tai-opinto-button'),
   ).toBeVisible();
+  page.getByTestId('poista-tutkinto-tai-opinto-button').click();
+
+  await expect(page.getByTestId('modal-component')).toBeVisible();
 
   const [poistaTutkintoReq] = await Promise.all([
     page.waitForRequest((req1) => matchUpdate(req1.url(), req1.method())),
-    page.getByTestId('poista-tutkinto-tai-opinto-button').click(),
+    page.getByTestId('modal-confirm-button').click(),
   ]);
 
   const tutkintoTasoPostData = poistaTutkintoReq.postDataJSON();
