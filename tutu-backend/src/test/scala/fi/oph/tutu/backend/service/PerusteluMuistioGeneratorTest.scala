@@ -60,8 +60,24 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muokattu = None,
       muutosHistoria = Seq.empty,
       taydennyspyyntoLahetetty = None,
-      yhteistutkinto = false,
-      tutkinnot = Seq.empty,
+      yhteistutkinto = true,
+      tutkinnot = Seq(
+        Tutkinto(
+          id = None,
+          jarjestys = "MUU",
+          hakemusId = UUID.randomUUID,
+          nimi = None,
+          oppilaitos = None,
+          muuTutkintoTieto = Some("Muu tutkinto sisältö")
+        ),
+        Tutkinto(
+          id = None,
+          jarjestys = "1",
+          hakemusId = UUID.randomUUID,
+          nimi = Some("Paras tutkinto"),
+          oppilaitos = None
+        )
+      ),
       asiakirja = Some(
         Asiakirja(
           valmistumisenVahvistus = ValmistumisenVahvistus(
@@ -143,7 +159,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
-  val someMuistio: Option[Muistio] = Some(
+  val someKoulutuksenSisaltoMuistio: Option[Muistio] = Some(
     Muistio(
       id = UUID.randomUUID,
       hakemus_id = UUID.randomUUID,
@@ -171,7 +187,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       someHakemus,
       someAtaruHakemus,
       somePerustelu,
-      someMuistio
+      someKoulutuksenSisaltoMuistio
     )
     assert(!result.isEmpty)
   }
@@ -216,7 +232,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeKoulutuksenSisaltoProducesString(): Unit = {
-    val result = haeKoulutuksenSisalto(someMuistio)
+    val result = haeKoulutuksenSisalto(someKoulutuksenSisaltoMuistio)
     assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
   }
 
@@ -224,5 +240,23 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeImiHalytyksetTarkastettuProducesString(): Unit = {
     val result = haeImiHalytyksetTarkastettu(somePerustelu)
     assert(result.get.contains("kyllä"))
+  }
+
+  @Test
+  def haeMuuTutkintoProducesString(): Unit = {
+    val result = haeMuuTutkinto(someHakemus)
+    assert(result.get.contains("Muu tutkinto sisältö"))
+  }
+
+  @Test
+  def haeYhteistutkintoProducesString(): Unit = {
+    val result = haeYhteistutkinto(someHakemus)
+    assert(result.get.contains("Yhteistutkinto"))
+  }
+
+  @Test
+  def haeTutkintokohtaisetTiedotProducesString(): Unit = {
+    val result = haeTutkintokohtaisetTiedot(someHakemus)
+    assert(result.get.contains("Nimi: Paras tutkinto"))
   }
 }
