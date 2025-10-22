@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Kieli, KoodistoItem}
+import fi.oph.tutu.backend.domain.{DbMaakoodi, Kieli, KoodistoItem}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -12,13 +12,6 @@ import java.util.UUID
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
-
-case class DbMaakoodi(
-  id: UUID,
-  esittelijaId: Option[UUID],
-  koodiUri: String,
-  nimi: String
-)
 
 @Component
 @Repository
@@ -35,6 +28,8 @@ class MaakoodiRepository {
         UUID.fromString(r.nextString()),
         Option(r.nextString()).map(UUID.fromString),
         r.nextString(),
+        r.nextString(),
+        r.nextString(),
         r.nextString()
       )
     )
@@ -42,7 +37,7 @@ class MaakoodiRepository {
   def listAll(): Seq[DbMaakoodi] =
     db.run(
       sql"""
-        SELECT id, esittelija_id, koodiuri, nimi
+        SELECT id, esittelija_id, koodiuri, fi, sv, en
         FROM maakoodi
       """.as[DbMaakoodi],
       "list_all_maakoodi"
@@ -52,28 +47,34 @@ class MaakoodiRepository {
    * Creates or updates a maakoodi entry
    *
    * @param koodiUri maakoodi value in format maatjavaltiot2_XXX
-   * @param nimi name for the maakoodi
+   * @param fi name for the maakoodi finnish
+   * @param sv name for the maakoodi sverige
+   * @param en name for the maakoodi english
    * @param muokkaajaTaiLuoja creator or modifier of the entry
    * @return the created or updated maakoodi
    */
   def upsertMaakoodi(
     koodiUri: String,
-    nimi: String,
+    fi: String,
+    sv: String,
+    en: String,
     muokkaajaTaiLuoja: String,
     esittelijaId: Option[UUID] = None
   ): Option[DbMaakoodi] = {
     try {
       val esittelijaIdSql = esittelijaId.map(id => s"'$id'::uuid").getOrElse("NULL")
       val query           = sql"""
-        INSERT INTO maakoodi (koodiuri, nimi, luoja, esittelija_id)
-        VALUES ($koodiUri, $nimi, $muokkaajaTaiLuoja, #$esittelijaIdSql)
+        INSERT INTO maakoodi (koodiuri, fi, sv, en, luoja, esittelija_id)
+        VALUES ($koodiUri, $fi, $sv, $en, $muokkaajaTaiLuoja, #$esittelijaIdSql)
         ON CONFLICT (koodiuri) DO
         UPDATE SET
-          nimi = EXCLUDED.nimi,
+          fi = EXCLUDED.fi,
+          sv = EXCLUDED.sv,
+          en = EXCLUDED.en,
           muokkaaja = EXCLUDED.luoja,
           esittelija_id = #$esittelijaIdSql,
           muokattu = now()
-        RETURNING id, esittelija_id, koodiuri, nimi
+        RETURNING id, esittelija_id, koodiuri, fi, sv, en
         """.as[DbMaakoodi]
       val maakoodi: DbMaakoodi = db.run(query.head, "upsertMaakoodi")
       Some(maakoodi)
@@ -86,19 +87,25 @@ class MaakoodiRepository {
 
   private def syncInsert(
     koodiUri: String,
-    nimi: String,
+    fi: String,
+    sv: String,
+    en: String,
     muokkaajaTaiLuoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO maakoodi (koodiuri, nimi, luoja)
+      INSERT INTO maakoodi (koodiuri, fi, sv, en, luoja)
       VALUES (
         $koodiUri,
-        $nimi,
+        $fi,
+        $sv,
+        $en,
         $muokkaajaTaiLuoja
       )
       ON CONFLICT (koodiuri)
       DO UPDATE SET
-        nimi = EXCLUDED.nimi,
+        fi = EXCLUDED.fi,
+        sv = EXCLUDED.sv,
+        en = EXCLUDED.en,
         muokkaaja = EXCLUDED.luoja,
         muokattu = now()
     """
@@ -117,7 +124,9 @@ class MaakoodiRepository {
 
     val toInsertOrUpdate = items.map { item =>
       val nameFi = item.nimi.getOrElse(Kieli.fi, "")
-      syncInsert(item.koodiUri, nameFi, muokkaajaTaiLuoja)
+      val nameSv = item.nimi.getOrElse(Kieli.sv, "")
+      val nameEn = item.nimi.getOrElse(Kieli.en, "")
+      syncInsert(item.koodiUri, nameFi, nameSv, nameEn, muokkaajaTaiLuoja)
     }
 
     val toDelete = (existing -- incoming).toSeq.map(syncDelete)
@@ -139,7 +148,7 @@ class MaakoodiRepository {
   def getMaakoodi(id: UUID): Option[DbMaakoodi] = {
     try {
       val query = sql"""
-        SELECT id, esittelija_id, koodiuri, nimi
+        SELECT id, esittelija_id, koodiuri, fi, sv, en
         FROM maakoodi
         WHERE id = ${id.toString}::uuid
       """.as[DbMaakoodi]
@@ -161,6 +170,31 @@ class MaakoodiRepository {
     }
   }
 
+  def getMaakoodiByUri(uri: String): Option[DbMaakoodi] = {
+    try {
+      val query = sql"""
+        SELECT id, esittelija_id, koodiuri, fi, sv, en
+        FROM maakoodi
+        WHERE koodiuri = ${uri}
+      """.as[DbMaakoodi]
+      val maakoodi = db.run(query.head, "getMaakoodi")
+      Some(maakoodi)
+    } catch {
+      case e: java.util.NoSuchElementException =>
+        LOG.error(s"Maakoodi not found with uri: $uri")
+        None
+      case e: java.sql.SQLException =>
+        LOG.error(
+          s"SQL virhe maakoodin haussa - uri: $uri, SQL State: ${e.getSQLState}, Error Code: ${e.getErrorCode}",
+          e
+        )
+        None
+      case e: Exception =>
+        LOG.error(s"Maakoodin haku epäonnistui - uri: $uri", e)
+        None
+    }
+  }
+
   def updateMaakoodi(
     id: UUID,
     esittelijaId: Option[UUID],
@@ -175,7 +209,7 @@ class MaakoodiRepository {
           muokkaaja = $muokkaaja,
           muokattu = now()
         WHERE id = ${id.toString}::uuid
-        RETURNING id, esittelija_id, koodiuri, nimi
+        RETURNING id, esittelija_id, koodiuri, fi, sv, en
       """.as[DbMaakoodi]
       val maakoodi: DbMaakoodi = db.run(query.head, "updateMaakoodi")
       Some(maakoodi)

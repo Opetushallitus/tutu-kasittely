@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
-import fi.oph.tutu.backend.service.findAnswerByAtaruKysymysId
+import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, MaakoodiService}
 import fi.oph.tutu.backend.domain.{
   AtaruHakemus,
   AtaruLomake,
@@ -120,7 +120,11 @@ def haeYhteistutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   )
 }
 
-def haeTutkintokohtaisetTiedot(hakemusMaybe: Option[Hakemus]): Option[String] = {
+def haeTutkintokohtaisetTiedot(
+  maakoodiService: MaakoodiService,
+  hakemusMaybe: Option[Hakemus]
+): Option[String] = {
+  val lomakkeenKieli = hakemusMaybe.map(_.lomakkeenKieli)
   hakemusMaybe
     .map(_.tutkinnot)
     .map((tutkinnot: Seq[Tutkinto]) => {
@@ -128,13 +132,24 @@ def haeTutkintokohtaisetTiedot(hakemusMaybe: Option[Hakemus]): Option[String] = 
         .filter((tutkinto: Tutkinto) => tutkinto.jarjestys != "MUU")
         .sortWith((a: Tutkinto, b: Tutkinto) => a.jarjestys.toInt < b.jarjestys.toInt)
         .map((tutkinto: Tutkinto) => {
+          val kielistettyMaakoodi: Option[String] =
+            tutkinto.maakoodiUri
+              .flatMap(uri => maakoodiService.getMaakoodiByUri(uri))
+              .map(koodi =>
+                lomakkeenKieli match {
+                  case Some("sv") => koodi.sv
+                  case Some("en") => koodi.en
+                  case _          => koodi.fi
+                }
+              )
+
           Seq[String](
             s"Tutkinto ${tutkinto.jarjestys}:",
             s"Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
             s"Nimi: ${tutkinto.nimi.getOrElse("-")}",
             s"Pääaine tai erokoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("paaaaineTaiErikoisala")}",
             s"Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
-            s"Korkeakoulun tai oppilaitoksen sijaintimaa: ${tutkinto.maakoodiUri.getOrElse("-")}",
+            s"Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
             s"Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
           ).mkString("\n")
         })
@@ -143,6 +158,7 @@ def haeTutkintokohtaisetTiedot(hakemusMaybe: Option[Hakemus]): Option[String] = 
 }
 
 def generate(
+  maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
@@ -159,7 +175,7 @@ def generate(
     haeImiHalytyksetTarkastettu(perusteluMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
-    haeTutkintokohtaisetTiedot(hakemusMaybe)
+    haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe)
   ).flatten
 
   result.mkString("\n\n")

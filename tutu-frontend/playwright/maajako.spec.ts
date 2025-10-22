@@ -16,7 +16,9 @@ const setupMaakoodiApi = (
   initial: Array<{
     id: string;
     koodiUri: string;
-    nimi: string;
+    fi?: string;
+    sv?: string;
+    en?: string;
     esittelijaId: string | null;
   }>,
 ) => {
@@ -66,13 +68,13 @@ test('Näytä AlertBox, kun jotkin maakoodit ovat määrittämättä, ja Success
     {
       id: 'M1',
       koodiUri: 'maatjavaltiot2_001',
-      nimi: 'Suomi',
+      fi: 'Suomi',
       esittelijaId: 'E1',
     },
     {
       id: 'M2',
       koodiUri: 'maatjavaltiot2_002',
-      nimi: 'Ruotsi',
+      fi: 'Ruotsi',
       esittelijaId: null,
     },
   ]);
@@ -101,13 +103,13 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
     {
       id: 'M1',
       koodiUri: 'maatjavaltiot2_001',
-      nimi: 'Suomi',
+      fi: 'Suomi',
       esittelijaId: 'E1',
     },
     {
       id: 'M2',
       koodiUri: 'maatjavaltiot2_002',
-      nimi: 'Ruotsi',
+      fi: 'Ruotsi',
       esittelijaId: null,
     },
   ]);
@@ -150,13 +152,13 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
     {
       id: 'M1',
       koodiUri: 'maatjavaltiot2_001',
-      nimi: 'Suomi',
+      fi: 'Suomi',
       esittelijaId: 'E1',
     },
     {
       id: 'M2',
       koodiUri: 'maatjavaltiot2_002',
-      nimi: 'Ruotsi',
+      fi: 'Ruotsi',
       esittelijaId: null,
     },
   ]);
@@ -190,13 +192,13 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
     {
       id: 'M1',
       koodiUri: 'maatjavaltiot2_001',
-      nimi: 'Suomi',
+      fi: 'Suomi',
       esittelijaId: 'E1',
     },
     {
       id: 'M2',
       koodiUri: 'maatjavaltiot2_002',
-      nimi: 'Ruotsi',
+      fi: 'Ruotsi',
       esittelijaId: null,
     },
   ]);
@@ -237,13 +239,13 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
     {
       id: 'M1',
       koodiUri: 'maatjavaltiot2_001',
-      nimi: 'Suomi',
+      fi: 'Suomi',
       esittelijaId: 'E1',
     },
     {
       id: 'M2',
       koodiUri: 'maatjavaltiot2_002',
-      nimi: 'Ruotsi',
+      fi: 'Ruotsi',
       esittelijaId: null,
     },
   ]);

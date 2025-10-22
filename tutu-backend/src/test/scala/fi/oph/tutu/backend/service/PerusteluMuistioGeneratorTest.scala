@@ -4,12 +4,15 @@ import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.perustelumuistio.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{BeforeEach, Test}
 import fi.oph.tutu.backend.fixture.*
 import fi.oph.tutu.backend.utils.Constants
 
 import java.util.UUID
 import java.time.LocalDateTime
+import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.ArgumentMatchers.any
 
 class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
@@ -170,9 +173,18 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
+  @Mock
+  var maakoodiService: MaakoodiService = _
+
+  @BeforeEach
+  def setup(): Unit = {
+    MockitoAnnotations.openMocks(this)
+  }
+
   @Test
   def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
     val result = generate(
+      maakoodiService,
       noneHakemus,
       noneAtaruHakemus,
       nonePerustelu,
@@ -184,6 +196,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def generatesAStringWhenInputsDefined(): Unit = {
     val result = generate(
+      maakoodiService,
       someHakemus,
       someAtaruHakemus,
       somePerustelu,
@@ -256,7 +269,19 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeTutkintokohtaisetTiedotProducesString(): Unit = {
-    val result = haeTutkintokohtaisetTiedot(someHakemus)
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "",
+          sv = "",
+          en = ""
+        )
+      )
+    )
+    val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
   }
 }

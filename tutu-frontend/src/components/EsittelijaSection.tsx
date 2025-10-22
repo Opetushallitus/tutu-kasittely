@@ -1,11 +1,6 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { Esittelija } from '@/src/lib/types/esittelija';
-
-interface Maakoodi {
-  koodiUri: string;
-  nimi: string;
-  esittelijaId: string | null;
-}
+import { Maakoodi } from '../lib/types/maakoodi';
 
 interface EsittelijaSectionProps {
   esittelija: Esittelija;
@@ -19,7 +14,7 @@ const filterMaakooditByEsittelija = (
 ) =>
   maakoodit
     ?.filter((maakoodi) => maakoodi.esittelijaId === esittelijaId)
-    .map((maakoodi) => maakoodi.nimi) || [];
+    .map((maakoodi) => maakoodi.fi) || [];
 
 export const EsittelijaSection = ({
   esittelija,
