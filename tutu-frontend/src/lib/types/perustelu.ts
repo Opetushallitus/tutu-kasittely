@@ -11,19 +11,31 @@ export type Perustelu = {
   lahdeLahtomaanVirallinenVastaus: boolean;
   lahdeKansainvalinenHakuteosTaiVerkkosivusto: boolean;
   selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: string;
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa?: string;
+  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa?: string | null;
   selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: string;
   luotu: string;
   luoja: string;
   muokattu?: string;
   muokkaaja?: string;
   uoRoSisalto?: UoRoSisalto;
-  jatkoOpintoKelpoisuus?: string;
+  jatkoOpintoKelpoisuus?: string | null;
   jatkoOpintoKelpoisuusLisatieto?: string;
   muuPerustelu?: string;
-  aikaisemmatPaatokset?: boolean;
+  aikaisemmatPaatokset?: boolean | null;
   apSisalto?: APSisalto;
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];
+};
+
+export type VirallinenTutkinnonMyontajaWrapper = {
+  virallinenTutkinnonMyontaja?: boolean | null;
+};
+
+export type VirallinenTutkintoWrapper = {
+  virallinenTutkinto?: boolean | null;
+};
+
+export type AikaisemmatPaatoksetWrapper = {
+  aikaisemmatPaatokset?: boolean | null;
 };

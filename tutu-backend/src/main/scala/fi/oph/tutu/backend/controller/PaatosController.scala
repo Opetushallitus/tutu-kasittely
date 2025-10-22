@@ -4,7 +4,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{HakemusOid, HakemusOidDeserializer, PartialPaatos}
+import fi.oph.tutu.backend.domain.{
+  BooleanFieldWrapper,
+  BooleanFieldWrapperDeserializer,
+  BooleanFieldWrapperSerializer,
+  HakemusOid,
+  HakemusOidDeserializer,
+  PartialPaatos,
+  StringFieldWrapper,
+  StringFieldWrapperDeserializer
+}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
@@ -36,6 +45,11 @@ class PaatosController(paatosService: PaatosService, userService: UserService, v
 
   val module = new SimpleModule()
   module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
+  // Generic wrapper for all three-state boolean fields (NULL/true/false)
+  module.addDeserializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperDeserializer())
+  module.addSerializer(classOf[BooleanFieldWrapper], new BooleanFieldWrapperSerializer())
+  // Generic wrapper for all three-state string fields (NULL/value1/value2/...)
+  module.addDeserializer(classOf[StringFieldWrapper], new StringFieldWrapperDeserializer())
   mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)

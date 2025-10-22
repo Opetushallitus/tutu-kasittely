@@ -7,16 +7,14 @@ import {
 import { Stack } from '@mui/material';
 import {
   OphInputFormField,
-  OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { IconButton } from '@/src/components/IconButton';
 import * as dateFns from 'date-fns';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { OphRadioOption } from '@/src/lib/types/common';
-import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
@@ -31,16 +29,11 @@ export const ImiPyyntoComponent = ({
 }: ImiPyyntoProps) => {
   const { t } = useTranslations();
 
-  const [currentImiPyynto, setCurrentImiPyynto] =
-    React.useState<ImiPyynto>(imiPyynto);
-
-  React.useEffect(() => {
-    setCurrentImiPyynto(imiPyynto);
-  }, [imiPyynto]);
+  // Controlled component - derive value directly from props, no local state
+  const currentImiPyynto = imiPyynto;
 
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
-    setCurrentImiPyynto(updatedImiPyynto);
     if (key === 'imiPyyntoNumero') {
       debouncedUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
     } else {
@@ -80,42 +73,29 @@ export const ImiPyyntoComponent = ({
         {t('hakemus.asiakirjat.imiPyynnot.otsikko')}
       </OphTypography>
 
-      <Stack direction="row">
-        <OphTypography variant="label">
-          {t('hakemus.asiakirjat.imiPyynnot.imiPyyntoQuestion')}
-        </OphTypography>
-        <IconButton
-          data-testid="imiPyynto-delete"
-          onClick={() => setField('imiPyynto', null)}
-        >
-          <ClearSelectionIcon />
-        </IconButton>
-      </Stack>
-
-      <Stack direction="column" spacing={2}>
-        <OphRadioGroup
-          labelId="imiPyynto-radio-group-label"
-          data-testid="imiPyynto-radio-group"
-          sx={{ width: '100%' }}
-          options={imiPyyntoOptions}
-          row
-          value={currentImiPyynto.imiPyynto?.toString() ?? ''}
-          onChange={(e) => {
-            const newValue = e.target.value === 'true';
-            // Jos IMI-pyyntö muutetaan "Ei", tyhjennä myös päivämäärät
-            const updatedImiPyynto = newValue
-              ? { ...currentImiPyynto, imiPyynto: newValue }
-              : {
-                  imiPyynto: false,
-                  imiPyyntoNumero: '',
-                  imiPyyntoLahetetty: '',
-                  imiPyyntoVastattu: '',
-                };
-            setCurrentImiPyynto(updatedImiPyynto);
-            instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
-          }}
-        />
-      </Stack>
+      <OphRadioGroupWithClear
+        label={t('hakemus.asiakirjat.imiPyynnot.imiPyyntoQuestion')}
+        labelId="imiPyynto-radio-group-label"
+        labelVariant="label"
+        data-testid="imiPyynto-radio-group"
+        sx={{ width: '100%' }}
+        options={imiPyyntoOptions}
+        row
+        value={currentImiPyynto.imiPyynto?.toString() ?? ''}
+        onChange={(e) => {
+          const newValue = e.target.value === 'true';
+          const updatedImiPyynto = newValue
+            ? { ...currentImiPyynto, imiPyynto: newValue }
+            : {
+                imiPyynto: false,
+                imiPyyntoNumero: null,
+                imiPyyntoLahetetty: null,
+                imiPyyntoVastattu: null,
+              };
+          instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+        }}
+        onClear={() => setField('imiPyynto', null)}
+      />
 
       {currentImiPyynto.imiPyynto && (
         <>
