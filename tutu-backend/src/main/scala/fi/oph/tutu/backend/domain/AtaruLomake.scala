@@ -34,6 +34,18 @@ case class Valinta(
   followups: Seq[LomakeContentItem] = Seq()
 )
 
+case class NestedOption(
+  label: Option[Kielistetty] = None,
+  value: Option[Kielistetty] = None,
+  children: Seq[NestedOption] = Seq()
+)
+
+case class PaatosTietoOptions(
+  kelpoisuusOptions: Seq[NestedOption] = Seq(),
+  tiettyTutkintoTaiOpinnotOptions: Seq[NestedOption] = Seq(),
+  riittavatOpinnotOptions: Seq[NestedOption] = Seq()
+)
+
 case class SisaltoItem(
   key: String,
   fieldType: String,
