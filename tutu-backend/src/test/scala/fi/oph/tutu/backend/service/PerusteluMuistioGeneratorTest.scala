@@ -177,13 +177,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Mock
   var maakoodiService: MaakoodiService = _
 
-  @BeforeEach
-  def setup(): Unit = {
-    MockitoAnnotations.openMocks(this)
-  }
-
-  @Test
-  def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
+  def setupMaakoodit(): Unit = {
     when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
       Some(
         Maakoodi(
@@ -196,6 +190,16 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
     )
+  }
+
+  @BeforeEach
+  def setup(): Unit = {
+    MockitoAnnotations.openMocks(this)
+  }
+
+  @Test
+  def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
+    setupMaakoodit()
 
     val result = generate(
       maakoodiService,
@@ -209,18 +213,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def generatesAStringWhenInputsDefined(): Unit = {
-    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
-      Some(
-        Maakoodi(
-          id = UUID.randomUUID,
-          esittelijaId = None,
-          koodiUri = "",
-          fi = "Suomenmaa",
-          sv = "Ruotsinmaa",
-          en = "Englanninmaa"
-        )
-      )
-    )
+    setupMaakoodit()
 
     val result = generate(
       maakoodiService,
@@ -296,18 +289,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeTutkintokohtaisetTiedotProducesString(): Unit = {
-    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
-      Some(
-        Maakoodi(
-          id = UUID.randomUUID,
-          esittelijaId = None,
-          koodiUri = "",
-          fi = "Suomenmaa",
-          sv = "Ruotsinmaa",
-          en = "Englanninmaa"
-        )
-      )
-    )
+    setupMaakoodit()
+
     val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
     assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))

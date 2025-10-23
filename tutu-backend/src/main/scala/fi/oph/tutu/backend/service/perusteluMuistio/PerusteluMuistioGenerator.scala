@@ -147,7 +147,7 @@ def haeTutkintokohtaisetTiedot(
             s"Tutkinto ${tutkinto.jarjestys}:",
             s"Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
             s"Nimi: ${tutkinto.nimi.getOrElse("-")}",
-            s"Pääaine tai erokoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("paaaaineTaiErikoisala")}",
+            s"Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("paaaaineTaiErikoisala")}",
             s"Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
             s"Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
             s"Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
