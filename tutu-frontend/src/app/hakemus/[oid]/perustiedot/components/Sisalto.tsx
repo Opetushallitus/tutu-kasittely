@@ -49,11 +49,21 @@ const getValue = (sisaltoValue: SisaltoValue, lomakkeenKieli: Language) => {
 
 const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
   if (!isAttachmentField(item)) {
-    const label =
-      item.label?.[lomakkeenKieli as keyof typeof item.label] || null;
-    const renderedLabel = label && (
+    let label = item.label?.[lomakkeenKieli as keyof typeof item.label];
+
+    // väliaikainen purkkaratkaisu, muuttuu turhaksi jos lomakkeeseen lisätään kysymykset eikä niitä tarvitse kaivaa infotekstistä
+    if (!label || label === '') {
+      label = item.infoText?.label?.[
+        lomakkeenKieli as keyof typeof item.infoText.label
+      ]
+        ?.split('\n')[0]
+        .replaceAll('#', '')
+        .replaceAll('*', '');
+    }
+
+    const renderedLabel = label ? (
       <OphTypography variant={'label'}>{label}</OphTypography>
-    );
+    ) : undefined;
     const isEuPatevyys = sisaltoItemMatches(item, eupatevyys);
 
     const renderedValues = item.value.map((value) => (
@@ -68,18 +78,20 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
         >
           {getValue(value, lomakkeenKieli)}
         </OphTypography>
-        {isEuPatevyys ? null : (
+        {isEuPatevyys ? undefined : (
           <Subsection key={`${value.value}--followups`}>
             {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
           </Subsection>
         )}
       </Fragment>
     ));
-    const renderedChildren = (
-      <Subsection>
-        {item.children.map((child) => renderItem(child, lomakkeenKieli))}
-      </Subsection>
-    );
+
+    const renderedChildren =
+      item.children.length > 0 ? (
+        <Subsection>
+          {item.children.map((child) => renderItem(child, lomakkeenKieli))}
+        </Subsection>
+      ) : undefined;
 
     return (
       <Indented key={`${item.key}`}>
@@ -100,42 +112,19 @@ export const Sisalto = ({
   osiot: HakemuspalveluSisaltoId[];
   lomakkeenKieli: Language;
 }) => {
-  const isPerustiedot = osiot.some(
-    (osio) =>
-      sisaltoItemMatches(
-        { key: osio.generatedId } as SisaltoItem,
-        perustiedot,
-      ) ||
-      sisaltoItemMatches({ key: osio.definedId } as SisaltoItem, perustiedot),
-  );
-
-  let itemsToRender: SisaltoItem[] = [];
-
-  if (isPerustiedot) {
-    // Perustiedoissa ei haluta näyttää päätason kysymyksiä
-    const perustiedotItem = sisalto.find((item) =>
-      sisaltoItemMatches(item, perustiedot),
-    );
-    const perustiedotFollowups =
-      perustiedotItem?.children?.[0]?.value?.[0]?.followups ?? [];
-    itemsToRender = [...perustiedotFollowups];
-  }
-
-  // Muut osiot
-  const otherOsiot = osiot.filter(
-    (osio) =>
-      !sisaltoItemMatches(
-        { key: osio.generatedId } as SisaltoItem,
-        perustiedot,
-      ),
-  );
-
-  if (otherOsiot.length > 0) {
-    const otherItems = sisalto.filter((item) =>
-      sisaltoItemMatchesToAny(item, otherOsiot),
-    );
-    itemsToRender = [...itemsToRender, ...otherItems];
-  }
+  const itemsToRender = sisalto
+    .filter((item) => sisaltoItemMatchesToAny(item, osiot))
+    .map((item) => {
+      // Perustiedoissa ei haluta näyttää päätason kysymyksiä
+      if (sisaltoItemMatches(item, perustiedot)) {
+        return {
+          ...item?.children?.[0],
+          label: {},
+          value: item?.children?.[0].value?.map((i) => ({ ...i, label: {} })),
+        };
+      }
+      return item;
+    });
 
   return <>{itemsToRender.map((item) => renderItem(item, lomakkeenKieli))}</>;
 };

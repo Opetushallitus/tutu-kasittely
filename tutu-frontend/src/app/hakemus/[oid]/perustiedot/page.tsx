@@ -6,7 +6,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
-import { Sisalto } from '@/src/components/Sisalto';
+import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
 import React, { useEffect } from 'react';
@@ -56,7 +56,7 @@ export default function PerustietoPage() {
   );
 
   return (
-    <Stack gap={theme.spacing(1)}>
+    <Stack gap={theme.spacing(1)} sx={{ marginRight: theme.spacing(3) }}>
       <OphTypography variant={'h2'}>
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>
