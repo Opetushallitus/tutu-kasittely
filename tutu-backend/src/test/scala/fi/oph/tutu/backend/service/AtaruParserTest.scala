@@ -13,18 +13,23 @@ import org.mockito.{Mock, MockitoAnnotations}
 
 import java.util.UUID
 
-class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
+class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   @Mock
   var koodistoService: KoodistoService = _
 
   var ataruHakemusParser: AtaruHakemusParser = _
 
+  var ataruLomakeParser: AtaruLomakeParser = _
+
   val hakemus: AtaruHakemus = JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]
+
+  val lomake: AtaruLomake = JsonMethods.parse(loadJson("ataruLomake.json")).extract[AtaruLomake]
 
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     ataruHakemusParser = new AtaruHakemusParser(koodistoService)
+    ataruLomakeParser = new AtaruLomakeParser()
   }
 
   @Test
@@ -617,4 +622,12 @@ class AtaruHakemusParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(Some("maatjavaltiot2_152"), maakoodi)
   }
 
+  @Test
+  def parsePaatosOptionsTest(): Unit = {
+    val options = ataruLomakeParser.parsePaatosOptions(lomake)
+    assert(options.kelpoisuusOptions.size == 20)
+    assert(options.tiettyTutkintoTaiOpinnotOptions.size == 7)
+    assert(options.riittavatOpinnotOptions.size == 4)
+
+  }
 }
