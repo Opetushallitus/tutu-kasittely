@@ -78,7 +78,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           jarjestys = "1",
           hakemusId = UUID.randomUUID,
           nimi = Some("Paras tutkinto"),
-          oppilaitos = None
+          oppilaitos = None,
+          maakoodiUri = Some("mock_maakoodiuri")
         )
       ),
       asiakirja = Some(
@@ -183,6 +184,19 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
+        )
+      )
+    )
+
     val result = generate(
       maakoodiService,
       noneHakemus,
@@ -195,6 +209,19 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def generatesAStringWhenInputsDefined(): Unit = {
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
+        )
+      )
+    )
+
     val result = generate(
       maakoodiService,
       someHakemus,
@@ -275,13 +302,14 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           id = UUID.randomUUID,
           esittelijaId = None,
           koodiUri = "",
-          fi = "",
-          sv = "",
-          en = ""
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
         )
       )
     )
     val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
+    assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
   }
 }
