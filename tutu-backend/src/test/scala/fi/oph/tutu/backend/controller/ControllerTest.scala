@@ -4,7 +4,6 @@ import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.*
 import fi.oph.tutu.backend.domain.ValmistumisenVahvistusVastaus.{Kielteinen, Myonteinen}
-import fi.oph.tutu.backend.repository.DbMaakoodi
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
@@ -74,12 +73,30 @@ class ControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
-    maakoodi =
-      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_752", "Ruotsi", "testi", Some(esittelija.get.esittelijaId))
-    maakoodi2 =
-      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_834", "Tansania", "testi", Some(esittelija.get.esittelijaId))
-    maakoodi3 =
-      maakoodiRepository.upsertMaakoodi("maatjavaltiot2_152", "Chile", "testi", Some(esittelija.get.esittelijaId))
+    maakoodi = maakoodiRepository.upsertMaakoodi(
+      "maatjavaltiot2_752",
+      "Ruotsi",
+      "Sverige",
+      "Sweden",
+      "testi",
+      Some(esittelija.get.esittelijaId)
+    )
+    maakoodi2 = maakoodiRepository.upsertMaakoodi(
+      "maatjavaltiot2_834",
+      "Tansania",
+      "Tanzania",
+      "Tarzania",
+      "testi",
+      Some(esittelija.get.esittelijaId)
+    )
+    maakoodi3 = maakoodiRepository.upsertMaakoodi(
+      "maatjavaltiot2_152",
+      "Chile",
+      "Chilé",
+      "Chili",
+      "testi",
+      Some(esittelija.get.esittelijaId)
+    )
   }
 
   @BeforeEach

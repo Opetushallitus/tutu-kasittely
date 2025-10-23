@@ -21,16 +21,10 @@ import { AlertBox } from '@/src/components/AlertBox';
 import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
 import React from 'react';
 import { EsittelijaSection } from '@/src/components/EsittelijaSection';
-
-interface Maakoodi {
-  id: string;
-  koodiUri: string;
-  nimi: string;
-  esittelijaId: string | null;
-}
+import { Maakoodi } from '@/src/lib/types/maakoodi';
 
 const sortMaakoodit = (maakoodit: Maakoodi[] | undefined) =>
-  maakoodit?.slice().sort((a, b) => a.nimi.localeCompare(b.nimi)) || [];
+  maakoodit?.slice().sort((a, b) => a.fi.localeCompare(b.fi)) || [];
 
 export default function MaajakoPage() {
   const { t } = useTranslations();
@@ -85,7 +79,7 @@ export default function MaajakoPage() {
     (maakoodi) => maakoodi.esittelijaId == null,
   );
   const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
-    label: maakoodi.nimi,
+    label: maakoodi.fi,
     value: maakoodi.koodiUri,
   }));
 
@@ -125,7 +119,7 @@ export default function MaajakoPage() {
         ) : (
           <AlertBox
             infoText={maakooditWithoutEsittelija
-              .map((maakoodi) => maakoodi.nimi)
+              .map((maakoodi) => maakoodi.fi)
               .join(', ')}
             headingText={t('maajako.varoitus')}
           />
@@ -162,7 +156,7 @@ export default function MaajakoPage() {
                   multiple
                   data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
                   options={maakooditWithoutEsittelija.map((maakoodi) => ({
-                    label: maakoodi.nimi,
+                    label: maakoodi.fi,
                     value: maakoodi.koodiUri,
                   }))}
                   value={
@@ -201,7 +195,7 @@ export default function MaajakoPage() {
                           .map((maakoodi) => (
                             <Chip
                               key={maakoodi.koodiUri}
-                              label={maakoodi.nimi}
+                              label={maakoodi.fi}
                               sx={{ borderRadius: '0px' }}
                               data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
                               onDelete={() => {

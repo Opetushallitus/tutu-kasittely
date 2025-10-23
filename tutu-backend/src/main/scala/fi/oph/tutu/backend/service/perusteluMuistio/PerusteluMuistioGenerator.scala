@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
-import fi.oph.tutu.backend.service.findAnswerByAtaruKysymysId
+import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, MaakoodiService}
 import fi.oph.tutu.backend.domain.{
   AtaruHakemus,
   AtaruLomake,
@@ -13,6 +13,7 @@ import fi.oph.tutu.backend.domain.{
   Kieli,
   Muistio,
   Perustelu,
+  Tutkinto,
   ValmistumisenVahvistus,
   ValmistumisenVahvistusVastaus
 }
@@ -66,11 +67,11 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
 }
 
 def haeHakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  hakemusMaybe.map(hakemus => s"${hakemus.hakija.etunimet} ${hakemus.hakija.sukunimi}")
+  hakemusMaybe.map(hakemus => s"Hakijan nimi: ${hakemus.hakija.etunimet} ${hakemus.hakija.sukunimi}")
 }
 
 def haeHakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  hakemusMaybe.map(hakemus => hakemus.hakija.syntymaaika)
+  hakemusMaybe.map(hakemus => s"Hakijan syntymäaika: ${hakemus.hakija.syntymaaika}")
 }
 
 def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -101,7 +102,63 @@ def haeImiHalytyksetTarkastettu(perusteluMaybe: Option[Perustelu]): Option[Strin
     .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu: ${muotoiltuValinta}")
 }
 
+def haeMuuTutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val tutkinnotMaybe: Option[Seq[Tutkinto]] = hakemusMaybe.map(_.tutkinnot)
+  val muuTutkintoMaybe: Option[Tutkinto]    = tutkinnotMaybe
+    .flatMap((tutkinnot: Seq[Tutkinto]) => {
+      tutkinnot.find((tutkinto: Tutkinto) => tutkinto.jarjestys == "MUU")
+    })
+  val muuTutkintoTietoMaybe: Option[String] = muuTutkintoMaybe.flatMap(_.muuTutkintoTieto)
+
+  muuTutkintoTietoMaybe.map((muuTutkintoTieto: String) => s"Muu tutkinto:\n${muuTutkintoTieto}")
+}
+
+def haeYhteistutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  hakemusMaybe.flatMap(hakemus =>
+    if (hakemus.yhteistutkinto) { Some("Yhteistutkinto") }
+    else { None }
+  )
+}
+
+def haeTutkintokohtaisetTiedot(
+  maakoodiService: MaakoodiService,
+  hakemusMaybe: Option[Hakemus]
+): Option[String] = {
+  val lomakkeenKieli = hakemusMaybe.map(_.lomakkeenKieli)
+  hakemusMaybe
+    .map(_.tutkinnot)
+    .map((tutkinnot: Seq[Tutkinto]) => {
+      tutkinnot
+        .filter((tutkinto: Tutkinto) => tutkinto.jarjestys != "MUU")
+        .sortWith((a: Tutkinto, b: Tutkinto) => a.jarjestys.toInt < b.jarjestys.toInt)
+        .map((tutkinto: Tutkinto) => {
+          val kielistettyMaakoodi: Option[String] =
+            tutkinto.maakoodiUri
+              .flatMap(uri => maakoodiService.getMaakoodiByUri(uri))
+              .map(koodi =>
+                lomakkeenKieli match {
+                  case Some("sv") => koodi.sv
+                  case Some("en") => koodi.en
+                  case _          => koodi.fi
+                }
+              )
+
+          Seq[String](
+            s"Tutkinto ${tutkinto.jarjestys}:",
+            s"Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
+            s"Nimi: ${tutkinto.nimi.getOrElse("-")}",
+            s"Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("paaaaineTaiErikoisala")}",
+            s"Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
+            s"Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
+            s"Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
+          ).mkString("\n")
+        })
+        .mkString("\n\n")
+    })
+}
+
 def generate(
+  maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
@@ -115,7 +172,10 @@ def generate(
     haeImiPyyntoTieto(hakemusMaybe),
     haeValmistuminenVahvistettu(hakemusMaybe),
     haeKoulutuksenSisalto(uoRoMuistioMaybe),
-    haeImiHalytyksetTarkastettu(perusteluMaybe)
+    haeImiHalytyksetTarkastettu(perusteluMaybe),
+    haeMuuTutkinto(hakemusMaybe),
+    haeYhteistutkinto(hakemusMaybe),
+    haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe)
   ).flatten
 
   result.mkString("\n\n")

@@ -4,12 +4,15 @@ import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.perustelumuistio.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{BeforeEach, Test}
 import fi.oph.tutu.backend.fixture.*
 import fi.oph.tutu.backend.utils.Constants
 
 import java.util.UUID
 import java.time.LocalDateTime
+import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.ArgumentMatchers.any
 
 class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
@@ -60,8 +63,25 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muokattu = None,
       muutosHistoria = Seq.empty,
       taydennyspyyntoLahetetty = None,
-      yhteistutkinto = false,
-      tutkinnot = Seq.empty,
+      yhteistutkinto = true,
+      tutkinnot = Seq(
+        Tutkinto(
+          id = None,
+          jarjestys = "MUU",
+          hakemusId = UUID.randomUUID,
+          nimi = None,
+          oppilaitos = None,
+          muuTutkintoTieto = Some("Muu tutkinto sisältö")
+        ),
+        Tutkinto(
+          id = None,
+          jarjestys = "1",
+          hakemusId = UUID.randomUUID,
+          nimi = Some("Paras tutkinto"),
+          oppilaitos = None,
+          maakoodiUri = Some("mock_maakoodiuri")
+        )
+      ),
       asiakirja = Some(
         Asiakirja(
           valmistumisenVahvistus = ValmistumisenVahvistus(
@@ -143,7 +163,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
-  val someMuistio: Option[Muistio] = Some(
+  val someKoulutuksenSisaltoMuistio: Option[Muistio] = Some(
     Muistio(
       id = UUID.randomUUID,
       hakemus_id = UUID.randomUUID,
@@ -154,9 +174,35 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
+  @Mock
+  var maakoodiService: MaakoodiService = _
+
+  def setupMaakoodit(): Unit = {
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
+        )
+      )
+    )
+  }
+
+  @BeforeEach
+  def setup(): Unit = {
+    MockitoAnnotations.openMocks(this)
+  }
+
   @Test
   def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
+    setupMaakoodit()
+
     val result = generate(
+      maakoodiService,
       noneHakemus,
       noneAtaruHakemus,
       nonePerustelu,
@@ -167,11 +213,14 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def generatesAStringWhenInputsDefined(): Unit = {
+    setupMaakoodit()
+
     val result = generate(
+      maakoodiService,
       someHakemus,
       someAtaruHakemus,
       somePerustelu,
-      someMuistio
+      someKoulutuksenSisaltoMuistio
     )
     assert(!result.isEmpty)
   }
@@ -216,7 +265,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeKoulutuksenSisaltoProducesString(): Unit = {
-    val result = haeKoulutuksenSisalto(someMuistio)
+    val result = haeKoulutuksenSisalto(someKoulutuksenSisaltoMuistio)
     assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
   }
 
@@ -224,5 +273,26 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeImiHalytyksetTarkastettuProducesString(): Unit = {
     val result = haeImiHalytyksetTarkastettu(somePerustelu)
     assert(result.get.contains("kyllä"))
+  }
+
+  @Test
+  def haeMuuTutkintoProducesString(): Unit = {
+    val result = haeMuuTutkinto(someHakemus)
+    assert(result.get.contains("Muu tutkinto sisältö"))
+  }
+
+  @Test
+  def haeYhteistutkintoProducesString(): Unit = {
+    val result = haeYhteistutkinto(someHakemus)
+    assert(result.get.contains("Yhteistutkinto"))
+  }
+
+  @Test
+  def haeTutkintokohtaisetTiedotProducesString(): Unit = {
+    setupMaakoodit()
+
+    val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
+    assert(result.get.contains("Nimi: Paras tutkinto"))
+    assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
   }
 }

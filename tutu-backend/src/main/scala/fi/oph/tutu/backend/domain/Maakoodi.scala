@@ -6,5 +6,16 @@ case class Maakoodi(
   id: UUID,
   esittelijaId: Option[UUID],
   koodiUri: String,
-  nimi: String
+  fi: String,
+  sv: String,
+  en: String
+)
+
+case class DbMaakoodi(
+  id: UUID,
+  esittelijaId: Option[UUID],
+  koodiUri: String,
+  fi: String,
+  sv: String,
+  en: String
 )
