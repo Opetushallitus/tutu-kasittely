@@ -1,16 +1,12 @@
 package fi.oph.tutu.backend.controller
 
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.domain.{HakemusOid, HakemusOidDeserializer, PartialPaatos}
+import com.fasterxml.jackson.databind.ObjectMapper
+import fi.oph.tutu.backend.domain.{HakemusOid, PartialPaatos}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.{
   GetMapping,
   PathVariable,
@@ -24,19 +20,13 @@ import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
-class PaatosController(paatosService: PaatosService, userService: UserService, val auditLog: AuditLog) {
+class PaatosController(
+  paatosService: PaatosService,
+  userService: UserService,
+  mapper: ObjectMapper,
+  val auditLog: AuditLog
+) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosController])
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-  mapper.registerModule(new JavaTimeModule)
-  mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-  mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-
-  val module = new SimpleModule()
-  module.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
-  mapper.registerModule(module)
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 

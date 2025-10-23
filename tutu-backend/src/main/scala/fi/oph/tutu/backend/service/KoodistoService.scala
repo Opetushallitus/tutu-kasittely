@@ -72,10 +72,21 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
     items
   }
 
-  @CacheEvict(value = Array("koodisto"), allEntries = true)
+  /**
+   * Hakee koodiston relaatiot (esim. kunnan relaatiot maakuntaan)
+   * @param koodiUri Koodisto URI (esim. "kunta_091")
+   * @return Either virhe tai JSON-vastaus merkkijonona
+   */
+  @Cacheable(value = Array("koodistoRelaatiot"), key = "#koodiUri")
+  def getKoodistoRelaatiot(koodiUri: String): Either[Throwable, String] = {
+    val url = s"$opintopolku_virkailija_domain/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/$koodiUri"
+    httpService.get(koodistoCasClient, url)
+  }
+
+  @CacheEvict(value = Array("koodisto", "koodistoRelaatiot"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
   def emptyKoodistoCache(): Unit =
-    LOG.info("Emptying koodisto-cache")
+    LOG.info("Emptying koodisto-cache and koodistoRelaatiot-cache")
 
   @CachePut(Array("koodisto"))
   private def updateCached(koodisto: String, value: String): Unit = {
