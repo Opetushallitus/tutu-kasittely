@@ -1,7 +1,7 @@
-import React, { Fragment, ReactNode } from 'react';
+import React from 'react';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
-import { styled } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   eupatevyys,
   HakemuspalveluSisaltoId,
@@ -13,32 +13,6 @@ import {
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { Language } from '@/src/lib/localization/localizationTypes';
-
-interface IndentedProps {
-  className?: string;
-  children: ReactNode;
-}
-
-const Indented = styled((props: IndentedProps) => {
-  const { children, ...rest } = props;
-  return (
-    <div {...rest} className={`${props.className} indented`}>
-      {children}
-    </div>
-  );
-})({
-  '.indented .indented': {
-    paddingLeft: `1em`,
-  },
-  '.indented:last-child': {
-    paddingBottom: `24px`,
-  },
-});
-
-const Subsection = styled('div')({
-  paddingLeft: `1em`,
-  display: 'block',
-});
 
 const getValue = (sisaltoValue: SisaltoValue, lomakkeenKieli: Language) => {
   return (
@@ -66,39 +40,42 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
     ) : undefined;
     const isEuPatevyys = sisaltoItemMatches(item, eupatevyys);
 
-    const renderedValues = item.value.map((value) => (
-      <Fragment key={`${value.value}--item`}>
-        <OphTypography
-          key={`${value.value}--value`}
-          data-testid={`sisalto-item-${item.key}`}
-          variant={'body1'}
-          sx={{
-            paddingLeft: `1em`,
-          }}
-        >
-          {getValue(value, lomakkeenKieli)}
-        </OphTypography>
-        {isEuPatevyys ? undefined : (
-          <Subsection key={`${value.value}--followups`}>
-            {value.followups.map((v) => renderItem(v, lomakkeenKieli))}
-          </Subsection>
-        )}
-      </Fragment>
-    ));
+    const renderedValues = item.value.map((val) => {
+      const value = val.value;
+      const valueLabel = getValue(val, lomakkeenKieli);
+      return (
+        <Stack key={`${value}--item`}>
+          {valueLabel && valueLabel !== '' ? (
+            <OphTypography
+              key={`${value}--value`}
+              data-testid={`sisalto-item-${item.key}`}
+              variant={'body1'}
+            >
+              {valueLabel}
+            </OphTypography>
+          ) : undefined}
+          {isEuPatevyys || val.followups.length === 0 ? undefined : (
+            <Stack gap={2} key={`${value}--followups`} sx={{ paddingLeft: 2 }}>
+              {val.followups.map((v) => renderItem(v, lomakkeenKieli))}
+            </Stack>
+          )}
+        </Stack>
+      );
+    });
 
     const renderedChildren =
       item.children.length > 0 ? (
-        <Subsection>
+        <Stack gap={2} sx={{ paddingLeft: 2 }} key={`${item.key}-children`}>
           {item.children.map((child) => renderItem(child, lomakkeenKieli))}
-        </Subsection>
+        </Stack>
       ) : undefined;
 
     return (
-      <Indented key={`${item.key}`}>
+      <Stack key={`${item.key}`}>
         {renderedLabel}
         {renderedValues}
         {renderedChildren}
-      </Indented>
+      </Stack>
     );
   }
 };
@@ -120,7 +97,8 @@ export const Sisalto = ({
         return {
           ...item?.children?.[0],
           label: {},
-          value: item?.children?.[0].value?.map((i) => ({ ...i, label: {} })),
+          value:
+            item?.children?.[0].value?.map((i) => ({ ...i, label: {} })) ?? [],
         };
       }
       return item;
