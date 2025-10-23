@@ -73,6 +73,7 @@ case class DbHakemus(
 case class Hakemus(
   hakemusOid: String,
   lomakeOid: String,
+  lomakeId: Long,
   lomakkeenKieli: String,
   hakija: Hakija,
   sisalto: Seq[SisaltoItem],
