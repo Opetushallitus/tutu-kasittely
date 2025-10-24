@@ -56,8 +56,11 @@ object Constants {
   val ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_OPTIONS: AtaruKysymysId =
     AtaruKysymysId("54559d94-9dff-4103-9b31-a0a4a5bbd7bd", "varhaiskasvatuksen-tehtavat-options")
 
-  val ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OPTIONS: AtaruKysymysId =
-    AtaruKysymysId("370b6714-2934-4ce8-aef9-0b52f7eef4d5", "tietty-tutkinto-tai-opinnot-options")
+  val ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_AINE_OPTIONS: AtaruKysymysId =
+    AtaruKysymysId("370b6714-2934-4ce8-aef9-0b52f7eef4d5", "tietty-tutkinto-tai-opinnot-aine-options")
+  val ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OIKEUSTIETEELLINEN_OPTIONS: AtaruKysymysId =
+    AtaruKysymysId("a9c20eff-b25d-4bb6-a96d-85d30a6c0d5a", "tietty-tutkinto-tai-opinnot-oikeustieteellinen-options")
+
   val ATARU_LOMAKE_RIITTAVAT_OPINNOT_OPTIONS: AtaruKysymysId = {
     AtaruKysymysId("337b4741-2550-4f21-adb5-69dfdcbb7829", "riittavat-opinnot-options")
   }
