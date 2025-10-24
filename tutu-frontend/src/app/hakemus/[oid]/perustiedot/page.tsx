@@ -65,12 +65,10 @@ export default function PerustietoPage() {
       </OphTypography>
       <Box>
         <OphTypography variant={'label'}>
-          {t('hakemus.perustiedot.mitaHakee', {
-            language: hakemus.lomakkeenKieli,
-          })}
+          {t(`hakemus.perustiedot.mitaHakee.${hakemus.lomakkeenKieli}`)}
         </OphTypography>
         <OphTypography variant={'body1'} data-testid={'hakemus-koskee'}>
-          {t(hakemusKoskee, { language: hakemus.lomakkeenKieli })}
+          {t(`${hakemusKoskee}.${hakemus.lomakkeenKieli}`)}
         </OphTypography>
       </Box>
       <Sisalto

@@ -85,7 +85,11 @@
     "perustiedot": {
       "otsikko": "Hakemuksen ja hakijan tiedot",
       "hakemusKoskee": "Hakemus koskee",
-      "mitaHakee": "Mitä hakee",
+      "mitaHakee": {
+        "fi": "Mitä hakee",
+        "sv": "Ansökan gäller",
+        "en": "Applying for"
+      },
       "esittelijanHuomioita": "Esittelijan huomioita (ei näy muistiossa)",
       "muutoshistoria": {
         "otsikko": "Hakemuksen muutoshistoria",
