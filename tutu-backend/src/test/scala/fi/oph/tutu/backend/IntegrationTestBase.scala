@@ -1,11 +1,11 @@
 package fi.oph.tutu.backend
 
-import fi.oph.tutu.backend.domain.*
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
 import fi.oph.tutu.backend.repository.{
@@ -19,7 +19,7 @@ import fi.oph.tutu.backend.repository.{
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.junit.jupiter.api.{AfterAll, BeforeAll, TestInstance}
+import org.junit.jupiter.api.{BeforeAll, TestInstance}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.slf4j.{Logger, LoggerFactory}
@@ -33,8 +33,8 @@ import org.testcontainers.containers.wait.strategy.Wait
 
 import java.io.FileNotFoundException
 import java.sql.DriverManager
-import java.time.{Duration, LocalDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 
