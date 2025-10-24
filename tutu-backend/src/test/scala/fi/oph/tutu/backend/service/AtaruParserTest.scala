@@ -626,7 +626,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   def parsePaatosOptionsTest(): Unit = {
     val options = ataruLomakeParser.parsePaatosTietoOptions(lomake)
     assert(options.kelpoisuusOptions.size == 20)
-    assert(options.tiettyTutkintoTaiOpinnotOptions.size == 7)
+    assert(options.tiettyTutkintoTaiOpinnotOptions.size == 8)
     assert(options.riittavatOpinnotOptions.size == 4)
 
   }

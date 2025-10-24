@@ -363,7 +363,10 @@ class AtaruLomakeParser() {
     )
 
     val tiettyTutkintoTaiOpinnotOptions = findOptionsByAtaruKysymysId(
-      Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OPTIONS,
+      Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OIKEUSTIETEELLINEN_OPTIONS,
+      lomake
+    ) ++ findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_AINE_OPTIONS,
       lomake
     )
 
