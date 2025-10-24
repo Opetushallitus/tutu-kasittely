@@ -1,11 +1,15 @@
 {
   "valinnat": {
     "hakemusKoskeeValinta": {
-      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
-      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
-      "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
-      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
-      "riittavatOpinnot": "Päätös riittävistä opinnoista"
+      "tutkinnonTasonRinnastaminen": { "fi": "Tutkinnon tason rinnastaminen" },
+      "kelpoisuusAmmattiin": { "fi": "Kelpoisuus ammattiin" },
+      "kelpoisuusAmmattiinAPHakemus": {
+        "fi": "Kelpoisuus ammattiin (AP-hakemus)"
+      },
+      "tutkintoSuoritusRinnastaminen": {
+        "fi": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen"
+      },
+      "riittavatOpinnot": { "fi": "Päätös riittävistä opinnoista" }
     }
   },
   "hakemuslista": {
@@ -85,7 +89,11 @@
     "perustiedot": {
       "otsikko": "Hakemuksen ja hakijan tiedot",
       "hakemusKoskee": "Hakemus koskee",
-      "mitaHakee": "Mitä hakee",
+      "mitaHakee": {
+        "fi": "Mitä hakee",
+        "sv": "Ansökan gäller",
+        "en": "Applying for"
+      },
       "esittelijanHuomioita": "Esittelijan huomioita (ei näy muistiossa)",
       "muutoshistoria": {
         "otsikko": "Hakemuksen muutoshistoria",
