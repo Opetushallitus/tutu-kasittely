@@ -42,6 +42,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   @MockitoBean
   private var auditLog: AuditLog = _
 
+  val lomakeId               = 1527182
   val hakemusOid: HakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666")
   val hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: HakemusOid = HakemusOid(
     "1.2.246.562.11.00000000000000006667"
@@ -239,6 +240,7 @@ class PaatosControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+    initAtaruHakemusRequests()
   }
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
@@ -247,7 +249,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja")
     mvc
       .perform(
-        post(s"/api/paatos/${hakemusOid}")
+        post(s"/api/paatos/$hakemusOid/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -264,10 +266,17 @@ class PaatosControllerTest extends IntegrationTestBase {
   def haePaatosPalauttaa200(): Unit = {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
-      paatos2Json(paatos.copy(id = paatosId, luoja = Some("test user")), "id", "luotu", "muokattu", "muokkaaja")
+      paatos2Json(
+        paatos.copy(id = paatosId, luoja = Some("test user")),
+        "id",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosTietoOptions"
+      )
     mvc
       .perform(
-        get(s"/api/paatos/${hakemusOid}")
+        get(s"/api/paatos/$hakemusOid/$lomakeId")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -281,7 +290,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   def haePaatosPalauttaa404KunPaatosEiKannassa(): Unit = {
     mvc
       .perform(
-        get(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
+        get(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}/$lomakeId")
       )
       .andExpect(status().isNotFound)
     verify(auditLog, times(0)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
@@ -291,10 +300,10 @@ class PaatosControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(4)
   def tallennaPaatosPalauttaa500KunHakemusEiKannassa(): Unit = {
-    val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja")
+    val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosTietoOptions")
     mvc
       .perform(
-        post(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
+        post(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -308,10 +317,19 @@ class PaatosControllerTest extends IntegrationTestBase {
   @Order(5)
   def tallennaPaatosPalauttaaPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
-      paatos2Json(paatosWithPaatosTiedot, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosId")
+      paatos2Json(
+        paatosWithPaatosTiedot,
+        "id",
+        "luoja",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosId",
+        "paatosTietoOptions"
+      )
     mvc
       .perform(
-        post(s"/api/paatos/${hakemusOid}")
+        post(s"/api/paatos/$hakemusOid/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -336,11 +354,12 @@ class PaatosControllerTest extends IntegrationTestBase {
         "luotu",
         "muokattu",
         "muokkaaja",
-        "paatosId"
+        "paatosId",
+        "paatosTietoOptions"
       )
     mvc
       .perform(
-        get(s"/api/paatos/${hakemusOid}")
+        get(s"/api/paatos/$hakemusOid/$lomakeId")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -361,11 +380,12 @@ class PaatosControllerTest extends IntegrationTestBase {
         "luoja",
         "luotu",
         "muokattu",
-        "muokkaaja"
+        "muokkaaja",
+        "paatosTietoOptions"
       )
     val result = mvc
       .perform(
-        post(s"/api/paatos/${hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot}")
+        post(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -391,11 +411,12 @@ class PaatosControllerTest extends IntegrationTestBase {
         "luotu",
         "muokattu",
         "muokkaaja",
-        "paatosId"
+        "paatosId",
+        "paatosTietoOptions"
       )
     var result = mvc
       .perform(
-        get(s"/api/paatos/${hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot}")
+        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/$lomakeId")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)

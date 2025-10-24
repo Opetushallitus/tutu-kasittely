@@ -41,15 +41,16 @@ class PaatosController(paatosService: PaatosService, userService: UserService, v
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   @GetMapping(
-    path = Array("paatos/{hakemusOid}"),
+    path = Array("paatos/{hakemusOid}/{formId}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def haePaatos(
     @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("formId") formId: Long,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      paatosService.haePaatos(HakemusOid(hakemusOid))
+      paatosService.haePaatos(HakemusOid(hakemusOid), formId)
     } match {
       case Success(result) => {
         result match {
@@ -68,12 +69,13 @@ class PaatosController(paatosService: PaatosService, userService: UserService, v
     }
   }
   @PostMapping(
-    path = Array("paatos/{hakemusOid}"),
+    path = Array("paatos/{hakemusOid}/{formId}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def tallennaPaatos(
     @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("formId") formId: Long,
     @RequestBody paatosBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
@@ -81,7 +83,7 @@ class PaatosController(paatosService: PaatosService, userService: UserService, v
       val user                  = userService.getEnrichedUserDetails(true)
       val paatos: PartialPaatos = mapper.readValue(paatosBytes, classOf[PartialPaatos])
 
-      paatosService.tallennaPaatos(HakemusOid(hakemusOid), paatos, user.userOid)
+      paatosService.tallennaPaatos(HakemusOid(hakemusOid), formId, paatos, user.userOid)
     } match {
       case Success(result) =>
         result match {

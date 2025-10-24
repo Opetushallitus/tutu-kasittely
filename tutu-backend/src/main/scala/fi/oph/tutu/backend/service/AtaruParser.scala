@@ -353,7 +353,7 @@ private def findOptionsInContentAsNestedInfoText(
 @Component
 @Service
 class AtaruLomakeParser() {
-  def parsePaatosOptions(lomake: AtaruLomake): PaatosTietoOptions = {
+  def parsePaatosTietoOptions(lomake: AtaruLomake): PaatosTietoOptions = {
     val kelpoisuusOptions = findOptionsByAtaruKysymysId(
       Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS,
       lomake
