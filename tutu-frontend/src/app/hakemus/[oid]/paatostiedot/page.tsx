@@ -63,7 +63,7 @@ export default function PaatostiedotPage() {
   if (isHakemusLoading || isPaatosLoading) {
     return <FullSpinner></FullSpinner>;
   }
-  console.log(paatos.paatosTietoOptions);
+
   return (
     <Paatostiedot
       paatos={paatos}

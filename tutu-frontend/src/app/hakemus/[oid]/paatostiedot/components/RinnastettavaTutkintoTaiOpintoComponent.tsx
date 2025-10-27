@@ -11,7 +11,11 @@ import {
   Stack,
   useTheme,
 } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphButton,
+  ophColors,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { DeleteOutline } from '@mui/icons-material';
@@ -100,7 +104,11 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     renderOptionsRecursively(rinnastettavaTutkintoTaiOpinnotOptions);
 
   return (
-    <Stack direction={'column'} gap={2} sx={{ width: '100%' }}>
+    <Stack
+      direction={'column'}
+      gap={2}
+      sx={{ width: '100%', padding: 2, backgroundColor: ophColors.grey50 }}
+    >
       <Stack
         key={`stack-${index}`}
         direction={'row'}

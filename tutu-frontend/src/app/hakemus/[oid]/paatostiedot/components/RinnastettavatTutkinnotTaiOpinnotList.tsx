@@ -37,9 +37,12 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   >([]);
 
   useEffect(() => {
-    if (!rinnastettavatTutkinnotTaiOpinnot) return;
-    setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
-  }, [rinnastettavatTutkinnotTaiOpinnot]);
+    if (!rinnastettavatTutkinnotTaiOpinnot.length) {
+      setTutkinnotTaiOpinnot([emptyTutkintoTaiOpinto(paatosTieto.id!)]);
+    } else {
+      setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
+    }
+  }, [paatosTieto.id, rinnastettavatTutkinnotTaiOpinnot]);
   const tyyppi =
     paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
       ? 'riittavatOpinnot'
@@ -76,7 +79,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
       rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
     });
   };
-
+  console.log({ tutkinnotTaiOpinnot });
   return (
     <>
       {tutkinnotTaiOpinnot &&
