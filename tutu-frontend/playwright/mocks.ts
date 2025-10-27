@@ -137,6 +137,8 @@ export const mockHakemus = async (
       contentType: 'application/json',
       body: JSON.stringify({
         hakemusOid: oid,
+        lomakeOid: '74825f61-e561-447e-bef4-1bb5be4ea44a',
+        lomakeId: 12345,
         lomakkeenKieli: lomakkeenKieli,
         hakija: {
           etunimet: 'Heikki Hemuli',
@@ -331,14 +333,17 @@ export const mockPerustelu = async (page: Page) => {
 };
 
 export const mockPaatos = async (page: Page) => {
-  await page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
-    const paatos = getPaatos();
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        ...paatos,
-      }),
-    });
-  });
+  await page.route(
+    `**/paatos/1.2.246.562.10.00000000001/12345`,
+    async (route) => {
+      const paatos = getPaatos();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...paatos,
+        }),
+      });
+    },
+  );
 };

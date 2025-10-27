@@ -29,12 +29,14 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
 
   await tasoOption.click();
 
+  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+
   await expect(
     page.getByTestId('lisaa-tutkinto-tai-opinto-button'),
   ).toBeVisible();
   await page.getByTestId('lisaa-tutkinto-tai-opinto-button').click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText('Opinnot 2');
 });
 
 test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja lähettää kutsun backendille', async ({
@@ -53,11 +55,6 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
     .locator('text=3 Tietty tutkinto tai opinnot');
 
   await tasoOption.click();
-
-  await expect(
-    page.getByTestId('lisaa-tutkinto-tai-opinto-button'),
-  ).toBeVisible();
-  await page.getByTestId('lisaa-tutkinto-tai-opinto-button').click();
 
   await expect(page.locator('h3').last()).toHaveText('Tutkinto tai opinnot 1');
 
@@ -78,7 +75,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   expect(
     req.postDataJSON().paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0]
       .tutkintoTaiOpinto,
-  ).toEqual('testi');
+  ).toEqual('uskonto, ortodoksinen');
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
     'paatos-myonteinenPaatos-radio-group',
@@ -101,9 +98,16 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   ).toEqual(true);
 
   await expect(
+    page.getByTestId('lisaa-tutkinto-tai-opinto-button'),
+  ).toBeVisible();
+  await page.getByTestId('lisaa-tutkinto-tai-opinto-button').click();
+
+  await expect(page.locator('h3').last()).toHaveText('Tutkinto tai opinnot 2');
+
+  await expect(
     page.getByTestId('poista-tutkinto-tai-opinto-button'),
   ).toBeVisible();
-  page.getByTestId('poista-tutkinto-tai-opinto-button').click();
+  await page.getByTestId('poista-tutkinto-tai-opinto-button').last().click();
 
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
@@ -115,5 +119,12 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   const tutkintoTasoPostData = poistaTutkintoReq.postDataJSON();
   expect(
     tutkintoTasoPostData.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot,
-  ).toEqual([]);
+  ).toEqual([
+    {
+      kielteisenPaatoksenPerustelut: '{}',
+      myonteinenPaatos: true,
+      myonteisenPaatoksenLisavaatimukset: '{}',
+      tutkintoTaiOpinto: 'uskonto, ortodoksinen',
+    },
+  ]);
 });

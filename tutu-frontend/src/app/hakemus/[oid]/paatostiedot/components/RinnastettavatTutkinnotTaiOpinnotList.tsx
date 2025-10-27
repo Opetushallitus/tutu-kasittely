@@ -79,7 +79,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
       rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
     });
   };
-  console.log({ tutkinnotTaiOpinnot });
+
   return (
     <>
       {tutkinnotTaiOpinnot &&

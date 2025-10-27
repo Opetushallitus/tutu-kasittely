@@ -119,27 +119,33 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.otsikko`) +
             (index + 1)}
         </OphTypography>
-        <OphButton
-          sx={{
-            alignSelf: 'flex-end',
-          }}
-          data-testid={`poista-tutkinto-tai-opinto-button`}
-          variant="text"
-          startIcon={<DeleteOutline />}
-          onClick={() =>
-            showConfirmation({
-              header: t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.otsikko`),
-              content: t(`hakemus.paatos.paatostyyppi.${tyyppi}.modal.teksti`),
-              confirmButtonText: t(
-                `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
-              ),
-              handleConfirmAction: () =>
-                deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id),
-            })
-          }
-        >
-          {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
-        </OphButton>
+        {index > 0 && (
+          <OphButton
+            sx={{
+              alignSelf: 'flex-end',
+            }}
+            data-testid={`poista-tutkinto-tai-opinto-button`}
+            variant="text"
+            startIcon={<DeleteOutline />}
+            onClick={() =>
+              showConfirmation({
+                header: t(
+                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.otsikko`,
+                ),
+                content: t(
+                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.teksti`,
+                ),
+                confirmButtonText: t(
+                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
+                ),
+                handleConfirmAction: () =>
+                  deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id),
+              })
+            }
+          >
+            {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
+          </OphButton>
+        )}{' '}
       </Stack>
       <OphTypography variant={'label'} sx={{ marginBottom: '0' }}>
         {t(
@@ -148,7 +154,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       </OphTypography>
       <Select
         sx={{ width: '100%' }}
-        data-testid="pyyda-asiakirja-select"
+        data-testid="rinnastettava-tutkinto-tai-opinto-select"
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         onChange={(e) =>
           updateTutkintoTaiOpintoAction(
