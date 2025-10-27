@@ -13,6 +13,7 @@ export type MuutosHistoriaItem = {
 export type Hakemus = {
   hakemusOid: string;
   lomakeOid: string;
+  lomakeId: number;
   lomakkeenKieli: Language;
   hakemusKoskee: number;
   readonly hakija: Hakija;

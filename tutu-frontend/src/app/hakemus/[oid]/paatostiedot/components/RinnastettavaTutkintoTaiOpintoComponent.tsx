@@ -1,21 +1,30 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { TutkintoTaiOpinto } from '@/src/lib/types/paatos';
-import { Divider, Stack, useTheme } from '@mui/material';
 import {
-  OphButton,
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+  PaatosTietoOptionGroup,
+  TutkintoTaiOpinto,
+} from '@/src/lib/types/paatos';
+import {
+  Divider,
+  ListSubheader,
+  MenuItem,
+  Select,
+  Stack,
+  useTheme,
+} from '@mui/material';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
   index: number;
   tutkintoTaiOpinto: TutkintoTaiOpinto;
   paatosTyyppi: string;
+  paatosTietoOptions: PaatosTietoOptionGroup;
   updateTutkintoTaiOpintoAction: (
     updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
     index: number,
@@ -29,6 +38,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   index,
   tutkintoTaiOpinto,
   paatosTyyppi,
+  paatosTietoOptions,
   updateTutkintoTaiOpintoAction,
   deleteTutkintoTaiOpintoAction,
   tyyppi,
@@ -40,7 +50,54 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     );
   };
   const theme = useTheme();
+  const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
+
+  const rinnastettavaTutkintoTaiOpinnotOptions =
+    tyyppi === 'riittavatOpinnot'
+      ? getPaatosTietoDropdownOptions(
+          asiointikieli,
+          paatosTietoOptions.riittavatOpinnotOptions,
+        )
+      : getPaatosTietoDropdownOptions(
+          asiointikieli,
+          paatosTietoOptions.tiettyTutkintoTaiOpinnotOptions,
+        );
+
+  const renderOptionsRecursively = (
+    options: typeof rinnastettavaTutkintoTaiOpinnotOptions,
+    level: number = 1,
+  ): React.ReactNode[] => {
+    return options.flatMap((option) => {
+      const isTopLevel =
+        'children' in option && option.children && option.children.length > 0;
+
+      if (isTopLevel) {
+        return [
+          <ListSubheader
+            key={`header-${option.value}`}
+            sx={{ paddingLeft: level }}
+          >
+            <OphTypography sx={{ paddingLeft: level + 1 }} variant="h5">
+              {option.label}
+            </OphTypography>
+          </ListSubheader>,
+          ...renderOptionsRecursively(option.children!, level + 1),
+        ];
+      }
+
+      return (
+        <MenuItem key={option.value} value={option.value}>
+          <OphTypography sx={{ paddingLeft: level === 1 ? level : level + 1 }}>
+            {option.label}
+          </OphTypography>
+        </MenuItem>
+      );
+    });
+  };
+
+  const rinnastettavaTutkintoTaiOpinnotGroupedOptions =
+    renderOptionsRecursively(rinnastettavaTutkintoTaiOpinnotOptions);
 
   return (
     <Stack direction={'column'} gap={2} sx={{ width: '100%' }}>
@@ -76,26 +133,24 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
         </OphButton>
       </Stack>
-
-      <OphSelectFormField
-        placeholder={t('yleiset.valitse')}
-        label={t(
-          t(
-            `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
-          ),
+      <OphTypography variant={'label'} sx={{ marginBottom: '0' }}>
+        {t(
+          `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
         )}
+      </OphTypography>
+      <Select
         sx={{ width: '100%' }}
-        //TODO seuraavassa vaiheessa oikeat optionsit
-        options={[{ value: 'testi', label: 'TODO' }]}
+        data-testid="pyyda-asiakirja-select"
+        value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         onChange={(e) =>
           updateTutkintoTaiOpintoAction(
             { ...tutkintoTaiOpinto, tutkintoTaiOpinto: e.target.value },
             index,
           )
         }
-        value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
-        data-testid={`rinnastettava-tutkinto-tai-opinto-select`}
-      />
+      >
+        {rinnastettavaTutkintoTaiOpinnotGroupedOptions}
+      </Select>
       <MyonteinenPaatos
         t={t}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}

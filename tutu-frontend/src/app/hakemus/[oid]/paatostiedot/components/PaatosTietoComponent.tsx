@@ -2,6 +2,7 @@
 
 import {
   PaatosTieto,
+  PaatosTietoOptionGroup,
   Paatostyyppi,
   SovellettuLaki,
   TutkintoTaso,
@@ -26,6 +27,7 @@ import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/component
 interface PaatosTietoProps {
   t: TFunction;
   paatosTieto: PaatosTieto;
+  paatosTietoOptions: PaatosTietoOptionGroup;
   updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
   tutkinnot: Tutkinto[];
 }
@@ -33,6 +35,7 @@ interface PaatosTietoProps {
 export const PaatosTietoComponent = ({
   t,
   paatosTieto,
+  paatosTietoOptions,
   updatePaatosTietoAction,
   tutkinnot,
 }: PaatosTietoProps) => {
@@ -176,6 +179,7 @@ export const PaatosTietoComponent = ({
         <RinnastettavatTutkinnotTaiOpinnotList
           t={t}
           paatosTieto={currentPaatosTieto}
+          paatosTietoOptions={paatosTietoOptions}
           rinnastettavatTutkinnotTaiOpinnot={
             currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot
           }

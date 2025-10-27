@@ -3,6 +3,7 @@ import { Hakemus } from '@/src/lib/types/hakemus';
 export const _hakemus: Hakemus = {
   hakemusOid: '1.2.246.562.10.00000000001',
   lomakeOid: '74825f61-e561-447e-bef4-1bb5be4ea44a',
+  lomakeId: 12345,
   hakija: {
     etunimet: 'Heikki Hemuli',
     kutsumanimi: 'Hessu',

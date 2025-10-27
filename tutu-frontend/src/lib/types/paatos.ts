@@ -47,6 +47,7 @@ export type Paatos = {
   seutArviointi: boolean;
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
   paatosTiedot?: PaatosTieto[];
+  paatosTietoOptions: PaatosTietoOptionGroup;
 };
 
 export type PaatosUpdateCallback = (paatos: Paatos) => void;
@@ -58,4 +59,16 @@ export type TutkintoTaiOpinto = {
   myonteinenPaatos?: boolean;
   myonteisenPaatoksenLisavaatimukset?: string;
   kielteisenPaatoksenPerustelut?: string;
+};
+
+export type PaatosTietoOptionGroup = {
+  kelpoisuusOptions: PaatosTietoOption[];
+  riittavatOpinnotOptions: PaatosTietoOption[];
+  tiettyTutkintoTaiOpinnotOptions: PaatosTietoOption[];
+};
+
+export type PaatosTietoOption = {
+  label: { fi: string; en: string; sv: string };
+  value: { fi: string; en: string; sv: string };
+  children?: PaatosTietoOption[];
 };

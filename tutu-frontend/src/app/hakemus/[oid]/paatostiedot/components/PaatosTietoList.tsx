@@ -1,7 +1,7 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { PaatosTieto } from '@/src/lib/types/paatos';
+import { PaatosTieto, PaatosTietoOptionGroup } from '@/src/lib/types/paatos';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { DeleteOutline } from '@mui/icons-material';
@@ -13,6 +13,7 @@ import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 interface PaatosTietoListProps {
   t: TFunction;
   paatosTiedot: PaatosTieto[];
+  paatosTietoOptions: PaatosTietoOptionGroup;
   updatePaatosTietoAction: (
     updatedPaatosTieto: PaatosTieto,
     index: number,
@@ -24,6 +25,7 @@ interface PaatosTietoListProps {
 export const PaatosTietoList = ({
   t,
   paatosTiedot,
+  paatosTietoOptions,
   updatePaatosTietoAction,
   deletePaatosTieto,
   tutkinnot,
@@ -67,6 +69,7 @@ export const PaatosTietoList = ({
         key={index}
         t={t}
         paatosTieto={paatosTieto}
+        paatosTietoOptions={paatosTietoOptions}
         updatePaatosTietoAction={(updated) =>
           updatePaatosTietoAction(updated, index)
         }
