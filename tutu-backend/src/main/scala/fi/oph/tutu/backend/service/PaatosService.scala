@@ -3,18 +3,35 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
+import org.json4s.jackson.JsonMethods.parse
+import org.json4s.jvalue2extractable
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: PaatosRepository) extends TutuJsonFormats {
+class PaatosService(
+  hakemusRepository: HakemusRepository,
+  paatosRepository: PaatosRepository,
+  hakemuspalveluService: HakemuspalveluService,
+  ataruLomakeParser: AtaruLomakeParser
+) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
-  def haePaatos(hakemusOid: HakemusOid): Option[Paatos] = {
+  def haePaatos(hakemusOid: HakemusOid, formId: Long): Option[Paatos] = {
     hakemusRepository.haeHakemus(hakemusOid).flatMap { dbHakemus =>
       paatosRepository.haePaatos(dbHakemus.id).flatMap { paatos =>
         {
+
+          val paatosTietoOptions = hakemuspalveluService.haeLomake(formId) match {
+            case Right(response: String) =>
+              Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
+
+            case Left(error) =>
+              LOG.error(s"Lomakkeeen $formId haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
+              None
+          }
+
           paatosRepository.haePaatosTiedot(paatos.id.get) match {
             case paatostiedot if paatostiedot.nonEmpty =>
               val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
@@ -25,9 +42,15 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
                 }
               }
               Some(
-                paatos.copy(paatosTiedot = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot)
+                paatos.copy(
+                  paatosTiedot = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot,
+                  paatosTietoOptions = paatosTietoOptions
+                )
               )
-            case _ => Some(paatos)
+            case _ =>
+              Some(
+                paatos.copy(paatosTietoOptions = paatosTietoOptions)
+              )
           }
         }
       }
@@ -36,6 +59,7 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
 
   def tallennaPaatos(
     hakemusOid: HakemusOid,
+    formId: Long,
     partialPaatos: PartialPaatos,
     luojaTaiMuokkaaja: String
   ): (Option[Paatos], Option[Paatos]) = {
@@ -54,7 +78,7 @@ class PaatosService(hakemusRepository: HakemusRepository, paatosRepository: Paat
             )
         }
 
-        val currentPaatosTiedot = haePaatos(hakemusOid) match {
+        val currentPaatosTiedot = haePaatos(hakemusOid, formId) match {
           case Some(paatos) => paatos.paatosTiedot
           case None         => Nil
         }

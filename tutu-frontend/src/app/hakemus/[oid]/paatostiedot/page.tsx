@@ -48,7 +48,7 @@ export default function PaatostiedotPage() {
     error: paatosError,
     updatePaatos,
     updateOngoing,
-  } = usePaatos(hakemus?.hakemusOid);
+  } = usePaatos(hakemus?.hakemusOid, hakemus?.lomakeId);
   const { addToast } = useToaster();
 
   useEffect(() => {
@@ -188,6 +188,7 @@ const Paatostiedot = ({
           <PaatosTietoList
             t={t}
             paatosTiedot={currentPaatosTiedot}
+            paatosTietoOptions={paatos.paatosTietoOptions}
             updatePaatosTietoAction={updatePaatosTieto}
             deletePaatosTieto={deletePaatosTieto}
             tutkinnot={hakemus.tutkinnot}

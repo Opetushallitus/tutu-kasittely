@@ -1,3 +1,5 @@
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+
 export type Ratkaisutyyppi =
   | 'Paatos'
   | 'PeruutusTaiRaukeaminen'
@@ -47,6 +49,7 @@ export type Paatos = {
   seutArviointi: boolean;
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
   paatosTiedot?: PaatosTieto[];
+  paatosTietoOptions: PaatosTietoOptionGroup;
 };
 
 export type PaatosUpdateCallback = (paatos: Paatos) => void;
@@ -58,4 +61,16 @@ export type TutkintoTaiOpinto = {
   myonteinenPaatos?: boolean;
   myonteisenPaatoksenLisavaatimukset?: string;
   kielteisenPaatoksenPerustelut?: string;
+};
+
+export type PaatosTietoOptionGroup = {
+  kelpoisuusOptions: PaatosTietoOption[];
+  riittavatOpinnotOptions: PaatosTietoOption[];
+  tiettyTutkintoTaiOpinnotOptions: PaatosTietoOption[];
+};
+
+export type PaatosTietoOption = {
+  label: TranslatedName;
+  value: TranslatedName;
+  children?: PaatosTietoOption[];
 };

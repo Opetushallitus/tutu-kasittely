@@ -1,0 +1,3129 @@
+{
+  "kelpoisuusOptions": [
+    {
+      "label": {
+        "fi": "Luokanopettaja",
+        "sv": "Klasslärare",
+        "en": "Class teacher"
+      },
+      "value": {
+        "fi": "1",
+        "sv": "1",
+        "en": "1"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Esiopetusta antava opettaja",
+        "sv": "Lärare som meddelar förskoleundervisning",
+        "en": "Teacher providing pre-primary education"
+      },
+      "value": {
+        "fi": "0",
+        "sv": "0",
+        "en": "0"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Aamu- ja iltapäivätoiminnan ohjaaja",
+        "sv": "Handledare i morgon- och eftermiddagsverksamhet",
+        "en": "Instructor in morning and afternoon activities"
+      },
+      "value": {
+        "fi": "15",
+        "sv": "15",
+        "en": "15"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Aineenopettaja perusopetuksessa",
+        "sv": "Ämneslärare inom grundläggande utbildning",
+        "en": "Subject teacher in primary and lower secondary education"
+      },
+      "value": {
+        "fi": "2",
+        "sv": "2",
+        "en": "2"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "modersmål och litteratur",
+            "en": "Mother tongue and literature"
+          },
+          "value": {
+            "fi": "0",
+            "sv": "0",
+            "en": "0"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "saame",
+                "sv": "saame",
+                "en": "saame"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "det andra inhemska språket",
+            "en": "Second national language"
+          },
+          "value": {
+            "fi": "1",
+            "sv": "1",
+            "en": "1"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "vieras kieli",
+            "sv": "främmande språk",
+            "en": "Foreign language"
+          },
+          "value": {
+            "fi": "2",
+            "sv": "2",
+            "en": "2"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "englanti",
+                "sv": "engelska",
+                "en": "English"
+              },
+              "value": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "espanja",
+                "sv": "spanska",
+                "en": "Spanish"
+              },
+              "value": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "italia",
+                "sv": "italienska",
+                "en": "Italian"
+              },
+              "value": {
+                "fi": "2",
+                "sv": "2",
+                "en": "2"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "japani",
+                "sv": "japanska",
+                "en": "Japanese"
+              },
+              "value": {
+                "fi": "3",
+                "sv": "3",
+                "en": "3"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kiina",
+                "sv": "kinesiska",
+                "en": "Chinese"
+              },
+              "value": {
+                "fi": "4",
+                "sv": "4",
+                "en": "4"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "latina",
+                "sv": "latin",
+                "en": "Latin"
+              },
+              "value": {
+                "fi": "5",
+                "sv": "5",
+                "en": "5"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "portugali",
+                "sv": "portugisiska",
+                "en": "Portuguese"
+              },
+              "value": {
+                "fi": "6",
+                "sv": "6",
+                "en": "6"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ranska",
+                "sv": "franska",
+                "en": "French"
+              },
+              "value": {
+                "fi": "7",
+                "sv": "7",
+                "en": "7"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "8",
+                "sv": "8",
+                "en": "8"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saksa",
+                "sv": "tyska",
+                "en": "German"
+              },
+              "value": {
+                "fi": "9",
+                "sv": "9",
+                "en": "9"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "venäjä",
+                "sv": "ryska",
+                "en": "Russian"
+              },
+              "value": {
+                "fi": "10",
+                "sv": "10",
+                "en": "10"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "viro",
+                "sv": "estniska",
+                "en": "Estonian"
+              },
+              "value": {
+                "fi": "11",
+                "sv": "11",
+                "en": "11"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "matematiikka",
+            "sv": "matematik",
+            "en": "Mathematics"
+          },
+          "value": {
+            "fi": "3",
+            "sv": "3",
+            "en": "3"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "biologia",
+            "sv": "biologi",
+            "en": "Biology"
+          },
+          "value": {
+            "fi": "4",
+            "sv": "4",
+            "en": "4"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "maantieto",
+            "sv": "geografi",
+            "en": "Geography"
+          },
+          "value": {
+            "fi": "5",
+            "sv": "5",
+            "en": "5"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "fysiikka",
+            "sv": "fysik",
+            "en": "Physics"
+          },
+          "value": {
+            "fi": "6",
+            "sv": "6",
+            "en": "6"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kemia",
+            "sv": "kemi",
+            "en": "Chemistry"
+          },
+          "value": {
+            "fi": "7",
+            "sv": "7",
+            "en": "7"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "terveystieto",
+            "sv": "hälsokunskap",
+            "en": "Health education"
+          },
+          "value": {
+            "fi": "8",
+            "sv": "8",
+            "en": "8"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "uskonto",
+            "sv": "religion",
+            "en": "Religion"
+          },
+          "value": {
+            "fi": "9",
+            "sv": "9",
+            "en": "9"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "religion, evangelisk-luthersk tro",
+                "en": "Religion, Evangelical-Lutheran"
+              },
+              "value": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "uskonto, evankelis-luterilainen",
+                "en": "uskonto, evankelis-luterilainen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "religion, ortodox tro",
+                "en": "Religion, Orthodox"
+              },
+              "value": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "uskonto, ortodoksinen",
+                "en": "uskonto, ortodoksinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, katolinen",
+                "sv": "religion, katolsk tro",
+                "en": "Religion, Catholic"
+              },
+              "value": {
+                "fi": "uskonto, katolinen",
+                "sv": "uskonto, katolinen",
+                "en": "uskonto, katolinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, islam",
+                "sv": "religion, islam",
+                "en": "Religion, Islam"
+              },
+              "value": {
+                "fi": "uskonto, islam",
+                "sv": "uskonto, islam",
+                "en": "uskonto, islam"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "elämänkatsomustieto",
+            "sv": "livsåskådningskunskap",
+            "en": "Ethics"
+          },
+          "value": {
+            "fi": "10",
+            "sv": "10",
+            "en": "10"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "History"
+          },
+          "value": {
+            "fi": "11",
+            "sv": "11",
+            "en": "11"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "samhällslära",
+            "en": "Social Studies"
+          },
+          "value": {
+            "fi": "12",
+            "sv": "12",
+            "en": "12"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "musiikki",
+            "sv": "musik",
+            "en": "Music"
+          },
+          "value": {
+            "fi": "13",
+            "sv": "13",
+            "en": "13"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kuvataide",
+            "sv": "bildkonst",
+            "en": "Art"
+          },
+          "value": {
+            "fi": "14",
+            "sv": "14",
+            "en": "14"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "käsityö",
+            "sv": "slöjd",
+            "en": "Crafts"
+          },
+          "value": {
+            "fi": "15",
+            "sv": "15",
+            "en": "15"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "liikunta",
+            "sv": "gymnastik",
+            "en": "Physical education"
+          },
+          "value": {
+            "fi": "16",
+            "sv": "16",
+            "en": "16"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kotitalous",
+            "sv": "huslig ekonomi",
+            "en": "Home economics"
+          },
+          "value": {
+            "fi": "17",
+            "sv": "17",
+            "en": "17"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "tietotekniikka",
+            "sv": "informationsteknik",
+            "en": "ICT"
+          },
+          "value": {
+            "fi": "18",
+            "sv": "18",
+            "en": "18"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": {
+        "fi": "Aineenopettaja lukiossa",
+        "sv": "Ämneslärare i gymnasiet",
+        "en": "Subject teacher in general upper secondary education"
+      },
+      "value": {
+        "fi": "3",
+        "sv": "3",
+        "en": "3"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "modersmål och litteratur",
+            "en": "Mother tongue and literature"
+          },
+          "value": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "äidinkieli ja kirjallisuus",
+            "en": "äidinkieli ja kirjallisuus"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "sami",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "saame",
+                "sv": "saame",
+                "en": "saame"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "det andra inhemska språket",
+            "en": "Second national language"
+          },
+          "value": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "toinen kotimainen kieli",
+            "en": "toinen kotimainen kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "vieras kieli",
+            "sv": "främmande språk",
+            "en": "Foreign language"
+          },
+          "value": {
+            "fi": "vieras kieli",
+            "sv": "vieras kieli",
+            "en": "vieras kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "englanti",
+                "sv": "engelska",
+                "en": "English"
+              },
+              "value": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "espanja",
+                "sv": "spanska",
+                "en": "Spanish"
+              },
+              "value": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "italia",
+                "sv": "italienska",
+                "en": "Italian"
+              },
+              "value": {
+                "fi": "2",
+                "sv": "2",
+                "en": "2"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "japani",
+                "sv": "japanska",
+                "en": "Japanese"
+              },
+              "value": {
+                "fi": "3",
+                "sv": "3",
+                "en": "3"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kiina",
+                "sv": "kinesiska",
+                "en": "Chinese"
+              },
+              "value": {
+                "fi": "4",
+                "sv": "4",
+                "en": "4"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "latina",
+                "sv": "latin",
+                "en": "Latin"
+              },
+              "value": {
+                "fi": "5",
+                "sv": "5",
+                "en": "5"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "portugali",
+                "sv": "portugisiska",
+                "en": "Portuguese"
+              },
+              "value": {
+                "fi": "6",
+                "sv": "6",
+                "en": "6"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ranska",
+                "sv": "franska",
+                "en": "French"
+              },
+              "value": {
+                "fi": "7",
+                "sv": "7",
+                "en": "7"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "8",
+                "sv": "8",
+                "en": "8"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saksa",
+                "sv": "tyska",
+                "en": "German"
+              },
+              "value": {
+                "fi": "9",
+                "sv": "9",
+                "en": "9"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "venäjä",
+                "sv": "ryska",
+                "en": "Russian"
+              },
+              "value": {
+                "fi": "10",
+                "sv": "10",
+                "en": "10"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "viro",
+                "sv": "estniska",
+                "en": "Estonian"
+              },
+              "value": {
+                "fi": "11",
+                "sv": "11",
+                "en": "11"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "matematiikka",
+            "sv": "matematik",
+            "en": "Mathematics"
+          },
+          "value": {
+            "fi": "matematiikka",
+            "sv": "matematiikka",
+            "en": "matematiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "biologia",
+            "sv": "biologi",
+            "en": "Biology"
+          },
+          "value": {
+            "fi": "biologia",
+            "sv": "biologia",
+            "en": "biologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "maantiede",
+            "sv": "geografi",
+            "en": "Geography"
+          },
+          "value": {
+            "fi": "maantiede",
+            "sv": "maantiede",
+            "en": "maantiede"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "fysiikka",
+            "sv": "fysik",
+            "en": "Physics"
+          },
+          "value": {
+            "fi": "fysiikka",
+            "sv": "fysiikka",
+            "en": "fysiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kemia",
+            "sv": "kemi",
+            "en": "Chemistry"
+          },
+          "value": {
+            "fi": "kemia",
+            "sv": "kemia",
+            "en": "kemia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "terveystieto",
+            "sv": "hälsokunskap",
+            "en": "Health education"
+          },
+          "value": {
+            "fi": "terveystieto",
+            "sv": "terveystieto",
+            "en": "terveystieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "uskonto",
+            "sv": "religion",
+            "en": "Religion"
+          },
+          "value": {
+            "fi": "uskonto",
+            "sv": "uskonto",
+            "en": "uskonto"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "religion, evangelisk-luthersk tro",
+                "en": "Religion, Evangelical-Lutheran"
+              },
+              "value": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "uskonto, evankelis-luterilainen",
+                "en": "uskonto, evankelis-luterilainen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "religion, ortodox tro",
+                "en": "Religion, Orthodox"
+              },
+              "value": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "uskonto, ortodoksinen",
+                "en": "uskonto, ortodoksinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, katolinen",
+                "sv": "religion, katolsk tro",
+                "en": "Religion, Catholic"
+              },
+              "value": {
+                "fi": "uskonto, katolinen",
+                "sv": "uskonto, katolinen",
+                "en": "uskonto, katolinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, islam",
+                "sv": "religion, islam",
+                "en": "Religion, Islam"
+              },
+              "value": {
+                "fi": "uskonto, islam",
+                "sv": "uskonto, islam",
+                "en": "uskonto, islam"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "elämänkatsomustieto",
+            "sv": "livsåskådningskunskap",
+            "en": "Ethics"
+          },
+          "value": {
+            "fi": "elämänkatsomustieto",
+            "sv": "elämänkatsomustieto",
+            "en": "elämänkatsomustieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "filosofia",
+            "sv": "filosofi",
+            "en": "Philosophy"
+          },
+          "value": {
+            "fi": "filosofia",
+            "sv": "filosofia",
+            "en": "filosofia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "psykologia",
+            "sv": "psykologi",
+            "en": "Psychology"
+          },
+          "value": {
+            "fi": "psykologia",
+            "sv": "psykologia",
+            "en": "psykologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "History"
+          },
+          "value": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "historia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "samhällslära",
+            "en": "Social studies"
+          },
+          "value": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "yhteiskuntaoppi",
+            "en": "yhteiskuntaoppi"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "musiikki",
+            "sv": "musik",
+            "en": "Music"
+          },
+          "value": {
+            "fi": "musiikki",
+            "sv": "musiikki",
+            "en": "musiikki"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kuvataide",
+            "sv": "bildkonst",
+            "en": "Art"
+          },
+          "value": {
+            "fi": "kuvataide",
+            "sv": "kuvataide",
+            "en": "kuvataide"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "liikunta",
+            "sv": "gymnastik",
+            "en": "Physical education"
+          },
+          "value": {
+            "fi": "liikunta",
+            "sv": "liikunta",
+            "en": "liikunta"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "tietotekniikka",
+            "sv": "informationsteknik",
+            "en": "ICT"
+          },
+          "value": {
+            "fi": "tietotekniikka",
+            "sv": "tietotekniikka",
+            "en": "tietotekniikka"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": {
+        "fi": "Erityisluokanopettaja",
+        "sv": "Specialklasslärare",
+        "en": "Special class teacher"
+      },
+      "value": {
+        "fi": "4",
+        "sv": "4",
+        "en": "4"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Erityisopettaja perusopetuksessa",
+        "sv": "Speciallärare inom grundläggande utbildning",
+        "en": "Special needs teacher in primary and lower secondary education"
+      },
+      "value": {
+        "fi": "5",
+        "sv": "5",
+        "en": "5"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Erityisopettaja lukiossa",
+        "sv": "Speciallärare i gymnasiet",
+        "en": "Special needs teacher in general upper secondary education"
+      },
+      "value": {
+        "fi": "6",
+        "sv": "6",
+        "en": "6"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Muu erityisopettaja",
+        "sv": "Annan speciallärare",
+        "en": "Other special education teacher "
+      },
+      "value": {
+        "fi": "11",
+        "sv": "11",
+        "en": "11"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Oppilaanohjaaja perusopetuksessa",
+        "sv": "Elevhandledare inom grundläggande utbildning",
+        "en": "Guidance counsellor in primary and lower secondary education"
+      },
+      "value": {
+        "fi": "7",
+        "sv": "7",
+        "en": "7"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Opinto-ohjaaja lukiossa",
+        "sv": "Studiehandledare i gymnasiet",
+        "en": "Guidance counsellor in general upper secondary education"
+      },
+      "value": {
+        "fi": "8",
+        "sv": "8",
+        "en": "8"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa",
+        "sv": "Lärare i yrkesinriktade examensdelar inom yrkesutbildning",
+        "en": "Teacher in vocational education and training, teaching vocational qualification units"
+      },
+      "value": {
+        "fi": "9",
+        "sv": "9",
+        "en": "9"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ",
+        "sv": "Lärare i gemensamma examensdelar inom yrkesutbildning",
+        "en": "Teacher in vocational education and training, teaching common qualification units"
+      },
+      "value": {
+        "fi": "10",
+        "sv": "10",
+        "en": "10"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Vapaan sivistystyön opettaja",
+        "sv": "Lärare i fritt bildningsarbete",
+        "en": "Teacher in liberal adult education"
+      },
+      "value": {
+        "fi": "12",
+        "sv": "12",
+        "en": "12"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Kuraattori",
+        "sv": "Kurator",
+        "en": "School social worker"
+      },
+      "value": {
+        "fi": "14",
+        "sv": "14",
+        "en": "14"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Varhaiskasvatuksen opettaja",
+        "sv": "Lärare inom småbarnspedagogik",
+        "en": "Teacher in early childhood education and care"
+      },
+      "value": {
+        "fi": "0",
+        "sv": "0",
+        "en": "0"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Varhaiskasvatuksen sosionomi",
+        "sv": "Socionom inom småbarnspedagogik",
+        "en": "Social pedagogue in early childhood education and care"
+      },
+      "value": {
+        "fi": "1",
+        "sv": "1",
+        "en": "1"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Varhaiskasvatuksen lastenhoitaja",
+        "sv": "Barnskötare inom småbarnspedagogik",
+        "en": "Childcarer in early childhood education and care"
+      },
+      "value": {
+        "fi": "2",
+        "sv": "2",
+        "en": "2"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Varhaiskasvatuksen erityisopettaja",
+        "sv": "Speciallärare inom småbarnspedagogik",
+        "en": "Special education teacher in early childhood education and care"
+      },
+      "value": {
+        "fi": "3",
+        "sv": "3",
+        "en": "3"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Muu varhaiskasvatuksen tehtävä",
+        "sv": "Annan uppgift inom småbarnspedagogik",
+        "en": "Other profession in early childhood education"
+      },
+      "value": {
+        "fi": "4",
+        "sv": "4",
+        "en": "4"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "Päiväkodin johtaja",
+            "sv": "Daghemsföreståndare",
+            "en": "Head of early education centre"
+          },
+          "value": {
+            "fi": "0",
+            "sv": "0",
+            "en": "0"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Steinerpedagogisen henkilöstön tehtävät",
+            "sv": "Personal vid steinerpedagogiska daghem",
+            "en": "Personnel at day care centres providing Steiner pedagogic"
+          },
+          "value": {
+            "fi": "1",
+            "sv": "1",
+            "en": "1"
+          },
+          "children": []
+        }
+      ]
+    }
+  ],
+  "tiettyTutkintoTaiOpinnotOptions": [
+    {
+      "label": {
+        "fi": "Rinnastaminen oikeustieteen maisterin tutkintoon",
+        "sv": "Jämställande med juris magisterexamen",
+        "en": "Recognition of studies as comparable to a Master of Laws degree completed in Finland"
+      },
+      "value": {
+        "fi": "0",
+        "sv": "0",
+        "en": "0"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Opetettavan aineen opinnot",
+        "sv": "Studier i ämnet som ska undervisas",
+        "en": "Studies in a teaching subject"
+      },
+      "value": {
+        "fi": "Opetettavan aineen opinnot",
+        "sv": "Opetettavan aineen opinnot",
+        "en": "Opetettavan aineen opinnot"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "modersmål och litteratur",
+            "en": "Mother tongue and literature"
+          },
+          "value": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "äidinkieli ja kirjallisuus",
+            "en": "äidinkieli ja kirjallisuus"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "saame",
+                "sv": "saame",
+                "en": "saame"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "det andra inhemska språket",
+            "en": "Second national language"
+          },
+          "value": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "toinen kotimainen kieli",
+            "en": "toinen kotimainen kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "vieras kieli",
+            "sv": "främmande språk",
+            "en": "Foreign language"
+          },
+          "value": {
+            "fi": "vieras kieli",
+            "sv": "vieras kieli",
+            "en": "vieras kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "englanti",
+                "sv": "engelska",
+                "en": "English"
+              },
+              "value": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "espanja",
+                "sv": "spanska",
+                "en": "Spanish"
+              },
+              "value": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "italia",
+                "sv": "italienska",
+                "en": "Italian"
+              },
+              "value": {
+                "fi": "2",
+                "sv": "2",
+                "en": "2"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "japani",
+                "sv": "japanska",
+                "en": "Japanese"
+              },
+              "value": {
+                "fi": "3",
+                "sv": "3",
+                "en": "3"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kiina",
+                "sv": "kinesiska",
+                "en": "Chinese"
+              },
+              "value": {
+                "fi": "4",
+                "sv": "4",
+                "en": "4"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "latina",
+                "sv": "latin",
+                "en": "Latin"
+              },
+              "value": {
+                "fi": "5",
+                "sv": "5",
+                "en": "5"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "portugali",
+                "sv": "portugisiska",
+                "en": "Portuguese"
+              },
+              "value": {
+                "fi": "6",
+                "sv": "6",
+                "en": "6"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ranska",
+                "sv": "franska",
+                "en": "French"
+              },
+              "value": {
+                "fi": "7",
+                "sv": "7",
+                "en": "7"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "8",
+                "sv": "8",
+                "en": "8"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saksa",
+                "sv": "tyska",
+                "en": "German"
+              },
+              "value": {
+                "fi": "9",
+                "sv": "9",
+                "en": "9"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "venäjä",
+                "sv": "ryska",
+                "en": "Russian"
+              },
+              "value": {
+                "fi": "10",
+                "sv": "10",
+                "en": "10"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "viro",
+                "sv": "estniska",
+                "en": "Estonian"
+              },
+              "value": {
+                "fi": "11",
+                "sv": "11",
+                "en": "11"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "matematiikka",
+            "sv": "matematik",
+            "en": "Mathematics"
+          },
+          "value": {
+            "fi": "matematiikka",
+            "sv": "matematiikka",
+            "en": "matematiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "biologia",
+            "sv": "biologi",
+            "en": "Biology"
+          },
+          "value": {
+            "fi": "biologia",
+            "sv": "biologia",
+            "en": "biologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "maantieto/maantiede",
+            "sv": "geografi",
+            "en": "Geography"
+          },
+          "value": {
+            "fi": "maantieto/maantiede",
+            "sv": "maantieto/maantiede",
+            "en": "maantieto/maantiede"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "fysiikka",
+            "sv": "fysik",
+            "en": "Physics"
+          },
+          "value": {
+            "fi": "fysiikka",
+            "sv": "fysiikka",
+            "en": "fysiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kemia",
+            "sv": "kemi",
+            "en": "Chemistry"
+          },
+          "value": {
+            "fi": "kemia",
+            "sv": "kemia",
+            "en": "kemia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "terveystieto",
+            "sv": "hälsokunskap",
+            "en": "Health education"
+          },
+          "value": {
+            "fi": "terveystieto",
+            "sv": "terveystieto",
+            "en": "terveystieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "uskonto",
+            "sv": "religion",
+            "en": "Religion"
+          },
+          "value": {
+            "fi": "uskonto",
+            "sv": "uskonto",
+            "en": "uskonto"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "religion, evangelisk-luthersk tro",
+                "en": "Religion, Evangelical-Lutheran"
+              },
+              "value": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "uskonto, evankelis-luterilainen",
+                "en": "uskonto, evankelis-luterilainen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "religion, ortodox tro",
+                "en": "Religion, Orthodox"
+              },
+              "value": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "uskonto, ortodoksinen",
+                "en": "uskonto, ortodoksinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, katolinen",
+                "sv": "religion, katolsk tro",
+                "en": "Religion, Catholic"
+              },
+              "value": {
+                "fi": "uskonto, katolinen",
+                "sv": "uskonto, katolinen",
+                "en": "uskonto, katolinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, islam",
+                "sv": "religion, islam",
+                "en": "Religion, Islam"
+              },
+              "value": {
+                "fi": "uskonto, islam",
+                "sv": "uskonto, islam",
+                "en": "uskonto, islam"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "elämänkatsomustieto",
+            "sv": "livsåskådningskunskap",
+            "en": "Ethics"
+          },
+          "value": {
+            "fi": "elämänkatsomustieto",
+            "sv": "elämänkatsomustieto",
+            "en": "elämänkatsomustieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "filosofia",
+            "sv": "filosofi",
+            "en": "Philosophy"
+          },
+          "value": {
+            "fi": "filosofia",
+            "sv": "filosofia",
+            "en": "filosofia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "psykologia",
+            "sv": "psykologi",
+            "en": "Psychology"
+          },
+          "value": {
+            "fi": "psykologia",
+            "sv": "psykologia",
+            "en": "psykologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "History"
+          },
+          "value": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "historia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "samhällslära",
+            "en": "Social studies"
+          },
+          "value": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "yhteiskuntaoppi",
+            "en": "yhteiskuntaoppi"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "musiikki",
+            "sv": "musik",
+            "en": "Music"
+          },
+          "value": {
+            "fi": "musiikki",
+            "sv": "musiikki",
+            "en": "musiikki"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kuvataide",
+            "sv": "bildkonst",
+            "en": "Art"
+          },
+          "value": {
+            "fi": "kuvataide",
+            "sv": "kuvataide",
+            "en": "kuvataide"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "käsityö",
+            "sv": "slöjd",
+            "en": "Crafts"
+          },
+          "value": {
+            "fi": "käsityö",
+            "sv": "käsityö",
+            "en": "käsityö"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "liikunta",
+            "sv": "gymnastik",
+            "en": "Physical education"
+          },
+          "value": {
+            "fi": "liikunta",
+            "sv": "liikunta",
+            "en": "liikunta"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kotitalous",
+            "sv": "huslig ekonomi",
+            "en": "Home economics"
+          },
+          "value": {
+            "fi": "kotitalous",
+            "sv": "kotitalous",
+            "en": "kotitalous"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "tietotekniikka",
+            "sv": "informationsteknik",
+            "en": "ICT"
+          },
+          "value": {
+            "fi": "tietotekniikka",
+            "sv": "tietotekniikka",
+            "en": "tietotekniikka"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": {
+        "fi": "Opettajan pedagogiset opinnot",
+        "sv": "Pedagogiska studier för lärare",
+        "en": "Teacher’s pedagogical studies"
+      },
+      "value": {
+        "fi": "Opettajan pedagogiset opinnot",
+        "sv": "Opettajan pedagogiset opinnot",
+        "en": "Opettajan pedagogiset opinnot"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "sv": "Studier som ger yrkesfärdigheter för uppgifter inom specialundervisning",
+        "en": "Studies providing professional competence for special needs education"
+      },
+      "value": {
+        "fi": "Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "sv": "Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "en": "Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "sv": "Studier som ger yrkesfärdigheter för uppgifter inom elevhandledning och studiehandledning",
+        "en": "Studies providing professional competence for guidance counselling"
+      },
+      "value": {
+        "fi": "Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "sv": "Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot",
+        "en": "Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Kasvatustieteellisen alan korkeakoulututkinto (kasvatustieteen kandidaatti, kasvatustieteen maisteri, kasvatustieteen lisensiaatti tai kasvatustieteen tohtori)",
+        "sv": "Examen inom det pedagogiska utbildningsområdet (pedagogie kandidat, pedagogie magister, pedagogie licentiat eller pedagogie doktor)",
+        "en": "Higher education degree in the field of education (Bachelor of Arts (Education), Master of Arts (Education), Licentiate of Arts (Education) or Doctor of Arts (Education))"
+      },
+      "value": {
+        "fi": "0",
+        "sv": "0",
+        "en": "0"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Sosiaali- ja terveysalan ammattikorkeakoulututkinto tai ylempi ammattikorkeakoulututkinto (sosionomi (AMK) tai sosionomi (ylempi AMK))",
+        "sv": "Yrkeshögskoleexamen eller högre yrkeshögskoleexamen inom social- och hälsoområdet (socionom (YH) eller socionom (högre YH))",
+        "en": "Bachelor's or Master's degree in social services and health care (Bachelor of Social Services (UAS) or Master of Social Services (UAS))"
+      },
+      "value": {
+        "fi": "1",
+        "sv": "1",
+        "en": "1"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Muu opetustehtävään tai varhaiskasvatuksen tehtävään vaadittava korkeakoulun opintosuoritus",
+        "sv": "Annan studieprestation vid en högskola som krävs för en undervisningsuppgift eller en uppgift inom småbarnspedagogik",
+        "en": "Other higher education study module required for a teaching position or for a position in early childhood education and care"
+      },
+      "value": {
+        "fi": "Muu opettajankoulutuksen opintokokonaisuus",
+        "sv": "Muu opettajankoulutuksen opintokokonaisuus",
+        "en": "Muu opettajankoulutuksen opintokokonaisuus"
+      },
+      "children": []
+    }
+  ],
+  "riittavatOpinnotOptions": [
+    {
+      "label": {
+        "fi": "Luokanopettaja",
+        "sv": "Klasslärare",
+        "en": "Class teacher"
+      },
+      "value": {
+        "fi": "1",
+        "sv": "1",
+        "en": "1"
+      },
+      "children": []
+    },
+    {
+      "label": {
+        "fi": "Aineenopettaja perusopetuksessa",
+        "sv": "Ämneslärare inom grundläggande utbildning",
+        "en": "Subject teacher in primary and lower secondary education"
+      },
+      "value": {
+        "fi": "2",
+        "sv": "2",
+        "en": "2"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "modersmål och litteratur",
+            "en": "Mother tongue and literature"
+          },
+          "value": {
+            "fi": "0",
+            "sv": "0",
+            "en": "0"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "saame",
+                "sv": "saame",
+                "en": "saame"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "det andra inhemska språket",
+            "en": "Second national language"
+          },
+          "value": {
+            "fi": "1",
+            "sv": "1",
+            "en": "1"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "vieras kieli",
+            "sv": "främmande språk",
+            "en": "Foreign language"
+          },
+          "value": {
+            "fi": "2",
+            "sv": "2",
+            "en": "2"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "englanti",
+                "sv": "engelska",
+                "en": "English"
+              },
+              "value": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "espanja",
+                "sv": "spanska",
+                "en": "Spanish"
+              },
+              "value": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "italia",
+                "sv": "italienska",
+                "en": "Italian"
+              },
+              "value": {
+                "fi": "2",
+                "sv": "2",
+                "en": "2"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "japani",
+                "sv": "japanska",
+                "en": "Japanese"
+              },
+              "value": {
+                "fi": "3",
+                "sv": "3",
+                "en": "3"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kiina",
+                "sv": "kinesiska",
+                "en": "Chinese"
+              },
+              "value": {
+                "fi": "4",
+                "sv": "4",
+                "en": "4"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "latina",
+                "sv": "latin",
+                "en": "Latin"
+              },
+              "value": {
+                "fi": "5",
+                "sv": "5",
+                "en": "5"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "portugali",
+                "sv": "portugisiska",
+                "en": "Portuguese"
+              },
+              "value": {
+                "fi": "6",
+                "sv": "6",
+                "en": "6"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ranska",
+                "sv": "franska",
+                "en": "French"
+              },
+              "value": {
+                "fi": "7",
+                "sv": "7",
+                "en": "7"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "8",
+                "sv": "8",
+                "en": "8"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saksa",
+                "sv": "tyska",
+                "en": "German"
+              },
+              "value": {
+                "fi": "9",
+                "sv": "9",
+                "en": "9"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "venäjä",
+                "sv": "ryska",
+                "en": "Russian"
+              },
+              "value": {
+                "fi": "10",
+                "sv": "10",
+                "en": "10"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "viro",
+                "sv": "estniska",
+                "en": "Estonian"
+              },
+              "value": {
+                "fi": "11",
+                "sv": "11",
+                "en": "11"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "matematiikka",
+            "sv": "matematik",
+            "en": "Mathematics"
+          },
+          "value": {
+            "fi": "3",
+            "sv": "3",
+            "en": "3"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "biologia",
+            "sv": "biologi",
+            "en": "Biology"
+          },
+          "value": {
+            "fi": "4",
+            "sv": "4",
+            "en": "4"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "maantieto",
+            "sv": "geografi",
+            "en": "Geography"
+          },
+          "value": {
+            "fi": "5",
+            "sv": "5",
+            "en": "5"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "fysiikka",
+            "sv": "fysik",
+            "en": "Physics"
+          },
+          "value": {
+            "fi": "6",
+            "sv": "6",
+            "en": "6"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kemia",
+            "sv": "kemi",
+            "en": "Chemistry"
+          },
+          "value": {
+            "fi": "7",
+            "sv": "7",
+            "en": "7"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "terveystieto",
+            "sv": "hälsokunskap",
+            "en": "Health education"
+          },
+          "value": {
+            "fi": "8",
+            "sv": "8",
+            "en": "8"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "uskonto",
+            "sv": "religion",
+            "en": "Religion"
+          },
+          "value": {
+            "fi": "9",
+            "sv": "9",
+            "en": "9"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "religion, evangelisk-luthersk tro",
+                "en": "Religion, Evangelical-Lutheran"
+              },
+              "value": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "uskonto, evankelis-luterilainen",
+                "en": "uskonto, evankelis-luterilainen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "religion, ortodox tro",
+                "en": "Religion, Orthodox"
+              },
+              "value": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "uskonto, ortodoksinen",
+                "en": "uskonto, ortodoksinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, katolinen",
+                "sv": "religion, katolsk tro",
+                "en": "Religion, Catholic"
+              },
+              "value": {
+                "fi": "uskonto, katolinen",
+                "sv": "uskonto, katolinen",
+                "en": "uskonto, katolinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, islam",
+                "sv": "religion, islam",
+                "en": "Religion, Islam"
+              },
+              "value": {
+                "fi": "uskonto, islam",
+                "sv": "uskonto, islam",
+                "en": "uskonto, islam"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "elämänkatsomustieto",
+            "sv": "livsåskådningskunskap",
+            "en": "Ethics"
+          },
+          "value": {
+            "fi": "10",
+            "sv": "10",
+            "en": "10"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "History"
+          },
+          "value": {
+            "fi": "11",
+            "sv": "11",
+            "en": "11"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "samhällslära",
+            "en": "Social Studies"
+          },
+          "value": {
+            "fi": "12",
+            "sv": "12",
+            "en": "12"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "musiikki",
+            "sv": "musik",
+            "en": "Music"
+          },
+          "value": {
+            "fi": "13",
+            "sv": "13",
+            "en": "13"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kuvataide",
+            "sv": "bildkonst",
+            "en": "Art"
+          },
+          "value": {
+            "fi": "14",
+            "sv": "14",
+            "en": "14"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "käsityö",
+            "sv": "slöjd",
+            "en": "Crafts"
+          },
+          "value": {
+            "fi": "15",
+            "sv": "15",
+            "en": "15"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "liikunta",
+            "sv": "gymnastik",
+            "en": "Physical education"
+          },
+          "value": {
+            "fi": "16",
+            "sv": "16",
+            "en": "16"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kotitalous",
+            "sv": "huslig ekonomi",
+            "en": "Home economics"
+          },
+          "value": {
+            "fi": "17",
+            "sv": "17",
+            "en": "17"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "tietotekniikka",
+            "sv": "informationsteknik",
+            "en": "ICT"
+          },
+          "value": {
+            "fi": "18",
+            "sv": "18",
+            "en": "18"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": {
+        "fi": "Aineenopettaja lukiossa",
+        "sv": "Ämneslärare i gymnasiet",
+        "en": "Subject teacher in general upper secondary education"
+      },
+      "value": {
+        "fi": "3",
+        "sv": "3",
+        "en": "3"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "modersmål och litteratur",
+            "en": "Mother tongue and literature"
+          },
+          "value": {
+            "fi": "äidinkieli ja kirjallisuus",
+            "sv": "äidinkieli ja kirjallisuus",
+            "en": "äidinkieli ja kirjallisuus"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "sami",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "saame",
+                "sv": "saame",
+                "en": "saame"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "det andra inhemska språket",
+            "en": "Second national language"
+          },
+          "value": {
+            "fi": "toinen kotimainen kieli",
+            "sv": "toinen kotimainen kieli",
+            "en": "toinen kotimainen kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "ruotsi",
+                "sv": "svenska",
+                "en": "Swedish"
+              },
+              "value": {
+                "fi": "ruotsi",
+                "sv": "ruotsi",
+                "en": "ruotsi"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "suomi",
+                "sv": "finska",
+                "en": "Finnish"
+              },
+              "value": {
+                "fi": "suomi",
+                "sv": "suomi",
+                "en": "suomi"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "vieras kieli",
+            "sv": "främmande språk",
+            "en": "Foreign language"
+          },
+          "value": {
+            "fi": "vieras kieli",
+            "sv": "vieras kieli",
+            "en": "vieras kieli"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "englanti",
+                "sv": "engelska",
+                "en": "English"
+              },
+              "value": {
+                "fi": "0",
+                "sv": "0",
+                "en": "0"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "espanja",
+                "sv": "spanska",
+                "en": "Spanish"
+              },
+              "value": {
+                "fi": "1",
+                "sv": "1",
+                "en": "1"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "italia",
+                "sv": "italienska",
+                "en": "Italian"
+              },
+              "value": {
+                "fi": "2",
+                "sv": "2",
+                "en": "2"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "japani",
+                "sv": "japanska",
+                "en": "Japanese"
+              },
+              "value": {
+                "fi": "3",
+                "sv": "3",
+                "en": "3"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kiina",
+                "sv": "kinesiska",
+                "en": "Chinese"
+              },
+              "value": {
+                "fi": "4",
+                "sv": "4",
+                "en": "4"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "latina",
+                "sv": "latin",
+                "en": "Latin"
+              },
+              "value": {
+                "fi": "5",
+                "sv": "5",
+                "en": "5"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "portugali",
+                "sv": "portugisiska",
+                "en": "Portuguese"
+              },
+              "value": {
+                "fi": "6",
+                "sv": "6",
+                "en": "6"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "ranska",
+                "sv": "franska",
+                "en": "French"
+              },
+              "value": {
+                "fi": "7",
+                "sv": "7",
+                "en": "7"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saame",
+                "sv": "samiska",
+                "en": "Sami"
+              },
+              "value": {
+                "fi": "8",
+                "sv": "8",
+                "en": "8"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "saksa",
+                "sv": "tyska",
+                "en": "German"
+              },
+              "value": {
+                "fi": "9",
+                "sv": "9",
+                "en": "9"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "venäjä",
+                "sv": "ryska",
+                "en": "Russian"
+              },
+              "value": {
+                "fi": "10",
+                "sv": "10",
+                "en": "10"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "viro",
+                "sv": "estniska",
+                "en": "Estonian"
+              },
+              "value": {
+                "fi": "11",
+                "sv": "11",
+                "en": "11"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "matematiikka",
+            "sv": "matematik",
+            "en": "Mathematics"
+          },
+          "value": {
+            "fi": "matematiikka",
+            "sv": "matematiikka",
+            "en": "matematiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "biologia",
+            "sv": "biologi",
+            "en": "Biology"
+          },
+          "value": {
+            "fi": "biologia",
+            "sv": "biologia",
+            "en": "biologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "maantiede",
+            "sv": "geografi",
+            "en": "Geography"
+          },
+          "value": {
+            "fi": "maantiede",
+            "sv": "maantiede",
+            "en": "maantiede"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "fysiikka",
+            "sv": "fysik",
+            "en": "Physics"
+          },
+          "value": {
+            "fi": "fysiikka",
+            "sv": "fysiikka",
+            "en": "fysiikka"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kemia",
+            "sv": "kemi",
+            "en": "Chemistry"
+          },
+          "value": {
+            "fi": "kemia",
+            "sv": "kemia",
+            "en": "kemia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "terveystieto",
+            "sv": "hälsokunskap",
+            "en": "Health education"
+          },
+          "value": {
+            "fi": "terveystieto",
+            "sv": "terveystieto",
+            "en": "terveystieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "uskonto",
+            "sv": "religion",
+            "en": "Religion"
+          },
+          "value": {
+            "fi": "uskonto",
+            "sv": "uskonto",
+            "en": "uskonto"
+          },
+          "children": [
+            {
+              "label": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "religion, evangelisk-luthersk tro",
+                "en": "Religion, Evangelical-Lutheran"
+              },
+              "value": {
+                "fi": "uskonto, evankelis-luterilainen",
+                "sv": "uskonto, evankelis-luterilainen",
+                "en": "uskonto, evankelis-luterilainen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "religion, ortodox tro",
+                "en": "Religion, Orthodox"
+              },
+              "value": {
+                "fi": "uskonto, ortodoksinen",
+                "sv": "uskonto, ortodoksinen",
+                "en": "uskonto, ortodoksinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, katolinen",
+                "sv": "religion, katolsk tro",
+                "en": "Religion, Catholic"
+              },
+              "value": {
+                "fi": "uskonto, katolinen",
+                "sv": "uskonto, katolinen",
+                "en": "uskonto, katolinen"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto, islam",
+                "sv": "religion, islam",
+                "en": "Religion, Islam"
+              },
+              "value": {
+                "fi": "uskonto, islam",
+                "sv": "uskonto, islam",
+                "en": "uskonto, islam"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "label": {
+            "fi": "elämänkatsomustieto",
+            "sv": "livsåskådningskunskap",
+            "en": "Ethics"
+          },
+          "value": {
+            "fi": "elämänkatsomustieto",
+            "sv": "elämänkatsomustieto",
+            "en": "elämänkatsomustieto"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "filosofia",
+            "sv": "filosofi",
+            "en": "Philosophy"
+          },
+          "value": {
+            "fi": "filosofia",
+            "sv": "filosofia",
+            "en": "filosofia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "psykologia",
+            "sv": "psykologi",
+            "en": "Psychology"
+          },
+          "value": {
+            "fi": "psykologia",
+            "sv": "psykologia",
+            "en": "psykologia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "History"
+          },
+          "value": {
+            "fi": "historia",
+            "sv": "historia",
+            "en": "historia"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "samhällslära",
+            "en": "Social studies"
+          },
+          "value": {
+            "fi": "yhteiskuntaoppi",
+            "sv": "yhteiskuntaoppi",
+            "en": "yhteiskuntaoppi"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "musiikki",
+            "sv": "musik",
+            "en": "Music"
+          },
+          "value": {
+            "fi": "musiikki",
+            "sv": "musiikki",
+            "en": "musiikki"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "kuvataide",
+            "sv": "bildkonst",
+            "en": "Art"
+          },
+          "value": {
+            "fi": "kuvataide",
+            "sv": "kuvataide",
+            "en": "kuvataide"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "liikunta",
+            "sv": "gymnastik",
+            "en": "Physical education"
+          },
+          "value": {
+            "fi": "liikunta",
+            "sv": "liikunta",
+            "en": "liikunta"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "tietotekniikka",
+            "sv": "informationsteknik",
+            "en": "ICT"
+          },
+          "value": {
+            "fi": "tietotekniikka",
+            "sv": "tietotekniikka",
+            "en": "tietotekniikka"
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "label": {
+        "fi": "Steinerpedagogiikkaan tai montessoripedagogiikkaan perustuva opetus",
+        "sv": "Undervisning som baserar sig på montessori- eller steinerpedagogik",
+        "en": "Teaching and education based on Steiner or Montessori pedagogy"
+      },
+      "value": {
+        "fi": "16",
+        "sv": "16",
+        "en": "16"
+      },
+      "children": [
+        {
+          "label": {
+            "fi": "Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)",
+            "sv": "Undervisning som baserar sig på steinerpedagogik (grundläggande undervisning och gymnasiet)",
+            "en": "Teaching based on Steiner pedagogy (Basic education, General upper secondary education)"
+          },
+          "value": {
+            "fi": "0",
+            "sv": "0",
+            "en": "0"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Montessoripedagogiikkaan perustuva esiopetus",
+            "sv": "Förskoleundervisning som baserar sig på montessoripedagogik",
+            "en": "Pre-primary education based on Montessori pedagogy"
+          },
+          "value": {
+            "fi": "1",
+            "sv": "1",
+            "en": "1"
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

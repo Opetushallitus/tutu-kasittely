@@ -6,6 +6,8 @@ import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
+import scala.util.boundary
+import scala.util.boundary.break
 
 def findAnswer(key: String, allAnswers: Seq[Answer]): Option[AnswerValue] = {
   allAnswers.find(_.key == key).map(_.value)
@@ -32,6 +34,127 @@ def findAnswerByAtaruKysymysId(
         case Some(answer) => Some(answer)
         case None         => None
       }
+  }
+}
+
+def traverseContent(
+  content: Seq[LomakeContentItem],
+  handleItem: LomakeContentItem => SisaltoItem
+): Seq[SisaltoItem] = {
+  // map content
+  val newItems = content.flatMap((item: LomakeContentItem) => {
+    // handle this
+    val newItem = handleItem(item)
+
+    // traverse children (children, followups)
+    val newChildren = traverseContent(item.children, handleItem)
+
+    val resultItem = newItem.copy(
+      children = newChildren
+    )
+
+    // omit form nodes with no answer content
+    val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
+
+    if (resultIsEmpty) {
+      None
+    } else {
+      Some(resultItem)
+    }
+  })
+
+  newItems
+}
+
+def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = {
+  val itemLabel = item.label
+
+  val answer = answers.find(a => a.key == item.id)
+  val values = extractValues(answer)
+
+  val valinnat = values.map((value: String) => {
+    val emptyOption = Valinta(
+      label = Map(
+        Kieli.fi -> value,
+        Kieli.en -> value,
+        Kieli.sv -> value
+      ),
+      value = ""
+    )
+    val valinta = item.options
+      .find((option: Valinta) => option.value == value)
+      .getOrElse(
+        emptyOption
+      )
+    valinta
+  })
+
+  val sisaltoValues = valinnat.map((valinta: Valinta) => {
+    SisaltoValue(
+      valinta.label,
+      valinta.value,
+      traverseContent(valinta.followups, item => transformItem(answers, item))
+    )
+  })
+
+  SisaltoItem(
+    key = item.id,
+    fieldType = item.fieldType,
+    value = sisaltoValues,
+    label = itemLabel,
+    infoText = item.params.flatMap(_.`info-text`),
+    children = Seq()
+  )
+}
+
+def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
+  val value = answerMaybe match {
+    case Some(answer) => answer.value
+    case None         => null
+  }
+
+  value match {
+    case SingleValue(value)   => Seq(value)
+    case MultiValue(values)   => values
+    case NestedValues(values) => values.flatten()
+    case EmptyValue           => Seq()
+    case null                 => Seq()
+  }
+}
+
+private def collectAllOptionsRecursively(item: LomakeContentItem): Seq[PaatosTietoOption] = {
+  // Get direct options from this item
+  val directOptions = item.options.map { valinta =>
+    PaatosTietoOption(
+      label = Some(valinta.label),
+      value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
+      children = buildNestedChildren(valinta.followups)
+    )
+  }
+
+  // Recursively collect from children items
+  val nestedOptions = item.children.flatMap { childItem =>
+    collectAllOptionsRecursively(childItem)
+  }
+
+  directOptions ++ nestedOptions
+}
+
+private def buildNestedChildren(items: Seq[LomakeContentItem]): Seq[PaatosTietoOption] = {
+  items.flatMap { item =>
+    // Collect options from this item and all its descendants
+    val directOptions = item.options.map { valinta =>
+      PaatosTietoOption(
+        label = Some(valinta.label),
+        value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
+        children = buildNestedChildren(valinta.followups)
+      )
+    }
+
+    // Recursively collect from children
+    val childrenOptions = item.children.flatMap(childItem => collectAllOptionsRecursively(childItem))
+
+    directOptions ++ childrenOptions
   }
 }
 
@@ -191,87 +314,79 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 }
 
-def traverseContent(
-  content: Seq[LomakeContentItem],
-  handleItem: (LomakeContentItem) => SisaltoItem
-): Seq[SisaltoItem] = {
-  // map content
-  val newItems = content.flatMap((item: LomakeContentItem) => {
-    // handle this
-    val newItem = handleItem(item)
+def findOptionsByAtaruKysymysId(
+  kysymysId: AtaruKysymysId,
+  lomake: AtaruLomake
+): Seq[PaatosTietoOption] = {
+  findOptionsInContentAsNestedInfoText(kysymysId, lomake.content)
+}
 
-    // traverse children (children, followups)
-    val newChildren = traverseContent(item.children, handleItem)
+private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
+  item.id == kysymysId.generatedId || item.id == kysymysId.definedId
+}
 
-    val resultItem = newItem.copy(
-      children = newChildren
-    )
+private def findOptionsInContentAsNestedInfoText(
+  kysymysId: AtaruKysymysId,
+  items: Seq[LomakeContentItem]
+): Seq[PaatosTietoOption] = {
+  boundary {
+    // First, try to find the exact match at this level
+    val directMatch = items.find(item => matchesAtaruKysymysId(item, kysymysId))
 
-    // omit form nodes with no answer content
-    val resultIsEmpty = newItem.value.isEmpty && newChildren.isEmpty
-
-    if (resultIsEmpty) {
-      None
-    } else {
-      Some(resultItem)
+    if (directMatch.isDefined) {
+      // Collect all options recursively from this item
+      break(collectAllOptionsRecursively(directMatch.get))
     }
-  })
 
-  newItems
-}
+    // If not found at this level, search recursively in children
+    for (item <- items) {
+      val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children)
+      if (resultFromChildren.nonEmpty) {
+        break(resultFromChildren)
+      }
 
-def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = {
-  val itemLabel = item.label
+      // Also search in followups within options
+      for (valinta <- item.options) {
+        val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups)
+        if (resultFromFollowups.nonEmpty) {
+          break(resultFromFollowups)
+        }
+      }
+    }
 
-  val answer = answers.find(a => a.key == item.id)
-  val values = extractValues(answer)
-
-  val valinnat = values.map((value: String) => {
-    val emptyOption = Valinta(
-      label = Map(
-        Kieli.fi -> value,
-        Kieli.en -> value,
-        Kieli.sv -> value
-      ),
-      value = ""
-    )
-    val valinta = item.options
-      .find((option: Valinta) => option.value == value)
-      .getOrElse(
-        emptyOption
-      )
-    valinta
-  })
-
-  val sisaltoValues = valinnat.map((valinta: Valinta) => {
-    SisaltoValue(
-      valinta.label,
-      valinta.value,
-      traverseContent(valinta.followups, item => transformItem(answers, item))
-    )
-  })
-
-  SisaltoItem(
-    key = item.id,
-    fieldType = item.fieldType,
-    value = sisaltoValues,
-    label = itemLabel,
-    infoText = item.params.flatMap(_.`info-text`),
-    children = Seq()
-  )
-}
-
-def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
-  val value = answerMaybe match {
-    case Some(answer) => answer.value
-    case None         => null
+    Seq.empty
   }
+}
 
-  value match {
-    case SingleValue(value)   => Seq(value)
-    case MultiValue(values)   => values
-    case NestedValues(values) => values.flatten()
-    case EmptyValue           => Seq()
-    case null                 => Seq()
+@Component
+@Service
+class AtaruLomakeParser() {
+  def parsePaatosTietoOptions(lomake: AtaruLomake): PaatosTietoOptions = {
+    val kelpoisuusOptions = findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS,
+      lomake
+    ) ++ findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_OPTIONS,
+      lomake
+    )
+
+    val tiettyTutkintoTaiOpinnotOptions = findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OIKEUSTIETEELLINEN_OPTIONS,
+      lomake
+    ) ++ findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_AINE_OPTIONS,
+      lomake
+    )
+
+    val riittavatOpinnotOptions = findOptionsByAtaruKysymysId(
+      Constants.ATARU_LOMAKE_RIITTAVAT_OPINNOT_OPTIONS,
+      lomake
+    )
+
+    PaatosTietoOptions(
+      kelpoisuusOptions = kelpoisuusOptions,
+      tiettyTutkintoTaiOpinnotOptions = tiettyTutkintoTaiOpinnotOptions,
+      riittavatOpinnotOptions = riittavatOpinnotOptions
+    )
   }
 }

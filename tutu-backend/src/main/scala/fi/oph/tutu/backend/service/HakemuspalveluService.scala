@@ -3,17 +3,20 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
-import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
-import org.json4s.native.JsonMethods.{compact, parse, render}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
+import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
+import org.json4s.native.JsonMethods.{compact, parse, render}
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
 
 case class HakemuspalveluServiceException(cause: Throwable = null) extends RuntimeException(cause)
 
@@ -30,6 +33,9 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
 
   @Value("${tutu.backend.cas.password}")
   val cas_password: String = null
+
+  @Autowired
+  val cacheManager: CacheManager = null
 
   val COMMON_MUUTOSHISTORIA_FIELDS: Seq[String] = Seq("type", "virkailijaOid", "time")
 
@@ -90,18 +96,15 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
     }
   }
 
+  @Cacheable(value = Array("lomake"))
   def haeLomake(form_id: Long): Either[Throwable, String] = {
     httpService.get(
       hakemuspalveluCasClient,
-      s"$opintopolku_virkailija_domain/lomake-editori/api/forms/${form_id}"
+      s"$opintopolku_virkailija_domain/lomake-editori/api/forms/$form_id"
     ) match {
       case Left(error: Throwable)  => Left(error)
       case Right(response: String) => Right(response)
     }
-  }
-
-  def haeJaParsiLomake(form_id: Long): Either[Throwable, AtaruLomake] = {
-    haeLomake(form_id).map(response => parse(response).extract[AtaruLomake])
   }
 
   def haeLiitteidenTiedot(hakemusOid: HakemusOid, avainLista: Array[String]): Option[String] = {
@@ -120,7 +123,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
       jsonBody
     ) match {
       case Left(error)     => throw error
-      case Right(response) => {
+      case Right(response) =>
         val liitteidenTiedot = parse(response).values.asInstanceOf[List[Map[String, Any]]]
 
         val liitteidenTiedotJaLinkit = liitteidenTiedot.map(tiedot => {
@@ -134,9 +137,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
 
           tiedotJaLinkkiJaSaapumisaika
         })
-
         Some(compact(render(Extraction.decompose(liitteidenTiedotJaLinkit))))
-      }
     }
   }
 
@@ -174,5 +175,16 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
       case _ => Seq()
     }
     mappings.toMap
+  }
+
+  @CacheEvict(value = Array("lomake"), allEntries = true)
+  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
+  def emptyLomakeCache(): Unit =
+    LOG.info("Emptying koodisto-cache")
+
+  @CachePut(Array("lomake"))
+  private def updateCached(lomake: AtaruLomake): Unit = {
+    val lomakeCache = cacheManager.getCache("lomake")
+    lomakeCache.put(lomake.key, lomake)
   }
 }

@@ -1,7 +1,11 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { PaatosTieto, TutkintoTaiOpinto } from '@/src/lib/types/paatos';
+import {
+  PaatosTieto,
+  PaatosTietoOptionGroup,
+  TutkintoTaiOpinto,
+} from '@/src/lib/types/paatos';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { Add } from '@mui/icons-material';
 import React, { useEffect } from 'react';
@@ -16,6 +20,7 @@ const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
 type RinnastettavatTutkinnotTaiOpinnotListProps = {
   t: TFunction;
   paatosTieto: PaatosTieto;
+  paatosTietoOptions: PaatosTietoOptionGroup;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
 };
@@ -23,6 +28,7 @@ type RinnastettavatTutkinnotTaiOpinnotListProps = {
 export const RinnastettavatTutkinnotTaiOpinnotList = ({
   t,
   paatosTieto,
+  paatosTietoOptions,
   rinnastettavatTutkinnotTaiOpinnot,
   updatePaatosTietoAction,
 }: RinnastettavatTutkinnotTaiOpinnotListProps) => {
@@ -31,9 +37,12 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   >([]);
 
   useEffect(() => {
-    if (!rinnastettavatTutkinnotTaiOpinnot) return;
-    setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
-  }, [rinnastettavatTutkinnotTaiOpinnot]);
+    if (!rinnastettavatTutkinnotTaiOpinnot.length) {
+      setTutkinnotTaiOpinnot([emptyTutkintoTaiOpinto(paatosTieto.id!)]);
+    } else {
+      setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
+    }
+  }, [paatosTieto.id, rinnastettavatTutkinnotTaiOpinnot]);
   const tyyppi =
     paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
       ? 'riittavatOpinnot'
@@ -81,6 +90,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
               index={index}
               tutkintoTaiOpinto={tutkintoTaiOpinto}
               paatosTyyppi={tyyppi}
+              paatosTietoOptions={paatosTietoOptions}
               updateTutkintoTaiOpintoAction={updateTutkintoTaiOpinto}
               deleteTutkintoTaiOpintoAction={deleteTutkintoTaiOpinto}
               tyyppi={tyyppi}

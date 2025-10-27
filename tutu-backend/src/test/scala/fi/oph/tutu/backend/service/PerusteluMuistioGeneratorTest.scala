@@ -25,6 +25,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     Hakemus(
       hakemusOid = UUID.randomUUID().toString,
       lomakeOid = UUID.randomUUID().toString,
+      lomakeId = 1527182,
       lomakkeenKieli = "en",
       hakija = hakijaFixture,
       sisalto = Seq(
