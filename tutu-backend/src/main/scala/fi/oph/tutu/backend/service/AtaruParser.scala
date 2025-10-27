@@ -6,6 +6,8 @@ import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
+import scala.util.boundary
+import scala.util.boundary.break
 
 def findAnswer(key: String, allAnswers: Seq[Answer]): Option[AnswerValue] = {
   allAnswers.find(_.key == key).map(_.value)
@@ -319,35 +321,41 @@ def findOptionsByAtaruKysymysId(
   findOptionsInContentAsNestedInfoText(kysymysId, lomake.content)
 }
 
+private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
+  item.id == kysymysId.generatedId || item.id == kysymysId.definedId
+}
+
 private def findOptionsInContentAsNestedInfoText(
   kysymysId: AtaruKysymysId,
   items: Seq[LomakeContentItem]
 ): Seq[PaatosTietoOption] = {
-  // First, try to find the exact match at this level
-  val directMatch = items.find(item => item.id == kysymysId.generatedId || item.id == kysymysId.definedId)
+  boundary {
+    // First, try to find the exact match at this level
+    val directMatch = items.find(item => matchesAtaruKysymysId(item, kysymysId))
 
-  if (directMatch.isDefined) {
-    // Collect all options recursively from this item
-    return collectAllOptionsRecursively(directMatch.get)
-  }
-
-  // If not found at this level, search recursively in children
-  for (item <- items) {
-    val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children)
-    if (resultFromChildren.nonEmpty) {
-      return resultFromChildren
+    if (directMatch.isDefined) {
+      // Collect all options recursively from this item
+      break(collectAllOptionsRecursively(directMatch.get))
     }
 
-    // Also search in followups within options
-    for (valinta <- item.options) {
-      val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups)
-      if (resultFromFollowups.nonEmpty) {
-        return resultFromFollowups
+    // If not found at this level, search recursively in children
+    for (item <- items) {
+      val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children)
+      if (resultFromChildren.nonEmpty) {
+        break(resultFromChildren)
+      }
+
+      // Also search in followups within options
+      for (valinta <- item.options) {
+        val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups)
+        if (resultFromFollowups.nonEmpty) {
+          break(resultFromFollowups)
+        }
       }
     }
-  }
 
-  Seq.empty
+    Seq.empty
+  }
 }
 
 @Component

@@ -1,3 +1,5 @@
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+
 export type Ratkaisutyyppi =
   | 'Paatos'
   | 'PeruutusTaiRaukeaminen'
@@ -68,7 +70,7 @@ export type PaatosTietoOptionGroup = {
 };
 
 export type PaatosTietoOption = {
-  label: { fi: string; en: string; sv: string };
-  value: { fi: string; en: string; sv: string };
+  label: TranslatedName;
+  value: TranslatedName;
   children?: PaatosTietoOption[];
 };

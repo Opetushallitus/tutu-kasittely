@@ -107,7 +107,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   return (
     <Stack
       direction={'column'}
-      gap={2}
+      gap={theme.spacing(2)}
       sx={{ width: '100%', padding: 2, backgroundColor: ophColors.grey50 }}
     >
       <Stack

@@ -1,4 +1,5 @@
 import { PaatosTietoOption } from '@/src/lib/types/paatos';
+import { Language } from '@/src/lib/localization/localizationTypes';
 
 export type PaatosTietoDropdownOption = {
   label: string;
@@ -7,13 +8,13 @@ export type PaatosTietoDropdownOption = {
 };
 
 export const getPaatosTietoDropdownOptions = (
-  lang: string,
+  lang: Language,
   paatostietoOptions: PaatosTietoOption[],
 ): PaatosTietoDropdownOption[] => {
   return paatostietoOptions.map((option) => {
     const keyOption: PaatosTietoDropdownOption = {
-      label: option.label[lang as 'fi' | 'en' | 'sv'],
-      value: option.value[lang as 'fi' | 'en' | 'sv'],
+      label: option.label[lang as Language]!,
+      value: option.value[lang as Language]!,
     };
 
     if (option.children && option.children.length > 0) {
