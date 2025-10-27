@@ -120,10 +120,10 @@ def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
   }
 }
 
-private def collectAllOptionsRecursively(item: LomakeContentItem): Seq[NestedOption] = {
+private def collectAllOptionsRecursively(item: LomakeContentItem): Seq[PaatosTietoOption] = {
   // Get direct options from this item
   val directOptions = item.options.map { valinta =>
-    NestedOption(
+    PaatosTietoOption(
       label = Some(valinta.label),
       value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
       children = buildNestedChildren(valinta.followups)
@@ -138,11 +138,11 @@ private def collectAllOptionsRecursively(item: LomakeContentItem): Seq[NestedOpt
   directOptions ++ nestedOptions
 }
 
-private def buildNestedChildren(items: Seq[LomakeContentItem]): Seq[NestedOption] = {
+private def buildNestedChildren(items: Seq[LomakeContentItem]): Seq[PaatosTietoOption] = {
   items.flatMap { item =>
     // Collect options from this item and all its descendants
     val directOptions = item.options.map { valinta =>
-      NestedOption(
+      PaatosTietoOption(
         label = Some(valinta.label),
         value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
         children = buildNestedChildren(valinta.followups)
@@ -315,14 +315,14 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
 def findOptionsByAtaruKysymysId(
   kysymysId: AtaruKysymysId,
   lomake: AtaruLomake
-): Seq[NestedOption] = {
+): Seq[PaatosTietoOption] = {
   findOptionsInContentAsNestedInfoText(kysymysId, lomake.content)
 }
 
 private def findOptionsInContentAsNestedInfoText(
   kysymysId: AtaruKysymysId,
   items: Seq[LomakeContentItem]
-): Seq[NestedOption] = {
+): Seq[PaatosTietoOption] = {
   // First, try to find the exact match at this level
   val directMatch = items.find(item => item.id == kysymysId.generatedId || item.id == kysymysId.definedId)
 

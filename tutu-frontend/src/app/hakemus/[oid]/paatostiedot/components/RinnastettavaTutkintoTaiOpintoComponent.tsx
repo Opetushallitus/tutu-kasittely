@@ -14,6 +14,7 @@ import {
 import {
   OphButton,
   ophColors,
+  OphFormFieldWrapper,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
@@ -147,24 +148,27 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           </OphButton>
         )}{' '}
       </Stack>
-      <OphTypography variant={'label'} sx={{ marginBottom: '0' }}>
-        {t(
+      <OphFormFieldWrapper
+        label={t(
           `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
         )}
-      </OphTypography>
-      <Select
         sx={{ width: '100%' }}
-        data-testid="rinnastettava-tutkinto-tai-opinto-select"
-        value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
-        onChange={(e) =>
-          updateTutkintoTaiOpintoAction(
-            { ...tutkintoTaiOpinto, tutkintoTaiOpinto: e.target.value },
-            index,
-          )
-        }
-      >
-        {rinnastettavaTutkintoTaiOpinnotGroupedOptions}
-      </Select>
+        renderInput={() => (
+          <Select
+            sx={{ width: '100%' }}
+            data-testid="rinnastettava-tutkinto-tai-opinto-select"
+            value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
+            onChange={(e) =>
+              updateTutkintoTaiOpintoAction(
+                { ...tutkintoTaiOpinto, tutkintoTaiOpinto: e.target.value },
+                index,
+              )
+            }
+          >
+            {rinnastettavaTutkintoTaiOpinnotGroupedOptions}
+          </Select>
+        )}
+      />
       <MyonteinenPaatos
         t={t}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}

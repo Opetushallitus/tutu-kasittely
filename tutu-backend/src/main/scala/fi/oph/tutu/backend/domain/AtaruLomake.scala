@@ -34,16 +34,16 @@ case class Valinta(
   followups: Seq[LomakeContentItem] = Seq()
 )
 
-case class NestedOption(
+case class PaatosTietoOption(
   label: Option[Kielistetty] = None,
   value: Option[Kielistetty] = None,
-  children: Seq[NestedOption] = Seq()
+  children: Seq[PaatosTietoOption] = Seq()
 )
 
 case class PaatosTietoOptions(
-  kelpoisuusOptions: Seq[NestedOption] = Seq(),
-  tiettyTutkintoTaiOpinnotOptions: Seq[NestedOption] = Seq(),
-  riittavatOpinnotOptions: Seq[NestedOption] = Seq()
+  kelpoisuusOptions: Seq[PaatosTietoOption] = Seq(),
+  tiettyTutkintoTaiOpinnotOptions: Seq[PaatosTietoOption] = Seq(),
+  riittavatOpinnotOptions: Seq[PaatosTietoOption] = Seq()
 )
 
 case class SisaltoItem(

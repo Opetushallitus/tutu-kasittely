@@ -28,7 +28,7 @@ class PaatosService(
               Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
 
             case Left(error) =>
-              LOG.error(s"Lomaketta ei saatu haettua päätöksen käsittelyä varten: ${error.getMessage}")
+              LOG.error(s"Lomakkeeen $formId haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
               None
           }
 

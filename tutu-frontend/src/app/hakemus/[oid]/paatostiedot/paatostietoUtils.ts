@@ -1,17 +1,17 @@
 import { PaatosTietoOption } from '@/src/lib/types/paatos';
 
-export type LocalizedDropdownOption = {
+export type PaatosTietoDropdownOption = {
   label: string;
   value: string;
-  children?: LocalizedDropdownOption[];
+  children?: PaatosTietoDropdownOption[];
 };
 
 export const getPaatosTietoDropdownOptions = (
   lang: string,
   paatostietoOptions: PaatosTietoOption[],
-): LocalizedDropdownOption[] => {
+): PaatosTietoDropdownOption[] => {
   return paatostietoOptions.map((option) => {
-    const keyOption: LocalizedDropdownOption = {
+    const keyOption: PaatosTietoDropdownOption = {
       label: option.label[lang as 'fi' | 'en' | 'sv'],
       value: option.value[lang as 'fi' | 'en' | 'sv'],
     };
