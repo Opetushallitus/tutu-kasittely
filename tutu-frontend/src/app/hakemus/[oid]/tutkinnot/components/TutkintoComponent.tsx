@@ -32,6 +32,7 @@ const primaryTutkintotodistusOtsikko = {
 
 const tutkintotodistusOtsikko = {
   fi: [
+    { value: '', label: '' },
     { value: 'muutodistus', label: 'Muu todistus' },
     { value: 'muuttodistukset', label: 'Muut todistukset' },
     {
@@ -40,6 +41,7 @@ const tutkintotodistusOtsikko = {
     },
   ],
   sv: [
+    { value: '', label: '' },
     { value: 'ovrigbevis', label: 'Övrig bevis' },
     { value: 'ovrigabevis', label: 'Övriga bevis' },
     { value: 'foregaendehogskolestudier', label: 'Föregående högskolestudier' },
@@ -297,20 +299,22 @@ export const TutkintoComponent = ({
           'data-testid': `tutkinto-todistuksenpvm-${tutkinto.jarjestys}`,
         }}
       />
-      <OphSelectFormField
-        placeholder={t('yleiset.valitse')}
-        label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
-        sx={{ width: '25%' }}
-        options={koulutusLuokitusOptions}
-        onChange={(event) =>
-          updateCurrentTutkinto({
-            ...currentTutkinto,
-            koulutusalaKoodiUri: event.target.value,
-          })
-        }
-        value={currentTutkinto.koulutusalaKoodiUri || ''}
-        data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
-      />
+      {currentTutkinto.jarjestys === '1' && (
+        <OphSelectFormField
+          placeholder={t('yleiset.valitse')}
+          label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
+          sx={{ width: '25%' }}
+          options={koulutusLuokitusOptions}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...currentTutkinto,
+              koulutusalaKoodiUri: event.target.value,
+            })
+          }
+          value={currentTutkinto.koulutusalaKoodiUri || ''}
+          data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
+        />
+      )}
       <HakijanIlmoittamaPopover
         anchorEl={nimiAnchorEl}
         onClose={() => setNimiAnchorEl(null)}
