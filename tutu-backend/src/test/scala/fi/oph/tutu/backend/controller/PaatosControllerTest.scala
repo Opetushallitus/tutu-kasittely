@@ -21,7 +21,7 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.{get, post}
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.{get, post, put}
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, jsonPath, status}
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
@@ -298,7 +298,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja")
     mvc
       .perform(
-        post(s"/api/paatos/$hakemusOid/$lomakeId")
+        put(s"/api/paatos/$hakemusOid/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -352,7 +352,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosTietoOptions")
     mvc
       .perform(
-        post(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}/$lomakeId")
+        put(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -378,7 +378,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     mvc
       .perform(
-        post(s"/api/paatos/$hakemusOid/$lomakeId")
+        put(s"/api/paatos/$hakemusOid/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -434,7 +434,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     val result = mvc
       .perform(
-        post(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/$lomakeId")
+        put(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/$lomakeId")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)

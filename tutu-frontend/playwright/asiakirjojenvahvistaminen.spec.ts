@@ -6,7 +6,6 @@ import {
 } from '@/playwright/mocks';
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import * as dateFns from 'date-fns';
-import { ValmistumisenVahvistus } from '@/src/lib/types/hakemus';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -54,65 +53,54 @@ test('Suostumus asiakirjojen vahvistamiselle -valinta näkyy sivulla', async ({
   ).toBeVisible();
 });
 
-const defaultValmistumisenVahvistus: ValmistumisenVahvistus = {
-  valmistumisenVahvistus: false,
-  valmistumisenVahvistusPyyntoLahetetty: null,
-  valmistumisenVahvistusSaatu: null,
-  valmistumisenVahvistusVastaus: null,
-  valmistumisenVahvistusLisatieto: null,
-};
-
 test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   page,
 }) => {
-  let callCount = 0;
-
   await mockUser(page);
   await mockLiitteet(page);
 
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    callCount++;
-    const body = {
-      ...hakemus,
-      asiakirja: {
-        ...hakemus.asiakirja,
-        valmistumisenVahvistus: defaultValmistumisenVahvistus,
-      },
-    };
-    if (callCount == 1) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = false;
-    }
-    if (callCount >= 2) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistus = true;
-    }
-    if (callCount >= 3) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
+    // Handle GET requests - return hakemus with initial state
+    if (route.request().method() === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(hakemus),
+      });
+      return;
     }
 
-    if (callCount >= 4) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu =
-        dateFns.format(new Date().setDate(26), "yyyy-MM-dd'T'HH:mm:ss.SSS");
-    }
-
-    if (callCount >= 5) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus =
-        'Myonteinen';
-    }
-
-    if (callCount >= 6) {
-      body.asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto =
-        'Hyvinhän se meni';
-    }
-    if (callCount < 7)
+    // Handle PUT request for save - return final state with all changes
+    if (route.request().method() === 'PUT') {
+      const body = {
+        ...hakemus,
+        asiakirja: {
+          ...hakemus.asiakirja,
+          valmistumisenVahvistus: {
+            valmistumisenVahvistus: true,
+            valmistumisenVahvistusPyyntoLahetetty: dateFns.format(
+              new Date().setDate(26),
+              "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            ),
+            valmistumisenVahvistusSaatu: dateFns.format(
+              new Date().setDate(26),
+              "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            ),
+            valmistumisenVahvistusVastaus: 'Myonteinen',
+            valmistumisenVahvistusLisatieto: 'Hyvinhän se meni',
+          },
+        },
+      };
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(body),
       });
-    else await route.continue();
+    } else {
+      await route.continue();
+    }
   });
 
   await page.goto(
@@ -130,7 +118,7 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(radio).not.toBeVisible();
   await expect(lisatieto).not.toBeVisible();
 
-  checkbox.check();
+  await checkbox.check();
   await expect(lahetetty).toBeVisible();
   await expect(vastattu).toBeVisible();
   await expect(radio).toBeVisible();
@@ -158,6 +146,15 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
 
   const lisatietoInput = lisatieto.locator('input');
   await lisatietoInput.fill('Hyvin meni');
+
+  // Wait for save button and click it
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  await page.getByRole('button', { name: 'Tallenna' }).click();
+
+  // Wait for save to complete and verify all values are preserved
+  await expect(
+    page.getByRole('button', { name: 'Tallenna' }),
+  ).not.toBeVisible();
 
   await expect(lahetettyInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),

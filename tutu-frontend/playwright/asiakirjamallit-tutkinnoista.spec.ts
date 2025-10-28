@@ -84,46 +84,41 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  let [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    cellsOfEce.nth(2).locator('input[type="radio"]').click(),
-  ]);
-  expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
-  ).toEqual(false);
+  // Make changes to ECE
+  await cellsOfEce.nth(2).locator('input[type="radio"]').click();
 
   const cellsOfUkEnic = page
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
-  [request] = await Promise.all([
+
+  // Make changes to UK ENIC
+  await cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus');
+
+  // Delete aacrao
+  await page.getByTestId('asiakirjamalli-delete-aacrao').click();
+
+  // Wait for save ribbon to appear
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+
+  // Click save button and wait for PUT request
+  const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
         req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
+        req.method() === 'PUT',
     ),
-    cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
+
+  // Verify all changes are in the request
+  const requestData = request.postDataJSON();
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+    requestData.asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
+  ).toEqual(false);
+  expect(
+    requestData.asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
-      .vastaavuus,
-  ).toEqual(true);
-
-  [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    page.getByTestId('asiakirjamalli-delete-aacrao').click(),
-  ]);
-  expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
+    requestData.asiakirja.asiakirjamallitTutkinnoista.aacrao,
   ).toBeUndefined();
 });

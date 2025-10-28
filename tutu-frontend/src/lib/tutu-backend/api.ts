@@ -139,27 +139,6 @@ export const doApiFetch = async (
   }
 };
 
-export async function doApiPatch(
-  resource: string,
-  body: object,
-  options?: Options,
-  cache?: string,
-) {
-  return apiFetch(
-    resource,
-    {
-      ...options,
-      method: 'PATCH',
-      body: JSON.stringify(body),
-      headers: {
-        ...options?.headers,
-        'Content-Type': 'application/json',
-      },
-    },
-    cache,
-  );
-}
-
 export async function doApiPost(
   resource: string,
   body: object,

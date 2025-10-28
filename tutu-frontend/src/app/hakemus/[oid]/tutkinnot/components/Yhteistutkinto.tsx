@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Hakemus, HakemusUpdateCallback } from '@/src/lib/types/hakemus';
+import { Hakemus } from '@/src/lib/types/hakemus';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { isDefined } from 'remeda';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 
 export type YhteistutkintoProps = {
   hakemus: Hakemus;
-  updateHakemus: HakemusUpdateCallback;
+  updateHakemus: (update: { yhteistutkinto: boolean }) => void;
   t: TFunction;
 };
 

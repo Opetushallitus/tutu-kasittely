@@ -103,6 +103,69 @@ class PerusteluService(
     (currentPerustelu, newPerustelu)
   }
 
+  /**
+   * Päivittää perustelun kokonaan (PUT endpoint).
+   * Korvaa kaikki kentät.
+   * NULL arvo pyynnössä -> NULL tietokantaan.
+   */
+  def paivitaPerusteluKokonaan(
+    hakemusOid: HakemusOid,
+    perustelu: Perustelu,
+    luojaTaiMuokkaaja: String
+  ): (Option[Perustelu], Option[Perustelu]) = {
+    val dbHakemus        = hakemusRepository.haeHakemus(hakemusOid)
+    val currentPerustelu = dbHakemus.flatMap(h => perusteluRepository.haePerustelu(h.id))
+    val newPerustelu     = dbHakemus match {
+      case Some(dbHakemus) =>
+        // Täysi tallennus ilman mergeä
+        val perusteluWithIds = perustelu.copy(
+          hakemusId = Some(dbHakemus.id),
+          id = currentPerustelu.flatMap(_.id)
+        )
+
+        val latestSavedPerustelu = perusteluRepository.tallennaPerustelu(
+          dbHakemus.id,
+          perusteluWithIds,
+          luojaTaiMuokkaaja
+        )
+
+        // Lausuntopyynnöt - korvaa kaikki
+        val currentLausuntopyynnot   = perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
+        val lausuntopyyntoModifyData =
+          HakemusModifyOperationResolver
+            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, perustelu.lausuntopyynnot)
+
+        perusteluRepository.suoritaLausuntopyyntojenModifiointi(
+          latestSavedPerustelu.id.orNull,
+          lausuntopyyntoModifyData,
+          luojaTaiMuokkaaja
+        )
+
+        val newlySavedLausuntoPyynnot =
+          perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
+
+        // Päivitä kasittelyVaihe kun perustelu muuttuu
+        try {
+          paivitaHakemusKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja)
+        } catch {
+          case e: Exception =>
+            LOG.error(s"Käsittelyvaiheen päivitys epäonnistui: ${e.getMessage}", e)
+        }
+
+        Some(
+          latestSavedPerustelu.copy(
+            lausuntopyynnot =
+              if (newlySavedLausuntoPyynnot.nonEmpty)
+                newlySavedLausuntoPyynnot
+              else
+                latestSavedPerustelu.lausuntopyynnot
+          )
+        )
+      case _ => None
+    }
+    (currentPerustelu, newPerustelu)
+  }
+
   def haePerusteluMuistio(
     hakemusOid: HakemusOid
   ): Option[String] = {

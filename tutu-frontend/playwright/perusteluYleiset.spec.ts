@@ -1,27 +1,18 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
-import { expect, Page, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
-
-const expectRequestData = async (
-  page: Page,
-  action: Promise<void>,
-  data: any,
-) => {
-  const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) => req.url().includes(`/perustelu/`) && req.method() === 'POST',
-    ),
-    action,
-  ]);
-
-  return expect(request.postDataJSON()).toMatchObject(data);
-};
+import { expect, test } from '@playwright/test';
+import {
+  mockUser,
+  mockBasicForHakemus,
+  mockHakemus,
+  mockPerustelu,
+} from '@/playwright/mocks';
+import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
+import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
 
 test.beforeEach(async ({ page }) => {
   await mockBasicForHakemus({ page });
   mockUser(page);
   await mockHakemus(page);
+  await mockPerustelu(page);
 });
 
 test.describe('Yleiset perustelut', () => {
@@ -115,153 +106,41 @@ test.describe('Yleiset perustelut', () => {
   }) => {
     test.setTimeout(60000);
 
-    await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
-      if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(route.request().postDataJSON()),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({}),
-        });
-      }
-    });
+    // Setup route handler using helper
+    await setupPerusteluRoute(page);
 
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__off').click(),
-      { virallinenTutkinnonMyontaja: false },
-    );
+    // Make all changes without waiting for save
+    await page.getByTestId('virallinen-tutkinnon-myontaja__on').click();
+    await page.getByTestId('virallinen-tutkinto__off').click();
+    await page.getByTestId('lahde__lahtomaan-kansallinen-lahde').click();
+    await page.getByTestId('lahde__lahtomaan-virallinen-vastaus').click();
+    await page
+      .getByTestId('lahde__kansainvalinen-hakuteos-tai-verkkosivusto')
+      .click();
+    await page.getByTestId('tutkinnon-asema--ylempi_korkeakouluaste').click();
+    await page.getByTestId('jatko-opintokelpoisuus--muu').click();
+    await page
+      .getByTestId('jatko-opintokelpoisuus--lisatiedot')
+      .getByRole('textbox')
+      .fill('Kelpoisuus jatkaa kandidaatinopintoihin');
+    await page.getByTestId('aiemmat-paatokset--kylla').click();
 
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__on').click(),
-      { virallinenTutkinnonMyontaja: true },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinnon-myontaja__none').click(),
-      { virallinenTutkinnonMyontaja: null },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinto__off').click(),
-      { virallinenTutkinto: false },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinto__on').click(),
-      { virallinenTutkinto: true },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('virallinen-tutkinto__none').click(),
-      { virallinenTutkinto: null },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('lahde__lahtomaan-kansallinen-lahde').click(),
-      { lahdeLahtomaanKansallinenLahde: true },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('lahde__lahtomaan-kansallinen-lahde').click(),
-      { lahdeLahtomaanKansallinenLahde: false },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('lahde__lahtomaan-virallinen-vastaus').click(),
-      { lahdeLahtomaanVirallinenVastaus: true },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('lahde__lahtomaan-virallinen-vastaus').click(),
-      { lahdeLahtomaanVirallinenVastaus: false },
-    );
-
-    await expectRequestData(
-      page,
-      page
-        .getByTestId('lahde__kansainvalinen-hakuteos-tai-verkkosivusto')
-        .click(),
-      { lahdeKansainvalinenHakuteosTaiVerkkosivusto: true },
-    );
-
-    await expectRequestData(
-      page,
-      page
-        .getByTestId('lahde__kansainvalinen-hakuteos-tai-verkkosivusto')
-        .click(),
-      { lahdeKansainvalinenHakuteosTaiVerkkosivusto: false },
-    );
-
-    await [
-      'alempi_korkeakouluaste',
-      'ylempi_korkeakouluaste',
-      'alempi_ja_ylempi_korkeakouluaste',
-      'tutkijakoulutusaste',
-      'ei_korkeakouluaste',
-    ].reduce(async (acc, tutkintoaste) => {
-      await acc;
-      return expectRequestData(
-        page,
-        page.getByTestId(`tutkinnon-asema--${tutkintoaste}`).click(),
-        { ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: tutkintoaste },
-      );
-    }, Promise.resolve());
-
-    await [
-      'toisen_vaiheen_korkeakouluopintoihin',
-      'tieteellisiin_jatko-opintoihin',
-      'muu',
-    ].reduce(async (acc, kelpoisuus) => {
-      await acc;
-      return expectRequestData(
-        page,
-        page.getByTestId(`jatko-opintokelpoisuus--${kelpoisuus}`).click(),
-        { jatkoOpintoKelpoisuus: kelpoisuus },
-      );
-    }, Promise.resolve());
-
-    await expectRequestData(
-      page,
-      page
-        .getByTestId('jatko-opintokelpoisuus--lisatiedot')
-        .getByRole('textbox')
-        .fill('Kelpoisuus jatkaa kandidaatinopintoihin'),
-      {
-        jatkoOpintoKelpoisuusLisatieto:
-          'Kelpoisuus jatkaa kandidaatinopintoihin',
-      },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('aiemmat-paatokset--kylla').click(),
-      { aikaisemmatPaatokset: true },
-    );
-
-    await expectRequestData(
-      page,
-      page.getByTestId('aiemmat-paatokset--ei').click(),
-      { aikaisemmatPaatokset: false },
-    );
+    // Click save and verify payload using helper
+    await clickSaveAndVerifyPayload(page, '/perustelu/', {
+      virallinenTutkinnonMyontaja: true,
+      virallinenTutkinto: false,
+      lahdeLahtomaanKansallinenLahde: true,
+      lahdeLahtomaanVirallinenVastaus: true,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto: true,
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: 'ylempi_korkeakouluaste',
+      jatkoOpintoKelpoisuus: 'muu',
+      jatkoOpintoKelpoisuusLisatieto: 'Kelpoisuus jatkaa kandidaatinopintoihin',
+      aikaisemmatPaatokset: true,
+    });
   });
 
   test('Syötetyt tutkintotiedot päivitetään hakemuksen kautta', async ({
@@ -273,62 +152,55 @@ test.describe('Yleiset perustelut', () => {
     page.on('console', (msg) => console.log(msg.text()));
     const tutkintoJarjestykset = ['1', '2'];
 
-    const resultPromise = tutkintoJarjestykset.reduce(
-      // @ts-expect-error TS does not understand Array.prototype.reduce
-      async (acc, jarjestys) => {
-        await acc;
+    // Fill all fields for all tutkinnot without waiting for save
+    for (const jarjestys of tutkintoJarjestykset) {
+      const ohjeellinenLaajuus = page
+        .getByTestId(
+          `yleiset-perustelut__tutkinto-${jarjestys}--ohjeellinen-laajuus`,
+        )
+        .getByRole('textbox');
+      await expect(ohjeellinenLaajuus).toBeVisible();
+      await ohjeellinenLaajuus.fill('120 op');
 
-        const requestPromise = page.waitForRequest(
-          (req) => req.url().includes(`/hakemus/`) && req.method() === 'PATCH',
-        );
+      const aloitusVuosi = page
+        .getByTestId(
+          `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-alku`,
+        )
+        .getByRole('textbox');
+      await expect(aloitusVuosi).toBeVisible();
+      await aloitusVuosi.fill('2020');
 
-        await page
-          .getByTestId(
-            `yleiset-perustelut__tutkinto-${jarjestys}--ohjeellinen-laajuus`,
-          )
-          .getByRole('textbox')
-          .fill('120 op');
+      const paattymisVuosi = page
+        .getByTestId(
+          `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-loppu`,
+        )
+        .getByRole('textbox');
+      await expect(paattymisVuosi).toBeVisible();
+      await paattymisVuosi.fill('2023');
 
-        await page
-          .getByTestId(
-            `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-alku`,
-          )
-          .getByRole('textbox')
-          .fill('2020');
+      const opinnaytetyo = page.locator(
+        `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--opinnaytetyo"]//input[@value="true"]`,
+      );
+      await expect(opinnaytetyo).toBeVisible();
+      await opinnaytetyo.click();
 
-        await page
-          .getByTestId(
-            `yleiset-perustelut__tutkinto-${jarjestys}--suoritusvuodet-loppu`,
-          )
-          .getByRole('textbox')
-          .fill('2023');
+      const harjoittelu = page.locator(
+        `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--harjoittelu"]//input[@value="false"]`,
+      );
+      await expect(harjoittelu).toBeVisible();
+      await harjoittelu.click();
 
-        await page
-          .locator(
-            `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--opinnaytetyo"]//input[@value="true"]`,
-          )
-          .click();
+      const lisatietoja = page
+        .getByTestId(`yleiset-perustelut__tutkinto-${jarjestys}--lisatietoja`)
+        .getByRole('textbox');
+      await expect(lisatietoja).toBeVisible();
+      await lisatietoja.fill(
+        'Vastaa kandidaatintutkinnon perus- ja aineopintoja',
+      );
+    }
 
-        await page
-          .locator(
-            `//*[@data-testid="yleiset-perustelut__tutkinto-${jarjestys}--harjoittelu"]//input[@value="false"]`,
-          )
-          .click();
-
-        await page
-          .getByTestId(`yleiset-perustelut__tutkinto-${jarjestys}--lisatietoja`)
-          .getByRole('textbox')
-          .fill('Vastaa kandidaatintutkinnon perus- ja aineopintoja');
-
-        return requestPromise;
-      },
-      Promise.resolve(),
-    );
-
-    const results = await resultPromise;
-
-    // @ts-expect-error TS does not understand results of Array.prototype.reduce
-    expect(results?.postDataJSON()).toMatchObject({
+    // Click save and verify payload using helper
+    await clickSaveAndVerifyPayload(page, '/hakemus/', {
       tutkinnot: [
         {
           id: '18732268-07ca-4898-a21f-e49b9dd68275',

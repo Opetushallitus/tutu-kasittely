@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, Ser
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{
+  Asiakirja,
+  AsiakirjaDeserializer,
   HakemusOid,
   HakemusOidDeserializer,
   ImiPyynto,
@@ -29,6 +31,7 @@ class JacksonConfig {
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
     customModule.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())
+    customModule.addDeserializer(classOf[Asiakirja], new AsiakirjaDeserializer())
     mapper.registerModule(customModule)
 
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

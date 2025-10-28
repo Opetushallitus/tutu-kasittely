@@ -1,11 +1,15 @@
 package fi.oph.tutu.backend.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.meta.field
+import scala.jdk.CollectionConverters.*
 
 case class DbAsiakirja(
   @(Schema @field)(
@@ -256,4 +260,119 @@ case class PartialAsiakirja(
 ) {
   def imiPyyntoDefined(): Boolean              = imiPyynto.isDefined
   def valmistumisenVahvistusDefined(): Boolean = valmistumisenVahvistus.isDefined
+}
+
+class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): Asiakirja = {
+    if (p.getCurrentToken == JsonToken.VALUE_NULL) {
+      // Return default Asiakirja with empty values
+      Asiakirja()
+    } else {
+      val node = p.getCodec.readTree[JsonNode](p)
+
+      // Parse simple boolean fields
+      val allekirjoituksetTarkistettu = Option(node.get("allekirjoituksetTarkistettu"))
+        .exists(n => !n.isNull && n.asBoolean())
+
+      val alkuperaisetAsiakirjatSaatuNahtavaksi = Option(node.get("alkuperaisetAsiakirjatSaatuNahtavaksi"))
+        .exists(n => !n.isNull && n.asBoolean())
+
+      val selvityksetSaatu = Option(node.get("selvityksetSaatu"))
+        .exists(n => !n.isNull && n.asBoolean())
+
+      val suostumusVahvistamiselleSaatu = Option(node.get("suostumusVahvistamiselleSaatu"))
+        .exists(n => !n.isNull && n.asBoolean())
+
+      // Parse Option[String] fields
+      val allekirjoituksetTarkistettuLisatiedot = Option(node.get("allekirjoituksetTarkistettuLisatiedot"))
+        .filterNot(_.isNull)
+        .map(_.asText)
+
+      val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
+        Option(node.get("alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot"))
+          .filterNot(_.isNull)
+          .map(_.asText)
+
+      val viimeinenAsiakirjaHakijalta = Option(node.get("viimeinenAsiakirjaHakijalta"))
+        .filterNot(_.isNull)
+        .map(date => LocalDateTime.parse(date.asText))
+
+      // Parse Option[Boolean] field
+      val apHakemus = Option(node.get("apHakemus")) match {
+        case Some(jsonNode) if !jsonNode.isNull && jsonNode.isBoolean =>
+          Some(jsonNode.asBoolean())
+        case _ => None
+      }
+
+      // Parse nested complex objects using their custom deserializers
+      val imiPyynto = Option(node.get("imiPyynto")) match {
+        case Some(jsonNode) if !jsonNode.isNull =>
+          val deserializer = new ImiPyyntoDeserializer()
+          deserializer.deserialize(jsonNode.traverse(p.getCodec), ctxt)
+        case _ =>
+          ImiPyynto(imiPyynto = None, imiPyyntoNumero = None, imiPyyntoLahetetty = None, imiPyyntoVastattu = None)
+      }
+
+      val valmistumisenVahvistus = Option(node.get("valmistumisenVahvistus")) match {
+        case Some(jsonNode) if !jsonNode.isNull =>
+          val deserializer = new ValmistumisenVahvistusDeserializer()
+          deserializer.deserialize(jsonNode.traverse(p.getCodec), ctxt)
+        case _ =>
+          ValmistumisenVahvistus(
+            valmistumisenVahvistus = false,
+            valmistumisenVahvistusPyyntoLahetetty = None,
+            valmistumisenVahvistusSaatu = None,
+            valmistumisenVahvistusVastaus = None,
+            valmistumisenVahvistusLisatieto = None
+          )
+      }
+
+      // Parse pyydettavatAsiakirjat sequence
+      val pyydettavatAsiakirjat = Option(node.get("pyydettavatAsiakirjat")) match {
+        case Some(arrayNode) if !arrayNode.isNull && arrayNode.isArray =>
+          arrayNode
+            .elements()
+            .asScala
+            .map { itemNode =>
+              val id               = Option(itemNode.get("id")).filterNot(_.isNull).map(n => UUID.fromString(n.asText))
+              val asiakirjanTyyppi = itemNode.get("asiakirjanTyyppi").asText()
+              PyydettavaAsiakirja(id, asiakirjanTyyppi)
+            }
+            .toSeq
+        case _ => Seq.empty
+      }
+
+      // Parse asiakirjamallitTutkinnoista map
+      val asiakirjamallitTutkinnoista = Option(node.get("asiakirjamallitTutkinnoista")) match {
+        case Some(objNode) if !objNode.isNull && objNode.isObject =>
+          objNode
+            .fields()
+            .asScala
+            .map { entry =>
+              val lahde      = AsiakirjamalliLahde.valueOf(entry.getKey)
+              val valueNode  = entry.getValue
+              val vastaavuus = valueNode.get("vastaavuus").asBoolean()
+              val kuvaus     = Option(valueNode.get("kuvaus")).filterNot(_.isNull).map(_.asText)
+              lahde -> AsiakirjamalliTutkinnosta(lahde, vastaavuus, kuvaus)
+            }
+            .toMap
+        case _ => Map.empty
+      }
+
+      Asiakirja(
+        allekirjoituksetTarkistettu = allekirjoituksetTarkistettu,
+        allekirjoituksetTarkistettuLisatiedot = allekirjoituksetTarkistettuLisatiedot,
+        imiPyynto = imiPyynto,
+        alkuperaisetAsiakirjatSaatuNahtavaksi = alkuperaisetAsiakirjatSaatuNahtavaksi,
+        alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
+        selvityksetSaatu = selvityksetSaatu,
+        apHakemus = apHakemus,
+        suostumusVahvistamiselleSaatu = suostumusVahvistamiselleSaatu,
+        valmistumisenVahvistus = valmistumisenVahvistus,
+        pyydettavatAsiakirjat = pyydettavatAsiakirjat,
+        asiakirjamallitTutkinnoista = asiakirjamallitTutkinnoista,
+        viimeinenAsiakirjaHakijalta = viimeinenAsiakirjaHakijalta
+      )
+    }
+  }
 }

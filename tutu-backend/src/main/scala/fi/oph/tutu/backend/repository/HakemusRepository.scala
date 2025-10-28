@@ -72,7 +72,7 @@ class HakemusRepository extends BaseResultHandlers {
         maakoodiUri = r.nextStringOption(),
         muuTutkintoTieto = r.nextStringOption(),
         todistuksenPaivamaara = r.nextStringOption(),
-        koulutusalaKoodi = r.nextStringOption(),
+        koulutusalaKoodiUri = r.nextStringOption(),
         paaaaineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
         muuTutkintoMuistioId = Option(r.nextString()).map(UUID.fromString),
@@ -347,6 +347,61 @@ class HakemusRepository extends BaseResultHandlers {
   }
 
   /**
+   * Päivittää hakemuksen kokonaan (PUT endpoint).
+   * Korvaa kaikki käyttäjän muokattavat kentät.
+   * NULL arvo pyynnössä -> NULL tietokantaan.
+   *
+   * @param hakemusOid
+   * hakemuksen oid
+   * @param hakemus
+   * täysi hakemus-objekti
+   * @param muokkaaja
+   * muokkaajan oid
+   * @return
+   * tallennetun hakemuksen oid
+   */
+  def paivitaTaysiHakemus(
+    hakemusOid: HakemusOid,
+    hakemus: DbHakemus,
+    muokkaaja: String
+  ): HakemusOid = {
+    val hakemusOidString   = hakemusOid.toString
+    val esittelijaIdOrNull = hakemus.esittelijaId.map(_.toString).orNull
+    val asiakirjaIdOrNull  = hakemus.asiakirjaId.map(_.toString).orNull
+    val asiatunnusOrNull   = hakemus.asiatunnus.orNull
+    val hakemusKoskee      = hakemus.hakemusKoskee
+    val yhteistutkinto     = hakemus.yhteistutkinto
+    val kasittelyVaihe     = hakemus.kasittelyVaihe.toString
+
+    try
+      db.run(
+        sql"""
+        UPDATE hakemus
+        SET
+          hakemus_koskee = $hakemusKoskee,
+          esittelija_id = $esittelijaIdOrNull::uuid,
+          asiakirja_id = $asiakirjaIdOrNull::uuid,
+          asiatunnus = $asiatunnusOrNull,
+          muokkaaja = $muokkaaja,
+          yhteistutkinto = $yhteistutkinto,
+          kasittely_vaihe = $kasittelyVaihe
+        WHERE hakemus_oid = $hakemusOidString
+        RETURNING
+          hakemus_oid
+      """.as[HakemusOid].head,
+        "paivita_taysi_hakemus"
+      )
+    catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen täysi päivitys epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Hakemuksen täysi päivitys epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
    * Hakee hakemuksen tutkinnot
    *
    * @param hakemusId
@@ -369,7 +424,7 @@ class HakemusRepository extends BaseResultHandlers {
       maakoodiuri,
       muu_tutkinto_tieto,
       todistuksen_paivamaara,
-      koulutusala_koodi,
+      koulutusala_koodiuri,
       paaaine_tai_erikoisala,
       todistusotsikko,
       muu_tutkinto_muistio_id,
@@ -425,21 +480,21 @@ class HakemusRepository extends BaseResultHandlers {
   }
 
   def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
-    val nimiOrNull                  = tutkinto.nimi.map(identity).orNull
-    val oppilaitosOrNull            = tutkinto.oppilaitos.map(identity).orNull
+    val nimiOrNull                  = tutkinto.nimi.filter(_.nonEmpty).orNull
+    val oppilaitosOrNull            = tutkinto.oppilaitos.filter(_.nonEmpty).orNull
     val aloitusVuosi                = tutkinto.aloitusVuosi
     val paattymisVuosi              = tutkinto.paattymisVuosi
-    val maakoodiUri                 = tutkinto.maakoodiUri
-    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.map(identity).orNull
-    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.map(identity).orNull
-    val koulutusalaKoodi            = tutkinto.koulutusalaKoodi
-    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.map(identity).orNull
-    val todistusOtsikko             = tutkinto.todistusOtsikko.map(identity).orNull
+    val maakoodiUri                 = tutkinto.maakoodiUri.filter(_.nonEmpty).orNull
+    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
+    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
+    val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
+    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull
+    val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
     val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
-    val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.map(_.toString).orNull
+    val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
     val opinnaytetyo                = tutkinto.opinnaytetyo
     val harjoittelu                 = tutkinto.harjoittelu
-    val perustelunLisatietoja       = tutkinto.perustelunLisatietoja.map(_.toString).orNull
+    val perustelunLisatietoja       = tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull
     sqlu"""
       INSERT INTO tutkinto (
         hakemus_id,
@@ -451,7 +506,7 @@ class HakemusRepository extends BaseResultHandlers {
         maakoodiuri,
         muu_tutkinto_tieto,
         todistuksen_paivamaara,
-        koulutusala_koodi,
+        koulutusala_koodiuri,
         paaaine_tai_erikoisala,
         todistusotsikko,
         muu_tutkinto_muistio_id,
@@ -471,7 +526,7 @@ class HakemusRepository extends BaseResultHandlers {
         ${maakoodiUri},
         ${muuTutkintoTietoOrNull},
         ${todistuksenPaivamaaraOrNull},
-        ${koulutusalaKoodi},
+        ${koulutusalaKoodiUri},
         ${paaaineTaiErikoisala},
         ${todistusOtsikko},
         ${muuTutkintoMuistioId}::uuid,
@@ -500,21 +555,21 @@ class HakemusRepository extends BaseResultHandlers {
       UPDATE tutkinto
       SET
         jarjestys = ${tutkinto.jarjestys},
-        nimi = ${tutkinto.nimi.orNull},
-        oppilaitos = ${tutkinto.oppilaitos.orNull},
+        nimi = ${tutkinto.nimi.filter(_.nonEmpty).orNull},
+        oppilaitos = ${tutkinto.oppilaitos.filter(_.nonEmpty).orNull},
         aloitus_vuosi = ${tutkinto.aloitusVuosi},
         paattymis_vuosi = ${tutkinto.paattymisVuosi},
-        maakoodiuri = ${tutkinto.maakoodiUri},
-        muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto},
-        todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara},
-        koulutusala_koodi = ${tutkinto.koulutusalaKoodi},
-        paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.orNull},
-        todistusotsikko = ${tutkinto.todistusOtsikko.orNull},
+        maakoodiuri = ${tutkinto.maakoodiUri.filter(_.nonEmpty).orNull},
+        muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull},
+        todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull},
+        koulutusala_koodiuri = ${tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull},
+        paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull},
+        todistusotsikko = ${tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull},
         muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
-        ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus},
+        ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull},
         opinnaytetyo = ${tutkinto.opinnaytetyo},
         harjoittelu = ${tutkinto.harjoittelu},
-        perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja},
+        perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull},
         muokkaaja = ${muokkaaja.toString}
       WHERE id = ${tutkinto.id.get.toString}::uuid
     """

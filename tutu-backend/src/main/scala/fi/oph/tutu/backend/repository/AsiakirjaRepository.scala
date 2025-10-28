@@ -12,6 +12,7 @@ import fi.oph.tutu.backend.domain.{
   UserOid,
   ValmistumisenVahvistusVastaus
 }
+import fi.oph.tutu.backend.service.HakemusModifyOperationResolver
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -494,6 +495,103 @@ class AsiakirjaRepository extends BaseResultHandlers {
         LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")
         throw new RuntimeException(
           s"Hakemuksen asiakirjamallien haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Päivittää asiakirjatiedot täysin (korvaa kaikki kentät).
+   * Käytetään täyden entiteetin tallennukseen ilman mergeä.
+   *
+   * @param asiakirjaId asiakirjan id
+   * @param asiakirja täysi asiakirja-objekti (ei partial)
+   * @param muokkaaja muokkaajan käyttäjätunnus
+   * @return päivitetyn asiakirjan id
+   */
+  def paivitaTaysiAsiakirjaTiedot(
+    asiakirjaId: UUID,
+    asiakirja: Asiakirja,
+    muokkaaja: UserOid
+  ): UUID = {
+    try {
+      // Hae nykyiset tiedot nested collection -muutosten selvittämiseksi
+      val (currentPyydettavatAsiakirjat, currentAsiakirjamallitTutkinnoista) =
+        haeKaikkiAsiakirjaTiedot(Some(asiakirjaId)) match {
+          case Some((_, pyydettavat, mallit)) => (pyydettavat, mallit)
+          case None                           =>
+            throw new RuntimeException(s"Asiakirjaa ei löydy id:llä $asiakirjaId")
+        }
+
+      // Päivitä pääasiakirjan kentät suoraan ilman mergeä
+      val valmistumisenVahvistusVastausOrNull = asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus
+        .map(_.toString)
+        .orNull
+
+      val updatedId = db.run(
+        sql"""
+          UPDATE asiakirja
+          SET
+            allekirjoitukset_tarkistettu = ${asiakirja.allekirjoituksetTarkistettu},
+            allekirjoitukset_tarkistettu_lisatiedot = ${asiakirja.allekirjoituksetTarkistettuLisatiedot.orNull},
+            imi_pyynto = ${asiakirja.imiPyynto.imiPyynto},
+            imi_pyynto_numero = ${asiakirja.imiPyynto.imiPyyntoNumero.orNull},
+            imi_pyynto_lahetetty = ${asiakirja.imiPyynto.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull},
+            imi_pyynto_vastattu = ${asiakirja.imiPyynto.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull},
+            alkuperaiset_asiakirjat_saatu_nahtavaksi = ${asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi},
+            alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = ${asiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orNull},
+            selvitykset_saatu = ${asiakirja.selvityksetSaatu},
+            ap_hakemus = ${asiakirja.apHakemus},
+            suostumus_vahvistamiselle_saatu = ${asiakirja.suostumusVahvistamiselleSaatu},
+            valmistumisen_vahvistus = ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistus},
+            valmistumisen_vahvistus_pyynto_lahetetty = ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusPyyntoLahetetty
+            .map(java.sql.Timestamp.valueOf)
+            .orNull},
+            valmistumisen_vahvistus_saatu = ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusSaatu
+            .map(java.sql.Timestamp.valueOf)
+            .orNull},
+            valmistumisen_vahvistus_vastaus = $valmistumisenVahvistusVastausOrNull::valmistumisen_vahvistus_vastaus_enum,
+            valmistumisen_vahvistus_lisatieto = ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.orNull},
+            viimeinen_asiakirja_hakijalta = ${asiakirja.viimeinenAsiakirjaHakijalta
+            .map(java.sql.Timestamp.valueOf)
+            .orNull},
+            muokkaaja = ${muokkaaja.toString}
+          WHERE id = ${asiakirjaId.toString}::uuid
+          RETURNING id
+        """.as[UUID].head,
+        "paivita_taysi_asiakirjatiedot"
+      )
+
+      // Selvitä ja suorita pyydettävien asiakirjojen muutokset
+      val pyydettavatAsiakirjatModifyData = HakemusModifyOperationResolver
+        .resolvePyydettavatAsiakirjatModifyOperations(
+          currentPyydettavatAsiakirjat,
+          asiakirja.pyydettavatAsiakirjat
+        )
+      suoritaPyydettavienAsiakirjojenModifiointi(
+        asiakirjaId,
+        pyydettavatAsiakirjatModifyData,
+        muokkaaja
+      )
+
+      // Selvitä ja suorita asiakirjamallien muutokset
+      val asiakirjamalliModifyData = HakemusModifyOperationResolver
+        .resolveAsiakirjamalliModifyOperations(
+          currentAsiakirjamallitTutkinnoista,
+          asiakirja.asiakirjamallitTutkinnoista
+        )
+      suoritaAsiakirjamallienModifiointi(
+        asiakirjaId,
+        asiakirjamalliModifyData,
+        muokkaaja
+      )
+
+      updatedId
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Asiakirjatietojen täysi päivitys epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Asiakirjatietojen täysi päivitys epäonnistui: ${e.getMessage}",
           e
         )
     }

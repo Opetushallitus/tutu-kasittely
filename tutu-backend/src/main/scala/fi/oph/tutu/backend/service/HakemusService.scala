@@ -430,46 +430,64 @@ class HakemusService(
 
   }
 
-  def paivitaHakemus(hakemusOid: HakemusOid, partialHakemus: PartialHakemus, userOid: UserOid): HakemusOid = {
-    val esittelijaId = partialHakemus.esittelijaOid match {
+  /**
+   * Tallentaa hakemuksen kokonaan (PUT endpoint).
+   * Korvaa kaikki käyttäjän muokattavat kentät.
+   * NULL arvo pyynnössä -> NULL tietokantaan.
+   */
+  def tallennaHakemus(
+    hakemusOid: HakemusOid,
+    hakemusUpdateRequest: HakemusUpdateRequest,
+    userOid: UserOid
+  ): HakemusOid = {
+    val esittelijaId = hakemusUpdateRequest.esittelijaOid match {
       case None                => None
       case Some(esittelijaOid) =>
         esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
           case Some(esittelija) => Some(esittelija.esittelijaId)
           case None             =>
-            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${partialHakemus.esittelijaOid}")
+            LOG.warn(s"Esittelijää ei löytynyt oidilla: ${hakemusUpdateRequest.esittelijaOid}")
             None
         }
-
     }
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case None => {
-        LOG.warn(s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        LOG.warn(s"Hakemuksen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         throw new RuntimeException(
-          s"Hakemuksen päivitys epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+          s"Hakemuksen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
       }
       case Some(dbHakemus) => {
-        // Tallennetaan / poistetaan tutkinnot
-        partialHakemus.tutkinnot match {
-          case None            => ()
-          case Some(tutkinnot) =>
-            val tallennetutTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
-            hakemusRepository.suoritaTutkintojenModifiointi(
-              dbHakemus.id,
-              HakemusModifyOperationResolver.resolveTutkintoModifyOperations(tallennetutTutkinnot, tutkinnot),
+        // Tallennetaan tutkinnot (korvaa kaikki)
+        val tallennetutTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
+        hakemusRepository.suoritaTutkintojenModifiointi(
+          dbHakemus.id,
+          HakemusModifyOperationResolver.resolveTutkintoModifyOperations(
+            tallennetutTutkinnot,
+            hakemusUpdateRequest.tutkinnot
+          ),
+          userOid
+        )
+
+        // Tallennetaan asiakirjatiedot täysin (korvaa kaikki kentät ilman mergeä)
+        val finalAsiakirjaId = dbHakemus.asiakirjaId match {
+          case Some(asiakirjaId) =>
+            // Päivitä olemassa oleva asiakirja täysin
+            asiakirjaRepository.paivitaTaysiAsiakirjaTiedot(
+              asiakirjaId,
+              hakemusUpdateRequest.asiakirja,
               userOid
             )
+            Some(asiakirjaId)
+          case None =>
+            // Luo uusi asiakirja jos ei ole olemassa
+            val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
+              hakemusUpdateRequest.asiakirja,
+              userOid.toString
+            )
+            Some(asiakirjaId)
         }
-
-        val newOrUpdatedAsiakirjaId = partialHakemus.asiakirja match {
-          case Some(asiakirja) =>
-            paivitaTaiLisaaAsiakirjatiedot(dbHakemus.asiakirjaId, asiakirja, userOid)
-          case _ => None
-        }
-
-        val finalAsiakirjaId = newOrUpdatedAsiakirjaId.orElse(dbHakemus.asiakirjaId)
 
         // Laske lopullinen kasittelyVaihe päivitettyjen tietojen perusteella
         val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
@@ -477,105 +495,22 @@ class HakemusService(
           dbHakemus.id
         )
 
+        // Täysi päivitys - kaikki kentät korvataan
         val modifiedHakemus = dbHakemus.copy(
           asiakirjaId = finalAsiakirjaId,
-          hakemusKoskee = partialHakemus.hakemusKoskee.getOrElse(dbHakemus.hakemusKoskee),
-          asiatunnus = partialHakemus.asiatunnus.orElse(dbHakemus.asiatunnus),
-          esittelijaId = esittelijaId.orElse(dbHakemus.esittelijaId),
-          yhteistutkinto = partialHakemus.yhteistutkinto.getOrElse(dbHakemus.yhteistutkinto),
+          hakemusKoskee = hakemusUpdateRequest.hakemusKoskee,
+          asiatunnus = hakemusUpdateRequest.asiatunnus,
+          esittelijaId = esittelijaId,
+          yhteistutkinto = hakemusUpdateRequest.yhteistutkinto,
           kasittelyVaihe = kasittelyVaihe
         )
-        hakemusRepository.paivitaPartialHakemus(
+
+        hakemusRepository.paivitaTaysiHakemus(
           hakemusOid,
           modifiedHakemus,
           userOid.toString
         )
       }
-    }
-  }
-
-  private def resolveMuutoshistoria(jsonString: String, hakija: Hakija): Seq[MuutosHistoriaItem] = {
-    parse(jsonString) match {
-      case JArray(rawItems) =>
-        val relevant = rawItems.filter { item =>
-          MuutosHistoriaRoleType.isRelevant((item \ "type").extract[String])
-        }
-        relevant.map(item => {
-          val roleType = (item \ "type").extract[String]
-          val time = LocalDateTime.parse((item \ "time").extract[String], DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-          val esittelijaOid                       = (item \ "virkailijaOid").extractOpt[String]
-          val (etunimi: String, sukunimi: String) = esittelijaOid match {
-            case None                => (hakija.kutsumanimi, hakija.sukunimi)
-            case Some(esittelijaOid) =>
-              onrService.haeHenkilo(esittelijaOid) match {
-                case Left(error) =>
-                  LOG.warn(
-                    s"Ataru-hakemuksen editoijan haku epäonnistui esittelijaOidille $esittelijaOid: {}",
-                    error.getMessage
-                  )
-                  ("", "")
-                case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
-              }
-
-          }
-          val editoija = s"$etunimi $sukunimi".trim
-          MuutosHistoriaItem(MuutosHistoriaRoleType.fromString(roleType), time, editoija)
-        })
-      case _ => throw new MappingException(s"Cannot deserialize muutoshistoria response")
-    }
-  }
-
-  private def paivitaTaiLisaaAsiakirjatiedot(
-    currentAsiakirjaId: Option[UUID],
-    toBeAsiakirjaTiedot: PartialAsiakirja,
-    luojaTaiMuokkaaja: UserOid
-  ): Option[UUID] = {
-    asiakirjaRepository.haeKaikkiAsiakirjaTiedot(currentAsiakirjaId) match {
-      case Some((dbAsiakirjaTiedot, dbPyydettavatAsiakirjat, dbAsiakirjamallitTutkinnoista)) =>
-        val updatedAsiakirjaTiedot = dbAsiakirjaTiedot.mergeWithUpdatedAsiakirja(toBeAsiakirjaTiedot)
-        if (updatedAsiakirjaTiedot != dbAsiakirjaTiedot) {
-          asiakirjaRepository.paivitaAsiakirjaTiedot(
-            updatedAsiakirjaTiedot,
-            luojaTaiMuokkaaja
-          )
-        }
-        toBeAsiakirjaTiedot.pyydettavatAsiakirjat.foreach { pyydettavatAsiakirjat =>
-          asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(
-            currentAsiakirjaId.get,
-            HakemusModifyOperationResolver
-              .resolvePyydettavatAsiakirjatModifyOperations(dbPyydettavatAsiakirjat, pyydettavatAsiakirjat),
-            luojaTaiMuokkaaja
-          )
-        }
-        toBeAsiakirjaTiedot.asiakirjamallitTutkinnoista.foreach { asiakirjamallitTutkinnoista =>
-          asiakirjaRepository.suoritaAsiakirjamallienModifiointi(
-            currentAsiakirjaId.get,
-            HakemusModifyOperationResolver
-              .resolveAsiakirjamalliModifyOperations(dbAsiakirjamallitTutkinnoista, asiakirjamallitTutkinnoista),
-            luojaTaiMuokkaaja
-          )
-        }
-        None
-      case None =>
-        val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
-          new Asiakirja(toBeAsiakirjaTiedot),
-          luojaTaiMuokkaaja.toString()
-        )
-        toBeAsiakirjaTiedot.pyydettavatAsiakirjat.foreach { pyydettavatAsiakirjat =>
-          asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(
-            asiakirjaId,
-            PyydettavaAsiakirjaModifyData(pyydettavatAsiakirjat, Seq(), Seq()),
-            luojaTaiMuokkaaja
-          )
-        }
-        toBeAsiakirjaTiedot.asiakirjamallitTutkinnoista.foreach { asiakirjamallitTutkinnoista =>
-          asiakirjaRepository.suoritaAsiakirjamallienModifiointi(
-            asiakirjaId,
-            AsiakirjamalliModifyData(asiakirjamallitTutkinnoista, Map(), Seq()),
-            luojaTaiMuokkaaja
-          )
-        }
-        Some(asiakirjaId)
     }
   }
 }

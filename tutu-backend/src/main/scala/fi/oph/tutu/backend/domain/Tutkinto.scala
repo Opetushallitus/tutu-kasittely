@@ -13,7 +13,7 @@ case class Tutkinto(
   maakoodiUri: Option[String] = None,
   muuTutkintoTieto: Option[String] = None,
   todistuksenPaivamaara: Option[String] = None,
-  koulutusalaKoodi: Option[String] = None,
+  koulutusalaKoodiUri: Option[String] = None,
   paaaaineTaiErikoisala: Option[String] = None,
   todistusOtsikko: Option[String] = None,
   muuTutkintoMuistioId: Option[UUID] = None,

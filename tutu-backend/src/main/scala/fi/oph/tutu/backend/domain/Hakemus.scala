@@ -94,15 +94,20 @@ case class Hakemus(
   asiakirja: Option[Asiakirja] = None
 )
 
-case class PartialHakemus(
-  hakemusKoskee: Option[Int] = None,
-  asiatunnus: Option[String] = None,
-  kirjausPvm: Option[LocalDateTime] = None,
-  esittelyPvm: Option[LocalDateTime] = None,
-  paatosPvm: Option[LocalDateTime] = None,
-  esittelijaOid: Option[String] = None,
-  kasittelyVaihe: Option[KasittelyVaihe] = None,
-  yhteistutkinto: Option[Boolean] = None,
-  tutkinnot: Option[Seq[Tutkinto]] = None,
-  asiakirja: Option[PartialAsiakirja] = None
+/**
+ * Täysi hakemuksen päivityspyyntö.
+ * Käytetään PUT-endpointissa kaikkien käyttäjän muokattavien kenttien korvaamiseen.
+ * NULL-arvot pyynnössä → NULL tietokantaan (ei tarvita field wrappereita).
+ */
+case class HakemusUpdateRequest(
+  hakemusKoskee: Int,
+  asiatunnus: Option[String],
+  kirjausPvm: Option[LocalDateTime],
+  esittelyPvm: Option[LocalDateTime],
+  paatosPvm: Option[LocalDateTime],
+  esittelijaOid: Option[String],
+  kasittelyVaihe: KasittelyVaihe,
+  yhteistutkinto: Boolean,
+  tutkinnot: Seq[Tutkinto],
+  asiakirja: Asiakirja
 )

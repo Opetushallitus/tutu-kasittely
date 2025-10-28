@@ -35,13 +35,20 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 
   await otmMuuEroSeliteField.scrollIntoViewIfNeeded();
   await expect(otmMuuEroSeliteField).toBeVisible();
+
+  // Make change
+  await otmMuuEroSeliteField.fill('Härköneeeeeen');
+
+  // Wait for save button and click it
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
+        r.method() === 'PUT',
     ),
-    otmMuuEroSeliteField.fill('Härköneeeeeen'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
   const payload = req.postDataJSON();
 
@@ -56,6 +63,35 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
+  // Add route handler to return updated data after PUT
+  await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
+    if (route.request().method() === 'PUT') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(route.request().postDataJSON()),
+      });
+    } else {
+      // Fulfill GET with mock data
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'mock-perustelu-id',
+          hakemusId: 'mock-hakemus-id',
+          lahdeLahtomaanKansallinenLahde: false,
+          lahdeLahtomaanVirallinenVastaus: false,
+          lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+          selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
+          selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
+          luotu: '2025-09-02T16:08:42.083643',
+          luoja: 'Hakemuspalvelu',
+          uoRoSisalto: {},
+        }),
+      });
+    }
+  });
+
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
@@ -84,13 +120,19 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     .first();
   await expect(firstOptionLabel).toBeVisible();
 
+  // First change: click radio option
+  await firstOptionLabel.click();
+
+  // Wait for save button and click it (first save)
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+
   let [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
+        r.method() === 'PUT',
     ),
-    firstOptionLabel.click(),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
   let payload = req.postDataJSON();
@@ -103,13 +145,24 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     },
   });
 
+  // Wait for save to complete
+  await expect(page.getByRole('button', { name: 'Tallenna' })).not.toBeVisible({
+    timeout: 10000,
+  });
+
+  // Second change: uncheck checkbox
+  await sovellettuLuokanopettajaCheckbox.uncheck();
+
+  // Wait for save button and click it (second save)
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+
   [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
+        r.method() === 'PUT',
     ),
-    sovellettuLuokanopettajaCheckbox.uncheck(),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
   payload = req.postDataJSON();
