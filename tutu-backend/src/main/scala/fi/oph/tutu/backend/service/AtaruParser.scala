@@ -122,42 +122,6 @@ def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
   }
 }
 
-private def collectAllOptionsRecursively(item: LomakeContentItem): Seq[PaatosTietoOption] = {
-  // Get direct options from this item
-  val directOptions = item.options.map { valinta =>
-    PaatosTietoOption(
-      label = Some(valinta.label),
-      value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
-      children = buildNestedChildren(valinta.followups)
-    )
-  }
-
-  // Recursively collect from children items
-  val nestedOptions = item.children.flatMap { childItem =>
-    collectAllOptionsRecursively(childItem)
-  }
-
-  directOptions ++ nestedOptions
-}
-
-private def buildNestedChildren(items: Seq[LomakeContentItem]): Seq[PaatosTietoOption] = {
-  items.flatMap { item =>
-    // Collect options from this item and all its descendants
-    val directOptions = item.options.map { valinta =>
-      PaatosTietoOption(
-        label = Some(valinta.label),
-        value = Some(Map(Kieli.fi -> valinta.value, Kieli.sv -> valinta.value, Kieli.en -> valinta.value)),
-        children = buildNestedChildren(valinta.followups)
-      )
-    }
-
-    // Recursively collect from children
-    val childrenOptions = item.children.flatMap(childItem => collectAllOptionsRecursively(childItem))
-
-    directOptions ++ childrenOptions
-  }
-}
-
 @Component
 @Service
 class AtaruHakemusParser(koodistoService: KoodistoService) {
@@ -314,50 +278,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 }
 
-def findOptionsByAtaruKysymysId(
-  kysymysId: AtaruKysymysId,
-  lomake: AtaruLomake
-): Seq[PaatosTietoOption] = {
-  findOptionsInContentAsNestedInfoText(kysymysId, lomake.content)
-}
-
-private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
-  item.id == kysymysId.generatedId || item.id == kysymysId.definedId
-}
-
-private def findOptionsInContentAsNestedInfoText(
-  kysymysId: AtaruKysymysId,
-  items: Seq[LomakeContentItem]
-): Seq[PaatosTietoOption] = {
-  boundary {
-    // First, try to find the exact match at this level
-    val directMatch = items.find(item => matchesAtaruKysymysId(item, kysymysId))
-
-    if (directMatch.isDefined) {
-      // Collect all options recursively from this item
-      break(collectAllOptionsRecursively(directMatch.get))
-    }
-
-    // If not found at this level, search recursively in children
-    for (item <- items) {
-      val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children)
-      if (resultFromChildren.nonEmpty) {
-        break(resultFromChildren)
-      }
-
-      // Also search in followups within options
-      for (valinta <- item.options) {
-        val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups)
-        if (resultFromFollowups.nonEmpty) {
-          break(resultFromFollowups)
-        }
-      }
-    }
-
-    Seq.empty
-  }
-}
-
 @Component
 @Service
 class AtaruLomakeParser() {
@@ -388,5 +308,98 @@ class AtaruLomakeParser() {
       tiettyTutkintoTaiOpinnotOptions = tiettyTutkintoTaiOpinnotOptions,
       riittavatOpinnotOptions = riittavatOpinnotOptions
     )
+  }
+
+  def findOptionsByAtaruKysymysId(
+    kysymysId: AtaruKysymysId,
+    lomake: AtaruLomake
+  ): Seq[PaatosTietoOption] = {
+    findOptionsInContentAsNestedInfoText(kysymysId, lomake.content, "")
+  }
+
+  private def findOptionsInContentAsNestedInfoText(
+    kysymysId: AtaruKysymysId,
+    items: Seq[LomakeContentItem],
+    parentPath: String
+  ): Seq[PaatosTietoOption] = {
+    var result = Seq[PaatosTietoOption]()
+
+    boundary {
+      for (item <- items) {
+        val currentPath = if (parentPath.isEmpty) "" else parentPath
+
+        if (matchesAtaruKysymysId(item, kysymysId)) {
+          result = collectAllOptionsRecursively(item, currentPath)
+          break()
+        }
+
+        // If not found at this level, search recursively in children
+        val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children, currentPath)
+        if (resultFromChildren.nonEmpty) {
+          result = resultFromChildren
+          break()
+        }
+
+        // Also search in followups within options
+        for (valinta <- item.options) {
+          val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups, currentPath)
+          if (resultFromFollowups.nonEmpty) {
+            result = resultFromFollowups
+            break()
+          }
+        }
+      }
+    }
+
+    result
+  }
+
+  private def collectAllOptionsRecursively(
+    item: LomakeContentItem,
+    basePath: String
+  ): Seq[PaatosTietoOption] = {
+    item.options.map { option =>
+      val optionPath = Map(
+        Kieli.fi -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.fi, "")
+                     else s"${basePath}.${option.label.getOrElse(Kieli.fi, "")}"),
+        Kieli.sv -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.sv, "")
+                     else s"${basePath}.${option.label.getOrElse(Kieli.sv, "")}"),
+        Kieli.en -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.en, "")
+                     else s"${basePath}.${option.label.getOrElse(Kieli.en, "")}")
+      )
+
+      PaatosTietoOption(
+        label = Some(option.label),
+        value = Some(optionPath),
+        children = option.followups.flatMap { followup =>
+          collectAllOptionsRecursivelyFromFollowups(followup, optionPath)
+        }
+      )
+    }
+  }
+
+  private def collectAllOptionsRecursivelyFromFollowups(
+    item: LomakeContentItem,
+    basePath: Kielistetty
+  ): Seq[PaatosTietoOption] = {
+    item.options.map { option =>
+      val optionPath = Map(
+        Kieli.fi -> s"${basePath.getOrElse(Kieli.fi, "")}_${option.label.getOrElse(Kieli.fi, "")}",
+        Kieli.sv -> s"${basePath.getOrElse(Kieli.sv, "")}_${option.label.getOrElse(Kieli.sv, "")}",
+        Kieli.en -> s"${basePath.getOrElse(Kieli.en, "")}_${option.label.getOrElse(Kieli.en, "")}"
+      )
+
+      PaatosTietoOption(
+        label = Some(option.label),
+        value = Some(optionPath),
+        children = option.followups.flatMap { followup =>
+          collectAllOptionsRecursivelyFromFollowups(followup, optionPath)
+        }
+      )
+    }
+  }
+
+  private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
+    item.id == kysymysId.definedId || item.id == kysymysId.generatedId
   }
 }
