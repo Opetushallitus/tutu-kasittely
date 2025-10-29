@@ -33,6 +33,7 @@ const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   myonteisenPaatoksenLisavaatimukset: '{}',
   kielteisenPaatoksenPerustelut: '{}',
   rinnastettavatTutkinnotTaiOpinnot: [],
+  kelpoisuudet: [],
 });
 
 export default function PaatostiedotPage() {

@@ -1,7 +1,5 @@
 package fi.oph.tutu.backend.domain
 
-import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
-
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -17,27 +15,6 @@ case class Paatos(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
-) {
-  private def ratkaisutyyppiOnPeruutusTaiRaukeaminen(toBeRatkaisutyyppi: Option[Ratkaisutyyppi]): Boolean = {
-    toBeRatkaisutyyppi.contains(PeruutusTaiRaukeaminen) ||
-    (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen) && toBeRatkaisutyyppi.isEmpty)
-  }
-  def mergeWith(partial: PartialPaatos): Paatos =
-    this.copy(
-      ratkaisutyyppi = partial.ratkaisutyyppi.orElse(this.ratkaisutyyppi),
-      seutArviointi = partial.seutArviointi.getOrElse(this.seutArviointi),
-      peruutuksenTaiRaukeamisenSyy =
-        if (ratkaisutyyppiOnPeruutusTaiRaukeaminen(partial.ratkaisutyyppi))
-          partial.peruutuksenTaiRaukeamisenSyy.orElse(this.peruutuksenTaiRaukeamisenSyy)
-        else None
-    )
-}
-
-case class PartialPaatos(
-  ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
-  seutArviointi: Option[Boolean] = None,
-  peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
-  paatosTiedot: Option[Seq[PaatosTieto]] = None
 )
 
 case class PeruutuksenTaiRaukeamisenSyy(
@@ -65,6 +42,7 @@ case class PaatosTieto(
   kielteisenPaatoksenPerustelut: Option[String] = None,
   tutkintoTaso: Option[TutkintoTaso],
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
+  kelpoisuudet: Seq[Kelpoisuus] = Seq(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
@@ -91,8 +69,21 @@ case class PaatosTietoModifyData(
   poistetut: Seq[UUID] = Seq.empty
 )
 
-case class TutkintoTaiOpintoModifyData(
-  uudet: Seq[TutkintoTaiOpinto] = Seq.empty,
-  muutetut: Seq[TutkintoTaiOpinto] = Seq.empty,
-  poistetut: Seq[UUID] = Seq.empty
+case class Kelpoisuus(
+  id: Option[UUID] = None,
+  paatostietoId: Option[UUID] = None,
+  kelpoisuus: Option[String] = None,
+  opetettavaAine: Option[String] = None,
+  muuAmmattiKuvaus: Option[String] = None,
+  direktiivitaso: Option[Direktiivitaso] = None,
+  kansallisestiVaadittavaDirektiivitaso: Option[Direktiivitaso] = None,
+  direktiivitasoLisatiedot: Option[String] = None,
+  // TODO: case classeiksi
+  myonteinenPaatos: Option[Boolean] = None,
+  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
+  kielteisenPaatoksenPerustelut: Option[String] = None,
+  luotu: Option[LocalDateTime] = None,
+  luoja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None
 )

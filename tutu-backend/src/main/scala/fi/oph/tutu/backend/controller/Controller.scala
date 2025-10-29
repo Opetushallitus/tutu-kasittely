@@ -137,7 +137,7 @@ class Controller(
             PartialPerustelu(
               jatkoOpintoKelpoisuusLisatieto = Some("")
             ),
-            PartialPaatos(),
+            Paatos(),
             "Hakemuspalvelu"
           )
           auditLog.logCreate(

@@ -22,11 +22,9 @@ class PaatosService(
     hakemusRepository.haeHakemus(hakemusOid).flatMap { dbHakemus =>
       paatosRepository.haePaatos(dbHakemus.id).flatMap { paatos =>
         {
-
           val paatosTietoOptions = hakemuspalveluService.haeLomake(formId) match {
             case Right(response: String) =>
               Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
-
             case Left(error) =>
               LOG.error(s"Lomakkeeen $formId haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
               None
@@ -41,9 +39,16 @@ class PaatosService(
                   case _ => paatosTieto
                 }
               }
+              val paatostiedotWithAllData = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot.map { paatosTieto =>
+                paatosRepository.haeKelpoisuudet(paatosTieto.id.get) match {
+                  case kelpoisuudet if kelpoisuudet.nonEmpty =>
+                    paatosTieto.copy(kelpoisuudet = kelpoisuudet)
+                  case _ => paatosTieto
+                }
+              }
               Some(
                 paatos.copy(
-                  paatosTiedot = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot,
+                  paatosTiedot = paatostiedotWithAllData,
                   paatosTietoOptions = paatosTietoOptions
                 )
               )
@@ -60,23 +65,18 @@ class PaatosService(
   def tallennaPaatos(
     hakemusOid: HakemusOid,
     formId: Long,
-    partialPaatos: PartialPaatos,
+    paatos: Paatos,
     luojaTaiMuokkaaja: String
   ): (Option[Paatos], Option[Paatos]) = {
     val dbHakemus     = hakemusRepository.haeHakemus(hakemusOid)
     val currentPaatos = dbHakemus.flatMap(h => paatosRepository.haePaatos(h.id))
     val updatedPaatos = dbHakemus match {
       case Some(dbHakemus) =>
-        val latestSavedPaatos = currentPaatos match {
-          case Some(existing) =>
-            paatosRepository.tallennaPaatos(dbHakemus.id, existing.mergeWith(partialPaatos), luojaTaiMuokkaaja)
-          case _ =>
-            paatosRepository.tallennaPaatos(
-              dbHakemus.id,
-              Paatos().mergeWith(partialPaatos).copy(hakemusId = Some(dbHakemus.id)),
-              luojaTaiMuokkaaja
-            )
-        }
+        val latestSavedPaatos = paatosRepository.tallennaPaatos(
+          dbHakemus.id,
+          paatos.copy(hakemusId = Some(dbHakemus.id)),
+          luojaTaiMuokkaaja
+        )
 
         val currentPaatosTiedot = haePaatos(hakemusOid, formId) match {
           case Some(paatos) => paatos.paatosTiedot
@@ -84,7 +84,7 @@ class PaatosService(
         }
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
-            .resolvePaatosTietoModifyOperations(currentPaatosTiedot, partialPaatos.paatosTiedot.getOrElse(Nil)) match {
+            .resolvePaatosTietoModifyOperations(currentPaatosTiedot, paatos.paatosTiedot) match {
             case PaatosTietoModifyData(uudet, muutetut, poistetut) =>
               PaatosTietoModifyData(uudet, muutetut, poistetut)
             case null => PaatosTietoModifyData()
@@ -101,15 +101,15 @@ class PaatosService(
 
         Some(
           latestSavedPaatos.copy(
-            paatosTiedot =
-              if (newlySavedPaatosTiedot.nonEmpty) {
-                newlySavedPaatosTiedot.map(paatosTieto =>
-                  paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot =
-                    paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get)
-                  )
+            paatosTiedot = if (newlySavedPaatosTiedot.nonEmpty) {
+              newlySavedPaatosTiedot.map(paatosTieto =>
+                paatosTieto.copy(
+                  rinnastettavatTutkinnotTaiOpinnot = paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get),
+                  kelpoisuudet = paatosRepository.haeKelpoisuudet(paatosTieto.id.get)
                 )
-              } else
-                latestSavedPaatos.paatosTiedot
+              )
+            } else
+              latestSavedPaatos.paatosTiedot
           )
         )
       case _ => None

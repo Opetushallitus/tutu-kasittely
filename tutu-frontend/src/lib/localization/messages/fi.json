@@ -404,7 +404,22 @@
         "lisaaPaatos": "Lisää päätös",
         "poistaPaatos": "Poista päätös",
         "taso": {},
-        "kelpoisuus": {},
+        "kelpoisuus": {
+          "otsikko": "Kelpoisuus",
+          "muuAmmatti": "Muu ammatti",
+          "muuAmmattiKuvaus": "Yksilöi ammatti ja kuvaa olennainen ero",
+          "opetettavaAine": "Opetettava aine",
+          "direktiivitaso": "Direktiivitaso",
+          "direktiivitasoLisatieto": "Lisätietoa direktiivitasosta",
+          "kansallisestiVaadittavaDirektiivitaso": "Kansallisesti vaadittava direktiivitaso",
+          "lisaa": "Lisää kelpoisuus",
+          "poista": "Poista kelpoisuus",
+          "modal": {
+            "otsikko": "Vahvista kelpoisuuden poisto",
+            "teksti": "Olet poistamassa kelpoisuutta. Vahvista poistaminen.",
+            "poistaKelpoisuus": "Poista kelpoisuus"
+          }
+        },
         "tiettyTutkintoTaiOpinnot": {
           "otsikko": "Tutkinto tai opinnot ",
           "lisaa": "Lisää tutkinto tai opinnot",
@@ -457,6 +472,13 @@
         "eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin": "ei edellytyksiä rinnastaa tiettyihin korkeakouluopintoihin",
         "hakijallaJoPaatosSamastaKoulutusKokonaisuudesta": "hakijalla on jo päätös samasta koulutuskokonaisuudesta",
         "muuSyy": "muu syy, esim. aikataulu"
+      },
+      "direktiivitaso": {
+        "a_1384_2015_patevyystaso_1": "a - 1384/2015 pätevyystaso 1",
+        "b_1384_2015_patevyystaso_2": "b - 1384/2015 pätevyystaso 2",
+        "c_1384_2015_patevyystaso_3": "c - 1384/2015 pätevyystaso 3",
+        "d_1384_2015_patevyystaso_4": "d - 1384/2015 pätevyystaso 4",
+        "e_1384_2015_patevyystaso_5": "e - 1384/2015 pätevyystaso 5"
       }
     }
   },

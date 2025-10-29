@@ -70,6 +70,26 @@ class PaatosRepository extends BaseResultHandlers {
     )
   )
 
+  implicit val getKelpoisuusResult: GetResult[Kelpoisuus] = GetResult(r =>
+    Kelpoisuus(
+      id = Some(r.nextObject().asInstanceOf[UUID]),
+      paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
+      kelpoisuus = r.nextStringOption(),
+      opetettavaAine = r.nextStringOption(),
+      muuAmmattiKuvaus = r.nextStringOption(),
+      direktiivitaso = Option(Direktiivitaso.fromString(r.nextString())),
+      kansallisestiVaadittavaDirektiivitaso = Option(Direktiivitaso.fromString(r.nextString())),
+      direktiivitasoLisatiedot = r.nextStringOption(),
+      myonteinenPaatos = r.nextBooleanOption(),
+      myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
+      kielteisenPaatoksenPerustelut = r.nextStringOption(),
+      luotu = Some(r.nextTimestamp().toLocalDateTime),
+      luoja = Some(r.nextString()),
+      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
+      muokkaaja = r.nextStringOption()
+    )
+  )
+
   /**
    * Tallentaa päätöksen (palauttaa DBIO-actionin transaktioita varten)
    *
@@ -178,11 +198,39 @@ class PaatosRepository extends BaseResultHandlers {
       }
     }
 
+    val kelpoisuusActions = {
+      modifyData.muutetut.flatMap { pt =>
+        val paatostietoId        = pt.id.getOrElse(UUID.randomUUID())
+        val existingKelpoisuudet = haeKelpoisuudet(paatostietoId)
+        val existingIds          = existingKelpoisuudet.flatMap(_.id).toSet
+        val updatedIds           = pt.kelpoisuudet.flatMap(_.id).toSet
+        val idsToDelete          = existingIds.diff(updatedIds)
+
+        val deleteActions = idsToDelete
+          .map(id => poistaKelpoisuus(id)) ++
+          modifyData.poistetut.flatMap { id =>
+            haeKelpoisuudet(id).flatMap { kelpoisuus =>
+              kelpoisuus.id.map(poistaKelpoisuus)
+            }
+          }
+
+        val updateActions = pt.kelpoisuudet
+          .filter(k => k.id.isDefined)
+          .map(k => paivitaKelpoisuus(k, luojaTaiMuokkaaja))
+
+        val addActions = pt.kelpoisuudet
+          .filter(k => k.id.isEmpty)
+          .map(k => lisaaKelpoisuus(paatostietoId, k, luojaTaiMuokkaaja))
+
+        deleteActions ++ updateActions ++ addActions
+      }
+    }
+
     val paatostietoActions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
 
-    val combined = db.combineIntDBIOs(tutkinnotTaiOpinnotActions ++ paatostietoActions)
+    val combined = db.combineIntDBIOs(tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions)
 
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
       case Success(_) => ()
@@ -195,17 +243,17 @@ class PaatosRepository extends BaseResultHandlers {
   def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] = {
     sqlu"""
         INSERT INTO paatostieto (
-                                  paatos_id, 
-                                  paatostyyppi, 
-                                  sovellettulaki, 
-                                  tutkinto_id, 
-                                  lisaa_tutkinto_paatostekstiin, 
-                                  myonteinen_paatos, 
-                                  myonteisen_paatoksen_lisavaatimukset, 
-                                  kielteisen_paatoksen_perustelut, 
-                                  tutkintotaso, 
-                                  luoja
-                                )
+          paatos_id,
+          paatostyyppi,
+          sovellettulaki,
+          tutkinto_id,
+          lisaa_tutkinto_paatostekstiin,
+          myonteinen_paatos,
+          myonteisen_paatoksen_lisavaatimukset,
+          kielteisen_paatoksen_perustelut,
+          tutkintotaso,
+          luoja
+        )
         VALUES (
           ${paatosId.toString}::uuid,
           ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
@@ -286,16 +334,16 @@ class PaatosRepository extends BaseResultHandlers {
   def lisaaTutkintoTaiOpinto(paatostietoId: UUID, tutkintoTaiOpinto: TutkintoTaiOpinto, luoja: String): DBIO[Int] =
     sqlu"""
           INSERT INTO tutkinto_tai_opinto (
-                                            paatostieto_id,
-                                            tutkinto_tai_opinto,
-                                            myonteinen_paatos,
-                                            myonteisen_paatoksen_lisavaatimukset,
-                                            kielteisen_paatoksen_perustelut,
-                                            luoja
-                                          )
+            paatostieto_id,
+            tutkinto_tai_opinto,
+            myonteinen_paatos,
+            myonteisen_paatoksen_lisavaatimukset,
+            kielteisen_paatoksen_perustelut,
+            luoja
+          )
           VALUES (
             ${paatostietoId.toString}::uuid,
-            ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
+            ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(identity).orNull}::text,
             ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
             ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
             ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
@@ -309,7 +357,7 @@ class PaatosRepository extends BaseResultHandlers {
     sqlu"""
           UPDATE tutkinto_tai_opinto
           SET
-            tutkinto_tai_opinto = ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(_.toString).orNull}::text,
+            tutkinto_tai_opinto = ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(identity).orNull}::text,
             myonteinen_paatos = ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
             myonteisen_paatoksen_lisavaatimukset = ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
             kielteisen_paatoksen_perustelut = ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
@@ -343,4 +391,85 @@ class PaatosRepository extends BaseResultHandlers {
           DELETE FROM tutkinto_tai_opinto
           WHERE id = ${id.toString}::uuid
         """
+
+  private def lisaaKelpoisuus(paatostietoId: UUID, kelpoisuus: Kelpoisuus, luoja: String): DBIO[Int] =
+    sqlu"""
+          INSERT INTO kelpoisuus (
+            paatostieto_id,
+            kelpoisuus,
+            opetettava_aine,
+            muu_ammatti_kuvaus,
+            direktiivitaso,
+            kansallisesti_vaadittava_direktiivitaso,
+            direktiivitaso_lisatiedot,
+            myonteinen_paatos,
+            myonteisen_paatoksen_lisavaatimukset,
+            kielteisen_paatoksen_perustelut,
+            luoja
+          )
+          VALUES (
+            ${paatostietoId.toString}::uuid,
+            ${kelpoisuus.kelpoisuus},
+            ${kelpoisuus.opetettavaAine},
+            ${kelpoisuus.muuAmmattiKuvaus},
+            ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
+            ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso.map(_.toString).orNull}::direktiivitaso,
+            ${kelpoisuus.direktiivitasoLisatiedot},
+            ${kelpoisuus.myonteinenPaatos},
+            ${kelpoisuus.myonteisenPaatoksenLisavaatimukset.map(identity).orNull}::jsonb,
+            ${kelpoisuus.kielteisenPaatoksenPerustelut.map(identity).orNull}::jsonb,
+            $luoja
+          )"""
+
+  private def paivitaKelpoisuus(
+    kelpoisuus: Kelpoisuus,
+    muokkaaja: String
+  ): DBIO[Int] =
+    sqlu"""
+          UPDATE kelpoisuus
+          SET
+            kelpoisuus = ${kelpoisuus.kelpoisuus},
+            opetettava_aine = ${kelpoisuus.opetettavaAine},
+            muu_ammatti_kuvaus = ${kelpoisuus.muuAmmattiKuvaus},
+            direktiivitaso = ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
+            kansallisesti_vaadittava_direktiivitaso = ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso
+        .map(_.toString)
+        .orNull}::direktiivitaso,
+            direktiivitaso_lisatiedot = ${kelpoisuus.direktiivitasoLisatiedot},
+            myonteinen_paatos = ${kelpoisuus.myonteinenPaatos},
+            myonteisen_paatoksen_lisavaatimukset = ${kelpoisuus.myonteisenPaatoksenLisavaatimukset
+        .map(identity)
+        .orNull}::jsonb,
+            kielteisen_paatoksen_perustelut = ${kelpoisuus.kielteisenPaatoksenPerustelut.map(identity).orNull}::jsonb,
+            muokkaaja = $muokkaaja
+          WHERE id = ${kelpoisuus.id.get.toString}::uuid
+        """
+
+  def haeKelpoisuudet(paatostietoId: UUID): Seq[Kelpoisuus] = {
+    try {
+      db.run(
+        sql"""
+            SELECT *
+            FROM kelpoisuus
+            WHERE paatostieto_id = ${paatostietoId.toString}::uuid
+            ORDER BY luotu
+          """.as[Kelpoisuus],
+        "hae_kelpoisuudet"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Kelpoisuuksien haku epäonnistui: $e")
+        throw new RuntimeException(
+          s"Kelpoisuuksien haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  private def poistaKelpoisuus(id: UUID): DBIO[Int] =
+    sqlu"""
+          DELETE FROM kelpoisuus
+          WHERE id = ${id.toString}::uuid
+        """
+
 }
