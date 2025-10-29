@@ -57,6 +57,7 @@ export const PaatosTietoComponent = ({
             ...currentPaatosTieto,
             myonteinenPaatos: false,
             tutkintoTaso: undefined,
+            rinnastettavatTutkinnotTaiOpinnot: [],
           },
     );
   };
@@ -69,6 +70,7 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'uo' as SovellettuLaki,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'Kelpoisuus':
@@ -76,6 +78,7 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: undefined,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'RiittavatOpinnot':
@@ -83,6 +86,7 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'ro' as SovellettuLaki,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
     }
