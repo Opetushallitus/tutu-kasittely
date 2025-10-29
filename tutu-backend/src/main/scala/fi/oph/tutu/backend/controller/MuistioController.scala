@@ -5,6 +5,8 @@ import fi.oph.tutu.backend.domain.{HakemusOid, MuistioPostBody}
 import fi.oph.tutu.backend.service.{MuistioService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateMuistio, ReadMuistio}
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{
@@ -34,6 +36,23 @@ class MuistioController(
   @GetMapping(
     path = Array("muistio/{hakemusOid}/{hakemuksenOsa}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae muistio hakemuksen osan mukaan",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "204",
+        description = "Muistiota ei löytynyt"
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def haeMuistio(
     @PathVariable("hakemusOid") hakemusOid: String,
@@ -77,6 +96,23 @@ class MuistioController(
     path = Array("muistio/{hakemusOid}/{hakemuksenOsa}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Tallenna muistio",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def tallennaMuistio(
     @PathVariable("hakemusOid") hakemusOid: String,

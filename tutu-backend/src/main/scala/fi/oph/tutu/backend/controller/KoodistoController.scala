@@ -3,6 +3,8 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.service.KoodistoService
 import fi.oph.tutu.backend.utils.ErrorMessageMapper
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{GetMapping, PathVariable, RequestMapping, RestController}
@@ -22,6 +24,19 @@ class KoodistoController(
   @GetMapping(
     path = Array("koodisto/{koodisto}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae koodisto nimen perusteella",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def haeKoodisto(
     @PathVariable("koodisto") koodisto: String

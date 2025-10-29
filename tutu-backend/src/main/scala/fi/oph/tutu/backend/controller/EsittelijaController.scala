@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.AuditOperation.ReadEsittelija
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
@@ -24,6 +26,19 @@ class EsittelijaController(
   @GetMapping(
     path = Array("esittelijat"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae kaikki esittelijät",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def haeEsittelijat(
     request: jakarta.servlet.http.HttpServletRequest
