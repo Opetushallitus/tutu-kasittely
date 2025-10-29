@@ -19,7 +19,6 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    // Handle GET requests - return hakemus
     if (route.request().method() === 'GET') {
       await route.fulfill({
         status: 200,
@@ -29,7 +28,6 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
       return;
     }
 
-    // Handle PUT requests for save
     if (route.request().method() === 'PUT') {
       callCount++;
       if (callCount == 1) {
@@ -83,28 +81,22 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
 
   await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
 
-  // Wait for save button and click it (first save)
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await page.getByRole('button', { name: 'Tallenna' }).click();
 
-  // Wait for save to complete
   await expect(
     page.getByRole('button', { name: 'Tallenna' }),
   ).not.toBeVisible();
 
-  // Remove the added document
   await page.getByTestId('poista-asiakirja-button-0').click();
 
-  // Wait for save button to appear after removal
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
-  // Try to add and immediately remove
   await page.getByTestId('pyyda-asiakirja-button').click();
   await page.getByTestId('poista-asiakirja-button-undefined').click();
 
   await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
 
-  // Click save button again (second save)
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await page.getByRole('button', { name: 'Tallenna' }).click();
 });

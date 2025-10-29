@@ -153,10 +153,8 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
     .first();
   await expect(SEUTArviointi).toHaveText('SEUTArviointi');
 
-  // Make change
   await SEUTArviointi.fill('SEUTArviointi uusi arvo');
 
-  // Wait for save button and click it
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   const [req] = await Promise.all([

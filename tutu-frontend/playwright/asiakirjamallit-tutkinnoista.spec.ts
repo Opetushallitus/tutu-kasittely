@@ -84,23 +84,18 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  // Make changes to ECE
   await cellsOfEce.nth(2).locator('input[type="radio"]').click();
 
   const cellsOfUkEnic = page
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
 
-  // Make changes to UK ENIC
   await cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus');
 
-  // Delete aacrao
   await page.getByTestId('asiakirjamalli-delete-aacrao').click();
 
-  // Wait for save ribbon to appear
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
-  // Click save button and wait for PUT request
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
@@ -110,7 +105,6 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
-  // Verify all changes are in the request
   const requestData = request.postDataJSON();
   expect(
     requestData.asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,

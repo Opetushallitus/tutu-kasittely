@@ -112,7 +112,6 @@ export const mockHakemus = async (
     const method = route.request().method();
 
     if (method === 'PUT') {
-      // Handle PUT - return the posted data as confirmation
       const putData = route.request().postDataJSON();
       await route.fulfill({
         status: 200,
@@ -122,7 +121,6 @@ export const mockHakemus = async (
       return;
     }
 
-    // Handle GET
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
     const oid = params[0];
@@ -330,7 +328,6 @@ export const mockPerustelu = async (page: Page) => {
     const method = route.request().method();
 
     if (method === 'POST' || method === 'PUT') {
-      // Handle POST/PUT - return the posted data as confirmation
       const postData = route.request().postDataJSON();
       await route.fulfill({
         status: 200,
@@ -338,7 +335,6 @@ export const mockPerustelu = async (page: Page) => {
         body: JSON.stringify(postData),
       });
     } else {
-      // Handle GET
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

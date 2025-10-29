@@ -106,14 +106,12 @@ test.describe('Yleiset perustelut', () => {
   }) => {
     test.setTimeout(60000);
 
-    // Setup route handler using helper
     await setupPerusteluRoute(page);
 
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
-    // Make all changes without waiting for save
     await page.getByTestId('virallinen-tutkinnon-myontaja__on').click();
     await page.getByTestId('virallinen-tutkinto__off').click();
     await page.getByTestId('lahde__lahtomaan-kansallinen-lahde').click();
@@ -129,7 +127,6 @@ test.describe('Yleiset perustelut', () => {
       .fill('Kelpoisuus jatkaa kandidaatinopintoihin');
     await page.getByTestId('aiemmat-paatokset--kylla').click();
 
-    // Click save and verify payload using helper
     await clickSaveAndVerifyPayload(page, '/perustelu/', {
       virallinenTutkinnonMyontaja: true,
       virallinenTutkinto: false,
@@ -152,7 +149,6 @@ test.describe('Yleiset perustelut', () => {
     page.on('console', (msg) => console.log(msg.text()));
     const tutkintoJarjestykset = ['1', '2'];
 
-    // Fill all fields for all tutkinnot without waiting for save
     for (const jarjestys of tutkintoJarjestykset) {
       const ohjeellinenLaajuus = page
         .getByTestId(
@@ -199,7 +195,6 @@ test.describe('Yleiset perustelut', () => {
       );
     }
 
-    // Click save and verify payload using helper
     await clickSaveAndVerifyPayload(page, '/hakemus/', {
       tutkinnot: [
         {

@@ -43,7 +43,6 @@ export default function TutkintoPage() {
     [tutkinnot, yhteistutkinto],
   );
 
-  // Use editableState hook for tutkinnot and yhteistutkinto
   const {
     editedData: editedData,
     hasChanges,
@@ -61,7 +60,6 @@ export default function TutkintoPage() {
   const editedTutkinnot = editedData?.tutkinnot ?? [];
   const editedYhteistutkinto = editedData?.yhteistutkinto ?? false;
 
-  // UI-specific state for paatos kieli (derived from sisalto)
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
@@ -80,7 +78,6 @@ export default function TutkintoPage() {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
   }, [error, addToast, t]);
 
-  // Update handlers for local state only
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,

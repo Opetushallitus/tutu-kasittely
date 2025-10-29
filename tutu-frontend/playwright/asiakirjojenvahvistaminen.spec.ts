@@ -62,7 +62,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    // Handle GET requests - return hakemus with initial state
     if (route.request().method() === 'GET') {
       await route.fulfill({
         status: 200,
@@ -72,7 +71,6 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
       return;
     }
 
-    // Handle PUT request for save - return final state with all changes
     if (route.request().method() === 'PUT') {
       const body = {
         ...hakemus,
@@ -147,11 +145,9 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   const lisatietoInput = lisatieto.locator('input');
   await lisatietoInput.fill('Hyvin meni');
 
-  // Wait for save button and click it
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await page.getByRole('button', { name: 'Tallenna' }).click();
 
-  // Wait for save to complete and verify all values are preserved
   await expect(
     page.getByRole('button', { name: 'Tallenna' }),
   ).not.toBeVisible();

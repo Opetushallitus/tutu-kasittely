@@ -173,10 +173,8 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
   const paattymisvuosi1 = page.getByTestId('tutkinto-paattymisvuosi-1');
   await expect(paattymisvuosi1).toBeEditable();
 
-  // Make the change
   await paattymisvuosi1.fill('2015');
 
-  // Wait for save button and click it
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   const [req] = await Promise.all([
@@ -213,10 +211,8 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
 
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  // Confirm deletion in modal
   await page.getByTestId('modal-confirm-button').click();
 
-  // Wait for save button and click it
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   const [req] = await Promise.all([

@@ -36,10 +36,8 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   await otmMuuEroSeliteField.scrollIntoViewIfNeeded();
   await expect(otmMuuEroSeliteField).toBeVisible();
 
-  // Make change
   await otmMuuEroSeliteField.fill('Härköneeeeeen');
 
-  // Wait for save button and click it
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   const [req] = await Promise.all([
@@ -63,7 +61,6 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
-  // Add route handler to return updated data after PUT
   await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
     if (route.request().method() === 'PUT') {
       await route.fulfill({
@@ -72,7 +69,6 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
         body: JSON.stringify(route.request().postDataJSON()),
       });
     } else {
-      // Fulfill GET with mock data
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -120,10 +116,8 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     .first();
   await expect(firstOptionLabel).toBeVisible();
 
-  // First change: click radio option
   await firstOptionLabel.click();
 
-  // Wait for save button and click it (first save)
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   let [req] = await Promise.all([
@@ -145,15 +139,12 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     },
   });
 
-  // Wait for save to complete
   await expect(page.getByRole('button', { name: 'Tallenna' })).not.toBeVisible({
     timeout: 10000,
   });
 
-  // Second change: uncheck checkbox
   await sovellettuLuokanopettajaCheckbox.uncheck();
 
-  // Wait for save button and click it (second save)
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
 
   [req] = await Promise.all([
