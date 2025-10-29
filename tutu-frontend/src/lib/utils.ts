@@ -54,3 +54,5 @@ export const LocalizeFetchError = (
 };
 
 export const isDefined = (val: unknown) => val !== undefined && val !== null;
+
+export { buildHakemusUpdateRequest } from '@/src/lib/utils/hakemusUpdateBuilder';

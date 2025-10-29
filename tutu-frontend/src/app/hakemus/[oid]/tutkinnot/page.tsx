@@ -4,14 +4,15 @@ import { Divider, Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import useToaster from '@/src/hooks/useToaster';
 import { useHakemus } from '@/src/context/HakemusContext';
-import React, { useEffect, useMemo, useState } from 'react';
-import { handleFetchError } from '@/src/lib/utils';
+import React, { useEffect, useState } from 'react';
+import { handleFetchError, buildHakemusUpdateRequest } from '@/src/lib/utils';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
 import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
-import { HakemusUpdateRequest, Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/hakemus';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { Add } from '@mui/icons-material';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
@@ -29,20 +30,44 @@ export default function TutkintoPage() {
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
 
-  // Local editable state
-  const [editedTutkinnot, setEditedTutkinnot] = useState<Tutkinto[]>([]);
-  const [editedYhteistutkinto, setEditedYhteistutkinto] =
-    useState<boolean>(false);
+  // Extract fields to avoid referencing hakemus object in memo
+  const tutkinnot = hakemus?.tutkinnot;
+  const yhteistutkinto = hakemus?.yhteistutkinto;
+
+  // Memoize the server data object to prevent unnecessary resets
+  const serverData = React.useMemo(
+    () =>
+      tutkinnot !== undefined && yhteistutkinto !== undefined
+        ? { tutkinnot, yhteistutkinto }
+        : undefined,
+    [tutkinnot, yhteistutkinto],
+  );
+
+  // Use editableState hook for tutkinnot and yhteistutkinto
+  const {
+    editedData: editedData,
+    hasChanges,
+    updateLocal,
+    save,
+  } = useEditableState(serverData, (data) => {
+    tallennaHakemus(
+      buildHakemusUpdateRequest(hakemus!, {
+        tutkinnot: data.tutkinnot,
+        yhteistutkinto: data.yhteistutkinto,
+      }),
+    );
+  });
+
+  const editedTutkinnot = editedData?.tutkinnot ?? [];
+  const editedYhteistutkinto = editedData?.yhteistutkinto ?? false;
+
+  // UI-specific state for paatos kieli (derived from sisalto)
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
 
-  // Sync server data to local state when loaded
   useEffect(() => {
     if (!hakemus) return;
-    setEditedTutkinnot(hakemus.tutkinnot);
-    setEditedYhteistutkinto(hakemus.yhteistutkinto);
-
     const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
       hakemus.sisalto,
       [paatosJaAsiointikieli, paatosKieli],
@@ -55,46 +80,17 @@ export default function TutkintoPage() {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
   }, [error, addToast, t]);
 
-  // Track if there are unsaved changes
-  const hasChanges = useMemo(() => {
-    if (!hakemus) return false;
-    return (
-      JSON.stringify(hakemus.tutkinnot) !== JSON.stringify(editedTutkinnot) ||
-      hakemus.yhteistutkinto !== editedYhteistutkinto
-    );
-  }, [hakemus, editedTutkinnot, editedYhteistutkinto]);
-
-  // Save handler
-  const handleSave = () => {
-    if (!hakemus || !hasChanges) return;
-
-    const updateRequest: HakemusUpdateRequest = {
-      hakemusKoskee: hakemus.hakemusKoskee,
-      asiatunnus: hakemus.asiatunnus || null,
-      kirjausPvm: hakemus.kirjausPvm || null,
-      esittelyPvm: hakemus.esittelyPvm || null,
-      paatosPvm: hakemus.paatosPvm || null,
-      esittelijaOid: hakemus.esittelijaOid || null,
-      kasittelyVaihe: hakemus.kasittelyVaihe,
-      yhteistutkinto: editedYhteistutkinto,
-      tutkinnot: editedTutkinnot,
-      asiakirja: hakemus.asiakirja,
-    };
-
-    tallennaHakemus(updateRequest);
-  };
-
   // Update handlers for local state only
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
-    setEditedTutkinnot([...oldTutkinnot, next]);
+    updateLocal({ tutkinnot: [...oldTutkinnot, next] });
   };
 
   const deleteTutkintoLocal = (id: string | undefined) => {
     const tutkinnot = editedTutkinnot.filter((tutkinto) => tutkinto.id !== id);
-    setEditedTutkinnot(tutkinnot);
+    updateLocal({ tutkinnot });
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
@@ -116,10 +112,12 @@ export default function TutkintoPage() {
     ).length;
 
     const hakemusId = editedTutkinnot[0]!.hakemusId;
-    setEditedTutkinnot((tutkinnot) => [
-      ...tutkinnot,
-      emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
-    ]);
+    updateLocal({
+      tutkinnot: [
+        ...editedTutkinnot,
+        emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
+      ],
+    });
   };
 
   if (error) {
@@ -145,7 +143,7 @@ export default function TutkintoPage() {
           hakemus={{ ...hakemus, yhteistutkinto: editedYhteistutkinto }}
           updateHakemus={(patch) => {
             if (patch.yhteistutkinto !== undefined) {
-              setEditedYhteistutkinto(patch.yhteistutkinto);
+              updateLocal({ yhteistutkinto: patch.yhteistutkinto });
             }
           }}
           t={t}
@@ -184,7 +182,7 @@ export default function TutkintoPage() {
         />
       </Stack>
       <SaveRibbon
-        onSave={handleSave}
+        onSave={save}
         isSaving={isSaving || false}
         hasChanges={hasChanges}
       />

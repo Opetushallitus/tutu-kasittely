@@ -11,12 +11,11 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect, useMemo, useState } from 'react';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { APSisalto } from '@/src/lib/types/APSisalto';
 import * as R from 'remeda';
-import { Perustelu } from '@/src/lib/types/perustelu';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useEditableState } from '@/src/hooks/useEditableState';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
@@ -26,46 +25,25 @@ export default function ApPage() {
   const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
     usePerustelu(hakemus?.hakemusOid);
 
-  // Local editable state
-  const [editedPerustelu, setEditedPerustelu] = useState<Perustelu | undefined>(
-    perustelu,
-  );
-
-  // Sync server data to local state when loaded
-  useEffect(() => {
-    if (perustelu) {
-      setEditedPerustelu(perustelu);
-    }
-  }, [perustelu]);
-
-  // Track if there are unsaved changes
-  const hasChanges = useMemo(() => {
-    return JSON.stringify(perustelu) !== JSON.stringify(editedPerustelu);
-  }, [perustelu, editedPerustelu]);
-
-  // Save handler
-  const handleSave = () => {
-    if (!hasChanges || !editedPerustelu) return;
-    tallennaPerustelu(editedPerustelu);
-  };
+  // Use editableState hook for perustelu management
+  const {
+    editedData: editedPerustelu,
+    hasChanges,
+    updateLocal,
+    save,
+  } = useEditableState(perustelu, tallennaPerustelu);
 
   // Update local state only
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
     const currentAPSisalto = editedPerustelu?.apSisalto;
     const next = { ...currentAPSisalto, [key]: checked };
-    setEditedPerustelu((prev) => ({
-      ...prev!,
-      apSisalto: next,
-    }));
+    updateLocal({ apSisalto: next });
   };
 
   const updateTextField = (key: keyof APSisalto, value: string) => {
     const currentAPSisalto = editedPerustelu?.apSisalto;
     const next = { ...currentAPSisalto, [key]: value };
-    setEditedPerustelu((prev) => ({
-      ...prev!,
-      apSisalto: next,
-    }));
+    updateLocal({ apSisalto: next });
   };
 
   if (isLoading || isPerusteluLoading || !editedPerustelu) {
@@ -361,7 +339,7 @@ export default function ApPage() {
         ></OphInputFormField>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={handleSave}
+        onSave={save}
         isSaving={isSaving || false}
         hasChanges={hasChanges}
       />

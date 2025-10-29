@@ -5,7 +5,7 @@ import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 
 const matchUpdate = (url: string, method: string) =>
-  url.includes('/perustelu/1.2.246.562.10.00000000001') && method === 'POST';
+  url.includes('/perustelu/1.2.246.562.10.00000000001') && method === 'PUT';
 
 const matchingDate = () => {
   const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
@@ -17,7 +17,16 @@ const mockPerustelu = (page: Page) => {
     `**/perustelu/1.2.246.562.10.00000000001`,
     async (route) => {
       const perustelu = getPerustelu();
-      if (route.request().method() === 'GET') {
+      const method = route.request().method();
+
+      if (method === 'PUT') {
+        const putData = route.request().postDataJSON();
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(putData),
+        });
+      } else if (method === 'GET') {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -75,45 +84,72 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     page.getByTestId('lausuntoPyyntoVastattu-calendar-2').locator('input'),
   ).toHaveValue('30.11.2025');
 
+  await lausuntopyyntoLisatietoInput.fill('lisääää');
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    lausuntopyyntoLisatietoInput.fill('lisääää'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) =>
     expect(req[0].postDataJSON().lausuntoPyyntojenLisatiedot).toEqual(
       'lisääää',
     ),
   );
 
+  // Wait for mutation state to settle after save
+  await page.waitForTimeout(100);
+
+  await lausuntoSisaltoInput.fill('sisältöä elämähän');
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    lausuntoSisaltoInput.fill('sisältöä elämähän'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) =>
     expect(req[0].postDataJSON().lausunnonSisalto).toEqual('sisältöä elämähän'),
   );
 
+  // Wait for mutation state to settle after save
+  await page.waitForTimeout(100);
+
+  await lausunnonAntaja1.fill('Esko Mörkö');
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    lausunnonAntaja1.fill('Esko Mörkö'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) =>
     expect(req[0].postDataJSON().lausuntopyynnot[0].lausunnonAntaja).toEqual(
       'Esko Mörkö',
     ),
   );
 
+  // Wait for mutation state to settle after save
+  await page.waitForTimeout(100);
+
+  await lahetetty1.click();
+  await page.locator('.react-datepicker__day--026').click();
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    lahetetty1.click(),
-    page.locator('.react-datepicker__day--026').click(),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) =>
     expect(req[0].postDataJSON().lausuntopyynnot[0].lahetetty).toEqual(
       matchingDate(),
     ),
   );
 
+  // Wait for mutation state to settle after save
+  await page.waitForTimeout(100);
+
+  await vastattu1.click();
+  await page.locator('.react-datepicker__day--026').click();
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    vastattu1.click(),
-    page.locator('.react-datepicker__day--026').click(),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) =>
     expect(req[0].postDataJSON().lausuntopyynnot[0].saapunut).toEqual(
       matchingDate(),
@@ -130,9 +166,12 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
     'Lausuntopyyntö 3',
   );
 
+  await page.getByTestId('lausunnon-antaja-3').fill('Pertti Keinonen');
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    page.getByTestId('lausunnon-antaja-3').fill('Pertti Keinonen'),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) => {
     const pyynnot = req[0].postDataJSON().lausuntopyynnot;
     expect(pyynnot.length).toEqual(3);
@@ -144,11 +183,12 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await page.getByTestId('poista-lausuntopyynto-button-2').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
+  await page.getByTestId('modal-confirm-button').click();
+
+  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
   await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    (async () => {
-      await page.getByTestId('modal-confirm-button').click();
-    })(),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
   ]).then((req) => {
     const pyynnot = req[0].postDataJSON().lausuntopyynnot;
     expect(pyynnot.length).toEqual(2);

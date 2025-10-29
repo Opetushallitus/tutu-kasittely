@@ -2,7 +2,6 @@ import { LiiteItem } from '@/src/lib/types/liiteItem';
 
 export const _liitteet: Array<LiiteItem> = [
   {
-    deleted: null,
     key: 'f0974a8c-ff0e-4702-b62c-58f69047e25fx',
     size: 10,
     uploaded: '2025-05-19T06:30:59.647Z',
@@ -11,7 +10,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: 'c95d7c76-5a4c-4ce5-a173-5c848664e6ed',
     size: 10,
     uploaded: '2025-05-19T06:31:59.647Z',
@@ -20,7 +18,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: '7046e83e-b780-42c4-bbd5-a55b798050dd',
     size: 10,
     uploaded: '2025-05-19T06:32:03.226Z',
@@ -29,7 +26,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: '582be518-e3ea-4692-8a2c-8370b40213e5',
     size: 10,
     uploaded: '2025-05-19T06:33:56.244Z',
@@ -38,7 +34,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: 'f0974a8c-ff0e-4702-b62c-58f69047e25f',
     size: 10,
     uploaded: '2025-05-19T06:34:56.244Z',
@@ -47,7 +42,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: '0443f1ca-6fd0-4919-812f-eaed4ae87933',
     size: 10,
     uploaded: '2025-05-19T06:35:08.455Z',
@@ -56,7 +50,6 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
-    deleted: null,
     key: 'f0974a8c-ff0e-4702-b62c-58f69047e25g',
     size: 10,
     uploaded: '2025-05-19T06:30:56.244Z',

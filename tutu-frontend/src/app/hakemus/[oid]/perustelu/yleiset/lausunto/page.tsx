@@ -7,16 +7,16 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { Add } from '@mui/icons-material';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { Perustelu } from '@/src/lib/types/perustelu';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { useEditableState } from '@/src/hooks/useEditableState';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -33,49 +33,32 @@ export default function Lausuntotiedot() {
   const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
     usePerustelu(hakemus?.hakemusOid);
 
-  // Local editable state
-  const [editedPerustelu, setEditedPerustelu] = React.useState<
-    Perustelu | undefined
-  >();
+  // Use editableState hook for perustelu management
+  const {
+    editedData: editedPerustelu,
+    hasChanges,
+    updateLocal,
+    save,
+  } = useEditableState(perustelu, tallennaPerustelu);
+
+  // Separate state for indexed lausuntopyynnot (UI-specific)
   const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
     Lausuntopyynto[]
   >([]);
 
-  // Sync server data to local state when loaded
+  // Sync indexed lausuntopyynnot from editedPerustelu
   useEffect(() => {
-    if (!perustelu) return;
-    setEditedPerustelu(perustelu);
+    if (!editedPerustelu) return;
 
-    const indexedLausuntopyynnot = perustelu.lausuntopyynnot.map(
+    const indexedLausuntopyynnot = editedPerustelu.lausuntopyynnot.map(
       (pyynto, index) => ({
         ...pyynto,
         jarjestys: index + 1,
       }),
     );
     setLausuntopyynnot(indexedLausuntopyynnot);
-  }, [perustelu]);
-
-  // Track if there are unsaved changes
-  const hasChanges = useMemo(() => {
-    return JSON.stringify(perustelu) !== JSON.stringify(editedPerustelu);
-  }, [perustelu, editedPerustelu]);
-
-  // Save handler
-  const handleSave = () => {
-    if (!hasChanges || !editedPerustelu) return;
-    tallennaPerustelu(editedPerustelu);
-  };
-
-  // Update local state only
-  const updateLausuntotieto = (
-    field: string,
-    value: string | Lausuntopyynto[] | null,
-  ) => {
-    setEditedPerustelu((prev) => ({
-      ...prev!,
-      [field]: value,
-    }));
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editedPerustelu?.lausuntopyynnot]);
 
   const addLausuntopyynto = () => {
     const newJarjestys =
@@ -88,7 +71,7 @@ export default function Lausuntotiedot() {
     const newLausuntopyynto: Lausuntopyynto = emptyLausuntopyynto(newJarjestys);
     const updatedLausuntopyynnot = [...lausuntopyynnot, newLausuntopyynto];
     setLausuntopyynnot(updatedLausuntopyynnot);
-    updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
+    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
   const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
@@ -99,7 +82,7 @@ export default function Lausuntotiedot() {
         jarjestys: index + 1,
       }));
     setLausuntopyynnot(updatedLausuntopyynnot);
-    updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
+    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
   if (isPerusteluLoading || !editedPerustelu) {
@@ -127,7 +110,7 @@ export default function Lausuntotiedot() {
                 p.jarjestys === pyynto.jarjestys ? pyynto : p,
               );
               setLausuntopyynnot(updatedLausuntopyynnot);
-              updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
+              updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
             }}
             deleteLausuntopyyntoAction={deleteLausuntopyynto}
             t={t}
@@ -151,7 +134,7 @@ export default function Lausuntotiedot() {
           label={t('hakemus.perustelu.lausuntotiedot.pyyntojenLisatiedot')}
           value={editedPerustelu.lausuntoPyyntojenLisatiedot || ''}
           onChange={(e) =>
-            updateLausuntotieto('lausuntoPyyntojenLisatiedot', e.target.value)
+            updateLocal({ lausuntoPyyntojenLisatiedot: e.target.value })
           }
           multiline
           minRows={4}
@@ -164,15 +147,13 @@ export default function Lausuntotiedot() {
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.sisalto')}
           value={editedPerustelu.lausunnonSisalto || ''}
-          onChange={(e) =>
-            updateLausuntotieto('lausunnonSisalto', e.target.value)
-          }
+          onChange={(e) => updateLocal({ lausunnonSisalto: e.target.value })}
           multiline
           minRows={4}
           inputProps={{ 'data-testid': 'lausunnonSisalto-input' }}
         />
         <SaveRibbon
-          onSave={handleSave}
+          onSave={save}
           isSaving={isSaving || false}
           hasChanges={hasChanges}
         />

@@ -109,6 +109,20 @@ export const mockHakemus = async (
   lomakkeenKieli: Language = 'fi',
 ) => {
   await page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
+    const method = route.request().method();
+
+    if (method === 'PUT') {
+      // Handle PUT - return the posted data as confirmation
+      const putData = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(putData),
+      });
+      return;
+    }
+
+    // Handle GET
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
     const oid = params[0];
@@ -313,22 +327,35 @@ export const mockKoodistot = async (page: Page) => {
 
 export const mockPerustelu = async (page: Page) => {
   await page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        id: 'mock-perustelu-id',
-        hakemusId: 'mock-hakemus-id',
-        lahdeLahtomaanKansallinenLahde: false,
-        lahdeLahtomaanVirallinenVastaus: false,
-        lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
-        selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
-        selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
-        luotu: '2025-09-02T16:08:42.083643',
-        luoja: 'Hakemuspalvelu',
-        uoRoSisalto: {},
-      }),
-    });
+    const method = route.request().method();
+
+    if (method === 'POST' || method === 'PUT') {
+      // Handle POST/PUT - return the posted data as confirmation
+      const postData = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(postData),
+      });
+    } else {
+      // Handle GET
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'mock-perustelu-id',
+          hakemusId: 'mock-hakemus-id',
+          lahdeLahtomaanKansallinenLahde: false,
+          lahdeLahtomaanVirallinenVastaus: false,
+          lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+          selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
+          selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
+          luotu: '2025-09-02T16:08:42.083643',
+          luoja: 'Hakemuspalvelu',
+          uoRoSisalto: {},
+        }),
+      });
+    }
   });
 };
 
