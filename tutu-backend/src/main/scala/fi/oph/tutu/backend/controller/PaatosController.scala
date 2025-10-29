@@ -1,20 +1,13 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, PartialPaatos}
+import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{
-  GetMapping,
-  PathVariable,
-  PostMapping,
-  RequestBody,
-  RequestMapping,
-  RestController
-}
+import org.springframework.web.bind.annotation.*
 
 import scala.util.{Failure, Success, Try}
 
@@ -52,10 +45,9 @@ class PaatosController(
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatos))
         }
       }
-      case Failure(exception) => {
+      case Failure(exception) =>
         LOG.error(s"Päätöksen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
-      }
     }
   }
   @PostMapping(
@@ -71,7 +63,7 @@ class PaatosController(
   ): ResponseEntity[Any] = {
     Try {
       val user                  = userService.getEnrichedUserDetails(true)
-      val paatos: PartialPaatos = mapper.readValue(paatosBytes, classOf[PartialPaatos])
+      val paatos: Paatos = mapper.readValue(paatosBytes, classOf[Paatos])
 
       paatosService.tallennaPaatos(HakemusOid(hakemusOid), formId, paatos, user.userOid)
     } match {

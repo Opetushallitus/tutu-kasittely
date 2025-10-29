@@ -112,7 +112,7 @@ class HakemusService(
   def luoKokonainenHakemus(
     hakemus: UusiAtaruHakemus,
     partialPerustelu: PartialPerustelu,
-    partialPaatos: PartialPaatos,
+    paatos: Paatos,
     luoja: String
   ): (UUID, Perustelu, Paatos) = {
     val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
@@ -133,7 +133,6 @@ class HakemusService(
 
     // Rakennetaan perustelu ja paatos domain objektit
     val perustelu = Perustelu().mergeWith(partialPerustelu)
-    val paatos    = Paatos().mergeWith(partialPaatos)
 
     // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
     val transactionalAction = for {

@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_1384_2015_patevyystaso_2}
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.UserService
@@ -47,28 +48,25 @@ class PaatosControllerTest extends IntegrationTestBase {
   val hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: HakemusOid = HakemusOid(
     "1.2.246.562.11.00000000000000006667"
   )
+  val hakemusOidWithPaatosTiedotJaKelpoisuudet: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006668"
+  )
+
   var hakemusId: Option[UUID]                                                    = None
   var hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: Option[UUID] = None
+  var hakemusIdWithPaatosTiedotJaKelpoisuudet: Option[UUID]                      = None
   var paatosId: Option[UUID]                                                     = None
+  var paatosId2: Option[UUID]                                                    = None
   var paatosTietoId: Option[UUID]                                                = None
+  var paatosTietoId2: Option[UUID]                                               = None
   var paatos: Paatos                                                             = _
   var paatosWithPaatosTiedot: Paatos                                             = _
   var paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: Paatos          = _
+  var paatosWithPaatosTiedotJaKelpoisuudet: Paatos                               = _
 
   var paatosTiedot: Seq[PaatosTieto] =
     Seq(
-      PaatosTieto(
-        id = None,
-        paatosId = None,
-        paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
-        sovellettuLaki = Some(SovellettuLaki.ap_seut),
-        tutkintoId = None,
-        lisaaTutkintoPaatostekstiin = None,
-        myonteinenPaatos = None,
-        myonteisenPaatoksenLisavaatimukset = Some("{}"),
-        kielteisenPaatoksenPerustelut = Some("{}"),
-        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
-      )
+      makePaatosTieto(None)
     )
 
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
@@ -111,7 +109,6 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   private def makePaatosTieto(paatosId: Option[UUID]): PaatosTieto = {
-
     PaatosTieto(
       id = None,
       paatosId = paatosId,
@@ -139,22 +136,49 @@ class PaatosControllerTest extends IntegrationTestBase {
       seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = None,
       paatosTiedot = Seq(
-        PaatosTieto(
+        makePaatosTieto(givenPaatosId).copy(
           id = givenPaatosTietoId,
-          paatosId = givenPaatosId,
-          paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
-          sovellettuLaki = Some(SovellettuLaki.ap_seut),
-          tutkintoId = None,
-          lisaaTutkintoPaatostekstiin = None,
-          myonteinenPaatos = None,
-          myonteisenPaatoksenLisavaatimukset = Some("{}"),
-          kielteisenPaatoksenPerustelut = Some("{}"),
-          tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu),
+          paatosTyyppi = Some(PaatosTyyppi.TiettyTutkintoTaiOpinnot),
           rinnastettavatTutkinnotTaiOpinnot = Seq(
             TutkintoTaiOpinto(
               id = None,
               paatostietoId = givenPaatosTietoId,
               tutkintoTaiOpinto = Some("testi"),
+              myonteinenPaatos = None,
+              myonteisenPaatoksenLisavaatimukset = Some("{}"),
+              kielteisenPaatoksenPerustelut = Some("{}")
+            )
+          )
+        )
+      )
+    )
+  }
+
+  private def makePaatosWithPaatosTiedotJaKelpoisuudet(
+    givenHakemusId: Option[UUID],
+    givenPaatosId: Option[UUID],
+    givenPaatosTietoId: Option[UUID]
+  ): Paatos = {
+    val ratkaisutyyppi = Ratkaisutyyppi.Paatos
+    Paatos(
+      id = givenPaatosId,
+      hakemusId = givenHakemusId,
+      ratkaisutyyppi = Some(ratkaisutyyppi),
+      seutArviointi = pickBoolean,
+      peruutuksenTaiRaukeamisenSyy = None,
+      paatosTiedot = Seq(
+        makePaatosTieto(givenPaatosId).copy(
+          id = givenPaatosTietoId,
+          kelpoisuudet = Seq(
+            Kelpoisuus(
+              id = None,
+              paatostietoId = givenPaatosTietoId,
+              kelpoisuus = Some("kelpotesti"),
+              opetettavaAine = Some("latina"),
+              muuAmmattiKuvaus = None,
+              direktiivitaso = Some(a_1384_2015_patevyystaso_1),
+              kansallisestiVaadittavaDirektiivitaso = Some(b_1384_2015_patevyystaso_2),
+              direktiivitasoLisatiedot = randomStringOption,
               myonteinenPaatos = None,
               myonteisenPaatoksenLisavaatimukset = Some("{}"),
               kielteisenPaatoksenPerustelut = Some("{}")
@@ -205,19 +229,39 @@ class PaatosControllerTest extends IntegrationTestBase {
         "testi"
       )
     )
+    hakemusIdWithPaatosTiedotJaKelpoisuudet = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithPaatosTiedotJaKelpoisuudet,
+        1,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        "testi"
+      )
+    )
     paatosId = Some(
       paatosRepository
         .tallennaPaatos(
           hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get,
-          makePaatosWithPaatosTiedot(hakemusId),
+          makePaatosWithPaatosTiedot(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot),
+          "test user"
+        )
+        .id
+        .get
+    )
+    paatosId2 = Some(
+      paatosRepository
+        .tallennaPaatos(
+          hakemusIdWithPaatosTiedotJaKelpoisuudet.get,
+          makePaatosWithPaatosTiedot(hakemusIdWithPaatosTiedotJaKelpoisuudet),
           "test user"
         )
         .id
         .get
     )
     paatosRepository.tallennaPaatosTieto(paatosId.get, makePaatosTieto(paatosId), "test user")
-    val paatosTiedot = paatosRepository.haePaatosTiedot(paatosId.get)
     paatosTietoId = Some(paatosRepository.haePaatosTiedot(paatosId.get).head.id.get)
+    paatosRepository.tallennaPaatosTieto(paatosId2.get, makePaatosTieto(paatosId2), "test user")
+    paatosTietoId2 = Some(paatosRepository.haePaatosTiedot(paatosId2.get).head.id.get)
     paatos = makePaatos(hakemusId)
     paatosWithPaatosTiedot = makePaatosWithPaatosTiedot(
       hakemusId
@@ -227,6 +271,12 @@ class PaatosControllerTest extends IntegrationTestBase {
         hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
         paatosId,
         paatosTietoId
+      )
+    paatosWithPaatosTiedotJaKelpoisuudet =
+      makePaatosWithPaatosTiedotJaKelpoisuudet(
+        hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
+        paatosId2,
+        paatosTietoId2
       )
   }
 
@@ -426,4 +476,69 @@ class PaatosControllerTest extends IntegrationTestBase {
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(9)
+  def tallennaPaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200JaKantaanTallennetunDatan()
+  : Unit = {
+    val paatosJSON =
+      paatos2Json(
+        paatosWithPaatosTiedotJaKelpoisuudet,
+        "luoja",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosTietoOptions"
+      )
+    val result = mvc
+      .perform(
+        post(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/$lomakeId")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatosJSON)
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso").value("b_1384_2015_patevyystaso_2"))
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(10)
+  def haePaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200(): Unit = {
+    val paatosId   = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaKelpoisuudet.get).get.id
+    val paatosJSON =
+      paatos2Json(
+        paatosWithPaatosTiedotJaKelpoisuudet.copy(id = paatosId, luoja = Some("test user")),
+        "id",
+        "luoja",
+        "luotu",
+        "muokattu",
+        "muokkaaja",
+        "paatosId",
+        "paatosTietoOptions"
+      )
+    var result = mvc
+      .perform(
+        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/$lomakeId")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso").value("b_1384_2015_patevyystaso_2"))
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
+  }
+
 }

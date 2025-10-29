@@ -23,6 +23,7 @@ import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusList';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -187,6 +188,13 @@ export const PaatosTietoComponent = ({
           rinnastettavatTutkinnotTaiOpinnot={
             currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot
           }
+          updatePaatosTietoAction={updatePaatosTietoAction}
+        />
+      )}
+      {currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' && (
+        <KelpoisuusList
+          t={t}
+          paatosTieto={currentPaatosTieto}
           updatePaatosTietoAction={updatePaatosTietoAction}
         />
       )}

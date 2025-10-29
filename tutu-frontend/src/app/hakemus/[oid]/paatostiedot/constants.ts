@@ -103,3 +103,28 @@ export const tutkinnonTasoOptions = (t: TFunction) => {
     },
   ];
 };
+
+export const direktiivitasoOptions = (t: TFunction) => {
+  return [
+    {
+      value: 'a_1384_2015_patevyystaso_1',
+      label: t('hakemus.paatos.direktiivitaso.a_1384_2015_patevyystaso_1'),
+    },
+    {
+      value: 'b_1384_2015_patevyystaso_2',
+      label: t('hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2'),
+    },
+    {
+      value: 'c_1384_2015_patevyystaso_3',
+      label: t('hakemus.paatos.direktiivitaso.c_1384_2015_patevyystaso_3'),
+    },
+    {
+      value: 'd_1384_2015_patevyystaso_4',
+      label: t('hakemus.paatos.direktiivitaso.d_1384_2015_patevyystaso_4'),
+    },
+    {
+      value: 'e_1384_2015_patevyystaso_5',
+      label: t('hakemus.paatos.direktiivitaso.e_1384_2015_patevyystaso_5'),
+    },
+  ];
+};

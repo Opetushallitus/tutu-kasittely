@@ -41,6 +41,7 @@ export type PaatosTieto = {
   myonteinenPaatos?: boolean;
   tutkintoTaso?: TutkintoTaso;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
+  kelpoisuudet: Kelpoisuus[];
 };
 
 export type Paatos = {
@@ -73,4 +74,25 @@ export type PaatosTietoOption = {
   label: TranslatedName;
   value: TranslatedName;
   children?: PaatosTietoOption[];
+};
+
+export type Direktiivitaso =
+  | 'a_1384_2015_patevyystaso_1'
+  | 'b_1384_2015_patevyystaso_2'
+  | 'c_1384_2015_patevyystaso_3'
+  | 'd_1384_2015_patevyystaso_4'
+  | 'e_1384_2015_patevyystaso_5';
+
+export type Kelpoisuus = {
+  id?: string;
+  paatostietoId?: string;
+  kelpoisuus?: string;
+  muuAmmmattikuvaus?: string;
+  opetettavaAine?: string;
+  direktiivitaso?: Direktiivitaso;
+  kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso;
+  direktiivitasoLisatiedot?: string;
+  myonteinenPaatos?: boolean;
+  myonteisenPaatoksenLisavaatimukset?: string;
+  kielteisenPaatoksenPerustelut?: string;
 };
