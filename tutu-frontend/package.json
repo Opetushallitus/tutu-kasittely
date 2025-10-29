@@ -47,7 +47,7 @@
     "@axe-core/react": "^4.10.1",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.24.0",
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.56.1",
     "@tanstack/react-query-devtools": "^5.74.4",
     "@types/node": "^20",
     "@types/react": "^19",
