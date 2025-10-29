@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { doApiFetch, doApiPost, doApiPut } from '@/src/lib/tutu-backend/api';
+import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Perustelu } from '@/src/lib/types/perustelu';
 
 export const getPerusteluMuistio = async (
@@ -16,11 +16,6 @@ export const getPerustelu = async (
 ): Promise<Perustelu> => {
   const url = `perustelu/${hakemusOid}`;
   return await doApiFetch(url, undefined, 'no-store');
-};
-
-export const postPerustelu = (hakemusOid: string, perustelu: Perustelu) => {
-  const url = `perustelu/${hakemusOid}`;
-  return doApiPost(url, perustelu);
 };
 
 export const putPerustelu = (hakemusOid: string, perustelu: Perustelu) => {
@@ -40,19 +35,6 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
     throwOnError: false,
   });
 
-  const mutation = useMutation({
-    mutationFn: (perustelu: Perustelu) => postPerustelu(hakemusOid!, perustelu),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
-      // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
-    },
-  });
-
-  const updatePerustelu = (perustelu: Perustelu) => {
-    mutation.mutate(perustelu);
-  };
-
   const mutationTallenna = useMutation({
     mutationFn: (perustelu: Perustelu) => putPerustelu(hakemusOid!, perustelu),
     onSuccess: async (response) => {
@@ -69,7 +51,6 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
 
   return {
     ...query,
-    updatePerustelu,
     tallennaPerustelu,
     perustelu: query.data,
     isPerusteluLoading: query.isLoading,

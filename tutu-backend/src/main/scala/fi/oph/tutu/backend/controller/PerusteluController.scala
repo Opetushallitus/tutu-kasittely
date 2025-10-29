@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, PartialPerustelu, Perustelu}
+import fi.oph.tutu.backend.domain.{HakemusOid, Perustelu}
 import fi.oph.tutu.backend.service.{PerusteluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPerustelu, UpdatePerustelu}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
@@ -13,7 +13,6 @@ import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{
   GetMapping,
   PathVariable,
-  PostMapping,
   PutMapping,
   RequestBody,
   RequestMapping,
@@ -79,59 +78,6 @@ class PerusteluController(
       case Failure(exception) =>
         LOG.error("Perustelumuistion haku epäonnistui", exception.getMessage)
         errorMessageMapper.mapErrorMessage(exception)
-    }
-  }
-
-  @PostMapping(
-    path = Array("perustelu/{hakemusOid}"),
-    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
-    produces = Array(MediaType.APPLICATION_JSON_VALUE)
-  )
-  @Deprecated
-  def tallennaPerustelu(
-    @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody perusteluBytes: Array[Byte],
-    request: jakarta.servlet.http.HttpServletRequest
-  ): ResponseEntity[Any] = {
-    Try {
-      val user                        = userService.getEnrichedUserDetails(true)
-      val perustelu: PartialPerustelu =
-        mapper.readValue(perusteluBytes, classOf[PartialPerustelu])
-
-      perusteluService.tallennaPerustelu(
-        HakemusOid(hakemusOid),
-        perustelu,
-        user.userOid
-      )
-    } match {
-      case Success(result) =>
-        result match {
-          case (vanhaPerustelu, Some(paivitettyPerustelu)) =>
-            auditLog.logChanges(
-              auditLog.getUser(request),
-              Map("hakemusOid" -> hakemusOid),
-              UpdatePerustelu,
-              AuditUtil.getChanges(
-                vanhaPerustelu.map(h => mapper.writeValueAsString(h)),
-                Some(mapper.writeValueAsString(paivitettyPerustelu))
-              )
-            )
-            ResponseEntity
-              .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(paivitettyPerustelu))
-          case _ =>
-            LOG.warn(s"Perustelun tallennus epäonnistui")
-            errorMessageMapper.mapPlainErrorMessage(
-              "Perustelun tallennus epäonnistui",
-              HttpStatus.INTERNAL_SERVER_ERROR
-            )
-        }
-      case Failure(e) =>
-        LOG.error("Perustelun tallennus epäonnistui", e.getMessage)
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_400_DESCRIPTION,
-          HttpStatus.BAD_REQUEST
-        )
     }
   }
 

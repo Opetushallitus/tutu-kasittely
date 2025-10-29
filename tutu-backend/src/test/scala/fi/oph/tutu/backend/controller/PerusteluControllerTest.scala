@@ -339,7 +339,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/${hakemusOid}")
+        put(s"/api/perustelu/${hakemusOid}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -407,7 +407,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/$hakemusOid")
+        put(s"/api/perustelu/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -453,7 +453,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/${hakemusOid2}")
+        put(s"/api/perustelu/${hakemusOid2}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -510,7 +510,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/$hakemusOid2")
+        put(s"/api/perustelu/$hakemusOid2")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -546,7 +546,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/${hakemusOid3}")
+        put(s"/api/perustelu/${hakemusOid3}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -620,7 +620,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/$hakemusOid3")
+        put(s"/api/perustelu/$hakemusOid3")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -655,7 +655,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/${hakemusOid4}")
+        put(s"/api/perustelu/${hakemusOid4}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -712,7 +712,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/perustelu/$hakemusOid4")
+        put(s"/api/perustelu/$hakemusOid4")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
