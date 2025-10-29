@@ -359,13 +359,11 @@ class AtaruLomakeParser() {
     basePath: String
   ): Seq[PaatosTietoOption] = {
     item.options.map { option =>
+      val prePath    = if (basePath.nonEmpty) s"${basePath}_" else ""
       val optionPath = Map(
-        Kieli.fi -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.fi, "")
-                     else s"${basePath}.${option.label.getOrElse(Kieli.fi, "")}"),
-        Kieli.sv -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.sv, "")
-                     else s"${basePath}.${option.label.getOrElse(Kieli.sv, "")}"),
-        Kieli.en -> (if (basePath.isEmpty) option.label.getOrElse(Kieli.en, "")
-                     else s"${basePath}.${option.label.getOrElse(Kieli.en, "")}")
+        Kieli.fi -> s"${prePath}${option.label.getOrElse(Kieli.fi, "")}",
+        Kieli.sv -> s"${prePath}${option.label.getOrElse(Kieli.sv, "")}",
+        Kieli.en -> s"${prePath}${option.label.getOrElse(Kieli.en, "")}"
       )
 
       PaatosTietoOption(
