@@ -272,12 +272,11 @@ class PaatosControllerTest extends IntegrationTestBase {
         paatosId,
         paatosTietoId
       )
-    paatosWithPaatosTiedotJaKelpoisuudet =
-      makePaatosWithPaatosTiedotJaKelpoisuudet(
-        hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
-        paatosId2,
-        paatosTietoId2
-      )
+    paatosWithPaatosTiedotJaKelpoisuudet = makePaatosWithPaatosTiedotJaKelpoisuudet(
+      hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
+      paatosId2,
+      paatosTietoId2
+    )
   }
 
   @BeforeEach
@@ -480,8 +479,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(9)
-  def tallennaPaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200JaKantaanTallennetunDatan()
-  : Unit = {
+  def tallennaPaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
       paatos2Json(
         paatosWithPaatosTiedotJaKelpoisuudet,
@@ -505,7 +503,10 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso").value("b_1384_2015_patevyystaso_2"))
+      .andExpect(
+        jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso")
+          .value("b_1384_2015_patevyystaso_2")
+      )
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
 
@@ -536,7 +537,10 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso").value("b_1384_2015_patevyystaso_2"))
+      .andExpect(
+        jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso")
+          .value("b_1384_2015_patevyystaso_2")
+      )
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }

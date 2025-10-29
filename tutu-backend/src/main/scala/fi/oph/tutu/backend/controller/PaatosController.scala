@@ -62,7 +62,7 @@ class PaatosController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user                  = userService.getEnrichedUserDetails(true)
+      val user           = userService.getEnrichedUserDetails(true)
       val paatos: Paatos = mapper.readValue(paatosBytes, classOf[Paatos])
 
       paatosService.tallennaPaatos(HakemusOid(hakemusOid), formId, paatos, user.userOid)

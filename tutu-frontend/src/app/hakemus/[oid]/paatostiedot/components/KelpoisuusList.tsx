@@ -42,6 +42,7 @@ export const KelpoisuusList = ({
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addKelpoisuus = () => {
     const tobeKelpoisuudet = currentKelpoisuudet.concat([
       emptyKelpoisuus(paatosTieto.id!),

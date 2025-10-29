@@ -1,9 +1,12 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Direktiivitaso, Kelpoisuus, SovellettuLaki } from '@/src/lib/types/paatos';
+import {
+  Direktiivitaso,
+  Kelpoisuus,
+  SovellettuLaki,
+} from '@/src/lib/types/paatos';
 import { Stack, useTheme } from '@mui/material';
 import {
   OphButton,
-  OphFormFieldWrapper,
   OphInputFormField,
   OphSelectFormField,
   OphTypography,
@@ -12,7 +15,6 @@ import React from 'react';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { DeleteOutline } from '@mui/icons-material';
 import { ophColors } from '@/src/lib/theme';
-import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
 import { direktiivitasoOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 
 type kelpoisuusComponentProps = {
