@@ -486,6 +486,29 @@ class HakemusService(
               hakemusUpdateRequest.asiakirja,
               userOid.toString
             )
+
+            // Tallenna nested collections (pyydettävät asiakirjat ja asiakirjamallit)
+            // jotka muuten jäisivät tallentamatta uuden asiakirjan luonnissa
+            asiakirjaRepository.suoritaPyydettavienAsiakirjojenModifiointi(
+              asiakirjaId,
+              PyydettavaAsiakirjaModifyData(
+                uudet = hakemusUpdateRequest.asiakirja.pyydettavatAsiakirjat,
+                muutetut = Seq(),
+                poistetut = Seq()
+              ),
+              userOid
+            )
+
+            asiakirjaRepository.suoritaAsiakirjamallienModifiointi(
+              asiakirjaId,
+              AsiakirjamalliModifyData(
+                uudetMallit = hakemusUpdateRequest.asiakirja.asiakirjamallitTutkinnoista,
+                muutetutMallit = Map(),
+                poistetutMallit = Seq()
+              ),
+              userOid
+            )
+
             Some(asiakirjaId)
         }
 
