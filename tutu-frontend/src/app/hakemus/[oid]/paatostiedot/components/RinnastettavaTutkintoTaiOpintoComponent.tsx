@@ -104,6 +104,15 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const rinnastettavaTutkintoTaiOpinnotGroupedOptions =
     renderOptionsRecursively(rinnastettavaTutkintoTaiOpinnotOptions);
 
+  const getRinnastettavaTutkintoTaiOpinnotValueWithPath = (
+    value: string | null,
+  ) => {
+    if (!value) return '';
+    const parts = value.split('_');
+    if (parts.length == 1) return value;
+    return `${parts.join(', ')}`;
+  };
+
   return (
     <Stack
       direction={'column'}
@@ -160,9 +169,15 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
             value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
             onChange={(e) =>
               updateTutkintoTaiOpintoAction(
-                { ...tutkintoTaiOpinto, tutkintoTaiOpinto: e.target.value },
+                {
+                  ...tutkintoTaiOpinto,
+                  tutkintoTaiOpinto: e.target.value,
+                },
                 index,
               )
+            }
+            renderValue={(value: string | null) =>
+              getRinnastettavaTutkintoTaiOpinnotValueWithPath(value)
             }
           >
             {rinnastettavaTutkintoTaiOpinnotGroupedOptions}

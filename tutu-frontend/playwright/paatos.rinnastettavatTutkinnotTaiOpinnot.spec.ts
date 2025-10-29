@@ -75,7 +75,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   expect(
     req.postDataJSON().paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0]
       .tutkintoTaiOpinto,
-  ).toEqual('uskonto, ortodoksinen');
+  ).toEqual('Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen');
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
     'paatos-myonteinenPaatos-radio-group',
@@ -124,7 +124,8 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
       kielteisenPaatoksenPerustelut: '{}',
       myonteinenPaatos: true,
       myonteisenPaatoksenLisavaatimukset: '{}',
-      tutkintoTaiOpinto: 'uskonto, ortodoksinen',
+      tutkintoTaiOpinto:
+        'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
     },
   ]);
 });
