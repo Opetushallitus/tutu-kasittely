@@ -12,11 +12,11 @@ import org.springframework.web.servlet.view.RedirectView
 
 @RestController
 @RequestMapping(path = Array("api"))
-class Controller(
+class UserController(
   userService: UserService,
   mapper: ObjectMapper
 ) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[Controller])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[UserController])
 
   @Value("${tutu.ui.url}")
   val tutuUiUrl: String = null

@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
-class ControllerTest extends IntegrationTestBase {
+class UserControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
