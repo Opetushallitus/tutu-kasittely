@@ -11,17 +11,20 @@ import React, { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
-import { useEditableState } from '@/src/hooks/useEditableState';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
-import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
+import {
+  Paatos,
+  PaatosTieto,
+  PaatosUpdateCallback,
+  Ratkaisutyyppi,
+} from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { Hakemus } from '@/src/lib/types/hakemus';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -44,8 +47,8 @@ export default function PaatostiedotPage() {
     isPaatosLoading,
     paatos,
     error: paatosError,
-    tallennaPaatos,
-    isSaving,
+    updatePaatos,
+    updateOngoing,
   } = usePaatos(hakemus?.hakemusOid, hakemus?.lomakeId);
   const { addToast } = useToaster();
 
@@ -65,8 +68,8 @@ export default function PaatostiedotPage() {
   return (
     <Paatostiedot
       paatos={paatos}
-      tallennaPaatos={tallennaPaatos}
-      isSaving={isSaving || false}
+      updatePaatos={updatePaatos}
+      updateOngoing={updateOngoing}
       hakemus={hakemus!}
     />
   );
@@ -74,40 +77,38 @@ export default function PaatostiedotPage() {
 
 const Paatostiedot = ({
   paatos,
-  tallennaPaatos,
-  isSaving,
+  updatePaatos,
+  updateOngoing,
   hakemus,
 }: {
   paatos: Paatos;
-  tallennaPaatos: (paatos: Paatos) => void;
-  isSaving: boolean;
+  updatePaatos: PaatosUpdateCallback;
+  updateOngoing: boolean;
   hakemus: Hakemus;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
-  // Use editable state hook for automatic change tracking and save handling
-  const paatosState = useEditableState(paatos, tallennaPaatos);
-
-  // Local state for paatosTiedot list (derived from editedData)
+  const [currentPaatos, setCurrentPaatos] = React.useState<Paatos>(paatos);
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
   >([]);
 
-  // Sync paatosTiedot when editedData changes
   useEffect(() => {
-    if (paatosState.editedData) {
-      setCurrentPaatosTiedot(
-        paatosState.editedData.paatosTiedot?.length
-          ? paatosState.editedData.paatosTiedot
-          : [emptyPaatosTieto(paatosState.editedData.id!)],
-      );
-    }
-  }, [paatosState.editedData]);
+    setCurrentPaatos(paatos);
+    setCurrentPaatosTiedot(
+      paatos.paatosTiedot?.length
+        ? paatos.paatosTiedot
+        : [emptyPaatosTieto(paatos.id!)],
+    );
+  }, [paatos]);
 
-  // Update local state only
   const updatePaatosField = (updatedPaatos: Partial<Paatos>) => {
-    paatosState.updateLocal(updatedPaatos);
+    const newPaatos: Paatos = { ...currentPaatos, ...updatedPaatos };
+    setCurrentPaatos(newPaatos);
+    if (!updateOngoing) {
+      updatePaatos(newPaatos);
+    }
   };
 
   const updatePaatosTieto = (
@@ -121,11 +122,9 @@ const Paatostiedot = ({
   };
 
   const addPaatosTieto = () => {
-    const newPaatosTiedot = currentPaatosTiedot.concat([
-      emptyPaatosTieto(paatos.id!),
-    ]);
-    setCurrentPaatosTiedot(newPaatosTiedot);
-    updatePaatosField({ paatosTiedot: newPaatosTiedot });
+    setCurrentPaatosTiedot((oldPaatosTiedot) =>
+      oldPaatosTiedot.concat([emptyPaatosTieto(paatos.id!)]),
+    );
   };
 
   const deletePaatosTieto = (id: string | undefined) => {
@@ -135,12 +134,6 @@ const Paatostiedot = ({
     setCurrentPaatosTiedot(newPaatosTiedot);
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
-
-  if (!paatosState.editedData) {
-    return <FullSpinner />;
-  }
-
-  const currentPaatos = paatosState.editedData;
 
   return (
     <Stack
@@ -215,11 +208,6 @@ const Paatostiedot = ({
           <Divider />
         </>
       )}
-      <SaveRibbon
-        onSave={paatosState.save}
-        isSaving={isSaving}
-        hasChanges={paatosState.hasChanges}
-      />
     </Stack>
   );
 };
