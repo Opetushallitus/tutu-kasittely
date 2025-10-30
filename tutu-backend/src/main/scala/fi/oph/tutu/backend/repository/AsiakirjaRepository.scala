@@ -251,10 +251,39 @@ class AsiakirjaRepository extends BaseResultHandlers {
 
   def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: String): UUID = {
     try
-      db.run(
+      val asiakirjaId = db.run(
         tallennaUudetAsiakirjatiedotAction(asiakirja, luoja),
         "tallenna_uudet_asiakirjatiedot"
       )
+
+      // Tallenna myös sisäkkäiset kokoelmat alkuperäisellä tallennuksella
+      if (asiakirja.pyydettavatAsiakirjat.nonEmpty) {
+        val pyydettavatOperations = HakemusModifyOperationResolver
+          .resolvePyydettavatAsiakirjatModifyOperations(
+            Seq.empty, // Ei olemassa olevaa dataa ensimmäisellä tallennuksella
+            asiakirja.pyydettavatAsiakirjat
+          )
+        suoritaPyydettavienAsiakirjojenModifiointi(
+          asiakirjaId,
+          pyydettavatOperations,
+          UserOid(luoja)
+        )
+      }
+
+      if (asiakirja.asiakirjamallitTutkinnoista.nonEmpty) {
+        val malliOperations = HakemusModifyOperationResolver
+          .resolveAsiakirjamalliModifyOperations(
+            Map.empty, // Ei olemassa olevaa dataa ensimmäisellä tallennuksella
+            asiakirja.asiakirjamallitTutkinnoista
+          )
+        suoritaAsiakirjamallienModifiointi(
+          asiakirjaId,
+          malliOperations,
+          UserOid(luoja)
+        )
+      }
+
+      asiakirjaId
     catch {
       case e: Exception =>
         LOG.error(s"Asiakirjatietojen tallennus epäonnistui: ${e}")
