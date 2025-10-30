@@ -175,7 +175,8 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
 
   await paattymisvuosi1.fill('2015');
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
 
   const [req] = await Promise.all([
     page.waitForRequest(
@@ -183,7 +184,7 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
         r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
         r.method() === 'PUT',
     ),
-    page.getByRole('button', { name: 'Tallenna' }).click(),
+    saveButton.click(),
   ]);
 
   const payload = req.postDataJSON();
@@ -213,7 +214,8 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
 
   await page.getByTestId('modal-confirm-button').click();
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
 
   const [req] = await Promise.all([
     page.waitForRequest(
@@ -221,7 +223,7 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
         r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
         r.method() === 'PUT',
     ),
-    page.getByRole('button', { name: 'Tallenna' }).click(),
+    saveButton.click(),
   ]);
 
   const payload = req.postDataJSON();
