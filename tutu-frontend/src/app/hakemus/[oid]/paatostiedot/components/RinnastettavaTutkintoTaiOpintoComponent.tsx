@@ -4,7 +4,6 @@ import {
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
 import {
-  Divider,
   ListSubheader,
   MenuItem,
   Select,
@@ -189,7 +188,6 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         updateMyonteinenPaatosAction={updateMyonteinenPaatos}
       />
-      <Divider orientation={'horizontal'} />
     </Stack>
   );
 };

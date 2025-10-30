@@ -376,7 +376,8 @@
     "paatos": {
       "otsikko": "Päätöstiedot",
       "esikatselu": "Esikatsele päätöstekstiä",
-      "hyvaksymisPaiva": "Hyväksymispäivä",
+      "hyvaksymispaiva": "Hyväksymispäivä",
+      "lahetyspaiva": "Lähetyspäivä",
       "ratkaisuJaPaatos": "Ratkaisu ja päätös",
       "seut": "SEUT-arviointi tehty",
       "modal": {

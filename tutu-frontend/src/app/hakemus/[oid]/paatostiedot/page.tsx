@@ -25,6 +25,9 @@ import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/cons
 import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { CalendarComponent } from '@/src/components/calendar-component';
+import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
+import * as dateFns from 'date-fns';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -135,15 +138,53 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
+  const hyvaksymispaiva = paatos.hyvaksymispaiva
+    ? new Date(paatos.hyvaksymispaiva)
+    : null;
+  const lahetyspaiva = paatos.lahetyspaiva
+    ? new Date(paatos.lahetyspaiva)
+    : null;
+
   return (
     <Stack
       gap={theme.spacing(3)}
       sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
     >
       <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        <OphTypography variant={'h2'}>
-          {t('hakemus.paatos.otsikko')}
-        </OphTypography>
+        <Stack direction="column" gap={theme.spacing(3)}>
+          <OphTypography variant={'h2'}>
+            {t('hakemus.paatos.otsikko')}
+          </OphTypography>
+          <Stack direction="row" gap={theme.spacing(2)}>
+            <CalendarComponent
+              setDate={(date: Date | null) =>
+                updatePaatosField({
+                  hyvaksymispaiva: date
+                    ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
+                    : null,
+                })
+              }
+              selectedValue={hyvaksymispaiva}
+              maxDate={null}
+              label={t('hakemus.paatos.hyvaksymispaiva')}
+              dataTestId="imiPyyntoLahetetty-calendar"
+            />
+
+            <CalendarComponent
+              setDate={(date: Date | null) =>
+                updatePaatosField({
+                  lahetyspaiva: date
+                    ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
+                    : null,
+                })
+              }
+              selectedValue={lahetyspaiva}
+              maxDate={null}
+              label={t('hakemus.paatos.lahetyspaiva')}
+              dataTestId="imiPyyntoLahetetty-calendar"
+            />
+          </Stack>
+        </Stack>
       </Stack>
       <Divider />
       <OphTypography variant={'h3'}>
