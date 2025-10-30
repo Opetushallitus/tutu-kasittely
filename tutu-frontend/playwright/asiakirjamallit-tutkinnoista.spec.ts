@@ -94,7 +94,8 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
 
   await page.getByTestId('asiakirjamalli-delete-aacrao').click();
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
 
   const [request] = await Promise.all([
     page.waitForRequest(
@@ -102,7 +103,7 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
         req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
         req.method() === 'PUT',
     ),
-    page.getByRole('button', { name: 'Tallenna' }).click(),
+    saveButton.click(),
   ]);
 
   const requestData = request.postDataJSON();
