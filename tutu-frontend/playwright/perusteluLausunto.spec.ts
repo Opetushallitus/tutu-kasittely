@@ -72,21 +72,54 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await lausunnonAntaja1.fill('Esko Mörkö');
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
-    lausuntopyynnot: [{ lausunnonAntaja: 'Esko Mörkö' }],
+    lausuntopyynnot: [
+      {
+        lausunnonAntaja: 'Esko Mörkö',
+        lahetetty: '2025-09-01T00:00:00',
+        saapunut: '2025-09-30T00:00:00',
+      },
+      {
+        lausunnonAntaja: 'Aas Weckström',
+        lahetetty: '2025-11-01T00:00:00',
+        saapunut: '2025-11-30T00:00:00',
+      },
+    ],
   });
 
   await lahetetty1.click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
-    lausuntopyynnot: [{ lahetetty: matchingDate() }],
+    lausuntopyynnot: [
+      {
+        lausunnonAntaja: 'Esko Mörkö',
+        lahetetty: matchingDate(),
+        saapunut: '2025-09-30T00:00:00',
+      },
+      {
+        lausunnonAntaja: 'Aas Weckström',
+        lahetetty: '2025-11-01T00:00:00',
+        saapunut: '2025-11-30T00:00:00',
+      },
+    ],
   });
 
   await vastattu1.click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
-    lausuntopyynnot: [{ saapunut: matchingDate() }],
+    lausuntopyynnot: [
+      {
+        lausunnonAntaja: 'Esko Mörkö',
+        lahetetty: matchingDate(),
+        saapunut: matchingDate(),
+      },
+      {
+        lausunnonAntaja: 'Aas Weckström',
+        lahetetty: '2025-11-01T00:00:00',
+        saapunut: '2025-11-30T00:00:00',
+      },
+    ],
   });
 });
 
@@ -103,9 +136,21 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
-      { lausunnonAntaja: 'Kostaja' },
-      { lausunnonAntaja: 'Aas Weckström' },
-      { lausunnonAntaja: 'Pertti Keinonen' },
+      {
+        lausunnonAntaja: 'Kostaja',
+        lahetetty: '2025-09-01T00:00:00',
+        saapunut: '2025-09-30T00:00:00',
+      },
+      {
+        lausunnonAntaja: 'Aas Weckström',
+        lahetetty: '2025-11-01T00:00:00',
+        saapunut: '2025-11-30T00:00:00',
+      },
+      {
+        lausunnonAntaja: 'Pertti Keinonen',
+        lahetetty: null,
+        saapunut: null,
+      },
     ],
   });
 
@@ -116,8 +161,16 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
-      { lausunnonAntaja: 'Kostaja' },
-      { lausunnonAntaja: 'Pertti Keinonen' },
+      {
+        lausunnonAntaja: 'Kostaja',
+        lahetetty: '2025-09-01T00:00:00',
+        saapunut: '2025-09-30T00:00:00',
+      },
+      {
+        lausunnonAntaja: 'Pertti Keinonen',
+        lahetetty: null,
+        saapunut: null,
+      },
     ],
   });
 });
