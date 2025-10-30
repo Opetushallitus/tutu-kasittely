@@ -53,7 +53,7 @@ class PerusteluService(
    * Korvaa kaikki kentät.
    * NULL arvo pyynnössä -> NULL tietokantaan.
    */
-  def paivitaPerusteluKokonaan(
+  def tallennaPerustelu(
     hakemusOid: HakemusOid,
     perustelu: Perustelu,
     luojaTaiMuokkaaja: String

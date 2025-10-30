@@ -113,7 +113,7 @@ class PerusteluController(
       )
     )
   )
-  def paivitaPerusteluKokonaan(
+  def tallennaPerustelu(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestBody perusteluBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
@@ -123,7 +123,7 @@ class PerusteluController(
       val perustelu: Perustelu =
         mapper.readValue(perusteluBytes, classOf[Perustelu])
 
-      perusteluService.paivitaPerusteluKokonaan(
+      perusteluService.tallennaPerustelu(
         HakemusOid(hakemusOid),
         perustelu,
         user.userOid
