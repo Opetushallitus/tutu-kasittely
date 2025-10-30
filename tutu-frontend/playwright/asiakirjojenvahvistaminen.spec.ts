@@ -145,12 +145,11 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   const lisatietoInput = lisatieto.locator('input');
   await lisatietoInput.fill('Hyvin meni');
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
-  await page.getByRole('button', { name: 'Tallenna' }).click();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
 
-  await expect(
-    page.getByRole('button', { name: 'Tallenna' }),
-  ).not.toBeVisible();
+  await expect(saveButton).not.toBeVisible();
 
   await expect(lahetettyInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
