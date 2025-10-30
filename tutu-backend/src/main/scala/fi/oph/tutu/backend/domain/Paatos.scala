@@ -11,6 +11,8 @@ case class Paatos(
   peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
   paatosTiedot: Seq[PaatosTieto] = Seq(),
   paatosTietoOptions: Option[PaatosTietoOptions] = None,
+  hyvaksymispaiva: Option[LocalDateTime] = None,
+  lahetyspaiva: Option[LocalDateTime] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,

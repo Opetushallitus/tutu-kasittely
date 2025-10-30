@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{conten
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 @AutoConfigureMockMvc
@@ -91,20 +92,23 @@ class PaatosControllerTest extends IntegrationTestBase {
             )
           )
         else None,
-      paatosTiedot = Seq.empty
+      paatosTiedot = Seq.empty,
+      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
   }
 
   private def makePaatosWithPaatosTiedot(
     givenHakemusId: Option[UUID]
   ): Paatos = {
-    val ratkaisutyyppi = Ratkaisutyyppi.Paatos
     Paatos(
       hakemusId = givenHakemusId,
-      ratkaisutyyppi = Some(ratkaisutyyppi),
+      ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos),
       seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = None,
-      paatosTiedot = paatosTiedot
+      paatosTiedot = paatosTiedot,
+      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
   }
 
@@ -150,7 +154,9 @@ class PaatosControllerTest extends IntegrationTestBase {
             )
           )
         )
-      )
+      ),
+      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
   }
 
@@ -185,7 +191,9 @@ class PaatosControllerTest extends IntegrationTestBase {
             )
           )
         )
-      )
+      ),
+      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
   }
 
