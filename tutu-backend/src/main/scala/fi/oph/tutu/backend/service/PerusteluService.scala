@@ -48,61 +48,6 @@ class PerusteluService(
       }
   }
 
-  def tallennaPerustelu(
-    hakemusOid: HakemusOid,
-    partialPerustelu: PartialPerustelu,
-    luojaTaiMuokkaaja: String
-  ): (Option[Perustelu], Option[Perustelu]) = {
-    val dbHakemus        = hakemusRepository.haeHakemus(hakemusOid)
-    val currentPerustelu = dbHakemus.flatMap(h => perusteluRepository.haePerustelu(h.id))
-    val newPerustelu     = dbHakemus match {
-      case Some(dbHakemus) =>
-        val latestSavedPerustelu = currentPerustelu match {
-          case Some(existing) =>
-            perusteluRepository.tallennaPerustelu(dbHakemus.id, existing.mergeWith(partialPerustelu), luojaTaiMuokkaaja)
-          case _ =>
-            perusteluRepository.tallennaPerustelu(
-              dbHakemus.id,
-              Perustelu().mergeWith(partialPerustelu).copy(hakemusId = Some(dbHakemus.id)),
-              luojaTaiMuokkaaja
-            )
-        }
-        val currentLausuntopyynnot   = perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
-        val lausuntopyyntoModifyData =
-          HakemusModifyOperationResolver
-            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, partialPerustelu.lausuntopyynnot)
-
-        perusteluRepository.suoritaLausuntopyyntojenModifiointi(
-          latestSavedPerustelu.id.orNull,
-          lausuntopyyntoModifyData,
-          luojaTaiMuokkaaja
-        )
-
-        val newlySavedLausuntoPyynnot =
-          perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
-
-        // Päivitä kasittelyVaihe kun perustelu muuttuu
-        try {
-          paivitaHakemusKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja)
-        } catch {
-          case e: Exception =>
-            LOG.error(s"Käsittelyvaiheen päivitys epäonnistui: ${e.getMessage}", e)
-        }
-
-        Some(
-          latestSavedPerustelu.copy(
-            lausuntopyynnot =
-              if (newlySavedLausuntoPyynnot.nonEmpty)
-                newlySavedLausuntoPyynnot
-              else
-                latestSavedPerustelu.lausuntopyynnot
-          )
-        )
-      case _ => None
-    }
-    (currentPerustelu, newPerustelu)
-  }
-
   /**
    * Päivittää perustelun kokonaan (PUT endpoint).
    * Korvaa kaikki kentät.
