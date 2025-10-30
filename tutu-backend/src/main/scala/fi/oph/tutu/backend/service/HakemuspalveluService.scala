@@ -185,6 +185,6 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   @CachePut(Array("lomake"))
   private def updateCached(lomake: AtaruLomake): Unit = {
     val lomakeCache = cacheManager.getCache("lomake")
-    lomakeCache.put(lomake.key, lomake)
+    lomakeCache.put(lomake.id, lomake)
   }
 }
