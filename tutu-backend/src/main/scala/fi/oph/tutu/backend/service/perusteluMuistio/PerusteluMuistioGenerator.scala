@@ -13,6 +13,7 @@ import fi.oph.tutu.backend.domain.{
   Kieli,
   Muistio,
   Perustelu,
+  SisaltoItem,
   Tutkinto,
   ValmistumisenVahvistus,
   ValmistumisenVahvistusVastaus
@@ -36,13 +37,12 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   }
 }
 
-def haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe: Option[AtaruHakemus]): Option[String] = {
-  ataruHakemusMaybe
-    .flatMap(ataruHakemus => {
-      findAnswerByAtaruKysymysId(Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA, ataruHakemus.content.answers)
-    })
-    .map(answer => s"Suostumus sähköiseen asiointiin: ${answer}")
+def haeSuostumusSahkoiseenAsiointiin(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val suostumusValue = hakemusMaybe
+    .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA))
+    .flatMap(_.value.head.label.get(Kieli.fi))
 
+  suostumusValue.map(valinta => s"Suostumus sähköiseen asiointiin: ${valinta}")
 }
 
 def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -74,18 +74,60 @@ def haeHakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => s"Hakijan syntymäaika: ${hakemus.hakija.syntymaaika}")
 }
 
+def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 0): Seq[Tuple3[Int, String, String]] = {
+  if (item == None) {
+    Seq.empty
+  } else {
+    val children: Seq[SisaltoItem]  = item.map(_.children).getOrElse(Seq.empty)
+    val followups: Seq[SisaltoItem] = item.map(_.value.flatMap(_.followups)).getOrElse(Seq.empty)
+
+    val allChildren: Seq[SisaltoItem] = children ++ followups
+
+    val alirivit: Seq[Tuple3[Int, String, String]] = allChildren.flatMap(child => {
+      haeHakemusKoskeeRivit(kieli, Option(child), level + 1)
+    })
+
+    val labelMaybe = item.flatMap(_.label.get(kieli))
+    val valueMaybe = item.flatMap(_.value.head.label.get(kieli))
+    val fieldType  = item.map(_.fieldType).getOrElse("-")
+
+    (labelMaybe, valueMaybe) match {
+      case (Some(label), Some(value)) => {
+        val rivi = s"${label}: ${value}"
+        (level, rivi, fieldType) +: alirivit
+      }
+      case (_, _) => alirivit
+    }
+  }
+}
+
 def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  hakemusMaybe
-    .flatMap(hakemus => {
-      val kieli: Kieli = hakemus.lomakkeenKieli match {
+  val hakemuksenKieli: Kieli = hakemusMaybe
+    .map(hakemus => {
+      hakemus.lomakkeenKieli match {
         case "sv" => Kieli.sv
         case "en" => Kieli.en
         case _    => Kieli.fi
       }
-      haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
-        .map(_.value.head.label.get(kieli))
     })
-    .map(hakemusKoskee => s"Hakemus koskee:\n  - ${hakemusKoskee}")
+    .getOrElse(Kieli.fi)
+
+  val hakemusKoskeeRoot: Option[SisaltoItem] = hakemusMaybe
+    .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE))
+  val hakemusKoskeeRivit: Seq[Tuple3[Int, String, String]] =
+    haeHakemusKoskeeRivit(hakemuksenKieli, hakemusKoskeeRoot)
+      .filter((t: Tuple3[Int, String, String]) => t._3 != "attachment")
+
+  val hakemusKoskeeContent = hakemusKoskeeRivit
+    .map((t: Tuple3[Int, String, String]) => {
+      val level  = t._1
+      val rivi   = t._2
+      val indent = " " * level * 2
+      s"${indent}${rivi}"
+    })
+    .mkString("\n")
+
+  Some(s"Hakemus koskee:\n${hakemusKoskeeContent}")
 }
 
 def haeKoulutuksenSisalto(uoRoMuistioMaybe: Option[Muistio]): Option[String] = {
@@ -145,12 +187,12 @@ def haeTutkintokohtaisetTiedot(
 
           Seq[String](
             s"Tutkinto ${tutkinto.jarjestys}:",
-            s"Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
-            s"Nimi: ${tutkinto.nimi.getOrElse("-")}",
-            s"Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("paaaaineTaiErikoisala")}",
-            s"Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
-            s"Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
-            s"Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
+            s"  Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
+            s"  Nimi: ${tutkinto.nimi.getOrElse("-")}",
+            s"  Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
+            s"  Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
+            s"  Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
+            s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
           ).mkString("\n")
         })
         .mkString("\n\n")
@@ -168,7 +210,7 @@ def generate(
     haeHakijanNimi(hakemusMaybe),
     haeHakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
-    haeSuostumusSahkoiseenAsiointiin(ataruHakemusMaybe),
+    haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
     haeValmistuminenVahvistettu(hakemusMaybe),
     haeKoulutuksenSisalto(uoRoMuistioMaybe),

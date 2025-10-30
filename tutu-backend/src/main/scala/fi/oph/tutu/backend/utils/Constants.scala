@@ -48,7 +48,7 @@ object Constants {
     AtaruKysymysId("1098b604-115b-4e59-ba11-073c0924e473", "sahkoisen-asioinnin-lupa")
 
   val ATARU_HAKEMUS_KOSKEE: AtaruKysymysId =
-    AtaruKysymysId("tutu-apply-reason", "tutu-apply-reason")
+    AtaruKysymysId("97840c6c-3642-48d0-9f47-adf9ee1793cc", "tutu-apply-reason")
 
   // Lomakkeen avaimet
   val ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS: AtaruKysymysId =
