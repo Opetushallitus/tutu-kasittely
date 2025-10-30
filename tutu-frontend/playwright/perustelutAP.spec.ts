@@ -155,14 +155,15 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
 
   await SEUTArviointi.fill('SEUTArviointi uusi arvo');
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
 
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/tutu-backend/api/perustelu') && r.method() === 'PUT',
     ),
-    page.getByRole('button', { name: 'Tallenna' }).click(),
+    saveButton.click(),
   ]);
   const payload = req.postDataJSON();
 
