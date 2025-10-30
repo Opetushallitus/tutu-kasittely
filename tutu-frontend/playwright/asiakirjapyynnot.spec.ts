@@ -81,22 +81,21 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
 
   await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
-  await page.getByRole('button', { name: 'Tallenna' }).click();
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
 
-  await expect(
-    page.getByRole('button', { name: 'Tallenna' }),
-  ).not.toBeVisible();
+  await expect(saveButton).not.toBeVisible();
 
   await page.getByTestId('poista-asiakirja-button-0').click();
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  await expect(saveButton).toBeVisible();
 
   await page.getByTestId('pyyda-asiakirja-button').click();
   await page.getByTestId('poista-asiakirja-button-undefined').click();
 
   await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
 
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
-  await page.getByRole('button', { name: 'Tallenna' }).click();
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
 });
