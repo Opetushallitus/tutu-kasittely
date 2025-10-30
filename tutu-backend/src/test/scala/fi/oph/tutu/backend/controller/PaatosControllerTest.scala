@@ -146,7 +146,7 @@ class PaatosControllerTest extends IntegrationTestBase {
               tutkintoTaiOpinto = Some("testi"),
               myonteinenPaatos = None,
               myonteisenPaatoksenLisavaatimukset = Some(
-                MyonteisenPaatoksenLisavaatimus(taydentavatOpinnot = true)
+                MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true)
               ),
               kielteisenPaatoksenPerustelut = Some("{}")
             )

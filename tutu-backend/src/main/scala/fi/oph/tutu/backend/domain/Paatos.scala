@@ -54,7 +54,7 @@ case class TutkintoTaiOpinto(
   paatostietoId: Option[UUID] = None,
   tutkintoTaiOpinto: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
-  myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimus] = None,
+  myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimukset] = None,
   // TODO: case classeiksi
   kielteisenPaatoksenPerustelut: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
@@ -63,7 +63,7 @@ case class TutkintoTaiOpinto(
   muokkaaja: Option[String] = None
 )
 
-case class MyonteisenPaatoksenLisavaatimus(
+case class MyonteisenPaatoksenLisavaatimukset(
   taydentavatOpinnot: Boolean = false,
   kelpoisuuskoe: Boolean = false,
   sopeutumisaika: Boolean = false

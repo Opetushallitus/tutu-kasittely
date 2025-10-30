@@ -60,8 +60,14 @@ export type TutkintoTaiOpinto = {
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
   myonteinenPaatos?: boolean;
-  myonteisenPaatoksenLisavaatimukset?: string;
+  myonteisenPaatoksenLisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
   kielteisenPaatoksenPerustelut?: string;
+};
+
+export type MyonteisenPaatoksenLisavaatimukset = {
+  taydentavatOpinnot: boolean;
+  kelpoisuuskoe: boolean;
+  sopeutumisaika: boolean;
 };
 
 export type PaatosTietoOptionGroup = {
