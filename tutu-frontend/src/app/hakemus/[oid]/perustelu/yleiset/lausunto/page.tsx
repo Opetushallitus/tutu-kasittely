@@ -17,6 +17,7 @@ import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/Pe
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useEditableState } from '@/src/hooks/useEditableState';
+import { omit } from 'remeda';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -71,7 +72,11 @@ export default function Lausuntotiedot() {
     const newLausuntopyynto: Lausuntopyynto = emptyLausuntopyynto(newJarjestys);
     const updatedLausuntopyynnot = [...lausuntopyynnot, newLausuntopyynto];
     setLausuntopyynnot(updatedLausuntopyynnot);
-    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
+    // Strip jarjestys field before saving to editedPerustelu
+    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
+      omit(p, ['jarjestys']),
+    );
+    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
   const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
@@ -82,7 +87,11 @@ export default function Lausuntotiedot() {
         jarjestys: index + 1,
       }));
     setLausuntopyynnot(updatedLausuntopyynnot);
-    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
+    // Strip jarjestys field before saving to editedPerustelu
+    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
+      omit(p, ['jarjestys']),
+    );
+    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
   if (isPerusteluLoading || !editedPerustelu) {
@@ -110,7 +119,11 @@ export default function Lausuntotiedot() {
                 p.jarjestys === pyynto.jarjestys ? pyynto : p,
               );
               setLausuntopyynnot(updatedLausuntopyynnot);
-              updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
+              // Strip jarjestys field before saving to editedPerustelu
+              // jarjestys is only used for UI, not persisted to server
+              const lausuntopyynnotWithoutJarjestys =
+                updatedLausuntopyynnot.map((p) => omit(p, ['jarjestys']));
+              updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
             }}
             deleteLausuntopyyntoAction={deleteLausuntopyynto}
             t={t}
