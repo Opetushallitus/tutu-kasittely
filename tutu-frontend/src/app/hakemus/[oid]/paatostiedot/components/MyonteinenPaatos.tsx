@@ -13,10 +13,10 @@ import { MyonteisenPaatoksenLisavaatimukset } from '@/src/lib/types/paatos';
 interface MyonteinenPaatosProps {
   t: TFunction;
   myonteinenPaatos?: boolean;
-  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
+  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
   updateMyonteinenPaatosAction: (
     myonteinenPaatos: boolean,
-    lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
+    lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => void;
 }
 
@@ -34,33 +34,33 @@ export const MyonteinenPaatos = ({
       </OphTypography>
       <OphRadioGroup
         labelId="myonteinenPaatos-radio-group-label"
-        data-testid="paatos-myonteinenPaatos-radio-group"
+        data-testid="myonteinenPaatos-radio-group"
         sx={{ width: '100%' }}
         options={myonteinenPaatosOptions(t)}
         row
         value={myonteinenPaatos?.toString() || null}
         onChange={(e) =>
-          updateMyonteinenPaatosAction(
-            e.target.value === 'true',
-            {} as MyonteisenPaatoksenLisavaatimukset,
-          )
+          updateMyonteinenPaatosAction(e.target.value === 'true')
         }
       />
-      {myonteinenPaatos && (
+      {myonteinenPaatos && lisavaatimukset && (
         <>
-          <OphTypography variant="h5" data-testid="imiPyynto-otsikko">
+          <OphTypography variant="h5">
             {t('hakemus.paatos.myonteinenPaatos.otsikko')}
           </OphTypography>
           <OphCheckbox
+            data-testid="myonteinenPaatos-taydentavatOpinnot"
             label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
             checked={lisavaatimukset.taydentavatOpinnot || false}
             onChange={(e) =>
               updateMyonteinenPaatosAction(true, {
+                ...lisavaatimukset,
                 taydentavatOpinnot: e.target.checked,
               } as MyonteisenPaatoksenLisavaatimukset)
             }
           />
           <OphCheckbox
+            data-testid="myonteinenPaatos-kelpoisuuskoe"
             label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
             checked={lisavaatimukset.kelpoisuuskoe || false}
             onChange={(e) =>
@@ -71,6 +71,7 @@ export const MyonteinenPaatos = ({
             }
           />
           <OphCheckbox
+            data-testid="myonteinenPaatos-sopeutumisaika"
             label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaika')}
             checked={lisavaatimukset.sopeutumisaika || false}
             onChange={(e) =>

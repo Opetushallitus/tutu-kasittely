@@ -78,7 +78,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   ).toEqual('Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen');
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
-    'paatos-myonteinenPaatos-radio-group',
+    'myonteinenPaatos-radio-group',
   );
 
   await expect(myonteinenPaatosRadioGroup).toBeVisible();
@@ -95,6 +95,21 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   expect(
     myonteinenPaatosPostData.paatosTiedot[0]
       .rinnastettavatTutkinnotTaiOpinnot[0].myonteinenPaatos,
+  ).toEqual(true);
+
+  await expect(
+    page.getByTestId('myonteinenPaatos-sopeutumisaika'),
+  ).toBeVisible();
+
+  const [sopeutumisaikaReq] = await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    page.getByTestId('myonteinenPaatos-sopeutumisaika').click(),
+  ]);
+
+  const sopeutumisaikaPostData = sopeutumisaikaReq.postDataJSON();
+  expect(
+    sopeutumisaikaPostData.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0]
+      .myonteisenPaatoksenLisavaatimukset.sopeutumisaika,
   ).toEqual(true);
 
   await expect(
@@ -123,7 +138,11 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
     {
       kielteisenPaatoksenPerustelut: '{}',
       myonteinenPaatos: true,
-      myonteisenPaatoksenLisavaatimukset: '{}',
+      myonteisenPaatoksenLisavaatimukset: {
+        kelpoisuuskoe: false,
+        sopeutumisaika: true,
+        taydentavatOpinnot: false,
+      },
       tutkintoTaiOpinto:
         'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
     },

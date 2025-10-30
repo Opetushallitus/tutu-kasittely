@@ -385,7 +385,7 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   ]);
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
-    'paatos-myonteinenPaatos-radio-group',
+    'myonteinenPaatos-radio-group',
   );
 
   await expect(myonteinenPaatosRadioGroup).toBeVisible();

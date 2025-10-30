@@ -51,13 +51,15 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
   const updateMyonteinenPaatos = (
     myonteinenPaatos: boolean,
-    lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
+    lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => {
     updateTutkintoTaiOpintoAction(
       {
         ...tutkintoTaiOpinto,
         myonteinenPaatos: myonteinenPaatos,
-        myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+        ...(lisavaatimukset && {
+          myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+        }),
       },
       index,
     );
