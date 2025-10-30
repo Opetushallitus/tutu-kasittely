@@ -104,8 +104,6 @@ test.describe('Yleiset perustelut', () => {
   test('Syötetyt tiedot välitetään updatePerustelu-funktiolle', async ({
     page,
   }) => {
-    test.setTimeout(60000);
-
     await setupPerusteluRoute(page);
 
     await page.goto(
@@ -146,7 +144,6 @@ test.describe('Yleiset perustelut', () => {
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
-    page.on('console', (msg) => console.log(msg.text()));
     const tutkintoJarjestykset = ['1', '2'];
 
     for (const jarjestys of tutkintoJarjestykset) {

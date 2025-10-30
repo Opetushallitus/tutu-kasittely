@@ -41,6 +41,7 @@ export const SaveRibbon = ({
         onClick={onSave}
         disabled={isSaving}
         sx={{ minWidth: 200 }}
+        data-testid="save-ribbon-button"
       >
         {isSaving ? t('yleiset.tallennetaan') : t('yleiset.tallenna')}
       </OphButton>

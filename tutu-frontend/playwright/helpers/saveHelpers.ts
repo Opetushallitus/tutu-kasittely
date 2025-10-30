@@ -3,23 +3,32 @@ import { Page, expect, Request } from '@playwright/test';
 /**
  * Waits for the save button to appear, clicks it, and waits for the PUT request
  *
+ * Uses data-testid for more reliable selection than getByRole.
+ *
  * @param page - Playwright page object
  * @param urlPattern - Pattern to match the API endpoint (e.g., '/hakemus/', '/perustelu/')
  * @returns The intercepted request object
+ *
+ * @example
+ * const request = await clickSaveAndWaitForPUT(page, '/perustelu/');
+ * expect(request.postDataJSON()).toMatchObject({ field: 'value' });
  */
 export const clickSaveAndWaitForPUT = async (
   page: Page,
   urlPattern: string,
 ): Promise<Request> => {
-  // Wait for save button to be visible
-  await expect(page.getByRole('button', { name: 'Tallenna' })).toBeVisible();
+  const saveButton = page.getByTestId('save-ribbon-button');
+
+  // Wait for save button to be visible and enabled
+  await expect(saveButton).toBeVisible();
+  await expect(saveButton).toBeEnabled();
 
   // Click save and wait for PUT request
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) => req.url().includes(urlPattern) && req.method() === 'PUT',
     ),
-    page.getByRole('button', { name: 'Tallenna' }).click(),
+    saveButton.click(),
   ]);
 
   return request;
@@ -29,11 +38,13 @@ export const clickSaveAndWaitForPUT = async (
  * Waits for the save button to disappear (indicating save completed)
  *
  * @param page - Playwright page object
+ *
+ * @example
+ * await clickSaveAndWaitForPUT(page, '/hakemus/');
+ * await waitForSaveComplete(page); // Ensures save finished
  */
 export const waitForSaveComplete = async (page: Page) => {
-  await expect(
-    page.getByRole('button', { name: 'Tallenna' }),
-  ).not.toBeVisible();
+  await expect(page.getByTestId('save-ribbon-button')).not.toBeVisible();
 };
 
 /**
