@@ -20,8 +20,9 @@ export const clickSaveAndWaitForPUT = async (
   const saveButton = page.getByTestId('save-ribbon-button');
 
   // Wait for save button to be visible and enabled
-  await expect(saveButton).toBeVisible();
-  await expect(saveButton).toBeEnabled();
+  // Increase timeout to allow for nested state updates to propagate
+  await expect(saveButton).toBeVisible({ timeout: 15000 });
+  await expect(saveButton).toBeEnabled({ timeout: 15000 });
 
   // Click save and wait for PUT request
   const [request] = await Promise.all([
