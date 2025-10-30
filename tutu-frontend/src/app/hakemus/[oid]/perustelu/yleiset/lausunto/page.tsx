@@ -13,9 +13,11 @@ import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleis
 import { useHakemus } from '@/src/context/HakemusContext';
 import { Add } from '@mui/icons-material';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useDebounce } from '@/src/hooks/useDebounce';
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { Perustelu } from '@/src/lib/types/perustelu';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { useEditableState } from '@/src/hooks/useEditableState';
+import { omit } from 'remeda';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -29,59 +31,35 @@ export default function Lausuntotiedot() {
   const theme = useTheme();
 
   const { isLoading, hakemus, error } = useHakemus();
-  const { perustelu, isPerusteluLoading, updatePerustelu } = usePerustelu(
-    hakemus?.hakemusOid,
-  );
+  const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
+    usePerustelu(hakemus?.hakemusOid);
 
-  const [lausuntoPyyntojenLisatiedot, setLausuntoPyyntojenLisatiedot] =
-    React.useState<string | undefined>(undefined);
-  const [lausunnonSisalto, setLausunnonSisalto] = React.useState<
-    string | undefined
-  >(undefined);
+  // Use editableState hook for perustelu management
+  const {
+    editedData: editedPerustelu,
+    hasChanges,
+    updateLocal,
+    save,
+  } = useEditableState(perustelu, tallennaPerustelu);
+
+  // Separate state for indexed lausuntopyynnot (UI-specific)
   const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
     Lausuntopyynto[]
   >([]);
 
+  // Sync indexed lausuntopyynnot from editedPerustelu
   useEffect(() => {
-    if (!perustelu) return;
-    const indexedLausuntopyynnot = perustelu.lausuntopyynnot.map(
+    if (!editedPerustelu) return;
+
+    const indexedLausuntopyynnot = editedPerustelu.lausuntopyynnot.map(
       (pyynto, index) => ({
         ...pyynto,
         jarjestys: index + 1,
       }),
     );
-
-    setLausunnonSisalto(perustelu!.lausunnonSisalto);
-    setLausuntoPyyntojenLisatiedot(perustelu!.lausuntoPyyntojenLisatiedot);
     setLausuntopyynnot(indexedLausuntopyynnot);
-  }, [perustelu, setLausuntopyynnot]);
-
-  const debouncedUpdatePerusteluLausuntotieto = useDebounce(
-    (next: Perustelu) => {
-      updatePerustelu(next);
-    },
-    1000,
-  );
-
-  const updateLausuntotieto = (
-    field: string,
-    value: string | Lausuntopyynto[] | null,
-  ) => {
-    switch (field) {
-      case 'lausuntoPyyntojenLisatiedot':
-        setLausuntoPyyntojenLisatiedot(value as string);
-        break;
-      case 'lausunnonSisalto':
-        setLausunnonSisalto(value as string);
-        break;
-      case 'lausuntopyynnot':
-        setLausuntopyynnot(value as Lausuntopyynto[]);
-    }
-    debouncedUpdatePerusteluLausuntotieto({
-      ...perustelu!,
-      [field]: value,
-    });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editedPerustelu?.lausuntopyynnot]);
 
   const addLausuntopyynto = () => {
     const newJarjestys =
@@ -92,7 +70,13 @@ export default function Lausuntotiedot() {
           ) + 1
         : 1;
     const newLausuntopyynto: Lausuntopyynto = emptyLausuntopyynto(newJarjestys);
-    setLausuntopyynnot([...lausuntopyynnot, newLausuntopyynto]);
+    const updatedLausuntopyynnot = [...lausuntopyynnot, newLausuntopyynto];
+    setLausuntopyynnot(updatedLausuntopyynnot);
+    // Strip jarjestys field before saving to editedPerustelu
+    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
+      omit(p, ['jarjestys']),
+    );
+    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
   const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
@@ -102,8 +86,17 @@ export default function Lausuntotiedot() {
         ...pyynto,
         jarjestys: index + 1,
       }));
-    updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
+    setLausuntopyynnot(updatedLausuntopyynnot);
+    // Strip jarjestys field before saving to editedPerustelu
+    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
+      omit(p, ['jarjestys']),
+    );
+    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
+
+  if (isPerusteluLoading || !editedPerustelu) {
+    return <FullSpinner />;
+  }
 
   return (
     <PerusteluLayout
@@ -125,7 +118,12 @@ export default function Lausuntotiedot() {
               const updatedLausuntopyynnot = lausuntopyynnot.map((p) =>
                 p.jarjestys === pyynto.jarjestys ? pyynto : p,
               );
-              updateLausuntotieto('lausuntopyynnot', updatedLausuntopyynnot);
+              setLausuntopyynnot(updatedLausuntopyynnot);
+              // Strip jarjestys field before saving to editedPerustelu
+              // jarjestys is only used for UI, not persisted to server
+              const lausuntopyynnotWithoutJarjestys =
+                updatedLausuntopyynnot.map((p) => omit(p, ['jarjestys']));
+              updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
             }}
             deleteLausuntopyyntoAction={deleteLausuntopyynto}
             t={t}
@@ -147,9 +145,9 @@ export default function Lausuntotiedot() {
         </OphButton>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.pyyntojenLisatiedot')}
-          value={lausuntoPyyntojenLisatiedot || ''}
+          value={editedPerustelu.lausuntoPyyntojenLisatiedot || ''}
           onChange={(e) =>
-            updateLausuntotieto('lausuntoPyyntojenLisatiedot', e.target.value)
+            updateLocal({ lausuntoPyyntojenLisatiedot: e.target.value })
           }
           multiline
           minRows={4}
@@ -161,13 +159,16 @@ export default function Lausuntotiedot() {
         </OphTypography>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.sisalto')}
-          value={lausunnonSisalto || ''}
-          onChange={(e) =>
-            updateLausuntotieto('lausunnonSisalto', e.target.value)
-          }
+          value={editedPerustelu.lausunnonSisalto || ''}
+          onChange={(e) => updateLocal({ lausunnonSisalto: e.target.value })}
           multiline
           minRows={4}
           inputProps={{ 'data-testid': 'lausunnonSisalto-input' }}
+        />
+        <SaveRibbon
+          onSave={save}
+          isSaving={isSaving || false}
+          hasChanges={hasChanges}
         />
       </Stack>
     </PerusteluLayout>

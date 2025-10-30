@@ -5,6 +5,8 @@ import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.*
@@ -26,6 +28,23 @@ class PaatosController(
   @GetMapping(
     path = Array("paatos/{hakemusOid}/{formId}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae päätös hakemuksen ja lomakkeen perusteella",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = "Päätöstä ei löytynyt"
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def haePaatos(
     @PathVariable("hakemusOid") hakemusOid: String,
@@ -54,6 +73,28 @@ class PaatosController(
     path = Array("paatos/{hakemusOid}/{formId}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Tallenna päätös osittain (päivittää vain pyynnössä olevat kentät)",
+    description = "POST endpoint osittaisille päivityksille. Vain pyynnössä olevat kentät päivitetään.",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def tallennaPaatos(
     @PathVariable("hakemusOid") hakemusOid: String,

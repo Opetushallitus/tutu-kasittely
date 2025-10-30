@@ -173,15 +173,18 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
   const paattymisvuosi1 = page.getByTestId('tutkinto-paattymisvuosi-1');
   await expect(paattymisvuosi1).toBeEditable();
 
+  await paattymisvuosi1.fill('2015');
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        r.method() === 'PATCH',
+        r.method() === 'PUT',
     ),
-    (async () => {
-      await paattymisvuosi1.fill('2015');
-    })(),
+    saveButton.click(),
   ]);
 
   const payload = req.postDataJSON();
@@ -209,15 +212,18 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
 
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
+  await page.getByTestId('modal-confirm-button').click();
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
         r.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        r.method() === 'PATCH',
+        r.method() === 'PUT',
     ),
-    (async () => {
-      await page.getByTestId('modal-confirm-button').click();
-    })(),
+    saveButton.click(),
   ]);
 
   const payload = req.postDataJSON();
@@ -267,7 +273,7 @@ test('Tutkinnon muistion esittäminen ja tallennus', async ({ page }) => {
 
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes(`/muistio/`) && req.method() === 'POST',
+      (req) => req.url().includes(`/muistio/`) && req.method() === 'PUT',
     ),
     muistio.fill('EIKU!'),
   ]);

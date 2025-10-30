@@ -153,13 +153,17 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
     .first();
   await expect(SEUTArviointi).toHaveText('SEUTArviointi');
 
+  await SEUTArviointi.fill('SEUTArviointi uusi arvo');
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
   const [req] = await Promise.all([
     page.waitForRequest(
       (r) =>
-        r.url().includes('/tutu-backend/api/perustelu') &&
-        r.method() === 'POST',
+        r.url().includes('/tutu-backend/api/perustelu') && r.method() === 'PUT',
     ),
-    SEUTArviointi.fill('SEUTArviointi uusi arvo'),
+    saveButton.click(),
   ]);
   const payload = req.postDataJSON();
 

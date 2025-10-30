@@ -305,10 +305,10 @@ export const TutkintoComponent = ({
         onChange={(event) =>
           updateCurrentTutkinto({
             ...currentTutkinto,
-            koulutusalaKoodi: event.target.value,
+            koulutusalaKoodiUri: event.target.value,
           })
         }
-        value={currentTutkinto.koulutusalaKoodi || ''}
+        value={currentTutkinto.koulutusalaKoodiUri || ''}
         data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
       />
       <HakijanIlmoittamaPopover

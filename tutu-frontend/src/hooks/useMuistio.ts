@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Muistio } from '@/src/lib/types/muistio';
-import { doApiFetch, doApiPost } from '@/src/lib/tutu-backend/api';
+import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 
 export const getMuistio = async (
   hakemusOid: string | undefined,
@@ -14,7 +14,7 @@ export const getMuistio = async (
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const postMuistio = (
+export const putMuistio = (
   hakemusOid: string | undefined,
   hakemuksenOsa: string,
   sisainen: boolean,
@@ -26,7 +26,7 @@ export const postMuistio = (
     nakyvyys,
     sisalto,
   };
-  return doApiPost(url, body);
+  return doApiPut(url, body);
 };
 
 export const useMuistio = (
@@ -48,7 +48,7 @@ export const useMuistio = (
   // Mutations
   const mutation = useMutation({
     mutationFn: (sisalto: string) =>
-      postMuistio(hakemusOid, hakemuksenOsa, sisainen, sisalto),
+      putMuistio(hakemusOid, hakemuksenOsa, sisainen, sisalto),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey });

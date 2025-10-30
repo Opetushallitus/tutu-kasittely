@@ -84,46 +84,36 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  let [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    cellsOfEce.nth(2).locator('input[type="radio"]').click(),
-  ]);
-  expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
-  ).toEqual(false);
+  await cellsOfEce.nth(2).locator('input[type="radio"]').click();
 
   const cellsOfUkEnic = page
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
-  [request] = await Promise.all([
+
+  await cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus');
+
+  await page.getByTestId('asiakirjamalli-delete-aacrao').click();
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
+  const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
         req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
+        req.method() === 'PUT',
     ),
-    cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus'),
+    saveButton.click(),
   ]);
+
+  const requestData = request.postDataJSON();
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+    requestData.asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
+  ).toEqual(false);
+  expect(
+    requestData.asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
-      .vastaavuus,
-  ).toEqual(true);
-
-  [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    page.getByTestId('asiakirjamalli-delete-aacrao').click(),
-  ]);
-  expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
+    requestData.asiakirja.asiakirjamallitTutkinnoista.aacrao,
   ).toBeUndefined();
 });

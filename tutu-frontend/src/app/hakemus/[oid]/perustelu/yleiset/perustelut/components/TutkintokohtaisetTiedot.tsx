@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   OphTypography,
   OphInputFormField,
@@ -6,9 +6,8 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useDebounce } from '@/src/hooks/useDebounce';
 
-import { Hakemus, PartialHakemus, Tutkinto } from '@/src/lib/types/hakemus';
+import { Hakemus, Tutkinto } from '@/src/lib/types/hakemus';
 
 const RangeDash = () => (
   <OphTypography variant="body1" sx={{ marginTop: '6px' }}>
@@ -137,7 +136,7 @@ const Lisatietoja = ({ tutkinto, updateTutkinto }: FieldProps) => {
 
 interface TutkintokohtaisetTiedotProps {
   hakemus: Hakemus | undefined;
-  updateHakemus: (patchHakemus: PartialHakemus) => void;
+  updateHakemus: (update: { tutkinnot: Tutkinto[] }) => void;
 }
 
 const sortTutkinnot = (tutkinnot: Tutkinto[]) => {
@@ -155,17 +154,21 @@ export const TutkintokohtaisetTiedot = ({
     sortTutkinnot(hakemus?.tutkinnot || []),
   );
 
-  const debouncedUpdateTutkinto = useDebounce((newTutkinnot: Tutkinto[]) => {
-    updateHakemus({ tutkinnot: newTutkinnot });
-  }, 1000);
+  // Sync parent hakemus tutkinnot to local state
+  useEffect(() => {
+    if (hakemus?.tutkinnot) {
+      setTutkinnot(sortTutkinnot(hakemus.tutkinnot));
+    }
+  }, [hakemus?.tutkinnot]);
 
+  // Update tutkinto immediately (no debounce)
   const updateTutkinto = (next: Tutkinto) => {
     const oldTutkinnot = tutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
     const newTutkinnot = sortTutkinnot([...oldTutkinnot, next]);
     setTutkinnot(newTutkinnot);
-    debouncedUpdateTutkinto(newTutkinnot);
+    updateHakemus({ tutkinnot: newTutkinnot });
   };
 
   const varsinaisetTutkinnot = tutkinnot.filter(

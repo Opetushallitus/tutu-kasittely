@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { mockAll } from '@/playwright/mocks';
+import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
+import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
 
 test.beforeEach(mockAll);
 
@@ -35,27 +37,33 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
 
   await otmMuuEroSeliteField.scrollIntoViewIfNeeded();
   await expect(otmMuuEroSeliteField).toBeVisible();
-  const [req] = await Promise.all([
-    page.waitForRequest(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
-    ),
-    otmMuuEroSeliteField.fill('Härköneeeeeen'),
-  ]);
-  const payload = req.postDataJSON();
 
-  const updatedItem = payload.uoRoSisalto;
+  await otmMuuEroSeliteField.fill('Härköneeeeeen');
 
-  expect(updatedItem).toEqual({
-    otmMuuEro: true,
-    otmMuuEroSelite: 'Härköneeeeeen',
+  await clickSaveAndVerifyPayload(page, '/perustelu/', {
+    uoRoSisalto: {
+      otmMuuEro: true,
+      otmMuuEroSelite: 'Härköneeeeeen',
+    },
   });
 });
 
 test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
+  await setupPerusteluRoute(page, {
+    id: 'mock-perustelu-id',
+    hakemusId: 'mock-hakemus-id',
+    lahdeLahtomaanKansallinenLahde: false,
+    lahdeLahtomaanVirallinenVastaus: false,
+    lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
+    selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
+    selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
+    luotu: '2025-09-02T16:08:42.083643',
+    luoja: 'Hakemuspalvelu',
+    uoRoSisalto: {},
+  });
+
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
@@ -84,41 +92,25 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     .first();
   await expect(firstOptionLabel).toBeVisible();
 
-  let [req] = await Promise.all([
-    page.waitForRequest(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
-    ),
-    firstOptionLabel.click(),
-  ]);
+  await firstOptionLabel.click();
 
-  let payload = req.postDataJSON();
-  let updatedItem = payload.uoRoSisalto;
-
-  expect(updatedItem).toEqual({
-    sovellettuLuokanopettaja: {
-      checked: true,
-      value: 'A',
+  await clickSaveAndVerifyPayload(page, '/perustelu/', {
+    uoRoSisalto: {
+      sovellettuLuokanopettaja: {
+        checked: true,
+        value: 'A',
+      },
     },
   });
 
-  [req] = await Promise.all([
-    page.waitForRequest(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.method() === 'POST',
-    ),
-    sovellettuLuokanopettajaCheckbox.uncheck(),
-  ]);
+  await sovellettuLuokanopettajaCheckbox.uncheck();
 
-  payload = req.postDataJSON();
-  updatedItem = payload.uoRoSisalto;
-
-  expect(updatedItem).toEqual({
-    sovellettuLuokanopettaja: {
-      checked: false,
-      value: null,
+  await clickSaveAndVerifyPayload(page, '/perustelu/', {
+    uoRoSisalto: {
+      sovellettuLuokanopettaja: {
+        checked: false,
+        value: null,
+      },
     },
   });
 });

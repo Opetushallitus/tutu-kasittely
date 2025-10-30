@@ -45,7 +45,7 @@ test('Asiakirjan sisäisen muistion esittäminen ja tallennus', async ({
 
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes(`/muistio/`) && req.method() === 'POST',
+      (req) => req.url().includes(`/muistio/`) && req.method() === 'PUT',
     ),
     muistio.fill('Parempaa sisältöä!'),
   ]);

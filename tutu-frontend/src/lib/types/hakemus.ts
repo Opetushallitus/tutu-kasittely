@@ -34,11 +34,24 @@ export type Hakemus = {
   tutkinnot: Tutkinto[];
 };
 
-export type PartialHakemus = Partial<Omit<Hakemus, 'asiakirja'>> & {
-  asiakirja?: Partial<AsiakirjaTieto>;
+/**
+ * Täysi hakemuksen päivityspyyntö.
+ * Käytetään PUT-endpointissa kaikkien käyttäjän muokattavien kenttien korvaamiseen.
+ * NULL-arvot pyynnössä → NULL tietokantaan.
+ */
+export type HakemusUpdateRequest = {
+  hakemusKoskee: number;
+  asiatunnus: string | null;
+  kirjausPvm: string | null;
+  esittelyPvm: string | null;
+  paatosPvm: string | null;
+  esittelijaOid: string | null;
+  kasittelyVaihe: string;
+  yhteistutkinto: boolean;
+  tutkinnot: Tutkinto[];
+  asiakirja: AsiakirjaTieto;
 };
 
-export type HakemusUpdateCallback = (patch: PartialHakemus) => void;
 export type AsiakirjaTietoUpdateCallback = (
   patch: Partial<AsiakirjaTieto>,
   showUpdateIndicator?: boolean,
@@ -156,7 +169,7 @@ export type Tutkinto = {
   maakoodiUri?: string;
   muuTutkintoTieto?: string;
   todistuksenPaivamaara?: string;
-  koulutusalaKoodi?: string;
+  koulutusalaKoodiUri?: string;
   paaaaineTaiErikoisala?: string;
   todistusOtsikko?: string;
   muuTutkintoMuistioId?: string;

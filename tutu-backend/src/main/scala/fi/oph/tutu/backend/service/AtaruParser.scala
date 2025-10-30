@@ -196,7 +196,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).map(value => s"maatjavaltiot2_$value"),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
-        koulutusalaKoodi = None,
+        koulutusalaKoodiUri = None,
         paaaaineTaiErikoisala = None,
         todistusOtsikko = paatosKieli match {
           case Some("swedish") => Some("examensbevis")
@@ -222,7 +222,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_MAA, answers).map(value => s"maatjavaltiot2_$value"),
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
-        koulutusalaKoodi = None,
+        koulutusalaKoodiUri = None,
         paaaaineTaiErikoisala = None,
         todistusOtsikko = paatosKieli match {
           case Some("swedish") => Some("ovrigbevis")
@@ -248,7 +248,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_MAA, answers).map(value => s"maatjavaltiot2_$value"),
           muuTutkintoTieto = None,
           todistuksenPaivamaara = None,
-          koulutusalaKoodi = None,
+          koulutusalaKoodiUri = None,
           paaaaineTaiErikoisala = None,
           todistusOtsikko = None,
           muuTutkintoMuistioId = None
@@ -268,7 +268,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           jarjestys = "MUU",
           muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
           todistuksenPaivamaara = None,
-          koulutusalaKoodi = None,
+          koulutusalaKoodiUri = None,
           paaaaineTaiErikoisala = None,
           todistusOtsikko = None,
           muuTutkintoMuistioId = None

@@ -539,7 +539,9 @@
     "peruuta": "Peruuta",
     "valitse": "Valitse...",
     "tasmenna": "Täsmennä",
-    "sulje": "Sulje"
+    "sulje": "Sulje",
+    "tallenna": "Tallenna",
+    "tallennetaan": "Tallennetaan..."
   },
   "yleinen": {
     "ladataan": "Ladataan"

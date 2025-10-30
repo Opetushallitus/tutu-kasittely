@@ -19,39 +19,43 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    callCount++;
-    if (callCount == 1) {
+    if (route.request().method() === 'GET') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemus,
-          asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
-        }),
+        body: JSON.stringify(hakemus),
       });
-    } else if (callCount == 2) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemus,
-          asiakirja: {
-            ...hakemus.asiakirja,
-            pyydettavatAsiakirjat: [
-              { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
-            ],
-          },
-        }),
-      });
-    } else if (callCount == 3) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemus,
-          asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
-        }),
-      });
+      return;
+    }
+
+    if (route.request().method() === 'PUT') {
+      callCount++;
+      if (callCount == 1) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...hakemus,
+            asiakirja: {
+              ...hakemus.asiakirja,
+              pyydettavatAsiakirjat: [
+                { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
+              ],
+            },
+          }),
+        });
+      } else if (callCount == 2) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...hakemus,
+            asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
+          }),
+        });
+      } else {
+        await route.continue();
+      }
     } else {
       await route.continue();
     }
@@ -77,9 +81,21 @@ test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
 
   await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
 
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
+
+  await expect(saveButton).not.toBeVisible();
+
   await page.getByTestId('poista-asiakirja-button-0').click();
+
+  await expect(saveButton).toBeVisible();
+
   await page.getByTestId('pyyda-asiakirja-button').click();
   await page.getByTestId('poista-asiakirja-button-undefined').click();
 
   await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
+
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
 });

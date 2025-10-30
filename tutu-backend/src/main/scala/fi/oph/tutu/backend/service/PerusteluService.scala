@@ -48,29 +48,37 @@ class PerusteluService(
       }
   }
 
+  /**
+   * Päivittää perustelun kokonaan (PUT endpoint).
+   * Korvaa kaikki kentät.
+   * NULL arvo pyynnössä -> NULL tietokantaan.
+   */
   def tallennaPerustelu(
     hakemusOid: HakemusOid,
-    partialPerustelu: PartialPerustelu,
+    perustelu: Perustelu,
     luojaTaiMuokkaaja: String
   ): (Option[Perustelu], Option[Perustelu]) = {
     val dbHakemus        = hakemusRepository.haeHakemus(hakemusOid)
     val currentPerustelu = dbHakemus.flatMap(h => perusteluRepository.haePerustelu(h.id))
     val newPerustelu     = dbHakemus match {
       case Some(dbHakemus) =>
-        val latestSavedPerustelu = currentPerustelu match {
-          case Some(existing) =>
-            perusteluRepository.tallennaPerustelu(dbHakemus.id, existing.mergeWith(partialPerustelu), luojaTaiMuokkaaja)
-          case _ =>
-            perusteluRepository.tallennaPerustelu(
-              dbHakemus.id,
-              Perustelu().mergeWith(partialPerustelu).copy(hakemusId = Some(dbHakemus.id)),
-              luojaTaiMuokkaaja
-            )
-        }
+        // Täysi tallennus ilman mergeä
+        val perusteluWithIds = perustelu.copy(
+          hakemusId = Some(dbHakemus.id),
+          id = currentPerustelu.flatMap(_.id)
+        )
+
+        val latestSavedPerustelu = perusteluRepository.tallennaPerustelu(
+          dbHakemus.id,
+          perusteluWithIds,
+          luojaTaiMuokkaaja
+        )
+
+        // Lausuntopyynnöt - korvaa kaikki
         val currentLausuntopyynnot   = perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
         val lausuntopyyntoModifyData =
           HakemusModifyOperationResolver
-            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, partialPerustelu.lausuntopyynnot)
+            .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, perustelu.lausuntopyynnot)
 
         perusteluRepository.suoritaLausuntopyyntojenModifiointi(
           latestSavedPerustelu.id.orNull,
