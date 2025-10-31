@@ -48,7 +48,6 @@ export default function PaatostiedotPage() {
     paatos,
     error: paatosError,
     updatePaatos,
-    updateOngoing,
   } = usePaatos(hakemus?.hakemusOid, hakemus?.lomakeId);
   const { addToast } = useToaster();
 
