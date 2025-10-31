@@ -54,13 +54,19 @@ case class TutkintoTaiOpinto(
   paatostietoId: Option[UUID] = None,
   tutkintoTaiOpinto: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
+  myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimukset] = None,
   // TODO: case classeiksi
-  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
   kielteisenPaatoksenPerustelut: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
+)
+
+case class MyonteisenPaatoksenLisavaatimukset(
+  taydentavatOpinnot: Boolean = false,
+  kelpoisuuskoe: Boolean = false,
+  sopeutumisaika: Boolean = false
 )
 
 case class PaatosTietoModifyData(

@@ -61,7 +61,8 @@ class PaatosRepository extends BaseResultHandlers {
       paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
       tutkintoTaiOpinto = r.nextStringOption(),
       myonteinenPaatos = r.nextBooleanOption(),
-      myonteisenPaatoksenLisavaatimukset = r.nextStringOption(),
+      myonteisenPaatoksenLisavaatimukset =
+        Option(Serialization.read[MyonteisenPaatoksenLisavaatimukset](r.nextString())),
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
@@ -345,7 +346,7 @@ class PaatosRepository extends BaseResultHandlers {
             ${paatostietoId.toString}::uuid,
             ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(identity).orNull}::text,
             ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
-            ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+            ${Serialization.write(tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
             ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
             $luoja
           )"""
@@ -359,7 +360,9 @@ class PaatosRepository extends BaseResultHandlers {
           SET
             tutkinto_tai_opinto = ${tutkintoTaiOpinto.tutkintoTaiOpinto.map(identity).orNull}::text,
             myonteinen_paatos = ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
-            myonteisen_paatoksen_lisavaatimukset = ${tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}::jsonb,
+            myonteisen_paatoksen_lisavaatimukset = ${Serialization.write(
+        tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull
+      )}::jsonb,
             kielteisen_paatoksen_perustelut = ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
             muokkaaja = $muokkaaja
           WHERE id = ${tutkintoTaiOpinto.id.get.toString}::uuid

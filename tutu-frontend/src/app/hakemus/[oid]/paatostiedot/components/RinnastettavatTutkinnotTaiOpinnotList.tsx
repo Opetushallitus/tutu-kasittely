@@ -13,7 +13,11 @@ import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
   paatostietoId: paatostietoId,
-  myonteisenPaatoksenLisavaatimukset: '{}',
+  myonteisenPaatoksenLisavaatimukset: {
+    taydentavatOpinnot: false,
+    kelpoisuuskoe: false,
+    sopeutumisaika: false,
+  },
   kielteisenPaatoksenPerustelut: '{}',
 });
 

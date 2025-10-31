@@ -392,6 +392,12 @@
         "jatetaanTutkimatta": "Jätetään tutkimatta",
         "siirto": "Siirto"
       },
+      "myonteinenPaatos": {
+        "otsikko": "Myönteinen päätös",
+        "taydentavatOpinnot": "Täydentävät opinnot",
+        "kelpoisuuskoe": "Kelpoisuuskoe",
+        "sopeutumisaika": "Sopeutumisaika"
+      },
       "paatostyyppi": {
         "paatos": "Päätös",
         "otsikko": "Päätöstyyppi",

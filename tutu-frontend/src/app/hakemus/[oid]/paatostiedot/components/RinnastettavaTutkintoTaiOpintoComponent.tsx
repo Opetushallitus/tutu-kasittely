@@ -1,5 +1,6 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
+  MyonteisenPaatoksenLisavaatimukset,
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
@@ -48,9 +49,18 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   deleteTutkintoTaiOpintoAction,
   tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const updateMyonteinenPaatos = (myonteinenPaatos: boolean) => {
+  const updateMyonteinenPaatos = (
+    myonteinenPaatos: boolean,
+    lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
+  ) => {
     updateTutkintoTaiOpintoAction(
-      { ...tutkintoTaiOpinto, myonteinenPaatos: myonteinenPaatos },
+      {
+        ...tutkintoTaiOpinto,
+        myonteinenPaatos: myonteinenPaatos,
+        ...(lisavaatimukset && {
+          myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+        }),
+      },
       index,
     );
   };
@@ -187,6 +197,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       <MyonteinenPaatos
         t={t}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
+        lisavaatimukset={tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}
         updateMyonteinenPaatosAction={updateMyonteinenPaatos}
       />
       <Divider orientation={'horizontal'} />

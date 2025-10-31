@@ -145,7 +145,9 @@ class PaatosControllerTest extends IntegrationTestBase {
               paatostietoId = givenPaatosTietoId,
               tutkintoTaiOpinto = Some("testi"),
               myonteinenPaatos = None,
-              myonteisenPaatoksenLisavaatimukset = Some("{}"),
+              myonteisenPaatoksenLisavaatimukset = Some(
+                MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true)
+              ),
               kielteisenPaatoksenPerustelut = Some("{}")
             )
           )
@@ -444,6 +446,11 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].tutkintoTaiOpinto").value("testi"))
+      .andExpect(
+        jsonPath(
+          "$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].myonteisenPaatoksenLisavaatimukset.taydentavatOpinnot"
+        ).value(true)
+      )
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
 
@@ -472,6 +479,11 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].tutkintoTaiOpinto").value("testi"))
+      .andExpect(
+        jsonPath(
+          "$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].myonteisenPaatoksenLisavaatimukset.taydentavatOpinnot"
+        ).value(true)
+      )
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
