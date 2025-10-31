@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { Hakemus, PartialHakemus } from '@/src/lib/types/hakemus';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -22,12 +21,11 @@ import { TutkintokohtaisetTiedot } from '@/src/app/hakemus/[oid]/perustelu/yleis
 import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
 import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
 import { MuuPerustelu } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/MuuPerustelu';
-import { Perustelu } from '@/src/lib/types/perustelu';
-import { useDebounce } from '@/src/hooks/useDebounce';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemus, updateHakemus, isLoading, error } = useHakemus();
+  const { hakemus, tallennaHakemus, isLoading, error } = useHakemus();
 
   return (
     <PerusteluLayout
@@ -38,98 +36,93 @@ export default function YleisetPage() {
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      <YleisetPerustelut hakemus={hakemus} updateHakemus={updateHakemus} />
+      <YleisetPerustelut hakemus={hakemus} tallennaHakemus={tallennaHakemus} />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
   hakemus: Hakemus | undefined;
-  updateHakemus: (patchHakemus: PartialHakemus) => void;
+  tallennaHakemus: (hakemus: Hakemus) => void;
 }
 
 const YleisetPerustelut = ({
   hakemus,
-  updateHakemus,
+  tallennaHakemus,
 }: YleisetPerustelutProps) => {
   const { t } = useTranslations();
 
-  const [parts, setParts] = useState<Partial<Perustelu>[]>([]);
+  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
+    usePerustelu(hakemus?.hakemusOid);
 
-  const { perustelu, updatePerustelu, isPerusteluLoading } = usePerustelu(
-    hakemus?.hakemusOid,
-  );
+  // Manage editable state for both perustelu and hakemus with automatic change tracking
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+  const hakemusState = useEditableState(hakemus, tallennaHakemus);
 
-  useEffect(() => {
-    setParts([]);
-  }, [perustelu]);
-
-  const debouncedUpdatePerustelu = useDebounce((newPerustelu: Perustelu) => {
-    updatePerustelu(newPerustelu);
-  }, 1000);
-
-  const updatePerusteluWithPartial = (part: Partial<Perustelu>) => {
-    const newParts = [...parts, part];
-    setParts(newParts);
-    const combinedParts = newParts.reduce(
-      (currentPerustelu, nextPart) => ({ ...currentPerustelu, ...nextPart }),
-      perustelu as Partial<Perustelu>,
-    );
-    debouncedUpdatePerustelu(combinedParts);
+  // Paikallinen päivitys hakemukselle (vain tutkinnot)
+  const updateHakemusLocal = (part: Partial<Hakemus>) => {
+    hakemusState.updateLocal(part);
   };
 
-  // For radio buttons and checkboxes - no debounce needed (immediate feedback)
-  const updatePerusteluImmediate = (part: Partial<Perustelu>) => {
-    updatePerustelu(part);
+  // Combined change tracking and save handler
+  const hasChanges = perusteluState.hasChanges || hakemusState.hasChanges;
+
+  const handleSave = () => {
+    perusteluState.save();
+    hakemusState.save();
   };
 
-  return isPerusteluLoading ? (
+  return isPerusteluLoading || !perusteluState.editedData ? (
     <FullSpinner></FullSpinner>
   ) : (
     <>
       <VirallinenTutkinnonMyontaja
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluImmediate}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <VirallinenTutkinto
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluImmediate}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <Lahde
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <SelvitysTutkinnonMyontajastaJaVirallisuudesta
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <YlimmanTutkinnonAsema
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluImmediate}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <SelvitysTutkinnonAsemasta
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <TutkintokohtaisetTiedot
-        hakemus={hakemus}
-        updateHakemus={updateHakemus}
+        hakemus={hakemusState.editedData}
+        updateHakemus={updateHakemusLocal}
       />
       <OphTypography variant={'h3'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
       </OphTypography>
       <JatkoOpintoKelpoisuus
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluImmediate}
-        updateTextDebounced={updatePerusteluWithPartial}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <AikaisemmatPaatokset
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluImmediate}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
       />
       <MuuPerustelu
-        perustelu={perustelu}
-        updatePerustelu={updatePerusteluWithPartial}
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <SaveRibbon
+        onSave={handleSave}
+        isSaving={isSaving || false}
+        hasChanges={hasChanges}
       />
     </>
   );
