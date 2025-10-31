@@ -167,7 +167,7 @@ const Paatostiedot = ({
               selectedValue={hyvaksymispaiva}
               maxDate={null}
               label={t('hakemus.paatos.hyvaksymispaiva')}
-              dataTestId="imiPyyntoLahetetty-calendar"
+              dataTestId="paatos-hyvaksymispaiva-calendar"
             />
 
             <CalendarComponent
@@ -181,7 +181,7 @@ const Paatostiedot = ({
               selectedValue={lahetyspaiva}
               maxDate={null}
               label={t('hakemus.paatos.lahetyspaiva')}
-              dataTestId="imiPyyntoLahetetty-calendar"
+              dataTestId="paatos-lahetyspaiva-calendar"
             />
           </Stack>
         </Stack>
