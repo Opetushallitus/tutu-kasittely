@@ -50,6 +50,28 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           ),
           children = Seq.empty,
           infoText = None
+        ),
+        SisaltoItem(
+          key = Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA.generatedId,
+          fieldType = "String",
+          value = Seq(
+            SisaltoValue(
+              label = Map(
+                Kieli.fi -> "Sähköinen asiointi sallittu: Kyllä",
+                Kieli.sv -> "Sähköinen asiointi sallittu: Kyllä",
+                Kieli.en -> "Sähköinen asiointi sallittu: Kyllä"
+              ),
+              value = "",
+              followups = Seq.empty
+            )
+          ),
+          label = Map(
+            Kieli.fi -> "Sähköinen asiointi sallittu",
+            Kieli.sv -> "Sähköinen asiointi sallittu",
+            Kieli.en -> "Sähköinen asiointi sallittu"
+          ),
+          children = Seq.empty,
+          infoText = None
         )
       ),
       liitteidenTilat = Seq.empty,
@@ -113,7 +135,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         answers = Seq(
           Answer(
             key = Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA.generatedId,
-            value = SingleValue("Sähköinen asiointi sallittu"),
+            value = SingleValue("0"),
             fieldType = ""
           )
         )
@@ -247,7 +269,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeSuostumusSahkoiseenAsiointiinProducesString(): Unit = {
-    val result = haeSuostumusSahkoiseenAsiointiin(someAtaruHakemus)
+    val result = haeSuostumusSahkoiseenAsiointiin(someHakemus)
     assert(result.get.contains("Sähköinen asiointi sallittu"))
   }
 

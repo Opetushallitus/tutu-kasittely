@@ -109,7 +109,9 @@ export const PerusteluMuistioModal = ({
   const content = isLoading ? (
     <FullSpinner />
   ) : (
-    <OphTypography variant={'body1'}>{muistio}</OphTypography>
+    <OphTypography variant={'body1'} component="pre">
+      {muistio}
+    </OphTypography>
   );
 
   return (
