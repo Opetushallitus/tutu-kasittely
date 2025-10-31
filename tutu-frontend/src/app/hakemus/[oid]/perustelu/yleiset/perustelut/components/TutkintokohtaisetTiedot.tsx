@@ -8,7 +8,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
-import { Hakemus, PartialHakemus, Tutkinto } from '@/src/lib/types/hakemus';
+import { Hakemus, Tutkinto } from '@/src/lib/types/hakemus';
 
 const RangeDash = () => (
   <OphTypography variant="body1" sx={{ marginTop: '6px' }}>
@@ -130,7 +130,7 @@ const Lisatietoja = ({ tutkinto, updateTutkinto }: FieldProps) => {
 
 interface TutkintokohtaisetTiedotProps {
   hakemus: Hakemus | undefined;
-  updateHakemus: (patchHakemus: PartialHakemus) => void;
+  updateHakemus: (patch: Partial<Hakemus>) => void;
 }
 
 const sortTutkinnot = (tutkinnot: Tutkinto[]) => {

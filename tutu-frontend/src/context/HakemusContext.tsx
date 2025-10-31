@@ -3,16 +3,16 @@
 import { createContext, useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { Hakemus, PartialHakemus } from '@/src/lib/types/hakemus';
-import { doApiFetch, doApiPatch } from '@/src/lib/tutu-backend/api';
+import { Hakemus, HakemusUpdateRequest } from '@/src/lib/types/hakemus';
+import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 
 type HakemusContextValue = {
   hakemus: Hakemus | undefined;
-  updateHakemus: (patch: PartialHakemus) => void;
+  tallennaHakemus: (hakemus: HakemusUpdateRequest) => void;
   isLoading: boolean;
   isError?: boolean;
   error: Error | null;
-  updateOngoing?: boolean;
+  isSaving?: boolean;
 };
 
 export const HAKEMUS_MUUTOSHISTORIA_SORT_KEY = 'hakemus-muutoshistoria-sort';
@@ -52,44 +52,27 @@ export const HakemusProvider = ({
     throwOnError: false,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (patchHakemus: PartialHakemus) =>
-      doApiPatch(`hakemus/${hakemus?.hakemusOid}`, patchHakemus),
-    onMutate: async () => {
-      // Cancel any outgoing refetches to prevent race conditions
-      // This ensures that server responses arrive in order
-      await queryClient.cancelQueries({
-        queryKey: ['getHakemus', hakemus?.hakemusOid],
-      });
-    },
+  const { mutate: tallennaHakemus, isPending: isSaving } = useMutation({
+    mutationFn: (hakemusUpdate: HakemusUpdateRequest) =>
+      doApiPut(`hakemus/${hakemus?.hakemusOid}`, hakemusUpdate),
     onSuccess: async (response) => {
-      // Update cache with server response (source of truth)
       const paivitettyHakemus = await response.json();
+
       queryClient.setQueryData(
         ['getHakemus', hakemus?.hakemusOid],
         paivitettyHakemus,
       );
     },
-    onError: () => {
-      // On error, invalidate to refetch and ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: ['getHakemus', hakemus?.hakemusOid],
-      });
-    },
   });
-
-  const updateHakemus = (patchHakemus: PartialHakemus) => {
-    mutate(patchHakemus);
-  };
 
   return (
     <HakemusContext.Provider
       value={{
         hakemus,
-        updateHakemus,
+        tallennaHakemus,
         isLoading,
         error,
-        updateOngoing: isPending,
+        isSaving,
       }}
     >
       {children}
