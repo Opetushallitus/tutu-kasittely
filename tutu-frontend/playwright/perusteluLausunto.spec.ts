@@ -4,7 +4,10 @@ import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
-import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
+import {
+  clickSaveAndVerifyPayload,
+  waitForSaveComplete,
+} from '@/playwright/helpers/saveHelpers';
 
 const matchingDate = () => {
   const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
@@ -62,12 +65,14 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntoPyyntojenLisatiedot: 'lisääää',
   });
+  await waitForSaveComplete(page);
 
   await lausuntoSisaltoInput.fill('sisältöä elämähän');
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausunnonSisalto: 'sisältöä elämähän',
   });
+  await waitForSaveComplete(page);
 
   await lausunnonAntaja1.fill('Esko Mörkö');
 
@@ -85,6 +90,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       },
     ],
   });
+  await waitForSaveComplete(page);
 
   await lahetetty1.click();
   await page.locator('.react-datepicker__day--026').click();
@@ -103,6 +109,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       },
     ],
   });
+  await waitForSaveComplete(page);
 
   await vastattu1.click();
   await page.locator('.react-datepicker__day--026').click();
@@ -121,6 +128,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       },
     ],
   });
+  // No waitForSaveComplete at test end
 });
 
 test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) => {
@@ -153,6 +161,7 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
       },
     ],
   });
+  await waitForSaveComplete(page);
 
   await page.getByTestId('poista-lausuntopyynto-button-2').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();

@@ -83,15 +83,15 @@ test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', 
   const falseRadio = page.locator(
     '[data-testid="imiPyynto-radio-group"] input[type="radio"][value="false"]',
   );
-  await falseRadio.check();
+  await falseRadio.click();
   await expect(falseRadio).toBeChecked();
 
-  await page.getByTestId('imiPyynto-delete').click();
+  await page.getByTestId('imiPyynto-radio-group-clear-button').click();
   await expect(falseRadio).not.toBeChecked();
   const trueRadio = page.locator(
     '[data-testid="imiPyynto-radio-group"] input[type="radio"][value="true"]',
   );
-  await trueRadio.check();
+  await trueRadio.click();
   await expect(trueRadio).toBeChecked();
 
   await expect(page.getByTestId('imiPyyntoNumero-input')).toBeVisible();
