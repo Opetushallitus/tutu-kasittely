@@ -10,7 +10,6 @@ import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/co
 import React, { useEffect, useState } from 'react';
 import { Stack, useTheme } from '@mui/material';
 import { MyonteisenPaatoksenLisavaatimukset, PaatosTieto } from '@/src/lib/types/paatos';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 
 interface MyonteinenPaatosProps {
   t: TFunction;
@@ -63,10 +62,7 @@ export const MyonteinenPaatos = ({
     // Send update to server
     updatePaatosTietoAction({
       ...paatosTieto,
-      ...(wrapField(
-        'myonteinenPaatos',
-        val,
-      ) as unknown as Partial<PaatosTieto>),
+      myonteinenPaatos: val,
       // Clear tutkintoTaso if not "Kyllä" (true)
       ...(val !== true && { tutkintoTaso: undefined }),
     });

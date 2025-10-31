@@ -3,7 +3,6 @@ import { OphInputFormField } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 
 interface Props {
   perustelu: Perustelu | undefined;
@@ -27,10 +26,10 @@ export const JatkoOpintoKelpoisuus = ({
   const currentLisatieto = perustelu?.jatkoOpintoKelpoisuusLisatieto;
 
   const updateKelpoisuus = (val: string | null | undefined) => {
-    // Wrap value for backend deserialization (type-safe) - immediate update
-    updatePerustelu(
-      wrapField('jatkoOpintoKelpoisuus', val) as unknown as Partial<Perustelu>,
-    );
+    // Update field directly with value
+    updatePerustelu({
+      jatkoOpintoKelpoisuus: val,
+    });
   };
 
   const updateLisatieto = (val: string | undefined) => {

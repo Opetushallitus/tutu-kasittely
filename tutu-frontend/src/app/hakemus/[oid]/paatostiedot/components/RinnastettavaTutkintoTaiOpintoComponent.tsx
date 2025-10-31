@@ -18,7 +18,6 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
