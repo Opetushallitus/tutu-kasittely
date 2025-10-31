@@ -51,6 +51,8 @@ export type Paatos = {
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
   paatosTiedot?: PaatosTieto[];
   paatosTietoOptions: PaatosTietoOptionGroup;
+  hyvaksymispaiva: string | null;
+  lahetyspaiva: string | null;
 };
 
 export type PaatosUpdateCallback = (paatos: Paatos) => void;
