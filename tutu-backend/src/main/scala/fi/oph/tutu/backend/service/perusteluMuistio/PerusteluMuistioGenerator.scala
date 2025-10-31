@@ -102,32 +102,33 @@ def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 
 }
 
 def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  val hakemuksenKieli: Kieli = hakemusMaybe
-    .map(hakemus => {
-      hakemus.lomakkeenKieli match {
-        case "sv" => Kieli.sv
-        case "en" => Kieli.en
-        case _    => Kieli.fi
-      }
-    })
-    .getOrElse(Kieli.fi)
+  if (hakemusMaybe == None) {
+    None
+  } else {
+    val hakemus = hakemusMaybe.get
 
-  val hakemusKoskeeRoot: Option[SisaltoItem] = hakemusMaybe
-    .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE))
-  val hakemusKoskeeRivit: Seq[Tuple3[Int, String, String]] =
-    haeHakemusKoskeeRivit(hakemuksenKieli, hakemusKoskeeRoot)
-      .filter((t: Tuple3[Int, String, String]) => t._3 != "attachment")
+    val hakemuksenKieli: Kieli = hakemus.lomakkeenKieli match {
+      case "sv" => Kieli.sv
+      case "en" => Kieli.en
+      case _    => Kieli.fi
+    }
 
-  val hakemusKoskeeContent = hakemusKoskeeRivit
-    .map((t: Tuple3[Int, String, String]) => {
-      val level  = t._1
-      val rivi   = t._2
-      val indent = " " * level * 2
-      s"${indent}${rivi}"
-    })
-    .mkString("\n")
+    val hakemusKoskeeRoot: Option[SisaltoItem] = haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
+    val hakemusKoskeeRivit: Seq[Tuple3[Int, String, String]] =
+      haeHakemusKoskeeRivit(hakemuksenKieli, hakemusKoskeeRoot)
+        .filter((t: Tuple3[Int, String, String]) => t._3 != "attachment")
 
-  Some(s"Hakemus koskee:\n${hakemusKoskeeContent}")
+    val hakemusKoskeeContent = hakemusKoskeeRivit
+      .map((t: Tuple3[Int, String, String]) => {
+        val level  = t._1
+        val rivi   = t._2
+        val indent = " " * level * 2
+        s"${indent}${rivi}"
+      })
+      .mkString("\n")
+
+    Some(s"Hakemus koskee:\n${hakemusKoskeeContent}")
+  }
 }
 
 def haeKoulutuksenSisalto(uoRoMuistioMaybe: Option[Muistio]): Option[String] = {
