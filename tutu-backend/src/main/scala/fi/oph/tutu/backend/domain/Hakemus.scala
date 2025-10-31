@@ -111,3 +111,7 @@ case class HakemusUpdateRequest(
   tutkinnot: Seq[Tutkinto],
   asiakirja: Asiakirja
 )
+
+case class AsiatunnusUpdateRequest(
+  asiatunnus: String
+)

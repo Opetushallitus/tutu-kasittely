@@ -180,3 +180,24 @@ export async function doApiPut(
     cache,
   );
 }
+
+export async function doApiPatch(
+  resource: string,
+  body: object,
+  options?: Options,
+  cache?: string,
+) {
+  return apiFetch(
+    resource,
+    {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        ...options?.headers,
+        'Content-Type': 'application/json',
+      },
+    },
+    cache,
+  );
+}

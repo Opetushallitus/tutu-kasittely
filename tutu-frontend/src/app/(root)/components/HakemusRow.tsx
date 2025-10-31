@@ -1,11 +1,21 @@
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
-import { Chip, styled, TableCell, TableRow } from '@mui/material';
+import { Chip, Stack, styled, TableCell, TableRow } from '@mui/material';
 import Link from 'next/link';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { ophColors } from '@/src/lib/theme';
+import { EditOutlined } from '@mui/icons-material';
+import { useCallback, useState } from 'react';
+import {
+  OphButton,
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import { doApiPatch } from '@/src/lib/tutu-backend/api';
+import useToaster from '@/src/hooks/useToaster';
+import { handleFetchError } from '@/src/lib/utils';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
@@ -47,6 +57,23 @@ export default function HakemusRow({
   nayta: string;
 }) {
   const { t } = useTranslations();
+  const [showEditAsiatunnus, setShowEditAsiatunnus] = useState(false);
+  const [asiatunnus, setAsiatunnus] = useState(hakemus.asiatunnus);
+  const { addToast } = useToaster();
+
+  const updateAsiatunnus = useCallback(async () => {
+    if (asiatunnus && asiatunnus !== '' && asiatunnus !== hakemus.asiatunnus) {
+      try {
+        await doApiPatch(`hakemus/${hakemus.hakemusOid}/asiatunnus`, {
+          asiatunnus,
+        });
+        setShowEditAsiatunnus(false);
+      } catch (error) {
+        handleFetchError(addToast, error, 'virhe.paivitaAsiatunnus', t);
+      }
+    }
+  }, [asiatunnus, hakemus.asiatunnus, hakemus.hakemusOid, addToast, t]);
+
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus.hakemusKoskee),
@@ -60,7 +87,31 @@ export default function HakemusRow({
           {hakemus.hakija}
         </Link>
       </StyledTableCell>
-      <StyledTableCell>{hakemus.asiatunnus}</StyledTableCell>
+      <StyledTableCell>
+        <Stack direction="row" spacing={2} justifyContent="space-between">
+          {showEditAsiatunnus ? (
+            <>
+              <OphInputFormField
+                value={asiatunnus ?? ''}
+                onChange={(event) => {
+                  setAsiatunnus(event.target.value);
+                }}
+              ></OphInputFormField>
+              <OphButton variant={'contained'} onClick={updateAsiatunnus}>
+                {t('yleiset.tallenna')}
+              </OphButton>
+            </>
+          ) : (
+            <>
+              <OphTypography>{asiatunnus}</OphTypography>
+              <EditOutlined
+                sx={{ color: 'primary.main' }}
+                onClick={() => setShowEditAsiatunnus(true)}
+              ></EditOutlined>
+            </>
+          )}
+        </Stack>
+      </StyledTableCell>
       {nayta === 'kaikki' && (
         <StyledTableCell>
           {hakemus.esittelijaKutsumanimi} {hakemus.esittelijaSukunimi}
@@ -82,6 +133,9 @@ export default function HakemusRow({
             />
           </>
         )}
+      </StyledTableCell>
+      <StyledTableCell>
+        {dateFns.formatDate(hakemus.aika, 'd.M.yyyy')}
       </StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaikaKk', '', {
