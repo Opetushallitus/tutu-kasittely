@@ -32,6 +32,7 @@ const FIELD_KEYS = {
   esittelija: 'esittelija',
   kasittelyvaihe: 'kasittelyvaihe',
   hakemusKoskee: 'hakemusKoskee',
+  saapumisPvm: 'saapumisPvm',
   kokonaisaika: 'kokonaisaika',
   hakijanaika: 'hakijanaika',
 };
@@ -78,8 +79,8 @@ export function HakemusList({ user }: HakemusListProps) {
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
-  const handleSort = (sortDef: unknown) => {
-    setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
+  const handleSort = async (sortDef: unknown) => {
+    await setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;

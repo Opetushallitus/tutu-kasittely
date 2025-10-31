@@ -28,16 +28,25 @@ export const setLocalStorageAndLaunchHakemusQuery = async (
 
 export const handleFetchError = (
   addToast: (toast: Toast) => void,
-  error: Error | null,
+  error: unknown,
   baseKey: string,
   t: TFunction,
 ) => {
-  if (error instanceof FetchError) {
-    addToast({
-      key: baseKey,
-      type: 'error',
-      message: LocalizeFetchError(error, baseKey, t),
-    });
+  if (error) {
+    if (error instanceof FetchError) {
+      addToast({
+        key: baseKey,
+        type: 'error',
+        message: LocalizeFetchError(error, baseKey, t),
+      });
+    } else {
+      addToast({
+        key: baseKey,
+        type: 'error',
+        message:
+          error instanceof Error ? Error.toString() : t('virhe.tuntematon'),
+      });
+    }
   }
 };
 
