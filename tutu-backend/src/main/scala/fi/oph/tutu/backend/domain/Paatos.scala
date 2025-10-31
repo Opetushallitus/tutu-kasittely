@@ -38,7 +38,7 @@ case class PaatosTieto(
   sovellettuLaki: Option[SovellettuLaki] = None,
   tutkintoId: Option[UUID] = None,
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
-  myonteinenPaatos: Option[BooleanFieldWrapper] = None,
+  myonteinenPaatos: Option[Boolean] = None,
   // TODO: case classeiksi
   myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
   kielteisenPaatoksenPerustelut: Option[String] = None,
@@ -63,9 +63,7 @@ case class TutkintoTaiOpinto(
   luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
-) {
-  def myonteinenPaatosDefined(): Boolean = myonteinenPaatos.isDefined
-}
+)
 
 case class MyonteisenPaatoksenLisavaatimukset(
   taydentavatOpinnot: Boolean = false,
