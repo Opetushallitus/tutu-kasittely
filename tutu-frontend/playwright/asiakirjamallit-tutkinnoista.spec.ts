@@ -5,6 +5,7 @@ import {
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
+import { clickSaveAndWaitForPUT } from '@/playwright/helpers/saveHelpers';
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([
@@ -92,14 +93,11 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  let [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    cellsOfEce.nth(1).locator('input[type="radio"][value="false"]').click(),
-  ]);
+  // Click radio button (local state update)
+  await cellsOfEce.nth(1).locator('input[type="radio"][value="false"]').click();
+
+  // Click save and wait for PUT request
+  let request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
   ).toEqual(false);
@@ -107,14 +105,12 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
   const cellsOfUkEnic = page
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
-  [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    cellsOfUkEnic.nth(2).locator('textarea').first().fill('Uusi kuvaus'),
-  ]);
+
+  // Fill textarea (local state update)
+  await cellsOfUkEnic.nth(2).locator('textarea').first().fill('Uusi kuvaus');
+
+  // Click save and wait for PUT request
+  request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
@@ -123,14 +119,13 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
       .vastaavuus,
   ).toEqual(true);
 
-  [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PATCH',
-    ),
-    page.getByTestId('asiakirjamalli-vastaavuus-aacrao-clear-button').click(),
-  ]);
+  // Click clear button (local state update)
+  await page
+    .getByTestId('asiakirjamalli-vastaavuus-aacrao-clear-button')
+    .click();
+
+  // Click save and wait for PUT request
+  request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
   ).toBeUndefined();

@@ -30,15 +30,8 @@ test('SovellettuTilanne: opettajan pedagogiset opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuOpettajanPedagogisetOpinnot',
@@ -65,15 +58,8 @@ test('SovellettuTilanne: opetettavan aineen opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const kieliItems = page.locator(
     '[data-testid^="opetettavatAineetVieraatKielet-"][data-testid$="-checkBox"]',
@@ -103,15 +89,8 @@ test('SovellettuTilanne: monialaiset opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuMonialaisetOpinnot',
@@ -136,15 +115,8 @@ test('SovellettuTilanne: erityisopetus', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuErityisopetus');
   await expect(radioGroup).toBeVisible();
@@ -167,15 +139,8 @@ test('SovellettuTilanne: varhaiskasvatus', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuVarhaiskasvatus');
   await expect(radioGroup).toBeVisible();
@@ -202,15 +167,8 @@ test('SovellettuTilanne: rinnastaminen kasvatustieteelliseen tutkintoon', async 
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const flat =
     sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions.flat();
@@ -245,15 +203,8 @@ test('SovellettuTilanne: rinnastaminen oikeustieteen maisterin tutkintoon', asyn
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuRinnastaminenOtmTutkintoon',
@@ -278,15 +229,8 @@ test('SovellettuTilanne: luokanopettaja', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox and wait for backend update
-  await Promise.all([
-    page.waitForResponse(
-      (r) =>
-        r.url().includes('/perustelu/1.2.246.562.10.00000000001') &&
-        r.request().method() === 'POST',
-    ),
-    checkbox.click(),
-  ]);
+  // Click checkbox (local state update)
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuLuokanopettaja');
   await expect(radioGroup).toBeVisible();
