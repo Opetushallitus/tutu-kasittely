@@ -179,34 +179,13 @@ test.describe('Yleiset perustelut', () => {
     // Stateful mock data for this test
     let testPerusteluData: Record<string, unknown> = {};
 
-    // Unwrap nested wrapper structures like backend does
-    const unwrapData = (
-      data: Record<string, unknown>,
-    ): Record<string, unknown> => {
-      const unwrapped: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(data)) {
-        if (
-          value &&
-          typeof value === 'object' &&
-          !Array.isArray(value) &&
-          key in (value as Record<string, unknown>)
-        ) {
-          unwrapped[key] = (value as Record<string, unknown>)[key];
-        } else {
-          unwrapped[key] = value;
-        }
-      }
-      return unwrapped;
-    };
-
     await page.route('**/tutu-backend/api/perustelu/*', async (route) => {
       if (route.request().method() === 'POST') {
         const postedData = route.request().postDataJSON() as Record<
           string,
           unknown
         >;
-        const unwrappedData = unwrapData(postedData);
-        testPerusteluData = { ...testPerusteluData, ...unwrappedData };
+        testPerusteluData = { ...testPerusteluData, ...postedData };
 
         await route.fulfill({
           status: 200,
@@ -233,7 +212,7 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="false"]',
         )
         .click(),
-      { virallinenTutkinnonMyontaja: { virallinenTutkinnonMyontaja: false } },
+      { virallinenTutkinnonMyontaja: false },
     );
 
     await expectRequestData(
@@ -243,7 +222,7 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="true"]',
         )
         .click(),
-      { virallinenTutkinnonMyontaja: { virallinenTutkinnonMyontaja: true } },
+      { virallinenTutkinnonMyontaja: true },
     );
 
     await expectRequestData(
@@ -251,11 +230,7 @@ test.describe('Yleiset perustelut', () => {
       page
         .getByTestId('virallinen-tutkinnon-myontaja-radio-group-clear-button')
         .click(),
-      {
-        virallinenTutkinnonMyontaja: {
-          virallinenTutkinnonMyontaja: null,
-        },
-      },
+      { virallinenTutkinnonMyontaja: null },
     );
 
     await expectRequestData(
@@ -265,7 +240,7 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="false"]',
         )
         .click(),
-      { virallinenTutkinto: { virallinenTutkinto: false } },
+      { virallinenTutkinto: false },
     );
 
     await expectRequestData(
@@ -275,13 +250,13 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="true"]',
         )
         .click(),
-      { virallinenTutkinto: { virallinenTutkinto: true } },
+      { virallinenTutkinto: true },
     );
 
     await expectRequestData(
       page,
       page.getByTestId('virallinen-tutkinto-radio-group-clear-button').click(),
-      { virallinenTutkinto: { virallinenTutkinto: null } },
+      { virallinenTutkinto: null },
     );
 
     await expectRequestData(
@@ -339,11 +314,7 @@ test.describe('Yleiset perustelut', () => {
             `[data-testid="tutkinnon-asema-radio-group"] input[type="radio"][value="${tutkintoaste}"]`,
           )
           .click(),
-        {
-          ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: {
-            ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: tutkintoaste,
-          },
-        },
+        { ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: tutkintoaste },
       );
     }, Promise.resolve());
 
@@ -360,7 +331,7 @@ test.describe('Yleiset perustelut', () => {
             `[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="${kelpoisuus}"]`,
           )
           .click(),
-        { jatkoOpintoKelpoisuus: { jatkoOpintoKelpoisuus: kelpoisuus } },
+        { jatkoOpintoKelpoisuus: kelpoisuus },
       );
     }, Promise.resolve());
 
@@ -383,7 +354,7 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="aiemmat-paatokset-radio-group"] input[type="radio"][value="true"]',
         )
         .click(),
-      { aikaisemmatPaatokset: { aikaisemmatPaatokset: true } },
+      { aikaisemmatPaatokset: true },
     );
 
     await expectRequestData(
@@ -393,7 +364,7 @@ test.describe('Yleiset perustelut', () => {
           '[data-testid="aiemmat-paatokset-radio-group"] input[type="radio"][value="false"]',
         )
         .click(),
-      { aikaisemmatPaatokset: { aikaisemmatPaatokset: false } },
+      { aikaisemmatPaatokset: false },
     );
   });
 
