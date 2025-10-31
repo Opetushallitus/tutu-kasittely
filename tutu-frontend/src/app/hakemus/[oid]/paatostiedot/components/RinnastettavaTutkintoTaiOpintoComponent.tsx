@@ -20,7 +20,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
@@ -80,10 +79,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     updateTutkintoTaiOpintoAction(
       {
         ...tutkintoTaiOpinto,
-        ...(wrapField(
-          'myonteinenPaatos',
-          value,
-        ) as unknown as Partial<TutkintoTaiOpinto>),
+        myonteinenPaatos: value,
       },
       index,
     );

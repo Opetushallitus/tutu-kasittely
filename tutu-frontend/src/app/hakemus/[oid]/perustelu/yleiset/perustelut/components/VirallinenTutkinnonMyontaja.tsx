@@ -1,7 +1,6 @@
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 
 interface Props {
   perustelu: Perustelu | undefined;
@@ -20,13 +19,10 @@ export const VirallinenTutkinnonMyontaja = ({
   const updateVirallinenTutkinnonMyontaja = (
     val: boolean | null | undefined,
   ) => {
-    // Wrap value for backend deserialization (type-safe)
-    updatePerustelu(
-      wrapField(
-        'virallinenTutkinnonMyontaja',
-        val,
-      ) as unknown as Partial<Perustelu>,
-    );
+    // Update field directly with value
+    updatePerustelu({
+      virallinenTutkinnonMyontaja: val,
+    });
   };
 
   return (

@@ -1,6 +1,5 @@
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { wrapField } from '@/src/lib/types/fieldWrapper';
 
 import {
   AsiakirjaTieto,
@@ -24,10 +23,10 @@ export const ApHakemus = ({
   const currentValue = asiakirjaTieto.apHakemus;
 
   const updateApHakemus = (val: boolean | null | undefined) => {
-    // Wrap value for backend deserialization
-    updateAsiakirjaTieto(
-      wrapField('apHakemus', val) as Partial<AsiakirjaTieto>,
-    );
+    // Update field directly with value
+    updateAsiakirjaTieto({
+      apHakemus: val,
+    } as Partial<AsiakirjaTieto>);
   };
 
   return (
