@@ -6,7 +6,6 @@ import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
-import paatosTietoOptions from '@/playwright/fixtures/paatos1/paatosTietoOptions.json';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([
@@ -377,60 +376,17 @@ export const mockPerustelu = async (page: Page) => {
 };
 
 export const mockPaatos = async (page: Page) => {
-  // Stateful mock data that gets updated by POST requests
-  let paatosData: Record<string, unknown> = {
-    ...(getPaatos() as unknown as Record<string, unknown>),
-    paatosTietoOptions: paatosTietoOptions,
-  };
-
-  // Unwrap nested wrapper structures like backend does
-  // { fieldName: { fieldName: value } } => { fieldName: value }
-  const unwrapData = (
-    data: Record<string, unknown>,
-  ): Record<string, unknown> => {
-    const unwrapped: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (
-        value &&
-        typeof value === 'object' &&
-        !Array.isArray(value) &&
-        key in (value as Record<string, unknown>)
-      ) {
-        // This is a wrapped field: { fieldName: { fieldName: actualValue } }
-        unwrapped[key] = (value as Record<string, unknown>)[key];
-      } else {
-        // Regular field or nested object
-        unwrapped[key] = value;
-      }
-    }
-    return unwrapped;
-  };
-
   await page.route(
     `**/paatos/1.2.246.562.10.00000000001/12345`,
     async (route) => {
-      if (route.request().method() === 'POST') {
-        // Merge posted data into state and unwrap nested wrapper structures
-        const postedData = route.request().postDataJSON() as Record<
-          string,
-          unknown
-        >;
-        const unwrappedData = unwrapData(postedData);
-        paatosData = { ...paatosData, ...unwrappedData };
-
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(paatosData),
-        });
-      } else {
-        // GET request - return current state
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(paatosData),
-        });
-      }
+      const paatos = getPaatos();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...paatos,
+        }),
+      });
     },
   );
 };

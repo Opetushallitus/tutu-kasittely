@@ -7,7 +7,7 @@ import {
   SovellettuLaki,
   TutkintoTaso,
 } from '@/src/lib/types/paatos';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   OphCheckbox,
   OphSelectFormField,
@@ -23,6 +23,7 @@ import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusList';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -39,31 +40,54 @@ export const PaatosTietoComponent = ({
   updatePaatosTietoAction,
   tutkinnot,
 }: PaatosTietoProps) => {
-  // Fully controlled component - no local state
-  // All state managed at page level
+  const [currentPaatosTieto, setCurrentPaatosTieto] =
+    useState<PaatosTieto>(paatosTieto);
+
+  useEffect(() => {
+    setCurrentPaatosTieto(paatosTieto);
+  }, [paatosTieto]);
+
+  const updateMyonteinenPaatos = (value: boolean) => {
+    updatePaatosTietoAction(
+      value
+        ? {
+            ...currentPaatosTieto,
+            myonteinenPaatos: true,
+          }
+        : {
+            ...currentPaatosTieto,
+            myonteinenPaatos: false,
+            tutkintoTaso: undefined,
+            rinnastettavatTutkinnotTaiOpinnot: [],
+          },
+    );
+  };
 
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
     switch (paatosTyyppi) {
       case 'Taso':
       case 'TiettyTutkintoTaiOpinnot':
         updatePaatosTietoAction({
-          ...paatosTieto,
+          ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'uo' as SovellettuLaki,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'Kelpoisuus':
         updatePaatosTietoAction({
-          ...paatosTieto,
+          ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: undefined,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'RiittavatOpinnot':
         updatePaatosTietoAction({
-          ...paatosTieto,
+          ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'ro' as SovellettuLaki,
+          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
     }
@@ -75,7 +99,7 @@ export const PaatosTietoComponent = ({
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.paatostyyppi.otsikko')}
         options={paatostyyppiOptions(t)}
-        value={paatosTieto.paatosTyyppi || ''}
+        value={currentPaatosTieto.paatosTyyppi || ''}
         onChange={(event) =>
           handlePaatosTyyppiChange(event.target.value as Paatostyyppi)
         }
@@ -85,65 +109,66 @@ export const PaatosTietoComponent = ({
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.sovellettuLaki.otsikko')}
         options={sovellettuLakiOptions(
-          paatosTieto.paatosTyyppi as Paatostyyppi,
+          currentPaatosTieto.paatosTyyppi as Paatostyyppi,
           t,
         )}
-        value={paatosTieto.sovellettuLaki || ''}
+        value={currentPaatosTieto.sovellettuLaki || ''}
         onChange={(event) =>
           updatePaatosTietoAction({
-            ...paatosTieto,
+            ...currentPaatosTieto,
             sovellettuLaki: event.target.value as SovellettuLaki,
           })
         }
         data-testid={'paatos-sovellettulaki-dropdown'}
       />
-      {paatosTieto.sovellettuLaki &&
-        (paatosTieto.paatosTyyppi === 'Kelpoisuus' ||
-          paatosTieto.paatosTyyppi === 'Taso') && (
+      {currentPaatosTieto.sovellettuLaki &&
+        (currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' ||
+          currentPaatosTieto.paatosTyyppi === 'Taso') && (
           <>
             <OphSelectFormField
               placeholder={t('yleiset.valitse')}
               label={t('hakemus.paatos.tutkinto.nimi')}
               options={tutkintoOptions(t, tutkinnot)}
-              value={paatosTieto.tutkintoId || ''}
+              value={currentPaatosTieto.tutkintoId || ''}
               onChange={(event) =>
                 updatePaatosTietoAction({
-                  ...paatosTieto,
+                  ...currentPaatosTieto,
                   tutkintoId: event.target.value,
                 })
               }
               data-testid={'paatos-tutkintonimi-dropdown'}
             />
-            {paatosTieto.tutkintoId && (
+            {currentPaatosTieto.tutkintoId && (
               <OphCheckbox
                 data-testid={`paatos-lisaa-tutkinto-paatostekstiin-checkbox`}
-                checked={paatosTieto.lisaaTutkintoPaatostekstiin || false}
+                checked={
+                  currentPaatosTieto.lisaaTutkintoPaatostekstiin || false
+                }
                 label={t('hakemus.paatos.tutkinto.lisaaTutkintoPaatosTekstiin')}
                 onChange={(event) =>
                   updatePaatosTietoAction({
-                    ...paatosTieto,
+                    ...currentPaatosTieto,
                     lisaaTutkintoPaatostekstiin: event.target.checked,
                   })
                 }
               />
             )}
-
-            {paatosTieto.paatosTyyppi === 'Taso' && (
+            {currentPaatosTieto.paatosTyyppi === 'Taso' && (
               <>
                 <MyonteinenPaatos
                   t={t}
-                  paatosTieto={paatosTieto}
-                  updatePaatosTietoAction={updatePaatosTietoAction}
+                  myonteinenPaatos={currentPaatosTieto.myonteinenPaatos}
+                  updateMyonteinenPaatosAction={updateMyonteinenPaatos}
                 />
-                {paatosTieto.myonteinenPaatos && (
+                {currentPaatosTieto.myonteinenPaatos && (
                   <OphSelectFormField
                     placeholder={t('yleiset.valitse')}
                     label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
                     options={tutkinnonTasoOptions(t)}
-                    value={paatosTieto.tutkintoTaso || ''}
+                    value={currentPaatosTieto.tutkintoTaso || ''}
                     onChange={(event) =>
                       updatePaatosTietoAction({
-                        ...paatosTieto,
+                        ...currentPaatosTieto,
                         tutkintoTaso: event.target.value as TutkintoTaso,
                       })
                     }
@@ -154,15 +179,22 @@ export const PaatosTietoComponent = ({
             )}
           </>
         )}
-      {(paatosTieto.paatosTyyppi === 'RiittavatOpinnot' ||
-        paatosTieto.paatosTyyppi === 'TiettyTutkintoTaiOpinnot') && (
+      {(currentPaatosTieto.paatosTyyppi === 'RiittavatOpinnot' ||
+        currentPaatosTieto.paatosTyyppi === 'TiettyTutkintoTaiOpinnot') && (
         <RinnastettavatTutkinnotTaiOpinnotList
           t={t}
-          paatosTieto={paatosTieto}
+          paatosTieto={currentPaatosTieto}
           paatosTietoOptions={paatosTietoOptions}
           rinnastettavatTutkinnotTaiOpinnot={
-            paatosTieto.rinnastettavatTutkinnotTaiOpinnot
+            currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot
           }
+          updatePaatosTietoAction={updatePaatosTietoAction}
+        />
+      )}
+      {currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' && (
+        <KelpoisuusList
+          t={t}
+          paatosTieto={currentPaatosTieto}
           updatePaatosTietoAction={updatePaatosTietoAction}
         />
       )}

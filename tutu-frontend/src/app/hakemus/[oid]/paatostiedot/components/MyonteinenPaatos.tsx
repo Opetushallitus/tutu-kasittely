@@ -1,68 +1,39 @@
 'use client';
-
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import {
+  OphRadioGroup,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
-import React, { useEffect, useState } from 'react';
-import { PaatosTieto } from '@/src/lib/types/paatos';
+import React from 'react';
 
 interface MyonteinenPaatosProps {
   t: TFunction;
-  paatosTieto: PaatosTieto;
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  myonteinenPaatos?: boolean;
+  updateMyonteinenPaatosAction: (myonteinenPaatos: boolean) => void;
 }
 
 export const MyonteinenPaatos = ({
   t,
-  paatosTieto,
-  updatePaatosTietoAction,
+  myonteinenPaatos,
+  updateMyonteinenPaatosAction,
 }: MyonteinenPaatosProps) => {
-  // Local optimistic state for immediate UI feedback
-  // This handles the controlled component behavior while cache updates propagate
-  const [optimisticValue, setOptimisticValue] = useState<
-    boolean | null | undefined
-  >(undefined);
-
-  // Use optimistic value if set, otherwise use prop value
-  const currentValue =
-    optimisticValue !== undefined
-      ? optimisticValue
-      : paatosTieto?.myonteinenPaatos;
-
-  // Clear optimistic state when prop value catches up
-  useEffect(() => {
-    if (optimisticValue !== undefined) {
-      // If prop matches optimistic value, clear optimistic state
-      if (paatosTieto?.myonteinenPaatos === optimisticValue) {
-        setOptimisticValue(undefined);
-      }
-    }
-  }, [paatosTieto?.myonteinenPaatos, optimisticValue]);
-
-  const updateMyonteinenPaatos = (val: boolean | null | undefined) => {
-    // Set local optimistic value immediately for instant UI feedback
-    setOptimisticValue(val);
-
-    // Send update to server
-    updatePaatosTietoAction({
-      ...paatosTieto,
-      myonteinenPaatos: val,
-      // Clear tutkintoTaso if not "Kyllä" (true)
-      ...(val !== true && { tutkintoTaso: undefined }),
-    });
-  };
-
   return (
-    <OphRadioGroupWithClear
-      label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
-      labelId="myonteinenPaatos-radio-group-label"
-      data-testid="paatos-myonteinenPaatos-radio-group"
-      labelVariant="h4"
-      options={myonteinenPaatosOptions(t)}
-      row
-      value={currentValue?.toString() ?? ''}
-      onChange={(e) => updateMyonteinenPaatos(e.target.value === 'true')}
-      onClear={() => updateMyonteinenPaatos(null)}
-    />
+    <>
+      <OphTypography variant="h4">
+        {t('hakemus.paatos.tutkinto.myonteinenPaatos')}
+      </OphTypography>
+      <OphRadioGroup
+        labelId="myonteinenPaatos-radio-group-label"
+        data-testid="paatos-myonteinenPaatos-radio-group"
+        sx={{ width: '100%' }}
+        options={myonteinenPaatosOptions(t)}
+        row
+        value={myonteinenPaatos?.toString() || null}
+        onChange={(e) =>
+          updateMyonteinenPaatosAction(e.target.value === 'true')
+        }
+      />
+    </>
   );
 };

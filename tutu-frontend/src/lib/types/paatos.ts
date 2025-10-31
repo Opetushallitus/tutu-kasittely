@@ -38,7 +38,7 @@ export type PaatosTieto = {
   kielteisenPaatoksenPerustelut: string;
   tutkintoId?: string;
   lisaaTutkintoPaatostekstiin?: boolean;
-  myonteinenPaatos?: boolean | null;
+  myonteinenPaatos?: boolean;
   tutkintoTaso?: TutkintoTaso;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   kelpoisuudet: Kelpoisuus[];
@@ -59,7 +59,7 @@ export type TutkintoTaiOpinto = {
   id?: string;
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
-  myonteinenPaatos?: boolean | null;
+  myonteinenPaatos?: boolean;
   myonteisenPaatoksenLisavaatimukset?: string;
   kielteisenPaatoksenPerustelut?: string;
 };
