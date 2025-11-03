@@ -27,15 +27,3 @@ export type Perustelu = {
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];
 };
-
-export type VirallinenTutkinnonMyontajaWrapper = {
-  virallinenTutkinnonMyontaja?: boolean | null;
-};
-
-export type VirallinenTutkintoWrapper = {
-  virallinenTutkinto?: boolean | null;
-};
-
-export type AikaisemmatPaatoksetWrapper = {
-  aikaisemmatPaatokset?: boolean | null;
-};
