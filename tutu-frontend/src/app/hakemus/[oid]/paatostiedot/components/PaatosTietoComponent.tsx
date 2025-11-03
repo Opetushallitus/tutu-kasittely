@@ -134,6 +134,7 @@ export const PaatosTietoComponent = ({
                   t={t}
                   paatosTieto={paatosTieto}
                   updatePaatosTietoAction={updatePaatosTietoAction}
+                  testId="myonteinenPaatos-radio-group"
                 />
                 {paatosTieto.myonteinenPaatos && (
                   <OphSelectFormField

@@ -88,7 +88,6 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
               t={t}
               index={index}
               tutkintoTaiOpinto={tutkintoTaiOpinto}
-              paatosTyyppi={tyyppi}
               paatosTietoOptions={paatosTietoOptions}
               updateTutkintoTaiOpintoAction={updateTutkintoTaiOpinto}
               deleteTutkintoTaiOpintoAction={deleteTutkintoTaiOpinto}

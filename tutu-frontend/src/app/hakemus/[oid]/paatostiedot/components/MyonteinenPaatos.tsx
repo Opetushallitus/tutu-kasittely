@@ -23,6 +23,7 @@ interface MyonteinenPaatosProps<T extends PaatosTieto | TutkintoTaiOpinto> {
     myonteinenPaatos: boolean,
     lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => void;
+  testId?: string;
 }
 
 export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
@@ -32,6 +33,7 @@ export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
   lisavaatimukset,
   updatePaatosTietoAction,
   updateMyonteinenPaatosAction,
+  testId = 'paatos-myonteinenPaatos-radio-group',
 }: MyonteinenPaatosProps<T>) => {
   const theme = useTheme();
 
@@ -76,7 +78,7 @@ export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
       <OphRadioGroupWithClear
         label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
         labelId="myonteinenPaatos-radio-group-label"
-        data-testid="paatos-myonteinenPaatos-radio-group"
+        data-testid={testId}
         labelVariant="h4"
         options={myonteinenPaatosOptions(t)}
         row
