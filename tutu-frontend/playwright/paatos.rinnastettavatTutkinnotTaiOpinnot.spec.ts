@@ -66,7 +66,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
 
   const tutkintoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=TODO');
+    .locator('text=uskonto, ortodoksinen');
 
   const [req] = await Promise.all([
     page.waitForRequest((req) => matchUpdate(req.url(), req.method())),

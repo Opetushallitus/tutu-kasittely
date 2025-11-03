@@ -24,6 +24,7 @@ import { Tutkinto } from '@/src/lib/types/hakemus';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusList';
+import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -53,6 +54,7 @@ export const PaatosTietoComponent = ({
         ? {
             ...currentPaatosTieto,
             myonteinenPaatos: true,
+            kielteisenPaatoksenPerustelut: undefined,
           }
         : {
             ...currentPaatosTieto,
@@ -160,7 +162,7 @@ export const PaatosTietoComponent = ({
                   myonteinenPaatos={currentPaatosTieto.myonteinenPaatos}
                   updateMyonteinenPaatosAction={updateMyonteinenPaatos}
                 />
-                {currentPaatosTieto.myonteinenPaatos && (
+                {currentPaatosTieto.myonteinenPaatos ? (
                   <OphSelectFormField
                     placeholder={t('yleiset.valitse')}
                     label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
@@ -173,6 +175,12 @@ export const PaatosTietoComponent = ({
                       })
                     }
                     data-testid={'paatos-tutkintotaso-dropdown'}
+                  />
+                ) : (
+                  <KielteisenPaatoksenPerusteluComponent
+                    paatosTieto={paatosTieto}
+                    updatePaatosTietoAction={updatePaatosTietoAction}
+                    t={t}
                   />
                 )}
               </>
