@@ -236,9 +236,11 @@ export default function HakemusListFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        <Grid size={'auto'}>
-          {hakemukset?.length} {t('hakemuslista.hakemusta')}
-        </Grid>
+        {hakemukset && (
+          <Grid size={'auto'}>
+            {hakemukset?.length} {t('hakemuslista.hakemusta')}
+          </Grid>
+        )}
         <Grid size={'auto'}>
           <div>sivutus</div>
         </Grid>

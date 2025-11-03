@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
+import { getPaatos } from '@/playwright/fixtures/paatos1';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
@@ -422,4 +423,63 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   expect(tutkintoTasoPostData.paatosTiedot[0].tutkintoTaso).toEqual(
     'AlempiKorkeakoulu',
   );
+});
+
+test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ page }) => {
+  const paatos = getPaatos();
+  await page.route(
+    '**/paatos/1.2.246.562.10.00000000001/12345',
+    async (route) => {
+      if (route.request().method() === 'GET') {
+        const body = {
+          ...paatos,
+          hyvaksymispaiva: '2025-10-26',
+          lahetyspaiva: '2025-10-26',
+        };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(body),
+        });
+        return;
+      }
+
+      if (route.request().method() === 'POST') {
+        const body = {
+          ...paatos,
+          hyvaksymispaiva: '2023-02-02',
+          lahetyspaiva: '2023-02-02',
+        };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(body),
+        });
+      } else {
+        await route.continue();
+      }
+    },
+  );
+
+  const hyvaksymispaivaCalendar = page
+    .getByTestId('paatos-hyvaksymispaiva-calendar')
+    .locator('input');
+
+  const lahetyspaivaCalendar = page
+    .getByTestId('paatos-lahetyspaiva-calendar')
+    .locator('input');
+
+  await expect(hyvaksymispaivaCalendar).toBeVisible();
+  await expect(lahetyspaivaCalendar).toBeVisible();
+
+  await hyvaksymispaivaCalendar.click();
+  await page.locator('.react-datepicker__day--026').click();
+
+  await page.locator('body').click({ position: { x: 1, y: 1 } });
+  await expect(hyvaksymispaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+
+  await lahetyspaivaCalendar.click();
+  await page.locator('.react-datepicker__day--026').click();
+  await page.locator('body').click({ position: { x: 1, y: 1 } });
+  await expect(lahetyspaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 });

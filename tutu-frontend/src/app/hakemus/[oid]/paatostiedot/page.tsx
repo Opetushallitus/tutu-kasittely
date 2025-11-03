@@ -25,6 +25,7 @@ import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/cons
 import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -140,11 +141,11 @@ const Paatostiedot = ({
       gap={theme.spacing(3)}
       sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
     >
-      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        <OphTypography variant={'h2'}>
-          {t('hakemus.paatos.otsikko')}
-        </OphTypography>
-      </Stack>
+      <PaatosHeader
+        paatos={paatos}
+        updatePaatosField={updatePaatosField}
+        t={t}
+      />
       <Divider />
       <OphTypography variant={'h3'}>
         {t('hakemus.paatos.ratkaisuJaPaatos')}

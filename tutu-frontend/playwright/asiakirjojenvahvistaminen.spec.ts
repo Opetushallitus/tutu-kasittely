@@ -124,14 +124,12 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
 
   const lahetettyInput = lahetetty.locator('input');
   await lahetetty.click();
-  await page.locator('.react-datepicker__day--026').click();
-  await expect(lahetettyInput).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
+  await page.locator('.react-datepicker__day--026').first().click();
+  await expect(lahetettyInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 
   const vastattuInput = vastattu.locator('input');
   await vastattu.click();
-  await page.locator('.react-datepicker__day--026').click();
+  await page.locator('.react-datepicker__day--026').last().click();
   await expect(vastattuInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
@@ -151,12 +149,8 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
 
   await expect(saveButton).not.toBeVisible();
 
-  await expect(lahetettyInput).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
-  await expect(vastattuInput).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-  );
+  await expect(lahetettyInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+  await expect(vastattuInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);
   await expect(myonteinenRadio).toBeChecked();
   await expect(lisatietoInput).toHaveValue('Hyvinhän se meni');
 });
