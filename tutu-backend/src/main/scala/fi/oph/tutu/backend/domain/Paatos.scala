@@ -39,9 +39,8 @@ case class PaatosTieto(
   tutkintoId: Option[UUID] = None,
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
   myonteinenPaatos: Option[Boolean] = None,
-  // TODO: case classeiksi
   myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
-  kielteisenPaatoksenPerustelut: Option[String] = None,
+  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
   tutkintoTaso: Option[TutkintoTaso],
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
   kelpoisuudet: Seq[Kelpoisuus] = Seq(),
@@ -69,6 +68,13 @@ case class MyonteisenPaatoksenLisavaatimukset(
   taydentavatOpinnot: Boolean = false,
   kelpoisuuskoe: Boolean = false,
   sopeutumisaika: Boolean = false
+)
+
+case class KielteisenPaatoksenPerustelut(
+  epavirallinenKorkeakoulu: Boolean = false,
+  epavirallinenTutkinto: Boolean = false,
+  eiVastaaSuomessaSuoritettavaaTutkintoa: Boolean = false,
+  muuPerustelu: Boolean = false
 )
 
 case class PaatosTietoModifyData(
