@@ -28,19 +28,21 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
   index: number;
   tutkintoTaiOpinto: TutkintoTaiOpinto;
+  paatosTyyppi: string;
   paatosTietoOptions: PaatosTietoOptionGroup;
   updateTutkintoTaiOpintoAction: (
     updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
     index: number,
   ) => void;
   deleteTutkintoTaiOpintoAction: (id: string | undefined) => void;
-  tyyppi: 'riittavatOpinnot' | 'tiettyTutkintoTaiOpinnot';
+  tyyppi: string;
 }
 
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
   t,
   index,
   tutkintoTaiOpinto,
+  paatosTyyppi,
   paatosTietoOptions,
   updateTutkintoTaiOpintoAction,
   deleteTutkintoTaiOpintoAction,
@@ -139,7 +141,8 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
         <OphTypography variant={'h3'}>
-          {t(`hakemus.paatos.paatostyyppi.${tyyppi}.otsikko`) + (index + 1)}
+          {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.otsikko`) +
+            (index + 1)}
         </OphTypography>
         {index > 0 && (
           <OphButton
@@ -165,13 +168,13 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
               })
             }
           >
-            {t(`hakemus.paatos.paatostyyppi.${tyyppi}.poista`)}
+            {t(`hakemus.paatos.paatostyyppi.${paatosTyyppi}.poista`)}
           </OphButton>
         )}{' '}
       </Stack>
       <OphFormFieldWrapper
         label={t(
-          `hakemus.paatos.paatostyyppi.${tyyppi}.rinnastettavaTutkintoTaiOpinnot`,
+          `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
         )}
         sx={{ width: '100%' }}
         renderInput={() => (
@@ -203,7 +206,6 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         lisavaatimukset={tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}
         updatePaatosTietoAction={updatePaatosTieto}
         updateMyonteinenPaatosAction={updateMyonteinenPaatos}
-        testId={`paatos-myonteinenPaatos-radio-group-${index}`}
       />
     </Stack>
   );

@@ -61,8 +61,8 @@ export type TutkintoTaiOpinto = {
   id?: string;
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
-  myonteinenPaatos?: boolean | null;
-  myonteisenPaatoksenLisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
+  myonteinenPaatos?: boolean;
+  myonteisenPaatoksenLisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
   kielteisenPaatoksenPerustelut?: string;
 };
 

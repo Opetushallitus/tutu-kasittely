@@ -9,32 +9,29 @@ import { Stack, useTheme } from '@mui/material';
 import {
   MyonteisenPaatoksenLisavaatimukset,
   PaatosTieto,
-  TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
+import { wrapField } from '@/src/lib/types/fieldWrapper';
 
-// Generic interface that accepts both PaatosTieto and TutkintoTaiOpinto
-interface MyonteinenPaatosProps<T extends PaatosTieto | TutkintoTaiOpinto> {
+interface MyonteinenPaatosProps {
   t: TFunction;
-  paatosTieto: T;
-  myonteinenPaatos?: boolean | null;
+  paatosTieto: PaatosTieto;
+  myonteinenPaatos?: boolean;
   lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
-  updatePaatosTietoAction: (updatedPaatosTieto: T) => void;
-  updateMyonteinenPaatosAction?: (
+  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  updateMyonteinenPaatosAction: (
     myonteinenPaatos: boolean,
     lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => void;
-  testId?: string;
 }
 
-export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
+export const MyonteinenPaatos = ({
   t,
   paatosTieto,
   myonteinenPaatos,
   lisavaatimukset,
   updatePaatosTietoAction,
   updateMyonteinenPaatosAction,
-  testId = 'paatos-myonteinenPaatos-radio-group',
-}: MyonteinenPaatosProps<T>) => {
+}: MyonteinenPaatosProps) => {
   const theme = useTheme();
 
   // Local optimistic state for immediate UI feedback
@@ -66,11 +63,13 @@ export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
     // Send update to server
     updatePaatosTietoAction({
       ...paatosTieto,
-      myonteinenPaatos: val,
-      // Clear tutkintoTaso if not "Kyllä" (true) and field exists
-      ...('tutkintoTaso' in paatosTieto &&
-        val !== true && { tutkintoTaso: undefined }),
-    } as T);
+      ...(wrapField(
+        'myonteinenPaatos',
+        val,
+      ) as unknown as Partial<PaatosTieto>),
+      // Clear tutkintoTaso if not "Kyllä" (true)
+      ...(val !== true && { tutkintoTaso: undefined }),
+    });
   };
 
   return (
@@ -78,7 +77,7 @@ export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
       <OphRadioGroupWithClear
         label={t('hakemus.paatos.tutkinto.myonteinenPaatos')}
         labelId="myonteinenPaatos-radio-group-label"
-        data-testid={testId}
+        data-testid="paatos-myonteinenPaatos-radio-group"
         labelVariant="h4"
         options={myonteinenPaatosOptions(t)}
         row
@@ -86,7 +85,7 @@ export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
         onChange={(e) => updateMyonteinenPaatos(e.target.value === 'true')}
         onClear={() => updateMyonteinenPaatos(null)}
       />
-      {myonteinenPaatos && lisavaatimukset && updateMyonteinenPaatosAction && (
+      {myonteinenPaatos && lisavaatimukset && (
         <>
           <OphTypography variant="h5">
             {t('hakemus.paatos.myonteinenPaatos.otsikko')}

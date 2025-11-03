@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Paatos } from '@/src/lib/types/paatos';
 import { doApiFetch, doApiPost } from '@/src/lib/tutu-backend/api';
+import { unwrapFieldWrappers } from '@/src/lib/utils/unwrapFieldWrappers';
 
 export const getPaatos = async (
   hakemusOid: string | undefined,
@@ -49,21 +50,29 @@ export const usePaatos = (
 
       // Optimistically update the cache
       if (previousPaatos) {
-        // Merge updates into existing paatos
-        const optimisticPaatos = { ...previousPaatos, ...updatedPaatos };
+        // Unwrap nested wrapper structures for optimistic update
+        // Example: { field: { field: value } } → { field: value }
+        const unwrappedUpdate = unwrapFieldWrappers(updatedPaatos);
 
-        // Special handling for paatosTiedot array: merge updates into each element
+        // Special handling for paatosTiedot array: unwrap fields inside each element
+        const optimisticPaatos = { ...previousPaatos };
         if (
-          updatedPaatos.paatosTiedot &&
-          Array.isArray(updatedPaatos.paatosTiedot)
+          unwrappedUpdate.paatosTiedot &&
+          Array.isArray(unwrappedUpdate.paatosTiedot)
         ) {
-          optimisticPaatos.paatosTiedot = updatedPaatos.paatosTiedot.map(
-            (paatosTietoUpdate, idx) => ({
-              ...previousPaatos.paatosTiedot?.[idx],
-              ...paatosTietoUpdate,
-            }),
+          optimisticPaatos.paatosTiedot = unwrappedUpdate.paatosTiedot.map(
+            (paatosTieto) => unwrapFieldWrappers(paatosTieto),
           );
         }
+
+        // Merge other top-level fields
+        Object.keys(unwrappedUpdate).forEach((key) => {
+          if (key !== 'paatosTiedot') {
+            (optimisticPaatos as Record<string, unknown>)[key] = (
+              unwrappedUpdate as Record<string, unknown>
+            )[key];
+          }
+        });
 
         queryClient.setQueryData(queryKey, optimisticPaatos as Paatos);
       }
