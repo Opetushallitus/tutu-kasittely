@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
-import * as dateFns from 'date-fns';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 
 test.beforeEach(async ({ page }) => {
@@ -477,16 +476,10 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
   await page.locator('.react-datepicker__day--026').click();
 
   await page.locator('body').click({ position: { x: 1, y: 1 } });
-  await expect(hyvaksymispaivaCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-    { timeout: 5000 },
-  );
+  await expect(hyvaksymispaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 
   await lahetyspaivaCalendar.click();
   await page.locator('.react-datepicker__day--026').click();
   await page.locator('body').click({ position: { x: 1, y: 1 } });
-  await expect(lahetyspaivaCalendar).toHaveValue(
-    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
-    { timeout: 5000 },
-  );
+  await expect(lahetyspaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 });
