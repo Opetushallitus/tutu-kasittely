@@ -397,6 +397,7 @@ class HakemusService(
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe)
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue))
+              case "saapumisPvm"  => hakemusList.sortBy(_.aika)
               case "kokonaisaika" => hakemusList.sortBy(_.aika).reverse
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta).reverse
 
@@ -410,6 +411,7 @@ class HakemusService(
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe).reverse
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue)).reverse
+              case "saapumisPvm"  => hakemusList.sortBy(_.aika).reverse
               case "kokonaisaika" => hakemusList.sortBy(_.aika)
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta)
               case _              => hakemusList

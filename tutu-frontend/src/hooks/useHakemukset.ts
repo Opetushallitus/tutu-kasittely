@@ -6,7 +6,7 @@ export const getHakemukset = async (): Promise<HakemusListItem[]> => {
   const localStorageSearchParams = localStorage.getItem('tutu-query-string');
   const url = localStorageSearchParams
     ? `hakemuslista?${localStorageSearchParams}`
-    : 'hakemuslista';
+    : 'hakemuslista?sort=saapumisPvm:desc';
 
   return await doApiFetch(url, undefined, 'no-store');
 };

@@ -27,7 +27,7 @@ import { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const FIELD_KEYS = {
-  hakijannimi: 'hakija',
+  hakijannimi: 'hakijannimi',
   asiatunnus: 'asiatunnus',
   esittelija: 'esittelija',
   kasittelyvaihe: 'kasittelyvaihe',
@@ -65,10 +65,10 @@ export function HakemusList({ user }: HakemusListProps) {
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
   const { t } = useTranslations();
-  const [sortDef, setSortDef] = useQueryState(
-    'sort',
-    parseAsString.withDefault(''),
-  );
+  const [sortDef, setSortDef] = useQueryState('sort', {
+    ...parseAsString.withDefault('saapumisPvm:desc'),
+    clearOnDefault: false,
+  });
   const { isLoading, data, error } = useHakemukset();
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuslistanLataus', t);

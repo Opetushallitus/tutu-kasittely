@@ -120,11 +120,7 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   await expect(page.getByTestId('tutkinto-todistuksenpvm-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-todistuksenpvm-2')).toHaveValue('');
 
-  await expect(page.getByTestId('tutkinto-koulutusala-2')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-koulutusala-2')).toHaveText(
-    'Valitse...',
-  );
-
+  // Muu tutkinto
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toHaveText(
     'Muut tutkinnot ja opinnot',

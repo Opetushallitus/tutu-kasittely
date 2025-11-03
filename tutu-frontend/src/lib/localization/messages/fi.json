@@ -29,7 +29,8 @@
     "kokonaisaika": "Kokonaisaika",
     "hakijanaika": "Hakijan aika",
     "kokonaisaikaKk": "{aika, number} kk",
-    "hakemusta": "hakemusta"
+    "hakemusta": "hakemusta",
+    "saapumisPvm": "Hakemus saapunut"
   },
   "hakemus": {
     "apHakemus": "AP-hakemus",

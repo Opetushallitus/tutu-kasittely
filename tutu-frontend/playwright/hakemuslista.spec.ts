@@ -113,7 +113,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
 
-  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+  const epajarjestystestit = ['hakijannimi'].map(async (fieldKey) => {
     const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
     await expect(epajarjestyskentta).not.toHaveAttribute(
@@ -140,7 +140,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
 
-  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+  const epajarjestystestit = ['hakijannimi'].map(async (fieldKey) => {
     const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
     await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
