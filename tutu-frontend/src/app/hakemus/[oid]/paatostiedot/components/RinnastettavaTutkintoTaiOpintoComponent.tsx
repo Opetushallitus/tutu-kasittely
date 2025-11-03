@@ -18,11 +18,11 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
+import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
-import { MyonteinenPaatos } from './MyonteinenPaatos';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
@@ -48,8 +48,6 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   deleteTutkintoTaiOpintoAction,
   tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const theme = useTheme();
-
   const updateMyonteinenPaatos = (
     myonteinenPaatos: boolean,
     lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
@@ -65,11 +63,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       index,
     );
   };
-
-  const updatePaatosTieto = (updatedTutkintoTaiOpinto: TutkintoTaiOpinto) => {
-    updateTutkintoTaiOpintoAction(updatedTutkintoTaiOpinto, index);
-  };
-
+  const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
 
@@ -201,10 +195,8 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       />
       <MyonteinenPaatos
         t={t}
-        paatosTieto={tutkintoTaiOpinto}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         lisavaatimukset={tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}
-        updatePaatosTietoAction={updatePaatosTieto}
         updateMyonteinenPaatosAction={updateMyonteinenPaatos}
       />
     </Stack>

@@ -8,7 +8,7 @@ import {
 } from '@/src/lib/types/paatos';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { Add } from '@mui/icons-material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
@@ -36,9 +36,17 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   rinnastettavatTutkinnotTaiOpinnot,
   updatePaatosTietoAction,
 }: RinnastettavatTutkinnotTaiOpinnotListProps) => {
-  // Fully controlled component - no local state
-  const tutkinnotTaiOpinnot = rinnastettavatTutkinnotTaiOpinnot || [];
+  const [tutkinnotTaiOpinnot, setTutkinnotTaiOpinnot] = React.useState<
+    TutkintoTaiOpinto[]
+  >([]);
 
+  useEffect(() => {
+    if (!rinnastettavatTutkinnotTaiOpinnot.length) {
+      setTutkinnotTaiOpinnot([emptyTutkintoTaiOpinto(paatosTieto.id!)]);
+    } else {
+      setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
+    }
+  }, [paatosTieto.id, rinnastettavatTutkinnotTaiOpinnot]);
   const tyyppi =
     paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
       ? 'riittavatOpinnot'
@@ -50,6 +58,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   ) => {
     const newTutkinnotTaiOpinnot = [...tutkinnotTaiOpinnot];
     newTutkinnotTaiOpinnot[index] = updatedTutkintoTaiOpinto;
+    setTutkinnotTaiOpinnot(newTutkinnotTaiOpinnot);
     updatePaatosTietoAction({
       ...paatosTieto,
       rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
@@ -57,14 +66,9 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
   };
 
   const addTutkintoTaiOpinto = () => {
-    const newTutkinnotTaiOpinnot = [
-      ...tutkinnotTaiOpinnot,
-      emptyTutkintoTaiOpinto(paatosTieto.id!),
-    ];
-    updatePaatosTietoAction({
-      ...paatosTieto,
-      rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
-    });
+    setTutkinnotTaiOpinnot((oldTutkinnotTaiOpinnot) =>
+      oldTutkinnotTaiOpinnot.concat([emptyTutkintoTaiOpinto(paatosTieto.id!)]),
+    );
   };
 
   const deleteTutkintoTaiOpinto = (id: string | undefined) => {
@@ -73,6 +77,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
           (tutkintoTaiOpinto) => tutkintoTaiOpinto.id !== id,
         )
       : tutkinnotTaiOpinnot.slice(0, -1);
+    setTutkinnotTaiOpinnot(newTutkinnotTaiOpinnot);
     updatePaatosTietoAction({
       ...paatosTieto,
       rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,

@@ -5,7 +5,7 @@ export const getPaatos = (): Paatos => {
   return {
     ..._paatos,
     ratkaisutyyppi: 'Paatos',
-    paatosTiedot: [],
+    paatosTiedot: undefined,
     paatosTietoOptions: paatosTietoOptions,
     hyvaksymispaiva: null,
     lahetyspaiva: null,
