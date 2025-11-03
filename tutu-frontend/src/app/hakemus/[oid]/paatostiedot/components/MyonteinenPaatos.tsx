@@ -1,36 +1,38 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  OphCheckbox,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import React, { useEffect, useState } from 'react';
 import { Stack, useTheme } from '@mui/material';
-import { MyonteisenPaatoksenLisavaatimukset, PaatosTieto } from '@/src/lib/types/paatos';
+import {
+  MyonteisenPaatoksenLisavaatimukset,
+  PaatosTieto,
+  TutkintoTaiOpinto,
+} from '@/src/lib/types/paatos';
 
-interface MyonteinenPaatosProps {
+// Generic interface that accepts both PaatosTieto and TutkintoTaiOpinto
+interface MyonteinenPaatosProps<T extends PaatosTieto | TutkintoTaiOpinto> {
   t: TFunction;
-  paatosTieto: PaatosTieto;
-  myonteinenPaatos?: boolean;
+  paatosTieto: T;
+  myonteinenPaatos?: boolean | null;
   lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
-  updateMyonteinenPaatosAction: (
+  updatePaatosTietoAction: (updatedPaatosTieto: T) => void;
+  updateMyonteinenPaatosAction?: (
     myonteinenPaatos: boolean,
     lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => void;
 }
 
-export const MyonteinenPaatos = ({
+export const MyonteinenPaatos = <T extends PaatosTieto | TutkintoTaiOpinto>({
   t,
   paatosTieto,
   myonteinenPaatos,
   lisavaatimukset,
   updatePaatosTietoAction,
   updateMyonteinenPaatosAction,
-}: MyonteinenPaatosProps) => {
+}: MyonteinenPaatosProps<T>) => {
   const theme = useTheme();
 
   // Local optimistic state for immediate UI feedback
@@ -63,9 +65,10 @@ export const MyonteinenPaatos = ({
     updatePaatosTietoAction({
       ...paatosTieto,
       myonteinenPaatos: val,
-      // Clear tutkintoTaso if not "Kyllä" (true)
-      ...(val !== true && { tutkintoTaso: undefined }),
-    });
+      // Clear tutkintoTaso if not "Kyllä" (true) and field exists
+      ...('tutkintoTaso' in paatosTieto &&
+        val !== true && { tutkintoTaso: undefined }),
+    } as T);
   };
 
   return (
@@ -81,7 +84,7 @@ export const MyonteinenPaatos = ({
         onChange={(e) => updateMyonteinenPaatos(e.target.value === 'true')}
         onClear={() => updateMyonteinenPaatos(null)}
       />
-      {myonteinenPaatos && lisavaatimukset && (
+      {myonteinenPaatos && lisavaatimukset && updateMyonteinenPaatosAction && (
         <>
           <OphTypography variant="h5">
             {t('hakemus.paatos.myonteinenPaatos.otsikko')}
