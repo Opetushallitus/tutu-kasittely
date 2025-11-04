@@ -584,7 +584,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$.asiatunnus", org.hamcrest.Matchers.is("OPH-4321-2025")))
+.andExpect(jsonPath("$.asiatunnus").value("OPH-4321-2025"))
   }
 
   @Test
