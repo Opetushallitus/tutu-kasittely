@@ -23,84 +23,35 @@ export const KielteisenPaatoksenPerusteluComponent = ({
   const theme = useTheme();
   const { hakemus } = useHakemus();
 
+  const kielteisenPaatoksenPerustelutKeys = [
+    'epavirallinenKorkeakoulu',
+    'epavirallinenTutkinto',
+    'eiVastaaSuomessaSuoritettavaaTutkintoa',
+    'muuPerustelu',
+  ] as const satisfies (keyof KielteisenPaatoksenPerustelut)[];
+
   return (
     <Stack direction="column" gap={theme.spacing(2)}>
       <OphTypography variant="h5">
         {t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
       </OphTypography>
-      <OphCheckbox
-        data-testid="kielteinenPaatos-epavirallinenKorkeakoulu"
-        label={t(
-          'hakemus.paatos.kielteisenPaatoksenPerustelut.epavirallinenKorkeakoulu',
-        )}
-        checked={
-          paatosTieto.kielteisenPaatoksenPerustelut?.epavirallinenKorkeakoulu ||
-          false
-        }
-        onChange={(e) =>
-          updatePaatosTietoAction({
-            ...paatosTieto,
-            kielteisenPaatoksenPerustelut: {
-              ...paatosTieto.kielteisenPaatoksenPerustelut,
-              epavirallinenKorkeakoulu: e.target.checked,
-            } as KielteisenPaatoksenPerustelut,
-          })
-        }
-      />
-      <OphCheckbox
-        data-testid="kielteinenPaatos-epavirallinenTutkinto"
-        label={t(
-          'hakemus.paatos.kielteisenPaatoksenPerustelut.epavirallinenTutkinto',
-        )}
-        checked={
-          paatosTieto.kielteisenPaatoksenPerustelut?.epavirallinenTutkinto ||
-          false
-        }
-        onChange={(e) =>
-          updatePaatosTietoAction({
-            ...paatosTieto,
-            kielteisenPaatoksenPerustelut: {
-              ...paatosTieto.kielteisenPaatoksenPerustelut,
-              epavirallinenTutkinto: e.target.checked,
-            } as KielteisenPaatoksenPerustelut,
-          })
-        }
-      />
-      <OphCheckbox
-        data-testid="kielteinenPaatos-eiVastaaSuomessaSuoritettavaaTutkintoa"
-        label={t(
-          'hakemus.paatos.kielteisenPaatoksenPerustelut.eiVastaaSuomessaSuoritettavaaTutkintoa',
-        )}
-        checked={
-          paatosTieto.kielteisenPaatoksenPerustelut
-            ?.eiVastaaSuomessaSuoritettavaaTutkintoa || false
-        }
-        onChange={(e) =>
-          updatePaatosTietoAction({
-            ...paatosTieto,
-            kielteisenPaatoksenPerustelut: {
-              ...paatosTieto.kielteisenPaatoksenPerustelut,
-              eiVastaaSuomessaSuoritettavaaTutkintoa: e.target.checked,
-            } as KielteisenPaatoksenPerustelut,
-          })
-        }
-      />
-      <OphCheckbox
-        data-testid="kielteinenPaatos-muuPerustelu"
-        label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu')}
-        checked={
-          paatosTieto.kielteisenPaatoksenPerustelut?.muuPerustelu || false
-        }
-        onChange={(e) =>
-          updatePaatosTietoAction({
-            ...paatosTieto,
-            kielteisenPaatoksenPerustelut: {
-              ...paatosTieto.kielteisenPaatoksenPerustelut,
-              muuPerustelu: e.target.checked,
-            } as KielteisenPaatoksenPerustelut,
-          })
-        }
-      />
+      {kielteisenPaatoksenPerustelutKeys.map((key) => (
+        <OphCheckbox
+          key={key}
+          data-testid={`kielteinenPaatos-${key}`}
+          label={t(`hakemus.paatos.kielteisenPaatoksenPerustelut.${key}`)}
+          checked={paatosTieto.kielteisenPaatoksenPerustelut?.[key] || false}
+          onChange={(e) =>
+            updatePaatosTietoAction({
+              ...paatosTieto,
+              kielteisenPaatoksenPerustelut: {
+                ...paatosTieto.kielteisenPaatoksenPerustelut,
+                [key]: e.target.checked,
+              } as KielteisenPaatoksenPerustelut,
+            })
+          }
+        />
+      ))}
       {paatosTieto.kielteisenPaatoksenPerustelut?.muuPerustelu && (
         <Muistio
           label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu')}
