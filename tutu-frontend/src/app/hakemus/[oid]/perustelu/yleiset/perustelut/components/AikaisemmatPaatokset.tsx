@@ -10,11 +10,9 @@ interface Props {
 export const AikaisemmatPaatokset = ({ perustelu, updatePerustelu }: Props) => {
   const { t } = useTranslations();
 
-  // Controlled component - read value directly from props (server response)
   const currentValue = perustelu?.aikaisemmatPaatokset;
 
   const updateAikaisemmatPaatokset = (val: boolean | null) => {
-    // Update field directly with value
     updatePerustelu({
       aikaisemmatPaatokset: val,
     });

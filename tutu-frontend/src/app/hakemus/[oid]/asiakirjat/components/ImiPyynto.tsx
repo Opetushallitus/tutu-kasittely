@@ -27,7 +27,6 @@ export const ImiPyyntoComponent = ({
 }: ImiPyyntoProps) => {
   const { t } = useTranslations();
 
-  // Controlled component - derive value directly from props, no local state
   const currentImiPyynto = imiPyynto;
 
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {

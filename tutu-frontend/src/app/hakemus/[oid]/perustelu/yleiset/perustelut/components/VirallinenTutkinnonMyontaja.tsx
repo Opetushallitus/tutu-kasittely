@@ -13,13 +13,11 @@ export const VirallinenTutkinnonMyontaja = ({
 }: Props) => {
   const { t } = useTranslations();
 
-  // Controlled component - read value directly from props (server response)
   const currentValue = perustelu?.virallinenTutkinnonMyontaja;
 
   const updateVirallinenTutkinnonMyontaja = (
     val: boolean | null | undefined,
   ) => {
-    // Update field directly with value
     updatePerustelu({
       virallinenTutkinnonMyontaja: val,
     });
