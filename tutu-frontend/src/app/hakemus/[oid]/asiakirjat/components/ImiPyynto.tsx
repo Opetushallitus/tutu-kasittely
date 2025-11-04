@@ -18,14 +18,12 @@ import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear'
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const ImiPyyntoComponent = ({
   imiPyynto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: ImiPyyntoProps) => {
   const { t } = useTranslations();
 
@@ -34,11 +32,7 @@ export const ImiPyyntoComponent = ({
 
   const setField = <K extends keyof ImiPyynto>(key: K, value: ImiPyynto[K]) => {
     const updatedImiPyynto = { ...currentImiPyynto, [key]: value } as ImiPyynto;
-    if (key === 'imiPyyntoNumero') {
-      debouncedUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
-    } else {
-      instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
-    }
+    updateAsiakirjaTieto({ imiPyynto: updatedImiPyynto });
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {
@@ -92,7 +86,7 @@ export const ImiPyyntoComponent = ({
                 imiPyyntoLahetetty: null,
                 imiPyyntoVastattu: null,
               };
-          instantUpdateAsiakirjaTietoAction({ imiPyynto: updatedImiPyynto });
+          updateAsiakirjaTieto({ imiPyynto: updatedImiPyynto });
         }}
         onClear={() => setField('imiPyynto', null)}
       />

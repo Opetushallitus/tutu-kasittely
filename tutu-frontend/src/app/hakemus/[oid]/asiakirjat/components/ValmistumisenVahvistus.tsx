@@ -24,12 +24,10 @@ type RadioGroupFormFieldChangeEventHandler = {
 
 export const ValmistumisenVahvistusComponent = ({
   asiakirjaTieto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: {
   asiakirjaTieto: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -50,15 +48,9 @@ export const ValmistumisenVahvistusComponent = ({
       [key]: value,
     } as ValmistumisenVahvistus;
     setValmistumisenVahvistus(updatedValmistumisenVahvistus);
-    if (key === 'valmistumisenVahvistusLisatieto') {
-      debouncedUpdateAsiakirjaTietoAction({
-        valmistumisenVahvistus: updatedValmistumisenVahvistus,
-      });
-    } else {
-      instantUpdateAsiakirjaTietoAction({
-        valmistumisenVahvistus: updatedValmistumisenVahvistus,
-      });
-    }
+    updateAsiakirjaTieto({
+      valmistumisenVahvistus: updatedValmistumisenVahvistus,
+    });
   };
 
   const updateVahvistusPyyntoLahetetty = (date: Date | null) => {

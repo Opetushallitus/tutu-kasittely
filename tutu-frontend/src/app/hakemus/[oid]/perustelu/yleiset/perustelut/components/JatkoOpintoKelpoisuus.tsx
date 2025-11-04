@@ -9,15 +9,10 @@ interface Props {
   updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
-interface ExtendedProps extends Props {
-  updateTextDebounced?: (perustelu: Partial<Perustelu>) => void;
-}
-
 export const JatkoOpintoKelpoisuus = ({
   perustelu,
   updatePerustelu,
-  updateTextDebounced,
-}: ExtendedProps) => {
+}: Props) => {
   const { t } = useTranslations();
   const theme = useTheme();
 
@@ -31,8 +26,7 @@ export const JatkoOpintoKelpoisuus = ({
   };
 
   const updateLisatieto = (val: string | undefined) => {
-    const updateFn = updateTextDebounced || updatePerustelu;
-    updateFn({
+    updatePerustelu({
       jatkoOpintoKelpoisuusLisatieto: val,
     });
   };

@@ -161,13 +161,10 @@ const ContentRow = ({
         setVastaavuus={(updatedVastaavuus: boolean) =>
           handleChange({
             lahde: id,
-            useDebounce: false,
             vastaavuus: updatedVastaavuus,
           })
         }
-        onClear={() =>
-          handleChange({ lahde: id, clear: true, useDebounce: false })
-        }
+        onClear={() => handleChange({ lahde: id, clear: true })}
         lahdeId={id}
       />
       <KuvausInput
@@ -175,7 +172,6 @@ const ContentRow = ({
         setKuvaus={(updatedKuvaus: string) =>
           handleChange({
             lahde: id,
-            useDebounce: true,
             kuvaus: updatedKuvaus,
           })
         }
@@ -187,7 +183,6 @@ const ContentRow = ({
 
 interface AsiakirjamalliPyynto {
   lahde: AsiakirjamalliLahde;
-  useDebounce: boolean;
   vastaavuus?: boolean;
   kuvaus?: string;
   clear?: boolean;
@@ -195,12 +190,10 @@ interface AsiakirjamalliPyynto {
 
 export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   asiakirjaTieto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: {
   asiakirjaTieto: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -253,15 +246,9 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
         [changedLahde]: updatedMalli,
       };
       setCurrentMallit(updatedMallit);
-      if (changeRequest.useDebounce) {
-        debouncedUpdateAsiakirjaTietoAction({
-          asiakirjamallitTutkinnoista: updatedMallit,
-        });
-      } else {
-        instantUpdateAsiakirjaTietoAction({
-          asiakirjamallitTutkinnoista: updatedMallit,
-        });
-      }
+      updateAsiakirjaTieto({
+        asiakirjamallitTutkinnoista: updatedMallit,
+      });
     }
   };
 
@@ -271,7 +258,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
       [deletedLahde],
     );
     setCurrentMallit(updatedMallit);
-    instantUpdateAsiakirjaTietoAction({
+    updateAsiakirjaTieto({
       asiakirjamallitTutkinnoista: updatedMallit,
     });
   };
