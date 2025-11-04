@@ -7,7 +7,7 @@ import * as dateFns from 'date-fns';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { ophColors } from '@/src/lib/theme';
 import { EditOutlined } from '@mui/icons-material';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   OphButton,
   OphInputFormField,
@@ -74,6 +74,10 @@ export default function HakemusRow({
     }
   }, [asiatunnus, hakemus.asiatunnus, hakemus.hakemusOid, addToast, t]);
 
+  const asiaTunnusValid = useMemo(() => {
+    return asiatunnus.match(new RegExp(/OPH-\d+-\d{4}$/)) !== null;
+  }, [asiatunnus]);
+
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus.hakemusKoskee),
@@ -88,7 +92,12 @@ export default function HakemusRow({
         </Link>
       </StyledTableCell>
       <StyledTableCell>
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          data-testid="asiatunnus"
+        >
           {showEditAsiatunnus ? (
             <>
               <OphInputFormField
@@ -97,7 +106,11 @@ export default function HakemusRow({
                   setAsiatunnus(event.target.value);
                 }}
               ></OphInputFormField>
-              <OphButton variant={'contained'} onClick={updateAsiatunnus}>
+              <OphButton
+                variant={'contained'}
+                onClick={updateAsiatunnus}
+                disabled={!asiaTunnusValid}
+              >
                 {t('yleiset.tallenna')}
               </OphButton>
             </>

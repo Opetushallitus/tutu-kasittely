@@ -374,7 +374,7 @@ class HakemusController(
     try {
       val user              = userService.getEnrichedUserDetails(true)
       val authorities       = user.authorities
-      val asiatunnusPattern = Pattern.compile("""^1\.2\.246\.562\.11\.\d+$""")
+      val asiatunnusPattern = Pattern.compile("""OPH-\d+-\d{4}$""")
 
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
         errorMessageMapper.mapPlainErrorMessage(
@@ -384,15 +384,23 @@ class HakemusController(
       } else {
         val asiatunnusUpdateRequest: AsiatunnusUpdateRequest =
           mapper.readValue(asiatunnusBytes, classOf[AsiatunnusUpdateRequest])
-        if (asiatunnusPattern.matcher(asiatunnusUpdateRequest.asiatunnus).matches) {
+        val asiatunnus = asiatunnusUpdateRequest.asiatunnus
+        if (asiatunnusPattern.matcher(asiatunnus).matches) {
           Try {
-            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnusUpdateRequest.asiatunnus)
+            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus)
           } match {
             case Success(result) =>
               if (result == 0)
                 errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
-              else
+              else {
+                auditLog.logChanges(
+                  AuditLog.getUser(request),
+                  Map("asiatunnus" -> asiatunnus),
+                  UpdateAsiatunnus,
+                  AuditUtil.getChanges(None, Some(asiatunnus))
+                )
                 ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
+              }
             case Failure(exception) =>
               errorMessageMapper.mapErrorMessage(exception)
           }

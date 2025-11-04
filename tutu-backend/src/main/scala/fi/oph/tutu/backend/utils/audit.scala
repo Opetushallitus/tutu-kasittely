@@ -212,6 +212,10 @@ object AuditOperation {
   case object ReadPaatos extends AuditOperation {
     val name = "PAATOKSEN_LUKU"
   }
+
+  case object UpdateAsiatunnus extends AuditOperation {
+    val name = "ASIATUNNUKSEN_MUOKKAUS"
+  }
 }
 
 case class AuditException(message: String) extends Exception(message)
