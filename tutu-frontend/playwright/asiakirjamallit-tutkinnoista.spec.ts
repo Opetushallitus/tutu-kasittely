@@ -93,10 +93,8 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  // Click radio button (local state update)
   await cellsOfEce.nth(1).locator('input[type="radio"][value="false"]').click();
 
-  // Click save and wait for PUT request
   let request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
