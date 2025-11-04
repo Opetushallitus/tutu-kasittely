@@ -200,6 +200,62 @@ def haeTutkintokohtaisetTiedot(
     })
 }
 
+def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  if (perusteluMaybe == None) {
+    None
+  } else {
+    val perustelu = perusteluMaybe.get
+
+    val resultString = Seq(
+      perustelu.virallinenTutkinnonMyontaja
+        .map(value => if (value == true) "Kyllä" else "Ei")
+        .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: ${muotoiltuValue}"),
+      perustelu.virallinenTutkinto
+        .map(value => if (value == true) "Kyllä" else "Ei")
+        .map(muotoiltuValue => s"Virallinen tutkinto: ${muotoiltuValue}"),
+      if (perustelu.lahdeLahtomaanKansallinenLahde) {
+        Some("Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)")
+      } else None,
+      if (perustelu.lahdeLahtomaanVirallinenVastaus) {
+        Some("Lähde: Lähtömaan virallinen vastaus")
+      } else None,
+      if (perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto) {
+        Some("Lähde: Kansainvälinen hakuteos tai verkkosivusto")
+      } else None,
+      if (perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta != "") {
+        Some(
+          s"Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta:\n${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta}"
+        )
+      } else None,
+      perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
+        .map(asema =>
+          asema match {
+            case "alempi_korkeakouluaste"           => "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto"
+            case "ylempi_korkeakouluaste"           => "Toisen vaiheen korkeakoulututkinto"
+            case "alempi_ja_ylempi_korkeakouluaste" =>
+              "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot"
+            case "tutkijakoulutusaste" => "Tieteellinen jatkotutknto"
+            case "ei_korkeakouluaste"  => "Alle korkeakoulutasoinen koulutus"
+          }
+        )
+        .map(muotoiltuAsema => {
+          s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: ${muotoiltuAsema}"
+        }),
+      if (perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa != "") {
+        Some(
+          s"Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:\n${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa}"
+        )
+      } else None
+    ).flatten.mkString("\n")
+
+    if (resultString != "") {
+      Some(resultString)
+    } else {
+      None
+    }
+  }
+}
+
 def generate(
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
@@ -213,9 +269,10 @@ def generate(
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
-    haeValmistuminenVahvistettu(hakemusMaybe),
     haeKoulutuksenSisalto(uoRoMuistioMaybe),
     haeImiHalytyksetTarkastettu(perusteluMaybe),
+    haeYleisetPerustelut(perusteluMaybe),
+    haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
     haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe)

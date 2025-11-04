@@ -21,6 +21,36 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   val nonePerustelu: Option[Perustelu]       = None
   val noneMuistio: Option[Muistio]           = None
 
+  val emptyPerustelu: Option[Perustelu] = Some(
+    Perustelu(
+      id = None,
+      hakemusId = None,
+      virallinenTutkinnonMyontaja = None,
+      virallinenTutkinto = None,
+      lahdeLahtomaanKansallinenLahde = false,
+      lahdeLahtomaanVirallinenVastaus = false,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto = false,
+      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "",
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = None,
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "",
+      aikaisemmatPaatokset = None,
+      jatkoOpintoKelpoisuus = None,
+      jatkoOpintoKelpoisuusLisatieto = None,
+      muuPerustelu = None,
+      lausuntoPyyntojenLisatiedot = None,
+      lausunnonSisalto = None,
+      lausuntopyynnot = Seq.empty,
+      luotu = None,
+      luoja = None,
+      muokattu = None,
+      muokkaaja = None,
+      uoRoSisalto = UoRoSisalto(),
+      apSisalto = APSisalto(
+        IMIHalytysTarkastettu = None
+      )
+    )
+  )
+
   val someHakemus: Option[Hakemus] = Some(
     Hakemus(
       hakemusOid = UUID.randomUUID().toString,
@@ -160,14 +190,14 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     Perustelu(
       id = Some(UUID.randomUUID()),
       hakemusId = Some(UUID.randomUUID()),
-      virallinenTutkinnonMyontaja = None,
-      virallinenTutkinto = None,
-      lahdeLahtomaanKansallinenLahde = false,
-      lahdeLahtomaanVirallinenVastaus = false,
-      lahdeKansainvalinenHakuteosTaiVerkkosivusto = false,
-      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "",
-      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = None,
-      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "",
+      virallinenTutkinnonMyontaja = Some(true),
+      virallinenTutkinto = Some(true),
+      lahdeLahtomaanKansallinenLahde = true,
+      lahdeLahtomaanVirallinenVastaus = true,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto = true,
+      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "Selvitetty",
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Some("alempi_korkeakouluaste"),
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "Selvitetty",
       aikaisemmatPaatokset = None,
       jatkoOpintoKelpoisuus = None,
       jatkoOpintoKelpoisuusLisatieto = None,
@@ -317,5 +347,32 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
     assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesNoneForNone(): Unit = {
+    val result = haeYleisetPerustelut(nonePerustelu)
+    assert(result.isEmpty)
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesNoneForEmptyPerustelu(): Unit = {
+    val result = haeYleisetPerustelut(emptyPerustelu)
+    assert(result.isEmpty)
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesStringForDataInPerustelu(): Unit = {
+    val result = haeYleisetPerustelut(somePerustelu)
+
+    assert(result.nonEmpty)
+    assert(result.get.contains("Virallinen tutkinnon myöntäjä"))
+    assert(result.get.contains("Virallinen tutkinto"))
+    assert(result.get.contains("Lähde: Lähtömaan kansallinen lähde"))
+    assert(result.get.contains("Lähde: Lähtömaan virallinen vastaus"))
+    assert(result.get.contains("Lähde: Kansainvälinen hakuteos tai verkkosivusto"))
+    assert(result.get.contains("Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta"))
+    assert(result.get.contains("Ylimmän tutkinnon asema lähtömaan järjestelmässä"))
+    assert(result.get.contains("Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä"))
   }
 }
