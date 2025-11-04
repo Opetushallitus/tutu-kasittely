@@ -79,7 +79,8 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
         Kieli.en -> value,
         Kieli.sv -> value
       ),
-      value = ""
+      value = "",
+      hidden = None
     )
     val valinta = item.options
       .find((option: Valinta) => option.value == value)
@@ -380,7 +381,7 @@ class AtaruLomakeParser() {
     item: LomakeContentItem,
     basePath: Kielistetty
   ): Seq[PaatosTietoOption] = {
-    item.options.map { option =>
+    item.options.filter(option => !option.hidden.getOrElse(false)).map { option =>
       val optionPath = Map(
         Kieli.fi -> s"${basePath.getOrElse(Kieli.fi, "")}_${option.label.getOrElse(Kieli.fi, "")}",
         Kieli.sv -> s"${basePath.getOrElse(Kieli.sv, "")}_${option.label.getOrElse(Kieli.sv, "")}",

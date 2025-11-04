@@ -31,7 +31,8 @@ case class InfoText(
 case class Valinta(
   label: Kielistetty,
   value: String,
-  followups: Seq[LomakeContentItem] = Seq()
+  followups: Seq[LomakeContentItem] = Seq(),
+  hidden: Option[Boolean]
 )
 
 case class PaatosTietoOption(
