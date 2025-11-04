@@ -419,6 +419,76 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   );
 });
 
+test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja päivitys lähettää kutsun backendille', async ({
+  page,
+}) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=1 Taso');
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tasoOption.click(),
+  ]);
+
+  const tutkintonimiDropdown = page.getByTestId('paatos-tutkintonimi-dropdown');
+  await expect(tutkintonimiDropdown).toBeVisible();
+  await tutkintonimiDropdown.click();
+
+  const tutkintoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=Päälikkö');
+
+  await expect(tutkintoOption).toBeVisible();
+
+  await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    tutkintoOption.first().click(),
+  ]);
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  const [req] = await Promise.all([
+    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="false"]')
+      .click(),
+  ]);
+
+  const myonteinenPaatosPostData = req.postDataJSON();
+  expect(myonteinenPaatosPostData.paatosTiedot[0].myonteinenPaatos).toEqual(
+    false,
+  );
+
+  const eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox = page.getByTestId(
+    'kielteinenPaatos-eiVastaaSuomessaSuoritettavaaTutkintoa',
+  );
+  await expect(eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox).toBeVisible();
+
+  const [req1] = await Promise.all([
+    page.waitForRequest((req1) => matchUpdate(req1.url(), req1.method())),
+    eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox.click(),
+  ]);
+
+  const kielteinenPaatosPostData = req1.postDataJSON();
+  expect(
+    kielteinenPaatosPostData.paatosTiedot[0].kielteisenPaatoksenPerustelut
+      .eiVastaaSuomessaSuoritettavaaTutkintoa,
+  ).toEqual(true);
+});
+
 test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ page }) => {
   const paatos = getPaatos();
   await page.route(

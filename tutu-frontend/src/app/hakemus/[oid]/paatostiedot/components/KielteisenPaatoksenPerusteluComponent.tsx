@@ -25,12 +25,8 @@ export const KielteisenPaatoksenPerusteluComponent = ({
 
   return (
     <Stack direction="column" gap={theme.spacing(2)}>
-      <OphTypography variant="h4">
-        {t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
-      </OphTypography>
-
       <OphTypography variant="h5">
-        {t('hakemus.paatos.myonteinenPaatos.otsikko')}
+        {t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
       </OphTypography>
       <OphCheckbox
         data-testid="kielteinenPaatos-epavirallinenKorkeakoulu"
