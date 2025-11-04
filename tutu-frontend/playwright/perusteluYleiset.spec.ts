@@ -1,5 +1,3 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { expect, Page, test } from '@playwright/test';
 import {
   mockUser,
@@ -11,11 +9,13 @@ import {
   clickSaveAndWaitForPUT,
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
+import { Perustelu } from '@/src/lib/types/perustelu';
+import { Tutkinto } from '@/src/lib/types/hakemus';
 
 const expectRequestData = async (
   page: Page,
   action: Promise<void>,
-  data: any,
+  data: unknown,
 ) => {
   // Perform action (local state update)
   await action;
@@ -34,7 +34,7 @@ const expectRequestData = async (
   // Wait for save to complete before next action
   await waitForSaveComplete(page);
 
-  return expect(request.postDataJSON()).toMatchObject(data);
+  return expect(request.postDataJSON()).toMatchObject(data as Perustelu);
 };
 
 test.beforeEach(async ({ page }) => {
@@ -412,7 +412,7 @@ test.describe('Yleiset perustelut', () => {
 
     // Verify that tutkinto 1 was saved with the correct data
     const tutkinnot = request.postDataJSON().tutkinnot;
-    const tutkinto1 = tutkinnot.find((t: any) => t.jarjestys === '1');
+    const tutkinto1 = tutkinnot.find((t: Tutkinto) => t.jarjestys === '1');
 
     expect(tutkinto1).toMatchObject({
       jarjestys: '1',

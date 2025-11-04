@@ -21,12 +21,10 @@ export const JatkoOpintoKelpoisuus = ({
   const { t } = useTranslations();
   const theme = useTheme();
 
-  // Controlled component - read value directly from props (server response)
   const currentValue = perustelu?.jatkoOpintoKelpoisuus;
   const currentLisatieto = perustelu?.jatkoOpintoKelpoisuusLisatieto;
 
   const updateKelpoisuus = (val: string | null | undefined) => {
-    // Update field directly with value
     updatePerustelu({
       jatkoOpintoKelpoisuus: val,
     });
