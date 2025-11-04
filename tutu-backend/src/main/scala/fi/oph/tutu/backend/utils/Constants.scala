@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.utils
 
-import fi.oph.tutu.backend.domain.AtaruKysymysId
+import fi.oph.tutu.backend.domain.{AtaruKysymysId, PaatosTietoOption}
+import fi.oph.tutu.backend.domain.Kieli.*
 
 object Constants {
   val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
@@ -64,4 +65,32 @@ object Constants {
   val ATARU_LOMAKE_RIITTAVAT_OPINNOT_OPTIONS: AtaruKysymysId = {
     AtaruKysymysId("337b4741-2550-4f21-adb5-69dfdcbb7829", "riittavat-opinnot-options")
   }
+
+  // Kovakoodatut juuritason arvot päätöstiedon kelpoisuusoptioissa
+  val KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE: PaatosTietoOption =
+    PaatosTietoOption(
+      label =
+        Some(Map(fi -> "Opetusalan ammatit", sv -> "Uppgifter inom undervisningsområdet", en -> "Teaching positions")),
+      value =
+        Some(Map(fi -> "Opetusalan ammatit", sv -> "Uppgifter inom undervisningsområdet", en -> "Teaching positions")),
+      children = Seq()
+    )
+  val KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE: PaatosTietoOption =
+    PaatosTietoOption(
+      label = Some(
+        Map(
+          fi -> "Varhaiskasvatuksen tehtävät",
+          sv -> "Uppgifter inom småbarnspedagogik",
+          en -> "Professions in early childhood education and care"
+        )
+      ),
+      value = Some(
+        Map(
+          fi -> "Varhaiskasvatuksen tehtävät",
+          sv -> "Uppgifter inom småbarnspedagogik",
+          en -> "Professions in early childhood education and care"
+        )
+      ),
+      children = Seq()
+    )
 }

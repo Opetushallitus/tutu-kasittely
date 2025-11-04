@@ -1,5 +1,9 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Kelpoisuus, PaatosTieto } from '@/src/lib/types/paatos';
+import {
+  Kelpoisuus,
+  PaatosTieto,
+  PaatosTietoOption,
+} from '@/src/lib/types/paatos';
 import { useEffect, useState } from 'react';
 import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusComponent';
 
@@ -14,12 +18,14 @@ type KelpoisuusListProps = {
   t: TFunction;
   paatosTieto: PaatosTieto;
   updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  kelpoisuusOptions: PaatosTietoOption[];
 };
 
 export const KelpoisuusList = ({
   t,
   paatosTieto,
   updatePaatosTietoAction,
+  kelpoisuusOptions,
 }: KelpoisuusListProps) => {
   const [currentKelpoisuudet, setCurrentKelpoisuudet] = useState<Kelpoisuus[]>(
     [],
@@ -76,6 +82,7 @@ export const KelpoisuusList = ({
           sovellettuLaki={paatosTieto.sovellettuLaki}
           updateKelpoisuusAction={updateKelpoisuus}
           deleteKelpoisuusAction={deleteKelpoisuus}
+          kelpoisuusOptions={kelpoisuusOptions}
         />
       ))}
     </>

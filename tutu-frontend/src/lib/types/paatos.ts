@@ -98,6 +98,11 @@ export type Direktiivitaso =
   | 'd_1384_2015_patevyystaso_4'
   | 'e_1384_2015_patevyystaso_5';
 
+export type KelpoisuusFieldUpdateCallback = <K extends keyof Kelpoisuus>(
+  key: K,
+  value: Kelpoisuus[K],
+) => void;
+
 export type Kelpoisuus = {
   id?: string;
   paatostietoId?: string;

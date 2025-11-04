@@ -4,17 +4,10 @@ import {
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
-import {
-  ListSubheader,
-  MenuItem,
-  Select,
-  Stack,
-  useTheme,
-} from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import {
   OphButton,
   ophColors,
-  OphFormFieldWrapper,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
@@ -23,6 +16,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
+import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
@@ -78,48 +72,14 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           paatosTietoOptions.tiettyTutkintoTaiOpinnotOptions,
         );
 
-  const renderOptionsRecursively = (
-    options: typeof rinnastettavaTutkintoTaiOpinnotOptions,
-    level: number = 1,
-  ): React.ReactNode[] => {
-    return options.flatMap((option) => {
-      const isTopLevel =
-        'children' in option && option.children && option.children.length > 0;
-
-      if (isTopLevel) {
-        return [
-          <ListSubheader
-            key={`header-${option.value}`}
-            sx={{ paddingLeft: level }}
-          >
-            <OphTypography sx={{ paddingLeft: level + 1 }} variant="h5">
-              {option.label}
-            </OphTypography>
-          </ListSubheader>,
-          ...renderOptionsRecursively(option.children!, level + 1),
-        ];
-      }
-
-      return (
-        <MenuItem key={option.value} value={option.value}>
-          <OphTypography sx={{ paddingLeft: level === 1 ? level : level + 1 }}>
-            {option.label}
-          </OphTypography>
-        </MenuItem>
-      );
-    });
-  };
-
-  const rinnastettavaTutkintoTaiOpinnotGroupedOptions =
-    renderOptionsRecursively(rinnastettavaTutkintoTaiOpinnotOptions);
-
-  const getRinnastettavaTutkintoTaiOpinnotValueWithPath = (
-    value: string | null,
-  ) => {
-    if (!value) return '';
-    const parts = value.split('_');
-    if (parts.length == 1) return value;
-    return `${parts.join(', ')}`;
+  const updateTutkintoTaiOpintoFieldAction = (fieldVal: string) => {
+    updateTutkintoTaiOpintoAction(
+      {
+        ...tutkintoTaiOpinto,
+        tutkintoTaiOpinto: fieldVal,
+      },
+      index,
+    );
   };
 
   return (
@@ -166,32 +126,14 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           </OphButton>
         )}{' '}
       </Stack>
-      <OphFormFieldWrapper
+      <PaatosTietoDropdown
         label={t(
           `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
         )}
-        sx={{ width: '100%' }}
-        renderInput={() => (
-          <Select
-            sx={{ width: '100%' }}
-            data-testid="rinnastettava-tutkinto-tai-opinto-select"
-            value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
-            onChange={(e) =>
-              updateTutkintoTaiOpintoAction(
-                {
-                  ...tutkintoTaiOpinto,
-                  tutkintoTaiOpinto: e.target.value,
-                },
-                index,
-              )
-            }
-            renderValue={(value: string | null) =>
-              getRinnastettavaTutkintoTaiOpinnotValueWithPath(value)
-            }
-          >
-            {rinnastettavaTutkintoTaiOpinnotGroupedOptions}
-          </Select>
-        )}
+        options={rinnastettavaTutkintoTaiOpinnotOptions}
+        updateAction={updateTutkintoTaiOpintoFieldAction}
+        value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
+        dataTestId={'rinnastettava-tutkinto-tai-opinto-select'}
       />
       <MyonteinenPaatos
         t={t}
