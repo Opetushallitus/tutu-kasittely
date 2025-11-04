@@ -51,7 +51,6 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
 
-  // Tutkinto 1
   await expect(page.getByTestId('tutkinto-otsikko-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-1')).toHaveText('Tutkinto 1');
 
@@ -92,7 +91,6 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
     'Valitse...',
   );
 
-  // Tutkinto 2
   await expect(page.getByTestId('tutkinto-otsikko-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-2')).toHaveText('Tutkinto 2');
 
@@ -127,7 +125,6 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
     'Valitse...',
   );
 
-  // Muu tutkinto
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toHaveText(
     'Muut tutkinnot ja opinnot',
@@ -290,7 +287,6 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
 
-  // Testaa nimi popover - data tulee sisalto-rakenteesta
   const nimiLink = page.getByTestId('tutkinto-nimi-hakijan-ilmoittama-link-1');
   await expect(nimiLink).toBeVisible();
   await nimiLink.click();
@@ -299,7 +295,6 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await page.locator('.MuiPopover-paper').getByRole('button').click();
   await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
 
-  // Testaa oppilaitos popover
   const oppilaitosLink = page.getByTestId(
     'tutkinto-oppilaitos-hakijan-ilmoittama-link-1',
   );
@@ -310,7 +305,6 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await page.locator('.MuiPopover-paper').getByRole('button').click();
   await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
 
-  // Testaa maa popover - näyttää maan nimen sisällöstä
   const maaLink = page.getByTestId('tutkinto-maa-hakijan-ilmoittama-link-1');
   await expect(maaLink).toBeVisible();
   await maaLink.click();

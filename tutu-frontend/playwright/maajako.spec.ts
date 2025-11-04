@@ -84,7 +84,6 @@ test('Näytä AlertBox, kun jotkin maakoodit ovat määrittämättä, ja Success
   await expect(page.getByTestId('alert-box')).toBeVisible();
   await expect(page.getByTestId('success-box')).toHaveCount(0);
 
-  // Aseta määrittämätön maakoodi (PUT + mitätöinti + GET).
   await page.getByTestId('toggle-edit').click();
   const firstSelect = await page.getByTestId('esittelija-maaselection-E1');
   await expect(firstSelect).toBeVisible();
@@ -116,10 +115,8 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
 
   await gotoMaajako(page);
 
-  // Siirry muokkaus tilaan
   await page.getByTestId('toggle-edit').click();
 
-  // Assign "Ruotsi" (002) via the first esittelija select
   const firstSelect = await page.getByTestId('esittelija-maaselection-E1');
   await expect(firstSelect).toBeVisible();
   await firstSelect.click();
@@ -127,25 +124,20 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   // Sulje pudotusvalikko, jotta tausta ei estä klikkauksia.
   await page.keyboard.press('Escape');
 
-  // Wait for success message and the chip to appear
   await expect(page.getByTestId('success-box')).toBeVisible();
   await expect(
     page.getByTestId('maakoodi-chip-maatjavaltiot2_002'),
   ).toBeVisible();
 
-  // Remove assignment by deleting chip -> becomes unassigned -> Alert shown again
   const chip = page.getByTestId('maakoodi-chip-maatjavaltiot2_002');
   await expect(chip).toBeVisible();
 
-  // Wait for the chip to be stable and the cancel icon to be clickable
   const cancelIcon = chip.locator('svg[data-testid="CancelIcon"]');
   await expect(cancelIcon).toBeVisible();
   await expect(cancelIcon).toBeEnabled();
 
-  // Force click the cancel icon to ensure the click happens
   await cancelIcon.click({ force: true });
 
-  // Workaround, API vastaa esittelijaId null
   // Poista määritys poistamalla maavalinta → muuttuu määrittämättömäksi → Alertbox näytetään jälleen.
   await page.unroute('**/tutu-backend/api/maakoodi*');
   setupMaakoodiApi(page, [

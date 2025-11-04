@@ -296,8 +296,7 @@ const AsiakirjaPagePure = ({
         {hakemus.hakemusKoskee === 1 && (
           <ImiPyyntoComponent
             imiPyynto={asiakirja.imiPyynto}
-            instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-            debouncedUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           ></ImiPyyntoComponent>
         )}
         <Divider orientation={'horizontal'} />
@@ -325,23 +324,19 @@ const AsiakirjaPagePure = ({
         />
         <ValmistumisenVahvistusComponent
           asiakirjaTieto={asiakirja}
-          instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-          debouncedUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         />
         <AllekirjoitustenTarkistus
           asiakirjaTieto={asiakirja}
-          instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-          debouncedUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         />
         <AlkuperaisetAsiakirjat
           asiakirja={asiakirja}
-          instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-          debouncedUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         />
         <AsiakirjaMallejaVastaavistaTutkinnoista
           asiakirjaTieto={asiakirja}
-          instantUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-          debouncedUpdateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         />
       </Stack>
       <SaveRibbon onSave={onSave} isSaving={isSaving} hasChanges={hasChanges} />

@@ -124,12 +124,22 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
 
   const lahetettyInput = lahetetty.locator('input');
   await lahetetty.click();
-  await page.locator('.react-datepicker__day--026').first().click();
-  await expect(lahetettyInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+  await page
+    .locator(
+      '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',
+    )
+    .click();
+  await expect(lahetettyInput).toHaveValue(
+    dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
+  );
 
   const vastattuInput = vastattu.locator('input');
   await vastattu.click();
-  await page.locator('.react-datepicker__day--026').last().click();
+  await page
+    .locator(
+      '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',
+    )
+    .click();
   await expect(vastattuInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );

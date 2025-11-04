@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react';
-
-import { Stack, useTheme } from '@mui/material';
-import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 import {
   AsiakirjaTieto,
@@ -22,42 +19,29 @@ export const ApHakemus = ({
 }: ApHakemusProps) => {
   const { t } = useTranslations();
 
-  const [isApHakemus, setIsApHakemus] = useState<boolean | undefined>();
+  const currentValue = asiakirjaTieto.apHakemus;
 
-  const updateApHakemus = (val: boolean | undefined) => {
-    if (val !== isApHakemus) {
-      setIsApHakemus(val);
-      updateAsiakirjaTieto({ apHakemus: val });
-    }
+  const updateApHakemus = (val: boolean | null) => {
+    updateAsiakirjaTieto({
+      apHakemus: val,
+    } as Partial<AsiakirjaTieto>);
   };
-
-  useEffect(() => {
-    setIsApHakemus(asiakirjaTieto.apHakemus);
-  }, [asiakirjaTieto.apHakemus]);
-
-  const theme = useTheme();
 
   return (
     hakemusKoskee === 1 && (
-      <>
-        <OphTypography variant="h4">{t('hakemus.apHakemus')}</OphTypography>
-        <Stack direction="row" gap={theme.spacing(3)}>
-          <OphRadio
-            value={'true'}
-            checked={isApHakemus === true}
-            label={t('yleiset.kylla')}
-            name="ap_hakemus_true_false"
-            onChange={() => updateApHakemus(true)}
-          ></OphRadio>
-          <OphRadio
-            value={'false'}
-            checked={isApHakemus === false}
-            label={t('yleiset.ei')}
-            name="ap_hakemus_true_false"
-            onChange={() => updateApHakemus(false)}
-          ></OphRadio>
-        </Stack>
-      </>
+      <OphRadioGroupWithClear
+        label={t('hakemus.apHakemus')}
+        labelId="ap-hakemus-radio-group-label"
+        data-testid="ap-hakemus-radio-group"
+        options={[
+          { value: 'true', label: t('yleiset.kylla') },
+          { value: 'false', label: t('yleiset.ei') },
+        ]}
+        row
+        value={currentValue?.toString() ?? ''}
+        onChange={(e) => updateApHakemus(e.target.value === 'true')}
+        onClear={() => updateApHakemus(null)}
+      />
     )
   );
 };

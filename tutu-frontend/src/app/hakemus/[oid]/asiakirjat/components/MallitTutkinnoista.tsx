@@ -10,7 +10,6 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   OphInputFormField,
-  OphRadio,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import {
@@ -23,9 +22,7 @@ import {
 import * as R from 'remeda';
 import React, { useEffect } from 'react';
 import { match, P } from 'ts-pattern';
-import { Theme } from '@mui/material/styles';
-import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
-import { IconButton } from '@/src/components/IconButton';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 type LahdeOption = {
   id: AsiakirjamalliLahde;
@@ -64,11 +61,10 @@ const TableHeader = () => {
             label={t('hakemus.asiakirjat.mallejaTutkinnoista.lahde')}
           />
         </TableCell>
-        <TableCell style={{ width: '5%' }}>
-          <BoldedLabel label={t('yleiset.kylla')} />
-        </TableCell>
-        <TableCell style={{ width: '7%' }}>
-          <BoldedLabel label={t('yleiset.ei')} />
+        <TableCell colSpan={2} style={{ width: '25%' }}>
+          <BoldedLabel
+            label={t('hakemus.asiakirjat.mallejaTutkinnoista.vastaavuus')}
+          />
         </TableCell>
         <TableCell>
           <OphTypography variant={'body1'}>
@@ -83,31 +79,33 @@ const TableHeader = () => {
 const RadioGroup = ({
   vastaavuus,
   setVastaavuus,
+  onClear,
+  lahdeId,
 }: {
   vastaavuus: boolean | undefined;
   setVastaavuus: (updatedVastaavuus: boolean) => void;
+  onClear: () => void;
+  lahdeId: string;
 }) => {
+  const { t } = useTranslations();
+
   return (
-    <>
-      <TableCell>
-        <OphRadio
-          value={'true'}
-          checked={vastaavuus === true}
-          label={''}
-          name="vastaavuus_true_false"
-          onChange={() => setVastaavuus(true)}
-        ></OphRadio>
-      </TableCell>
-      <TableCell>
-        <OphRadio
-          value={'false'}
-          checked={vastaavuus === false}
-          label={''}
-          name="vastaavuus_true_false"
-          onChange={() => setVastaavuus(false)}
-        ></OphRadio>
-      </TableCell>
-    </>
+    <TableCell colSpan={2}>
+      <OphRadioGroupWithClear
+        labelId={`asiakirjamalli-vastaavuus-${lahdeId}-label`}
+        data-testid={`asiakirjamalli-vastaavuus-${lahdeId}`}
+        options={[
+          { value: 'true', label: t('yleiset.kylla') },
+          { value: 'false', label: t('yleiset.ei') },
+        ]}
+        row
+        value={vastaavuus?.toString() ?? ''}
+        onChange={(e) => setVastaavuus(e.target.value === 'true')}
+        onClear={onClear}
+        clearButtonPlacement="inline"
+        inlineLabelMinWidth={60}
+      />
+    </TableCell>
   );
 };
 
@@ -146,48 +144,34 @@ const ContentRow = ({
   value,
   handleChange,
   kuvausLabel,
-  theme,
 }: {
   id: AsiakirjamalliLahde;
   label: string;
   value?: AsiakirjamalliTutkinnosta;
   handleChange: (changeRequest: AsiakirjamalliPyynto) => void;
   kuvausLabel?: string;
-  theme: Theme;
 }) => {
   return (
     <TableRow data-testid={`asiakirjamallit-tutkinnoista-${id}`}>
       <TableCell>
-        <Stack direction="row" gap={theme.spacing(1)}>
-          <OphTypography>{label}</OphTypography>
-          {value?.vastaavuus !== undefined && (
-            <IconButton
-              data-testid={`asiakirjamalli-delete-${id}`}
-              onClick={() =>
-                handleChange({ lahde: id, clear: true, useDebounce: false })
-              }
-            >
-              <ClearSelectionIcon />
-            </IconButton>
-          )}
-        </Stack>
+        <OphTypography>{label}</OphTypography>
       </TableCell>
       <RadioGroup
         vastaavuus={value?.vastaavuus}
         setVastaavuus={(updatedVastaavuus: boolean) =>
           handleChange({
             lahde: id,
-            useDebounce: false,
             vastaavuus: updatedVastaavuus,
           })
         }
+        onClear={() => handleChange({ lahde: id, clear: true })}
+        lahdeId={id}
       />
       <KuvausInput
         kuvaus={value?.kuvaus || ''}
         setKuvaus={(updatedKuvaus: string) =>
           handleChange({
             lahde: id,
-            useDebounce: true,
             kuvaus: updatedKuvaus,
           })
         }
@@ -199,7 +183,6 @@ const ContentRow = ({
 
 interface AsiakirjamalliPyynto {
   lahde: AsiakirjamalliLahde;
-  useDebounce: boolean;
   vastaavuus?: boolean;
   kuvaus?: string;
   clear?: boolean;
@@ -207,12 +190,10 @@ interface AsiakirjamalliPyynto {
 
 export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   asiakirjaTieto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: {
   asiakirjaTieto: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -265,15 +246,9 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
         [changedLahde]: updatedMalli,
       };
       setCurrentMallit(updatedMallit);
-      if (changeRequest.useDebounce) {
-        debouncedUpdateAsiakirjaTietoAction({
-          asiakirjamallitTutkinnoista: updatedMallit,
-        });
-      } else {
-        instantUpdateAsiakirjaTietoAction({
-          asiakirjamallitTutkinnoista: updatedMallit,
-        });
-      }
+      updateAsiakirjaTieto({
+        asiakirjamallitTutkinnoista: updatedMallit,
+      });
     }
   };
 
@@ -283,7 +258,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
       [deletedLahde],
     );
     setCurrentMallit(updatedMallit);
-    instantUpdateAsiakirjaTietoAction({
+    updateAsiakirjaTieto({
       asiakirjamallitTutkinnoista: updatedMallit,
     });
   };
@@ -306,7 +281,6 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
               label={t(option.lKey)}
               value={currentMallit?.[option.id]}
               handleChange={handleChange}
-              theme={theme}
             />
           ))}
           <ContentRow
@@ -315,7 +289,6 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
             value={currentMallit?.muu}
             handleChange={handleChange}
             kuvausLabel={t('hakemus.asiakirjat.mallejaTutkinnoista.muuSelite')}
-            theme={theme}
           />
         </TableBody>
       </Table>

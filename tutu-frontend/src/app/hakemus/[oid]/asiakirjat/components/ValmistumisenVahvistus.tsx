@@ -9,13 +9,13 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   OphCheckbox,
   OphInputFormField,
-  OphRadioGroupFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 import { OphRadioOption } from '@/src/lib/types/common';
+import { OphRadioGroupFormFieldWithClear } from '@/src/components/OphRadioGroupFormFieldWithClear';
 
 type RadioGroupFormFieldChangeEventHandler = {
   (event: React.FormEvent<HTMLDivElement>): void;
@@ -24,12 +24,10 @@ type RadioGroupFormFieldChangeEventHandler = {
 
 export const ValmistumisenVahvistusComponent = ({
   asiakirjaTieto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: {
   asiakirjaTieto: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -50,15 +48,9 @@ export const ValmistumisenVahvistusComponent = ({
       [key]: value,
     } as ValmistumisenVahvistus;
     setValmistumisenVahvistus(updatedValmistumisenVahvistus);
-    if (key === 'valmistumisenVahvistusLisatieto') {
-      debouncedUpdateAsiakirjaTietoAction({
-        valmistumisenVahvistus: updatedValmistumisenVahvistus,
-      });
-    } else {
-      instantUpdateAsiakirjaTietoAction({
-        valmistumisenVahvistus: updatedValmistumisenVahvistus,
-      });
-    }
+    updateAsiakirjaTieto({
+      valmistumisenVahvistus: updatedValmistumisenVahvistus,
+    });
   };
 
   const updateVahvistusPyyntoLahetetty = (date: Date | null) => {
@@ -180,7 +172,7 @@ export const ValmistumisenVahvistusComponent = ({
               dataTestId="vahvistusPyyntoVastattu-calendar"
             />
           </Stack>
-          <OphRadioGroupFormField
+          <OphRadioGroupFormFieldWithClear
             label={t('hakemus.asiakirjat.valmistumisenVahvistus.vastaus')}
             data-testid="valmistumisenVahvistus-radio-group"
             sx={{ width: '100%' }}
@@ -191,6 +183,7 @@ export const ValmistumisenVahvistusComponent = ({
               ''
             }
             onChange={radioGroupChangeHandler}
+            onClear={() => setField('valmistumisenVahvistusVastaus', null)}
           />
           {valmistumisenVahvistus.valmistumisenVahvistusVastaus && (
             <OphInputFormField

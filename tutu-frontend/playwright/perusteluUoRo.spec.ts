@@ -16,7 +16,6 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   );
   await expect(page.getByText('Erot koulutuksen sisällössä')).toBeVisible();
 
-  // Lasketaan checkboxit sivulla:
   const checkboxes = page.locator('[data-testid^="checkbox-"]');
   await expect
     .poll(async () => await checkboxes.count(), { timeout: 15000 })
@@ -27,7 +26,8 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   await otmMuuEro.scrollIntoViewIfNeeded();
   const otmMuuEroCheckbox = otmMuuEro.locator('input[type="checkbox"]');
   await expect(otmMuuEroCheckbox).toBeVisible();
-  await otmMuuEroCheckbox.check();
+
+  await otmMuuEroCheckbox.click();
   await expect(otmMuuEroCheckbox).toBeChecked();
   await expect(page.getByTestId('otmMuuEroSelite')).toBeVisible();
 
@@ -77,7 +77,8 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     'input[type="checkbox"]',
   );
   await expect(sovellettuLuokanopettajaCheckbox).toBeVisible();
-  await sovellettuLuokanopettajaCheckbox.check();
+
+  await sovellettuLuokanopettajaCheckbox.click();
   await expect(sovellettuLuokanopettajaCheckbox).toBeChecked();
 
   const sovellettuLuokanopettajaRadioGroup = page.getByTestId(

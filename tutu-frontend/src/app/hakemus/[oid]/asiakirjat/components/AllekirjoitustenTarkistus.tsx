@@ -17,7 +17,7 @@ import {
 
 interface StatelessAllekirjoitustenTarkistusProps {
   lisatieto: string | null | undefined;
-  setLisatieto: (lisatieto: string | null, useDebounce: boolean) => void;
+  setLisatieto: (lisatieto: string | null) => void;
   t: TFunction;
 }
 
@@ -33,14 +33,14 @@ const StatelessAllekirjoitustenTarkistus = ({
       <OphCheckbox
         label={t('hakemus.asiakirjat.allekirjoituksetTarkistettu')}
         checked={checked}
-        onChange={() => setLisatieto(checked ? null : '', false)}
+        onChange={() => setLisatieto(checked ? null : '')}
       />
       {checked && (
         <OphInputFormField
           multiline={true}
           label={t('hakemus.asiakirjat.allekirjoituksetTarkistettuLisatietoja')}
           value={lisatieto}
-          onChange={(event) => setLisatieto(event.target.value, true)}
+          onChange={(event) => setLisatieto(event.target.value)}
         />
       )}
     </>
@@ -49,14 +49,12 @@ const StatelessAllekirjoitustenTarkistus = ({
 
 interface AllekirjoitustenTarkistusProps {
   asiakirjaTieto: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const AllekirjoitustenTarkistus = ({
   asiakirjaTieto,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: AllekirjoitustenTarkistusProps) => {
   const { t } = useTranslations();
 
@@ -79,17 +77,13 @@ export const AllekirjoitustenTarkistus = ({
   return (
     <StatelessAllekirjoitustenTarkistus
       lisatieto={lisatieto}
-      setLisatieto={(lisatieto: string | null, useDebounce) => {
+      setLisatieto={(lisatieto: string | null) => {
         setLisatieto(lisatieto);
         const toBeAsiakirjaTieto: Partial<AsiakirjaTieto> = {
           allekirjoituksetTarkistettu: isDefined(lisatieto),
           allekirjoituksetTarkistettuLisatiedot: lisatieto,
         };
-        if (useDebounce) {
-          debouncedUpdateAsiakirjaTietoAction(toBeAsiakirjaTieto);
-        } else {
-          instantUpdateAsiakirjaTietoAction(toBeAsiakirjaTieto);
-        }
+        updateAsiakirjaTieto(toBeAsiakirjaTieto);
       }}
       t={t}
     />

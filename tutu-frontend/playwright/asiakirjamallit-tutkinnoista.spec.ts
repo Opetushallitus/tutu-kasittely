@@ -5,6 +5,7 @@ import {
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
+import { clickSaveAndWaitForPUT } from '@/playwright/helpers/saveHelpers';
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([
@@ -33,40 +34,48 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   await expect(
     cellsOfEce.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfEce.nth(3).locator('textarea').first()).toHaveValue(
+  await expect(cellsOfEce.nth(2).locator('textarea').first()).toHaveValue(
     'Jotain kuvausta',
   );
-  await expect(page.getByTestId('asiakirjamalli-delete-ece')).toBeVisible();
+  await expect(
+    page.getByTestId('asiakirjamalli-vastaavuus-ece-clear-button'),
+  ).toBeVisible();
 
   const cellsOfNuffic = page
     .getByTestId('asiakirjamallit-tutkinnoista-nuffic')
     .locator('td');
   await expect(cellsOfNuffic.nth(0)).toHaveText('Nuffic');
   await expect(
-    cellsOfNuffic.nth(2).locator('.MuiRadio-root.Mui-checked'),
+    cellsOfNuffic.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfNuffic.nth(3).locator('textarea').first()).toBeEmpty();
-  await expect(page.getByTestId('asiakirjamalli-delete-nuffic')).toBeVisible();
+  await expect(cellsOfNuffic.nth(2).locator('textarea').first()).toBeEmpty();
+  await expect(
+    page.getByTestId('asiakirjamalli-vastaavuus-nuffic-clear-button'),
+  ).toBeVisible();
 
   const cellsOfAacrao = page
     .getByTestId('asiakirjamallit-tutkinnoista-aacrao')
     .locator('td');
   await expect(cellsOfAacrao.nth(0)).toHaveText('Aacrao');
   await expect(
-    cellsOfAacrao.nth(2).locator('.MuiRadio-root.Mui-checked'),
+    cellsOfAacrao.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
-  await expect(cellsOfAacrao.nth(3).locator('textarea').first()).toHaveValue(
+  await expect(cellsOfAacrao.nth(2).locator('textarea').first()).toHaveValue(
     'Jotain muuta kuvausta',
   );
-  await expect(page.getByTestId('asiakirjamalli-delete-aacrao')).toBeVisible();
+  await expect(
+    page.getByTestId('asiakirjamalli-vastaavuus-aacrao-clear-button'),
+  ).toBeVisible();
 
   await expect(
-    page.getByTestId('asiakirjamalli-delete-UK_enic'),
+    page.getByTestId('asiakirjamalli-vastaavuus-UK_enic-clear-button'),
   ).not.toBeVisible();
   await expect(
-    page.getByTestId('asiakirjamalli-delete-naric_portal'),
+    page.getByTestId('asiakirjamalli-vastaavuus-naric_portal-clear-button'),
   ).not.toBeVisible();
-  await expect(page.getByTestId('asiakirjamalli-delete-muu')).not.toBeVisible();
+  await expect(
+    page.getByTestId('asiakirjamalli-vastaavuus-muu-clear-button'),
+  ).not.toBeVisible();
 });
 
 test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
@@ -84,36 +93,34 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
 
-  await cellsOfEce.nth(2).locator('input[type="radio"]').click();
+  await cellsOfEce.nth(1).locator('input[type="radio"][value="false"]').click();
+
+  let request = await clickSaveAndWaitForPUT(page, '/hakemus/');
+  expect(
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
+  ).toEqual(false);
 
   const cellsOfUkEnic = page
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
 
-  await cellsOfUkEnic.nth(3).locator('textarea').first().fill('Uusi kuvaus');
+  await cellsOfUkEnic.nth(2).locator('textarea').first().fill('Uusi kuvaus');
 
-  await page.getByTestId('asiakirjamalli-delete-aacrao').click();
-
-  const saveButton = page.getByTestId('save-ribbon-button');
-  await expect(saveButton).toBeVisible();
-
-  const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('/hakemus/1.2.246.562.10.00000000001') &&
-        req.method() === 'PUT',
-    ),
-    saveButton.click(),
-  ]);
-
-  const requestData = request.postDataJSON();
+  request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
-    requestData.asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
-  ).toEqual(false);
-  expect(
-    requestData.asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
   expect(
-    requestData.asiakirja.asiakirjamallitTutkinnoista.aacrao,
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
+      .vastaavuus,
+  ).toEqual(true);
+
+  await page
+    .getByTestId('asiakirjamalli-vastaavuus-aacrao-clear-button')
+    .click();
+
+  request = await clickSaveAndWaitForPUT(page, '/hakemus/');
+  expect(
+    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
   ).toBeUndefined();
 });

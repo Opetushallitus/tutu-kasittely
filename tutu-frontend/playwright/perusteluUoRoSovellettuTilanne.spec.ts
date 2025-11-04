@@ -28,7 +28,9 @@ test('SovellettuTilanne: opettajan pedagogiset opinnot', async ({ page }) => {
     'checkbox-sovellettuOpettajanPedagogisetOpinnot',
   );
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuOpettajanPedagogisetOpinnot',
@@ -53,7 +55,9 @@ test('SovellettuTilanne: opetettavan aineen opinnot', async ({ page }) => {
     'checkbox-sovellettuOpetettavanAineenOpinnot',
   );
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const kieliItems = page.locator(
     '[data-testid^="opetettavatAineetVieraatKielet-"][data-testid$="-checkBox"]',
@@ -81,7 +85,9 @@ test('SovellettuTilanne: monialaiset opinnot', async ({ page }) => {
 
   const toggle = page.getByTestId('checkbox-sovellettuMonialaisetOpinnot');
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuMonialaisetOpinnot',
@@ -104,7 +110,9 @@ test('SovellettuTilanne: erityisopetus', async ({ page }) => {
 
   const toggle = page.getByTestId('checkbox-sovellettuErityisopetus');
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuErityisopetus');
   await expect(radioGroup).toBeVisible();
@@ -125,7 +133,9 @@ test('SovellettuTilanne: varhaiskasvatus', async ({ page }) => {
 
   const toggle = page.getByTestId('checkbox-sovellettuVarhaiskasvatus');
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuVarhaiskasvatus');
   await expect(radioGroup).toBeVisible();
@@ -150,7 +160,9 @@ test('SovellettuTilanne: rinnastaminen kasvatustieteelliseen tutkintoon', async 
     'checkbox-sovellettuRinnastaminenKasvatustieteelliseenTutkintoon',
   );
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const flat =
     sovellettuRinnastaminenKasvatustieteelliseenTutkintoonOptions.flat();
@@ -183,7 +195,9 @@ test('SovellettuTilanne: rinnastaminen oikeustieteen maisterin tutkintoon', asyn
     'checkbox-sovellettuRinnastaminenOtmTutkintoon',
   );
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId(
     'radio-group-sovellettuRinnastaminenOtmTutkintoon',
@@ -206,7 +220,9 @@ test('SovellettuTilanne: luokanopettaja', async ({ page }) => {
 
   const toggle = page.getByTestId('checkbox-sovellettuLuokanopettaja');
   await toggle.scrollIntoViewIfNeeded();
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+
+  await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuLuokanopettaja');
   await expect(radioGroup).toBeVisible();
@@ -229,6 +245,7 @@ test('Sovellettu tilanne: Muu ero', async ({ page }) => {
 
   await expect(page.getByTestId('sovellettuMuuEroSelite')).toHaveCount(0);
 
-  await toggle.click();
+  const checkbox = toggle.locator('input[type="checkbox"]');
+  await checkbox.click();
   await expect(page.getByTestId('sovellettuMuuEroSelite')).toBeVisible();
 });

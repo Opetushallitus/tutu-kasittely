@@ -1,81 +1,36 @@
-import { useEffect, useState } from 'react';
-import { isNonNullish } from 'remeda';
-
-import { Stack, useTheme, Link } from '@mui/material';
-import { OphRadio, OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { ophColors } from '@/src/lib/theme';
-
-import { EditOffOutlined } from '@mui/icons-material';
 import { Perustelu } from '@/src/lib/types/perustelu';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 interface Props {
   perustelu: Perustelu | undefined;
   updatePerustelu: (perustelu: Partial<Perustelu>) => void;
 }
 
-export const VirallinenTutkinto = ({
-  perustelu: maybePerustelu,
-  updatePerustelu,
-}: Props) => {
+export const VirallinenTutkinto = ({ perustelu, updatePerustelu }: Props) => {
   const { t } = useTranslations();
-  const theme = useTheme();
 
-  const [isVirallinenTutkinto, setIsVirallinenTutkinto] = useState<
-    boolean | undefined | null
-  >();
+  const currentValue = perustelu?.virallinenTutkinto;
 
-  const updateIsVirallinenTutkinto = (val: boolean | undefined | null) => {
-    if (val !== isVirallinenTutkinto) {
-      setIsVirallinenTutkinto(val);
-      updatePerustelu({
-        virallinenTutkinto: val,
-      });
-    }
+  const updateVirallinenTutkinto = (val: boolean | null | undefined) => {
+    updatePerustelu({
+      virallinenTutkinto: val,
+    });
   };
 
-  useEffect(() => {
-    setIsVirallinenTutkinto(maybePerustelu?.virallinenTutkinto);
-  }, [maybePerustelu?.virallinenTutkinto]);
-
-  const poistopainike = (
-    <Link
-      data-testid={`virallinen-tutkinto__none`}
-      href=""
-      onClick={() => updateIsVirallinenTutkinto(null)}
-    >
-      <EditOffOutlined sx={{ color: ophColors.blue2 }} />
-    </Link>
-  );
-
-  const naytaPoisto = isNonNullish(isVirallinenTutkinto);
-
   return (
-    <Stack direction="column" gap={theme.spacing(1)}>
-      <Stack direction="row" gap={theme.spacing(3)}>
-        <OphTypography variant="h4">
-          {t('hakemus.perustelu.yleiset.perustelut.virallinenTutkinto')}
-        </OphTypography>
-        {naytaPoisto && poistopainike}
-      </Stack>
-      <Stack direction="row" gap={theme.spacing(3)}>
-        <OphRadio
-          data-testid={`virallinen-tutkinto__on`}
-          value={'true'}
-          checked={isVirallinenTutkinto === true}
-          label={t('yleiset.kylla')}
-          name="virallinen_tutkinnon_myontaja_true_false"
-          onChange={() => updateIsVirallinenTutkinto(true)}
-        ></OphRadio>
-        <OphRadio
-          data-testid={`virallinen-tutkinto__off`}
-          value={'false'}
-          checked={isVirallinenTutkinto === false}
-          label={t('yleiset.ei')}
-          name="virallinen_tutkinnon_myontaja_true_false"
-          onChange={() => updateIsVirallinenTutkinto(false)}
-        ></OphRadio>
-      </Stack>
-    </Stack>
+    <OphRadioGroupWithClear
+      label={t('hakemus.perustelu.yleiset.perustelut.virallinenTutkinto')}
+      labelId="virallinen-tutkinto-radio-group-label"
+      data-testid="virallinen-tutkinto-radio-group"
+      options={[
+        { value: 'true', label: t('yleiset.kylla') },
+        { value: 'false', label: t('yleiset.ei') },
+      ]}
+      row
+      value={currentValue?.toString() ?? ''}
+      onChange={(e) => updateVirallinenTutkinto(e.target.value === 'true')}
+      onClear={() => updateVirallinenTutkinto(null)}
+    />
   );
 };

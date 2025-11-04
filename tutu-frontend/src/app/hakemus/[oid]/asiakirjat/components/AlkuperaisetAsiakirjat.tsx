@@ -17,7 +17,7 @@ import {
 
 interface StatelessAlkuperaisetAsiakirjatProps {
   lisatieto: string | null | undefined;
-  setLisatieto: (lisatieto: string | null, useDebounce: boolean) => void;
+  setLisatieto: (lisatieto: string | null) => void;
   t: TFunction;
 }
 
@@ -33,7 +33,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
       <OphCheckbox
         label={t('hakemus.asiakirjat.alkuperaisetAsiakirjatSaatuNahtavaksi')}
         checked={checked}
-        onChange={() => setLisatieto(checked ? null : '', false)}
+        onChange={() => setLisatieto(checked ? null : '')}
       />
       {checked && (
         <OphInputFormField
@@ -42,7 +42,7 @@ const StatelessAlkuperaisetAsiakirjat = ({
             'hakemus.asiakirjat.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot',
           )}
           value={lisatieto}
-          onChange={(event) => setLisatieto(event.target.value, true)}
+          onChange={(event) => setLisatieto(event.target.value)}
         />
       )}
     </>
@@ -51,14 +51,12 @@ const StatelessAlkuperaisetAsiakirjat = ({
 
 interface AlkuperaisetAsiakirjatProps {
   asiakirja: AsiakirjaTieto;
-  instantUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  debouncedUpdateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
 export const AlkuperaisetAsiakirjat = ({
   asiakirja,
-  instantUpdateAsiakirjaTietoAction,
-  debouncedUpdateAsiakirjaTietoAction,
+  updateAsiakirjaTieto,
 }: AlkuperaisetAsiakirjatProps) => {
   const { t } = useTranslations();
 
@@ -82,17 +80,13 @@ export const AlkuperaisetAsiakirjat = ({
   return (
     <StatelessAlkuperaisetAsiakirjat
       lisatieto={lisatieto}
-      setLisatieto={(lisatieto: string | null, useDebounce: boolean) => {
+      setLisatieto={(lisatieto: string | null) => {
         setLisatieto(lisatieto);
         const toBeAsiakirjatieto: Partial<AsiakirjaTieto> = {
           alkuperaisetAsiakirjatSaatuNahtavaksi: isDefined(lisatieto),
           alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: lisatieto,
         };
-        if (useDebounce) {
-          debouncedUpdateAsiakirjaTietoAction(toBeAsiakirjatieto);
-        } else {
-          instantUpdateAsiakirjaTietoAction(toBeAsiakirjatieto);
-        }
+        updateAsiakirjaTieto(toBeAsiakirjatieto);
       }}
       t={t}
     />
