@@ -205,8 +205,10 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         muuTutkintoMuistioId = None
       )
     )
+    val isTutkinto2Defined = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined
+    val isTutkinto3Defined = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined
 
-    if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined) {
+    if (isTutkinto2Defined) {
       tutkinnot += Tutkinto(
         id = None,
         hakemusId = hakemusId,
@@ -232,12 +234,12 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       )
     }
 
-    val tutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers).isDefined) {
+    val tutkinto = if (isTutkinto3Defined) {
       tutkinnot +=
         Tutkinto(
           id = None,
           hakemusId = hakemusId,
-          jarjestys = "3",
+          jarjestys = if (isTutkinto2Defined) "3" else "2",
           nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers),
           oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPPILAITOS, answers),
           aloitusVuosi =
@@ -250,7 +252,13 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           todistuksenPaivamaara = None,
           koulutusalaKoodiUri = None,
           paaaaineTaiErikoisala = None,
-          todistusOtsikko = None,
+          todistusOtsikko =
+            if (isTutkinto2Defined) None
+            else
+              paatosKieli match {
+                case Some("swedish") => Some("ovrigbevis")
+                case _               => Some("muutodistus")
+              },
           muuTutkintoMuistioId = None
         )
     }
