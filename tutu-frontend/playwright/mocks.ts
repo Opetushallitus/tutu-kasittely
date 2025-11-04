@@ -312,7 +312,6 @@ export const mockKoodistot = async (page: Page) => {
 };
 
 export const mockPerustelu = async (page: Page) => {
-  // Stateful mock data that gets updated by POST requests
   let perusteluData: Record<string, unknown> = {
     id: 'mock-perustelu-id',
     hakemusId: 'mock-hakemus-id',
@@ -326,8 +325,6 @@ export const mockPerustelu = async (page: Page) => {
     uoRoSisalto: {},
   };
 
-  // Unwrap nested wrapper structures like backend does
-  // { fieldName: { fieldName: value } } => { fieldName: value }
   const unwrapData = (
     data: Record<string, unknown>,
   ): Record<string, unknown> => {
@@ -339,10 +336,8 @@ export const mockPerustelu = async (page: Page) => {
         !Array.isArray(value) &&
         key in (value as Record<string, unknown>)
       ) {
-        // This is a wrapped field: { fieldName: { fieldName: actualValue } }
         unwrapped[key] = (value as Record<string, unknown>)[key];
       } else {
-        // Regular field or nested object
         unwrapped[key] = value;
       }
     }
@@ -351,7 +346,6 @@ export const mockPerustelu = async (page: Page) => {
 
   await page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
     if (route.request().method() === 'POST') {
-      // Merge posted data into state and unwrap nested wrapper structures
       const postedData = route.request().postDataJSON() as Record<
         string,
         unknown
@@ -365,7 +359,6 @@ export const mockPerustelu = async (page: Page) => {
         body: JSON.stringify(perusteluData),
       });
     } else {
-      // GET request - return current state
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
