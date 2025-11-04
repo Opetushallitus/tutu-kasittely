@@ -170,7 +170,7 @@ test.describe('Yleiset perustelut', () => {
   test('Syötetyt tiedot välitetään updatePerustelu-funktiolle', async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    test.setTimeout(30000);
 
     // Stateful mock data for this test - start with minimal valid perustelu
     let testPerusteluData: Record<string, unknown> = {

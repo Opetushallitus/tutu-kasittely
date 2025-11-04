@@ -38,7 +38,7 @@ export const clickSaveAndWaitForPUT = async (
  * Waits for the save button to disappear (indicating save completed)
  *
  * @param page - Playwright page object
- * @param timeout - Optional timeout in ms (default: 15000)
+ * @param timeout - Optional timeout in ms (default: 5000)
  *
  * @example
  * await clickSaveAndWaitForPUT(page, '/hakemus/');
@@ -46,7 +46,7 @@ export const clickSaveAndWaitForPUT = async (
  */
 export const waitForSaveComplete = async (
   page: Page,
-  timeout: number = 15000,
+  timeout: number = 5000,
 ) => {
   await expect(page.getByTestId('save-ribbon-button')).not.toBeVisible({
     timeout,
