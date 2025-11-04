@@ -75,7 +75,9 @@ export default function HakemusRow({
   }, [asiatunnus, hakemus.asiatunnus, hakemus.hakemusOid, addToast, t]);
 
   const asiaTunnusValid = useMemo(() => {
-    return asiatunnus.match(new RegExp(/OPH-\d+-\d{4}$/)) !== null;
+    return (
+      asiatunnus && asiatunnus.match(new RegExp(/OPH-\d+-\d{4}$/)) !== null
+    );
   }, [asiatunnus]);
 
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
