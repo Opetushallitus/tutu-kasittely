@@ -22,7 +22,7 @@ export const ApHakemus = ({
   // Controlled component - read value directly from props (server response)
   const currentValue = asiakirjaTieto.apHakemus;
 
-  const updateApHakemus = (val: boolean | null | undefined) => {
+  const updateApHakemus = (val: boolean | null) => {
     // Update field directly with value
     updateAsiakirjaTieto({
       apHakemus: val,

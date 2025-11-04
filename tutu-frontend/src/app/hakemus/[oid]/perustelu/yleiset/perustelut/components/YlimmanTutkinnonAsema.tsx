@@ -16,7 +16,7 @@ export const YlimmanTutkinnonAsema = ({
   // Controlled component - read value directly from props (server response)
   const currentValue = perustelu?.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa;
 
-  const updateYlimmanTutkinnonAsema = (val: string | null | undefined) => {
+  const updateYlimmanTutkinnonAsema = (val: string | null) => {
     // Update field directly with value
     updatePerustelu({
       ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: val,

@@ -48,8 +48,7 @@ export const OphRadioGroupFormFieldWithClear = <T extends string>({
   sx,
   'data-testid': dataTestId,
 }: OphRadioGroupFormFieldWithClearProps<T>) => {
-  const shouldShowClearButton =
-    showClearButton !== undefined ? showClearButton : value !== '';
+  const shouldShowClearButton = showClearButton ?? value !== '';
 
   const labelId = `${dataTestId}-label`;
 
