@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   OphTypography,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
 import { Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useDebounce } from '@/src/hooks/useDebounce';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 import { Hakemus, Tutkinto } from '@/src/lib/types/hakemus';
@@ -144,21 +143,14 @@ export const TutkintokohtaisetTiedot = ({
   const theme = useTheme();
   const { t } = useTranslations();
 
-  const [tutkinnot, setTutkinnot] = useState<Tutkinto[]>(
-    sortTutkinnot(hakemus?.tutkinnot || []),
-  );
-
-  const debouncedUpdateTutkinto = useDebounce((newTutkinnot: Tutkinto[]) => {
-    updateHakemus({ tutkinnot: newTutkinnot });
-  }, 1000);
+  const tutkinnot = hakemus?.tutkinnot || [];
 
   const updateTutkinto = (next: Tutkinto) => {
     const oldTutkinnot = tutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
     const newTutkinnot = sortTutkinnot([...oldTutkinnot, next]);
-    setTutkinnot(newTutkinnot);
-    debouncedUpdateTutkinto(newTutkinnot);
+    updateHakemus({ tutkinnot: newTutkinnot });
   };
 
   const varsinaisetTutkinnot = tutkinnot.filter(
