@@ -187,7 +187,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         options = Seq(
           Valinta(
             value = "singleAnswer2",
-            label = Map(Kieli.fi -> "valinta2")
+            label = Map(Kieli.fi -> "valinta2"),
+            hidden = Some(false)
           )
         )
       )
@@ -231,7 +232,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         options = Seq(
           Valinta(
             value = "singleAnswer2",
-            label = Map(Kieli.fi -> "valinta2")
+            label = Map(Kieli.fi -> "valinta2"),
+            hidden = None
           )
         )
       )
@@ -320,11 +322,13 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
       val valinta501 = Valinta(
         value = "501",
-        label = Map()
+        label = Map(),
+        hidden = Some(true)
       )
       val valinta502 = Valinta(
         value = "502",
-        label = Map()
+        label = Map(),
+        hidden = Some(true)
       )
 
       val item401 = LomakeContentItem(
@@ -354,7 +358,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         label = Map(),
         followups = Seq(
           item401
-        )
+        ),
+        hidden = None
       )
       val valinta302 = Valinta(
         value = "302",
@@ -362,11 +367,13 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         followups = Seq(
           item402,
           item403
-        )
+        ),
+        hidden = None
       )
       val valinta303 = Valinta(
         value = "303",
-        label = Map()
+        label = Map(),
+        hidden = None
       )
 
       val item201 = LomakeContentItem(
