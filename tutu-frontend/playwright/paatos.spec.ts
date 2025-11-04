@@ -80,7 +80,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
   await expect(paatostyyppiInput).toBeVisible();
 
-  //Lisätään ensimmäinen päätöstyyppi
   await paatostyyppiInput.first().click();
   await expect(paatostyyppiInput).toBeVisible();
   const tasoOption = page
@@ -94,7 +93,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
     expect(req[0].postDataJSON().paatosTiedot[0].paatosTyyppi).toEqual('Taso'),
   );
 
-  //Lisätään toinen päätöstyyppi
   await page.getByTestId('lisaa-paatos-button').click();
   const secondDropdown = page
     .getByTestId('paatos-paatostyyppi-dropdown')
@@ -115,7 +113,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
     expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
   });
 
-  //Lisätään kolmas päätöstyyppi
   await page.getByTestId('lisaa-paatos-button').click();
   const thirdDropdown = page.getByTestId('paatos-paatostyyppi-dropdown').nth(2);
   await expect(thirdDropdown).toBeVisible();
@@ -137,8 +134,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
     expect(postData.paatosTiedot[2].paatosTyyppi).toEqual('RiittavatOpinnot');
   });
 
-  //Poistetaan viimeisin päätöstyyppi
-
   const deleteButton = page.getByTestId('poista-paatos-button').last();
 
   deleteButton.click();
@@ -155,7 +150,6 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
     expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
   });
 
-  // Ratkaisutyypin vaihdon tulisi tyhjentää päätöstiedot:
   await ratkaisutyyppiInput.click();
   const peruutusOption = page
     .locator('ul[role="listbox"] li[role="option"]')

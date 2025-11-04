@@ -17,10 +17,8 @@ const expectRequestData = async (
   action: Promise<void>,
   data: unknown,
 ) => {
-  // Perform action (local state update)
   await action;
 
-  // Click save button and wait for PUT request
   const saveButton = page.getByTestId('save-ribbon-button');
   await expect(saveButton).toBeVisible();
 
@@ -31,7 +29,6 @@ const expectRequestData = async (
     saveButton.click(),
   ]);
 
-  // Wait for save to complete before next action
   await waitForSaveComplete(page);
 
   return expect(request.postDataJSON()).toMatchObject(data as Perustelu);
@@ -50,11 +47,9 @@ test.describe('Yleiset perustelut', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
-    // Tuodaan piilotetut lomakkeen osat esiin
     const muuRadio = page.locator(
       '[data-testid="jatko-opintokelpoisuus-radio-group"] input[type="radio"][value="muu"]',
     );
-    // Click radio button (local state update)
     await muuRadio.click();
 
     const checks = [
@@ -147,13 +142,11 @@ test.describe('Yleiset perustelut', () => {
     const myontajaOn = page.locator(
       '[data-testid="virallinen-tutkinnon-myontaja-radio-group"] input[type="radio"][value="true"]',
     );
-    // Click radio button (local state update)
     await myontajaOn.click();
 
     const tutkintoOff = page.locator(
       '[data-testid="virallinen-tutkinto-radio-group"] input[type="radio"][value="false"]',
     );
-    // Click radio button (local state update)
     await tutkintoOff.click();
 
     await expect(
@@ -172,7 +165,6 @@ test.describe('Yleiset perustelut', () => {
   }) => {
     test.setTimeout(30000);
 
-    // Stateful mock data for this test - start with minimal valid perustelu
     let testPerusteluData: Record<string, unknown> = {
       id: 'test-perustelu-id',
       hakemusId: 'test-hakemus-id',
@@ -374,7 +366,6 @@ test.describe('Yleiset perustelut', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
     );
 
-    // Fill tutkinto 1 fields (local state updates)
     await page
       .getByTestId('yleiset-perustelut__tutkinto-1--ohjeellinen-laajuus')
       .getByRole('textbox')
@@ -407,10 +398,8 @@ test.describe('Yleiset perustelut', () => {
       .getByRole('textbox')
       .fill('Vastaa kandidaatintutkinnon perus- ja aineopintoja');
 
-    // Click save and wait for PUT request
     const request = await clickSaveAndWaitForPUT(page, '/hakemus/');
 
-    // Verify that tutkinto 1 was saved with the correct data
     const tutkinnot = request.postDataJSON().tutkinnot;
     const tutkinto1 = tutkinnot.find((t: Tutkinto) => t.jarjestys === '1');
 

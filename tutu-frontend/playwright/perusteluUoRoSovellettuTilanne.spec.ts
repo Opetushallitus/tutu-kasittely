@@ -30,7 +30,6 @@ test('SovellettuTilanne: opettajan pedagogiset opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId(
@@ -58,7 +57,6 @@ test('SovellettuTilanne: opetettavan aineen opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const kieliItems = page.locator(
@@ -89,7 +87,6 @@ test('SovellettuTilanne: monialaiset opinnot', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId(
@@ -115,7 +112,6 @@ test('SovellettuTilanne: erityisopetus', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuErityisopetus');
@@ -139,7 +135,6 @@ test('SovellettuTilanne: varhaiskasvatus', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuVarhaiskasvatus');
@@ -167,7 +162,6 @@ test('SovellettuTilanne: rinnastaminen kasvatustieteelliseen tutkintoon', async 
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const flat =
@@ -203,7 +197,6 @@ test('SovellettuTilanne: rinnastaminen oikeustieteen maisterin tutkintoon', asyn
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId(
@@ -229,7 +222,6 @@ test('SovellettuTilanne: luokanopettaja', async ({ page }) => {
   await toggle.scrollIntoViewIfNeeded();
   const checkbox = toggle.locator('input[type="checkbox"]');
 
-  // Click checkbox (local state update)
   await checkbox.click();
 
   const radioGroup = page.getByTestId('radio-group-sovellettuLuokanopettaja');

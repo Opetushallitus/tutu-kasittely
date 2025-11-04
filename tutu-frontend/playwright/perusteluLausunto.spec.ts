@@ -128,7 +128,6 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       },
     ],
   });
-  // No waitForSaveComplete at test end
 });
 
 test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) => {
