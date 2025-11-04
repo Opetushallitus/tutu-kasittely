@@ -29,7 +29,8 @@
     "kokonaisaika": "Kokonaisaika",
     "hakijanaika": "Hakijan aika",
     "kokonaisaikaKk": "{aika, number} kk",
-    "hakemusta": "hakemusta"
+    "hakemusta": "hakemusta",
+    "saapumisPvm": "Hakemus saapunut"
   },
   "hakemus": {
     "apHakemus": "AP-hakemus",
@@ -547,7 +548,9 @@
     "maakoodi": "Virhe maakoodien lataamisessa",
     "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui",
     "liitteidenLataus": "Liitteiden lataamisessa tapahtui virhe.",
-    "paatoksenLataus": "Päätöstietojen lataamisessa tapahtui virhe."
+    "paatoksenLataus": "Päätöstietojen lataamisessa tapahtui virhe.",
+    "paivitaAsiatunnus": "Asiatunnuksen päivittämisessä tapahtui virhe.",
+    "tuntematon": "Tapahtui tuntematon virhe"
   },
   "yleiset": {
     "poista": "Poista",

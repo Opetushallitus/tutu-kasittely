@@ -113,7 +113,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'desc');
 
-  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+  const epajarjestystestit = ['hakijannimi'].map(async (fieldKey) => {
     const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
     await expect(epajarjestyskentta).not.toHaveAttribute(
@@ -140,7 +140,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
   await expect(jarjestyskentta).toHaveAttribute('data-active');
   await expect(jarjestyskentta).toHaveAttribute('data-direction', 'asc');
 
-  const epajarjestystestit = ['hakija'].map(async (fieldKey) => {
+  const epajarjestystestit = ['hakijannimi'].map(async (fieldKey) => {
     const epajarjestyskentta = page.getByTestId(`sortlabel--${fieldKey}`);
 
     await expect(epajarjestyskentta).not.toHaveAttribute('data-active');
@@ -150,9 +150,9 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
 });
 
 test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
-  mockUser(page);
-  mockEsittelijat(page);
-  page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
+  await mockUser(page);
+  await mockEsittelijat(page);
+  await page.route('**/tutu-backend/api/hakemuslista*', async (route) => {
     await route.fulfill({
       status: 500,
       contentType: 'application/json',
@@ -163,10 +163,40 @@ test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
     });
   });
 
-  await page.goto('/tutu-frontend');
+  await page.goto('/');
 
   await expect(page.getByTestId('hakemus-list')).not.toBeVisible();
 
   // tarkistetaan että virheviesti näkyy
   await expect(page.getByTestId('toast-message')).toBeVisible();
+});
+
+test('Asiatunnuksen validointi toimii', async ({ page }) => {
+  await mockSuccessfullLists({ page });
+  await page.route('**/asiatunnus*', async (route) => {
+    await route.fulfill({});
+  });
+  await page.goto('/');
+  const asiatunnus = page.getByTestId('asiatunnus').first();
+  const asiatunnusInput = asiatunnus.locator('input');
+  const asiatunnusSubmit = asiatunnus.locator('button');
+
+  await expect(asiatunnusInput).not.toBeVisible();
+  await asiatunnus.getByTestId('EditOutlinedIcon').click();
+  await expect(asiatunnusInput).toBeVisible();
+
+  await asiatunnusInput.fill('ei toimi');
+  await expect(asiatunnusSubmit).toBeDisabled();
+
+  await asiatunnusInput.fill('OPH-4444-2025');
+  await expect(asiatunnusSubmit).toBeEnabled();
+
+  const [request] = await Promise.all([
+    page.waitForRequest((request) => request.url().includes('asiatunnus')),
+    asiatunnusSubmit.click(),
+  ]);
+
+  expect(JSON.parse(request.postData() ?? '')).toEqual({
+    asiatunnus: 'OPH-4444-2025',
+  });
 });

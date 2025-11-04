@@ -12,7 +12,7 @@ const TableSortLabel = (props: {
     <TableHeaderCell
       colId={fieldKey}
       sort={sortDef}
-      title={t(fieldKey)}
+      title={t(`hakemuslista.${fieldKey}`)}
       setSort={handleSort}
       sortable={true}
     />

@@ -550,4 +550,65 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadLiitteenTiedot), any())
   }
+
+  @Test
+  @Order(7)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaAsiatunnusReturns204(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+    initAtaruHakemusRequests()
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+
+    val requestJson = """{"asiatunnus": "OPH-4321-2025"}"""
+
+    mockMvc
+      .perform(
+        patch(s"/api/hakemus/${hakemusOid.toString}/asiatunnus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isNoContent)
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdateAsiatunnus), any())
+
+    mockMvc
+      .perform(
+        get(s"/api/hakemus/${hakemusOid.toString}")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+.andExpect(jsonPath("$.asiatunnus").value("OPH-4321-2025"))
+  }
+
+  @Test
+  @Order(8)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaAsiatunnusReturns400(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+
+    val requestJson = """{"asiatunnus": "ei toimi"}"""
+
+    mockMvc
+      .perform(
+        patch(s"/api/hakemus/${hakemusOid.toString}/asiatunnus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isBadRequest)
+  }
 }

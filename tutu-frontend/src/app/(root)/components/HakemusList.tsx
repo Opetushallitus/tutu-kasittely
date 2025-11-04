@@ -27,11 +27,12 @@ import { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const FIELD_KEYS = {
-  hakijannimi: 'hakija',
+  hakijannimi: 'hakijannimi',
   asiatunnus: 'asiatunnus',
   esittelija: 'esittelija',
   kasittelyvaihe: 'kasittelyvaihe',
   hakemusKoskee: 'hakemusKoskee',
+  saapumisPvm: 'saapumisPvm',
   kokonaisaika: 'kokonaisaika',
   hakijanaika: 'hakijanaika',
 };
@@ -64,10 +65,10 @@ export function HakemusList({ user }: HakemusListProps) {
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
   const { t } = useTranslations();
-  const [sortDef, setSortDef] = useQueryState(
-    'sort',
-    parseAsString.withDefault(''),
-  );
+  const [sortDef, setSortDef] = useQueryState('sort', {
+    ...parseAsString.withDefault('saapumisPvm:desc'),
+    clearOnDefault: false,
+  });
   const { isLoading, data, error } = useHakemukset();
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuslistanLataus', t);
@@ -78,8 +79,8 @@ export function HakemusList({ user }: HakemusListProps) {
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
-  const handleSort = (sortDef: unknown) => {
-    setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
+  const handleSort = async (sortDef: unknown) => {
+    await setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;

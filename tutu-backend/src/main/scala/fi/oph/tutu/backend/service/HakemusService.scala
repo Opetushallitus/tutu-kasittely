@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.repository.{
 }
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
+import fi.oph.tutu.backend.utils.Utility.stringToSeq
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
@@ -300,20 +301,11 @@ class HakemusService(
     vaihe: Option[String],
     sort: String
   ): Seq[HakemusListItem] = {
-    val vaiheet: Option[Seq[String]] = vaihe match {
-      case None        => None
-      case Some(vaihe) => Some(vaihe.split(",").map(_.trim).toSeq)
-    }
+    val vaiheet: Option[Seq[String]] = vaihe.map(stringToSeq)
 
-    val userOids: Option[Seq[String]] = userOid match {
-      case None       => None
-      case Some(oids) => Some(oids.split(",").map(_.trim).toSeq)
-    }
+    val userOids: Option[Seq[String]] = userOid.map(stringToSeq)
 
-    val hakemusKoskeeParams: Option[Seq[String]] = hakemuskoskee match {
-      case None     => None
-      case Some(hk) => Some(hk.split(",").map(_.trim).toSeq)
-    }
+    val hakemusKoskeeParams: Option[Seq[String]] = hakemuskoskee.map(stringToSeq)
 
     // jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
     val hakemusKoskeeQueryParams = hakemusKoskeeParams match {
@@ -405,6 +397,7 @@ class HakemusService(
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe)
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue))
+              case "saapumisPvm"  => hakemusList.sortBy(_.aika)
               case "kokonaisaika" => hakemusList.sortBy(_.aika).reverse
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta).reverse
 
@@ -418,6 +411,7 @@ class HakemusService(
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe).reverse
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue)).reverse
+              case "saapumisPvm"  => hakemusList.sortBy(_.aika).reverse
               case "kokonaisaika" => hakemusList.sortBy(_.aika)
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta)
               case _              => hakemusList
@@ -513,5 +507,9 @@ class HakemusService(
         )
       }
     }
+  }
+
+  def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
+    hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus)
   }
 }

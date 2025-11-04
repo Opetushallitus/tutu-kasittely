@@ -128,6 +128,7 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     .locator(
       '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',
     )
+    .last()
     .click();
   await expect(lahetettyInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
@@ -139,6 +140,7 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     .locator(
       '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',
     )
+    .last()
     .click();
   await expect(vastattuInput).toHaveValue(
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),

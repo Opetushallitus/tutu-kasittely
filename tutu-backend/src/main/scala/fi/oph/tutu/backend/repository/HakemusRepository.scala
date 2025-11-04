@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.repository
 
+import dotty.tools.dotc.core.Phases.NoPhase.id
 import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +11,7 @@ import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 @Component
 @Repository
@@ -587,4 +588,22 @@ class HakemusRepository extends BaseResultHandlers {
       DELETE FROM tutkinto
       WHERE id = ${id.toString}::uuid
     """
+
+  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): DBIO[Int] =
+    sqlu"""
+      UPDATE hakemus
+      SET asiatunnus = ${asiatunnus}
+      WHERE hakemus_oid = ${hakemusOid.toString}
+    """
+
+  def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
+    Try {
+      db.run(paivitaAsiatunnus(hakemusOid, asiatunnus), "PaivitaAsiatunnus")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+    }
+  }
 }

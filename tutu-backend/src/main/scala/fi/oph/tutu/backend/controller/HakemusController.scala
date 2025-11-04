@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.{
 }
 
 import java.util.UUID
+import java.util.regex.Pattern
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -334,6 +335,83 @@ class HakemusController(
       case Failure(exception) =>
         LOG.error(s"Liitteiden haku epäonnistui, avaimet: $avaimet", exception)
         errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PatchMapping(path = Array("hakemus/{hakemusOid}/asiatunnus"))
+  @Operation(
+    summary = "Päivittää hakemuksen asiatunnuksen",
+    description = "PATCH endpoint asiatunnuksen asettamiselle",
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[AsiatunnusUpdateRequest]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def paivitaAsiatunnus(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody asiatunnusBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user              = userService.getEnrichedUserDetails(true)
+      val authorities       = user.authorities
+      val asiatunnusPattern = Pattern.compile("""OPH-\d+-\d{4}$""")
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        val asiatunnusUpdateRequest: AsiatunnusUpdateRequest =
+          mapper.readValue(asiatunnusBytes, classOf[AsiatunnusUpdateRequest])
+        val asiatunnus = asiatunnusUpdateRequest.asiatunnus
+        if (asiatunnusPattern.matcher(asiatunnus).matches) {
+          Try {
+            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus)
+          } match {
+            case Success(result) =>
+              if (result == 0)
+                errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+              else {
+                auditLog.logChanges(
+                  AuditLog.getUser(request),
+                  Map("asiatunnus" -> asiatunnus),
+                  UpdateAsiatunnus,
+                  AuditUtil.getChanges(None, Some(asiatunnus))
+                )
+                ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
+              }
+            case Failure(exception) =>
+              errorMessageMapper.mapErrorMessage(exception)
+          }
+        } else {
+          errorMessageMapper.mapPlainErrorMessage("Virheellinen asiatunnus", HttpStatus.BAD_REQUEST)
+        }
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
     }
   }
 }
