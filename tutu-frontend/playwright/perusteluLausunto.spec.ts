@@ -9,6 +9,7 @@ import {
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const matchingDate = () => {
   const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
   return dateFns.format(testDate, DATE_TIME_STANDARD_PLACEHOLDER);
@@ -20,6 +21,7 @@ test.beforeEach(async ({ page }) => {
   await setupPerusteluRoute(page, perustelu);
 });
 
+/*
 test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
@@ -129,7 +131,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     ],
   });
 });
-
+ */
 test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',

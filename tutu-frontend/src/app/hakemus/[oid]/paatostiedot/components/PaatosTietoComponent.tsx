@@ -73,6 +73,7 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'uo' as SovellettuLaki,
+          kelpoisuudet: [],
           rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
@@ -81,6 +82,7 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: undefined,
+          kelpoisuudet: [],
           rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
@@ -89,10 +91,20 @@ export const PaatosTietoComponent = ({
           ...currentPaatosTieto,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'ro' as SovellettuLaki,
+          kelpoisuudet: [],
           rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
     }
+  };
+
+  const handleSovellettuLakiChange = (sovellettuLaki: string) => {
+    updatePaatosTietoAction({
+      ...currentPaatosTieto,
+      sovellettuLaki: sovellettuLaki as SovellettuLaki,
+      kelpoisuudet: [],
+      rinnastettavatTutkinnotTaiOpinnot: [],
+    });
   };
 
   return (
@@ -115,12 +127,7 @@ export const PaatosTietoComponent = ({
           t,
         )}
         value={currentPaatosTieto.sovellettuLaki || ''}
-        onChange={(event) =>
-          updatePaatosTietoAction({
-            ...currentPaatosTieto,
-            sovellettuLaki: event.target.value as SovellettuLaki,
-          })
-        }
+        onChange={(event) => handleSovellettuLakiChange(event.target.value)}
         data-testid={'paatos-sovellettulaki-dropdown'}
       />
       {currentPaatosTieto.sovellettuLaki &&
@@ -199,13 +206,15 @@ export const PaatosTietoComponent = ({
           updatePaatosTietoAction={updatePaatosTietoAction}
         />
       )}
-      {currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' && (
-        <KelpoisuusList
-          t={t}
-          paatosTieto={currentPaatosTieto}
-          updatePaatosTietoAction={updatePaatosTietoAction}
-        />
-      )}
+      {currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' &&
+        currentPaatosTieto.sovellettuLaki && (
+          <KelpoisuusList
+            t={t}
+            paatosTieto={currentPaatosTieto}
+            updatePaatosTietoAction={updatePaatosTietoAction}
+            kelpoisuusOptions={paatosTietoOptions.kelpoisuusOptions}
+          />
+        )}
     </Stack>
   );
 };

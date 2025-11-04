@@ -2,103 +2,588 @@
   "kelpoisuusOptions": [
     {
       "label": {
-        "fi": "Luokanopettaja",
-        "sv": "Klasslärare",
-        "en": "Class teacher"
+        "fi": "Opetusalan ammatit",
+        "sv": "Uppgifter inom undervisningsområdet",
+        "en": "Teaching positions"
       },
       "value": {
-        "fi": "Luokanopettaja",
-        "sv": "Klasslärare",
-        "en": "Class teacher"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Esiopetusta antava opettaja",
-        "sv": "Lärare som meddelar förskoleundervisning",
-        "en": "Teacher providing pre-primary education"
-      },
-      "value": {
-        "fi": "Esiopetusta antava opettaja",
-        "sv": "Lärare som meddelar förskoleundervisning",
-        "en": "Teacher providing pre-primary education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Aamu- ja iltapäivätoiminnan ohjaaja",
-        "sv": "Handledare i morgon- och eftermiddagsverksamhet",
-        "en": "Instructor in morning and afternoon activities"
-      },
-      "value": {
-        "fi": "Aamu- ja iltapäivätoiminnan ohjaaja",
-        "sv": "Handledare i morgon- och eftermiddagsverksamhet",
-        "en": "Instructor in morning and afternoon activities"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Aineenopettaja perusopetuksessa",
-        "sv": "Ämneslärare inom grundläggande utbildning",
-        "en": "Subject teacher in primary and lower secondary education"
-      },
-      "value": {
-        "fi": "Aineenopettaja perusopetuksessa",
-        "sv": "Ämneslärare inom grundläggande utbildning",
-        "en": "Subject teacher in primary and lower secondary education"
+        "fi": "Opetusalan ammatit",
+        "sv": "Uppgifter inom undervisningsområdet",
+        "en": "Teaching positions"
       },
       "children": [
         {
           "label": {
-            "fi": "äidinkieli ja kirjallisuus",
-            "sv": "modersmål och litteratur",
-            "en": "Mother tongue and literature"
+            "fi": "Luokanopettaja",
+            "sv": "Klasslärare",
+            "en": "Class teacher"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus",
-            "sv": "Ämneslärare inom grundläggande utbildning_modersmål och litteratur",
-            "en": "Subject teacher in primary and lower secondary education_Mother tongue and literature"
+            "fi": "Opetusalan ammatit_Luokanopettaja",
+            "sv": "Uppgifter inom undervisningsområdet_Klasslärare",
+            "en": "Teaching positions_Class teacher"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Esiopetusta antava opettaja",
+            "sv": "Lärare som meddelar förskoleundervisning",
+            "en": "Teacher providing pre-primary education"
+          },
+          "value": {
+            "fi": "Opetusalan ammatit_Esiopetusta antava opettaja",
+            "sv": "Uppgifter inom undervisningsområdet_Lärare som meddelar förskoleundervisning",
+            "en": "Teaching positions_Teacher providing pre-primary education"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Aamu- ja iltapäivätoiminnan ohjaaja",
+            "sv": "Handledare i morgon- och eftermiddagsverksamhet",
+            "en": "Instructor in morning and afternoon activities"
+          },
+          "value": {
+            "fi": "Opetusalan ammatit_Aamu- ja iltapäivätoiminnan ohjaaja",
+            "sv": "Uppgifter inom undervisningsområdet_Handledare i morgon- och eftermiddagsverksamhet",
+            "en": "Teaching positions_Instructor in morning and afternoon activities"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Aineenopettaja perusopetuksessa",
+            "sv": "Ämneslärare inom grundläggande utbildning",
+            "en": "Subject teacher in primary and lower secondary education"
+          },
+          "value": {
+            "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa",
+            "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning",
+            "en": "Teaching positions_Subject teacher in primary and lower secondary education"
           },
           "children": [
             {
               "label": {
-                "fi": "suomi",
-                "sv": "finska",
-                "en": "Finnish"
+                "fi": "äidinkieli ja kirjallisuus",
+                "sv": "modersmål och litteratur",
+                "en": "Mother tongue and literature"
               },
               "value": {
-                "fi": "Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi",
-                "sv": "Ämneslärare inom grundläggande utbildning_modersmål och litteratur_finska",
-                "en": "Subject teacher in primary and lower secondary education_Mother tongue and literature_Finnish"
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_modersmål och litteratur",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Mother tongue and literature"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "suomi",
+                    "sv": "finska",
+                    "en": "Finnish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_modersmål och litteratur_finska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Mother tongue and literature_Finnish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "ruotsi",
+                    "sv": "svenska",
+                    "en": "Swedish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_ruotsi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_modersmål och litteratur_svenska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Mother tongue and literature_Swedish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saame",
+                    "sv": "samiska",
+                    "en": "Sami"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_saame",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_modersmål och litteratur_samiska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Mother tongue and literature_Sami"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "toinen kotimainen kieli",
+                "sv": "det andra inhemska språket",
+                "en": "Second national language"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_toinen kotimainen kieli",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_det andra inhemska språket",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Second national language"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "ruotsi",
+                    "sv": "svenska",
+                    "en": "Swedish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_toinen kotimainen kieli_ruotsi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_det andra inhemska språket_svenska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Second national language_Swedish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "suomi",
+                    "sv": "finska",
+                    "en": "Finnish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_toinen kotimainen kieli_suomi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_det andra inhemska språket_finska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Second national language_Finnish"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "vieras kieli",
+                "sv": "främmande språk",
+                "en": "Foreign language"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "englanti",
+                    "sv": "engelska",
+                    "en": "English"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_englanti",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_engelska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_English"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "espanja",
+                    "sv": "spanska",
+                    "en": "Spanish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_espanja",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_spanska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Spanish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "italia",
+                    "sv": "italienska",
+                    "en": "Italian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_italia",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_italienska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Italian"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "japani",
+                    "sv": "japanska",
+                    "en": "Japanese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_japani",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_japanska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Japanese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "kiina",
+                    "sv": "kinesiska",
+                    "en": "Chinese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_kiina",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_kinesiska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Chinese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "latina",
+                    "sv": "latin",
+                    "en": "Latin"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_latina",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_latin",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Latin"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "portugali",
+                    "sv": "portugisiska",
+                    "en": "Portuguese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_portugali",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_portugisiska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Portuguese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "ranska",
+                    "sv": "franska",
+                    "en": "French"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_ranska",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_franska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_French"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saame",
+                    "sv": "samiska",
+                    "en": "Sami"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_saame",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_samiska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Sami"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saksa",
+                    "sv": "tyska",
+                    "en": "German"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_saksa",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_tyska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_German"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "venäjä",
+                    "sv": "ryska",
+                    "en": "Russian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_venäjä",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_ryska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Russian"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "viro",
+                    "sv": "estniska",
+                    "en": "Estonian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_viro",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_främmande språk_estniska",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Foreign language_Estonian"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "matematiikka",
+                "sv": "matematik",
+                "en": "Mathematics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_matematiikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_matematik",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Mathematics"
               },
               "children": []
             },
             {
               "label": {
-                "fi": "ruotsi",
-                "sv": "svenska",
-                "en": "Swedish"
+                "fi": "biologia",
+                "sv": "biologi",
+                "en": "Biology"
               },
               "value": {
-                "fi": "Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_ruotsi",
-                "sv": "Ämneslärare inom grundläggande utbildning_modersmål och litteratur_svenska",
-                "en": "Subject teacher in primary and lower secondary education_Mother tongue and literature_Swedish"
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_biologia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_biologi",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Biology"
               },
               "children": []
             },
             {
               "label": {
-                "fi": "saame",
-                "sv": "samiska",
-                "en": "Sami"
+                "fi": "maantieto",
+                "sv": "geografi",
+                "en": "Geography"
               },
               "value": {
-                "fi": "Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_saame",
-                "sv": "Ämneslärare inom grundläggande utbildning_modersmål och litteratur_samiska",
-                "en": "Subject teacher in primary and lower secondary education_Mother tongue and literature_Sami"
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_maantieto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_geografi",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Geography"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "fysiikka",
+                "sv": "fysik",
+                "en": "Physics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_fysiikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_fysik",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Physics"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kemia",
+                "sv": "kemi",
+                "en": "Chemistry"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_kemia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_kemi",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Chemistry"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "terveystieto",
+                "sv": "hälsokunskap",
+                "en": "Health education"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_terveystieto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_hälsokunskap",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Health education"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto",
+                "sv": "religion",
+                "en": "Religion"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_uskonto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_religion",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Religion"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "uskonto, evankelis-luterilainen",
+                    "sv": "religion, evangelisk-luthersk tro",
+                    "en": "Religion, Evangelical-Lutheran"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_uskonto_uskonto, evankelis-luterilainen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_religion_religion, evangelisk-luthersk tro",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Religion_Religion, Evangelical-Lutheran"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, ortodoksinen",
+                    "sv": "religion, ortodox tro",
+                    "en": "Religion, Orthodox"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_uskonto_uskonto, ortodoksinen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_religion_religion, ortodox tro",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Religion_Religion, Orthodox"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, katolinen",
+                    "sv": "religion, katolsk tro",
+                    "en": "Religion, Catholic"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_uskonto_uskonto, katolinen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_religion_religion, katolsk tro",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Religion_Religion, Catholic"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, islam",
+                    "sv": "religion, islam",
+                    "en": "Religion, Islam"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_uskonto_uskonto, islam",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_religion_religion, islam",
+                    "en": "Teaching positions_Subject teacher in primary and lower secondary education_Religion_Religion, Islam"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "elämänkatsomustieto",
+                "sv": "livsåskådningskunskap",
+                "en": "Ethics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_elämänkatsomustieto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_livsåskådningskunskap",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Ethics"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "historia",
+                "sv": "historia",
+                "en": "History"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_historia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_historia",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_History"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "yhteiskuntaoppi",
+                "sv": "samhällslära",
+                "en": "Social Studies"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_yhteiskuntaoppi",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_samhällslära",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Social Studies"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "musiikki",
+                "sv": "musik",
+                "en": "Music"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_musiikki",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_musik",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Music"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kuvataide",
+                "sv": "bildkonst",
+                "en": "Art"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_kuvataide",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_bildkonst",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Art"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "käsityö",
+                "sv": "slöjd",
+                "en": "Crafts"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_käsityö",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_slöjd",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Crafts"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "liikunta",
+                "sv": "gymnastik",
+                "en": "Physical education"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_liikunta",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_gymnastik",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Physical education"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kotitalous",
+                "sv": "huslig ekonomi",
+                "en": "Home economics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_kotitalous",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_huslig ekonomi",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_Home economics"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "tietotekniikka",
+                "sv": "informationsteknik",
+                "en": "ICT"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja perusopetuksessa_tietotekniikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare inom grundläggande utbildning_informationsteknik",
+                "en": "Teaching positions_Subject teacher in primary and lower secondary education_ICT"
               },
               "children": []
             }
@@ -106,39 +591,537 @@
         },
         {
           "label": {
-            "fi": "toinen kotimainen kieli",
-            "sv": "det andra inhemska språket",
-            "en": "Second national language"
+            "fi": "Aineenopettaja lukiossa",
+            "sv": "Ämneslärare i gymnasiet",
+            "en": "Subject teacher in general upper secondary education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_toinen kotimainen kieli",
-            "sv": "Ämneslärare inom grundläggande utbildning_det andra inhemska språket",
-            "en": "Subject teacher in primary and lower secondary education_Second national language"
+            "fi": "Opetusalan ammatit_Aineenopettaja lukiossa",
+            "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet",
+            "en": "Teaching positions_Subject teacher in general upper secondary education"
           },
           "children": [
             {
               "label": {
-                "fi": "ruotsi",
-                "sv": "svenska",
-                "en": "Swedish"
+                "fi": "äidinkieli ja kirjallisuus",
+                "sv": "modersmål och litteratur",
+                "en": "Mother tongue and literature"
               },
               "value": {
-                "fi": "Aineenopettaja perusopetuksessa_toinen kotimainen kieli_ruotsi",
-                "sv": "Ämneslärare inom grundläggande utbildning_det andra inhemska språket_svenska",
-                "en": "Subject teacher in primary and lower secondary education_Second national language_Swedish"
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_äidinkieli ja kirjallisuus",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_modersmål och litteratur",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Mother tongue and literature"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "suomi",
+                    "sv": "finska",
+                    "en": "Finnish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_suomi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_modersmål och litteratur_finska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Mother tongue and literature_Finnish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "ruotsi",
+                    "sv": "svenska",
+                    "en": "Swedish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_ruotsi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_modersmål och litteratur_svenska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Mother tongue and literature_Swedish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saame",
+                    "sv": "sami",
+                    "en": "Sami"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_saame",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_modersmål och litteratur_sami",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Mother tongue and literature_Sami"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "toinen kotimainen kieli",
+                "sv": "det andra inhemska språket",
+                "en": "Second national language"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_toinen kotimainen kieli",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_det andra inhemska språket",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Second national language"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "ruotsi",
+                    "sv": "svenska",
+                    "en": "Swedish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_toinen kotimainen kieli_ruotsi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_det andra inhemska språket_svenska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Second national language_Swedish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "suomi",
+                    "sv": "finska",
+                    "en": "Finnish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_toinen kotimainen kieli_suomi",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_det andra inhemska språket_finska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Second national language_Finnish"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "vieras kieli",
+                "sv": "främmande språk",
+                "en": "Foreign language"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "englanti",
+                    "sv": "engelska",
+                    "en": "English"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_englanti",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_engelska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_English"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "espanja",
+                    "sv": "spanska",
+                    "en": "Spanish"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_espanja",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_spanska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Spanish"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "italia",
+                    "sv": "italienska",
+                    "en": "Italian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_italia",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_italienska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Italian"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "japani",
+                    "sv": "japanska",
+                    "en": "Japanese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_japani",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_japanska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Japanese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "kiina",
+                    "sv": "kinesiska",
+                    "en": "Chinese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_kiina",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_kinesiska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Chinese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "latina",
+                    "sv": "latin",
+                    "en": "Latin"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_latina",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_latin",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Latin"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "portugali",
+                    "sv": "portugisiska",
+                    "en": "Portuguese"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_portugali",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_portugisiska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Portuguese"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "ranska",
+                    "sv": "franska",
+                    "en": "French"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_ranska",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_franska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_French"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saame",
+                    "sv": "samiska",
+                    "en": "Sami"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_saame",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_samiska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Sami"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "saksa",
+                    "sv": "tyska",
+                    "en": "German"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_saksa",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_tyska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_German"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "venäjä",
+                    "sv": "ryska",
+                    "en": "Russian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_venäjä",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_ryska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Russian"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "viro",
+                    "sv": "estniska",
+                    "en": "Estonian"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_viro",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_främmande språk_estniska",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Foreign language_Estonian"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "matematiikka",
+                "sv": "matematik",
+                "en": "Mathematics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_matematiikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_matematik",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Mathematics"
               },
               "children": []
             },
             {
               "label": {
-                "fi": "suomi",
-                "sv": "finska",
-                "en": "Finnish"
+                "fi": "biologia",
+                "sv": "biologi",
+                "en": "Biology"
               },
               "value": {
-                "fi": "Aineenopettaja perusopetuksessa_toinen kotimainen kieli_suomi",
-                "sv": "Ämneslärare inom grundläggande utbildning_det andra inhemska språket_finska",
-                "en": "Subject teacher in primary and lower secondary education_Second national language_Finnish"
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_biologia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_biologi",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Biology"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "maantiede",
+                "sv": "geografi",
+                "en": "Geography"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_maantiede",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_geografi",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Geography"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "fysiikka",
+                "sv": "fysik",
+                "en": "Physics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_fysiikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_fysik",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Physics"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kemia",
+                "sv": "kemi",
+                "en": "Chemistry"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_kemia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_kemi",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Chemistry"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "terveystieto",
+                "sv": "hälsokunskap",
+                "en": "Health education"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_terveystieto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_hälsokunskap",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Health education"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "uskonto",
+                "sv": "religion",
+                "en": "Religion"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_uskonto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_religion",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Religion"
+              },
+              "children": [
+                {
+                  "label": {
+                    "fi": "uskonto, evankelis-luterilainen",
+                    "sv": "religion, evangelisk-luthersk tro",
+                    "en": "Religion, Evangelical-Lutheran"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_uskonto_uskonto, evankelis-luterilainen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_religion_religion, evangelisk-luthersk tro",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Religion_Religion, Evangelical-Lutheran"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, ortodoksinen",
+                    "sv": "religion, ortodox tro",
+                    "en": "Religion, Orthodox"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_uskonto_uskonto, ortodoksinen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_religion_religion, ortodox tro",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Religion_Religion, Orthodox"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, katolinen",
+                    "sv": "religion, katolsk tro",
+                    "en": "Religion, Catholic"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_uskonto_uskonto, katolinen",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_religion_religion, katolsk tro",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Religion_Religion, Catholic"
+                  },
+                  "children": []
+                },
+                {
+                  "label": {
+                    "fi": "uskonto, islam",
+                    "sv": "religion, islam",
+                    "en": "Religion, Islam"
+                  },
+                  "value": {
+                    "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_uskonto_uskonto, islam",
+                    "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_religion_religion, islam",
+                    "en": "Teaching positions_Subject teacher in general upper secondary education_Religion_Religion, Islam"
+                  },
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": {
+                "fi": "elämänkatsomustieto",
+                "sv": "livsåskådningskunskap",
+                "en": "Ethics"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_elämänkatsomustieto",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_livsåskådningskunskap",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Ethics"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "filosofia",
+                "sv": "filosofi",
+                "en": "Philosophy"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_filosofia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_filosofi",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Philosophy"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "psykologia",
+                "sv": "psykologi",
+                "en": "Psychology"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_psykologia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_psykologi",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Psychology"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "historia",
+                "sv": "historia",
+                "en": "History"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_historia",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_historia",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_History"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "yhteiskuntaoppi",
+                "sv": "samhällslära",
+                "en": "Social studies"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_yhteiskuntaoppi",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_samhällslära",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Social studies"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "musiikki",
+                "sv": "musik",
+                "en": "Music"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_musiikki",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_musik",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Music"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "kuvataide",
+                "sv": "bildkonst",
+                "en": "Art"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_kuvataide",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_bildkonst",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Art"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "liikunta",
+                "sv": "gymnastik",
+                "en": "Physical education"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_liikunta",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_gymnastik",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_Physical education"
+              },
+              "children": []
+            },
+            {
+              "label": {
+                "fi": "tietotekniikka",
+                "sv": "informationsteknik",
+                "en": "ICT"
+              },
+              "value": {
+                "fi": "Opetusalan ammatit_Aineenopettaja lukiossa_tietotekniikka",
+                "sv": "Uppgifter inom undervisningsområdet_Ämneslärare i gymnasiet_informationsteknik",
+                "en": "Teaching positions_Subject teacher in general upper secondary education_ICT"
               },
               "children": []
             }
@@ -146,432 +1129,131 @@
         },
         {
           "label": {
-            "fi": "vieras kieli",
-            "sv": "främmande språk",
-            "en": "Foreign language"
+            "fi": "Erityisluokanopettaja",
+            "sv": "Specialklasslärare",
+            "en": "Special class teacher"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_vieras kieli",
-            "sv": "Ämneslärare inom grundläggande utbildning_främmande språk",
-            "en": "Subject teacher in primary and lower secondary education_Foreign language"
-          },
-          "children": [
-            {
-              "label": {
-                "fi": "englanti",
-                "sv": "engelska",
-                "en": "English"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_englanti",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_engelska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_English"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "espanja",
-                "sv": "spanska",
-                "en": "Spanish"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_espanja",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_spanska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Spanish"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "italia",
-                "sv": "italienska",
-                "en": "Italian"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_italia",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_italienska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Italian"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "japani",
-                "sv": "japanska",
-                "en": "Japanese"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_japani",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_japanska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Japanese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "kiina",
-                "sv": "kinesiska",
-                "en": "Chinese"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_kiina",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_kinesiska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Chinese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "latina",
-                "sv": "latin",
-                "en": "Latin"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_latina",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_latin",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Latin"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "portugali",
-                "sv": "portugisiska",
-                "en": "Portuguese"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_portugali",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_portugisiska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Portuguese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "ranska",
-                "sv": "franska",
-                "en": "French"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_ranska",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_franska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_French"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "saame",
-                "sv": "samiska",
-                "en": "Sami"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_saame",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_samiska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Sami"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "saksa",
-                "sv": "tyska",
-                "en": "German"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_saksa",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_tyska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_German"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "venäjä",
-                "sv": "ryska",
-                "en": "Russian"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_venäjä",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_ryska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Russian"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "viro",
-                "sv": "estniska",
-                "en": "Estonian"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_vieras kieli_viro",
-                "sv": "Ämneslärare inom grundläggande utbildning_främmande språk_estniska",
-                "en": "Subject teacher in primary and lower secondary education_Foreign language_Estonian"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "label": {
-            "fi": "matematiikka",
-            "sv": "matematik",
-            "en": "Mathematics"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_matematiikka",
-            "sv": "Ämneslärare inom grundläggande utbildning_matematik",
-            "en": "Subject teacher in primary and lower secondary education_Mathematics"
+            "fi": "Opetusalan ammatit_Erityisluokanopettaja",
+            "sv": "Uppgifter inom undervisningsområdet_Specialklasslärare",
+            "en": "Teaching positions_Special class teacher"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "biologia",
-            "sv": "biologi",
-            "en": "Biology"
+            "fi": "Erityisopettaja perusopetuksessa",
+            "sv": "Speciallärare inom grundläggande utbildning",
+            "en": "Special needs teacher in primary and lower secondary education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_biologia",
-            "sv": "Ämneslärare inom grundläggande utbildning_biologi",
-            "en": "Subject teacher in primary and lower secondary education_Biology"
+            "fi": "Opetusalan ammatit_Erityisopettaja perusopetuksessa",
+            "sv": "Uppgifter inom undervisningsområdet_Speciallärare inom grundläggande utbildning",
+            "en": "Teaching positions_Special needs teacher in primary and lower secondary education"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "maantieto",
-            "sv": "geografi",
-            "en": "Geography"
+            "fi": "Erityisopettaja lukiossa",
+            "sv": "Speciallärare i gymnasiet",
+            "en": "Special needs teacher in general upper secondary education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_maantieto",
-            "sv": "Ämneslärare inom grundläggande utbildning_geografi",
-            "en": "Subject teacher in primary and lower secondary education_Geography"
+            "fi": "Opetusalan ammatit_Erityisopettaja lukiossa",
+            "sv": "Uppgifter inom undervisningsområdet_Speciallärare i gymnasiet",
+            "en": "Teaching positions_Special needs teacher in general upper secondary education"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "fysiikka",
-            "sv": "fysik",
-            "en": "Physics"
+            "fi": "Muu erityisopettaja",
+            "sv": "Annan speciallärare",
+            "en": "Other special education teacher "
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_fysiikka",
-            "sv": "Ämneslärare inom grundläggande utbildning_fysik",
-            "en": "Subject teacher in primary and lower secondary education_Physics"
+            "fi": "Opetusalan ammatit_Muu erityisopettaja",
+            "sv": "Uppgifter inom undervisningsområdet_Annan speciallärare",
+            "en": "Teaching positions_Other special education teacher "
           },
           "children": []
         },
         {
           "label": {
-            "fi": "kemia",
-            "sv": "kemi",
-            "en": "Chemistry"
+            "fi": "Oppilaanohjaaja perusopetuksessa",
+            "sv": "Elevhandledare inom grundläggande utbildning",
+            "en": "Guidance counsellor in primary and lower secondary education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_kemia",
-            "sv": "Ämneslärare inom grundläggande utbildning_kemi",
-            "en": "Subject teacher in primary and lower secondary education_Chemistry"
+            "fi": "Opetusalan ammatit_Oppilaanohjaaja perusopetuksessa",
+            "sv": "Uppgifter inom undervisningsområdet_Elevhandledare inom grundläggande utbildning",
+            "en": "Teaching positions_Guidance counsellor in primary and lower secondary education"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "terveystieto",
-            "sv": "hälsokunskap",
-            "en": "Health education"
+            "fi": "Opinto-ohjaaja lukiossa",
+            "sv": "Studiehandledare i gymnasiet",
+            "en": "Guidance counsellor in general upper secondary education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_terveystieto",
-            "sv": "Ämneslärare inom grundläggande utbildning_hälsokunskap",
-            "en": "Subject teacher in primary and lower secondary education_Health education"
+            "fi": "Opetusalan ammatit_Opinto-ohjaaja lukiossa",
+            "sv": "Uppgifter inom undervisningsområdet_Studiehandledare i gymnasiet",
+            "en": "Teaching positions_Guidance counsellor in general upper secondary education"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "uskonto",
-            "sv": "religion",
-            "en": "Religion"
+            "fi": "Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa",
+            "sv": "Lärare i yrkesinriktade examensdelar inom yrkesutbildning",
+            "en": "Teacher in vocational education and training, teaching vocational qualification units"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_uskonto",
-            "sv": "Ämneslärare inom grundläggande utbildning_religion",
-            "en": "Subject teacher in primary and lower secondary education_Religion"
-          },
-          "children": [
-            {
-              "label": {
-                "fi": "uskonto, evankelis-luterilainen",
-                "sv": "religion, evangelisk-luthersk tro",
-                "en": "Religion, Evangelical-Lutheran"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_uskonto_uskonto, evankelis-luterilainen",
-                "sv": "Ämneslärare inom grundläggande utbildning_religion_religion, evangelisk-luthersk tro",
-                "en": "Subject teacher in primary and lower secondary education_Religion_Religion, Evangelical-Lutheran"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, ortodoksinen",
-                "sv": "religion, ortodox tro",
-                "en": "Religion, Orthodox"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_uskonto_uskonto, ortodoksinen",
-                "sv": "Ämneslärare inom grundläggande utbildning_religion_religion, ortodox tro",
-                "en": "Subject teacher in primary and lower secondary education_Religion_Religion, Orthodox"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, katolinen",
-                "sv": "religion, katolsk tro",
-                "en": "Religion, Catholic"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_uskonto_uskonto, katolinen",
-                "sv": "Ämneslärare inom grundläggande utbildning_religion_religion, katolsk tro",
-                "en": "Subject teacher in primary and lower secondary education_Religion_Religion, Catholic"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, islam",
-                "sv": "religion, islam",
-                "en": "Religion, Islam"
-              },
-              "value": {
-                "fi": "Aineenopettaja perusopetuksessa_uskonto_uskonto, islam",
-                "sv": "Ämneslärare inom grundläggande utbildning_religion_religion, islam",
-                "en": "Subject teacher in primary and lower secondary education_Religion_Religion, Islam"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "label": {
-            "fi": "elämänkatsomustieto",
-            "sv": "livsåskådningskunskap",
-            "en": "Ethics"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_elämänkatsomustieto",
-            "sv": "Ämneslärare inom grundläggande utbildning_livsåskådningskunskap",
-            "en": "Subject teacher in primary and lower secondary education_Ethics"
+            "fi": "Opetusalan ammatit_Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa",
+            "sv": "Uppgifter inom undervisningsområdet_Lärare i yrkesinriktade examensdelar inom yrkesutbildning",
+            "en": "Teaching positions_Teacher in vocational education and training, teaching vocational qualification units"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "historia",
-            "sv": "historia",
-            "en": "History"
+            "fi": "Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ",
+            "sv": "Lärare i gemensamma examensdelar inom yrkesutbildning",
+            "en": "Teacher in vocational education and training, teaching common qualification units"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_historia",
-            "sv": "Ämneslärare inom grundläggande utbildning_historia",
-            "en": "Subject teacher in primary and lower secondary education_History"
+            "fi": "Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ",
+            "sv": "Uppgifter inom undervisningsområdet_Lärare i gemensamma examensdelar inom yrkesutbildning",
+            "en": "Teaching positions_Teacher in vocational education and training, teaching common qualification units"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "yhteiskuntaoppi",
-            "sv": "samhällslära",
-            "en": "Social Studies"
+            "fi": "Vapaan sivistystyön opettaja",
+            "sv": "Lärare i fritt bildningsarbete",
+            "en": "Teacher in liberal adult education"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_yhteiskuntaoppi",
-            "sv": "Ämneslärare inom grundläggande utbildning_samhällslära",
-            "en": "Subject teacher in primary and lower secondary education_Social Studies"
+            "fi": "Opetusalan ammatit_Vapaan sivistystyön opettaja",
+            "sv": "Uppgifter inom undervisningsområdet_Lärare i fritt bildningsarbete",
+            "en": "Teaching positions_Teacher in liberal adult education"
           },
           "children": []
         },
         {
           "label": {
-            "fi": "musiikki",
-            "sv": "musik",
-            "en": "Music"
+            "fi": "Kuraattori",
+            "sv": "Kurator",
+            "en": "School social worker"
           },
           "value": {
-            "fi": "Aineenopettaja perusopetuksessa_musiikki",
-            "sv": "Ämneslärare inom grundläggande utbildning_musik",
-            "en": "Subject teacher in primary and lower secondary education_Music"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "kuvataide",
-            "sv": "bildkonst",
-            "en": "Art"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_kuvataide",
-            "sv": "Ämneslärare inom grundläggande utbildning_bildkonst",
-            "en": "Subject teacher in primary and lower secondary education_Art"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "käsityö",
-            "sv": "slöjd",
-            "en": "Crafts"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_käsityö",
-            "sv": "Ämneslärare inom grundläggande utbildning_slöjd",
-            "en": "Subject teacher in primary and lower secondary education_Crafts"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "liikunta",
-            "sv": "gymnastik",
-            "en": "Physical education"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_liikunta",
-            "sv": "Ämneslärare inom grundläggande utbildning_gymnastik",
-            "en": "Subject teacher in primary and lower secondary education_Physical education"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "kotitalous",
-            "sv": "huslig ekonomi",
-            "en": "Home economics"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_kotitalous",
-            "sv": "Ämneslärare inom grundläggande utbildning_huslig ekonomi",
-            "en": "Subject teacher in primary and lower secondary education_Home economics"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "tietotekniikka",
-            "sv": "informationsteknik",
-            "en": "ICT"
-          },
-          "value": {
-            "fi": "Aineenopettaja perusopetuksessa_tietotekniikka",
-            "sv": "Ämneslärare inom grundläggande utbildning_informationsteknik",
-            "en": "Subject teacher in primary and lower secondary education_ICT"
+            "fi": "Opetusalan ammatit_Kuraattori",
+            "sv": "Uppgifter inom undervisningsområdet_Kurator",
+            "en": "Teaching positions_School social worker"
           },
           "children": []
         }
@@ -579,761 +1261,107 @@
     },
     {
       "label": {
-        "fi": "Aineenopettaja lukiossa",
-        "sv": "Ämneslärare i gymnasiet",
-        "en": "Subject teacher in general upper secondary education"
+        "fi": "Varhaiskasvatuksen tehtävät",
+        "sv": "Uppgifter inom småbarnspedagogik",
+        "en": "Professions in early childhood education and care"
       },
       "value": {
-        "fi": "Aineenopettaja lukiossa",
-        "sv": "Ämneslärare i gymnasiet",
-        "en": "Subject teacher in general upper secondary education"
+        "fi": "Varhaiskasvatuksen tehtävät",
+        "sv": "Uppgifter inom småbarnspedagogik",
+        "en": "Professions in early childhood education and care"
       },
       "children": [
         {
           "label": {
-            "fi": "äidinkieli ja kirjallisuus",
-            "sv": "modersmål och litteratur",
-            "en": "Mother tongue and literature"
+            "fi": "Varhaiskasvatuksen opettaja",
+            "sv": "Lärare inom småbarnspedagogik",
+            "en": "Teacher in early childhood education and care"
           },
           "value": {
-            "fi": "Aineenopettaja lukiossa_äidinkieli ja kirjallisuus",
-            "sv": "Ämneslärare i gymnasiet_modersmål och litteratur",
-            "en": "Subject teacher in general upper secondary education_Mother tongue and literature"
+            "fi": "Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen opettaja",
+            "sv": "Uppgifter inom småbarnspedagogik_Lärare inom småbarnspedagogik",
+            "en": "Professions in early childhood education and care_Teacher in early childhood education and care"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Varhaiskasvatuksen sosionomi",
+            "sv": "Socionom inom småbarnspedagogik",
+            "en": "Social pedagogue in early childhood education and care"
+          },
+          "value": {
+            "fi": "Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen sosionomi",
+            "sv": "Uppgifter inom småbarnspedagogik_Socionom inom småbarnspedagogik",
+            "en": "Professions in early childhood education and care_Social pedagogue in early childhood education and care"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Varhaiskasvatuksen lastenhoitaja",
+            "sv": "Barnskötare inom småbarnspedagogik",
+            "en": "Childcarer in early childhood education and care"
+          },
+          "value": {
+            "fi": "Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen lastenhoitaja",
+            "sv": "Uppgifter inom småbarnspedagogik_Barnskötare inom småbarnspedagogik",
+            "en": "Professions in early childhood education and care_Childcarer in early childhood education and care"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Varhaiskasvatuksen erityisopettaja",
+            "sv": "Speciallärare inom småbarnspedagogik",
+            "en": "Special education teacher in early childhood education and care"
+          },
+          "value": {
+            "fi": "Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen erityisopettaja",
+            "sv": "Uppgifter inom småbarnspedagogik_Speciallärare inom småbarnspedagogik",
+            "en": "Professions in early childhood education and care_Special education teacher in early childhood education and care"
+          },
+          "children": []
+        },
+        {
+          "label": {
+            "fi": "Muu varhaiskasvatuksen tehtävä",
+            "sv": "Annan uppgift inom småbarnspedagogik",
+            "en": "Other profession in early childhood education"
+          },
+          "value": {
+            "fi": "Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä",
+            "sv": "Uppgifter inom småbarnspedagogik_Annan uppgift inom småbarnspedagogik",
+            "en": "Professions in early childhood education and care_Other profession in early childhood education"
           },
           "children": [
             {
               "label": {
-                "fi": "suomi",
-                "sv": "finska",
-                "en": "Finnish"
+                "fi": "Päiväkodin johtaja",
+                "sv": "Daghemsföreståndare",
+                "en": "Head of early education centre"
               },
               "value": {
-                "fi": "Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_suomi",
-                "sv": "Ämneslärare i gymnasiet_modersmål och litteratur_finska",
-                "en": "Subject teacher in general upper secondary education_Mother tongue and literature_Finnish"
+                "fi": "Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä_Päiväkodin johtaja",
+                "sv": "Uppgifter inom småbarnspedagogik_Annan uppgift inom småbarnspedagogik_Daghemsföreståndare",
+                "en": "Professions in early childhood education and care_Other profession in early childhood education_Head of early education centre"
               },
               "children": []
             },
             {
               "label": {
-                "fi": "ruotsi",
-                "sv": "svenska",
-                "en": "Swedish"
+                "fi": "Steinerpedagogisen henkilöstön tehtävät",
+                "sv": "Personal vid steinerpedagogiska daghem",
+                "en": "Personnel at day care centres providing Steiner pedagogic"
               },
               "value": {
-                "fi": "Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_ruotsi",
-                "sv": "Ämneslärare i gymnasiet_modersmål och litteratur_svenska",
-                "en": "Subject teacher in general upper secondary education_Mother tongue and literature_Swedish"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "saame",
-                "sv": "sami",
-                "en": "Sami"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_äidinkieli ja kirjallisuus_saame",
-                "sv": "Ämneslärare i gymnasiet_modersmål och litteratur_sami",
-                "en": "Subject teacher in general upper secondary education_Mother tongue and literature_Sami"
+                "fi": "Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä_Steinerpedagogisen henkilöstön tehtävät",
+                "sv": "Uppgifter inom småbarnspedagogik_Annan uppgift inom småbarnspedagogik_Personal vid steinerpedagogiska daghem",
+                "en": "Professions in early childhood education and care_Other profession in early childhood education_Personnel at day care centres providing Steiner pedagogic"
               },
               "children": []
             }
           ]
-        },
-        {
-          "label": {
-            "fi": "toinen kotimainen kieli",
-            "sv": "det andra inhemska språket",
-            "en": "Second national language"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_toinen kotimainen kieli",
-            "sv": "Ämneslärare i gymnasiet_det andra inhemska språket",
-            "en": "Subject teacher in general upper secondary education_Second national language"
-          },
-          "children": [
-            {
-              "label": {
-                "fi": "ruotsi",
-                "sv": "svenska",
-                "en": "Swedish"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_toinen kotimainen kieli_ruotsi",
-                "sv": "Ämneslärare i gymnasiet_det andra inhemska språket_svenska",
-                "en": "Subject teacher in general upper secondary education_Second national language_Swedish"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "suomi",
-                "sv": "finska",
-                "en": "Finnish"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_toinen kotimainen kieli_suomi",
-                "sv": "Ämneslärare i gymnasiet_det andra inhemska språket_finska",
-                "en": "Subject teacher in general upper secondary education_Second national language_Finnish"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "label": {
-            "fi": "vieras kieli",
-            "sv": "främmande språk",
-            "en": "Foreign language"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_vieras kieli",
-            "sv": "Ämneslärare i gymnasiet_främmande språk",
-            "en": "Subject teacher in general upper secondary education_Foreign language"
-          },
-          "children": [
-            {
-              "label": {
-                "fi": "englanti",
-                "sv": "engelska",
-                "en": "English"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_englanti",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_engelska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_English"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "espanja",
-                "sv": "spanska",
-                "en": "Spanish"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_espanja",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_spanska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Spanish"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "italia",
-                "sv": "italienska",
-                "en": "Italian"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_italia",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_italienska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Italian"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "japani",
-                "sv": "japanska",
-                "en": "Japanese"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_japani",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_japanska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Japanese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "kiina",
-                "sv": "kinesiska",
-                "en": "Chinese"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_kiina",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_kinesiska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Chinese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "latina",
-                "sv": "latin",
-                "en": "Latin"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_latina",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_latin",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Latin"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "portugali",
-                "sv": "portugisiska",
-                "en": "Portuguese"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_portugali",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_portugisiska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Portuguese"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "ranska",
-                "sv": "franska",
-                "en": "French"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_ranska",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_franska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_French"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "saame",
-                "sv": "samiska",
-                "en": "Sami"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_saame",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_samiska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Sami"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "saksa",
-                "sv": "tyska",
-                "en": "German"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_saksa",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_tyska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_German"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "venäjä",
-                "sv": "ryska",
-                "en": "Russian"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_venäjä",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_ryska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Russian"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "viro",
-                "sv": "estniska",
-                "en": "Estonian"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_vieras kieli_viro",
-                "sv": "Ämneslärare i gymnasiet_främmande språk_estniska",
-                "en": "Subject teacher in general upper secondary education_Foreign language_Estonian"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "label": {
-            "fi": "matematiikka",
-            "sv": "matematik",
-            "en": "Mathematics"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_matematiikka",
-            "sv": "Ämneslärare i gymnasiet_matematik",
-            "en": "Subject teacher in general upper secondary education_Mathematics"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "biologia",
-            "sv": "biologi",
-            "en": "Biology"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_biologia",
-            "sv": "Ämneslärare i gymnasiet_biologi",
-            "en": "Subject teacher in general upper secondary education_Biology"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "maantiede",
-            "sv": "geografi",
-            "en": "Geography"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_maantiede",
-            "sv": "Ämneslärare i gymnasiet_geografi",
-            "en": "Subject teacher in general upper secondary education_Geography"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "fysiikka",
-            "sv": "fysik",
-            "en": "Physics"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_fysiikka",
-            "sv": "Ämneslärare i gymnasiet_fysik",
-            "en": "Subject teacher in general upper secondary education_Physics"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "kemia",
-            "sv": "kemi",
-            "en": "Chemistry"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_kemia",
-            "sv": "Ämneslärare i gymnasiet_kemi",
-            "en": "Subject teacher in general upper secondary education_Chemistry"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "terveystieto",
-            "sv": "hälsokunskap",
-            "en": "Health education"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_terveystieto",
-            "sv": "Ämneslärare i gymnasiet_hälsokunskap",
-            "en": "Subject teacher in general upper secondary education_Health education"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "uskonto",
-            "sv": "religion",
-            "en": "Religion"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_uskonto",
-            "sv": "Ämneslärare i gymnasiet_religion",
-            "en": "Subject teacher in general upper secondary education_Religion"
-          },
-          "children": [
-            {
-              "label": {
-                "fi": "uskonto, evankelis-luterilainen",
-                "sv": "religion, evangelisk-luthersk tro",
-                "en": "Religion, Evangelical-Lutheran"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_uskonto_uskonto, evankelis-luterilainen",
-                "sv": "Ämneslärare i gymnasiet_religion_religion, evangelisk-luthersk tro",
-                "en": "Subject teacher in general upper secondary education_Religion_Religion, Evangelical-Lutheran"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, ortodoksinen",
-                "sv": "religion, ortodox tro",
-                "en": "Religion, Orthodox"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_uskonto_uskonto, ortodoksinen",
-                "sv": "Ämneslärare i gymnasiet_religion_religion, ortodox tro",
-                "en": "Subject teacher in general upper secondary education_Religion_Religion, Orthodox"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, katolinen",
-                "sv": "religion, katolsk tro",
-                "en": "Religion, Catholic"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_uskonto_uskonto, katolinen",
-                "sv": "Ämneslärare i gymnasiet_religion_religion, katolsk tro",
-                "en": "Subject teacher in general upper secondary education_Religion_Religion, Catholic"
-              },
-              "children": []
-            },
-            {
-              "label": {
-                "fi": "uskonto, islam",
-                "sv": "religion, islam",
-                "en": "Religion, Islam"
-              },
-              "value": {
-                "fi": "Aineenopettaja lukiossa_uskonto_uskonto, islam",
-                "sv": "Ämneslärare i gymnasiet_religion_religion, islam",
-                "en": "Subject teacher in general upper secondary education_Religion_Religion, Islam"
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "label": {
-            "fi": "elämänkatsomustieto",
-            "sv": "livsåskådningskunskap",
-            "en": "Ethics"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_elämänkatsomustieto",
-            "sv": "Ämneslärare i gymnasiet_livsåskådningskunskap",
-            "en": "Subject teacher in general upper secondary education_Ethics"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "filosofia",
-            "sv": "filosofi",
-            "en": "Philosophy"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_filosofia",
-            "sv": "Ämneslärare i gymnasiet_filosofi",
-            "en": "Subject teacher in general upper secondary education_Philosophy"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "psykologia",
-            "sv": "psykologi",
-            "en": "Psychology"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_psykologia",
-            "sv": "Ämneslärare i gymnasiet_psykologi",
-            "en": "Subject teacher in general upper secondary education_Psychology"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "historia",
-            "sv": "historia",
-            "en": "History"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_historia",
-            "sv": "Ämneslärare i gymnasiet_historia",
-            "en": "Subject teacher in general upper secondary education_History"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "yhteiskuntaoppi",
-            "sv": "samhällslära",
-            "en": "Social studies"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_yhteiskuntaoppi",
-            "sv": "Ämneslärare i gymnasiet_samhällslära",
-            "en": "Subject teacher in general upper secondary education_Social studies"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "musiikki",
-            "sv": "musik",
-            "en": "Music"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_musiikki",
-            "sv": "Ämneslärare i gymnasiet_musik",
-            "en": "Subject teacher in general upper secondary education_Music"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "kuvataide",
-            "sv": "bildkonst",
-            "en": "Art"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_kuvataide",
-            "sv": "Ämneslärare i gymnasiet_bildkonst",
-            "en": "Subject teacher in general upper secondary education_Art"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "liikunta",
-            "sv": "gymnastik",
-            "en": "Physical education"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_liikunta",
-            "sv": "Ämneslärare i gymnasiet_gymnastik",
-            "en": "Subject teacher in general upper secondary education_Physical education"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "tietotekniikka",
-            "sv": "informationsteknik",
-            "en": "ICT"
-          },
-          "value": {
-            "fi": "Aineenopettaja lukiossa_tietotekniikka",
-            "sv": "Ämneslärare i gymnasiet_informationsteknik",
-            "en": "Subject teacher in general upper secondary education_ICT"
-          },
-          "children": []
-        }
-      ]
-    },
-    {
-      "label": {
-        "fi": "Erityisluokanopettaja",
-        "sv": "Specialklasslärare",
-        "en": "Special class teacher"
-      },
-      "value": {
-        "fi": "Erityisluokanopettaja",
-        "sv": "Specialklasslärare",
-        "en": "Special class teacher"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Erityisopettaja perusopetuksessa",
-        "sv": "Speciallärare inom grundläggande utbildning",
-        "en": "Special needs teacher in primary and lower secondary education"
-      },
-      "value": {
-        "fi": "Erityisopettaja perusopetuksessa",
-        "sv": "Speciallärare inom grundläggande utbildning",
-        "en": "Special needs teacher in primary and lower secondary education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Erityisopettaja lukiossa",
-        "sv": "Speciallärare i gymnasiet",
-        "en": "Special needs teacher in general upper secondary education"
-      },
-      "value": {
-        "fi": "Erityisopettaja lukiossa",
-        "sv": "Speciallärare i gymnasiet",
-        "en": "Special needs teacher in general upper secondary education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Muu erityisopettaja",
-        "sv": "Annan speciallärare",
-        "en": "Other special education teacher "
-      },
-      "value": {
-        "fi": "Muu erityisopettaja",
-        "sv": "Annan speciallärare",
-        "en": "Other special education teacher "
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Oppilaanohjaaja perusopetuksessa",
-        "sv": "Elevhandledare inom grundläggande utbildning",
-        "en": "Guidance counsellor in primary and lower secondary education"
-      },
-      "value": {
-        "fi": "Oppilaanohjaaja perusopetuksessa",
-        "sv": "Elevhandledare inom grundläggande utbildning",
-        "en": "Guidance counsellor in primary and lower secondary education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Opinto-ohjaaja lukiossa",
-        "sv": "Studiehandledare i gymnasiet",
-        "en": "Guidance counsellor in general upper secondary education"
-      },
-      "value": {
-        "fi": "Opinto-ohjaaja lukiossa",
-        "sv": "Studiehandledare i gymnasiet",
-        "en": "Guidance counsellor in general upper secondary education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa",
-        "sv": "Lärare i yrkesinriktade examensdelar inom yrkesutbildning",
-        "en": "Teacher in vocational education and training, teaching vocational qualification units"
-      },
-      "value": {
-        "fi": "Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa",
-        "sv": "Lärare i yrkesinriktade examensdelar inom yrkesutbildning",
-        "en": "Teacher in vocational education and training, teaching vocational qualification units"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ",
-        "sv": "Lärare i gemensamma examensdelar inom yrkesutbildning",
-        "en": "Teacher in vocational education and training, teaching common qualification units"
-      },
-      "value": {
-        "fi": "Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ",
-        "sv": "Lärare i gemensamma examensdelar inom yrkesutbildning",
-        "en": "Teacher in vocational education and training, teaching common qualification units"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Vapaan sivistystyön opettaja",
-        "sv": "Lärare i fritt bildningsarbete",
-        "en": "Teacher in liberal adult education"
-      },
-      "value": {
-        "fi": "Vapaan sivistystyön opettaja",
-        "sv": "Lärare i fritt bildningsarbete",
-        "en": "Teacher in liberal adult education"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Kuraattori",
-        "sv": "Kurator",
-        "en": "School social worker"
-      },
-      "value": {
-        "fi": "Kuraattori",
-        "sv": "Kurator",
-        "en": "School social worker"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Varhaiskasvatuksen opettaja",
-        "sv": "Lärare inom småbarnspedagogik",
-        "en": "Teacher in early childhood education and care"
-      },
-      "value": {
-        "fi": "Varhaiskasvatuksen opettaja",
-        "sv": "Lärare inom småbarnspedagogik",
-        "en": "Teacher in early childhood education and care"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Varhaiskasvatuksen sosionomi",
-        "sv": "Socionom inom småbarnspedagogik",
-        "en": "Social pedagogue in early childhood education and care"
-      },
-      "value": {
-        "fi": "Varhaiskasvatuksen sosionomi",
-        "sv": "Socionom inom småbarnspedagogik",
-        "en": "Social pedagogue in early childhood education and care"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Varhaiskasvatuksen lastenhoitaja",
-        "sv": "Barnskötare inom småbarnspedagogik",
-        "en": "Childcarer in early childhood education and care"
-      },
-      "value": {
-        "fi": "Varhaiskasvatuksen lastenhoitaja",
-        "sv": "Barnskötare inom småbarnspedagogik",
-        "en": "Childcarer in early childhood education and care"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Varhaiskasvatuksen erityisopettaja",
-        "sv": "Speciallärare inom småbarnspedagogik",
-        "en": "Special education teacher in early childhood education and care"
-      },
-      "value": {
-        "fi": "Varhaiskasvatuksen erityisopettaja",
-        "sv": "Speciallärare inom småbarnspedagogik",
-        "en": "Special education teacher in early childhood education and care"
-      },
-      "children": []
-    },
-    {
-      "label": {
-        "fi": "Muu varhaiskasvatuksen tehtävä",
-        "sv": "Annan uppgift inom småbarnspedagogik",
-        "en": "Other profession in early childhood education"
-      },
-      "value": {
-        "fi": "Muu varhaiskasvatuksen tehtävä",
-        "sv": "Annan uppgift inom småbarnspedagogik",
-        "en": "Other profession in early childhood education"
-      },
-      "children": [
-        {
-          "label": {
-            "fi": "Päiväkodin johtaja",
-            "sv": "Daghemsföreståndare",
-            "en": "Head of early education centre"
-          },
-          "value": {
-            "fi": "Muu varhaiskasvatuksen tehtävä_Päiväkodin johtaja",
-            "sv": "Annan uppgift inom småbarnspedagogik_Daghemsföreståndare",
-            "en": "Other profession in early childhood education_Head of early education centre"
-          },
-          "children": []
-        },
-        {
-          "label": {
-            "fi": "Steinerpedagogisen henkilöstön tehtävät",
-            "sv": "Personal vid steinerpedagogiska daghem",
-            "en": "Personnel at day care centres providing Steiner pedagogic"
-          },
-          "value": {
-            "fi": "Muu varhaiskasvatuksen tehtävä_Steinerpedagogisen henkilöstön tehtävät",
-            "sv": "Annan uppgift inom småbarnspedagogik_Personal vid steinerpedagogiska daghem",
-            "en": "Other profession in early childhood education_Personnel at day care centres providing Steiner pedagogic"
-          },
-          "children": []
         }
       ]
     }

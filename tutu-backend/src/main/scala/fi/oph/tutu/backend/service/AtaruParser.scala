@@ -2,6 +2,10 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
+import fi.oph.tutu.backend.utils.Constants.{
+  KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
+  KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
+}
 import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
@@ -293,11 +297,14 @@ class AtaruLomakeParser() {
   def parsePaatosTietoOptions(lomake: AtaruLomake): PaatosTietoOptions = {
     val kelpoisuusOptions = findOptionsByAtaruKysymysId(
       Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS,
-      lomake
-    ) ++ findOptionsByAtaruKysymysId(
-      Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_OPTIONS,
-      lomake
+      lomake,
+      Some(KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE)
     )
+      ++ findOptionsByAtaruKysymysId(
+        Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_OPTIONS,
+        lomake,
+        Some(KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE)
+      )
 
     val tiettyTutkintoTaiOpinnotOptions = findOptionsByAtaruKysymysId(
       Constants.ATARU_LOMAKE_TIETTY_TUTKINTO_TAI_OPINNOT_OIKEUSTIETEELLINEN_OPTIONS,
@@ -321,29 +328,29 @@ class AtaruLomakeParser() {
 
   def findOptionsByAtaruKysymysId(
     kysymysId: AtaruKysymysId,
-    lomake: AtaruLomake
+    lomake: AtaruLomake,
+    rootItem: Option[PaatosTietoOption] = None
   ): Seq[PaatosTietoOption] = {
-    findOptionsInContentAsNestedInfoText(kysymysId, lomake.content, "")
+    findOptionsInContentAsNestedInfoText(kysymysId, lomake.content, rootItem)
   }
 
   private def findOptionsInContentAsNestedInfoText(
     kysymysId: AtaruKysymysId,
     items: Seq[LomakeContentItem],
-    parentPath: String
+    rootItem: Option[PaatosTietoOption]
   ): Seq[PaatosTietoOption] = {
     var result = Seq[PaatosTietoOption]()
 
     boundary {
       for (item <- items) {
-        val currentPath = if (parentPath.isEmpty) "" else parentPath
 
         if (matchesAtaruKysymysId(item, kysymysId)) {
-          result = collectAllOptionsRecursively(item, currentPath)
+          result = collectAllOptionsRecursively(item, None, rootItem)
           break()
         }
 
         // If not found at this level, search recursively in children
-        val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children, currentPath)
+        val resultFromChildren = findOptionsInContentAsNestedInfoText(kysymysId, item.children, rootItem)
         if (resultFromChildren.nonEmpty) {
           result = resultFromChildren
           break()
@@ -351,7 +358,7 @@ class AtaruLomakeParser() {
 
         // Also search in followups within options
         for (valinta <- item.options) {
-          val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups, currentPath)
+          val resultFromFollowups = findOptionsInContentAsNestedInfoText(kysymysId, valinta.followups, rootItem)
           if (resultFromFollowups.nonEmpty) {
             result = resultFromFollowups
             break()
@@ -363,25 +370,49 @@ class AtaruLomakeParser() {
     result
   }
 
+  private def optionPath(
+    basePath: Option[Kielistetty],
+    optionLabel: Kielistetty
+  ): Kielistetty = {
+    basePath match {
+      case Some(basePathVal) =>
+        Map(
+          Kieli.fi -> s"${basePathVal.getOrElse(Kieli.fi, "")}_${optionLabel.getOrElse(Kieli.fi, "")}",
+          Kieli.sv -> s"${basePathVal.getOrElse(Kieli.sv, "")}_${optionLabel.getOrElse(Kieli.sv, "")}",
+          Kieli.en -> s"${basePathVal.getOrElse(Kieli.en, "")}_${optionLabel.getOrElse(Kieli.en, "")}"
+        )
+      case _ =>
+        Map(
+          Kieli.fi -> optionLabel.getOrElse(Kieli.fi, ""),
+          Kieli.sv -> optionLabel.getOrElse(Kieli.sv, ""),
+          Kieli.en -> optionLabel.getOrElse(Kieli.en, "")
+        )
+    }
+  }
+
   private def collectAllOptionsRecursively(
     item: LomakeContentItem,
-    basePath: String
+    basePath: Option[Kielistetty],
+    rootItem: Option[PaatosTietoOption]
   ): Seq[PaatosTietoOption] = {
-    item.options.map { option =>
-      val prePath    = if (basePath.nonEmpty) s"${basePath}_" else ""
-      val optionPath = Map(
-        Kieli.fi -> s"${prePath}${option.label.getOrElse(Kieli.fi, "")}",
-        Kieli.sv -> s"${prePath}${option.label.getOrElse(Kieli.sv, "")}",
-        Kieli.en -> s"${prePath}${option.label.getOrElse(Kieli.en, "")}"
-      )
-
-      PaatosTietoOption(
-        label = Some(option.label),
-        value = Some(optionPath),
-        children = option.followups.flatMap { followup =>
-          collectAllOptionsRecursivelyFromFollowups(followup, optionPath)
+    rootItem match {
+      case Some(rootOption) =>
+        Seq(
+          rootOption.copy(
+            children = collectAllOptionsRecursively(item, rootOption.label, None)
+          )
+        )
+      case _ =>
+        item.options.map { option =>
+          val optionPathVal = optionPath(basePath, option.label)
+          PaatosTietoOption(
+            label = Some(option.label),
+            value = Some(optionPathVal),
+            children = option.followups.flatMap { followup =>
+              collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
+            }
+          )
         }
-      )
     }
   }
 
@@ -390,17 +421,13 @@ class AtaruLomakeParser() {
     basePath: Kielistetty
   ): Seq[PaatosTietoOption] = {
     item.options.filter(option => !option.hidden.getOrElse(false)).map { option =>
-      val optionPath = Map(
-        Kieli.fi -> s"${basePath.getOrElse(Kieli.fi, "")}_${option.label.getOrElse(Kieli.fi, "")}",
-        Kieli.sv -> s"${basePath.getOrElse(Kieli.sv, "")}_${option.label.getOrElse(Kieli.sv, "")}",
-        Kieli.en -> s"${basePath.getOrElse(Kieli.en, "")}_${option.label.getOrElse(Kieli.en, "")}"
-      )
+      val optionPathVal = optionPath(Some(basePath), option.label)
 
       PaatosTietoOption(
         label = Some(option.label),
-        value = Some(optionPath),
+        value = Some(optionPathVal),
         children = option.followups.flatMap { followup =>
-          collectAllOptionsRecursivelyFromFollowups(followup, optionPath)
+          collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
         }
       )
     }

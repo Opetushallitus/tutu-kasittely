@@ -433,6 +433,9 @@
             "otsikko": "Vahvista kelpoisuuden poisto",
             "teksti": "Olet poistamassa kelpoisuutta. Vahvista poistaminen.",
             "poistaKelpoisuus": "Poista kelpoisuus"
+          },
+          "additionalKelpoisuudet": {
+            "muuAmmatti": "Muu ammatti"
           }
         },
         "tiettyTutkintoTaiOpinnot": {
