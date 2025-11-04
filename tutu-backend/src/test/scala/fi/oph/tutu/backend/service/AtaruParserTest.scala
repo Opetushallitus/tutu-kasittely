@@ -623,6 +623,40 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   }
 
   @Test
+  def parseTutkinnotWithTutkinto3AsTutkinto2WhenMissingTutkinto2WithGeneratedIds(): Unit = {
+    val hakemusWithKaikkiTutkinnot =
+      JsonMethods.parse(loadJson("ataruHakemus6671WithMissingTutkinto2.json")).extract[AtaruHakemus]
+    val hakemusId = UUID.randomUUID()
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val tutkinto1   = tutkinnot.head
+    val tutkinto2   = tutkinnot(1)
+    val muuTutkinto = tutkinnot.last
+
+    assertEquals(tutkinto1.hakemusId, hakemusId)
+    assertEquals(Some("ensimmäinen laulututkinto"), tutkinto1.nimi)
+    assertEquals(Some("Karaåke-oppilaitos"), tutkinto1.oppilaitos)
+    assertEquals("1", tutkinto1.jarjestys)
+    assertEquals(Some("tutkintotodistus"), tutkinto1.todistusOtsikko)
+
+    assertEquals(tutkinto2.hakemusId, hakemusId)
+    assertEquals("2", tutkinto2.jarjestys)
+    assertEquals(Some("Kolmoskaljan asijantuntijatutkinto"), tutkinto2.nimi)
+    assertEquals(Some("Beer- ja ravintola oppilaitos"), tutkinto2.oppilaitos)
+    assertEquals(Some("muutodistus"), tutkinto2.todistusOtsikko)
+
+    assertEquals(muuTutkinto.jarjestys, "MUU")
+    assertEquals(muuTutkinto.hakemusId, hakemusId)
+    assertEquals(None, muuTutkinto.nimi)
+    assertEquals(
+      muuTutkinto.muuTutkintoTieto,
+      Some(
+        "Ammuu-instituutti"
+      )
+    )
+  }
+
+  @Test
   def parseTutkinto1MaakoodiTest(): Unit = {
     val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
     val maakoodi                   = ataruHakemusParser.parseTutkinto1MaakoodiUri(hakemusWithKaikkiTutkinnot)
