@@ -104,10 +104,8 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
     .getByTestId('asiakirjamallit-tutkinnoista-UK_enic')
     .locator('td');
 
-  // Fill textarea (local state update)
   await cellsOfUkEnic.nth(2).locator('textarea').first().fill('Uusi kuvaus');
 
-  // Click save and wait for PUT request
   request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
@@ -117,12 +115,10 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
       .vastaavuus,
   ).toEqual(true);
 
-  // Click clear button (local state update)
   await page
     .getByTestId('asiakirjamalli-vastaavuus-aacrao-clear-button')
     .click();
 
-  // Click save and wait for PUT request
   request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
     request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
