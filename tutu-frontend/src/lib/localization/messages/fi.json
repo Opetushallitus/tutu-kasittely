@@ -400,6 +400,13 @@
         "kelpoisuuskoe": "Kelpoisuuskoe",
         "sopeutumisaika": "Sopeutumisaika"
       },
+      "kielteisenPaatoksenPerustelut": {
+        "otsikko": "Kielteisen päätöksen perustelut",
+        "epavirallinenKorkeakoulu": "Epävirallinen korkeakoulu",
+        "epavirallinenTutkinto": "Epävirallinen tutkinto",
+        "eiVastaaSuomessaSuoritettavaaTutkintoa": "Ei vastaa Suomessa suoritettavaa tutkintoa",
+        "muuPerustelu": "Muu perustelu"
+      },
       "paatostyyppi": {
         "paatos": "Päätös",
         "otsikko": "Päätöstyyppi",

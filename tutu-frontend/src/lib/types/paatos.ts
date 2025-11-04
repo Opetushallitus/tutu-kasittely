@@ -35,7 +35,7 @@ export type PaatosTieto = {
   paatosTyyppi?: Paatostyyppi;
   sovellettuLaki?: SovellettuLaki;
   myonteisenPaatoksenLisavaatimukset: string;
-  kielteisenPaatoksenPerustelut: string;
+  kielteisenPaatoksenPerustelut?: KielteisenPaatoksenPerustelut;
   tutkintoId?: string;
   lisaaTutkintoPaatostekstiin?: boolean;
   myonteinenPaatos?: boolean;
@@ -70,6 +70,13 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   taydentavatOpinnot: boolean;
   kelpoisuuskoe: boolean;
   sopeutumisaika: boolean;
+};
+
+export type KielteisenPaatoksenPerustelut = {
+  epavirallinenKorkeakoulu: boolean;
+  epavirallinenTutkinto: boolean;
+  eiVastaaSuomessaSuoritettavaaTutkintoa: boolean;
+  muuPerustelu: boolean;
 };
 
 export type PaatosTietoOptionGroup = {

@@ -13,18 +13,18 @@ import { MyonteisenPaatoksenLisavaatimukset } from '@/src/lib/types/paatos';
 interface MyonteinenPaatosProps {
   t: TFunction;
   myonteinenPaatos?: boolean;
-  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
   updateMyonteinenPaatosAction: (
     myonteinenPaatos: boolean,
     lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
   ) => void;
+  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
 }
 
 export const MyonteinenPaatos = ({
   t,
   myonteinenPaatos,
-  lisavaatimukset,
   updateMyonteinenPaatosAction,
+  lisavaatimukset,
 }: MyonteinenPaatosProps) => {
   const theme = useTheme();
   return (
