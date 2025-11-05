@@ -6,7 +6,6 @@ import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { Hakemus } from '@/src/lib/types/hakemus';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -25,7 +24,28 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemus, tallennaHakemus, isLoading, error } = useHakemus();
+  const {
+    hakemus,
+    tallennaHakemus,
+    updateLocal: updateHakemusLocal,
+    hasChanges: hakemusHasChanges,
+    isLoading,
+    error,
+  } = useHakemus();
+
+  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
+    usePerustelu(hakemus?.hakemusOid);
+
+  // Manage editable state for both perustelu and hakemus with automatic change tracking
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
+  // Combined change tracking and save handler
+  const hasChanges = perusteluState.hasChanges || hakemusHasChanges;
+
+  const handleSave = () => {
+    perusteluState.save();
+    tallennaHakemus();
+  };
 
   return (
     <PerusteluLayout
@@ -36,94 +56,60 @@ export default function YleisetPage() {
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      <YleisetPerustelut hakemus={hakemus} tallennaHakemus={tallennaHakemus} />
+      {isPerusteluLoading || !perusteluState.editedData ? (
+        <FullSpinner></FullSpinner>
+      ) : (
+        <>
+          <VirallinenTutkinnonMyontaja
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <VirallinenTutkinto
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <Lahde
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <SelvitysTutkinnonMyontajastaJaVirallisuudesta
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <YlimmanTutkinnonAsema
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <SelvitysTutkinnonAsemasta
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <TutkintokohtaisetTiedot
+            hakemus={hakemus}
+            updateHakemus={updateHakemusLocal}
+          />
+          <OphTypography variant={'h3'}>
+            {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
+          </OphTypography>
+          <JatkoOpintoKelpoisuus
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <AikaisemmatPaatokset
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <MuuPerustelu
+            perustelu={perusteluState.editedData}
+            updatePerustelu={perusteluState.updateLocal}
+          />
+          <SaveRibbon
+            onSave={handleSave}
+            isSaving={isSaving || false}
+            hasChanges={hasChanges}
+          />
+        </>
+      )}
     </PerusteluLayout>
   );
 }
-
-interface YleisetPerustelutProps {
-  hakemus: Hakemus | undefined;
-  tallennaHakemus: (hakemus: Hakemus) => void;
-}
-
-const YleisetPerustelut = ({
-  hakemus,
-  tallennaHakemus,
-}: YleisetPerustelutProps) => {
-  const { t } = useTranslations();
-
-  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
-
-  // Manage editable state for both perustelu and hakemus with automatic change tracking
-  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
-  const hakemusState = useEditableState(hakemus, tallennaHakemus);
-
-  // Paikallinen päivitys hakemukselle (vain tutkinnot)
-  const updateHakemusLocal = (part: Partial<Hakemus>) => {
-    hakemusState.updateLocal(part);
-  };
-
-  // Combined change tracking and save handler
-  const hasChanges = perusteluState.hasChanges || hakemusState.hasChanges;
-
-  const handleSave = () => {
-    perusteluState.save();
-    hakemusState.save();
-  };
-
-  return isPerusteluLoading || !perusteluState.editedData ? (
-    <FullSpinner></FullSpinner>
-  ) : (
-    <>
-      <VirallinenTutkinnonMyontaja
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <VirallinenTutkinto
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <Lahde
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <SelvitysTutkinnonMyontajastaJaVirallisuudesta
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <YlimmanTutkinnonAsema
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <SelvitysTutkinnonAsemasta
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <TutkintokohtaisetTiedot
-        hakemus={hakemusState.editedData}
-        updateHakemus={updateHakemusLocal}
-      />
-      <OphTypography variant={'h3'}>
-        {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
-      </OphTypography>
-      <JatkoOpintoKelpoisuus
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <AikaisemmatPaatokset
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <MuuPerustelu
-        perustelu={perusteluState.editedData}
-        updatePerustelu={perusteluState.updateLocal}
-      />
-      <SaveRibbon
-        onSave={handleSave}
-        isSaving={isSaving || false}
-        hasChanges={hasChanges}
-      />
-    </>
-  );
-};

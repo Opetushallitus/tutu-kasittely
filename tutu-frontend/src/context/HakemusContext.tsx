@@ -5,10 +5,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { Hakemus, HakemusUpdateRequest } from '@/src/lib/types/hakemus';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
+import { useEditableState } from '@/src/hooks/useEditableState';
 
 type HakemusContextValue = {
   hakemus: Hakemus | undefined;
-  tallennaHakemus: (hakemus: HakemusUpdateRequest) => void;
+  tallennaHakemus: () => void;
+  updateHakemusLocal: (update: Partial<Hakemus>) => void;
+  hakemusHasChanges: boolean;
   isLoading: boolean;
   isError?: boolean;
   error: Error | null;
@@ -65,11 +68,15 @@ export const HakemusProvider = ({
     },
   });
 
+  const hakemusState = useEditableState(hakemus, tallennaHakemus);
+
   return (
     <HakemusContext.Provider
       value={{
-        hakemus,
-        tallennaHakemus,
+        hakemus: hakemusState.editedData,
+        tallennaHakemus: hakemusState.save,
+        updateHakemusLocal: hakemusState.updateLocal,
+        hakemusHasChanges: hakemusState.hasChanges,
         isLoading,
         error,
         isSaving,
