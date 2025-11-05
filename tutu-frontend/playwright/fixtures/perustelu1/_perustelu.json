@@ -11,16 +11,18 @@
   "selvitysTutkinnonAsemastaLahtomaanJarjestelmassa": "",
   "luoja": "testi",
   "luotu": "2025-06-01T00:00:00",
-  "lausuntoPyyntojenLisatiedot": "pyynö",
-  "lausunnonSisalto": "sisältö",
+  "lausuntoPyyntojenLisatiedot": "Lisätietoja lausuntopyynnöistä",
+  "lausunnonSisalto": "Lausunto on myönteinen. Tutkinto on rinnastettavissa suomalaiseen ylempään korkeakoulututkintoon.",
   "lausuntopyynnot": [
     {
-      "lausunnonAntaja": "Kostaja",
+      "lausunnonAntajaKoodiUri": "oppilaitosnumero_01901",
+      "lausunnonAntajaMuu": null,
       "lahetetty": "2025-09-01T00:00:00",
       "saapunut": "2025-09-30T00:00:00"
     },
     {
-      "lausunnonAntaja": "Aas Weckström",
+      "lausunnonAntajaKoodiUri": "oppilaitosnumero_10076",
+      "lausunnonAntajaMuu": null,
       "lahetetty": "2025-11-01T00:00:00",
       "saapunut": "2025-11-30T00:00:00"
     }

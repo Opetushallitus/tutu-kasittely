@@ -22,6 +22,36 @@ class KoodistoController(
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   @GetMapping(
+    path = Array("koodisto/korkeakoulut"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae kaikki Suomen korkeakoulut (yliopistot ja ammattikorkeakoulut)",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def haeKorkeakoulut(): ResponseEntity[Any] = {
+    Try {
+      koodistoService.haeKorkeakoulut()
+    } match {
+      case Success(korkeakoulut) =>
+        val response = mapper.writeValueAsString(korkeakoulut)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Korkeakoulujen haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
     path = Array("koodisto/{koodisto}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )

@@ -1,0 +1,20 @@
+[
+  {
+    "koodiUri": "oppilaitosnumero_01901",
+    "koodiArvo": "01901",
+    "nimi": {
+      "fi": "Helsingin yliopisto",
+      "sv": "Helsingfors universitet",
+      "en": "University of Helsinki"
+    }
+  },
+  {
+    "koodiUri": "oppilaitosnumero_10076",
+    "koodiArvo": "10076",
+    "nimi": {
+      "fi": "Aalto-yliopisto",
+      "sv": "Aalto-universitetet",
+      "en": "Aalto University"
+    }
+  }
+]

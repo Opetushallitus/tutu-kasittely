@@ -29,12 +29,19 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await expect(page.getByTestId('perustelu-layout-otsikko')).toHaveText(
     'Lausuntopyynnöt',
   );
+
+  await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toBeVisible();
+
   const lausuntopyyntoLisatietoInput = page.getByTestId(
     'pyyntojenLisatiedot-input',
   );
   const lausuntoSisaltoInput = page.getByTestId('lausunnonSisalto-input');
-  await expect(lausuntopyyntoLisatietoInput).toHaveValue('pyynö');
-  await expect(lausuntoSisaltoInput).toHaveValue('sisältö');
+  await expect(lausuntopyyntoLisatietoInput).toHaveValue(
+    'Lisätietoja lausuntopyynnöistä',
+  );
+  await expect(lausuntoSisaltoInput).toHaveValue(
+    'Lausunto on myönteinen. Tutkinto on rinnastettavissa suomalaiseen ylempään korkeakoulututkintoon.',
+  );
 
   await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toHaveText(
     'Lausuntopyyntö 1',
@@ -43,16 +50,17 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   const lahetetty1 = page.getByTestId('lausuntoPyyntoLahetetty-calendar-1');
   const vastattu1 = page.getByTestId('lausuntoPyyntoVastattu-calendar-1');
 
-  await expect(lausunnonAntaja1).toHaveValue('Kostaja');
+  await expect(lausunnonAntaja1).toBeVisible({ timeout: 15000 });
+  await expect(lausunnonAntaja1).toContainText('Helsingin yliopisto');
   await expect(lahetetty1.locator('input')).toHaveValue('01.09.2025');
   await expect(vastattu1.locator('input')).toHaveValue('30.09.2025');
 
   await expect(page.getByTestId('lausuntopyynto-otsikko-2')).toHaveText(
     'Lausuntopyyntö 2',
   );
-  await expect(page.getByTestId('lausunnon-antaja-2')).toHaveValue(
-    'Aas Weckström',
-  );
+  const lausunnonAntaja2 = page.getByTestId('lausunnon-antaja-2');
+  await expect(lausunnonAntaja2).toBeVisible({ timeout: 15000 });
+  await expect(lausunnonAntaja2).toContainText('Aalto-yliopisto');
   await expect(
     page.getByTestId('lausuntoPyyntoLahetetty-calendar-2').locator('input'),
   ).toHaveValue('01.11.2025');
@@ -74,17 +82,24 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   });
   await waitForSaveComplete(page);
 
-  await lausunnonAntaja1.fill('Esko Mörkö');
+  await lausunnonAntaja1.click();
+  await page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=Muu lausunnon antaja')
+    .click();
+  await page.getByTestId('muu-lausunnon-antaja-1').fill('Esko Mörkö');
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
       {
-        lausunnonAntaja: 'Esko Mörkö',
+        lausunnonAntajaKoodiUri: null,
+        lausunnonAntajaMuu: 'Esko Mörkö',
         lahetetty: '2025-09-01T00:00:00',
         saapunut: '2025-09-30T00:00:00',
       },
       {
-        lausunnonAntaja: 'Aas Weckström',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-11-01T00:00:00',
         saapunut: '2025-11-30T00:00:00',
       },
@@ -98,12 +113,14 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
       {
-        lausunnonAntaja: 'Esko Mörkö',
+        lausunnonAntajaKoodiUri: null,
+        lausunnonAntajaMuu: 'Esko Mörkö',
         lahetetty: matchingDate(),
         saapunut: '2025-09-30T00:00:00',
       },
       {
-        lausunnonAntaja: 'Aas Weckström',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-11-01T00:00:00',
         saapunut: '2025-11-30T00:00:00',
       },
@@ -117,12 +134,14 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
       {
-        lausunnonAntaja: 'Esko Mörkö',
+        lausunnonAntajaKoodiUri: null,
+        lausunnonAntajaMuu: 'Esko Mörkö',
         lahetetty: matchingDate(),
         saapunut: matchingDate(),
       },
       {
-        lausunnonAntaja: 'Aas Weckström',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-11-01T00:00:00',
         saapunut: '2025-11-30T00:00:00',
       },
@@ -134,27 +153,40 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',
   );
+
+  await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toBeVisible();
+
   await page.getByTestId('lisaa-lausuntopyynto-button').click();
   await expect(page.getByTestId('lausuntopyynto-otsikko-3')).toHaveText(
     'Lausuntopyyntö 3',
   );
 
-  await page.getByTestId('lausunnon-antaja-3').fill('Pertti Keinonen');
+  const lausunnonAntaja3 = page.getByTestId('lausunnon-antaja-3');
+  await expect(lausunnonAntaja3).toBeVisible({ timeout: 15000 });
+  await lausunnonAntaja3.click();
+  await page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=Muu lausunnon antaja')
+    .click();
+  await page.getByTestId('muu-lausunnon-antaja-3').fill('Pertti Keinonen');
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
       {
-        lausunnonAntaja: 'Kostaja',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-09-01T00:00:00',
         saapunut: '2025-09-30T00:00:00',
       },
       {
-        lausunnonAntaja: 'Aas Weckström',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-11-01T00:00:00',
         saapunut: '2025-11-30T00:00:00',
       },
       {
-        lausunnonAntaja: 'Pertti Keinonen',
+        lausunnonAntajaKoodiUri: null,
+        lausunnonAntajaMuu: 'Pertti Keinonen',
         lahetetty: null,
         saapunut: null,
       },
@@ -170,12 +202,14 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
     lausuntopyynnot: [
       {
-        lausunnonAntaja: 'Kostaja',
+        lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
+        lausunnonAntajaMuu: null,
         lahetetty: '2025-09-01T00:00:00',
         saapunut: '2025-09-30T00:00:00',
       },
       {
-        lausunnonAntaja: 'Pertti Keinonen',
+        lausunnonAntajaKoodiUri: null,
+        lausunnonAntajaMuu: 'Pertti Keinonen',
         lahetetty: null,
         saapunut: null,
       },

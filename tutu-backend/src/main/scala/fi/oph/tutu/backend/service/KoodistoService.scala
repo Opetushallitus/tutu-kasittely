@@ -73,8 +73,8 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
   }
 
   /**
-   * Hakee koodiston relaatiot (esim. kunnan relaatiot maakuntaan)
-   * @param koodiUri Koodisto URI (esim. "kunta_091")
+   * Hakee koodiston relaatiot
+   * @param koodiUri Koodisto URI (esim. "oppilaitosnumero_03117" tai "kunta_091")
    * @return Either virhe tai JSON-vastaus merkkijonona
    */
   @Cacheable(value = Array("koodistoRelaatiot"), key = "#koodiUri")
@@ -92,5 +92,69 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
   private def updateCached(koodisto: String, value: String): Unit = {
     val koodistoCache = cacheManager.getCache("koodisto")
     koodistoCache.put(koodisto, value)
+  }
+
+  /**
+   * Hakee oppilaitosnumero-koodit oppilaitostyypin perusteella
+   * käyttäen codeelement-rajapintaa joka palauttaa withinCodeElements
+   */
+  private def haeKorkeakouluTyypinOppilaitokset(oppilaitostyyppiUri: String): Set[String] = {
+    val url = s"$opintopolku_virkailija_domain/koodisto-service/rest/codeelement/$oppilaitostyyppiUri/1"
+    httpService.get(koodistoCasClient, url) match {
+      case Right(responseJson) =>
+        try {
+          val json = parse(responseJson)
+          (json \ "withinCodeElements") match {
+            case JArray(elements) =>
+              elements.flatMap { element =>
+                (element \ "codeElementUri").extractOpt[String].filter(_.startsWith("oppilaitosnumero_"))
+              }.toSet
+            case _ =>
+              LOG.warn(s"withinCodeElements ei löytynyt tai ei ole JArray: $oppilaitostyyppiUri")
+              Set.empty
+          }
+        } catch {
+          case e: Exception =>
+            LOG.warn(s"Codeelement-vastauksen parsinta epäonnistui: $oppilaitostyyppiUri", e)
+            Set.empty
+        }
+      case Left(error) =>
+        LOG.warn(s"Codeelement-haku epäonnistui: $oppilaitostyyppiUri", error)
+        Set.empty
+    }
+  }
+
+  /**
+   * Hakee kaikki Suomen korkeakoulut (yliopistot ja ammattikorkeakoulut)
+   *
+   * Tekee kaksi API-kutsua oppilaitostyyppi codeelement-rajapintaan:
+   * - oppilaitostyyppi_42 (Yliopistot) → palauttaa yliopistot withinCodeElements-kentässä
+   * - oppilaitostyyppi_41 (Ammattikorkeakoulut) → palauttaa AMK:t withinCodeElements-kentässä
+   *
+   * Yhdistää tulokset paikallisesti oppilaitosnumero-koodiston kanssa.
+   */
+  @Cacheable(value = Array("korkeakoulut"), unless = "#result.isEmpty()")
+  def haeKorkeakoulut(): Seq[KoodistoItem] = {
+    val oppilaitokset = getKoodisto("oppilaitosnumero")
+
+    if (oppilaitokset.isEmpty) {
+      LOG.warn("Korkeakoulujen haku epäonnistui: oppilaitosnumero-koodisto on tyhjä")
+      return Seq.empty
+    }
+
+    val yliopistoKoodit   = haeKorkeakouluTyypinOppilaitokset("oppilaitostyyppi_42") // Yliopistot
+    val amkKoodit         = haeKorkeakouluTyypinOppilaitokset("oppilaitostyyppi_41") // Ammattikorkeakoulut
+    val korkeakouluKoodit = yliopistoKoodit ++ amkKoodit
+
+    LOG.info(s"Yliopistoja: ${yliopistoKoodit.size}, AMK:ita: ${amkKoodit.size}, yhteensä: ${korkeakouluKoodit.size}")
+
+    // Koodistossa on paljon historiallisia korkeakouluja jotka ei ole enää olemassa
+    val korkeakoulut = oppilaitokset
+      .filter(_.isValid())
+      .filter(oppilaitos => korkeakouluKoodit.contains(oppilaitos.koodiUri))
+
+    LOG.info(s"Voimassa olevia korkeakouluja: ${korkeakoulut.size}")
+
+    korkeakoulut
   }
 }

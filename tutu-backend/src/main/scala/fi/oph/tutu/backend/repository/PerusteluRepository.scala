@@ -59,6 +59,7 @@ class PerusteluRepository extends BaseResultHandlers {
         Option(UUID.fromString(r.nextString())),
         Option(UUID.fromString(r.nextString())),
         r.nextStringOption(),
+        r.nextStringOption(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
@@ -268,7 +269,8 @@ class PerusteluRepository extends BaseResultHandlers {
             SELECT
               lp.id,
               lp.perustelu_id,
-              lp.lausunnon_antaja,
+              lp.lausunnon_antaja_koodiuri,
+              lp.lausunnon_antaja_muu,
               lp.lahetetty,
               lp.saapunut
             FROM
@@ -320,10 +322,11 @@ class PerusteluRepository extends BaseResultHandlers {
     luoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO lausuntopyynto (perustelu_id, lausunnon_antaja, lahetetty, saapunut, luoja)
+      INSERT INTO lausuntopyynto (perustelu_id, lausunnon_antaja_koodiuri, lausunnon_antaja_muu, lahetetty, saapunut, luoja)
       VALUES (
         ${perusteluId.toString}::uuid,
-        ${lausuntopyynto.lausunnonAntaja.orNull},
+        ${lausuntopyynto.lausunnonAntajaKoodiUri.orNull},
+        ${lausuntopyynto.lausunnonAntajaMuu.orNull},
         ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
         ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         $luoja
@@ -336,7 +339,8 @@ class PerusteluRepository extends BaseResultHandlers {
     sqlu"""
       UPDATE lausuntopyynto
       SET
-        lausunnon_antaja = ${lausuntopyynto.lausunnonAntaja.orNull},
+        lausunnon_antaja_koodiuri = ${lausuntopyynto.lausunnonAntajaKoodiUri.orNull},
+        lausunnon_antaja_muu = ${lausuntopyynto.lausunnonAntajaMuu.orNull},
         lahetetty = ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
         saapunut = ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $muokkaaja

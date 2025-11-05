@@ -5,6 +5,7 @@ import { Theme } from '@mui/material/styles';
 import {
   OphButton,
   OphInputFormField,
+  OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
@@ -13,11 +14,14 @@ import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { DeleteOutline } from '@mui/icons-material';
+import { OphSelectOption } from '@/src/components/OphSelect';
 
 export type LausuntopyyntoProps = {
   lausuntopyynto: Lausuntopyynto;
   updateLausuntopyyntoAction: (lausuntopyynto: Lausuntopyynto) => void;
   deleteLausuntopyyntoAction: (jarjestysnumero: number) => void;
+  korkeakouluOptions: OphSelectOption<string>[];
+  isKoodistoLoading: boolean;
   t: TFunction;
   theme: Theme;
 };
@@ -25,6 +29,8 @@ export const LausuntopyyntoComponent = ({
   lausuntopyynto,
   updateLausuntopyyntoAction,
   deleteLausuntopyyntoAction,
+  korkeakouluOptions,
+  isKoodistoLoading,
   t,
   theme,
 }: LausuntopyyntoProps) => {
@@ -37,6 +43,20 @@ export const LausuntopyyntoComponent = ({
     };
     updateLausuntopyyntoAction(updatedLausuntopyynto);
   };
+
+  const isValidOption = (value: string | null) => {
+    if (!value) return false;
+    return korkeakouluOptions.some((option) => option.value === value);
+  };
+
+  const isMuuSelected =
+    !lausuntopyynto.lausunnonAntajaKoodiUri &&
+    lausuntopyynto.lausunnonAntajaMuu !== null;
+  const currentValue = isMuuSelected
+    ? 'muu'
+    : isValidOption(lausuntopyynto.lausunnonAntajaKoodiUri)
+      ? lausuntopyynto.lausunnonAntajaKoodiUri
+      : '';
 
   const lahetetty = lausuntopyynto.lahetetty
     ? new Date(lausuntopyynto.lahetetty)
@@ -80,16 +100,33 @@ export const LausuntopyyntoComponent = ({
           </OphButton>
         )}
       </Stack>
-      <OphInputFormField
+      <OphSelectFormField
         label={t('hakemus.perustelu.lausuntotiedot.lausunnonAntaja')}
-        value={lausuntopyynto.lausunnonAntaja || ''}
-        onChange={(e) =>
-          updateCurrentLausuntopyynto({ lausunnonAntaja: e.target.value })
-        }
-        inputProps={{
-          'data-testid': `lausunnon-antaja-${lausuntopyynto.jarjestys}`,
+        value={currentValue || ''}
+        options={korkeakouluOptions}
+        onChange={(e) => {
+          const value = e.target.value;
+          updateCurrentLausuntopyynto({
+            lausunnonAntajaKoodiUri: value === 'muu' ? null : value,
+            lausunnonAntajaMuu:
+              value === 'muu' ? lausuntopyynto.lausunnonAntajaMuu || '' : null,
+          });
         }}
+        disabled={isKoodistoLoading}
+        data-testid={`lausunnon-antaja-${lausuntopyynto.jarjestys}`}
       />
+      {isMuuSelected && (
+        <OphInputFormField
+          label={t('hakemus.perustelu.lausuntotiedot.muuLausunnonAntaja')}
+          value={lausuntopyynto.lausunnonAntajaMuu || ''}
+          onChange={(e) =>
+            updateCurrentLausuntopyynto({ lausunnonAntajaMuu: e.target.value })
+          }
+          inputProps={{
+            'data-testid': `muu-lausunnon-antaja-${lausuntopyynto.jarjestys}`,
+          }}
+        />
+      )}
       <Stack direction="row" gap={theme.spacing(5)}>
         <CalendarComponent
           setDate={(date: Date | null) =>

@@ -144,7 +144,8 @@ case class SovellettuTilanne(
 case class Lausuntopyynto(
   id: Option[UUID] = None,
   perusteluId: Option[UUID] = None,
-  lausunnonAntaja: Option[String] = None,
+  lausunnonAntajaKoodiUri: Option[String] = None,
+  lausunnonAntajaMuu: Option[String] = None,
   lahetetty: Option[LocalDateTime] = None,
   saapunut: Option[LocalDateTime] = None
 )
