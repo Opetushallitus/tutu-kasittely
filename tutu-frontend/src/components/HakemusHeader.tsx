@@ -12,7 +12,9 @@ import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 
 export const HakemusHeader = () => {
-  const { hakemus, updateHakemusLocal } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus, updateLocal: updateHakemusLocal },
+  } = useHakemus();
   const theme = useTheme();
   const { t } = useTranslations();
   const { options: esittelijaOptions } = useEsittelijat();

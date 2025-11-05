@@ -3,9 +3,10 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useEditableState } from '@/src/hooks/useEditableState';
+import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -24,92 +25,94 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const {
-    hakemus,
-    tallennaHakemus,
-    updateLocal: updateHakemusLocal,
-    hasChanges: hakemusHasChanges,
-    isLoading,
-    error,
-  } = useHakemus();
-
-  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
-
-  // Manage editable state for both perustelu and hakemus with automatic change tracking
-  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
-
-  // Combined change tracking and save handler
-  const hasChanges = perusteluState.hasChanges || hakemusHasChanges;
-
-  const handleSave = () => {
-    perusteluState.save();
-    tallennaHakemus();
-  };
+  const { hakemusState, isLoading, error } = useHakemus();
 
   return (
     <PerusteluLayout
       showTabs={true}
       title="hakemus.perustelu.yleiset.otsikko"
       t={t}
-      hakemus={hakemus}
+      hakemus={hakemusState.editedData}
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      {isPerusteluLoading || !perusteluState.editedData ? (
-        <FullSpinner></FullSpinner>
-      ) : (
-        <>
-          <VirallinenTutkinnonMyontaja
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <VirallinenTutkinto
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <Lahde
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <SelvitysTutkinnonMyontajastaJaVirallisuudesta
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <YlimmanTutkinnonAsema
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <SelvitysTutkinnonAsemasta
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <TutkintokohtaisetTiedot
-            hakemus={hakemus}
-            updateHakemus={updateHakemusLocal}
-          />
-          <OphTypography variant={'h3'}>
-            {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
-          </OphTypography>
-          <JatkoOpintoKelpoisuus
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <AikaisemmatPaatokset
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <MuuPerustelu
-            perustelu={perusteluState.editedData}
-            updatePerustelu={perusteluState.updateLocal}
-          />
-          <SaveRibbon
-            onSave={handleSave}
-            isSaving={isSaving || false}
-            hasChanges={hasChanges}
-          />
-        </>
-      )}
+      <YleisetPerustelut hakemusState={hakemusState} />
     </PerusteluLayout>
   );
 }
+
+interface YleisetPerustelutProps {
+  hakemusState: EditableState<Hakemus>;
+}
+
+const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
+  const { t } = useTranslations();
+
+  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
+    usePerustelu(hakemusState.editedData?.hakemusOid);
+
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
+  // Combined change tracking and save handler
+  const hasChanges = perusteluState.hasChanges || hakemusState.hasChanges;
+
+  const handleSave = () => {
+    perusteluState.save();
+    hakemusState.save();
+  };
+
+  return isPerusteluLoading || !perusteluState.editedData ? (
+    <FullSpinner></FullSpinner>
+  ) : (
+    <>
+      <VirallinenTutkinnonMyontaja
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <VirallinenTutkinto
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <Lahde
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <SelvitysTutkinnonMyontajastaJaVirallisuudesta
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <YlimmanTutkinnonAsema
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <SelvitysTutkinnonAsemasta
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <TutkintokohtaisetTiedot
+        hakemus={hakemusState.editedData}
+        updateHakemus={hakemusState.updateLocal}
+      />
+      <OphTypography variant={'h3'}>
+        {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
+      </OphTypography>
+      <JatkoOpintoKelpoisuus
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <AikaisemmatPaatokset
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <MuuPerustelu
+        perustelu={perusteluState.editedData}
+        updatePerustelu={perusteluState.updateLocal}
+      />
+      <SaveRibbon
+        onSave={handleSave}
+        isSaving={isSaving || false}
+        hasChanges={hasChanges}
+      />
+    </>
+  );
+};

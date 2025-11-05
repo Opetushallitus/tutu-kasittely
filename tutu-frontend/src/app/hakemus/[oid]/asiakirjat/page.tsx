@@ -85,8 +85,7 @@ export default function AsiakirjaPage() {
   /* Haetaan hakemuksen  tiedot */
   const {
     isLoading: hakemusIsLoading,
-    hakemus,
-    tallennaHakemus,
+    hakemusState,
     error: hakemusError,
     isSaving,
   } = useHakemus();
@@ -101,12 +100,13 @@ export default function AsiakirjaPage() {
     return null;
   }
 
-  if (hakemusIsLoading || !hakemus) return <FullSpinner></FullSpinner>;
+  if (hakemusIsLoading || !hakemusState.editedData)
+    return <FullSpinner></FullSpinner>;
 
   return (
     <AsiakirjaHookLayer
-      hakemus={hakemus}
-      tallennaHakemus={tallennaHakemus}
+      hakemus={hakemusState.editedData}
+      tallennaHakemus={hakemusState.save}
       isSaving={isSaving || false}
     />
   );
