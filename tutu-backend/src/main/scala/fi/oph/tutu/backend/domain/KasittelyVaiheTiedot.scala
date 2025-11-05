@@ -14,5 +14,7 @@ case class KasittelyVaiheTiedot(
   vahvistusSaatu: Option[LocalDateTime],
   imiPyyntoLahetetty: Option[LocalDateTime],
   imiPyyntoVastattu: Option[LocalDateTime],
-  lausuntoKesken: Boolean
+  lausuntoKesken: Boolean,
+  paatosHyvaksymispaiva: Option[LocalDateTime],
+  paatosLahetyspaiva: Option[LocalDateTime]
 )

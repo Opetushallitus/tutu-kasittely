@@ -509,10 +509,10 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
       }
 
       if (route.request().method() === 'POST') {
+        const requestBody = route.request().postDataJSON();
         const body = {
           ...paatos,
-          hyvaksymispaiva: '2023-02-02',
-          lahetyspaiva: '2023-02-02',
+          ...requestBody,
         };
         await route.fulfill({
           status: 200,

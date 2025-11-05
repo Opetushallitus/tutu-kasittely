@@ -40,8 +40,11 @@ export const usePaatos = (
 
   const { mutate, isPending } = useMutation({
     mutationFn: (paatos: Paatos) => postPaatos(hakemusOid!, lomakeId!, paatos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
+    onSuccess: async (response) => {
+      const paivitettyPaatos = await response.json();
+      queryClient.setQueryData(queryKey, paivitettyPaatos);
+      // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
+      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
     },
   });
 
