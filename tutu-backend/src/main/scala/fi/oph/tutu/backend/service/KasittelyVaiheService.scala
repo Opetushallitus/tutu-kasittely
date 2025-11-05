@@ -16,6 +16,8 @@ import java.util.UUID
  * ratkaisemiseen tarvittavat minimaaliset tiedot yhdellä kyselyllä.
  *
  * Käsittelyvaihe määräytyy seuraavien ehtojen perusteella (prioriteettijärjestyksessä):
+ * - Jos molemmat päätöksen päivämäärät (hyväksymispäivä JA lähetyspäivä) asetettu -> LoppukasittelyValmis
+ * - Jos vain päätöksen hyväksymispäivä asetettu (lähetyspäivä puuttuu) -> HyvaksyttyEiLahetetty
  * - Jos valmistumisen vahvistuspyyntö on lähetetty mutta ei saatu -> OdottaaVahvistusta
  * - Jos lausuntopyyntö on lähetetty mutta ei saapunut -> OdottaaLausuntoa
  * - Jos IMI-pyyntö on lähetetty mutta ei vastattu -> OdottaaIMIVastausta
@@ -38,11 +40,11 @@ class KasittelyVaiheService(
    * perustelutiedot useilla erillisillä kyselyillä.
    *
    * @param asiakirjaId
-   *   Hakemuksen asiakirja ID
+   * Hakemuksen asiakirja ID
    * @param hakemusId
-   *   Hakemuksen ID
+   * Hakemuksen ID
    * @return
-   *   Ratkaistu käsittelyvaihe
+   * Ratkaistu käsittelyvaihe
    */
   def resolveKasittelyVaihe(
     asiakirjaId: Option[UUID],
@@ -58,9 +60,10 @@ class KasittelyVaiheService(
    * Ratkaisee käsittelyvaiheen käyttäen optimoitua data-objektia.
    *
    * Käyttää pattern matchingia priorisoidun logiikan toteuttamiseen:
-   * 1. Jos jokin toimenpide kesken -> palauta kyseinen tila (prioriteettijärjestyksessä)
-   * 2. Jos selvitykset saatu ja kaikki toimenpiteet valmiit -> ValmisKasiteltavaksi
-   * 3. Muuten -> AlkukasittelyKesken
+   * 1. Jos päätös tehty (päivämäärät asetettu) -> LoppukasittelyValmis tai HyvaksyttyEiLahetetty
+   * 2. Jos jokin toimenpide kesken -> palauta kyseinen tila (OdottaaVahvistusta/Lausuntoa/IMIVastausta)
+   * 3. Jos selvitykset saatu ja kaikki toimenpiteet valmiit -> ValmisKasiteltavaksi
+   * 4. Muuten -> AlkukasittelyKesken
    *
    * @param tiedot Käsittelyvaiheen ratkaisemiseen tarvittavat minimaaliset tiedot
    * @return Ratkaistu käsittelyvaihe
@@ -70,16 +73,21 @@ class KasittelyVaiheService(
       tiedot.vahvistusPyyntoLahetetty.isDefined && tiedot.vahvistusSaatu.isEmpty,
       tiedot.lausuntoKesken,
       tiedot.imiPyyntoLahetetty.isDefined && tiedot.imiPyyntoVastattu.isEmpty,
-      tiedot.selvityksetSaatu
+      tiedot.selvityksetSaatu,
+      tiedot.paatosLahetyspaiva.isDefined,
+      tiedot.paatosHyvaksymispaiva.isDefined
     ) match
+      // Päätöksen tilat - tarkistetaan onko päätös tehty
+      case (_, _, _, _, true, true) => KasittelyVaihe.LoppukasittelyValmis
+      case (_, _, _, _, _, true)    => KasittelyVaihe.HyvaksyttyEiLahetetty
+
       // Prioriteettijärjestys: Tarkista ensin kesken olevat toimenpiteet
-      case (true, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
-      case (_, true, _, _) => KasittelyVaihe.OdottaaLausuntoa
-      case (_, _, true, _) => KasittelyVaihe.OdottaaIMIVastausta
+      case (true, _, _, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
+      case (_, true, _, _, _, _) => KasittelyVaihe.OdottaaLausuntoa
+      case (_, _, true, _, _, _) => KasittelyVaihe.OdottaaIMIVastausta
 
       // Jos selvitykset saatu ja ei toimenpiteitä kesken -> valmis käsiteltäväksi
-      case (false, false, false, true) => KasittelyVaihe.ValmisKasiteltavaksi
-
+      case (false, false, false, true, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
       // Oletusarvo: alkukäsittely kesken
       // (mahdollistaa tilan regression kun toimenpiteitä poistetaan)
       case _ => KasittelyVaihe.AlkukasittelyKesken

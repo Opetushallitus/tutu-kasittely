@@ -12,6 +12,7 @@ import org.springframework.stereotype.{Component, Service}
 @Service
 class PaatosService(
   hakemusRepository: HakemusRepository,
+  hakemusService: HakemusService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   ataruLomakeParser: AtaruLomakeParser
@@ -98,6 +99,13 @@ class PaatosService(
 
         val newlySavedPaatosTiedot =
           paatosRepository.haePaatosTiedot(latestSavedPaatos.id.orNull)
+
+        try {
+          hakemusService.paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja)
+        } catch {
+          case e: Exception =>
+            LOG.error(s"Käsittelyvaiheen päivitys epäonnistui: ${e.getMessage}", e)
+        }
 
         Some(
           latestSavedPaatos.copy(

@@ -512,4 +512,26 @@ class HakemusService(
   def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
     hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus)
   }
+
+  def paivitaKasittelyVaihe(
+    hakemusOid: HakemusOid,
+    dbHakemus: DbHakemus,
+    luojaTaiMuokkaaja: String
+  ): Unit = {
+    val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
+      dbHakemus.asiakirjaId,
+      dbHakemus.id
+    )
+
+    if (kasittelyVaihe != dbHakemus.kasittelyVaihe) {
+      LOG.info(
+        s"Päivitetään kasittelyVaihe: ${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe hakemukselle $hakemusOid"
+      )
+      hakemusRepository.paivitaPartialHakemus(
+        hakemusOid,
+        dbHakemus.copy(kasittelyVaihe = kasittelyVaihe),
+        luojaTaiMuokkaaja
+      )
+    }
+  }
 }
