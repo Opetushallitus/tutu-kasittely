@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.repository
 
-import dotty.tools.dotc.core.Phases.NoPhase.id
 import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -80,7 +79,8 @@ class HakemusRepository extends BaseResultHandlers {
         ohjeellinenLaajuus = r.nextStringOption(),
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),
-        perustelunLisatietoja = r.nextStringOption()
+        perustelunLisatietoja = r.nextStringOption(),
+        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -432,7 +432,8 @@ class HakemusRepository extends BaseResultHandlers {
       ohjeellinen_laajuus,
       opinnaytetyo,
       harjoittelu,
-      perustelun_lisatietoja
+      perustelun_lisatietoja,
+      muokattu
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
@@ -457,7 +458,7 @@ class HakemusRepository extends BaseResultHandlers {
   ): Unit = {
     val actions = modifyData.uudet.map(t => lisaaTutkinto(hakemusId, t, luojaTaiMuokkaja.toString)) ++
       modifyData.poistetut.map(poistaTutkinto) ++
-      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja))
+      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja.toString))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
       case Success(_) => ()
@@ -550,7 +551,7 @@ class HakemusRepository extends BaseResultHandlers {
    */
   def paivitaTutkinto(
     tutkinto: Tutkinto,
-    muokkaaja: UserOid
+    muokkaaja: String
   ): DBIO[Int] =
     sqlu"""
       UPDATE tutkinto
@@ -571,7 +572,7 @@ class HakemusRepository extends BaseResultHandlers {
         opinnaytetyo = ${tutkinto.opinnaytetyo},
         harjoittelu = ${tutkinto.harjoittelu},
         perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull},
-        muokkaaja = ${muokkaaja.toString}
+        muokkaaja = ${muokkaaja}
       WHERE id = ${tutkinto.id.get.toString}::uuid
     """
 

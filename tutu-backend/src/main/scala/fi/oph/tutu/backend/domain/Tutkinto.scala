@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.domain
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 case class Tutkinto(
@@ -20,7 +21,8 @@ case class Tutkinto(
   ohjeellinenLaajuus: Option[String] = None,
   opinnaytetyo: Option[Boolean] = None,
   harjoittelu: Option[Boolean] = None,
-  perustelunLisatietoja: Option[String] = None
+  perustelunLisatietoja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None
 )
 
 case class TutkintoModifyData(uudet: Seq[Tutkinto], muutetut: Seq[Tutkinto], poistetut: Seq[UUID])
