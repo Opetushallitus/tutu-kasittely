@@ -172,22 +172,26 @@ class PerusteluControllerTest extends IntegrationTestBase {
       lausunnonSisalto = Some(randomString),
       lausuntopyynnot = Seq(
         Lausuntopyynto(
-          lausunnonAntaja = Some(randomString),
+          lausunnonAntajaKoodiUri = Some("oppilaitosnumero_01901"),
+          lausunnonAntajaMuu = None,
           lahetetty = Option(LocalDateTime.now()),
           saapunut = Option(LocalDateTime.now())
         ),
         Lausuntopyynto(
-          lausunnonAntaja = Some(randomString),
+          lausunnonAntajaKoodiUri = Some("oppilaitosnumero_10076"),
+          lausunnonAntajaMuu = None,
           lahetetty = None,
           saapunut = None
         ),
         Lausuntopyynto(
-          lausunnonAntaja = Some(randomString),
+          lausunnonAntajaKoodiUri = None,
+          lausunnonAntajaMuu = Some("Muu yliopisto"),
           lahetetty = Option(LocalDateTime.now()),
           saapunut = None
         ),
         Lausuntopyynto(
-          lausunnonAntaja = Some(randomString),
+          lausunnonAntajaKoodiUri = Some("oppilaitosnumero_02535"),
+          lausunnonAntajaMuu = None,
           lahetetty = None,
           saapunut = Some(LocalDateTime.now())
         )
@@ -570,7 +574,13 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val lausuntopyynnot     = perustelu3.lausuntopyynnot.map(lp =>
       lp.copy(
         perusteluId = Some(perusteluId.get),
-        id = lausuntopyynnotInDb.find(_.lausunnonAntaja == lp.lausunnonAntaja).get.id
+        id = lausuntopyynnotInDb
+          .find(lpDb =>
+            lpDb.lausunnonAntajaKoodiUri == lp.lausunnonAntajaKoodiUri &&
+              lpDb.lausunnonAntajaMuu == lp.lausunnonAntajaMuu
+          )
+          .get
+          .id
       )
     )
     val perusteluJSON = perustelu2Json(

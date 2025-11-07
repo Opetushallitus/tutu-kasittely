@@ -18,12 +18,14 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { omit } from 'remeda';
+import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
   lahetetty: null,
   saapunut: null,
-  lausunnonAntaja: null,
+  lausunnonAntajaKoodiUri: null,
+  lausunnonAntajaMuu: null,
 });
 
 export default function Lausuntotiedot() {
@@ -33,6 +35,8 @@ export default function Lausuntotiedot() {
   const { isLoading, hakemus, error } = useHakemus();
   const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
     usePerustelu(hakemus?.hakemusOid);
+  const { korkeakouluOptions, isLoading: isKoodistoLoading } =
+    useKoodistoOptions();
 
   // Use editableState hook for perustelu management
   const {
@@ -126,6 +130,8 @@ export default function Lausuntotiedot() {
               updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
             }}
             deleteLausuntopyyntoAction={deleteLausuntopyynto}
+            korkeakouluOptions={korkeakouluOptions}
+            isKoodistoLoading={isKoodistoLoading}
             t={t}
             theme={theme}
             key={index}

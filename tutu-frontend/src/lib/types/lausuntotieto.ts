@@ -1,6 +1,7 @@
 export type Lausuntopyynto = {
   jarjestys?: number;
-  lausunnonAntaja: string | null;
+  lausunnonAntajaKoodiUri: string | null;
+  lausunnonAntajaMuu: string | null;
   lahetetty: string | null;
   saapunut: string | null;
 };

@@ -2,6 +2,7 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { OphSelectOption } from '@/src/components/OphSelect';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 type KoodistoItem = {
   koodiUri: string;
@@ -18,13 +19,29 @@ const getKoodistoOptions = (
   lang: string,
 ): OphSelectOption<string>[] => {
   return koodisto
+    .filter(
+      (item) => item.nimi && item.nimi[lang as keyof KoodistoItem['nimi']],
+    )
     .map((koodistoItem) => ({
       value: koodistoItem.koodiUri,
       label: koodistoItem.nimi[lang as keyof KoodistoItem['nimi']],
     }))
-    .sort((a, b) =>
-      a.label.localeCompare(b.label),
-    ) as OphSelectOption<string>[];
+    .sort((a, b) => a.label.localeCompare(b.label));
+};
+
+const getKorkeakouluOptions = (
+  koodisto: KoodistoItem[],
+  lang: string,
+  muuLabel: string,
+): OphSelectOption<string>[] => {
+  const options = getKoodistoOptions(koodisto, lang);
+
+  const muuOption: OphSelectOption<string> = {
+    value: 'muu',
+    label: muuLabel,
+  };
+
+  return [...options, muuOption];
 };
 
 export const getKoodisto = async (
@@ -35,6 +52,7 @@ export const getKoodisto = async (
 };
 
 export const useKoodistoOptions = () => {
+  const { t } = useTranslations();
   const asiointikieli = useAsiointiKieli();
   type Locale = keyof KoodistoItem['nimi'];
   const lang = asiointikieli as Locale;
@@ -58,15 +76,32 @@ export const useKoodistoOptions = () => {
       staleTime: Infinity,
     });
 
+  const {
+    data: korkeakoulut = [],
+    error: korkeakoulutError,
+    isLoading: korkeakoulutLoading,
+  } = useQuery<KoodistoItem[]>({
+    queryKey: ['getKoodisto', 'korkeakoulut'],
+    queryFn: () => getKoodisto('korkeakoulut'),
+    staleTime: Infinity,
+  });
+
   const maatJaValtiotOptions = getKoodistoOptions(maatJaValtiot, lang);
   const koulutusLuokitusOptions = getKoodistoOptions(
     koulutusLuokitus,
     lang,
   ).filter((option) => option.value !== '00');
+  const korkeakouluOptions = getKorkeakouluOptions(
+    korkeakoulut,
+    lang,
+    t('hakemus.perustelu.lausuntotiedot.muuLausunnonAntajaValinta'),
+  );
 
   return {
     maatJaValtiotOptions,
     koulutusLuokitusOptions,
-    error: maatJaValtiotError || koulutusLuokitusError,
+    korkeakouluOptions,
+    isLoading: korkeakoulutLoading,
+    error: maatJaValtiotError || koulutusLuokitusError || korkeakoulutError,
   };
 };

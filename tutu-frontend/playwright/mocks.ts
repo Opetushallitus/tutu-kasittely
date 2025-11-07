@@ -16,6 +16,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockHakemus(page),
     mockPerustelu(page),
     mockLiitteet(page),
+    mockKoodistot(page),
   ]);
 };
 
@@ -305,6 +306,18 @@ export const mockKoodistot = async (page: Page) => {
         contentType: 'application/json',
         body: await readFile(
           path.join(__dirname, './fixtures/koodistot/maatjavaltiot2.json'),
+        ),
+      });
+    },
+  );
+  await page.route(
+    '**/tutu-backend/api/koodisto/korkeakoulut',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: await readFile(
+          path.join(__dirname, './fixtures/koodistot/korkeakoulut.json'),
         ),
       });
     },

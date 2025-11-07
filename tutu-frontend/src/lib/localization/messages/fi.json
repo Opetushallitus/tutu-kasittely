@@ -362,6 +362,8 @@
         "lausuntopyynnot": "Lausuntopyynnöt",
         "lausuntopyynto": "Lausuntopyyntö {numero, number}",
         "lausunnonAntaja": "Lausunnon antaja",
+        "muuLausunnonAntajaValinta": "Muu lausunnon antaja",
+        "muuLausunnonAntaja": "Täsmennä",
         "pyyntoLahetetty": "Lähetetty",
         "pyyntoSaapunut": "Saapunut",
         "lisaaLausuntopyynto": "Lisää lausuntopyyntö",

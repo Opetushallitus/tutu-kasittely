@@ -27,7 +27,8 @@ object HakemusModifyOperationResolver {
     currentPyynto: Lausuntopyynto,
     toBePyynto: Lausuntopyynto
   ): Boolean = currentPyynto.id == toBePyynto.id &&
-    (currentPyynto.lausunnonAntaja != toBePyynto.lausunnonAntaja ||
+    (currentPyynto.lausunnonAntajaKoodiUri != toBePyynto.lausunnonAntajaKoodiUri ||
+      currentPyynto.lausunnonAntajaMuu != toBePyynto.lausunnonAntajaMuu ||
       currentPyynto.lahetetty != toBePyynto.lahetetty ||
       currentPyynto.saapunut != toBePyynto.saapunut)
 
