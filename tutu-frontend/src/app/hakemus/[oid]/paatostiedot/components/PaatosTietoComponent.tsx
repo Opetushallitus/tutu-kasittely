@@ -30,7 +30,10 @@ interface PaatosTietoProps {
   t: TFunction;
   paatosTieto: PaatosTieto;
   paatosTietoOptions: PaatosTietoOptionGroup;
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  updatePaatosTietoAction: (
+    updatedPaatosTieto: PaatosTieto,
+    immediateSave?: boolean,
+  ) => void;
   tutkinnot: Tutkinto[];
 }
 
@@ -212,7 +215,7 @@ export const PaatosTietoComponent = ({
             t={t}
             paatosTieto={currentPaatosTieto}
             updatePaatosTietoAction={updatePaatosTietoAction}
-            kelpoisuusOptions={paatosTietoOptions.kelpoisuusOptions}
+            kelpoisuusOptions={paatosTietoOptions?.kelpoisuusOptions || []}
           />
         )}
     </Stack>

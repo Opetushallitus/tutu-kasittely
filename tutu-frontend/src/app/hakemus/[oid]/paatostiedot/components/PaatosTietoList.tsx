@@ -17,6 +17,7 @@ interface PaatosTietoListProps {
   updatePaatosTietoAction: (
     updatedPaatosTieto: PaatosTieto,
     index: number,
+    immediateSave?: boolean,
   ) => void;
   deletePaatosTieto: (id: string | undefined) => void;
   tutkinnot: Tutkinto[];
@@ -70,8 +71,8 @@ export const PaatosTietoList = ({
         t={t}
         paatosTieto={paatosTieto}
         paatosTietoOptions={paatosTietoOptions}
-        updatePaatosTietoAction={(updated) =>
-          updatePaatosTietoAction(updated, index)
+        updatePaatosTietoAction={(updated, immediateSave?: boolean) =>
+          updatePaatosTietoAction(updated, index, immediateSave)
         }
         tutkinnot={tutkinnot}
       />

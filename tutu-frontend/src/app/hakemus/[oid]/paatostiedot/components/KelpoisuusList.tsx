@@ -17,7 +17,10 @@ const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
 type KelpoisuusListProps = {
   t: TFunction;
   paatosTieto: PaatosTieto;
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  updatePaatosTietoAction: (
+    updatedPaatosTieto: PaatosTieto,
+    immediateSave?: boolean,
+  ) => void;
   kelpoisuusOptions: PaatosTietoOption[];
 };
 
@@ -65,10 +68,13 @@ export const KelpoisuusList = ({
       ? currentKelpoisuudet.filter((kelpoisuus) => kelpoisuus.id !== id)
       : currentKelpoisuudet.slice(0, -1);
     setCurrentKelpoisuudet(tobeKelpoisuudet);
-    updatePaatosTietoAction({
-      ...paatosTieto,
-      kelpoisuudet: tobeKelpoisuudet,
-    });
+    updatePaatosTietoAction(
+      {
+        ...paatosTieto,
+        kelpoisuudet: tobeKelpoisuudet,
+      },
+      true,
+    );
   };
 
   return (

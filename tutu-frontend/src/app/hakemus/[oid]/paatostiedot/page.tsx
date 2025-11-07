@@ -26,13 +26,15 @@ import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
+import { useEditableState } from '@/src/hooks/useEditableState';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
   paatosId: paatosId,
   paatosTyyppi: undefined,
   myonteisenPaatoksenLisavaatimukset: '{}',
-  kielteisenPaatoksenPerustelut: '{}',
+  //kielteisenPaatoksenPerustelut: undefined,
   rinnastettavatTutkinnotTaiOpinnot: [],
   kelpoisuudet: [],
 });
@@ -44,6 +46,7 @@ export default function PaatostiedotPage() {
     hakemus,
     error: hakemusError,
   } = useHakemus();
+
   const {
     isPaatosLoading,
     paatos,
@@ -51,6 +54,7 @@ export default function PaatostiedotPage() {
     updatePaatos,
     updateOngoing,
   } = usePaatos(hakemus?.hakemusOid, hakemus?.lomakeId);
+
   const { addToast } = useToaster();
 
   useEffect(() => {
@@ -58,11 +62,11 @@ export default function PaatostiedotPage() {
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
   }, [addToast, hakemusError, paatosError, t]);
 
-  if (hakemusError || paatosError || !paatos) {
+  if (hakemusError || paatosError) {
     return null;
   }
 
-  if (isHakemusLoading || isPaatosLoading) {
+  if (isHakemusLoading || !hakemus || isPaatosLoading || !paatos) {
     return <FullSpinner></FullSpinner>;
   }
 
@@ -95,6 +99,8 @@ const Paatostiedot = ({
     PaatosTieto[]
   >([]);
 
+  const paatosState = useEditableState(paatos, updatePaatos);
+
   useEffect(() => {
     setCurrentPaatos(paatos);
     setCurrentPaatosTiedot(
@@ -104,22 +110,28 @@ const Paatostiedot = ({
     );
   }, [paatos]);
 
-  const updatePaatosField = (updatedPaatos: Partial<Paatos>) => {
+  const updatePaatosField = (
+    updatedPaatos: Partial<Paatos>,
+    immediateSave?: boolean,
+  ) => {
     const newPaatos: Paatos = { ...currentPaatos, ...updatedPaatos };
     setCurrentPaatos(newPaatos);
-    if (!updateOngoing) {
-      updatePaatos(newPaatos);
+    if (immediateSave) {
+      paatosState.updateImmediatelly(updatedPaatos);
+      return;
     }
+    paatosState.updateLocal(newPaatos);
   };
 
   const updatePaatosTieto = (
     updatedPaatosTieto: PaatosTieto,
     index: number,
+    immediateSave?: boolean,
   ) => {
     const newPaatosTiedot = [...currentPaatosTiedot];
     newPaatosTiedot[index] = updatedPaatosTieto;
     setCurrentPaatosTiedot(newPaatosTiedot);
-    updatePaatosField({ paatosTiedot: newPaatosTiedot });
+    updatePaatosField({ paatosTiedot: newPaatosTiedot }, immediateSave);
   };
 
   const addPaatosTieto = () => {
@@ -133,7 +145,7 @@ const Paatostiedot = ({
       ? currentPaatosTiedot.filter((paatostieto) => paatostieto.id !== id)
       : currentPaatosTiedot.slice(0, -1);
     setCurrentPaatosTiedot(newPaatosTiedot);
-    updatePaatosField({ paatosTiedot: newPaatosTiedot });
+    updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
   return (
@@ -209,6 +221,11 @@ const Paatostiedot = ({
           <Divider />
         </>
       )}
+      <SaveRibbon
+        onSave={paatosState.save}
+        isSaving={updateOngoing}
+        hasChanges={paatosState.hasChanges}
+      />
     </Stack>
   );
 };

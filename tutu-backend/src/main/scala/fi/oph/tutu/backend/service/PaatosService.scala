@@ -70,7 +70,7 @@ class PaatosService(
     luojaTaiMuokkaaja: String
   ): (Option[Paatos], Option[Paatos]) = {
     val dbHakemus     = hakemusRepository.haeHakemus(hakemusOid)
-    val currentPaatos = dbHakemus.flatMap(h => paatosRepository.haePaatos(h.id))
+    val currentPaatos = haePaatos(hakemusOid, formId)
     val updatedPaatos = dbHakemus match {
       case Some(dbHakemus) =>
         val latestSavedPaatos = paatosRepository.tallennaPaatos(
@@ -79,9 +79,9 @@ class PaatosService(
           luojaTaiMuokkaaja
         )
 
-        val currentPaatosTiedot = haePaatos(hakemusOid, formId) match {
-          case Some(paatos) => paatos.paatosTiedot
-          case None         => Nil
+        val (currentPaatosTiedot, paatosTietoOptions) = currentPaatos match {
+          case Some(paatos) => (paatos.paatosTiedot, paatos.paatosTietoOptions)
+          case None         => (Nil, None)
         }
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
@@ -109,6 +109,7 @@ class PaatosService(
 
         Some(
           latestSavedPaatos.copy(
+            paatosTietoOptions = paatosTietoOptions,
             paatosTiedot = if (newlySavedPaatosTiedot.nonEmpty) {
               newlySavedPaatosTiedot.map(paatosTieto =>
                 paatosTieto.copy(

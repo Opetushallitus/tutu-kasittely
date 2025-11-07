@@ -26,7 +26,10 @@ type RinnastettavatTutkinnotTaiOpinnotListProps = {
   paatosTieto: PaatosTieto;
   paatosTietoOptions: PaatosTietoOptionGroup;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  updatePaatosTietoAction: (
+    updatedPaatosTieto: PaatosTieto,
+    immediateSave?: boolean,
+  ) => void;
 };
 
 export const RinnastettavatTutkinnotTaiOpinnotList = ({
@@ -78,10 +81,13 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
         )
       : tutkinnotTaiOpinnot.slice(0, -1);
     setTutkinnotTaiOpinnot(newTutkinnotTaiOpinnot);
-    updatePaatosTietoAction({
-      ...paatosTieto,
-      rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
-    });
+    updatePaatosTietoAction(
+      {
+        ...paatosTieto,
+        rinnastettavatTutkinnotTaiOpinnot: newTutkinnotTaiOpinnot,
+      },
+      true,
+    );
   };
 
   return (

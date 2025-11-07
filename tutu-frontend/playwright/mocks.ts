@@ -324,6 +324,23 @@ export const mockKoodistot = async (page: Page) => {
   );
 };
 
+const unwrapData = (data: Record<string, unknown>): Record<string, unknown> => {
+  const unwrapped: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      key in (value as Record<string, unknown>)
+    ) {
+      unwrapped[key] = (value as Record<string, unknown>)[key];
+    } else {
+      unwrapped[key] = value;
+    }
+  }
+  return unwrapped;
+};
+
 export const mockPerustelu = async (page: Page) => {
   let perusteluData: Record<string, unknown> = {
     id: 'mock-perustelu-id',
@@ -336,25 +353,6 @@ export const mockPerustelu = async (page: Page) => {
     luotu: '2025-09-02T16:08:42.083643',
     luoja: 'Hakemuspalvelu',
     uoRoSisalto: {},
-  };
-
-  const unwrapData = (
-    data: Record<string, unknown>,
-  ): Record<string, unknown> => {
-    const unwrapped: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (
-        value &&
-        typeof value === 'object' &&
-        !Array.isArray(value) &&
-        key in (value as Record<string, unknown>)
-      ) {
-        unwrapped[key] = (value as Record<string, unknown>)[key];
-      } else {
-        unwrapped[key] = value;
-      }
-    }
-    return unwrapped;
   };
 
   await page.route('**/tutu-backend/api/perustelu/*', async (route: Route) => {
@@ -382,17 +380,30 @@ export const mockPerustelu = async (page: Page) => {
 };
 
 export const mockPaatos = async (page: Page) => {
+  let paatosData = getPaatos();
   await page.route(
     `**/paatos/1.2.246.562.10.00000000001/12345`,
     async (route) => {
-      const paatos = getPaatos();
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...paatos,
-        }),
-      });
+      if (route.request().method() === 'POST') {
+        const postedData = route.request().postDataJSON() as Record<
+          string,
+          unknown
+        >;
+        paatosData = { ...paatosData, ...unwrapData(postedData) };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(paatosData),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...paatosData,
+          }),
+        });
+      }
     },
   );
 };
