@@ -86,9 +86,8 @@ class PaatosService(
         val paatosTietoModifyData =
           HakemusModifyOperationResolver
             .resolvePaatosTietoModifyOperations(currentPaatosTiedot, paatos.paatosTiedot) match {
-            case PaatosTietoModifyData(uudet, muutetut, poistetut) =>
-              PaatosTietoModifyData(uudet, muutetut, poistetut)
-            case null => PaatosTietoModifyData()
+            case modifyData @ PaatosTietoModifyData(uudet, muutetut, poistetut) => modifyData
+            case null                                                           => PaatosTietoModifyData()
           }
 
         paatosRepository.suoritaPaatosTietojenModifiointi(

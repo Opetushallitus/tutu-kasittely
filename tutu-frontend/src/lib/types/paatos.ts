@@ -107,7 +107,7 @@ export type Kelpoisuus = {
   id?: string;
   paatostietoId?: string;
   kelpoisuus?: string;
-  muuAmmmattikuvaus?: string;
+  muuAmmattiKuvaus?: string;
   opetettavaAine?: string;
   direktiivitaso?: Direktiivitaso;
   kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso;

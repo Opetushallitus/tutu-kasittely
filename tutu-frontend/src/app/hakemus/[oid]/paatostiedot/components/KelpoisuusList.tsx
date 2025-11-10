@@ -6,6 +6,8 @@ import {
 } from '@/src/lib/types/paatos';
 import { useEffect, useState } from 'react';
 import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusComponent';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import { Add } from '@mui/icons-material';
 
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,
@@ -51,7 +53,6 @@ export const KelpoisuusList = ({
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addKelpoisuus = () => {
     const tobeKelpoisuudet = currentKelpoisuudet.concat([
       emptyKelpoisuus(paatosTieto.id!),
@@ -91,6 +92,17 @@ export const KelpoisuusList = ({
           kelpoisuusOptions={kelpoisuusOptions}
         />
       ))}
+      <OphButton
+        sx={{
+          alignSelf: 'flex-start',
+        }}
+        data-testid={`lisaa-kelpoisuus-button`}
+        variant="outlined"
+        startIcon={<Add />}
+        onClick={() => addKelpoisuus()}
+      >
+        {t(`hakemus.paatos.paatostyyppi.kelpoisuus.lisaa`)}
+      </OphButton>
     </>
   );
 };
