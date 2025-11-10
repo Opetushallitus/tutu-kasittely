@@ -47,7 +47,6 @@ export const useEditableState = <T extends Record<string, unknown>>(
   // Save immediately to server but keep local edits
   const updateImmediatelly = (part: Partial<T>) => {
     if (!serverData) return;
-    console.log('Updating immediatelly with part:', part);
     const tobeServerData = { ...serverData, ...part } as T;
     setPreserveEditedData(true);
     onSave(tobeServerData);

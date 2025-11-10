@@ -15,7 +15,6 @@ case class Paatos(
   lahetyspaiva: Option[LocalDateTime] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
 
@@ -46,7 +45,6 @@ case class PaatosTieto(
   kelpoisuudet: Seq[Kelpoisuus] = Seq(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
 
@@ -60,7 +58,6 @@ case class TutkintoTaiOpinto(
   kielteisenPaatoksenPerustelut: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
 
@@ -98,6 +95,5 @@ case class Kelpoisuus(
   kielteisenPaatoksenPerustelut: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
