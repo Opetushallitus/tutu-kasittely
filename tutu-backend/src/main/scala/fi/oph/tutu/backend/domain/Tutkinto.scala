@@ -22,7 +22,7 @@ case class Tutkinto(
   opinnaytetyo: Option[Boolean] = None,
   harjoittelu: Option[Boolean] = None,
   perustelunLisatietoja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None
+  muokkaaja: Option[String] = None
 )
 
 case class TutkintoModifyData(uudet: Seq[Tutkinto], muutetut: Seq[Tutkinto], poistetut: Seq[UUID])

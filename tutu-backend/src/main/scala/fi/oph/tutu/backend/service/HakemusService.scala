@@ -206,9 +206,9 @@ class HakemusService(
         // Ei tutkintoa järjestysnumerolla -> lisätään uusi
         case None => hakemusRepository.lisaaTutkintoSeparately(dbHakemus.id, ataruTutkinto, TUTU_SERVICE)
         case Some(existingDbTutkinto) =>
-          existingDbTutkinto.muokattu match {
-            // Jos ei muokattu, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
-            case None =>
+          existingDbTutkinto.muokkaaja match {
+            // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
+            case Some(ATARU_SERVICE) | Some(TUTU_SERVICE) | None =>
               hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
             case Some(value) =>
               val tutkinto1MaakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)

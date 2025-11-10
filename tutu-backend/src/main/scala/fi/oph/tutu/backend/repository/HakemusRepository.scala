@@ -80,7 +80,7 @@ class HakemusRepository extends BaseResultHandlers {
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),
         perustelunLisatietoja = r.nextStringOption(),
-        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        muokkaaja = r.nextStringOption()
       )
     )
 
@@ -433,7 +433,7 @@ class HakemusRepository extends BaseResultHandlers {
       opinnaytetyo,
       harjoittelu,
       perustelun_lisatietoja,
-      muokattu
+      muokkaaja
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
