@@ -26,6 +26,7 @@ import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
 import {
   AsiakirjaMetadata,
+  AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   Hakemus,
   SisaltoValue,
@@ -50,9 +51,7 @@ import {
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
 import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { HakemusUpdateRequest } from '@/src/lib/types/hakemus';
-import { useEditableState } from '@/src/hooks/useEditableState';
-import { buildHakemusUpdateRequest } from '@/src/lib/utils';
+import { EditableState } from '@/src/hooks/useEditableState';
 
 const sisallonSuoratYlatasonOsiot = [henkilotietojenLiitteet];
 const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
@@ -105,35 +104,28 @@ export default function AsiakirjaPage() {
 
   return (
     <AsiakirjaHookLayer
-      hakemus={hakemusState.editedData}
-      tallennaHakemus={hakemusState.save}
+      hakemusState={hakemusState}
       isSaving={isSaving || false}
     />
   );
 }
 
 const AsiakirjaHookLayer = ({
-  hakemus,
-  tallennaHakemus,
+  hakemusState,
   isSaving,
 }: {
-  hakemus: Hakemus;
-  tallennaHakemus: (request: HakemusUpdateRequest) => void;
+  hakemusState: EditableState<Hakemus>;
   isSaving: boolean;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  // Use editableState hook for asiakirja management
   const {
-    editedData: editedAsiakirja,
-    hasChanges,
-    updateLocal,
-    save,
-  } = useEditableState(hakemus.asiakirja, (asiakirja) => {
-    // Build full HakemusUpdateRequest with updated asiakirja
-    tallennaHakemus(buildHakemusUpdateRequest(hakemus, { asiakirja }));
-  });
+    editedData: hakemus,
+    save: saveHakemus,
+    hasChanges: hakemusHasChanges,
+    updateLocal: updateLocalHakemus,
+  } = hakemusState;
 
   /* -------------------------- */
   /* Haetaan liitteiden  tiedot */
@@ -154,11 +146,11 @@ const AsiakirjaHookLayer = ({
     data: asiakirjaMetadata,
     error: asiakirjaError,
   } = useLiitteet(
-    hakemus.hakemusOid,
+    hakemus!.hakemusOid,
     asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
   );
   const asiakirjaMetadataWithSaapumisaika = asiakirjaMetadata?.map((m) =>
-    setLiitteenSaapumisaika(m, hakemus.kirjausPvm),
+    setLiitteenSaapumisaika(m, hakemus!.kirjausPvm),
   );
 
   /* ----------------------------------------- */
@@ -171,22 +163,22 @@ const AsiakirjaHookLayer = ({
     return null;
   }
 
-  if (
-    asiakirjatIsLoading ||
-    !asiakirjaMetadataWithSaapumisaika ||
-    !editedAsiakirja
-  )
+  if (asiakirjatIsLoading || !asiakirjaMetadataWithSaapumisaika || !hakemus)
     return <FullSpinner></FullSpinner>;
+
+  const asiakirjaTietoUpdateAction = (asiakirja: Partial<AsiakirjaTieto>) => {
+    updateLocalHakemus({ asiakirja: { ...hakemus.asiakirja, ...asiakirja } });
+  };
 
   return (
     <AsiakirjaPagePure
-      hakemus={{ ...hakemus, asiakirja: editedAsiakirja }}
-      asiakirjaTietoUpdateAction={updateLocal}
+      hakemus={hakemus!}
+      asiakirjaTietoUpdateAction={asiakirjaTietoUpdateAction}
       asiakirjat={asiakirjat}
       asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
       isSaving={isSaving}
-      hasChanges={hasChanges}
-      onSave={save}
+      hasChanges={hakemusHasChanges}
+      onSave={saveHakemus}
     />
   );
 };

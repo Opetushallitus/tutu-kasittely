@@ -6,6 +6,7 @@ import React from 'react';
 import { Hakemus, HakemusUpdateRequest } from '@/src/lib/types/hakemus';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
+import { buildHakemusUpdateRequest } from '@/src/lib/utils';
 
 type HakemusContextValue = {
   hakemusState: EditableState<Hakemus>;
@@ -65,7 +66,9 @@ export const HakemusProvider = ({
     },
   });
 
-  const hakemusState = useEditableState(hakemus, tallennaHakemus);
+  const hakemusState = useEditableState(hakemus, (hakemusData: Hakemus) => {
+    tallennaHakemus(buildHakemusUpdateRequest(hakemusData));
+  });
 
   return (
     <HakemusContext.Provider
