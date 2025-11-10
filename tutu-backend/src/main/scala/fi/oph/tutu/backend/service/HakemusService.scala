@@ -62,20 +62,20 @@ class HakemusService(
     val transactionalAction = for {
       asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
         Asiakirja(),
-        "Hakemuspalvelu"
+        ATARU_SERVICE
       )
       hakemusId <- hakemusRepository.tallennaHakemusAction(
         hakemus.hakemusOid,
         hakemus.hakemusKoskee,
         esittelijaId,
         asiakirjaId,
-        "Hakemuspalvelu"
+        ATARU_SERVICE
       )
       tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
       _ <-
         if (tutkinnot != null && tutkinnot.nonEmpty) {
           DBIO.sequence(
-            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, "Hakemuspalvelu"))
+            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, ATARU_SERVICE))
           )
         } else {
           DBIO.successful(Seq.empty)
@@ -204,12 +204,12 @@ class HakemusService(
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
         // Ei tutkintoa järjestysnumerolla -> lisätään uusi
-        case None => hakemusRepository.lisaaTutkintoSeparately(dbHakemus.id, ataruTutkinto, "TUTU-päivitys")
+        case None => hakemusRepository.lisaaTutkintoSeparately(dbHakemus.id, ataruTutkinto, TUTU_SERVICE)
         case Some(existingDbTutkinto) =>
           existingDbTutkinto.muokattu match {
             // Jos ei muokattu, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
             case None =>
-              hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), "TUTU-päivitys")
+              hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
             case Some(value) =>
               val tutkinto1MaakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
               val tutkintoToUpdate     = ataruTutkinto.jarjestys == "1" match {
@@ -230,7 +230,7 @@ class HakemusService(
 
               hakemusRepository.suoritaPaivitaTutkinto(
                 tutkintoToUpdate,
-                "TUTU-päivitys"
+                TUTU_SERVICE
               )
           }
       }
@@ -566,8 +566,8 @@ class HakemusService(
     }
   }
 
-  def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
-    hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus)
+  def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
+    hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
   }
 
   def paivitaKasittelyVaihe(

@@ -1,9 +1,12 @@
 package fi.oph.tutu.backend.utils
 
-import fi.oph.tutu.backend.domain.{AtaruKysymysId, PaatosTietoOption}
 import fi.oph.tutu.backend.domain.Kieli.*
+import _root_.fi.oph.tutu.backend.domain.{AtaruKysymysId, PaatosTietoOption}
 
 object Constants {
+  val ATARU_SERVICE = "Hakemuspalvelu"
+  val TUTU_SERVICE  = "Tutu"
+
   val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
 
   val ATARU_PAATOS_KIELI: AtaruKysymysId =

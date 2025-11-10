@@ -648,17 +648,20 @@ class HakemusControllerTest extends IntegrationTestBase {
     hakemusService.tallennaHakemus(UusiAtaruHakemus(hakemusOid, 0))
     val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
-    val tutkinnotBefore     = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
-    val firstTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "1").get
+    val tutkinnotBefore = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
 
+    val firstTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "1").get
     assertEquals("tutkintotodistus", firstTutkintoBefore.todistusOtsikko.get)
     assertEquals("maatjavaltiot2_101", firstTutkintoBefore.maakoodiUri.get)
+    assertEquals("ensimmäinen laulututkinto", firstTutkintoBefore.nimi.get)
 
     val secondTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "2").get
     assertEquals("muutodistus", secondTutkintoBefore.todistusOtsikko.get)
     assertEquals(1974, secondTutkintoBefore.aloitusVuosi.get)
     assertEquals(2014, secondTutkintoBefore.paattymisVuosi.get)
     assertEquals("maatjavaltiot2_102", secondTutkintoBefore.maakoodiUri.get)
+    assertEquals("Kolmosoluen asijantuntijatutkinto", secondTutkintoBefore.nimi.get)
+
     mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006671")
@@ -670,6 +673,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val firstTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "1").get
     assertEquals("maatjavaltiot2_103", firstTutkintoAfter.maakoodiUri.get)
+    assertEquals("ensimmäinen laulututkinto, riki sorsan koko tuotanto", firstTutkintoAfter.nimi.get)
 
     val secondTutkintoAfter =
       tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "2").get
@@ -677,6 +681,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals(1897, secondTutkintoAfter.aloitusVuosi.get)
     assertEquals(2024, secondTutkintoAfter.paattymisVuosi.get)
     assertEquals("maatjavaltiot2_104", secondTutkintoAfter.maakoodiUri.get)
+    assertEquals("mocktail-koulu", secondTutkintoAfter.nimi.get)
+
+    // Muokataan tutkintoja virkailijan toimesta
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }

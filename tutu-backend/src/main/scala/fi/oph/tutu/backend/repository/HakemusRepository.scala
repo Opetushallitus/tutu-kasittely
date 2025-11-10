@@ -590,16 +590,16 @@ class HakemusRepository extends BaseResultHandlers {
       WHERE id = ${id.toString}::uuid
     """
 
-  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): DBIO[Int] =
+  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] =
     sqlu"""
       UPDATE hakemus
-      SET asiatunnus = ${asiatunnus}
+      SET asiatunnus = ${asiatunnus}, muokkaaja = ${muokkaaja}
       WHERE hakemus_oid = ${hakemusOid.toString}
     """
 
-  def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
+  def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
     Try {
-      db.run(paivitaAsiatunnus(hakemusOid, asiatunnus), "PaivitaAsiatunnus")
+      db.run(paivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja), "PaivitaAsiatunnus")
     } match {
       case Success(modified) => modified
       case Failure(e)        =>

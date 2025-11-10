@@ -387,7 +387,7 @@ class HakemusController(
         val asiatunnus = asiatunnusUpdateRequest.asiatunnus
         if (asiatunnusPattern.matcher(asiatunnus).matches) {
           Try {
-            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus)
+            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus, user.userOid)
           } match {
             case Success(result) =>
               if (result == 0)
