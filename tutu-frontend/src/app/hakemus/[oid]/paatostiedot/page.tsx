@@ -43,7 +43,7 @@ export default function PaatostiedotPage() {
   const { t } = useTranslations();
   const {
     isLoading: isHakemusLoading,
-    hakemus,
+    hakemusState: { editedData: hakemus },
     error: hakemusError,
   } = useHakemus();
 

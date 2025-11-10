@@ -32,7 +32,11 @@ export default function Lausuntotiedot() {
   const { t } = useTranslations();
   const theme = useTheme();
 
-  const { isLoading, hakemus, error } = useHakemus();
+  const {
+    isLoading,
+    hakemusState: { editedData: hakemus },
+    error,
+  } = useHakemus();
   const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
     usePerustelu(hakemus?.hakemusOid);
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =

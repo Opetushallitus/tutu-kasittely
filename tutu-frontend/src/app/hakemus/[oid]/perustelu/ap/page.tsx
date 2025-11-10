@@ -20,7 +20,11 @@ import { useEditableState } from '@/src/hooks/useEditableState';
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
-  const { hakemus, isLoading, error } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus },
+    isLoading,
+    error,
+  } = useHakemus();
   const hakija = hakemus?.hakija;
   const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
     usePerustelu(hakemus?.hakemusOid);

@@ -25,7 +25,11 @@ export default function PerustietoPage() {
   const theme = useTheme();
   const { t } = useTranslations();
   const { addToast } = useToaster();
-  const { isLoading, hakemus, error } = useHakemus();
+  const {
+    isLoading,
+    hakemusState: { editedData: hakemus },
+    error,
+  } = useHakemus();
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);

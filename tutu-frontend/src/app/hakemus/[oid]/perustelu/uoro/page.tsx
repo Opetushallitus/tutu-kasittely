@@ -24,7 +24,11 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const { hakemus, isLoading, error } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus },
+    isLoading,
+    error,
+  } = useHakemus();
   const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
     usePerustelu(hakemus?.hakemusOid);
 

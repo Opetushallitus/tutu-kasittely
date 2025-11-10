@@ -67,7 +67,9 @@ export const TutkintoComponent = ({
   paatosKieli,
   t,
 }: TutkintoProps) => {
-  const { hakemus } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus },
+  } = useHakemus();
   const hakijanTieto = useHakijanIlmoittamaTieto(
     hakemus?.sisalto || [],
     tutkinto.jarjestys,
