@@ -33,7 +33,6 @@ class PaatosRepository extends BaseResultHandlers {
       lahetyspaiva = r.nextTimestampOption().map(_.toLocalDateTime),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
-      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
       muokkaaja = r.nextStringOption()
     )
   )
@@ -52,7 +51,6 @@ class PaatosRepository extends BaseResultHandlers {
       tutkintoTaso = Option(TutkintoTaso.fromString(r.nextString())),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
-      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
       muokkaaja = r.nextStringOption()
     )
   )
@@ -68,7 +66,6 @@ class PaatosRepository extends BaseResultHandlers {
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
-      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
       muokkaaja = r.nextStringOption()
     )
   )
@@ -88,7 +85,6 @@ class PaatosRepository extends BaseResultHandlers {
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
-      muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
       muokkaaja = r.nextStringOption()
     )
   )
@@ -121,7 +117,7 @@ class PaatosRepository extends BaseResultHandlers {
         lahetyspaiva = ${paatos.lahetyspaiva.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $luojaTaiMuokkaaja
       RETURNING id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty,
-        peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokattu, muokkaaja
+        peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokkaaja
     """.as[Paatos].head
   }
 
@@ -145,7 +141,7 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-        SELECT id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokattu, muokkaaja
+        SELECT id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, null, muokkaaja
         FROM paatos
         WHERE hakemus_id = ${hakemusId.toString}::uuid
       """.as[Paatos].headOption,
@@ -317,7 +313,9 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          SELECT *
+          SELECT id, paatos_id, paatostyyppi, sovellettulaki, tutkinto_id, lisaa_tutkinto_paatostekstiin,
+            myonteinen_paatos, myonteisen_paatoksen_lisavaatimukset, kielteisen_paatoksen_perustelut,
+            tutkintotaso, luotu, luoja, muokkaaja
           FROM paatostieto
           WHERE paatos_id = ${paatosId.toString}::uuid
           ORDER BY luotu
@@ -380,7 +378,9 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-            SELECT *
+            SELECT id, paatostieto_id, tutkinto_tai_opinto, myonteinen_paatos,
+              myonteisen_paatoksen_lisavaatimukset, kielteisen_paatoksen_perustelut,
+              luotu, luoja, muokkaaja
             FROM tutkinto_tai_opinto
             WHERE paatostieto_id = ${paatostietoId.toString}::uuid
             ORDER BY luotu
@@ -460,7 +460,10 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-            SELECT *
+            SELECT id, paatostieto_id, kelpoisuus, opetettava_aine, muu_ammatti_kuvaus,
+              direktiivitaso, kansallisesti_vaadittava_direktiivitaso, direktiivitaso_lisatiedot,
+              myonteinen_paatos, myonteisen_paatoksen_lisavaatimukset, kielteisen_paatoksen_perustelut,
+              luotu, luoja, muokkaaja
             FROM kelpoisuus
             WHERE paatostieto_id = ${paatostietoId.toString}::uuid
             ORDER BY luotu

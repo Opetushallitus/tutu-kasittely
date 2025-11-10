@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
+import {
+  expectDataFromDropdownSelection,
+  expectRequestData,
+} from '@/playwright/helpers/testUtils';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
@@ -8,9 +12,6 @@ test.beforeEach(async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
 });
-
-const matchUpdate = (url: string, method: string) =>
-  url.includes('/paatos/1.2.246.562.10.00000000001') && method === 'POST';
 
 test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oikea otsikko', async ({
   page,
@@ -62,20 +63,25 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
     'rinnastettava-tutkinto-tai-opinto-select',
   );
   await expect(tutkintoDropdown).toBeVisible();
-  await tutkintoDropdown.click();
-
-  const tutkintoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=uskonto, ortodoksinen');
-
-  const [req] = await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tutkintoOption.click(),
-  ]);
-  expect(
-    req.postDataJSON().paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0]
-      .tutkintoTaiOpinto,
-  ).toEqual('Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen');
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'uskonto, ortodoksinen',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+            },
+          ],
+        },
+      ],
+    },
+  );
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
@@ -84,67 +90,54 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   await expect(myonteinenPaatosRadioGroup).toBeVisible();
   await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
 
-  const [myonteinenPaatosReq] = await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+  await expectRequestData(
+    page,
+    '/paatos/',
     myonteinenPaatosRadioGroup
       .locator('input[type="radio"][value="true"]')
       .click(),
-  ]);
-
-  const myonteinenPaatosPostData = myonteinenPaatosReq.postDataJSON();
-  expect(
-    myonteinenPaatosPostData.paatosTiedot[0]
-      .rinnastettavatTutkinnotTaiOpinnot[0].myonteinenPaatos,
-  ).toEqual(true);
-
-  await expect(
-    page.getByTestId('myonteinenPaatos-sopeutumisaika'),
-  ).toBeVisible();
-
-  const [sopeutumisaikaReq] = await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    page.getByTestId('myonteinenPaatos-sopeutumisaika').click(),
-  ]);
-
-  const sopeutumisaikaPostData = sopeutumisaikaReq.postDataJSON();
-  expect(
-    sopeutumisaikaPostData.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0]
-      .myonteisenPaatoksenLisavaatimukset.sopeutumisaika,
-  ).toEqual(true);
-
-  await expect(
-    page.getByTestId('lisaa-tutkinto-tai-opinto-button'),
-  ).toBeVisible();
-  await page.getByTestId('lisaa-tutkinto-tai-opinto-button').click();
-
-  await expect(page.locator('h3').last()).toHaveText('Tutkinto tai opinnot 2');
-
-  await expect(
-    page.getByTestId('poista-tutkinto-tai-opinto-button'),
-  ).toBeVisible();
-  await page.getByTestId('poista-tutkinto-tai-opinto-button').last().click();
-
-  await expect(page.getByTestId('modal-component')).toBeVisible();
-
-  const [poistaTutkintoReq] = await Promise.all([
-    page.waitForRequest((req1) => matchUpdate(req1.url(), req1.method())),
-    page.getByTestId('modal-confirm-button').click(),
-  ]);
-
-  const tutkintoTasoPostData = poistaTutkintoReq.postDataJSON();
-  expect(
-    tutkintoTasoPostData.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot,
-  ).toEqual([
     {
-      kielteisenPaatoksenPerustelut: '{}',
-      myonteinenPaatos: true,
-      myonteisenPaatoksenLisavaatimukset: {
-        kelpoisuuskoe: false,
-        sopeutumisaika: true,
-        taydentavatOpinnot: false,
-      },
-      tutkintoTaiOpinto:
-        'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+              myonteinenPaatos: true,
+            },
+          ],
+        },
+      ],
     },
-  ]);
+  );
+
+  await expect(
+    page.getByTestId('myonteinenPaatos-taydentavatOpinnot'),
+  ).toBeVisible();
+  await expectRequestData(
+    page,
+    '/paatos/',
+    page.getByTestId('myonteinenPaatos-taydentavatOpinnot').click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+              myonteinenPaatos: true,
+              kielteisenPaatoksenPerustelut: '{}',
+              myonteisenPaatoksenLisavaatimukset: {
+                taydentavatOpinnot: true,
+                kelpoisuuskoe: false,
+                sopeutumisaika: false,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
 });

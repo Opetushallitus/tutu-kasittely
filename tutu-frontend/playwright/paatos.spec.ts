@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
+import {
+  expectDataFromDropdownSelection,
+  expectRequestData,
+} from '@/playwright/helpers/testUtils';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
@@ -9,9 +13,6 @@ test.beforeEach(async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
 });
-
-const matchUpdate = (url: string, method: string) =>
-  url.includes('/paatos/1.2.246.562.10.00000000001') && method === 'POST';
 
 test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
@@ -24,51 +25,37 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
     page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
   ).not.toBeVisible();
 
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    seutCheckbox.click(),
-  ]).then((req) => expect(req[0].postDataJSON().seutArviointi).toEqual(true));
+  await expectRequestData(page, '/paatos/', seutCheckbox.click(), {
+    seutArviointi: true,
+  });
 
-  await ratkaisutyyppiInput.first().click();
-  await expect(ratkaisutyyppiInput).toBeVisible();
-  const peruutusOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Peruutus tai raukeaminen');
-  await expect(peruutusOption).toBeVisible();
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    peruutusOption.click(),
-  ]).then((req) =>
-    expect(req[0].postDataJSON().ratkaisutyyppi).toEqual(
-      'PeruutusTaiRaukeaminen',
-    ),
+  await expectDataFromDropdownSelection(
+    page,
+    ratkaisutyyppiInput.first(),
+    'Peruutus tai raukeaminen',
+    '/paatos/',
+    { ratkaisutyyppi: 'PeruutusTaiRaukeaminen' },
   );
   await expect(
     page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
   ).toBeVisible();
+  await page
+    .getByTestId('peruutuksenTaiRaukeamisenSyyComponent')
+    .scrollIntoViewIfNeeded();
 
   const syyt = [
     'eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada',
     'muutenTyytymatonRatkaisuun',
     'eiApMukainenTutkintoTaiHaettuaPatevyytta',
-    'eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa',
-    'epavirallinenKorkeakouluTaiTutkinto',
-    'eiEdellytyksiaRoEikaTasopaatokselle',
-    'eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin',
-    'hakijallaJoPaatosSamastaKoulutusKokonaisuudesta',
-    'muuSyy',
   ];
   for (const syy of syyt) {
     const syyCheckbox = page.getByTestId(syy);
     await expect(syyCheckbox).not.toBeChecked();
-    await Promise.all([
-      page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-      syyCheckbox.click(),
-    ]).then((req) =>
-      expect(req[0].postDataJSON().peruutuksenTaiRaukeamisenSyy[syy]).toEqual(
-        true,
-      ),
-    );
+    await expectRequestData(page, '/paatos/', syyCheckbox.click(), {
+      peruutuksenTaiRaukeamisenSyy: {
+        [syy]: true,
+      },
+    });
   }
 });
 
@@ -80,85 +67,66 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
   await expect(ratkaisutyyppiInput).toHaveText('Päätös');
   await expect(paatostyyppiInput).toBeVisible();
 
-  await paatostyyppiInput.first().click();
-  await expect(paatostyyppiInput).toBeVisible();
-  const tasoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=1 Taso');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]).then((req) =>
-    expect(req[0].postDataJSON().paatosTiedot[0].paatosTyyppi).toEqual('Taso'),
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput.first(),
+    '1 Taso',
+    '/paatos/',
+    { paatosTiedot: [{ paatosTyyppi: 'Taso' }] },
   );
 
   await page.getByTestId('lisaa-paatos-button').click();
   const secondDropdown = page
     .getByTestId('paatos-paatostyyppi-dropdown')
     .nth(1);
-  await expect(secondDropdown).toBeVisible();
-  await secondDropdown.click();
-
-  const kelpoisuusOption = page
-    .locator('ul[role="listbox"]:visible li[role="option"]')
-    .filter({ hasText: 'Kelpoisuus' });
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    kelpoisuusOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot).toHaveLength(2);
-    expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
-  });
+  await expectDataFromDropdownSelection(
+    page,
+    secondDropdown,
+    '2 Kelpoisuus',
+    '/paatos/',
+    {
+      paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
+    },
+  );
 
   await page.getByTestId('lisaa-paatos-button').click();
   const thirdDropdown = page.getByTestId('paatos-paatostyyppi-dropdown').nth(2);
-  await expect(thirdDropdown).toBeVisible();
-  await thirdDropdown.click();
+  await expectDataFromDropdownSelection(
+    page,
+    thirdDropdown,
+    '4 Riittävät opinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        { paatosTyyppi: 'Taso' },
+        { paatosTyyppi: 'Kelpoisuus' },
+        { paatosTyyppi: 'RiittavatOpinnot' },
+      ],
+    },
+  );
 
-  const riittavatOpinnotOption = page
-    .locator('ul[role="listbox"]:visible li[role="option"]')
-    .filter({ hasText: 'Riittävät opinnot' })
-    .last();
-
-  await expect(riittavatOpinnotOption).toBeVisible();
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    riittavatOpinnotOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot).toHaveLength(3);
-    expect(postData.paatosTiedot[2].paatosTyyppi).toEqual('RiittavatOpinnot');
-  });
-
-  const deleteButton = page.getByTestId('poista-paatos-button').last();
-
-  deleteButton.click();
+  page.getByTestId('poista-paatos-button').last().click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    page.getByTestId('modal-confirm-button').click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-
-    expect(postData.paatosTiedot).toHaveLength(2);
-    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Taso');
-    expect(postData.paatosTiedot[1].paatosTyyppi).toEqual('Kelpoisuus');
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/paatos/') && req.method() === 'POST',
+    ),
+    await page.getByTestId('modal-confirm-button').click(),
+  ]);
+  expect(request.postDataJSON()).toMatchObject({
+    paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
   });
 
-  await ratkaisutyyppiInput.click();
-  const peruutusOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Peruutus tai raukeaminen');
-  await expect(peruutusOption).toBeVisible();
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    peruutusOption.click(),
-  ]).then((req) => expect(req[0].postDataJSON().paatosTiedot).toEqual([]));
+  await expectDataFromDropdownSelection(
+    page,
+    ratkaisutyyppiInput,
+    'Peruutus tai raukeaminen',
+    '/paatos/',
+    {
+      paatosTiedot: [],
+    },
+  );
 });
 
 test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownissa', async ({
@@ -170,20 +138,15 @@ test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownis
   await expect(paatostyyppiInput).toBeVisible();
 
   //Kun valitaan 1 Taso, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
-  await paatostyyppiInput.click();
-  await expect(paatostyyppiInput).toBeVisible();
-  let tasoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=1 Taso');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Taso');
-    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('uo');
-  });
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput,
+    '1 Taso',
+    '/paatos/',
+    {
+      paatosTiedot: [{ paatosTyyppi: 'Taso', sovellettuLaki: 'uo' }],
+    },
+  );
   let sovellettuLakiDropdown = page.getByTestId(
     'paatos-sovellettulaki-dropdown',
   );
@@ -199,21 +162,16 @@ test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownis
   await expect(options.last()).toHaveText('Päätös UO');
   await page.locator('body').click({ position: { x: 0, y: 0 } });
 
-  //Kun valitaan 2 Kelpoisuus, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
-  await paatostyyppiInput.click();
-  await expect(paatostyyppiInput).toBeVisible();
-  tasoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=2 Kelpoisuus');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('Kelpoisuus');
-    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual(undefined);
-  });
+  //Kun valitaan 2 Kelpoisuus, tulee olla kolme eri optiota sovellettu laki-dropdownissa
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput,
+    '2 Kelpoisuus',
+    '/paatos/',
+    {
+      paatosTiedot: [{ paatosTyyppi: 'Kelpoisuus' }],
+    },
+  );
 
   sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
 
@@ -233,22 +191,17 @@ test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownis
   await page.locator('body').click({ position: { x: 0, y: 0 } });
 
   //Kun valitaan 3 Tietty tutkinto tai opinnot, tulee olla vain Päätös UO -optio sovellettu laki-dropdownissa
-  await paatostyyppiInput.click();
-  await expect(paatostyyppiInput).toBeVisible();
-  tasoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=3  Tietty tutkinto tai opinnot');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual(
-      'TiettyTutkintoTaiOpinnot',
-    );
-    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('uo');
-  });
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput,
+    '3 Tietty tutkinto tai opinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        { paatosTyyppi: 'TiettyTutkintoTaiOpinnot', sovellettuLaki: 'uo' },
+      ],
+    },
+  );
 
   sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
 
@@ -266,20 +219,17 @@ test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownis
   await page.locator('body').click({ position: { x: 0, y: 0 } });
 
   //Kun valitaan 4 Riittävät opinnot tai opinnot, tulee olla vain Päätös RO -optio sovellettu laki-dropdownissa
-  await paatostyyppiInput.click();
-  await expect(paatostyyppiInput).toBeVisible();
-  tasoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=4 Riittävät opinnot');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].paatosTyyppi).toEqual('RiittavatOpinnot');
-    expect(postData.paatosTiedot[0].sovellettuLaki).toEqual('ro');
-  });
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput,
+    '4 Riittävät opinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        { paatosTyyppi: 'RiittavatOpinnot', sovellettuLaki: 'ro' },
+      ],
+    },
+  );
 
   sovellettuLakiDropdown = page.getByTestId('paatos-sovellettulaki-dropdown');
 
@@ -315,34 +265,36 @@ test('Päätöstiedon valinta näyttää oikeat arvot tutkinto-dropdownissa ja p
 
   const tutkintonimiDropdown = page.getByTestId('paatos-tutkintonimi-dropdown');
   await expect(tutkintonimiDropdown).toBeVisible();
-  await tutkintonimiDropdown.click();
 
-  const tutkintoOption = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Päälikkö');
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintonimiDropdown,
+    'Päälikkö',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          tutkintoId: '18732268-07ca-4898-a21f-e49b9dd68275',
+        },
+      ],
+    },
+  );
 
-  await expect(tutkintoOption).toBeVisible();
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tutkintoOption.first().click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].tutkintoId).toEqual(
-      '18732268-07ca-4898-a21f-e49b9dd68275',
-    );
-  });
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+  await expectRequestData(
+    page,
+    '/paatos/',
     page.getByTestId('paatos-lisaa-tutkinto-paatostekstiin-checkbox').click(),
-  ]).then((req) => {
-    const postData = req[0].postDataJSON();
-    expect(postData.paatosTiedot[0].tutkintoId).toEqual(
-      '18732268-07ca-4898-a21f-e49b9dd68275',
-    );
-    expect(postData.paatosTiedot[0].lisaaTutkintoPaatostekstiin).toEqual(true);
-  });
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          tutkintoId: '18732268-07ca-4898-a21f-e49b9dd68275',
+          lisaaTutkintoPaatostekstiin: true,
+        },
+      ],
+    },
+  );
 });
 
 test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkintotaso-dropdownin ja päivitys lähettää kutsun backendille', async ({
@@ -359,10 +311,7 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
     .locator('ul[role="listbox"] li[role="option"]')
     .locator('text=1 Taso');
 
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]);
+  await tasoOption.click();
 
   const tutkintonimiDropdown = page.getByTestId('paatos-tutkintonimi-dropdown');
   await expect(tutkintonimiDropdown).toBeVisible();
@@ -374,10 +323,7 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
 
   await expect(tutkintoOption).toBeVisible();
 
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tutkintoOption.first().click(),
-  ]);
+  await tutkintoOption.first().click();
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
@@ -386,36 +332,38 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   await expect(myonteinenPaatosRadioGroup).toBeVisible();
   await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
 
-  const [req] = await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+  await expectRequestData(
+    page,
+    '/paatos/',
     myonteinenPaatosRadioGroup
       .locator('input[type="radio"][value="true"]')
       .click(),
-  ]);
-
-  const myonteinenPaatosPostData = req.postDataJSON();
-  expect(myonteinenPaatosPostData.paatosTiedot[0].myonteinenPaatos).toEqual(
-    true,
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          myonteinenPaatos: true,
+        },
+      ],
+    },
   );
 
   const tutkintoTasoDropdown = page.getByTestId('paatos-tutkintotaso-dropdown');
   await expect(tutkintoTasoDropdown).toBeVisible();
-  await tutkintoTasoDropdown.click();
 
-  const tutkintoTasoOption = page
-    .locator('ul[role="listbox"]:visible li[role="option"]')
-    .filter({ hasText: 'Alempi korkeakoulututkinto' });
-
-  await expect(tutkintoTasoOption).toBeVisible();
-
-  const [req1] = await Promise.all([
-    page.waitForRequest((req1) => matchUpdate(req1.url(), req1.method())),
-    tutkintoTasoOption.click(),
-  ]);
-
-  const tutkintoTasoPostData = req1.postDataJSON();
-  expect(tutkintoTasoPostData.paatosTiedot[0].tutkintoTaso).toEqual(
-    'AlempiKorkeakoulu',
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoTasoDropdown,
+    'Alempi korkeakoulututkinto',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          tutkintoTaso: 'AlempiKorkeakoulu',
+        },
+      ],
+    },
   );
 });
 
@@ -432,26 +380,18 @@ test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
     .locator('text=1 Taso');
-
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tasoOption.click(),
-  ]);
+  await tasoOption.click();
 
   const tutkintonimiDropdown = page.getByTestId('paatos-tutkintonimi-dropdown');
   await expect(tutkintonimiDropdown).toBeVisible();
   await tutkintonimiDropdown.click();
-
   const tutkintoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
     .locator('text=Päälikkö');
 
   await expect(tutkintoOption).toBeVisible();
 
-  await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
-    tutkintoOption.first().click(),
-  ]);
+  await tutkintoOption.first().click();
 
   const myonteinenPaatosRadioGroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
@@ -460,16 +400,20 @@ test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja 
   await expect(myonteinenPaatosRadioGroup).toBeVisible();
   await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
 
-  const [req] = await Promise.all([
-    page.waitForRequest((req) => matchUpdate(req.url(), req.method())),
+  await expectRequestData(
+    page,
+    '/paatos/',
     myonteinenPaatosRadioGroup
       .locator('input[type="radio"][value="false"]')
       .click(),
-  ]);
-
-  const myonteinenPaatosPostData = req.postDataJSON();
-  expect(myonteinenPaatosPostData.paatosTiedot[0].myonteinenPaatos).toEqual(
-    false,
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          myonteinenPaatos: false,
+        },
+      ],
+    },
   );
 
   const eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox = page.getByTestId(
@@ -477,16 +421,22 @@ test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja 
   );
   await expect(eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox).toBeVisible();
 
-  const [req1] = await Promise.all([
-    page.waitForRequest((req1) => matchUpdate(req1.url(), req1.method())),
+  await expectRequestData(
+    page,
+    '/paatos/',
     eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox.click(),
-  ]);
-
-  const kielteinenPaatosPostData = req1.postDataJSON();
-  expect(
-    kielteinenPaatosPostData.paatosTiedot[0].kielteisenPaatoksenPerustelut
-      .eiVastaaSuomessaSuoritettavaaTutkintoa,
-  ).toEqual(true);
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          myonteinenPaatos: false,
+          kielteisenPaatoksenPerustelut: {
+            eiVastaaSuomessaSuoritettavaaTutkintoa: true,
+          },
+        },
+      ],
+    },
+  );
 });
 
 test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ page }) => {
