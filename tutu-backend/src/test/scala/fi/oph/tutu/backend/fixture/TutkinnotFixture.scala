@@ -72,3 +72,91 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     None
   )
 )
+
+def createTutkinnotFixtureBeforeMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkinto] = Seq(
+  Tutkinto(
+    None,
+    hakemusId,
+    "1",
+    Some("ensimmäinen laulututkinto"),
+    Some("Karaåke-oppilaitos"),
+    Some(2005),
+    Some(2015),
+    Some("maatjavaltiot2_101"),
+    None,
+    None,
+    None,
+    None,
+    Some("tutkintotodistus"),
+    None
+  ),
+  Tutkinto(
+    None,
+    hakemusId,
+    "2",
+    Some("Kolmoskaljan asijantuntijatutkinto"),
+    Some("Beer- ja ravintola oppilaitos"),
+    Some(1974),
+    Some(2014),
+    Some("maatjavaltiot2_102"),
+    None,
+    None,
+    None,
+    None,
+    Some("muutodistus"),
+    None
+  ),
+  Tutkinto(
+    None,
+    hakemusId,
+    "MUU",
+    None,
+    None,
+    None,
+    None,
+    None,
+    Some(
+      "Ammuu-instituutti"
+    ),
+    None,
+    None,
+    None,
+    None,
+    None
+  )
+)
+
+def createTutkinnotFixtureAfterMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkinto] = Seq(
+  Tutkinto(
+    None,
+    hakemusId,
+    "1",
+    Some("ensimmäinen laulututkinto"),
+    Some("Karaåke-oppilaitos"),
+    Some(2005),
+    Some(2015),
+    Some("maatjavaltiot2_103"),
+    None,
+    None,
+    None,
+    None,
+    Some("examensbevis"),
+    None
+  ),
+  Tutkinto(
+    None,
+    hakemusId,
+    "2",
+    Some("Kolmoskaljan asijantuntijatutkinto"),
+    Some("Beer- ja ravintola oppilaitos"),
+    Some(1897),
+    Some(2024),
+    Some("maatjavaltiot2_104"),
+    None,
+    None,
+    None,
+    None,
+    Some("ovrigbevis"),
+    None
+  )
+)

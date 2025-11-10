@@ -607,4 +607,16 @@ class HakemusRepository extends BaseResultHandlers {
         throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
     }
   }
+
+  def suoritaPaivitaTutkinto(tutkinto: Tutkinto, muokkaaja: String): Int = {
+    Try {
+      db.run(paivitaTutkinto(tutkinto, muokkaaja), "PaivitaTutkinto")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
+    }
+  }
+
 }

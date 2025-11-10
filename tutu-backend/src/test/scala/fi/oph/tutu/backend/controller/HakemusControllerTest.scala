@@ -2,12 +2,17 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.fixture.{
+  createTutkinnotFixtureAfterMuuttuneetTutkinnot,
+  createTutkinnotFixtureBeforeMuuttuneetTutkinnot,
+  hakijaFixture
+}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Assertions.{assertEquals, fail}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -28,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.util.UUID
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
@@ -560,6 +566,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
       )
     initAtaruHakemusRequests()
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
 
@@ -610,5 +617,67 @@ class HakemusControllerTest extends IntegrationTestBase {
           .header(xffOriginalHeaderName, xffOriginalHeaderValue)
       )
       .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  @Order(9)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemusWithMuuttuneetTutkinnotValidRequestReturns200(): Unit = {
+    @Override
+    @MockitoBean
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006671")
+
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6671WithMissingTutkinto2.json")))
+      .thenReturn(Right(loadJson("ataruHakemus6671WithChangedTutkintoAndPaatoskieli.json")))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus]))
+      .thenReturn(hakijaFixture)
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+      .thenAnswer { invocation =>
+        val uuid = invocation.getArgument[UUID](0)
+        createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
+      }
+      .thenAnswer { invocation =>
+        val uuid = invocation.getArgument[UUID](0)
+        createTutkinnotFixtureAfterMuuttuneetTutkinnot(uuid)
+      }
+
+    when(hakemuspalveluService.haeLomake(any[Long]))
+      .thenReturn(Right(loadJson("ataruLomake.json")))
+
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(hakemusOid, 0))
+    val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
+
+    val tutkinnotBefore     = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+    val firstTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "1").get
+
+    assertEquals("tutkintotodistus", firstTutkintoBefore.todistusOtsikko.get)
+    assertEquals("maatjavaltiot2_101", firstTutkintoBefore.maakoodiUri.get)
+
+    val secondTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "2").get
+    assertEquals("muutodistus", secondTutkintoBefore.todistusOtsikko.get)
+    assertEquals(1974, secondTutkintoBefore.aloitusVuosi.get)
+    assertEquals(2014, secondTutkintoBefore.paattymisVuosi.get)
+    assertEquals("maatjavaltiot2_102", secondTutkintoBefore.maakoodiUri.get)
+    mockMvc
+      .perform(
+        get("/api/hakemus/1.2.246.562.11.00000000000000006671")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+    val tutkinnotAfter = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+
+    val firstTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "1").get
+    assertEquals("maatjavaltiot2_103", firstTutkintoAfter.maakoodiUri.get)
+
+    val secondTutkintoAfter =
+      tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "2").get
+    assertEquals("ovrigbevis", secondTutkintoAfter.todistusOtsikko.get)
+    assertEquals(1897, secondTutkintoAfter.aloitusVuosi.get)
+    assertEquals(2024, secondTutkintoAfter.paattymisVuosi.get)
+    assertEquals("maatjavaltiot2_104", secondTutkintoAfter.maakoodiUri.get)
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
 }

@@ -184,7 +184,17 @@ class HakemusService(
     }
   }
 
-  private def paivitaTutkinnot(
+  private def paivitaHakemusAtaruHakemukselta(
+    ataruHakemus: AtaruHakemus,
+    dbHakemus: DbHakemus
+  ): DbHakemus = {
+
+    // TODO päivitä hakemuksen tiedot
+    // TODO hakemusta päivitetty timestamp?
+    dbHakemus
+  }
+
+  private def paivitaTutkinnotAtarusHakemukselta(
     ataruHakemus: AtaruHakemus,
     dbHakemus: DbHakemus,
     dbTutkinnot: Seq[Tutkinto]
@@ -194,19 +204,32 @@ class HakemusService(
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
         // Ei tutkintoa järjestysnumerolla -> lisätään uusi
-        case None                     => hakemusRepository.lisaaTutkinto(dbHakemus.id, ataruTutkinto, "TUTU-päivitys")
+        case None => hakemusRepository.lisaaTutkintoSeparately(dbHakemus.id, ataruTutkinto, "TUTU-päivitys")
         case Some(existingDbTutkinto) =>
           existingDbTutkinto.muokattu match {
             // Jos ei muokattu, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
             case None =>
-              hakemusRepository.paivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), "TUTU-päivitys")
+              hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), "TUTU-päivitys")
             case Some(value) =>
-              hakemusRepository.paivitaTutkinto(
-                existingDbTutkinto.copy(
-                  todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                  aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                  paattymisVuosi = ataruTutkinto.paattymisVuosi
-                ),
+              val tutkinto1MaakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
+              val tutkintoToUpdate     = ataruTutkinto.jarjestys == "1" match {
+                case true =>
+                  existingDbTutkinto.copy(
+                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
+                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
+                    paattymisVuosi = ataruTutkinto.paattymisVuosi,
+                    maakoodiUri = tutkinto1MaakoodiUri
+                  )
+                case _ =>
+                  existingDbTutkinto.copy(
+                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
+                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
+                    paattymisVuosi = ataruTutkinto.paattymisVuosi
+                  )
+              }
+
+              hakemusRepository.suoritaPaivitaTutkinto(
+                tutkintoToUpdate,
                 "TUTU-päivitys"
               )
           }
@@ -320,7 +343,7 @@ class HakemusService(
               None
           }
         )
-        val updatedTutkinnot = paivitaTutkinnot(ataruHakemus, dbHakemus, dbTutkinnot)
+        val updatedTutkinnot = paivitaTutkinnotAtarusHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
 
         Some(tutuHakemus.copy(tutkinnot = updatedTutkinnot))
       case None =>
