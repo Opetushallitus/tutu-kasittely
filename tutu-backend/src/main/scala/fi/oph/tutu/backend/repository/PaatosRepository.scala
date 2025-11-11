@@ -66,7 +66,8 @@ class PaatosRepository extends BaseResultHandlers {
       kielteisenPaatoksenPerustelut = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
-      muokkaaja = r.nextStringOption()
+      muokkaaja = r.nextStringOption(),
+      opetuskieli = r.nextStringOption()
     )
   )
 
@@ -348,7 +349,8 @@ class PaatosRepository extends BaseResultHandlers {
             myonteinen_paatos,
             myonteisen_paatoksen_lisavaatimukset,
             kielteisen_paatoksen_perustelut,
-            luoja
+            luoja,
+            opetuskieli
           )
           VALUES (
             ${paatostietoId.toString}::uuid,
@@ -356,7 +358,8 @@ class PaatosRepository extends BaseResultHandlers {
             ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
             ${Serialization.write(tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
             ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
-            $luoja
+            $luoja,
+            ${tutkintoTaiOpinto.opetuskieli.orNull}
           )"""
 
   private def paivitaTutkintoTaiOpinto(
@@ -372,7 +375,8 @@ class PaatosRepository extends BaseResultHandlers {
         tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull
       )}::jsonb,
             kielteisen_paatoksen_perustelut = ${tutkintoTaiOpinto.kielteisenPaatoksenPerustelut}::jsonb,
-            muokkaaja = $muokkaaja
+            muokkaaja = $muokkaaja,
+            opetuskieli = ${tutkintoTaiOpinto.opetuskieli.orNull}
           WHERE id = ${tutkintoTaiOpinto.id.get.toString}::uuid
         """
 
@@ -382,7 +386,7 @@ class PaatosRepository extends BaseResultHandlers {
         sql"""
             SELECT id, paatostieto_id, tutkinto_tai_opinto, myonteinen_paatos,
               myonteisen_paatoksen_lisavaatimukset, kielteisen_paatoksen_perustelut,
-              luotu, luoja, muokkaaja
+              luotu, luoja, muokkaaja, opetuskieli
             FROM tutkinto_tai_opinto
             WHERE paatostieto_id = ${paatostietoId.toString}::uuid
             ORDER BY luotu

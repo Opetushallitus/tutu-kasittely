@@ -32,6 +32,8 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
 
   await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
 
+  await expect(page.getByTestId('riittavat-opinnot-opetuskieli-input'));
+
   await expect(
     page.getByTestId('lisaa-tutkinto-tai-opinto-button'),
   ).toBeVisible();

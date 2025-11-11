@@ -461,7 +461,8 @@
             "otsikko": "Vahvista opintojen poisto",
             "teksti": "Olet poistamassa opintoja. Vahvista poistaminen.",
             "poistaTutkintoTaiOpinnot": "Poista opinnot"
-          }
+          },
+          "opetuskieli": "Opetuskieli"
         }
       },
       "sovellettuLaki": {
