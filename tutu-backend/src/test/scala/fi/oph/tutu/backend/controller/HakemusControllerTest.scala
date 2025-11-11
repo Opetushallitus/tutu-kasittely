@@ -644,6 +644,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         val uuid = invocation.getArgument[UUID](0)
         createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
       }
+    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(1).thenReturn(0)
 
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
@@ -668,6 +669,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     val muuTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Ammuu-instituutti", muuTutkintoBefore.muuTutkintoTieto.get)
 
+    val hakemusBefore = hakemusRepository.haeHakemus(hakemusOid)
+    assertEquals(0, hakemusBefore.get.hakemusKoskee)
+
     mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006671")
@@ -691,6 +695,9 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val muuTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Ammuu-instituutti, ypäjän hevosopisto", muuTutkintoAfter.muuTutkintoTieto.get)
+
+    val hakemusAfter = hakemusRepository.haeHakemus(hakemusOid)
+    assertEquals(1, hakemusAfter.get.hakemusKoskee)
 
     // Muokataan tutkintoja virkailijan toimesta
     hakemusRepository.suoritaPaivitaTutkinto(
@@ -732,6 +739,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     val muuTutkintoAfterVirkailijaUpdate =
       tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Tarkistettu: lemmikkigerbiilin hoito", muuTutkintoAfterVirkailijaUpdate.muuTutkintoTieto.get)
+
+    val hakemusAfterVirkailijaUpdate = hakemusRepository.haeHakemus(hakemusOid)
+    assertEquals(0, hakemusAfterVirkailijaUpdate.get.hakemusKoskee)
 
     verify(auditLog, times(2)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }

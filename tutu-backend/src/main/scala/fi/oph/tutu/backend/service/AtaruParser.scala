@@ -176,6 +176,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     transformedContent
   }
 
+  def parseHakemusKoskee(hakemus: AtaruHakemus): Int = {
+    val answers = hakemus.content.answers
+    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_KOSKEE, answers).get.toInt
+  }
+
   def parseTutkinto1MaakoodiUri(hakemus: AtaruHakemus): Option[String] = {
     val answers     = hakemus.content.answers
     val paatosKieli = findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, answers)

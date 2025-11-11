@@ -618,5 +618,4 @@ class HakemusRepository extends BaseResultHandlers {
         throw new RuntimeException(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
     }
   }
-
 }

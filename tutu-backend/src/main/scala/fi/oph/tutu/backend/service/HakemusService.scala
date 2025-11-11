@@ -186,12 +186,19 @@ class HakemusService(
 
   private def paivitaHakemusAtaruHakemukselta(
     ataruHakemus: AtaruHakemus,
-    dbHakemus: DbHakemus
-  ): DbHakemus = {
+    dbHakemus: DbHakemus,
+    tutuHakemus: Hakemus
+  ): Hakemus = {
+    val hakemusKoskeeToUpdate = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
 
-    // TODO päivitä hakemuksen tiedot
-    // TODO hakemusta päivitetty timestamp?
-    dbHakemus
+    if (hakemusKoskeeToUpdate != dbHakemus.hakemusKoskee) {
+      hakemusRepository.paivitaPartialHakemus(
+        dbHakemus.hakemusOid,
+        dbHakemus.copy(hakemusKoskee = hakemusKoskeeToUpdate),
+        TUTU_SERVICE
+      )
+      tutuHakemus.copy(hakemusKoskee = hakemusKoskeeToUpdate)
+    } else tutuHakemus
   }
 
   private def paivitaTutkinnotAtarusHakemukselta(
@@ -331,8 +338,8 @@ class HakemusService(
           }
         )
         val updatedTutkinnot = paivitaTutkinnotAtarusHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
-
-        Some(tutuHakemus.copy(tutkinnot = updatedTutkinnot))
+        val updatedHakemus   = paivitaHakemusAtaruHakemukselta(ataruHakemus, dbHakemus, tutuHakemus)
+        Some(updatedHakemus.copy(tutkinnot = updatedTutkinnot))
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
