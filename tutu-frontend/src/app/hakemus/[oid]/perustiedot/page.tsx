@@ -20,6 +20,7 @@ import {
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { Muistio } from '@/src/components/Muistio';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 export default function PerustietoPage() {
   const theme = useTheme();
@@ -27,7 +28,8 @@ export default function PerustietoPage() {
   const { addToast } = useToaster();
   const {
     isLoading,
-    hakemusState: { editedData: hakemus },
+    isSaving,
+    hakemusState: { editedData: hakemus, hasChanges, save },
     error,
   } = useHakemus();
 
@@ -36,7 +38,7 @@ export default function PerustietoPage() {
   }, [error, addToast, t]);
 
   if (error) {
-    return null;
+    return <></>;
   }
 
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
@@ -44,7 +46,7 @@ export default function PerustietoPage() {
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus?.hakemusKoskee),
-    )?.label || ''
+    )?.label ?? ''
   }`;
 
   const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
@@ -89,10 +91,15 @@ export default function PerustietoPage() {
       <Stack gap={theme.spacing(3)} width={'60%'}>
         <Henkilotiedot
           hakija={hakemus.hakija}
-          paatosKieli={paatosKieliVal || ''}
-          asiointiKieli={asiointiKieliVal || ''}
+          paatosKieli={paatosKieliVal ?? ''}
+          asiointiKieli={asiointiKieliVal ?? ''}
         />
       </Stack>
+      <SaveRibbon
+        onSave={save}
+        isSaving={isSaving ?? false}
+        hasChanges={hasChanges}
+      />
     </Stack>
   );
 }

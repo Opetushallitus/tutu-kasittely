@@ -20,6 +20,7 @@ export type EditableState<T> = {
   editedData?: T;
   hasChanges: boolean;
   updateLocal: (newData: Partial<T>) => void;
+  updateImmediatelly: (newData: Partial<T>) => void;
   save: () => void;
 };
 

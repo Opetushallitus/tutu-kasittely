@@ -11,9 +11,9 @@ import { buildHakemusUpdateRequest } from '@/src/lib/utils';
 type HakemusContextValue = {
   hakemusState: EditableState<Hakemus>;
   isLoading: boolean;
-  isError?: boolean;
+  isError: boolean;
   error: Error | null;
-  isSaving?: boolean;
+  isSaving: boolean;
 };
 
 export const HAKEMUS_MUUTOSHISTORIA_SORT_KEY = 'hakemus-muutoshistoria-sort';
@@ -46,6 +46,7 @@ export const HakemusProvider = ({
     data: hakemus,
     isLoading,
     error,
+    isError: queryIsError,
   } = useQuery({
     queryKey: ['getHakemus', hakemusOid],
     queryFn: () => getHakemus(hakemusOid),
@@ -53,7 +54,11 @@ export const HakemusProvider = ({
     throwOnError: false,
   });
 
-  const { mutate: tallennaHakemus, isPending: isSaving } = useMutation({
+  const {
+    mutate: tallennaHakemus,
+    isPending: isSaving,
+    isError: mutationIsError,
+  } = useMutation({
     mutationFn: (hakemusUpdate: HakemusUpdateRequest) =>
       doApiPut(`hakemus/${hakemus?.hakemusOid}`, hakemusUpdate),
     onSuccess: async (response) => {
@@ -73,8 +78,9 @@ export const HakemusProvider = ({
   return (
     <HakemusContext.Provider
       value={{
-        hakemusState: hakemusState,
+        hakemusState,
         isLoading,
+        isError: queryIsError || mutationIsError,
         error,
         isSaving,
       }}
