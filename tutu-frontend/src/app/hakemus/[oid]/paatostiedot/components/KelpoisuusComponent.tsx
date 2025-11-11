@@ -68,11 +68,11 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
             label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmattiKuvaus`)}
             multiline={true}
             minRows={3}
-            value={kelpoisuus.muuAmmmattikuvaus || ''}
+            value={kelpoisuus.muuAmmattiKuvaus || ''}
             onChange={(e) =>
-              updateFieldAction('muuAmmmattikuvaus', e.target.value)
+              updateFieldAction('muuAmmattiKuvaus', e.target.value)
             }
-            data-testid={`muuAmmmattikuvaus-input`}
+            data-testid={`muuAmmattikuvaus-input`}
           />
         </Stack>
       ) : (
@@ -183,7 +183,7 @@ export const KelpoisuusComponent = ({
       tobeKelpoisuus.direktiivitaso = undefined;
       tobeKelpoisuus.direktiivitasoLisatiedot = undefined;
       tobeKelpoisuus.kansallisestiVaadittavaDirektiivitaso = undefined;
-      tobeKelpoisuus.muuAmmmattikuvaus = undefined;
+      tobeKelpoisuus.muuAmmattiKuvaus = undefined;
     }
     updateKelpoisuusAction(
       {
@@ -213,7 +213,7 @@ export const KelpoisuusComponent = ({
             sx={{
               alignSelf: 'flex-end',
             }}
-            data-testid={`poista-kelpoisuus-button`}
+            data-testid={`poista-kelpoisuus-button-${index}`}
             variant="text"
             startIcon={<DeleteOutline />}
             onClick={() =>

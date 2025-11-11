@@ -173,6 +173,11 @@ class PaatosRepository extends BaseResultHandlers {
     luojaTaiMuokkaaja: String
   ): Unit = {
 
+    val deleteTutkintosOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
+      haeTutkinnotTaiOpinnot(id).flatMap { tto =>
+        tto.id.map(poistaTutkintoTaiOpinto)
+      }
+    }
     val tutkinnotTaiOpinnotActions = {
       modifyData.muutetut.flatMap { pt =>
         val paatostietoId     = pt.id.getOrElse(UUID.randomUUID())
@@ -182,12 +187,7 @@ class PaatosRepository extends BaseResultHandlers {
         val idsToDelete       = existingIds.diff(updatedIds)
 
         val deleteActions = idsToDelete
-          .map(id => poistaTutkintoTaiOpinto(id)) ++
-          modifyData.poistetut.flatMap { id =>
-            haeTutkinnotTaiOpinnot(id).flatMap { tto =>
-              tto.id.map(poistaTutkintoTaiOpinto)
-            }
-          }
+          .map(id => poistaTutkintoTaiOpinto(id))
 
         val updateActions = pt.rinnastettavatTutkinnotTaiOpinnot
           .filter(tto => tto.id.isDefined)
@@ -201,6 +201,11 @@ class PaatosRepository extends BaseResultHandlers {
       }
     }
 
+    val deleteKelpoisuudetOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
+      haeKelpoisuudet(id).flatMap { kelpoisuus =>
+        kelpoisuus.id.map(poistaKelpoisuus)
+      }
+    }
     val kelpoisuusActions = {
       modifyData.muutetut.flatMap { pt =>
         val paatostietoId        = pt.id.getOrElse(UUID.randomUUID())
@@ -210,12 +215,7 @@ class PaatosRepository extends BaseResultHandlers {
         val idsToDelete          = existingIds.diff(updatedIds)
 
         val deleteActions = idsToDelete
-          .map(id => poistaKelpoisuus(id)) ++
-          modifyData.poistetut.flatMap { id =>
-            haeKelpoisuudet(id).flatMap { kelpoisuus =>
-              kelpoisuus.id.map(poistaKelpoisuus)
-            }
-          }
+          .map(id => poistaKelpoisuus(id))
 
         val updateActions = pt.kelpoisuudet
           .filter(k => k.id.isDefined)
@@ -233,7 +233,9 @@ class PaatosRepository extends BaseResultHandlers {
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
 
-    val combined = db.combineIntDBIOs(tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions)
+    val combined = db.combineIntDBIOs(
+      deleteTutkintosOfDeletedPaatosTiedot ++ deleteKelpoisuudetOfDeletedPaatosTiedot ++ tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions
+    )
 
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
       case Success(_) => ()

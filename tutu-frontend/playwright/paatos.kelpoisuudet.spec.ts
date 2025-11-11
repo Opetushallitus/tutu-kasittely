@@ -23,7 +23,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   );
   const kelpoisuusSelect = page.getByTestId('kelpoisuus-select');
   const opetettavaAineSelect = page.getByTestId('opetettavaAine-select');
-  const muuAmmattiInput = page.getByTestId('muuAmmmattikuvaus-input');
+  const muuAmmattiInput = page.getByTestId('muuAmmattikuvaus-input');
   await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText('Päätös');
 
   await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
@@ -165,11 +165,58 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
           kelpoisuudet: [
             {
               kelpoisuus: 'Muu ammatti',
-              muuAmmmattikuvaus: 'Muu ammatti lisätieto',
+              muuAmmattiKuvaus: 'Muu ammatti lisätieto',
             },
           ],
         },
       ],
     },
   );
+});
+
+test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähettävät POST -kutsut backendille', async ({
+  page,
+}) => {
+  await selectOption(
+    page,
+    page.getByTestId('paatos-paatostyyppi-dropdown'),
+    '2 Kelpoisuus',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('paatos-sovellettulaki-dropdown'),
+    'Päätös AP/SEUT',
+  );
+  await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
+
+  const lisaaKelpoisuusButton = page.getByTestId('lisaa-kelpoisuus-button');
+  await expect(lisaaKelpoisuusButton).toBeVisible();
+  await lisaaKelpoisuusButton.scrollIntoViewIfNeeded();
+
+  await expectRequestData(page, '/paatos/', lisaaKelpoisuusButton.click(), {
+    paatosTiedot: [
+      {
+        paatosTyyppi: 'Kelpoisuus',
+        kelpoisuudet: [{}, {}],
+      },
+    ],
+  });
+
+  page.getByTestId('poista-kelpoisuus-button-1').click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/paatos/') && req.method() === 'POST',
+    ),
+    await page.getByTestId('modal-confirm-button').click(),
+  ]);
+  expect(request.postDataJSON()).toMatchObject({
+    paatosTiedot: [
+      {
+        paatosTyyppi: 'Kelpoisuus',
+        kelpoisuudet: [{}],
+      },
+    ],
+  });
 });

@@ -64,11 +64,11 @@ export const getKelpoisuusMuuAmmattiDropdownValue = (t: TFunction): string =>
 export const getKelpoisuusMuuAmmattiDropdownOption = (
   t: TFunction,
 ): PaatosTietoDropdownOption => {
-  const muuAmmmattiTranslated = getKelpoisuusMuuAmmattiDropdownValue(t);
+  const muuAmmattiTranslated = getKelpoisuusMuuAmmattiDropdownValue(t);
 
   const muuAmmattiOption: PaatosTietoDropdownOption = {
-    label: muuAmmmattiTranslated,
-    value: muuAmmmattiTranslated,
+    label: muuAmmattiTranslated,
+    value: muuAmmattiTranslated,
   };
 
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };
