@@ -158,5 +158,23 @@ def createTutkinnotFixtureAfterMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkint
     None,
     Some("ovrigbevis"),
     None
+  ),
+  Tutkinto(
+    None,
+    hakemusId,
+    "MUU",
+    None,
+    None,
+    None,
+    None,
+    None,
+    Some(
+      "Ammuu-instituutti, ypäjän hevosopisto"
+    ),
+    None,
+    None,
+    None,
+    None,
+    None
   )
 )

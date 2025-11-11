@@ -211,25 +211,12 @@ class HakemusService(
             case Some(ATARU_SERVICE) | Some(TUTU_SERVICE) | None =>
               hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
             case Some(value) =>
-              val tutkinto1MaakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
-              val tutkintoToUpdate     = ataruTutkinto.jarjestys == "1" match {
-                case true =>
-                  existingDbTutkinto.copy(
-                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                    paattymisVuosi = ataruTutkinto.paattymisVuosi,
-                    maakoodiUri = tutkinto1MaakoodiUri
-                  )
-                case _ =>
-                  existingDbTutkinto.copy(
-                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                    paattymisVuosi = ataruTutkinto.paattymisVuosi
-                  )
-              }
-
               hakemusRepository.suoritaPaivitaTutkinto(
-                tutkintoToUpdate,
+                existingDbTutkinto.copy(
+                  todistusOtsikko = ataruTutkinto.todistusOtsikko,
+                  aloitusVuosi = ataruTutkinto.aloitusVuosi,
+                  paattymisVuosi = ataruTutkinto.paattymisVuosi
+                ),
                 TUTU_SERVICE
               )
           }

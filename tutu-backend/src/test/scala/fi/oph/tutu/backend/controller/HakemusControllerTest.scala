@@ -629,7 +629,6 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6671WithMissingTutkinto2.json")))
-      .thenReturn(Right(loadJson("ataruHakemus6671WithChangedTutkintoAndPaatoskieli.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus]))
       .thenReturn(hakijaFixture)
     when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
@@ -640,6 +639,10 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenAnswer { invocation =>
         val uuid = invocation.getArgument[UUID](0)
         createTutkinnotFixtureAfterMuuttuneetTutkinnot(uuid)
+      }
+      .thenAnswer { invocation =>
+        val uuid = invocation.getArgument[UUID](0)
+        createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
       }
 
     when(hakemuspalveluService.haeLomake(any[Long]))
@@ -662,6 +665,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals("maatjavaltiot2_102", secondTutkintoBefore.maakoodiUri.get)
     assertEquals("Kolmosoluen asijantuntijatutkinto", secondTutkintoBefore.nimi.get)
 
+    val muuTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "MUU").get
+    assertEquals("Ammuu-instituutti", muuTutkintoBefore.muuTutkintoTieto.get)
+
     mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006671")
@@ -683,8 +689,50 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals("maatjavaltiot2_104", secondTutkintoAfter.maakoodiUri.get)
     assertEquals("mocktail-koulu", secondTutkintoAfter.nimi.get)
 
-    // Muokataan tutkintoja virkailijan toimesta
+    val muuTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "MUU").get
+    assertEquals("Ammuu-instituutti, ypäjän hevosopisto", muuTutkintoAfter.muuTutkintoTieto.get)
 
-    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
+    // Muokataan tutkintoja virkailijan toimesta
+    hakemusRepository.suoritaPaivitaTutkinto(
+      firstTutkintoAfter.copy(nimi = Some("Oikeasti Kirkan parhaat")),
+      "Virkailija1"
+    )
+    hakemusRepository.suoritaPaivitaTutkinto(
+      secondTutkintoAfter.copy(nimi = Some("Pienpanimo-tutkinto")),
+      "Virkailija2"
+    )
+    hakemusRepository.suoritaPaivitaTutkinto(
+      muuTutkintoAfter.copy(muuTutkintoTieto = Some("Tarkistettu: lemmikkigerbiilin hoito")),
+      "Virkailija3"
+    )
+
+    mockMvc
+      .perform(
+        get("/api/hakemus/1.2.246.562.11.00000000000000006671")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+    val tutkinnotAfterVirkailijaUpdate = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+
+    val firstTutkintoAfterVirkailijaUpdate =
+      tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "1").get
+    assertEquals("tutkintotodistus", firstTutkintoAfterVirkailijaUpdate.todistusOtsikko.get)
+    assertEquals("maatjavaltiot2_103", firstTutkintoAfterVirkailijaUpdate.maakoodiUri.get)
+    assertEquals("Oikeasti Kirkan parhaat", firstTutkintoAfterVirkailijaUpdate.nimi.get)
+
+    val secondTutkintoAfterVirkailijaUpdate =
+      tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "2").get
+    assertEquals("muutodistus", secondTutkintoAfterVirkailijaUpdate.todistusOtsikko.get)
+    assertEquals(1974, secondTutkintoAfterVirkailijaUpdate.aloitusVuosi.get)
+    assertEquals(2014, secondTutkintoAfterVirkailijaUpdate.paattymisVuosi.get)
+    assertEquals("maatjavaltiot2_104", secondTutkintoAfterVirkailijaUpdate.maakoodiUri.get)
+    assertEquals("Pienpanimo-tutkinto", secondTutkintoAfterVirkailijaUpdate.nimi.get)
+
+    val muuTutkintoAfterVirkailijaUpdate =
+      tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "MUU").get
+    assertEquals("Tarkistettu: lemmikkigerbiilin hoito", muuTutkintoAfterVirkailijaUpdate.muuTutkintoTieto.get)
+
+    verify(auditLog, times(2)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
 }
