@@ -173,7 +173,7 @@ class PaatosRepository extends BaseResultHandlers {
     luojaTaiMuokkaaja: String
   ): Unit = {
 
-    val deleteTtosOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
+    val deleteTutkintosOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
       haeTutkinnotTaiOpinnot(id).flatMap { tto =>
         tto.id.map(poistaTutkintoTaiOpinto)
       }
@@ -234,7 +234,7 @@ class PaatosRepository extends BaseResultHandlers {
       modifyData.poistetut.map(poistaPaatosTieto)
 
     val combined = db.combineIntDBIOs(
-      deleteTtosOfDeletedPaatosTiedot ++ deleteKelpoisuudetOfDeletedPaatosTiedot ++ tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions
+      deleteTutkintosOfDeletedPaatosTiedot ++ deleteKelpoisuudetOfDeletedPaatosTiedot ++ tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions
     )
 
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
