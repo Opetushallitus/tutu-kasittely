@@ -328,7 +328,7 @@ class HakemusService(
     }
   }
 
-  private def paivitaHakemusAtaruHakemukselta(
+  private def paivitaHakemusKoskeeAtaruHakemukselta(
     ataruHakemus: AtaruHakemus,
     hakemus: HakemusListItem
   ): HakemusListItem = {
@@ -428,7 +428,7 @@ class HakemusService(
                 taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`,
                 apHakemus = hakemus.apHakemus
               )
-            Some(paivitaHakemusAtaruHakemukselta(ataruHakemus, hakemusListItem))
+            Some(paivitaHakemusKoskeeAtaruHakemukselta(ataruHakemus, hakemusListItem))
         }
       }
     sort match {
