@@ -13,12 +13,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
-import {
-  Paatos,
-  PaatosTieto,
-  PaatosUpdateCallback,
-  Ratkaisutyyppi,
-} from '@/src/lib/types/paatos';
+import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
 import useToaster from '@/src/hooks/useToaster';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
@@ -26,7 +21,7 @@ import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
-import { useEditableState } from '@/src/hooks/useEditableState';
+import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
@@ -43,8 +38,9 @@ export default function PaatostiedotPage() {
   const { t } = useTranslations();
   const {
     isLoading: isHakemusLoading,
-    hakemus,
+    hakemusState,
     error: hakemusError,
+    isSaving,
   } = useHakemus();
 
   const {
@@ -53,7 +49,12 @@ export default function PaatostiedotPage() {
     error: paatosError,
     updatePaatos,
     updateOngoing,
-  } = usePaatos(hakemus?.hakemusOid, hakemus?.lomakeId);
+  } = usePaatos(
+    hakemusState.editedData?.hakemusOid,
+    hakemusState.editedData?.lomakeId,
+  );
+
+  const paatosState = useEditableState(paatos, updatePaatos);
 
   const { addToast } = useToaster();
 
@@ -66,56 +67,56 @@ export default function PaatostiedotPage() {
     return null;
   }
 
-  if (isHakemusLoading || !hakemus || isPaatosLoading || !paatos) {
+  if (isHakemusLoading || isPaatosLoading) {
     return <FullSpinner></FullSpinner>;
   }
 
   return (
     <Paatostiedot
-      paatos={paatos}
-      updatePaatos={updatePaatos}
-      updateOngoing={updateOngoing}
-      hakemus={hakemus!}
+      paatosState={paatosState}
+      updateOngoing={isSaving || updateOngoing}
+      hakemusState={hakemusState}
     />
   );
 }
 
 const Paatostiedot = ({
-  paatos,
-  updatePaatos,
+  paatosState,
   updateOngoing,
-  hakemus,
+  hakemusState,
 }: {
-  paatos: Paatos;
-  updatePaatos: PaatosUpdateCallback;
+  paatosState: EditableState<Paatos>;
   updateOngoing: boolean;
-  hakemus: Hakemus;
+  hakemusState: EditableState<Hakemus>;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
+  const paatos = paatosState.editedData;
+  const hakemus = hakemusState.editedData;
 
-  const [currentPaatos, setCurrentPaatos] = React.useState<Paatos>(paatos);
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
   >([]);
 
-  const paatosState = useEditableState(paatos, updatePaatos);
-
   useEffect(() => {
-    setCurrentPaatos(paatos);
-    setCurrentPaatosTiedot(
-      paatos.paatosTiedot?.length
-        ? paatos.paatosTiedot
-        : [emptyPaatosTieto(paatos.id!)],
-    );
+    if (paatos) {
+      setCurrentPaatosTiedot(
+        paatos.paatosTiedot?.length
+          ? paatos.paatosTiedot
+          : [emptyPaatosTieto(paatos.id!)],
+      );
+    }
   }, [paatos]);
+
+  if (!hakemus || !paatos) {
+    return <FullSpinner></FullSpinner>;
+  }
 
   const updatePaatosField = (
     updatedPaatos: Partial<Paatos>,
     immediateSave?: boolean,
   ) => {
-    const newPaatos: Paatos = { ...currentPaatos, ...updatedPaatos };
-    setCurrentPaatos(newPaatos);
+    const newPaatos: Paatos = { ...paatos, ...updatedPaatos };
     if (immediateSave) {
       paatosState.updateImmediatelly(updatedPaatos);
       return;
@@ -164,9 +165,9 @@ const Paatostiedot = ({
       </OphTypography>
       <OphCheckbox
         label={t('hakemus.paatos.seut')}
-        checked={currentPaatos.seutArviointi}
+        checked={paatos.seutArviointi}
         onChange={() => {
-          updatePaatosField({ seutArviointi: !currentPaatos.seutArviointi });
+          updatePaatosField({ seutArviointi: !paatos.seutArviointi });
         }}
         data-testid={'paatos-seut'}
       />
@@ -174,7 +175,7 @@ const Paatostiedot = ({
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
         options={ratkaisutyyppiOptions(t)}
-        value={currentPaatos.ratkaisutyyppi || ''}
+        value={paatos.ratkaisutyyppi || ''}
         onChange={(event) =>
           updatePaatosField(
             (event.target.value as Ratkaisutyyppi) !== 'Paatos'
@@ -187,17 +188,17 @@ const Paatostiedot = ({
         }
         data-testid={'paatos-ratkaisutyyppi'}
       />
-      {currentPaatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
+      {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
         <PeruutuksenTaiRaukeamisenSyyComponent
           t={t}
           theme={theme}
-          syy={currentPaatos.peruutuksenTaiRaukeamisenSyy}
+          syy={paatos.peruutuksenTaiRaukeamisenSyy}
           updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
             updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
           }
         />
       )}
-      {currentPaatos.ratkaisutyyppi === 'Paatos' && (
+      {paatos.ratkaisutyyppi === 'Paatos' && (
         <>
           <PaatosTietoList
             t={t}
@@ -222,9 +223,12 @@ const Paatostiedot = ({
         </>
       )}
       <SaveRibbon
-        onSave={paatosState.save}
+        onSave={() => {
+          paatosState.save();
+          hakemusState.save();
+        }}
         isSaving={updateOngoing}
-        hasChanges={paatosState.hasChanges}
+        hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
       />
     </Stack>
   );

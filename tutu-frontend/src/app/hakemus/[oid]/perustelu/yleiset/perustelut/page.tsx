@@ -3,7 +3,7 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useEditableState } from '@/src/hooks/useEditableState';
+import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { Hakemus } from '@/src/lib/types/hakemus';
@@ -25,44 +25,33 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemus, tallennaHakemus, isLoading, error } = useHakemus();
+  const { hakemusState, isLoading, error } = useHakemus();
 
   return (
     <PerusteluLayout
       showTabs={true}
       title="hakemus.perustelu.yleiset.otsikko"
       t={t}
-      hakemus={hakemus}
+      hakemus={hakemusState.editedData}
       isHakemusLoading={isLoading}
       hakemusError={error}
     >
-      <YleisetPerustelut hakemus={hakemus} tallennaHakemus={tallennaHakemus} />
+      <YleisetPerustelut hakemusState={hakemusState} />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
-  hakemus: Hakemus | undefined;
-  tallennaHakemus: (hakemus: Hakemus) => void;
+  hakemusState: EditableState<Hakemus>;
 }
 
-const YleisetPerustelut = ({
-  hakemus,
-  tallennaHakemus,
-}: YleisetPerustelutProps) => {
+const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
   const { t } = useTranslations();
 
   const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
+    usePerustelu(hakemusState.editedData?.hakemusOid);
 
-  // Manage editable state for both perustelu and hakemus with automatic change tracking
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
-  const hakemusState = useEditableState(hakemus, tallennaHakemus);
-
-  // Paikallinen päivitys hakemukselle (vain tutkinnot)
-  const updateHakemusLocal = (part: Partial<Hakemus>) => {
-    hakemusState.updateLocal(part);
-  };
 
   // Combined change tracking and save handler
   const hasChanges = perusteluState.hasChanges || hakemusState.hasChanges;
@@ -102,7 +91,7 @@ const YleisetPerustelut = ({
       />
       <TutkintokohtaisetTiedot
         hakemus={hakemusState.editedData}
-        updateHakemus={updateHakemusLocal}
+        updateHakemus={hakemusState.updateLocal}
       />
       <OphTypography variant={'h3'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}

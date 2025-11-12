@@ -26,7 +26,9 @@ export const AvaaPerusteluMuistioButton = () => {
   const theme = useTheme();
   const { t } = useTranslations();
 
-  const { hakemus } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus },
+  } = useHakemus();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const modalComponent = hakemus ? (

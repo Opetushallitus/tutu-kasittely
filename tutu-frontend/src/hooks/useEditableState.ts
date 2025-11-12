@@ -16,10 +16,18 @@ import { isDeepEqual } from 'remeda';
  * @param onSave - Callback to save changes back to the server
  * @returns Object containing local state, update function, save function, and change tracking
  */
+export type EditableState<T> = {
+  editedData?: T;
+  hasChanges: boolean;
+  updateLocal: (newData: Partial<T>) => void;
+  updateImmediatelly: (newData: Partial<T>) => void;
+  save: () => void;
+};
+
 export const useEditableState = <T extends Record<string, unknown>>(
   serverData: T | undefined,
   onSave: (data: T) => void,
-) => {
+): EditableState<T> => {
   const [editedData, setEditedData] = useState<T | undefined>(serverData);
   const [preserveEditedData, setPreserveEditedData] = useState<boolean>(false);
 

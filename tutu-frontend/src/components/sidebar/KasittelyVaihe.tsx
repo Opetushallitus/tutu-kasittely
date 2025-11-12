@@ -28,7 +28,9 @@ const KasittelyvaiheStack = styled(Stack)(({ theme }) => ({
 export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const { hakemus } = useHakemus();
+  const {
+    hakemusState: { editedData: hakemus },
+  } = useHakemus();
   const kasittelyVaiheTranslation = useKasittelyvaiheTranslation(hakemus);
 
   return (

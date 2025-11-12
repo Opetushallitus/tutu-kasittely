@@ -44,7 +44,9 @@ export const usePaatos = (
       const paivitettyPaatos = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatos);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
+      await queryClient.invalidateQueries({
+        queryKey: ['getHakemus', hakemusOid],
+      });
     },
   });
 

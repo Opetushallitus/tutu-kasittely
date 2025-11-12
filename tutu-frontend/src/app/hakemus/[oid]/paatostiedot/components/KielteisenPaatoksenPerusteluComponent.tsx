@@ -21,7 +21,7 @@ export const KielteisenPaatoksenPerusteluComponent = ({
   t,
 }: KielteisenPaatoksenPerusteluComponentProps) => {
   const theme = useTheme();
-  const { hakemus } = useHakemus();
+  const { hakemusState } = useHakemus();
 
   const kielteisenPaatoksenPerustelutKeys = [
     'epavirallinenKorkeakoulu',
@@ -55,7 +55,7 @@ export const KielteisenPaatoksenPerusteluComponent = ({
       {paatosTieto.kielteisenPaatoksenPerustelut?.muuPerustelu && (
         <Muistio
           label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu')}
-          hakemus={hakemus}
+          hakemus={hakemusState.editedData}
           sisainen={false}
           hakemuksenOsa={'paatos'}
         />
