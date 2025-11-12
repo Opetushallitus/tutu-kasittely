@@ -45,6 +45,7 @@ export const PaatosHeader = ({
             }
             selectedValue={hyvaksymispaiva}
             maxDate={null}
+            //TODO
             label={t('hakemus.paatos.hyvaksymispaiva')}
             dataTestId="paatos-hyvaksymispaiva-calendar"
           />

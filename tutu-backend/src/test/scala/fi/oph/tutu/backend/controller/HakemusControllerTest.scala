@@ -12,7 +12,7 @@ import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.{assertEquals, fail}
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -20,7 +20,7 @@ import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.{WithAnonymousUser, WithMockUser}
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
@@ -118,89 +118,6 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  def luoHakemusInvalidRequestReturns400(): Unit = {
-    when(userService.getEnrichedUserDetails(any[Boolean]))
-      .thenReturn(
-        fi.oph.tutu.backend.domain.User(
-          userOid = "kayttaja",
-          authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
-        )
-      )
-
-    val hakemus     = "1.2.246.562.XX"
-    val requestJson = mapper.writeValueAsString(hakemus)
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isBadRequest)
-  }
-
-  @Test
-  @WithMockUser(value = "kayttaja", authorities = Array("ROLE_APP_NADA"))
-  def luoHakemusValidRequestReturns403WithInSufficientRights(): Unit = {
-    when(userService.getEnrichedUserDetails(any[Boolean]))
-      .thenReturn(
-        fi.oph.tutu.backend.domain.User(
-          userOid = "kayttaja",
-          authorities = List("ROLE_APP_NADA")
-        )
-      )
-
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0)
-    val requestJson = mapper.writeValueAsString(hakemus)
-
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isForbidden)
-  }
-
-  @Test
-  @WithAnonymousUser
-  def luoHakemusValidRequestReturns401WithAnonymousUser(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0)
-    val requestJson = mapper.writeValueAsString(hakemus)
-
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-      )
-      .andExpect(status().isUnauthorized)
-  }
-
-  @Test
-  @WithMockUser(
-    value = HakemusControllerTestConstants.ESITTELIJA_OID,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
-  )
-  def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1)
-    val requestJson = mapper.writeValueAsString(hakemus)
-    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-          .header("XFF_ORIGINAL", "127.0.0.1")
-      )
-      .andExpect(status().isInternalServerError)
-  }
-
-  @Test
   @WithMockUser(
     value = HakemusControllerTestConstants.ESITTELIJA_OID,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
@@ -256,80 +173,6 @@ class HakemusControllerTest extends IntegrationTestBase {
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
   )
-  def luoHakemusValidRequestReturns200(): Unit = {
-    when(userService.getEnrichedUserDetails(any[Boolean]))
-      .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-      )
-    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus6666.json")))
-    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
-    val requestJson =
-      """{
-          "hakemusOid": "1.2.246.562.11.00000000000000006666",
-          "hakemusKoskee": 1
-          }"""
-
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-          .header(dummyUserAgent, dummyUserAgentValue)
-          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
-      )
-      .andExpect(status().isOk)
-
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
-  }
-
-  @Test
-  @Order(2)
-  @WithMockUser(
-    value = esittelijaOidString,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
-  )
-  def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
-    when(userService.getEnrichedUserDetails(any[Boolean]))
-      .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-      )
-    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus6665.json")))
-    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_752"))
-
-    val requestJson =
-      """{
-          "hakemusOid": "1.2.246.562.11.00000000000000006665",
-          "hakemusKoskee": 0
-          }"""
-
-    mockMvc
-      .perform(
-        post("/api/ataru-hakemus")
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(requestJson)
-          .header(dummyUserAgent, dummyUserAgentValue)
-          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
-      )
-      .andExpect(status().isOk)
-
-    val insertedHakemus = hakemusRepository
-      .haeHakemusLista(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
-      .headOption
-      .getOrElse(fail("Hakemusta ei löytynyt"))
-    assert(insertedHakemus.esittelijaOid.get == esittelija.get.esittelijaOid.toString)
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
-  }
-
-  @Test
-  @Order(3)
-  @WithMockUser(
-    value = esittelijaOidString,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
-  )
   def haeHakemuslistaReturns200AndArrayOfHakemusListItems(): Unit = {
     initAtaruHakemusRequests()
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -338,9 +181,12 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
 
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006665")))
+      .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+    when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006666")))
+      .thenReturn(Right(loadJson("ataruHakemus6666.json")))
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))
-
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")))
       .thenReturn(Right(loadJson("ataruHakemus6668.json")))
 
@@ -388,6 +234,8 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), 0))
+    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1))
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0))
     hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), 1))
     mockMvc
@@ -401,7 +249,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(4)
+  @Order(2)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
     val virkailijaOid = UserOid("1.2.246.562.24.00000000000000006666")
@@ -490,7 +338,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(5)
+  @Order(3)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -535,7 +383,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(6)
+  @Order(4)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeLiitteidenTiedotReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -558,7 +406,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(7)
+  @Order(5)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def paivitaAsiatunnusReturns204(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -595,7 +443,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(8)
+  @Order(6)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def paivitaAsiatunnusReturns400(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -620,7 +468,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(9)
+  @Order(7)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemusWithMuuttuneetTutkinnotValidRequestReturns200(): Unit = {
     @Override
