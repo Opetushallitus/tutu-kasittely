@@ -618,4 +618,22 @@ class HakemusRepository extends BaseResultHandlers {
         throw new RuntimeException(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
     }
   }
+
+  private def paivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): DBIO[Int] =
+    sqlu"""
+        UPDATE hakemus
+        SET hakemus_koskee = ${hakemusKoskee}, muokkaaja = ${muokkaaja}
+        WHERE hakemus_oid = ${hakemusOid.toString}
+      """
+
+  def suoritaPaivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): Int = {
+    Try {
+      db.run(paivitaHakemusKoskee(hakemusOid, hakemusKoskee, muokkaaja), "PaivitaHakemusKoskee")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage} ${e.getMessage}", e)
+    }
+  }
 }

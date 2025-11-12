@@ -184,23 +184,6 @@ class HakemusService(
     }
   }
 
-  private def paivitaHakemusAtaruHakemukselta(
-    ataruHakemus: AtaruHakemus,
-    dbHakemus: DbHakemus,
-    tutuHakemus: Hakemus
-  ): Hakemus = {
-    val hakemusKoskeeToUpdate = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-
-    if (hakemusKoskeeToUpdate != dbHakemus.hakemusKoskee) {
-      hakemusRepository.paivitaPartialHakemus(
-        dbHakemus.hakemusOid,
-        dbHakemus.copy(hakemusKoskee = hakemusKoskeeToUpdate),
-        TUTU_SERVICE
-      )
-      tutuHakemus.copy(hakemusKoskee = hakemusKoskeeToUpdate)
-    } else tutuHakemus
-  }
-
   private def paivitaTutkinnotAtarusHakemukselta(
     ataruHakemus: AtaruHakemus,
     dbHakemus: DbHakemus,
@@ -338,12 +321,27 @@ class HakemusService(
           }
         )
         val updatedTutkinnot = paivitaTutkinnotAtarusHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
-        val updatedHakemus   = paivitaHakemusAtaruHakemukselta(ataruHakemus, dbHakemus, tutuHakemus)
-        Some(updatedHakemus.copy(tutkinnot = updatedTutkinnot))
+        Some(tutuHakemus.copy(tutkinnot = updatedTutkinnot))
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
     }
+  }
+
+  private def paivitaHakemusAtaruHakemukselta(
+    ataruHakemus: AtaruHakemus,
+    hakemus: HakemusListItem
+  ): HakemusListItem = {
+    val hakemusKoskeeToUpdate = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+
+    if (hakemusKoskeeToUpdate != hakemus.hakemusKoskee) {
+      hakemusRepository.suoritaPaivitaHakemusKoskee(
+        HakemusOid(hakemus.hakemusOid),
+        hakemusKoskeeToUpdate,
+        TUTU_SERVICE
+      )
+      hakemus.copy(hakemusKoskee = hakemusKoskeeToUpdate)
+    } else hakemus
   }
 
   def haeHakemusLista(
@@ -394,13 +392,13 @@ class HakemusService(
 
     val hakemusList = hakemusRepository
       .haeHakemusLista(hakemusOidit)
-      .flatMap { item =>
-        val ataruHakemus = ataruHakemukset.find(hakemus => hakemus.key == item.hakemusOid)
+      .flatMap { hakemus =>
+        val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == hakemus.hakemusOid)
 
-        val esittelija = item.esittelijaOid match {
+        val esittelija = hakemus.esittelijaOid match {
           case None                => (null, null)
           case Some(esittelijaOid) =>
-            onrService.haeHenkilo(item.esittelijaOid.get) match {
+            onrService.haeHenkilo(hakemus.esittelijaOid.get) match {
               case Left(error)    => (null, null)
               case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
             }
@@ -409,27 +407,28 @@ class HakemusService(
         ataruHakemus match {
           case None =>
             LOG.warn(
-              s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${item.hakemusOid}, ei näytetä hakemusta listassa."
+              s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${hakemus.hakemusOid}, ei näytetä hakemusta listassa."
             )
             None
           case Some(ataruHakemus) =>
-            Some(
+            val hakemusListItem =
               HakemusListItem(
-                asiatunnus = item.asiatunnus,
+                asiatunnus = hakemus.asiatunnus,
                 hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
                 aika = ataruHakemus.submitted,
-                viimeinenAsiakirjaHakijalta = item.viimeinenAsiakirjaHakijalta.map(dateStr => dateStr.split(" ").head),
-                hakemusOid = item.hakemusOid,
-                hakemusKoskee = item.hakemusKoskee,
-                esittelijaOid = item.esittelijaOid,
+                viimeinenAsiakirjaHakijalta =
+                  hakemus.viimeinenAsiakirjaHakijalta.map(dateStr => dateStr.split(" ").head),
+                hakemusOid = hakemus.hakemusOid,
+                hakemusKoskee = hakemus.hakemusKoskee,
+                esittelijaOid = hakemus.esittelijaOid,
                 esittelijaKutsumanimi = esittelija(0),
                 esittelijaSukunimi = esittelija(1),
-                kasittelyVaihe = item.kasittelyVaihe,
-                muokattu = item.muokattu,
+                kasittelyVaihe = hakemus.kasittelyVaihe,
+                muokattu = hakemus.muokattu,
                 taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp`,
-                apHakemus = item.apHakemus
+                apHakemus = hakemus.apHakemus
               )
-            )
+            Some(paivitaHakemusAtaruHakemukselta(ataruHakemus, hakemusListItem))
         }
       }
     sort match {

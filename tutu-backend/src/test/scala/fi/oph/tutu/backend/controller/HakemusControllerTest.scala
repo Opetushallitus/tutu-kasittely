@@ -337,6 +337,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
       )
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
+
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))
 
@@ -345,13 +346,12 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
-
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
-                                "hakemusKoskee" : 1,
+                                "hakemusKoskee" : 0,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
@@ -361,7 +361,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "hakija" : "Testi Hakija",
                                 "aika" : "2025-05-14T11:06:38.273Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
-                                "hakemusKoskee" : 0,
+                                "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
@@ -381,7 +381,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "hakija" : "Testi Kolmas Hakija",
                                 "aika" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
-                                "hakemusKoskee" : 0,
+                                "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
@@ -501,8 +501,8 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruHakemukset.json")))
     when(hakemuspalveluService.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")))
       .thenReturn(Right(loadJson("ataruHakemus6668.json")))
-
-    val hakemus     = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668")).get
+    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(1)
+    val hakemus     = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")).get
     val asiakirjaId = hakemus.asiakirjaId.get
     val asiakirja   = asiakirjaRepository.haeAsiakirjaTiedot(asiakirjaId).get
     asiakirjaRepository.paivitaAsiakirjaTiedot(
@@ -512,9 +512,9 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Neljäs Hakija",
+                                "hakija" : "Testi Kolmas Hakija",
                                 "aika" : "2025-05-14T10:59:47.597Z",
-                                "hakemusOid" : "1.2.246.562.11.00000000000000006668",
+                                "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
                                 "apHakemus": true,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
@@ -669,9 +669,6 @@ class HakemusControllerTest extends IntegrationTestBase {
     val muuTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Ammuu-instituutti", muuTutkintoBefore.muuTutkintoTieto.get)
 
-    val hakemusBefore = hakemusRepository.haeHakemus(hakemusOid)
-    assertEquals(0, hakemusBefore.get.hakemusKoskee)
-
     mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006671")
@@ -695,9 +692,6 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val muuTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Ammuu-instituutti, ypäjän hevosopisto", muuTutkintoAfter.muuTutkintoTieto.get)
-
-    val hakemusAfter = hakemusRepository.haeHakemus(hakemusOid)
-    assertEquals(1, hakemusAfter.get.hakemusKoskee)
 
     // Muokataan tutkintoja virkailijan toimesta
     hakemusRepository.suoritaPaivitaTutkinto(
@@ -739,9 +733,6 @@ class HakemusControllerTest extends IntegrationTestBase {
     val muuTutkintoAfterVirkailijaUpdate =
       tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals("Tarkistettu: lemmikkigerbiilin hoito", muuTutkintoAfterVirkailijaUpdate.muuTutkintoTieto.get)
-
-    val hakemusAfterVirkailijaUpdate = hakemusRepository.haeHakemus(hakemusOid)
-    assertEquals(0, hakemusAfterVirkailijaUpdate.get.hakemusKoskee)
 
     verify(auditLog, times(2)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
