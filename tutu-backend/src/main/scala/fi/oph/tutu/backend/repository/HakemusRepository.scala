@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.repository
 
-import dotty.tools.dotc.core.Phases.NoPhase.id
 import fi.oph.tutu.backend.domain.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -80,7 +79,8 @@ class HakemusRepository extends BaseResultHandlers {
         ohjeellinenLaajuus = r.nextStringOption(),
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),
-        perustelunLisatietoja = r.nextStringOption()
+        perustelunLisatietoja = r.nextStringOption(),
+        muokkaaja = r.nextStringOption()
       )
     )
 
@@ -432,7 +432,8 @@ class HakemusRepository extends BaseResultHandlers {
       ohjeellinen_laajuus,
       opinnaytetyo,
       harjoittelu,
-      perustelun_lisatietoja
+      perustelun_lisatietoja,
+      muokkaaja
     FROM tutkinto
     WHERE hakemus_id = ${hakemusId.toString}::uuid
     ORDER BY jarjestys ASC
@@ -457,7 +458,7 @@ class HakemusRepository extends BaseResultHandlers {
   ): Unit = {
     val actions = modifyData.uudet.map(t => lisaaTutkinto(hakemusId, t, luojaTaiMuokkaja.toString)) ++
       modifyData.poistetut.map(poistaTutkinto) ++
-      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja))
+      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja.toString))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
       case Success(_) => ()
@@ -550,7 +551,7 @@ class HakemusRepository extends BaseResultHandlers {
    */
   def paivitaTutkinto(
     tutkinto: Tutkinto,
-    muokkaaja: UserOid
+    muokkaaja: String
   ): DBIO[Int] =
     sqlu"""
       UPDATE tutkinto
@@ -571,7 +572,7 @@ class HakemusRepository extends BaseResultHandlers {
         opinnaytetyo = ${tutkinto.opinnaytetyo},
         harjoittelu = ${tutkinto.harjoittelu},
         perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull},
-        muokkaaja = ${muokkaaja.toString}
+        muokkaaja = ${muokkaaja}
       WHERE id = ${tutkinto.id.get.toString}::uuid
     """
 
@@ -589,21 +590,50 @@ class HakemusRepository extends BaseResultHandlers {
       WHERE id = ${id.toString}::uuid
     """
 
-  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): DBIO[Int] =
+  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] =
     sqlu"""
       UPDATE hakemus
-      SET asiatunnus = ${asiatunnus}
+      SET asiatunnus = ${asiatunnus}, muokkaaja = ${muokkaaja}
       WHERE hakemus_oid = ${hakemusOid.toString}
     """
 
-  def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String): Int = {
+  def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
     Try {
-      db.run(paivitaAsiatunnus(hakemusOid, asiatunnus), "PaivitaAsiatunnus")
+      db.run(paivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja), "PaivitaAsiatunnus")
     } match {
       case Success(modified) => modified
       case Failure(e)        =>
         LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
         throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+    }
+  }
+
+  def suoritaPaivitaTutkinto(tutkinto: Tutkinto, muokkaaja: String): Int = {
+    Try {
+      db.run(paivitaTutkinto(tutkinto, muokkaaja), "PaivitaTutkinto")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
+    }
+  }
+
+  private def paivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): DBIO[Int] =
+    sqlu"""
+        UPDATE hakemus
+        SET hakemus_koskee = ${hakemusKoskee}, muokkaaja = ${muokkaaja}
+        WHERE hakemus_oid = ${hakemusOid.toString}
+      """
+
+  def suoritaPaivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): Int = {
+    Try {
+      db.run(paivitaHakemusKoskee(hakemusOid, hakemusKoskee, muokkaaja), "PaivitaHakemusKoskee")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage} ${e.getMessage}", e)
     }
   }
 }

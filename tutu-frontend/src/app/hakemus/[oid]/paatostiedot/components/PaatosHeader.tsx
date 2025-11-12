@@ -28,6 +28,7 @@ export const PaatosHeader = ({
   const lahetyspaiva = paatos.lahetyspaiva
     ? new Date(paatos.lahetyspaiva)
     : null;
+
   return (
     <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
       <Stack direction="column" gap={theme.spacing(3)}>
