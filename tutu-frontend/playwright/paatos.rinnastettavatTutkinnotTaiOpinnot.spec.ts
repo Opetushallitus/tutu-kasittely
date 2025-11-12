@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oikea otsikko', async ({
+test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oikea otsikko ja opetuskieli-input näkyviin sekä backendille lähtee kutsu', async ({
   page,
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
@@ -31,6 +31,37 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
   await tasoOption.click();
 
   await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+
+  const opetuskieliInput = page.getByTestId(
+    'riittavat-opinnot-opetuskieli-input',
+  );
+  await expect(opetuskieliInput).toBeVisible();
+
+  await opetuskieliInput.locator('input').fill('suomi');
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'Luokanopettaja',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+              opetuskieli: 'suomi',
+            },
+          ],
+        },
+      ],
+    },
+  );
 
   await expect(
     page.getByTestId('lisaa-tutkinto-tai-opinto-button'),

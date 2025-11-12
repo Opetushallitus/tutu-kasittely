@@ -52,6 +52,7 @@ case class TutkintoTaiOpinto(
   id: Option[UUID] = None,
   paatostietoId: Option[UUID] = None,
   tutkintoTaiOpinto: Option[String] = None,
+  opetuskieli: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
   myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimukset] = None,
   // TODO: case classeiksi

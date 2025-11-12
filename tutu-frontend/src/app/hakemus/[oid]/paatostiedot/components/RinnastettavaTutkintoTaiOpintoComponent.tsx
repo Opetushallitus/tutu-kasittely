@@ -8,6 +8,7 @@ import { Stack, useTheme } from '@mui/material';
 import {
   OphButton,
   ophColors,
+  OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
@@ -135,6 +136,22 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         dataTestId={'rinnastettava-tutkinto-tai-opinto-select'}
       />
+      {tyyppi === 'riittavatOpinnot' && (
+        <OphInputFormField
+          label={t('hakemus.paatos.paatostyyppi.riittavatOpinnot.opetuskieli')}
+          value={tutkintoTaiOpinto.opetuskieli ?? ''}
+          onChange={(event) =>
+            updateTutkintoTaiOpintoAction(
+              {
+                ...tutkintoTaiOpinto,
+                opetuskieli: event.target.value,
+              },
+              index,
+            )
+          }
+          data-testid={'riittavat-opinnot-opetuskieli-input'}
+        ></OphInputFormField>
+      )}
       <MyonteinenPaatos
         t={t}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
