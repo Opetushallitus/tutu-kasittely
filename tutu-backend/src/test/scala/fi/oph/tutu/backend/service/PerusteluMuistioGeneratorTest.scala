@@ -21,6 +21,36 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   val nonePerustelu: Option[Perustelu]       = None
   val noneMuistio: Option[Muistio]           = None
 
+  val emptyPerustelu: Option[Perustelu] = Some(
+    Perustelu(
+      id = None,
+      hakemusId = None,
+      virallinenTutkinnonMyontaja = None,
+      virallinenTutkinto = None,
+      lahdeLahtomaanKansallinenLahde = false,
+      lahdeLahtomaanVirallinenVastaus = false,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto = false,
+      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "",
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = None,
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "",
+      aikaisemmatPaatokset = None,
+      jatkoOpintoKelpoisuus = None,
+      jatkoOpintoKelpoisuusLisatieto = None,
+      muuPerustelu = None,
+      lausuntoPyyntojenLisatiedot = None,
+      lausunnonSisalto = None,
+      lausuntopyynnot = Seq.empty,
+      luotu = None,
+      luoja = None,
+      muokattu = None,
+      muokkaaja = None,
+      uoRoSisalto = UoRoSisalto(),
+      apSisalto = APSisalto(
+        IMIHalytysTarkastettu = None
+      )
+    )
+  )
+
   val someHakemus: Option[Hakemus] = Some(
     Hakemus(
       hakemusOid = UUID.randomUUID().toString,
@@ -102,7 +132,13 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           hakemusId = UUID.randomUUID,
           nimi = Some("Paras tutkinto"),
           oppilaitos = None,
-          maakoodiUri = Some("mock_maakoodiuri")
+          maakoodiUri = Some("mock_maakoodiuri"),
+          aloitusVuosi = Some(2000),
+          paattymisVuosi = Some(2001),
+          ohjeellinenLaajuus = Some("20op"),
+          opinnaytetyo = Some(true),
+          harjoittelu = Some(false),
+          perustelunLisatietoja = Some("Vastaa perusopintoja")
         )
       ),
       asiakirja = Some(
@@ -160,18 +196,18 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     Perustelu(
       id = Some(UUID.randomUUID()),
       hakemusId = Some(UUID.randomUUID()),
-      virallinenTutkinnonMyontaja = None,
-      virallinenTutkinto = None,
-      lahdeLahtomaanKansallinenLahde = false,
-      lahdeLahtomaanVirallinenVastaus = false,
-      lahdeKansainvalinenHakuteosTaiVerkkosivusto = false,
-      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "",
-      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = None,
-      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "",
-      aikaisemmatPaatokset = None,
-      jatkoOpintoKelpoisuus = None,
+      virallinenTutkinnonMyontaja = Some(true),
+      virallinenTutkinto = Some(true),
+      lahdeLahtomaanKansallinenLahde = true,
+      lahdeLahtomaanVirallinenVastaus = true,
+      lahdeKansainvalinenHakuteosTaiVerkkosivusto = true,
+      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta = "Selvitetty",
+      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa = Some("alempi_korkeakouluaste"),
+      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = "Selvitetty",
+      aikaisemmatPaatokset = Some(true),
+      jatkoOpintoKelpoisuus = Some("tieteellisiin_jatko-opintoihin"),
       jatkoOpintoKelpoisuusLisatieto = None,
-      muuPerustelu = None,
+      muuPerustelu = Some("Hyvin suoritettu"),
       lausuntoPyyntojenLisatiedot = None,
       lausunnonSisalto = None,
       lausuntopyynnot = Seq.empty,
@@ -295,7 +331,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeImiHalytyksetTarkastettuProducesString(): Unit = {
     val result = haeImiHalytyksetTarkastettu(somePerustelu)
-    assert(result.get.contains("kyllä"))
+    assert(result.get.contains("Kyllä"))
   }
 
   @Test
@@ -317,5 +353,76 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
     assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
+    assert(result.get.contains("Suoritusvuodet: 2000 - 2001"))
+    assert(result.get.contains("Ohjeellinen laajuus: 20op"))
+    assert(result.get.contains("Tutkintoon sisältyi opinnäytetyö: Kyllä"))
+    assert(result.get.contains("Tutkintoon sisältyi harjoittelu: Ei"))
+    assert(result.get.contains("Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"))
+    assert(result.get.contains("Vastaa perusopintoja"))
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesNoneForNone(): Unit = {
+    val result = haeYleisetPerustelut(nonePerustelu)
+    assert(result.isEmpty)
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesNoneForEmptyPerustelu(): Unit = {
+    val result = haeYleisetPerustelut(emptyPerustelu)
+    assert(result.isEmpty)
+  }
+
+  @Test
+  def haeYleisetPerustelutProducesStringForDataInPerustelu(): Unit = {
+    val result = haeYleisetPerustelut(somePerustelu)
+
+    assert(result.nonEmpty)
+    assert(result.get.contains("Virallinen tutkinnon myöntäjä"))
+    assert(result.get.contains("Virallinen tutkinto"))
+    assert(result.get.contains("Lähde: Lähtömaan kansallinen lähde"))
+    assert(result.get.contains("Lähde: Lähtömaan virallinen vastaus"))
+    assert(result.get.contains("Lähde: Kansainvälinen hakuteos tai verkkosivusto"))
+    assert(result.get.contains("Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta"))
+    assert(result.get.contains("Ylimmän tutkinnon asema lähtömaan järjestelmässä"))
+    assert(result.get.contains("Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä"))
+  }
+
+  @Test
+  def haeJatkoOpintoKelpoisuusProducesString(): Unit = {
+    val result = haeJatkoOpintoKelpoisuus(somePerustelu)
+
+    assert(result.get.contains("Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin"))
+  }
+
+  @Test
+  def haeJatkoOpintoKelpoisuusMuuProducesString(): Unit = {
+    val result = haeJatkoOpintoKelpoisuus(
+      somePerustelu.map(perustelu =>
+        perustelu.copy(
+          jatkoOpintoKelpoisuus = Some("muu"),
+          jatkoOpintoKelpoisuusLisatieto = Some("Jatkoon")
+        )
+      )
+    )
+
+    assert(result.get.contains("Jatko-opintokelpoisuus: muu"))
+    assert(result.get.contains("Jatko-opintokelpoisuuus, lisätieto"))
+    assert(result.get.contains("Jatkoon"))
+  }
+
+  @Test
+  def haeAikaisemmatPaatoksetProducesString(): Unit = {
+    val result = haeAikaisemmatPaatokset(somePerustelu)
+
+    assert(result.get.contains("Opetushallitus on tehnyt vastaavia päätöksiä: Kyllä"))
+  }
+
+  @Test
+  def haeMuuPerusteluProducesString(): Unit = {
+    val result = haeMuuPerustelu(somePerustelu)
+
+    assert(result.get.contains("Ratkaisun tai päätöksen muut perustelut"))
+    assert(result.get.contains("Hyvin suoritettu"))
   }
 }

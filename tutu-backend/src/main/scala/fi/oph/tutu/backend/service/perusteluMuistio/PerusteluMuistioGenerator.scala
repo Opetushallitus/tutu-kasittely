@@ -19,6 +19,11 @@ import fi.oph.tutu.backend.domain.{
   ValmistumisenVahvistusVastaus
 }
 
+def toKyllaEi(value: Boolean): String = {
+  if (value) { "Kyllä" }
+  else { "Ei" }
+}
+
 def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)
   val showImiData                  = imiPyynto.flatMap(_.imiPyynto).contains(true)
@@ -141,7 +146,7 @@ def haeImiHalytyksetTarkastettu(perusteluMaybe: Option[Perustelu]): Option[Strin
   perusteluMaybe
     .map(_.apSisalto)
     .flatMap(_.IMIHalytysTarkastettu)
-    .map(value => if (value) "kyllä" else "ei")
+    .map(toKyllaEi)
     .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu: ${muotoiltuValinta}")
 }
 
@@ -186,6 +191,9 @@ def haeTutkintokohtaisetTiedot(
                 }
               )
 
+          val suoritusvuodet = Seq(tutkinto.aloitusVuosi, tutkinto.paattymisVuosi).flatten
+            .mkString(" - ")
+
           Seq[String](
             s"Tutkinto ${tutkinto.jarjestys}:",
             s"  Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
@@ -193,11 +201,109 @@ def haeTutkintokohtaisetTiedot(
             s"  Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
             s"  Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
             s"  Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
-            s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}"
+            s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}",
+            s"  Suoritusvuodet: ${suoritusvuodet}",
+            s"  Ohjeellinen laajuus: ${tutkinto.ohjeellinenLaajuus.getOrElse("-")}",
+            s"  Tutkintoon sisältyi opinnäytetyö: ${tutkinto.opinnaytetyo.map(toKyllaEi).getOrElse("-")}",
+            s"  Tutkintoon sisältyi harjoittelu: ${tutkinto.harjoittelu.map(toKyllaEi).getOrElse("-")}",
+            s"  Lisätietoja opinnäytteisiin tai harjoitteluun liittyen: ${tutkinto.perustelunLisatietoja.getOrElse("-")}"
           ).mkString("\n")
         })
         .mkString("\n\n")
     })
+}
+
+def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val resultString = Seq(
+        perustelu.virallinenTutkinnonMyontaja
+          .map(toKyllaEi)
+          .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: ${muotoiltuValue}"),
+        perustelu.virallinenTutkinto
+          .map(toKyllaEi)
+          .map(muotoiltuValue => s"Virallinen tutkinto: ${muotoiltuValue}"),
+        if (perustelu.lahdeLahtomaanKansallinenLahde) {
+          Some("Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)")
+        } else None,
+        if (perustelu.lahdeLahtomaanVirallinenVastaus) {
+          Some("Lähde: Lähtömaan virallinen vastaus")
+        } else None,
+        if (perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto) {
+          Some("Lähde: Kansainvälinen hakuteos tai verkkosivusto")
+        } else None,
+        if (perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta != "") {
+          Some(
+            s"Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta:\n${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta}"
+          )
+        } else None,
+        perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
+          .map {
+            case "alempi_korkeakouluaste"           => "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto"
+            case "ylempi_korkeakouluaste"           => "Toisen vaiheen korkeakoulututkinto"
+            case "alempi_ja_ylempi_korkeakouluaste" =>
+              "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot"
+            case "tutkijakoulutusaste" => "Tieteellinen jatkotutknto"
+            case "ei_korkeakouluaste"  => "Alle korkeakoulutasoinen koulutus"
+          }
+          .map(muotoiltuAsema => {
+            s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: ${muotoiltuAsema}"
+          }),
+        if (perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa != "") {
+          Some(
+            s"Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:\n${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa}"
+          )
+        } else None
+      ).flatten.mkString("\n")
+
+      resultString match {
+        case "" => None
+        case _  => Some(resultString)
+      }
+    }
+  }
+}
+
+def haeJatkoOpintoKelpoisuus(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val result = Seq(
+        perustelu.jatkoOpintoKelpoisuus
+          .map {
+            case "toisen_vaiheen_korkeakouluopintoihin" => "toisen vaiheen korkeakouluopintoihin"
+            case "tieteellisiin_jatko-opintoihin"       => "tieteellisiin jatko-opintoihin"
+            case "muu"                                  => "muu"
+          }
+          .map(muotoiltu => s"Jatko-opintokelpoisuus: ${muotoiltu}"),
+        (perustelu.jatkoOpintoKelpoisuus, perustelu.jatkoOpintoKelpoisuusLisatieto) match {
+          case (Some("muu"), Some(lisatieto)) => Some(s"Jatko-opintokelpoisuuus, lisätieto:\n${lisatieto}")
+          case (_, _)                         => None
+        }
+      ).flatten.mkString("\n")
+
+      result match {
+        case "" => None
+        case _  => Some(result)
+      }
+    }
+  }
+}
+
+def haeAikaisemmatPaatokset(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe.flatMap(perustelu => {
+    perustelu.aikaisemmatPaatokset
+      .map(toKyllaEi)
+      .map(muotoiltu => s"Opetushallitus on tehnyt vastaavia päätöksiä: ${muotoiltu}")
+  })
+}
+
+def haeMuuPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe.flatMap(perustelu => {
+    perustelu.muuPerustelu
+      .map(muotoiltu => s"Ratkaisun tai päätöksen muut perustelut:\n${muotoiltu}")
+  })
 }
 
 def generate(
@@ -213,9 +319,13 @@ def generate(
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
-    haeValmistuminenVahvistettu(hakemusMaybe),
     haeKoulutuksenSisalto(uoRoMuistioMaybe),
     haeImiHalytyksetTarkastettu(perusteluMaybe),
+    haeYleisetPerustelut(perusteluMaybe),
+    haeJatkoOpintoKelpoisuus(perusteluMaybe),
+    haeAikaisemmatPaatokset(perusteluMaybe),
+    haeMuuPerustelu(perusteluMaybe),
+    haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
     haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe)
