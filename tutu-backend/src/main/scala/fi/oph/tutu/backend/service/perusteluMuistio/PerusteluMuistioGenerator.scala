@@ -214,35 +214,32 @@ def haeTutkintokohtaisetTiedot(
 }
 
 def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
-  if (perusteluMaybe == None) {
-    None
-  } else {
-    val perustelu = perusteluMaybe.get
-
-    val resultString = Seq(
-      perustelu.virallinenTutkinnonMyontaja
-        .map(toKyllaEi)
-        .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: ${muotoiltuValue}"),
-      perustelu.virallinenTutkinto
-        .map(toKyllaEi)
-        .map(muotoiltuValue => s"Virallinen tutkinto: ${muotoiltuValue}"),
-      if (perustelu.lahdeLahtomaanKansallinenLahde) {
-        Some("Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)")
-      } else None,
-      if (perustelu.lahdeLahtomaanVirallinenVastaus) {
-        Some("Lähde: Lähtömaan virallinen vastaus")
-      } else None,
-      if (perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto) {
-        Some("Lähde: Kansainvälinen hakuteos tai verkkosivusto")
-      } else None,
-      if (perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta != "") {
-        Some(
-          s"Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta:\n${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta}"
-        )
-      } else None,
-      perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
-        .map(asema =>
-          asema match {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val resultString = Seq(
+        perustelu.virallinenTutkinnonMyontaja
+          .map(toKyllaEi)
+          .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: ${muotoiltuValue}"),
+        perustelu.virallinenTutkinto
+          .map(toKyllaEi)
+          .map(muotoiltuValue => s"Virallinen tutkinto: ${muotoiltuValue}"),
+        if (perustelu.lahdeLahtomaanKansallinenLahde) {
+          Some("Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)")
+        } else None,
+        if (perustelu.lahdeLahtomaanVirallinenVastaus) {
+          Some("Lähde: Lähtömaan virallinen vastaus")
+        } else None,
+        if (perustelu.lahdeKansainvalinenHakuteosTaiVerkkosivusto) {
+          Some("Lähde: Kansainvälinen hakuteos tai verkkosivusto")
+        } else None,
+        if (perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta != "") {
+          Some(
+            s"Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta:\n${perustelu.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta}"
+          )
+        } else None,
+        perustelu.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa
+          .map {
             case "alempi_korkeakouluaste"           => "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto"
             case "ylempi_korkeakouluaste"           => "Toisen vaiheen korkeakoulututkinto"
             case "alempi_ja_ylempi_korkeakouluaste" =>
@@ -250,50 +247,46 @@ def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
             case "tutkijakoulutusaste" => "Tieteellinen jatkotutknto"
             case "ei_korkeakouluaste"  => "Alle korkeakoulutasoinen koulutus"
           }
-        )
-        .map(muotoiltuAsema => {
-          s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: ${muotoiltuAsema}"
-        }),
-      if (perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa != "") {
-        Some(
-          s"Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:\n${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa}"
-        )
-      } else None
-    ).flatten.mkString("\n")
+          .map(muotoiltuAsema => {
+            s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: ${muotoiltuAsema}"
+          }),
+        if (perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa != "") {
+          Some(
+            s"Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:\n${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa}"
+          )
+        } else None
+      ).flatten.mkString("\n")
 
-    if (resultString != "") {
-      Some(resultString)
-    } else {
-      None
+      resultString match {
+        case "" => None
+        case _  => Some(resultString)
+      }
     }
   }
 }
 
 def haeJatkoOpintoKelpoisuus(perusteluMaybe: Option[Perustelu]): Option[String] = {
-  if (perusteluMaybe == None) {
-    None
-  } else {
-    val perustelu = perusteluMaybe.get
-    val result    = Seq(
-      perustelu.jatkoOpintoKelpoisuus
-        .map(jatkoOpintoKelpoisuus =>
-          jatkoOpintoKelpoisuus match {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val result = Seq(
+        perustelu.jatkoOpintoKelpoisuus
+          .map {
             case "toisen_vaiheen_korkeakouluopintoihin" => "toisen vaiheen korkeakouluopintoihin"
             case "tieteellisiin_jatko-opintoihin"       => "tieteellisiin jatko-opintoihin"
             case "muu"                                  => "muu"
           }
-        )
-        .map(muotoiltu => s"Jatko-opintokelpoisuus: ${muotoiltu}"),
-      (perustelu.jatkoOpintoKelpoisuus, perustelu.jatkoOpintoKelpoisuusLisatieto) match {
-        case (Some("muu"), Some(lisatieto)) => Some(s"Jatko-opintokelpoisuuus, lisätieto:\n${lisatieto}")
-        case (_, _)                         => None
-      }
-    ).flatten.mkString("\n")
+          .map(muotoiltu => s"Jatko-opintokelpoisuus: ${muotoiltu}"),
+        (perustelu.jatkoOpintoKelpoisuus, perustelu.jatkoOpintoKelpoisuusLisatieto) match {
+          case (Some("muu"), Some(lisatieto)) => Some(s"Jatko-opintokelpoisuuus, lisätieto:\n${lisatieto}")
+          case (_, _)                         => None
+        }
+      ).flatten.mkString("\n")
 
-    if (result != "") {
-      Some(result)
-    } else {
-      None
+      result match {
+        case "" => None
+        case _  => Some(result)
+      }
     }
   }
 }
