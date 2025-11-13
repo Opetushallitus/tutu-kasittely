@@ -4,6 +4,7 @@ import { HakemusTabs } from '@/src/components/HakemusTabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { HakemusHeader } from '@/src/components/HakemusHeader';
 import { SideBar } from '@/src/components/sidebar/SideBar';
+import { useShowPaatosTekstiPreview } from '@/src/context/ShowPaatosTekstiPreviewContext';
 
 export const HakemusDetailLayout = ({
   hakemusOid,
@@ -13,6 +14,7 @@ export const HakemusDetailLayout = ({
   children: React.ReactNode;
 }) => {
   const theme = useTheme();
+  const { ShowPaatosTekstiPreview } = useShowPaatosTekstiPreview();
 
   return (
     <Stack direction="row" spacing={theme.spacing(3, 3)}>
@@ -29,7 +31,7 @@ export const HakemusDetailLayout = ({
             sx={{ paddingTop: 2 }}
           >
             {children}
-            <SideBar />
+            {!ShowPaatosTekstiPreview && <SideBar />}
           </Stack>
         </BoxWrapper>
       </Stack>

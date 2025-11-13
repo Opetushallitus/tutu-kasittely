@@ -1,13 +1,15 @@
 'use client';
 
 import { Stack, useTheme } from '@mui/material';
-import { OphTypography } from '@opetushallitus/oph-design-system';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import React from 'react';
 import { Paatos } from '@/src/lib/types/paatos';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Preview } from '@mui/icons-material';
+import { useShowPaatosTekstiPreview } from '@/src/context/ShowPaatosTekstiPreviewContext';
 
 interface PaatosHeaderProps {
   paatos: Paatos;
@@ -21,6 +23,8 @@ export const PaatosHeader = ({
   t,
 }: PaatosHeaderProps) => {
   const theme = useTheme();
+  const { ShowPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPaatosTekstiPreview();
 
   const hyvaksymispaiva = paatos.hyvaksymispaiva
     ? new Date(paatos.hyvaksymispaiva)
@@ -64,6 +68,19 @@ export const PaatosHeader = ({
           />
         </Stack>
       </Stack>
+      {!ShowPaatosTekstiPreview && (
+        <OphButton
+          sx={{
+            alignSelf: 'flex-start',
+          }}
+          data-testid={`paatos-avaa-esikatselu-button`}
+          variant="text"
+          startIcon={<Preview />}
+          onClick={() => setShowPaatosTekstiPreview(true)}
+        >
+          {t('hakemus.paatos.esikatselu')}
+        </OphButton>
+      )}
     </Stack>
   );
 };
