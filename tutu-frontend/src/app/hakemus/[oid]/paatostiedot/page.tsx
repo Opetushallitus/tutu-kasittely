@@ -155,7 +155,7 @@ const Paatostiedot = ({
       sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
     >
       <PaatosHeader
-        paatos={currentPaatos}
+        paatos={paatos}
         updatePaatosField={updatePaatosField}
         t={t}
       />
