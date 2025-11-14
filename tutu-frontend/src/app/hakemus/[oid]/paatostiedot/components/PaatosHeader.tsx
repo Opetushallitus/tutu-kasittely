@@ -9,7 +9,7 @@ import React from 'react';
 import { Paatos } from '@/src/lib/types/paatos';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Preview } from '@mui/icons-material';
-import { useShowPaatosTekstiPreview } from '@/src/context/ShowPaatosTekstiPreviewContext';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
 
 interface PaatosHeaderProps {
   paatos: Paatos;
@@ -23,8 +23,8 @@ export const PaatosHeader = ({
   t,
 }: PaatosHeaderProps) => {
   const theme = useTheme();
-  const { ShowPaatosTekstiPreview, setShowPaatosTekstiPreview } =
-    useShowPaatosTekstiPreview();
+  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPreview();
 
   const hyvaksymispaiva = paatos.hyvaksymispaiva
     ? new Date(paatos.hyvaksymispaiva)
@@ -68,7 +68,7 @@ export const PaatosHeader = ({
           />
         </Stack>
       </Stack>
-      {!ShowPaatosTekstiPreview && (
+      {!showPaatosTekstiPreview && (
         <OphButton
           sx={{
             alignSelf: 'flex-start',

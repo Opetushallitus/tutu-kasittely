@@ -23,8 +23,8 @@ import { Hakemus } from '@/src/lib/types/hakemus';
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { useShowPaatosTekstiPreview } from '@/src/context/ShowPaatosTekstiPreviewContext';
-import { PaatosTekstiPreview } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTekstiPreview';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { PreviewComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -100,7 +100,8 @@ const Paatostiedot = ({
     PaatosTieto[]
   >([]);
 
-  const { ShowPaatosTekstiPreview } = useShowPaatosTekstiPreview();
+  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPreview();
 
   useEffect(() => {
     if (paatos) {
@@ -153,12 +154,20 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
+  const demoContent = (
+    <Stack direction={'row'} gap={2}>
+      demo demo demo demo
+      <Divider />
+      demo demo demo demo
+    </Stack>
+  );
+
   return (
     <Stack
       gap={theme.spacing(3)}
       sx={{
         flexGrow: 1,
-        marginRight: ShowPaatosTekstiPreview
+        marginRight: showPaatosTekstiPreview
           ? theme.spacing(0)
           : theme.spacing(3),
       }}
@@ -166,7 +175,7 @@ const Paatostiedot = ({
       <Stack direction={'row'} gap={theme.spacing(2)}>
         <Stack
           direction={'column'}
-          sx={{ width: ShowPaatosTekstiPreview ? '50%' : '100%' }}
+          sx={{ width: showPaatosTekstiPreview ? '50%' : '100%' }}
         >
           <PaatosHeader
             paatos={paatos}
@@ -247,7 +256,14 @@ const Paatostiedot = ({
             hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
           />
         </Stack>
-        {ShowPaatosTekstiPreview && <PaatosTekstiPreview />}
+        {showPaatosTekstiPreview && (
+          <PreviewComponent
+            setShowPreview={setShowPaatosTekstiPreview}
+            headerText={'hakemus.paatos.paatosteksti'}
+            closeButtonText={'hakemus.paatos.suljeEsikatselu'}
+            content={demoContent}
+          />
+        )}
       </Stack>
     </Stack>
   );

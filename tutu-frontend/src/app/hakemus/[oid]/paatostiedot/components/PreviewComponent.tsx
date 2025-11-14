@@ -3,11 +3,22 @@ import { Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
-import { useShowPaatosTekstiPreview } from '@/src/context/ShowPaatosTekstiPreviewContext';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-export const PaatosTekstiPreview = () => {
-  const { setShowPaatosTekstiPreview } = useShowPaatosTekstiPreview();
+interface PreviewComponentProps {
+  setShowPreview: (showPreview: boolean) => void;
+  headerText: string;
+  closeButtonText: string;
+  content: React.ReactNode;
+  showCopyButton?: boolean;
+}
+export const PreviewComponent = ({
+  setShowPreview,
+  headerText,
+  closeButtonText,
+  content,
+  showCopyButton = false,
+}: PreviewComponentProps) => {
   const { t } = useTranslations();
 
   return (
@@ -19,7 +30,7 @@ export const PaatosTekstiPreview = () => {
         borderColor: 'divider',
         paddingLeft: 2,
       }}
-      data-testid="paatosteksti-preview-content"
+      data-testid="preview-content"
     >
       <Stack sx={{ height: '100%' }} direction="column" gap={2}>
         <Stack
@@ -28,17 +39,18 @@ export const PaatosTekstiPreview = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <OphTypography variant="h2">
-            {t('hakemus.paatos.paatosteksti')}
-          </OphTypography>
+          <OphTypography variant="h2">{t(headerText)}</OphTypography>
+          {/*TODO: lisätään kopiointinappi ja logiikka*/}
+          {showCopyButton && null}
           <OphButton
-            data-testid="paatos-esikatselu-sulje-button"
-            onClick={() => setShowPaatosTekstiPreview(false)}
+            data-testid="close-preview-button"
+            onClick={() => setShowPreview(false)}
             startIcon={<CloseIcon />}
           >
-            {t('hakemus.paatos.suljeEsikatselu')}
+            {t(closeButtonText)}
           </OphButton>
         </Stack>
+        {content}
       </Stack>
     </Box>
   );
