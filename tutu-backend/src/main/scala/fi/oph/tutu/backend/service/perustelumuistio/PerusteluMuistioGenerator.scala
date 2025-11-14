@@ -136,12 +136,6 @@ def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
   }
 }
 
-def haeKoulutuksenSisalto(uoRoMuistioMaybe: Option[Muistio]): Option[String] = {
-  uoRoMuistioMaybe
-    .map(_.sisalto)
-    .map(sisalto => s"Koulutuksen sisältö:\n${sisalto}")
-}
-
 def haeImiHalytyksetTarkastettu(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe
     .map(_.apSisalto)
@@ -302,8 +296,124 @@ def haeAikaisemmatPaatokset(perusteluMaybe: Option[Perustelu]): Option[String] =
 def haeMuuPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe.flatMap(perustelu => {
     perustelu.muuPerustelu
+      .filter(!_.isEmpty)
       .map(muotoiltu => s"Ratkaisun tai päätöksen muut perustelut:\n${muotoiltu}")
   })
+}
+
+def haeUoRoPerustelu(
+  perusteluMaybe: Option[Perustelu],
+  someKoulutuksenSisaltoMuistio: Option[Muistio],
+  someMuuTutkintoMuistio: Option[Muistio]
+): Option[String] = {
+  val koulutuksenSisalto = someKoulutuksenSisaltoMuistio
+    .map(_.sisalto)
+    .map(sisalto => s"Koulutuksen sisältö:\n${sisalto}")
+
+  val erotKoulutuksenSisallossa = perusteluMaybe
+    .map(_.uoRoSisalto)
+    .map(uoRoSisalto => {
+      Seq(
+        ////////////
+        // Opettajat
+        uoRoSisalto.opettajatEroMonialaisetOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero monialaisten opintojen sisällössä"),
+        uoRoSisalto.opettajatEroMonialaisetOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero monialaisten opintojen laajuudessa"),
+        uoRoSisalto.opettajatEroPedagogisetOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero pedagogisten opintojen sisällössä"),
+        uoRoSisalto.opettajatEroPedagogisetOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero pedagogisten opintojen laajuudessa"),
+        uoRoSisalto.opettajatEroKasvatustieteellisetOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero kasvatustieteellisten opintojen laajuudessa (LO)"),
+        uoRoSisalto.opettajatEroKasvatustieteellisetOpinnotVaativuus
+          .filter(_.==(true))
+          .map(_ => "Ero kasvatustieteellisten opintojen vaativuudessa (LO)"),
+        uoRoSisalto.opettajatEroKasvatustieteellisetOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero kasvatustieteellisten opintojen sisällössä (LO)"),
+        uoRoSisalto.opettajatEroOpetettavatAineetOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero opetettavan aineen opintojen sisällössä"),
+        uoRoSisalto.opettajatEroOpetettavatAineetOpinnotVaativuus
+          .filter(_.==(true))
+          .map(_ => "Ero opetettavan aineen opintojen vaativuudessa"),
+        uoRoSisalto.opettajatEroOpetettavatAineetOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero opetettavan aineen opintojen laajuudessa"),
+        uoRoSisalto.opettajatEroErityisopettajanOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero erityisopettajan opintojen sisällössä"),
+        uoRoSisalto.opettajatEroErityisopettajanOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero erityisopettajan opintojen laajuudessa"),
+        (uoRoSisalto.opettajatMuuEro, uoRoSisalto.opettajatMuuEroSelite) match {
+          case (Some(true), Some(""))     => Some("Muu ero")
+          case (Some(true), None)         => Some("Muu ero")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (_, _)                     => None
+        },
+
+        ///////////////////////////////
+        // Varhaiskasvatuksen opettajat
+        uoRoSisalto.vkOpettajatEroKasvatustieteellisetOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero kasvatustieteellisten opintojen laajuudessa"),
+        uoRoSisalto.vkOpettajatEroKasvatustieteellisetOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero kasvatustieteellisten opintojen sisällössä"),
+        uoRoSisalto.vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero varhaiskasvatuksen ja esiopetuksen opintojen laajuudessa"),
+        uoRoSisalto.vkOpettajatEroVarhaiskasvatusEsiopetusOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero varhaiskasvatuksen ja esiopetuksen opintojen sisällössä"),
+        (uoRoSisalto.vkOpettajatMuuEro, uoRoSisalto.vkOpettajatMuuEroSelite) match {
+          case (Some(true), Some(""))     => Some("Muu ero")
+          case (Some(true), None)         => Some("Muu ero")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (_, _)                     => None
+        },
+
+        //////////////////////////
+        // Oikeustieteen maisterit
+        uoRoSisalto.otmEroOpinnotLaajuus
+          .filter(_.==(true))
+          .map(_ => "Ero oikeustieteellisten opintojen laajuudessa"),
+        uoRoSisalto.otmEroOpinnotVaativuus
+          .filter(_.==(true))
+          .map(_ => "Ero oikeustieteellisten opintojen vaativuudessa"),
+        uoRoSisalto.otmEroOpinnotSisalto
+          .filter(_.==(true))
+          .map(_ => "Ero oikeustieteellisten opintojen sisällössä"),
+        (uoRoSisalto.otmMuuEro, uoRoSisalto.otmMuuEroSelite) match {
+          case (Some(true), Some(""))     => Some("Muu ero")
+          case (Some(true), None)         => Some("Muu ero")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (_, _)                     => None
+        }
+      ).flatten.mkString("\n")
+    })
+
+  val muuTutkintoTaiOpintosuoritus = someMuuTutkintoMuistio
+    .map(_.sisalto)
+    .map(sisalto => s"Muu tutkinto tai opintosuoritus:\n${sisalto}")
+
+  val result = Seq(
+    koulutuksenSisalto,
+    erotKoulutuksenSisallossa,
+    muuTutkintoTaiOpintosuoritus
+  ).flatten.mkString("\n")
+
+  result match {
+    case "" => None
+    case _  => Some(result)
+  }
 }
 
 def generate(
@@ -311,7 +421,8 @@ def generate(
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
-  uoRoMuistioMaybe: Option[Muistio]
+  someKoulutuksenSisaltoMuistio: Option[Muistio],
+  someMuuTutkintoMuistio: Option[Muistio]
 ): String = {
   var result: Seq[String] = Seq[Option[String]](
     haeHakijanNimi(hakemusMaybe),
@@ -319,12 +430,12 @@ def generate(
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
-    haeKoulutuksenSisalto(uoRoMuistioMaybe),
     haeImiHalytyksetTarkastettu(perusteluMaybe),
     haeYleisetPerustelut(perusteluMaybe),
     haeJatkoOpintoKelpoisuus(perusteluMaybe),
     haeAikaisemmatPaatokset(perusteluMaybe),
     haeMuuPerustelu(perusteluMaybe),
+    haeUoRoPerustelu(perusteluMaybe, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio),
     haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),

@@ -215,7 +215,11 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       luoja = None,
       muokattu = None,
       muokkaaja = None,
-      uoRoSisalto = UoRoSisalto(),
+      uoRoSisalto = UoRoSisalto(
+        opettajatEroMonialaisetOpinnotSisalto = Some(true),
+        opettajatMuuEro = Some(true),
+        opettajatMuuEroSelite = Some("Tutkinto ei vaadi opetusnäytettä")
+      ),
       apSisalto = APSisalto(
         IMIHalytysTarkastettu = Some(true)
       )
@@ -227,6 +231,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       id = UUID.randomUUID,
       hakemus_id = UUID.randomUUID,
       sisalto = "Koulutuksen sisältö muistio -- body",
+      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
+      luoja = "",
+      muokkaaja = ""
+    )
+  )
+
+  val someMuuTutkintoMuistio: Option[Muistio] = Some(
+    Muistio(
+      id = UUID.randomUUID,
+      hakemus_id = UUID.randomUUID,
+      sisalto = "Muu tutkinto tai opintosuoritus -- body",
       luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
       luoja = "",
       muokkaaja = ""
@@ -265,6 +280,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       noneHakemus,
       noneAtaruHakemus,
       nonePerustelu,
+      noneMuistio,
       noneMuistio
     )
     assert(result.isEmpty)
@@ -279,7 +295,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       someHakemus,
       someAtaruHakemus,
       somePerustelu,
-      someKoulutuksenSisaltoMuistio
+      someKoulutuksenSisaltoMuistio,
+      someMuuTutkintoMuistio
     )
     assert(!result.isEmpty)
   }
@@ -320,12 +337,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeValmistuminenVahvistettuProducesString(): Unit = {
     val result = haeValmistuminenVahvistettu(someHakemus)
     assert(result.get.contains("myönteinen"))
-  }
-
-  @Test
-  def haeKoulutuksenSisaltoProducesString(): Unit = {
-    val result = haeKoulutuksenSisalto(someKoulutuksenSisaltoMuistio)
-    assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
   }
 
   @Test
@@ -424,5 +435,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Ratkaisun tai päätöksen muut perustelut"))
     assert(result.get.contains("Hyvin suoritettu"))
+  }
+
+  @Test
+  def haeUoRoPerusteluProducesString(): Unit = {
+    val result = haeUoRoPerustelu(somePerustelu, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio)
+
+    assert(result.get.contains("Ero monialaisten opintojen sisällössä"))
+    assert(result.get.contains("Muu ero"))
+    assert(result.get.contains("Tutkinto ei vaadi opetusnäytettä"))
+
+    assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
+    assert(result.get.contains("Muu tutkinto tai opintosuoritus -- body"))
   }
 }
