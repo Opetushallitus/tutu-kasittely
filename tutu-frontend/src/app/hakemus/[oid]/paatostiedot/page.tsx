@@ -23,6 +23,8 @@ import { Hakemus } from '@/src/lib/types/hakemus';
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { PreviewComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -98,6 +100,9 @@ const Paatostiedot = ({
     PaatosTieto[]
   >([]);
 
+  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPreview();
+
   useEffect(() => {
     if (paatos) {
       setCurrentPaatosTiedot(
@@ -149,87 +154,117 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
+  const demoContent = (
+    <Stack direction={'row'} gap={2}>
+      demo demo demo demo
+      <Divider />
+      demo demo demo demo
+    </Stack>
+  );
+
   return (
     <Stack
       gap={theme.spacing(3)}
-      sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
+      sx={{
+        flexGrow: 1,
+        marginRight: showPaatosTekstiPreview
+          ? theme.spacing(0)
+          : theme.spacing(3),
+      }}
     >
-      <PaatosHeader
-        paatos={paatos}
-        updatePaatosField={updatePaatosField}
-        t={t}
-      />
-      <Divider />
-      <OphTypography variant={'h3'}>
-        {t('hakemus.paatos.ratkaisuJaPaatos')}
-      </OphTypography>
-      <OphCheckbox
-        label={t('hakemus.paatos.seut')}
-        checked={paatos.seutArviointi}
-        onChange={() => {
-          updatePaatosField({ seutArviointi: !paatos.seutArviointi });
-        }}
-        data-testid={'paatos-seut'}
-      />
-      <OphSelectFormField
-        placeholder={t('yleiset.valitse')}
-        label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
-        options={ratkaisutyyppiOptions(t)}
-        value={paatos.ratkaisutyyppi || ''}
-        onChange={(event) =>
-          updatePaatosField(
-            (event.target.value as Ratkaisutyyppi) !== 'Paatos'
-              ? {
-                  ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
-                  paatosTiedot: [],
-                }
-              : { ratkaisutyyppi: event.target.value as Ratkaisutyyppi },
-          )
-        }
-        data-testid={'paatos-ratkaisutyyppi'}
-      />
-      {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
-        <PeruutuksenTaiRaukeamisenSyyComponent
-          t={t}
-          theme={theme}
-          syy={paatos.peruutuksenTaiRaukeamisenSyy}
-          updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
-            updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
-          }
-        />
-      )}
-      {paatos.ratkaisutyyppi === 'Paatos' && (
-        <>
-          <PaatosTietoList
+      <Stack direction={'row'} gap={theme.spacing(2)}>
+        <Stack
+          direction={'column'}
+          sx={{ width: showPaatosTekstiPreview ? '50%' : '100%' }}
+        >
+          <PaatosHeader
+            paatos={paatos}
+            updatePaatosField={updatePaatosField}
             t={t}
-            paatosTiedot={currentPaatosTiedot}
-            paatosTietoOptions={paatos.paatosTietoOptions}
-            updatePaatosTietoAction={updatePaatosTieto}
-            deletePaatosTieto={deletePaatosTieto}
-            tutkinnot={hakemus.tutkinnot}
           />
-          <OphButton
-            sx={{
-              alignSelf: 'flex-start',
-            }}
-            data-testid={`lisaa-paatos-button`}
-            variant="outlined"
-            startIcon={<Add />}
-            onClick={addPaatosTieto}
-          >
-            {t('hakemus.paatos.paatostyyppi.lisaaPaatos')}
-          </OphButton>
           <Divider />
-        </>
-      )}
-      <SaveRibbon
-        onSave={() => {
-          paatosState.save();
-          hakemusState.save();
-        }}
-        isSaving={updateOngoing}
-        hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
-      />
+          <OphTypography variant={'h3'}>
+            {t('hakemus.paatos.ratkaisuJaPaatos')}
+          </OphTypography>
+          <OphCheckbox
+            label={t('hakemus.paatos.seut')}
+            checked={paatos.seutArviointi}
+            onChange={() => {
+              updatePaatosField({
+                seutArviointi: !paatos.seutArviointi,
+              });
+            }}
+            data-testid={'paatos-seut'}
+          />
+          <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
+            label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
+            options={ratkaisutyyppiOptions(t)}
+            value={paatos.ratkaisutyyppi || ''}
+            onChange={(event) =>
+              updatePaatosField(
+                (event.target.value as Ratkaisutyyppi) !== 'Paatos'
+                  ? {
+                      ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
+                      paatosTiedot: [],
+                    }
+                  : { ratkaisutyyppi: event.target.value as Ratkaisutyyppi },
+              )
+            }
+            data-testid={'paatos-ratkaisutyyppi'}
+          />
+          {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
+            <PeruutuksenTaiRaukeamisenSyyComponent
+              t={t}
+              theme={theme}
+              syy={paatos.peruutuksenTaiRaukeamisenSyy}
+              updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
+                updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })
+              }
+            />
+          )}
+          {paatos.ratkaisutyyppi === 'Paatos' && (
+            <>
+              <PaatosTietoList
+                t={t}
+                paatosTiedot={currentPaatosTiedot}
+                paatosTietoOptions={paatos.paatosTietoOptions}
+                updatePaatosTietoAction={updatePaatosTieto}
+                deletePaatosTieto={deletePaatosTieto}
+                tutkinnot={hakemus.tutkinnot}
+              />
+              <OphButton
+                sx={{
+                  alignSelf: 'flex-start',
+                }}
+                data-testid={`lisaa-paatos-button`}
+                variant="outlined"
+                startIcon={<Add />}
+                onClick={addPaatosTieto}
+              >
+                {t('hakemus.paatos.paatostyyppi.lisaaPaatos')}
+              </OphButton>
+              <Divider />
+            </>
+          )}
+          <SaveRibbon
+            onSave={() => {
+              paatosState.save();
+              hakemusState.save();
+            }}
+            isSaving={updateOngoing}
+            hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
+          />
+        </Stack>
+        {showPaatosTekstiPreview && (
+          <PreviewComponent
+            setShowPreview={setShowPaatosTekstiPreview}
+            headerText={'hakemus.paatos.paatosteksti'}
+            closeButtonText={'hakemus.paatos.suljeEsikatselu'}
+            content={demoContent}
+          />
+        )}
+      </Stack>
     </Stack>
   );
 };
