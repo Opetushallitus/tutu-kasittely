@@ -4,12 +4,14 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { FullSpinner } from '@/src/components/FullSpinner';
 
 interface PreviewComponentProps {
   setShowPreview: (showPreview: boolean) => void;
   headerText: string;
   closeButtonText: string;
   content: React.ReactNode;
+  isLoading: boolean;
   showCopyButton?: boolean;
 }
 export const PreviewComponent = ({
@@ -17,9 +19,11 @@ export const PreviewComponent = ({
   headerText,
   closeButtonText,
   content,
+  isLoading,
   showCopyButton = false,
 }: PreviewComponentProps) => {
   const { t } = useTranslations();
+  if (isLoading) return <FullSpinner></FullSpinner>;
 
   return (
     <Box

@@ -7,10 +7,10 @@ import {
   OphSelectFormField,
   OphButton,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { usePaatos } from '@/src/hooks/usePaatos';
+import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
 import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
@@ -96,12 +96,27 @@ const Paatostiedot = ({
   const paatos = paatosState.editedData;
   const hakemus = hakemusState.editedData;
 
+  const [isPaatosTekstiLoading, setIsPaatosTekstiLoading] =
+    useState<boolean>(true);
+  const [paatosTeksti, setPaatosTeksti] = useState<string>('');
+  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPreview();
+
+  useEffect(() => {
+    if (showPaatosTekstiPreview) {
+      getPaatosTeksti(hakemus!.hakemusOid).then((sisalto: string) => {
+        setPaatosTeksti(sisalto || '');
+        setIsPaatosTekstiLoading(false);
+      });
+    }
+    return () => {
+      setIsPaatosTekstiLoading(true);
+    };
+  }, [hakemus, showPaatosTekstiPreview]);
+
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
   >([]);
-
-  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
-    useShowPreview();
 
   useEffect(() => {
     if (paatos) {
@@ -153,14 +168,6 @@ const Paatostiedot = ({
     setCurrentPaatosTiedot(newPaatosTiedot);
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
-
-  const demoContent = (
-    <Stack direction={'row'} gap={2}>
-      demo demo demo demo
-      <Divider />
-      demo demo demo demo
-    </Stack>
-  );
 
   return (
     <Stack
@@ -261,7 +268,8 @@ const Paatostiedot = ({
             setShowPreview={setShowPaatosTekstiPreview}
             headerText={'hakemus.paatos.paatosteksti'}
             closeButtonText={'hakemus.paatos.suljeEsikatselu'}
-            content={demoContent}
+            content={paatosTeksti}
+            isLoading={isPaatosTekstiLoading}
           />
         )}
       </Stack>

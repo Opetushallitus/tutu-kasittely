@@ -15,6 +15,13 @@ export const getPaatos = async (
   );
 };
 
+export const getPaatosTeksti = async (
+  hakemusOid: string | undefined,
+): Promise<string> => {
+  const url = `paatos/${hakemusOid}/paatosteksti`;
+  return await doApiFetch(url, undefined, 'no-store');
+};
+
 export const postPaatos = (
   hakemusOid: string,
   lomakeId: number,

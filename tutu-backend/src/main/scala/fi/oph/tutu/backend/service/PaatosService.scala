@@ -15,6 +15,7 @@ class PaatosService(
   hakemusService: HakemusService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
+  muistioService: MuistioService,
   ataruLomakeParser: AtaruLomakeParser
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
@@ -124,4 +125,17 @@ class PaatosService(
     }
     (currentPaatos, updatedPaatos)
   }
+
+  def haePaatosTeksti(
+    hakemusOid: HakemusOid
+  ): Option[String] = {
+    val hakemus: Option[Hakemus]           = hakemusService.haeHakemus(hakemusOid)
+    val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
+    val paatos: Option[Paatos]             = haePaatos(hakemusOid, ataruHakemus.get.form_id)
+
+    val perusteluMuistio = "tämä on perustelumuistio" // generatePaatosTeksti(hakemus, ataruHakemus, paatos)
+
+    Some(perusteluMuistio)
+  }
+
 }

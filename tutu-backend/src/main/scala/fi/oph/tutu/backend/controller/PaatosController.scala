@@ -136,4 +136,22 @@ class PaatosController(
 
     }
   }
+
+  @GetMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haePaatosTeksti(@PathVariable hakemusOid: String): ResponseEntity[Any] = {
+    Try {
+      paatosService.haePaatosTeksti(HakemusOid(hakemusOid))
+    } match {
+      case Success(paatosTeksti) =>
+        val response = mapper.writeValueAsString(paatosTeksti)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Päätöstekstin haku epäonnistui", exception.getMessage)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
 }
