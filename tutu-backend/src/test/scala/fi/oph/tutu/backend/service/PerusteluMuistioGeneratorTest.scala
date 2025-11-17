@@ -2,10 +2,27 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.perustelumuistio.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
 import fi.oph.tutu.backend.fixture.*
+import fi.oph.tutu.backend.service.generator.perustelumuistio.{
+  generate,
+  haeAikaisemmatPaatokset,
+  haeHakemusKoskee,
+  haeHakijanNimi,
+  haeHakijanSyntymaaika,
+  haeImiHalytyksetTarkastettu,
+  haeImiPyyntoTieto,
+  haeJatkoOpintoKelpoisuus,
+  haeMuuPerustelu,
+  haeMuuTutkinto,
+  haeSuostumusSahkoiseenAsiointiin,
+  haeTutkintokohtaisetTiedot,
+  haeUoRoPerustelu,
+  haeValmistuminenVahvistettu,
+  haeYhteistutkinto,
+  haeYleisetPerustelut
+}
 import fi.oph.tutu.backend.utils.Constants
 
 import java.util.UUID

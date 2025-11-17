@@ -169,6 +169,12 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
+  const content = isPaatosTekstiLoading ? (
+    <FullSpinner />
+  ) : (
+    <OphTypography component="pre">{paatosTeksti}</OphTypography>
+  );
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -268,8 +274,7 @@ const Paatostiedot = ({
             setShowPreview={setShowPaatosTekstiPreview}
             headerText={'hakemus.paatos.paatosteksti'}
             closeButtonText={'hakemus.paatos.suljeEsikatselu'}
-            content={paatosTeksti}
-            isLoading={isPaatosTekstiLoading}
+            content={content}
           />
         )}
       </Stack>
