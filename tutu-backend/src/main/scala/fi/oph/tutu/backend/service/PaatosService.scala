@@ -2,12 +2,12 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
+import fi.oph.tutu.backend.service.generator.paatosteksti.generate as generatePaatosTeksti
 import fi.oph.tutu.backend.utils.{Constants, TutuJsonFormats}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jvalue2extractable
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
-import fi.oph.tutu.backend.service.generator.paatosteksti.generate as generatePaatosTeksti
 
 @Component
 @Service
@@ -129,13 +129,13 @@ class PaatosService(
 
   def haePaatosTeksti(
     hakemusOid: HakemusOid
-  ): Option[String] = {
-    val hakemus: Option[Hakemus]           = hakemusService.haeHakemus(hakemusOid)
+  ): String = {
+    val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val paatos: Option[Paatos]             = haePaatos(hakemusOid, ataruHakemus.get.form_id)
+    val paatos: Paatos                     = haePaatos(hakemusOid, ataruHakemus.get.form_id).get
     val paatosKieli: String                =
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
-    Some(generatePaatosTeksti(hakemus, paatos, paatosKieli))
+    generatePaatosTeksti(hakemus, paatos, paatosKieli)
   }
 
 }

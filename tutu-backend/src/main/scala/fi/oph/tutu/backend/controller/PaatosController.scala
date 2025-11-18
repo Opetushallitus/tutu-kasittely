@@ -139,7 +139,7 @@ class PaatosController(
 
   @GetMapping(
     path = Array("paatos/{hakemusOid}/paatosteksti"),
-    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+    produces = Array(MediaType.TEXT_HTML_VALUE)
   )
   def haePaatosTeksti(@PathVariable hakemusOid: String): ResponseEntity[Any] = {
     Try {
@@ -153,5 +153,4 @@ class PaatosController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
-
 }

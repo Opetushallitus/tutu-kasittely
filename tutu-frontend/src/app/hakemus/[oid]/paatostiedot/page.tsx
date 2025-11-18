@@ -179,7 +179,9 @@ const Paatostiedot = ({
   const content = isPaatosTekstiLoading ? (
     <FullSpinner />
   ) : (
-    <PreviewContent>{paatosTeksti}</PreviewContent>
+    <PreviewContent>
+      <div dangerouslySetInnerHTML={{ __html: paatosTeksti }} />
+    </PreviewContent>
   );
 
   return (
@@ -280,7 +282,7 @@ const Paatostiedot = ({
           <PreviewComponent
             setShowPreview={setShowPaatosTekstiPreview}
             headerText={'hakemus.paatos.paatosteksti'}
-            closeButtonText={'hakemus.paatos.suljeEsikatselu'}
+            closeButtonText={'yleiset.sulje'}
             content={content}
           />
         )}
