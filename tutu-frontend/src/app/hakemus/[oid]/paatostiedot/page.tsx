@@ -24,7 +24,10 @@ import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/Pa
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
-import { PreviewComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
+import {
+  PreviewComponent,
+  PreviewContent,
+} from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -51,6 +54,7 @@ export default function PaatostiedotPage() {
     error: paatosError,
     updatePaatos,
     updateOngoing,
+    updateSuccess: paatosUpdateSuccess,
   } = usePaatos(
     hakemusState.editedData?.hakemusOid,
     hakemusState.editedData?.lomakeId,
@@ -78,6 +82,7 @@ export default function PaatostiedotPage() {
       paatosState={paatosState}
       updateOngoing={isSaving || updateOngoing}
       hakemusState={hakemusState}
+      updateSuccess={paatosUpdateSuccess}
     />
   );
 }
@@ -86,10 +91,12 @@ const Paatostiedot = ({
   paatosState,
   updateOngoing,
   hakemusState,
+  updateSuccess,
 }: {
   paatosState: EditableState<Paatos>;
   updateOngoing: boolean;
   hakemusState: EditableState<Hakemus>;
+  updateSuccess: boolean;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
@@ -103,7 +110,7 @@ const Paatostiedot = ({
     useShowPreview();
 
   useEffect(() => {
-    if (showPaatosTekstiPreview) {
+    if (showPaatosTekstiPreview || updateSuccess) {
       getPaatosTeksti(hakemus!.hakemusOid).then((sisalto: string) => {
         setPaatosTeksti(sisalto || '');
         setIsPaatosTekstiLoading(false);
@@ -112,7 +119,7 @@ const Paatostiedot = ({
     return () => {
       setIsPaatosTekstiLoading(true);
     };
-  }, [hakemus, showPaatosTekstiPreview]);
+  }, [hakemus, showPaatosTekstiPreview, updateSuccess]);
 
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
@@ -172,7 +179,7 @@ const Paatostiedot = ({
   const content = isPaatosTekstiLoading ? (
     <FullSpinner />
   ) : (
-    <OphTypography component="pre">{paatosTeksti}</OphTypography>
+    <PreviewContent>{paatosTeksti}</PreviewContent>
   );
 
   return (

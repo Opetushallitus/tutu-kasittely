@@ -45,7 +45,7 @@ export const usePaatos = (
     throwOnError: false,
   });
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: (paatos: Paatos) => postPaatos(hakemusOid!, lomakeId!, paatos),
     onSuccess: async (response) => {
       const paivitettyPaatos = await response.json();
@@ -67,5 +67,6 @@ export const usePaatos = (
     paatos: query.data,
     isPaatosLoading: query.isLoading,
     updateOngoing: isPending,
+    updateSuccess: isSuccess,
   };
 };

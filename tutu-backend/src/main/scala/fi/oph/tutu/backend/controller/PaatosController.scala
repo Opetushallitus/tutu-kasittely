@@ -149,7 +149,7 @@ class PaatosController(
         val response = mapper.writeValueAsString(paatosTeksti)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
-        LOG.error("Päätöstekstin haku epäonnistui", exception.getMessage)
+        LOG.error(s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }

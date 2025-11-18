@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { Stack } from '@mui/material';
+import { Stack, styled } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
@@ -12,6 +12,12 @@ interface PreviewComponentProps {
   content: React.ReactNode;
   showCopyButton?: boolean;
 }
+
+export const PreviewContent = styled(Box)({
+  whiteSpace: 'pre-line',
+  overflowY: 'auto',
+});
+
 export const PreviewComponent = ({
   setShowPreview,
   headerText,

@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service.generator.paatosteksti
 
 import fi.oph.tutu.backend.domain.PaatosTyyppi.Taso
-import fi.oph.tutu.backend.domain.{Hakemus, Paatos}
+import fi.oph.tutu.backend.domain.{Hakemus, Paatos, PaatosTyyppi}
 
 val tasopaatosFi = s"""
 <b>Tutkinnon rinnastaminen</b>
@@ -74,6 +74,13 @@ Besvärstiden och förfarandet framgår av bifogade besvärsanvisning.
 
 Avgifterna för beslutet baserar sig på undervisnings- och kulturministeriets förordning om Utbildningsstyrelsens och dess fristående enheters avgiftsbelagda prestationer (1188/2023, 1 och 2 §). Omprövning som berör avgifterna kan begäras av Utbildningsstyrelsen. Av bifogade anvisning för begäran om omprövning framgår tiden för begäran om omprövning och ansökningsförfarandet."""
 
+//def getPaatosTeksti(paatosTyyppi: PaatosTyyppi, paatosKieli: String): String = {
+//  paatosTyyppi match {
+//    case Taso => generate(None, None, paatosKieli)
+//    case _    => ""
+//  }
+//}
+
 def generate(
   hakemus: Option[Hakemus],
   paatos: Option[Paatos],
@@ -82,7 +89,9 @@ def generate(
   val isTasopaatos = paatos.get.paatosTiedot.exists(paatosTieto => paatosTieto.paatosTyyppi.get == Taso)
 
   isTasopaatos match {
-    case false => "Tällä hetkellä esikatselu on saatavilla vain tasopäätökselle."
-    case true  => if (paatosKieli == "fi") tasopaatosFi else tasopaatosSv
+    case false =>
+      if (paatosKieli == "finnish") "Tällä hetkellä esikatselu on saatavilla vain tasopäätökselle."
+      else "För närvarande är förhandsgranskning endast tillgänglig för nivåbeslut."
+    case true => if (paatosKieli == "finnish") tasopaatosFi else tasopaatosSv
   }
 }
