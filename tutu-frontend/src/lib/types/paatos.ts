@@ -29,20 +29,25 @@ export type PeruutuksenTaiRaukeamisenSyy = {
   muuSyy?: boolean;
 };
 
+export type MyonteinenTaiKielteinenPaatos = {
+  myonteinenPaatos?: boolean | null;
+  myonteisenPaatoksenLisavaatimukset?:
+    | MyonteisenPaatoksenLisavaatimukset
+    | KelpoisuudenLisavaatimukset;
+  kielteisenPaatoksenPerustelut?: KielteisenPaatoksenPerustelut;
+};
+
 export type PaatosTieto = {
   id?: string;
   paatosId: string;
   paatosTyyppi?: Paatostyyppi;
   sovellettuLaki?: SovellettuLaki;
-  myonteisenPaatoksenLisavaatimukset: string;
-  kielteisenPaatoksenPerustelut?: KielteisenPaatoksenPerustelut;
   tutkintoId?: string;
   lisaaTutkintoPaatostekstiin?: boolean;
-  myonteinenPaatos?: boolean;
   tutkintoTaso?: TutkintoTaso;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   kelpoisuudet: Kelpoisuus[];
-};
+} & Omit<MyonteinenTaiKielteinenPaatos, 'myonteisenPaatoksenLisavaatimukset'>;
 
 export type Paatos = {
   id?: string;
@@ -55,17 +60,12 @@ export type Paatos = {
   lahetyspaiva: string | null;
 };
 
-export type PaatosUpdateCallback = (paatos: Paatos) => void;
-
 export type TutkintoTaiOpinto = {
   id?: string;
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
   opetuskieli?: string;
-  myonteinenPaatos?: boolean;
-  myonteisenPaatoksenLisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
-  kielteisenPaatoksenPerustelut?: string;
-};
+} & MyonteinenTaiKielteinenPaatos;
 
 export type MyonteisenPaatoksenLisavaatimukset = {
   taydentavatOpinnot: boolean;
@@ -73,11 +73,62 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   sopeutumisaika: boolean;
 };
 
+export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
+  lisavaatimukset: Partial<
+    MyonteisenPaatoksenLisavaatimukset | KelpoisuudenLisavaatimukset
+  >,
+) => void;
+
+export type KelpoisuudenLisavaatimukset = {
+  olennaisiaEroja?: boolean | null;
+  erotAineenopettajanKoulutuksessa?: ErotAineenopettajanKoulutuksessa;
+  korvaavaToimenpide?: KorvaavaToimenpide;
+  ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen;
+};
+
+export type ErotAineenopettajanKoulutuksessa = {
+  eroOpetettavanAineenOpinnoissa?: boolean;
+  eroPedagogisissaOpinnoissa?: boolean;
+  syventavienOpintojenPuuttuminen?: boolean;
+  eriIkaryhma?: boolean;
+  muu?: boolean;
+  muuKuvaus?: string;
+};
+
+export type KelpoisuuskoeSisalto = {
+  aihealue1?: boolean;
+  aihealue2?: boolean;
+  aihealue3?: boolean;
+};
+
+export type KorvaavaToimenpide = {
+  taydentavatOpinnot?: boolean;
+  kelpoisuuskoe?: boolean;
+  kelpoisuuskoeSisalto?: KelpoisuuskoeSisalto;
+  sopeutumisaika?: boolean;
+  sopeutumiusaikaKestoKk?: string;
+  kelpoisuuskoeJaSopeutumisaika?: boolean;
+};
+
+export type AmmattikokemusJaElinikainenOppiminenKorvaavuus =
+  | 'Taysi'
+  | 'Osittainen'
+  | 'Ei';
+
+export type AmmattikokemusJaElinikainenOppiminen = {
+  ammattikokemus?: boolean;
+  elinikainenOppiminen?: boolean;
+  lisatieto?: string;
+  korvaavuus?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
+  korvaavaToimenpide?: KorvaavaToimenpide;
+};
+
 export type KielteisenPaatoksenPerustelut = {
-  epavirallinenKorkeakoulu: boolean;
-  epavirallinenTutkinto: boolean;
-  eiVastaaSuomessaSuoritettavaaTutkintoa: boolean;
-  muuPerustelu: boolean;
+  epavirallinenKorkeakoulu?: boolean;
+  epavirallinenTutkinto?: boolean;
+  eiVastaaSuomessaSuoritettavaaTutkintoa?: boolean;
+  muuPerustelu?: boolean;
+  muuPerusteluKuvaus?: string;
 };
 
 export type PaatosTietoOptionGroup = {
@@ -99,9 +150,8 @@ export type Direktiivitaso =
   | 'd_1384_2015_patevyystaso_4'
   | 'e_1384_2015_patevyystaso_5';
 
-export type KelpoisuusFieldUpdateCallback = <K extends keyof Kelpoisuus>(
-  key: K,
-  value: Kelpoisuus[K],
+export type KelpoisuusUpdateCallback = (
+  kelpoisuus: Partial<Kelpoisuus>,
 ) => void;
 
 export type Kelpoisuus = {
@@ -113,7 +163,4 @@ export type Kelpoisuus = {
   direktiivitaso?: Direktiivitaso;
   kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso;
   direktiivitasoLisatiedot?: string;
-  myonteinenPaatos?: boolean;
-  myonteisenPaatoksenLisavaatimukset?: string;
-  kielteisenPaatoksenPerustelut?: string;
-};
+} & MyonteinenTaiKielteinenPaatos;

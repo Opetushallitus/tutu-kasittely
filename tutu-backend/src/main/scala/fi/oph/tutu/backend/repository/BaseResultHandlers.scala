@@ -2,12 +2,13 @@ package fi.oph.tutu.backend.repository
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{Kieli, Kielistetty}
+import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.springframework.beans.factory.annotation.Autowired
 import slick.jdbc.GetResult
 
 import java.util.UUID
 
-class BaseResultHandlers {
+class BaseResultHandlers extends TutuJsonFormats {
   @Autowired
   protected var jsonMapper: ObjectMapper = _
 

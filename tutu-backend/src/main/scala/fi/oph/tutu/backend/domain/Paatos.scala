@@ -38,7 +38,6 @@ case class PaatosTieto(
   tutkintoId: Option[UUID] = None,
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
   myonteinenPaatos: Option[Boolean] = None,
-  myonteisenPaatoksenLisavaatimukset: Option[String] = None, // TODO: poistetaan ja dropataan columni jos ei tarvita?
   kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
   tutkintoTaso: Option[TutkintoTaso],
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
@@ -55,8 +54,7 @@ case class TutkintoTaiOpinto(
   opetuskieli: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
   myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimukset] = None,
-  // TODO: case classeiksi
-  kielteisenPaatoksenPerustelut: Option[String] = None,
+  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None
@@ -68,11 +66,51 @@ case class MyonteisenPaatoksenLisavaatimukset(
   sopeutumisaika: Boolean = false
 )
 
+case class ErotAineenopettajanKoulutuksessa(
+  eroOpetettavanAineenOpinnoissa: Boolean = false,
+  eroPedagogisissaOpinnoissa: Boolean = false,
+  syventavienOpintojenPuuttuminen: Boolean = false,
+  eriIkaryhma: Boolean = false,
+  muu: Boolean = false,
+  muuKuvaus: Option[String] = None
+)
+
+case class KelpoisuuskoeSisalto(
+  aihealue1: Boolean = false,
+  aihealue2: Boolean = false,
+  aihealue3: Boolean = false
+)
+
+case class KorvaavaToimenpide(
+  taydentavatOpinnot: Option[Boolean] = None,
+  kelpoisuuskoe: Boolean = false,
+  kelpoisuuskoeSisalto: Option[KelpoisuuskoeSisalto] = None,
+  sopeutumisaika: Boolean = false,
+  sopeutumiusaikaKestoKk: Option[String] = None,
+  kelpoisuuskoeJaSopeutumisaika: Option[Boolean] = None
+)
+
+case class AmmattikomemusJaElinikainenOppiminen(
+  ammattikokemus: Option[Boolean] = None,
+  elinikainenOppiminen: Option[Boolean] = None,
+  lisatieto: Option[String] = None,
+  korvaavuus: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
+  korvaavaToimenpide: Option[KorvaavaToimenpide] = None
+)
+
+case class KelpoisuudenLisavaatimukset(
+  olennaisiaEroja: Option[Boolean] = None,
+  erotAineenopettajanKoulutuksessa: Option[ErotAineenopettajanKoulutuksessa] = None,
+  korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
+  ammattikokemusJaElinikainenOppiminen: Option[AmmattikomemusJaElinikainenOppiminen] = None
+)
+
 case class KielteisenPaatoksenPerustelut(
   epavirallinenKorkeakoulu: Boolean = false,
   epavirallinenTutkinto: Boolean = false,
   eiVastaaSuomessaSuoritettavaaTutkintoa: Boolean = false,
-  muuPerustelu: Boolean = false
+  muuPerustelu: Boolean = false,
+  muuPerusteluKuvaus: Option[String] = None
 )
 
 case class PaatosTietoModifyData(
@@ -90,10 +128,9 @@ case class Kelpoisuus(
   direktiivitaso: Option[Direktiivitaso] = None,
   kansallisestiVaadittavaDirektiivitaso: Option[Direktiivitaso] = None,
   direktiivitasoLisatiedot: Option[String] = None,
-  // TODO: case classeiksi
   myonteinenPaatos: Option[Boolean] = None,
-  myonteisenPaatoksenLisavaatimukset: Option[String] = None,
-  kielteisenPaatoksenPerustelut: Option[String] = None,
+  myonteisenPaatoksenLisavaatimukset: Option[KelpoisuudenLisavaatimukset] = None,
+  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None

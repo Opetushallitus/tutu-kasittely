@@ -385,6 +385,9 @@
       "lahetyspaiva": "Lähetyspäivä",
       "ratkaisuJaPaatos": "Ratkaisu ja päätös",
       "seut": "SEUT-arviointi tehty",
+      "myonteinenTaiKielteinenPaatos": "Päätös on",
+      "myonteinen": "Myönteinen",
+      "kielteinen": "Kielteinen",
       "modal": {
         "otsikko": "Vahvista päätöksen poisto",
         "teksti": "Olet poistamassa päätöstä. Vahvista poistaminen.",
@@ -402,7 +405,8 @@
         "otsikko": "Myönteinen päätös",
         "taydentavatOpinnot": "Täydentävät opinnot",
         "kelpoisuuskoe": "Kelpoisuuskoe",
-        "sopeutumisaika": "Sopeutumisaika"
+        "sopeutumisaika": "Sopeutumisaika",
+        "kelpoisuuskoeJaSopeutumisaika": "Kelpoisuuskoe ja sopeutumisaika"
       },
       "kielteisenPaatoksenPerustelut": {
         "otsikko": "Kielteisen päätöksen perustelut",
@@ -440,6 +444,40 @@
           },
           "additionalKelpoisuudet": {
             "muuAmmatti": "Muu ammatti"
+          },
+          "paatos": {
+            "olennaisiaEroja": "Onko olennaisia eroja?",
+            "erotKoulutuksessa": "Erot koulutuksessa: {kelpoisuus}",
+            "aineenopetus": "aineenopetus",
+            "eroOpetettavanAineenOpinnoissa": "Ero opetettavan aineen opinnoissa",
+            "eroPedagogisissaOpinnoissa": "Ero pedagogisissa opinnoissa",
+            "syventavienOpintojenPuuttuminen": "Syventävien opintojen puuttuminen",
+            "eriIkaryhma": "Eri ikäryhmä",
+            "muu": "Muu",
+            "muuEro": "Muu ero",
+            "lahtokohtainenKorvaavaToimenpide": "Lähtökohtainen korvaava toimenpide",
+            "toimenpideLisatieto": "Jos valittu useampi vaihtoehto, ne ovat keskenään vaihtoehtoiset. Jos valittu vain yksi, lisävaatimus on vaihtoehdoton.",
+            "kelpoisuusKoe": {
+              "otsikko": "Kelpoisuuskoe sisältö",
+              "aihealue1": "Aihealue 1",
+              "aihealue2": "Aihealue 2",
+              "aihealue3": "Aihealue 3"
+            },
+            "sopeutumisaika": "Sopeutumisajan kesto (kk)",
+            "ammattikokemusElinikainenOppiminen": {
+              "otsikko": "Onko ammattikokemusta tai elinikäistä oppimista",
+              "ammattikokemus": "Ammattikokemus",
+              "elinikainenOppiminen": "Elinikäinen oppiminen",
+              "ohje": "Täsmennä",
+              "korvaavuus": {
+                "otsikko": "Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?",
+                "taysi": "Täysin",
+                "osittainen": "Osittain",
+                "ei": "Ei, käytetään lähtökohtaista korvaavaa toimenpidettä",
+                "korvaavaToimenpide": "Korvaava toimenpide päätökseen"
+              },
+              "kuvaus": "Kuvaus"
+            }
           }
         },
         "tiettyTutkintoTaiOpinnot": {
@@ -477,9 +515,6 @@
         "nimi": "Tutkinnon nimi, jota päätös koskee",
         "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
         "muuTutkinto": "Muu tutkinto",
-        "myonteinenPaatos": "Päätös on",
-        "myonteinen": "Myönteinen",
-        "kielteinen": "Kielteinen",
         "tutkinnonTaso": "Tutkinnon taso",
         "alempiKorkeakoulu": "Alempi korkeakoulututkinto",
         "ylempiKorkeakoulu": "Ylempi korkeakoulututkinto"
