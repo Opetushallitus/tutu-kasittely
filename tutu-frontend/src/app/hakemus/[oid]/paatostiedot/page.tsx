@@ -33,7 +33,6 @@ const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
   paatosId: paatosId,
   paatosTyyppi: undefined,
-  myonteisenPaatoksenLisavaatimukset: '{}',
   kielteisenPaatoksenPerustelut: undefined,
   rinnastettavatTutkinnotTaiOpinnot: [],
   kelpoisuudet: [],

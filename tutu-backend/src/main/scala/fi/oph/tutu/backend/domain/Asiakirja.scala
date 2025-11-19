@@ -111,64 +111,7 @@ case class DbAsiakirja(
     maxLength = 50
   )
   viimeinenAsiakirjaHakijalta: Option[LocalDateTime]
-) {
-
-  def mergeWithUpdatedAsiakirja(
-    updatedAsiakirja: PartialAsiakirja
-  ): DbAsiakirja =
-    DbAsiakirja(
-      id = this.id,
-      allekirjoituksetTarkistettu = updatedAsiakirja.allekirjoituksetTarkistettu.getOrElse(
-        this.allekirjoituksetTarkistettu
-      ),
-      allekirjoituksetTarkistettuLisatiedot =
-        updatedAsiakirja.allekirjoituksetTarkistettuLisatiedot.orElse(this.allekirjoituksetTarkistettuLisatiedot),
-      imiPyynto =
-        if (updatedAsiakirja.imiPyyntoDefined()) updatedAsiakirja.imiPyynto.flatMap(_.imiPyynto) else this.imiPyynto,
-      imiPyyntoNumero =
-        if (updatedAsiakirja.imiPyyntoDefined()) updatedAsiakirja.imiPyynto.flatMap(_.getNumeroIfPyyntoTrue)
-        else this.imiPyyntoNumero,
-      imiPyyntoLahetetty =
-        if (updatedAsiakirja.imiPyyntoDefined()) updatedAsiakirja.imiPyynto.flatMap(_.getLahetettyIfPyyntoTrue)
-        else this.imiPyyntoLahetetty,
-      imiPyyntoVastattu =
-        if (updatedAsiakirja.imiPyyntoDefined()) updatedAsiakirja.imiPyynto.flatMap(_.getVastattuIfPyyntoTrue)
-        else this.imiPyyntoVastattu,
-      alkuperaisetAsiakirjatSaatuNahtavaksi =
-        updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(this.alkuperaisetAsiakirjatSaatuNahtavaksi),
-      alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot
-        .orElse(this.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot),
-      selvityksetSaatu = updatedAsiakirja.selvityksetSaatu.getOrElse(this.selvityksetSaatu),
-      apHakemus = updatedAsiakirja.apHakemus.orElse(this.apHakemus),
-      suostumusVahvistamiselleSaatu =
-        updatedAsiakirja.suostumusVahvistamiselleSaatu.getOrElse(this.suostumusVahvistamiselleSaatu),
-      valmistumisenVahvistus =
-        if (updatedAsiakirja.valmistumisenVahvistusDefined())
-          updatedAsiakirja.valmistumisenVahvistus.get.valmistumisenVahvistus
-        else this.valmistumisenVahvistus,
-      valmistumisenVahvistusPyyntoLahetetty =
-        if (updatedAsiakirja.valmistumisenVahvistusDefined())
-          updatedAsiakirja.valmistumisenVahvistus.flatMap(_.getPyyntoLahetettyIfVahvistusTrue)
-        else this.valmistumisenVahvistusPyyntoLahetetty,
-      valmistumisenVahvistusSaatu =
-        if (updatedAsiakirja.valmistumisenVahvistusDefined())
-          updatedAsiakirja.valmistumisenVahvistus
-            .flatMap(_.getSaatuIfVahvistusTrue)
-        else this.valmistumisenVahvistusSaatu,
-      valmistumisenVahvistusVastaus =
-        if (updatedAsiakirja.valmistumisenVahvistusDefined())
-          updatedAsiakirja.valmistumisenVahvistus
-            .flatMap(_.getVastausIfVahvistusTrue)
-        else this.valmistumisenVahvistusVastaus,
-      valmistumisenVahvistusLisatieto =
-        if (updatedAsiakirja.valmistumisenVahvistusDefined())
-          updatedAsiakirja.valmistumisenVahvistus
-            .flatMap(_.getLisatietoIfVahvistusTrue)
-        else this.valmistumisenVahvistusLisatieto,
-      viimeinenAsiakirjaHakijalta =
-        updatedAsiakirja.viimeinenAsiakirjaHakijalta.orElse(this.viimeinenAsiakirjaHakijalta)
-    )
-}
+)
 
 case class Asiakirja(
   allekirjoituksetTarkistettu: Boolean = false,
@@ -225,41 +168,6 @@ case class Asiakirja(
     asiakirjamallitTutkinnoista = asiakirjamallitTutkinnoista,
     viimeinenAsiakirjaHakijalta = dbAsiakirja.viimeinenAsiakirjaHakijalta
   )
-
-  def this(
-    partialAsiakirja: PartialAsiakirja
-  ) = this(
-    allekirjoituksetTarkistettu = partialAsiakirja.allekirjoituksetTarkistettu.getOrElse(false),
-    allekirjoituksetTarkistettuLisatiedot = partialAsiakirja.allekirjoituksetTarkistettuLisatiedot,
-    imiPyynto = new ImiPyynto(partialAsiakirja.imiPyynto),
-    alkuperaisetAsiakirjatSaatuNahtavaksi = partialAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi.getOrElse(false),
-    alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = partialAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot,
-    selvityksetSaatu = partialAsiakirja.selvityksetSaatu.getOrElse(false),
-    apHakemus = partialAsiakirja.apHakemus,
-    suostumusVahvistamiselleSaatu = partialAsiakirja.suostumusVahvistamiselleSaatu.getOrElse(false),
-    valmistumisenVahvistus = new ValmistumisenVahvistus(partialAsiakirja.valmistumisenVahvistus),
-    pyydettavatAsiakirjat = partialAsiakirja.pyydettavatAsiakirjat.getOrElse(Seq.empty),
-    asiakirjamallitTutkinnoista = partialAsiakirja.asiakirjamallitTutkinnoista.getOrElse(Map.empty),
-    viimeinenAsiakirjaHakijalta = partialAsiakirja.viimeinenAsiakirjaHakijalta
-  )
-}
-
-case class PartialAsiakirja(
-  allekirjoituksetTarkistettu: Option[Boolean] = None,
-  allekirjoituksetTarkistettuLisatiedot: Option[String] = None,
-  imiPyynto: Option[ImiPyynto] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksi: Option[Boolean] = None,
-  alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: Option[String] = None,
-  selvityksetSaatu: Option[Boolean] = None,
-  apHakemus: Option[Boolean] = None,
-  suostumusVahvistamiselleSaatu: Option[Boolean] = None,
-  pyydettavatAsiakirjat: Option[Seq[PyydettavaAsiakirja]] = None,
-  asiakirjamallitTutkinnoista: Option[Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta]] = None,
-  valmistumisenVahvistus: Option[ValmistumisenVahvistus] = None,
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None
-) {
-  def imiPyyntoDefined(): Boolean              = imiPyynto.isDefined
-  def valmistumisenVahvistusDefined(): Boolean = valmistumisenVahvistus.isDefined
 }
 
 class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {

@@ -1,6 +1,16 @@
-import { PaatosTietoOption } from '@/src/lib/types/paatos';
+import {
+  KelpoisuudenLisavaatimukset,
+  KorvaavaToimenpide,
+  PaatosTietoOption,
+} from '@/src/lib/types/paatos';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  emptyAmmattikokemusJaElinikainenOppiminen,
+  emptyErotKoulutuksessaAineenopettaja,
+  emptyKelpoisuuskoeSisalto,
+  emptyKorvaavaToimenpide,
+} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 
 export type PaatosTietoDropdownOption = {
   label: string;
@@ -72,4 +82,66 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
   };
 
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };
+};
+
+const initOrUpdateKorvaavaToimenpide = (
+  korvaavaToimenpide?: KorvaavaToimenpide,
+): KorvaavaToimenpide => {
+  const tobe = korvaavaToimenpide || emptyKorvaavaToimenpide();
+  if (tobe.kelpoisuuskoe || tobe.kelpoisuuskoeJaSopeutumisaika) {
+    tobe.kelpoisuuskoeSisalto =
+      tobe.kelpoisuuskoeSisalto || emptyKelpoisuuskoeSisalto();
+  } else {
+    tobe.kelpoisuuskoeSisalto = undefined;
+  }
+
+  return tobe;
+};
+
+export const initOrUpdateMyonteinenKelpoisuusPaatos = (
+  currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
+  updatedKelpoisuudenLisavaatimuket: Partial<KelpoisuudenLisavaatimukset>,
+): KelpoisuudenLisavaatimukset => {
+  const tobe = {
+    ...currentKelpoisuudenLisavaatimukset,
+    ...updatedKelpoisuudenLisavaatimuket,
+  };
+  if (tobe.olennaisiaEroja) {
+    tobe.erotAineenopettajanKoulutuksessa =
+      tobe.erotAineenopettajanKoulutuksessa ||
+      emptyErotKoulutuksessaAineenopettaja();
+    tobe.korvaavaToimenpide = initOrUpdateKorvaavaToimenpide(
+      tobe.korvaavaToimenpide,
+    );
+    tobe.ammattikokemusJaElinikainenOppiminen =
+      tobe.ammattikokemusJaElinikainenOppiminen ||
+      emptyAmmattikokemusJaElinikainenOppiminen();
+
+    if (
+      tobe.ammattikokemusJaElinikainenOppiminen.ammattikokemus ||
+      tobe.ammattikokemusJaElinikainenOppiminen.elinikainenOppiminen
+    ) {
+      if (
+        tobe.ammattikokemusJaElinikainenOppiminen.korvaavuus === 'Osittainen'
+      ) {
+        tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
+          initOrUpdateKorvaavaToimenpide(
+            tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide,
+          );
+      } else {
+        tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
+          undefined;
+      }
+    } else {
+      tobe.ammattikokemusJaElinikainenOppiminen.lisatieto = undefined;
+      tobe.ammattikokemusJaElinikainenOppiminen.korvaavuus = undefined;
+      tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide = undefined;
+    }
+  } else {
+    tobe.erotAineenopettajanKoulutuksessa = undefined;
+    tobe.korvaavaToimenpide = undefined;
+    tobe.ammattikokemusJaElinikainenOppiminen = undefined;
+  }
+
+  return tobe;
 };
