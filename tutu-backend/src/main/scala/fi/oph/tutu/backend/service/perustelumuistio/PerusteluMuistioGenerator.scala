@@ -136,14 +136,6 @@ def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
   }
 }
 
-def haeImiHalytyksetTarkastettu(perusteluMaybe: Option[Perustelu]): Option[String] = {
-  perusteluMaybe
-    .map(_.apSisalto)
-    .flatMap(_.IMIHalytysTarkastettu)
-    .map(toKyllaEi)
-    .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu: ${muotoiltuValinta}")
-}
-
 def haeMuuTutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val tutkinnotMaybe: Option[Seq[Tutkinto]] = hakemusMaybe.map(_.tutkinnot)
   val muuTutkintoMaybe: Option[Tutkinto]    = tutkinnotMaybe
@@ -416,6 +408,87 @@ def haeUoRoPerustelu(
   }
 }
 
+def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val apSisalto = perustelu.apSisalto
+      val result    = Seq(
+        /////////////////////////////////
+        // Peruste AP-lain soveltamiselle
+        apSisalto.lakiperusteToisessaJasenmaassaSaannelty
+          .filter(_.==(true))
+          .map(_ => "Toisessa jäsenmaassa säänneltyyn ammattiin johtanut koulutus tai säännelty ammatillinen koulutus"),
+        apSisalto.lakiperustePatevyysLahtomaanOikeuksilla
+          .filter(_.==(true))
+          .map(_ => "Pätevyys ammattiin lähtömaassa saavutettujen oikeuksien nojalla"),
+        apSisalto.lakiperusteToinenEUmaaTunnustanut
+          .filter(_.==(true))
+          .map(_ =>
+            "EU-kansalaisen EU:n ulkopuolella hankkima ammattipätevyys, jonka toinen EU-maa on tunnustanut, ja henkilöllä on jäsenmaassa hankittu"
+          ),
+        apSisalto.lakiperusteLahtomaassaSaantelematon
+          .filter(_.==(true))
+          .map(_ =>
+            "Lähtömaassa sääntelemätön ammatti tai koulutus ja hakijalla vähintään vuoden ammattikokemus maasta, joka ei sääntele ammattia"
+          ),
+
+        // ------- //
+        apSisalto.todistusEUKansalaisuuteenRinnasteisestaAsemasta
+          .filter(!_.isEmpty)
+          .map(text => s"Todistus, joka todistaa EU-kansalaisuuteen rinnaisteisen aseman:\n${text}\n"),
+        apSisalto.ammattiJohonPatevoitynyt
+          .filter(!_.isEmpty)
+          .map(text => s"Mihin ammattiin hakija on pätevöitynyt toisessa jäsenmaassa:\n${text}\n"),
+        apSisalto.ammattitoiminnanPaaAsiallinenSisalto
+          .filter(!_.isEmpty)
+          .map(text => s"Ammattitoiminnan pääasiallinen sisältö lähtömaassa:\n${text}\n"),
+        apSisalto.koulutuksenKestoJaSisalto
+          .filter(!_.isEmpty)
+          .map(text => s"Koulutuksen kesto ja pääasiallinen sisältö:\n${text}\n"),
+
+        //////////////////////////////////////////////////////////////////////////////
+        // Ammattipätevyyttä ja ammatin tai koulutuksen sääntelyä koskevat selvitykset
+        apSisalto.selvityksetLahtomaanViranomaiselta
+          .filter(_.==(true))
+          .map(_ => "Vastaus lähtömaan toimivaltaiselta viranomaiselta"),
+        apSisalto.selvityksetLahtomaanLainsaadannosta
+          .filter(_.==(true))
+          .map(_ => "Selvitetty lähtömaan lainsäädännöstä"),
+        (apSisalto.selvityksetAikaisempiTapaus, apSisalto.selvityksetAikaisemmanTapauksenAsiaTunnus) match {
+          case (Some(true), Some(""))         => Some("Selvitetty aikaisempien samanlaisten tapausten yhteydessä")
+          case (Some(true), None)             => Some("Selvitetty aikaisempien samanlaisten tapausten yhteydessä")
+          case (Some(true), Some(asiatunnus)) =>
+            Some(s"Selvitetty aikaisempien samanlaisten tapausten yhteydessä. Asiatunnus: ${asiatunnus}")
+          case (_, _) => None
+        },
+        apSisalto.selvityksetIlmeneeAsiakirjoista
+          .filter(_.==(true))
+          .map(_ => "Ilmenee hakijan esittämistä asiakirjoista"),
+
+        // ------- //
+        apSisalto.lisatietoja
+          .filter(!_.isEmpty)
+          .map(text => s"Lisätietoja:\n${text}\n"),
+        apSisalto.IMIHalytysTarkastettu
+          .filter(_.==(true))
+          .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu"),
+        apSisalto.muutAPPerustelut
+          .filter(!_.isEmpty)
+          .map(text => s"Muut AP-päätöksen perustelut:\n${text}\n"),
+        apSisalto.SEUTArviointi
+          .filter(!_.isEmpty)
+          .map(text => s"SEUT-arviointi:\n${text}\n")
+      ).flatten.mkString("\n")
+
+      result match {
+        case "" => None
+        case _  => Some(result)
+      }
+    }
+  }
+}
+
 def generate(
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
@@ -430,12 +503,12 @@ def generate(
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
     haeImiPyyntoTieto(hakemusMaybe),
-    haeImiHalytyksetTarkastettu(perusteluMaybe),
     haeYleisetPerustelut(perusteluMaybe),
     haeJatkoOpintoKelpoisuus(perusteluMaybe),
     haeAikaisemmatPaatokset(perusteluMaybe),
     haeMuuPerustelu(perusteluMaybe),
     haeUoRoPerustelu(perusteluMaybe, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio),
+    haeApPerustelu(perusteluMaybe),
     haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),

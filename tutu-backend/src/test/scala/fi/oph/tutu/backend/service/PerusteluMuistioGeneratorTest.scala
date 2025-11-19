@@ -221,7 +221,23 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         opettajatMuuEroSelite = Some("Tutkinto ei vaadi opetusnäytettä")
       ),
       apSisalto = APSisalto(
-        IMIHalytysTarkastettu = Some(true)
+        lakiperusteToisessaJasenmaassaSaannelty = Some(true),
+        lakiperustePatevyysLahtomaanOikeuksilla = Some(true),
+        lakiperusteToinenEUmaaTunnustanut = Some(true),
+        lakiperusteLahtomaassaSaantelematon = Some(true),
+        todistusEUKansalaisuuteenRinnasteisestaAsemasta = Some("todistus"),
+        ammattiJohonPatevoitynyt = Some("lähihoitaja"),
+        ammattitoiminnanPaaAsiallinenSisalto = Some("käytännön työ"),
+        koulutuksenKestoJaSisalto = Some("alusta loppuun asti"),
+        selvityksetLahtomaanViranomaiselta = Some(true),
+        selvityksetLahtomaanLainsaadannosta = Some(true),
+        selvityksetAikaisempiTapaus = Some(true),
+        selvityksetAikaisemmanTapauksenAsiaTunnus = Some("asia #6"),
+        selvityksetIlmeneeAsiakirjoista = Some(true),
+        lisatietoja = Some("annetaan pyydettäessä"),
+        IMIHalytysTarkastettu = Some(true),
+        muutAPPerustelut = Some("pätevä on"),
+        SEUTArviointi = Some("hyväksi todettu")
       )
     )
   )
@@ -340,12 +356,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   }
 
   @Test
-  def haeImiHalytyksetTarkastettuProducesString(): Unit = {
-    val result = haeImiHalytyksetTarkastettu(somePerustelu)
-    assert(result.get.contains("Kyllä"))
-  }
-
-  @Test
   def haeMuuTutkintoProducesString(): Unit = {
     val result = haeMuuTutkinto(someHakemus)
     assert(result.get.contains("Muu tutkinto sisältö"))
@@ -447,5 +457,42 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
     assert(result.get.contains("Muu tutkinto tai opintosuoritus -- body"))
+  }
+
+  @Test
+  def haeApPerusteluProducesString(): Unit = {
+    val result = haeApPerustelu(somePerustelu)
+
+    assert(
+      result.get.contains(
+        "Toisessa jäsenmaassa säänneltyyn ammattiin johtanut koulutus tai säännelty ammatillinen koulutus"
+      )
+    )
+    assert(result.get.contains("Pätevyys ammattiin lähtömaassa saavutettujen oikeuksien nojalla"))
+    assert(
+      result.get.contains(
+        "EU-kansalaisen EU:n ulkopuolella hankkima ammattipätevyys, jonka toinen EU-maa on tunnustanut, ja henkilöllä on jäsenmaassa hankittu"
+      )
+    )
+    assert(
+      result.get.contains(
+        "Lähtömaassa sääntelemätön ammatti tai koulutus ja hakijalla vähintään vuoden ammattikokemus maasta, joka ei sääntele ammattia"
+      )
+    )
+
+    assert(result.get.contains("Todistus, joka todistaa EU-kansalaisuuteen rinnaisteisen aseman"))
+    assert(result.get.contains("Mihin ammattiin hakija on pätevöitynyt toisessa jäsenmaassa"))
+    assert(result.get.contains("Ammattitoiminnan pääasiallinen sisältö lähtömaassa"))
+    assert(result.get.contains("Koulutuksen kesto ja pääasiallinen sisältö"))
+
+    assert(result.get.contains("Vastaus lähtömaan toimivaltaiselta viranomaiselta"))
+    assert(result.get.contains("Selvitetty lähtömaan lainsäädännöstä"))
+    assert(result.get.contains("Selvitetty aikaisempien samanlaisten tapausten yhteydessä. Asiatunnus"))
+    assert(result.get.contains("Ilmenee hakijan esittämistä asiakirjoista"))
+
+    assert(result.get.contains("Lisätietoja"))
+    assert(result.get.contains("IMI-hälytykset tarkistettu"))
+    assert(result.get.contains("Muut AP-päätöksen perustelut"))
+    assert(result.get.contains("SEUT-arviointi"))
   }
 }
