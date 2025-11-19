@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, UpdatePaatos}
+import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, ReadPaatosPreview, UpdatePaatos}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -141,11 +141,16 @@ class PaatosController(
     path = Array("paatos/{hakemusOid}/paatosteksti"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
-  def haePaatosTeksti(@PathVariable hakemusOid: String): ResponseEntity[Any] = {
+  def haePaatosTeksti(
+    @PathVariable hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
     Try {
       paatosService.haePaatosTeksti(HakemusOid(hakemusOid))
     } match {
       case Success(paatosTeksti) =>
+        auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
         val response = mapper.writeValueAsString(paatosTeksti)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>

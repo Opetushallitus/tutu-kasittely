@@ -213,6 +213,10 @@ object AuditOperation {
     val name = "PAATOKSEN_LUKU"
   }
 
+  case object ReadPaatosPreview extends AuditOperation {
+    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
+  }
+
   case object UpdateAsiatunnus extends AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }
