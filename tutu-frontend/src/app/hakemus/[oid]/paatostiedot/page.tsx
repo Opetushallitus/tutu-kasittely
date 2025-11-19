@@ -196,6 +196,7 @@ const Paatostiedot = ({
     >
       <Stack direction={'row'} gap={theme.spacing(2)}>
         <Stack
+          gap={theme.spacing(2)}
           direction={'column'}
           sx={{ width: showPaatosTekstiPreview ? '50%' : '100%' }}
         >
