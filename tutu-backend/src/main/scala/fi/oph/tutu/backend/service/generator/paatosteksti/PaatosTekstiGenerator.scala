@@ -1,8 +1,8 @@
 package fi.oph.tutu.backend.service.generator.paatosteksti
 
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.PaatosTyyppi.Taso
 import fi.oph.tutu.backend.domain.TutkintoTaso.YlempiKorkeakoulu
-import fi.oph.tutu.backend.domain.{Hakemus, Paatos, PaatosTieto, PaatosTyyppi}
 
 private def getTasoPaatosHeader(lang: String, count: Number): String = lang match {
   case "finnish" => s"""<h4>${if (count == 1) s"Tutkinnon" else s"Tutkintojen"} rinnastaminen</h4>"""
@@ -50,11 +50,20 @@ private def getTasoPaatosPerusteluText(lang: String, isYlempiKorkeakouluTutkinto
       }\nhögskoleexamen.\nTillämpade rättsnormer: Lagen om den tjänstebehörighet som högskolestudier utomlands medför (1385/2015), 2, 3 och 6 §</p>""".stripMargin
 }
 
+private def parseHallintoOikeusName(hallintoOikeus: String): String = {
+  hallintoOikeus.contains("hallintotuomioistuin") match {
+    case true  => hallintoOikeus.replace("hallintotuomioistuin", "hallintotuomioistuimelle")
+    case false => hallintoOikeus.replace("hallinto-oikeus", "hallinto-oikeudelle")
+  }
+}
+
 private def getTasoPaatosValitusoikeusText(lang: String, hallintoOikeus: String): String = lang match {
   case "finnish" =>
-    s"""<h4>Valitusoikeus</h4><p>Tähän päätökseen saa hakea muutosta valittamalla\n${hallintoOikeus}:n hallinto-oikeudelle.\nLiitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä. </p>""".stripMargin
+    s"""<h4>Valitusoikeus</h4><p>Tähän päätökseen saa hakea muutosta valittamalla\n${parseHallintoOikeusName(
+        hallintoOikeus
+      )}.\nLiitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä. </p>""".stripMargin
   case _ =>
-    s"""<h4>Besvärsrätt</h4><p>Ändring i detta beslut får sökas genom besvär hos\n${hallintoOikeus} förvaltningsdomstol.\nBesvärstiden och förfarandet framgår av bifogade besvärsanvisning.</p>""".stripMargin
+    s"""<h4>Besvärsrätt</h4><p>Ändring i detta beslut får sökas genom besvär hos\n$hallintoOikeus.\nBesvärstiden och förfarandet framgår av bifogade besvärsanvisning.</p>""".stripMargin
 }
 
 private def getTasoPaatosMaksunOikaisuText(lang: String): String = lang match {
@@ -84,19 +93,21 @@ private def getTutkintoNimi(hakemus: Hakemus, paatosTieto: PaatosTieto): String 
     .get
   if (tutkinto.jarjestys == "MUU") "Muu tutkinto" else tutkinto.nimi.get
 }
-
-def generate(
+//TODO sisennys
+def generatePaatosTeksti(
   hakemus: Hakemus,
   paatos: Paatos,
-  paatosKieli: String
+  paatosKieli: String,
+  hallintoOikeus: HallintoOikeus
 ): String = {
-  val constainsTasoPaatos = paatos.paatosTiedot.exists(paatosTieto => paatosTieto.paatosTyyppi.get == Taso)
+  val containsTasoPaatos = paatos.paatosTiedot.exists(paatosTieto => paatosTieto.paatosTyyppi.get == Taso)
 
-  if (constainsTasoPaatos) {
-    val hallintoOikeus   = "TODO HALLINTO-OIKEUS"
-    var paatosTietoTexts = getTasoPaatosHeader(paatosKieli, paatos.paatosTiedot.size)
-    // TODO hallinto-oikeuden päättely
-
+  if (containsTasoPaatos) {
+    var paatosTietoTexts     = getTasoPaatosHeader(paatosKieli, paatos.paatosTiedot.size)
+    val hallintoOikeudenNimi = paatosKieli match {
+      case "finnish" => hallintoOikeus.nimi.get(Kieli.fi)
+      case _         => hallintoOikeus.nimi.get(Kieli.sv)
+    }
     paatosTietoTexts = paatos.paatosTiedot.foldLeft(paatosTietoTexts)((acc, paatosTieto) => {
       val isTasoPaatos = paatosTieto.paatosTyyppi.get == Taso
       if (isTasoPaatos) {
@@ -127,7 +138,10 @@ def generate(
         acc
       }
     })
-    paatosTietoTexts ++ getTasoPaatosValitusoikeusText(paatosKieli, hallintoOikeus) ++ getTasoPaatosMaksunOikaisuText(
+    paatosTietoTexts ++ getTasoPaatosValitusoikeusText(
+      paatosKieli,
+      hallintoOikeudenNimi.get
+    ) ++ getTasoPaatosMaksunOikaisuText(
       paatosKieli
     )
   } else {

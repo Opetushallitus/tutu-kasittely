@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
-import fi.oph.tutu.backend.service.generator.paatosteksti.generate as generatePaatosTeksti
+import fi.oph.tutu.backend.service.generator.paatosteksti.generatePaatosTeksti
 import fi.oph.tutu.backend.utils.{Constants, TutuJsonFormats}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jvalue2extractable
@@ -17,6 +17,7 @@ class PaatosService(
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   muistioService: MuistioService,
+  hallintoOikeusService: HallintoOikeusService,
   ataruLomakeParser: AtaruLomakeParser
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
@@ -133,9 +134,12 @@ class PaatosService(
     val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val paatos: Paatos                     = haePaatos(hakemusOid, ataruHakemus.get.form_id).get
-    val paatosKieli: String                =
+    val paatosKieli: String                = {
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
-    generatePaatosTeksti(hakemus, paatos, paatosKieli)
+    }
+    val hakijanKunta                   = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers).get
+    val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
+    generatePaatosTeksti(hakemus, paatos, paatosKieli, hallintoOikeus)
   }
 
 }
