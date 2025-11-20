@@ -94,6 +94,8 @@ const initOrUpdateKorvaavaToimenpide = (
   } else {
     tobe.kelpoisuuskoeSisalto = undefined;
   }
+  if (!tobe.sopeutumisaika && !tobe.kelpoisuuskoeJaSopeutumisaika)
+    tobe.sopeutumiusaikaKestoKk = undefined;
 
   return tobe;
 };

@@ -113,6 +113,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
               }
               t={t}
               theme={theme}
+              testIdPrefix={'ammattikokemusElinikainenOppiminen'}
             />
           )}
         </Stack>

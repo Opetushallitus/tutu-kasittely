@@ -56,7 +56,7 @@ export const KielteisenPaatoksenPerusteluComponent = ({
           onChange={(e) =>
             updatePerustelutAction({ muuPerusteluKuvaus: e.target.value })
           }
-          data-testid={`erorotKoulutuksessa-aineenopettaja-muuKuvaus`}
+          data-testid={`kielteinenPaatos-muuPerustelu-kuvaus-input`}
         />
       )}
     </Stack>
