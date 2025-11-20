@@ -14,13 +14,10 @@ export function useKasittelyvaiheTranslation(
 
   const kasittelyVaihe = hakemus.kasittelyVaihe;
 
-  // Käsitellään erikoismuotoilu tietyille tiloille
   if (kasittelyVaihe === 'HakemustaTaydennetty') {
-    return (
-      t(`hakemus.kasittelyvaihe.hakemustataydennetty`) +
-      ' ' +
-      dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER)
-    );
+    return t(`hakemus.kasittelyvaihe.hakemustataydennetty`, {
+      date: dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER),
+    });
   } else if (kasittelyVaihe === 'OdottaaTaydennysta') {
     return t(`hakemus.kasittelyvaihe.odottaataydennystamennessa`, {
       date: dateFns.format(

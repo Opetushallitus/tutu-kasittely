@@ -58,7 +58,7 @@
       "odottaavahvistusta": "Odottaa vahvistusta",
       "odottaalausuntoa": "Odottaa lausuntoa",
       "valmiskasiteltavaksi": "Valmis käsiteltäväksi",
-      "hakemustataydennetty": "Hakemusta täydennetty",
+      "hakemustataydennetty": "Hakemusta täydennetty {date}",
       "hyvaksynnassatailoppukasittelyssa": "Hyväksynnässä tai loppukäsittelyssä",
       "hyvaksyttyeilahetetty": "Hyväksytty, ei lähetetty",
       "loppukasittelyvalmis": "Loppukäsittely valmis"
