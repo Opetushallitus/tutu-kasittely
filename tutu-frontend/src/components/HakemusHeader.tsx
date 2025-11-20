@@ -10,6 +10,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
+import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 
 export const HakemusHeader = () => {
   const {
@@ -18,7 +19,7 @@ export const HakemusHeader = () => {
   const theme = useTheme();
   const { t } = useTranslations();
   const { options: esittelijaOptions } = useEsittelijat();
-
+  const kasittelyVaiheTranslation = useKasittelyvaiheTranslation(hakemus);
   return (
     hakemus && (
       <Stack
@@ -28,8 +29,7 @@ export const HakemusHeader = () => {
       >
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
           <OphTypography variant="label" data-testid="hakemusotsikko-hakija">
-            {hakemus?.hakija?.sukunimi}, {hakemus?.hakija?.etunimet} -{' '}
-            {hakemus?.hakija.hetu || t('hakemusotsikko.hetuPuuttuu')}
+            {hakemus?.hakija?.sukunimi}, {hakemus?.hakija?.etunimet}
           </OphTypography>
           <OphTypography data-testid="hakemusotsikko-asiatunnus">
             {hakemus?.asiatunnus || t('hakemusotsikko.asiatunnusPuuttuu')}
@@ -45,23 +45,11 @@ export const HakemusHeader = () => {
                 )
               : t('puuttuu')}
           </OphTypography>
-          <OphTypography data-testid="hakemusotsikko-esittelypvm">
-            {t('hakemusotsikko.esittelyPvm')}{' '}
-            {hakemus.esittelyPvm
-              ? dateFns.format(
-                  Date.parse(hakemus?.esittelyPvm),
-                  DATE_PLACEHOLDER,
-                )
-              : t('puuttuu')}
+          <OphTypography data-testid="hakemusotsikko-kasittelyvaihe">
+            {t('hakemusotsikko.kasittelyvaihe')} {kasittelyVaiheTranslation}
           </OphTypography>
         </Stack>
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
-          <OphTypography data-testid="hakemusotsikko-lopullinenpaatospvm">
-            {t('hakemusotsikko.lopullinenPaatosPvm')}{' '}
-            {hakemus.paatosPvm
-              ? dateFns.format(Date.parse(hakemus?.paatosPvm), DATE_PLACEHOLDER)
-              : t('puuttuu')}
-          </OphTypography>
           <OphTypography
             component="span"
             sx={{

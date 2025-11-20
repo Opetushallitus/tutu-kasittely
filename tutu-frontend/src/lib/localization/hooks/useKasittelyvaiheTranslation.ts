@@ -12,7 +12,6 @@ export function useKasittelyvaiheTranslation(
     return '';
   }
 
-  // Käytetään backendiltä tulevaa kasittelyVaihe-arvoa, joka lasketaan dynaamisesti
   const kasittelyVaihe = hakemus.kasittelyVaihe;
 
   // Käsitellään erikoismuotoilu tietyille tiloille

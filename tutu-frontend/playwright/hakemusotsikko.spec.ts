@@ -9,7 +9,7 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   );
 
   const hakija = page.getByTestId('hakemusotsikko-hakija');
-  await expect(hakija).toHaveText('Heittotähti, Heikki Hemuli - 121280-123A');
+  await expect(hakija).toHaveText('Heittotähti, Heikki Hemuli');
 
   const asiatunnus = page.getByTestId('hakemusotsikko-asiatunnus');
   await expect(asiatunnus).toHaveText('OPH-111-2025');
@@ -17,11 +17,10 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   const kirjausPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
   await expect(kirjausPvm).toContainText('14.05.2025');
 
-  const esittelyPvm = page.getByTestId('hakemusotsikko-esittelypvm');
-  await expect(esittelyPvm).toContainText('28.05.2025');
-
-  const paatosPvm = page.getByTestId('hakemusotsikko-lopullinenpaatospvm');
-  await expect(paatosPvm).toContainText('28.05.2025');
+  const esittelyPvm = page.getByTestId('hakemusotsikko-kasittelyvaihe');
+  await expect(esittelyPvm).toContainText(
+    'Käsittelyvaihe: Hakemusta täydennetty 28.06.2025',
+  );
 
   const esittelija = page
     .getByTestId('hakemusotsikko-esittelija')
