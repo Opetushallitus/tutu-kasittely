@@ -137,7 +137,10 @@ class PaatosService(
     val paatosKieli: String                = {
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
     }
-    val hakijanKunta                   = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers).get
+    val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers) match {
+      case Some(kunta) => kunta
+      case None        => "009"
+    }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
     generatePaatosTeksti(hakemus, paatos, paatosKieli, hallintoOikeus)
   }
