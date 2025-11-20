@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Paatos } from '@/src/lib/types/paatos';
 import { doApiFetch, doApiPost } from '@/src/lib/tutu-backend/api';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
 
 export const getPaatos = async (
   hakemusOid: string | undefined,
@@ -35,6 +36,7 @@ export const usePaatos = (
   lomakeId: number | undefined,
 ) => {
   const queryKey = ['paatos', hakemusOid, lomakeId];
+  const { showPaatosTekstiPreview } = useShowPreview();
 
   const queryClient = useQueryClient();
 
@@ -54,6 +56,7 @@ export const usePaatos = (
       await queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
       });
+      if (showPaatosTekstiPreview) await getPaatosTeksti(hakemusOid);
     },
   });
 

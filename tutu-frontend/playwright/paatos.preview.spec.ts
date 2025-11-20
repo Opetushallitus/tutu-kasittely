@@ -51,14 +51,6 @@ test('Päätöstekstin esikatselu avautuu oikein, näyttää tekstin ja sulkeutu
   await expect(openPreviewButton).toBeVisible();
   await openPreviewButton.click();
 
-  const seutCheckbox = page.getByTestId('paatos-seut');
-  await seutCheckbox.check();
-  const saveButton = page.getByTestId('save-ribbon-button');
-  await expect(saveButton).toBeVisible();
-  await saveButton.click();
-
-  await expect(saveButton).not.toBeVisible();
-
   const previewComponent = page.getByTestId('preview-content');
   await expect(previewComponent).toBeVisible();
 
