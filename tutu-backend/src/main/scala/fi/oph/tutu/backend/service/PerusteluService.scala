@@ -2,16 +2,12 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, HakemusRepository, PerusteluRepository}
-import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
+import fi.oph.tutu.backend.service.generator.perustelumuistio.generate as generatePerusteluMuistio
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import org.json4s.*
-import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
-import fi.oph.tutu.backend.service.perustelumuistio.{generate => generatePerusteluMuistio}
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Component

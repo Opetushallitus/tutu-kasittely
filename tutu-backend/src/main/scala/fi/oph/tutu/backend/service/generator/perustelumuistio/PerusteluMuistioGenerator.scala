@@ -1,23 +1,10 @@
-package fi.oph.tutu.backend.service.perustelumuistio
+package fi.oph.tutu.backend.service.generator.perustelumuistio
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
-import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, MaakoodiService}
-import fi.oph.tutu.backend.domain.{
-  AtaruHakemus,
-  AtaruLomake,
-  Hakemus,
-  ImiPyynto,
-  Kieli,
-  Muistio,
-  Perustelu,
-  SisaltoItem,
-  Tutkinto,
-  ValmistumisenVahvistus,
-  ValmistumisenVahvistusVastaus
-}
+import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
+
+import java.time.format.DateTimeFormatter
 
 def toKyllaEi(value: Boolean): String = {
   if (value) { "Kyllä" }

@@ -5,8 +5,10 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_1384_2015_patevyystaso_2}
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.UserService
-import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import fi.oph.tutu.backend.service.{HallintoOikeusService, KoodistoService, OnrService, UserService}
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
+import org.json4s.jvalue2extractable
+import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -33,13 +35,22 @@ import java.util.UUID
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
-class PaatosControllerTest extends IntegrationTestBase {
+class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @Autowired
   private val context: WebApplicationContext = null
   private var mvc: MockMvc                   = null
 
   @MockitoBean
   private var userService: UserService = _
+
+  @MockitoBean
+  private var onrService: OnrService = _
+
+  @MockitoBean
+  private var koodistoService: KoodistoService = _
+
+  @MockitoBean
+  private var hallintoOikeusService: HallintoOikeusService = _
 
   @MockitoBean
   private var auditLog: AuditLog = _
@@ -673,5 +684,71 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.paatosTiedot[0].kielteisenPaatoksenPerustelut.epavirallinenKorkeakoulu").value(true))
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(13)
+  def haePaatosTekstiPalauttaaPaatosTekstinKanssa200(): Unit = {
+    when(onrService.haeHenkilo("1.2.246.562.24.00000000001"))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = "1.2.246.562.24.00000000001",
+            kutsumanimi = "Roope",
+            sukunimi = "Roihuvuori",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010171-789X"),
+            true
+          )
+        )
+      )
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
+    when(hakemuspalveluService.haeJaParsiHakemus(any[HakemusOid]))
+      .thenReturn(Right(JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]))
+    when(koodistoService.getKoodistoRelaatiot(any[String])).thenReturn(Right("""[
+    {
+      "koodiUri": "maakunta_01",
+      "koodiArvo": "01",
+      "tila": "HYVAKSYTTY"
+    }
+  ]"""))
+    when(hallintoOikeusService.haeHallintoOikeusByKunta(any[String]))
+      .thenReturn(
+        HallintoOikeus(
+          Some(UUID.fromString("9d36433f-c391-4f45-81e7-d14f95236ce9")),
+          "HAMEENLINNA",
+          Map(
+            Kieli.fi -> "Hämeenlinnan hallinto-oikeus",
+            Kieli.sv -> "Tavastehus förvaltningsdomstol",
+            Kieli.en -> "Hämeenlinna Administrative Court"
+          ),
+          Some(
+            Map(
+              Kieli.fi -> "Koulukatu 9, 13100 Hämeenlinna",
+              Kieli.sv -> "Koulukatu 9, 13100 Tavastehus",
+              Kieli.en -> "Koulukatu 9, 13100 Hämeenlinna"
+            )
+          ),
+          Some("029 56 46000"),
+          Some("hameenlinna.ho@oikeus.fi"),
+          Some(
+            Map(
+              Kieli.fi -> "https://oikeus.fi/hameenlinna",
+              Kieli.sv -> "https://oikeus.fi/hameenlinna/sv",
+              Kieli.en -> "https://oikeus.fi/hameenlinna/en"
+            )
+          )
+        )
+      )
+    val result = mvc
+      .perform(
+        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType("text/html;charset=UTF-8"))
+      .andExpect(content().string("\"<p>Tällä hetkellä esikatselu on saatavilla vain tasopäätökselle.</p>\""))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosPreview), any())
   }
 }

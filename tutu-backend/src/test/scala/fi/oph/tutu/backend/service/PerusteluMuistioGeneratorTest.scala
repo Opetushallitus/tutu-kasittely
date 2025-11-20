@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.perustelumuistio.*
+import fi.oph.tutu.backend.service.generator.perustelumuistio.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
 import fi.oph.tutu.backend.fixture.*

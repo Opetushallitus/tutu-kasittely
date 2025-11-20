@@ -7,10 +7,10 @@ import {
   OphSelectFormField,
   OphButton,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { usePaatos } from '@/src/hooks/usePaatos';
+import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { handleFetchError } from '@/src/lib/utils';
 import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
@@ -24,7 +24,10 @@ import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/Pa
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
-import { PreviewComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
+import {
+  PreviewComponent,
+  PreviewContent,
+} from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -51,6 +54,7 @@ export default function PaatostiedotPage() {
     error: paatosError,
     updatePaatos,
     updateOngoing,
+    updateSuccess: paatosUpdateSuccess,
   } = usePaatos(
     hakemusState.editedData?.hakemusOid,
     hakemusState.editedData?.lomakeId,
@@ -78,6 +82,7 @@ export default function PaatostiedotPage() {
       paatosState={paatosState}
       updateOngoing={isSaving || updateOngoing}
       hakemusState={hakemusState}
+      updateSuccess={paatosUpdateSuccess}
     />
   );
 }
@@ -86,22 +91,39 @@ const Paatostiedot = ({
   paatosState,
   updateOngoing,
   hakemusState,
+  updateSuccess,
 }: {
   paatosState: EditableState<Paatos>;
   updateOngoing: boolean;
   hakemusState: EditableState<Hakemus>;
+  updateSuccess: boolean;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
   const paatos = paatosState.editedData;
   const hakemus = hakemusState.editedData;
 
+  const [isPaatosTekstiLoading, setIsPaatosTekstiLoading] =
+    useState<boolean>(true);
+  const [paatosTeksti, setPaatosTeksti] = useState<string>('');
+  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
+    useShowPreview();
+
+  useEffect(() => {
+    if (showPaatosTekstiPreview && updateSuccess) {
+      getPaatosTeksti(hakemus!.hakemusOid).then((sisalto: string) => {
+        setPaatosTeksti(sisalto || '');
+        setIsPaatosTekstiLoading(false);
+      });
+    }
+    return () => {
+      setIsPaatosTekstiLoading(true);
+    };
+  }, [hakemus, showPaatosTekstiPreview, updateSuccess]);
+
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
   >([]);
-
-  const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
-    useShowPreview();
 
   useEffect(() => {
     if (paatos) {
@@ -154,12 +176,12 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
-  const demoContent = (
-    <Stack direction={'row'} gap={2}>
-      demo demo demo demo
-      <Divider />
-      demo demo demo demo
-    </Stack>
+  const content = isPaatosTekstiLoading ? (
+    <FullSpinner />
+  ) : (
+    <PreviewContent>
+      <div dangerouslySetInnerHTML={{ __html: paatosTeksti }} />
+    </PreviewContent>
   );
 
   return (
@@ -174,6 +196,7 @@ const Paatostiedot = ({
     >
       <Stack direction={'row'} gap={theme.spacing(2)}>
         <Stack
+          gap={theme.spacing(2)}
           direction={'column'}
           sx={{ width: showPaatosTekstiPreview ? '50%' : '100%' }}
         >
@@ -260,8 +283,8 @@ const Paatostiedot = ({
           <PreviewComponent
             setShowPreview={setShowPaatosTekstiPreview}
             headerText={'hakemus.paatos.paatosteksti'}
-            closeButtonText={'hakemus.paatos.suljeEsikatselu'}
-            content={demoContent}
+            closeButtonText={'yleiset.sulje'}
+            content={content}
           />
         )}
       </Stack>

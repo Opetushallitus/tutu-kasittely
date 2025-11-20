@@ -15,6 +15,13 @@ export const getPaatos = async (
   );
 };
 
+export const getPaatosTeksti = async (
+  hakemusOid: string | undefined,
+): Promise<string> => {
+  const url = `paatos/${hakemusOid}/paatosteksti`;
+  return await doApiFetch(url, undefined, 'no-store');
+};
+
 export const postPaatos = (
   hakemusOid: string,
   lomakeId: number,
@@ -38,7 +45,7 @@ export const usePaatos = (
     throwOnError: false,
   });
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: (paatos: Paatos) => postPaatos(hakemusOid!, lomakeId!, paatos),
     onSuccess: async (response) => {
       const paivitettyPaatos = await response.json();
@@ -60,5 +67,6 @@ export const usePaatos = (
     paatos: query.data,
     isPaatosLoading: query.isLoading,
     updateOngoing: isPending,
+    updateSuccess: isSuccess,
   };
 };

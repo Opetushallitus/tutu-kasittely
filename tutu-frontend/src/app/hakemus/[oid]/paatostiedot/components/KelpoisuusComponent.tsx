@@ -52,10 +52,11 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   opetettavaAineOptions: PaatosTietoDropdownOption[];
   updateFieldAction: KelpoisuusFieldUpdateCallback;
 }) => {
+  const theme = useTheme();
   return (
     <>
       {muuAmmattiOptionSelected ? (
-        <Stack>
+        <Stack gap={theme.spacing(2)}>
           <OphTypography variant={'label'}>
             {t('hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmatti')}
           </OphTypography>
