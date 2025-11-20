@@ -94,6 +94,56 @@ private def getTutkintoNimi(hakemus: Hakemus, paatosTieto: PaatosTieto): String 
   if (tutkinto.jarjestys == "MUU") "Muu tutkinto" else tutkinto.nimi.get
 }
 
+private def generateTasoPaatosTeksti(
+  hakemus: Hakemus,
+  paatos: Paatos,
+  paatosKieli: String,
+  hallintoOikeus: HallintoOikeus
+): String = {
+  var paatosTietoTexts     = getTasoPaatosHeader(paatosKieli, paatos.paatosTiedot.size)
+  val hallintoOikeudenNimi = paatosKieli match {
+    case "finnish" => hallintoOikeus.nimi.get(Kieli.fi)
+    case _         => hallintoOikeus.nimi.get(Kieli.sv)
+  }
+  paatosTietoTexts = paatos.paatosTiedot.foldLeft(paatosTietoTexts)((acc, paatosTieto) => {
+    val isTasoPaatos = paatosTieto.paatosTyyppi.get == Taso
+    if (isTasoPaatos) {
+      val isTutkintoTasoSelected = paatosTieto.tutkintoTaso.isDefined
+      if (isTutkintoTasoSelected) {
+        val isYlempiKorkeakouluTutkinto   = paatosTieto.tutkintoTaso.get == YlempiKorkeakoulu
+        val isLisaaTutkintoPaatostekstiin = paatosTieto.lisaaTutkintoPaatostekstiin.getOrElse(false)
+
+        val tutkintoText =
+          if (isLisaaTutkintoPaatostekstiin) {
+            getTasoPaatosTutkintoTextWithTutkintoName(
+              paatosKieli,
+              isYlempiKorkeakouluTutkinto,
+              getTutkintoNimi(hakemus, paatosTieto)
+            )
+          } else {
+            getTasoPaatosTutkintoText(
+              paatosKieli,
+              isYlempiKorkeakouluTutkinto
+            )
+          }
+
+        acc ++ tutkintoText ++ getTasoPaatosPerusteluText(paatosKieli, isYlempiKorkeakouluTutkinto)
+      } else {
+        acc ++ getSelectTutkintoTasoText(paatosKieli)
+      }
+    } else {
+      acc
+    }
+  })
+  paatosTietoTexts ++ getTasoPaatosValitusoikeusText(
+    paatosKieli,
+    hallintoOikeudenNimi.get
+  ) ++ getTasoPaatosMaksunOikaisuText(
+    paatosKieli
+  )
+
+}
+
 def generatePaatosTeksti(
   hakemus: Hakemus,
   paatos: Paatos,
@@ -103,47 +153,7 @@ def generatePaatosTeksti(
   val containsTasoPaatos = paatos.paatosTiedot.exists(paatosTieto => paatosTieto.paatosTyyppi.get == Taso)
 
   if (containsTasoPaatos) {
-    var paatosTietoTexts     = getTasoPaatosHeader(paatosKieli, paatos.paatosTiedot.size)
-    val hallintoOikeudenNimi = paatosKieli match {
-      case "finnish" => hallintoOikeus.nimi.get(Kieli.fi)
-      case _         => hallintoOikeus.nimi.get(Kieli.sv)
-    }
-    paatosTietoTexts = paatos.paatosTiedot.foldLeft(paatosTietoTexts)((acc, paatosTieto) => {
-      val isTasoPaatos = paatosTieto.paatosTyyppi.get == Taso
-      if (isTasoPaatos) {
-        val isTutkintoTasoSelected = paatosTieto.tutkintoTaso.isDefined
-        if (isTutkintoTasoSelected) {
-          val isYlempiKorkeakouluTutkinto   = paatosTieto.tutkintoTaso.get == YlempiKorkeakoulu
-          val isLisaaTutkintoPaatostekstiin = paatosTieto.lisaaTutkintoPaatostekstiin.getOrElse(false)
-
-          val tutkintoText =
-            if (isLisaaTutkintoPaatostekstiin) {
-              getTasoPaatosTutkintoTextWithTutkintoName(
-                paatosKieli,
-                isYlempiKorkeakouluTutkinto,
-                getTutkintoNimi(hakemus, paatosTieto)
-              )
-            } else {
-              getTasoPaatosTutkintoText(
-                paatosKieli,
-                isYlempiKorkeakouluTutkinto
-              )
-            }
-
-          acc ++ tutkintoText ++ getTasoPaatosPerusteluText(paatosKieli, isYlempiKorkeakouluTutkinto)
-        } else {
-          acc ++ getSelectTutkintoTasoText(paatosKieli)
-        }
-      } else {
-        acc
-      }
-    })
-    paatosTietoTexts ++ getTasoPaatosValitusoikeusText(
-      paatosKieli,
-      hallintoOikeudenNimi.get
-    ) ++ getTasoPaatosMaksunOikaisuText(
-      paatosKieli
-    )
+    generateTasoPaatosTeksti(hakemus, paatos, paatosKieli, hallintoOikeus)
   } else {
     getTODOText(paatosKieli)
   }

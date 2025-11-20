@@ -110,7 +110,7 @@ const Paatostiedot = ({
     useShowPreview();
 
   useEffect(() => {
-    if (showPaatosTekstiPreview || updateSuccess) {
+    if (showPaatosTekstiPreview && updateSuccess) {
       getPaatosTeksti(hakemus!.hakemusOid).then((sisalto: string) => {
         setPaatosTeksti(sisalto || '');
         setIsPaatosTekstiLoading(false);
