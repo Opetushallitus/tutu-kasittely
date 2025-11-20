@@ -68,7 +68,9 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
             olennaisiaEroja: e.target.value === 'true',
           })
         }
-        onClear={() => updateLisavaatimukset({ olennaisiaEroja: null })}
+        onClear={() =>
+          updateKelpoisuudenLisavaatimukset({ olennaisiaEroja: null })
+        }
       />
       {lisavaatimukset?.erotAineenopettajanKoulutuksessa && (
         <Stack gap={theme.spacing(2)}>
@@ -137,6 +139,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
           }}
           t={t}
           theme={theme}
+          testIdPrefix={'lahtokohtainen'}
         />
       )}
       {lisavaatimukset?.ammattikokemusJaElinikainenOppiminen && (

@@ -159,11 +159,8 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
               tutkintoTaiOpinto:
                 'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
               myonteinenPaatos: true,
-              kielteisenPaatoksenPerustelut: '{}',
               myonteisenPaatoksenLisavaatimukset: {
                 taydentavatOpinnot: true,
-                kelpoisuuskoe: false,
-                sopeutumisaika: false,
               },
             },
           ],

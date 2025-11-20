@@ -224,14 +224,11 @@ const Paatostiedot = ({
             options={ratkaisutyyppiOptions(t)}
             value={paatos.ratkaisutyyppi || ''}
             onChange={(event) =>
-              updatePaatosField(
-                (event.target.value as Ratkaisutyyppi) !== 'Paatos'
-                  ? {
-                      ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
-                      paatosTiedot: [],
-                    }
-                  : { ratkaisutyyppi: event.target.value as Ratkaisutyyppi },
-              )
+              updatePaatosField({
+                ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
+                paatosTiedot: [],
+                peruutuksenTaiRaukeamisenSyy: undefined,
+              })
             }
             data-testid={'paatos-ratkaisutyyppi'}
           />

@@ -36,6 +36,7 @@ const Kelpoisuuskoe = ({
   updateKelpoisuuskoeAction,
   t,
   theme,
+  testIdPrefix,
 }: {
   sisalto?: KelpoisuuskoeSisalto;
   updateKelpoisuuskoeAction: (
@@ -43,6 +44,7 @@ const Kelpoisuuskoe = ({
   ) => void;
   t: TFunction;
   theme: Theme;
+  testIdPrefix: string;
 }) => {
   const kelpoisuuskoeObj = sisalto || emptyKelpoisuuskoeSisalto();
   return (
@@ -55,7 +57,7 @@ const Kelpoisuuskoe = ({
       {kelpoisuuskoeFields.map((key) => (
         <OphCheckbox
           key={key}
-          data-testid={`kelpoisuuskoe-sisalto-${key}`}
+          data-testid={`${testIdPrefix}-kelpoisuuskoe-sisalto-${key}`}
           label={t(
             `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.${key}`,
           )}
@@ -80,6 +82,7 @@ export type KorvaavaToimenpideProps = {
   ) => void;
   t: TFunction;
   theme: Theme;
+  testIdPrefix: string;
 };
 
 export const KorvaavaToimenpideComponent = ({
@@ -88,6 +91,7 @@ export const KorvaavaToimenpideComponent = ({
   updateKorvaavaToimenpide,
   t,
   theme,
+  testIdPrefix,
 }: KorvaavaToimenpideProps) => {
   const kelpoisuuskoeElement = (
     <Kelpoisuuskoe
@@ -100,6 +104,7 @@ export const KorvaavaToimenpideComponent = ({
       }}
       t={t}
       theme={theme}
+      testIdPrefix={testIdPrefix}
     />
   );
 
@@ -114,7 +119,7 @@ export const KorvaavaToimenpideComponent = ({
           sopeutumiusaikaKestoKk: e.target.value,
         });
       }}
-      data-testid={`korvaavaToimenpode-sopeutumisaika-input`}
+      data-testid={`${testIdPrefix}-korvaavaToimenpide-sopeutumisaika-input`}
     />
   );
 
@@ -129,7 +134,7 @@ export const KorvaavaToimenpideComponent = ({
         </OphTypography>
       </Stack>
       <OphCheckbox
-        data-testid="korvaavaToimenpide-kelpoisuuskoe"
+        data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoe`}
         label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
         checked={korvaavaToimenpide?.kelpoisuuskoe}
         onChange={(e) => {
@@ -143,7 +148,7 @@ export const KorvaavaToimenpideComponent = ({
         <IndentedStack theme={theme}>{kelpoisuuskoeElement}</IndentedStack>
       )}
       <OphCheckbox
-        data-testid="korvaavaToimenpide-sopeutumisaika"
+        data-testid={`${testIdPrefix}-korvaavaToimenpide-sopeutumisaika`}
         label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaika')}
         checked={korvaavaToimenpide?.sopeutumisaika}
         onChange={(e) => {
@@ -157,7 +162,7 @@ export const KorvaavaToimenpideComponent = ({
         <IndentedStack theme={theme}>{sopeutumisaikaElement}</IndentedStack>
       )}
       <OphCheckbox
-        data-testid="korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika"
+        data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika`}
         label={t(
           'hakemus.paatos.myonteinenPaatos.kelpoisuuskoeJaSopeutumisaika',
         )}
