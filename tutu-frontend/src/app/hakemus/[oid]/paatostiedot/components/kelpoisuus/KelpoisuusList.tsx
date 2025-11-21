@@ -5,15 +5,15 @@ import {
   PaatosTietoOption,
 } from '@/src/lib/types/paatos';
 import { useEffect, useState } from 'react';
-import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusComponent';
+import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusComponent';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { Add } from '@mui/icons-material';
 
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,
   opetettavaAine: '',
-  myonteisenPaatoksenLisavaatimukset: '{}',
-  kielteisenPaatoksenPerustelut: '{}',
+  myonteisenPaatoksenLisavaatimukset: undefined,
+  kielteisenPaatoksenPerustelut: undefined,
 });
 
 type KelpoisuusListProps = {

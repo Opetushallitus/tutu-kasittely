@@ -142,7 +142,7 @@ export const ValmistumisenVahvistusComponent = ({
                 valmistumisenVahvistusLisatieto: null,
               };
           setValmistumisenVahvistus(updatedValmistumisenVahvistus);
-          instantUpdateAsiakirjaTietoAction({
+          updateAsiakirjaTieto({
             valmistumisenVahvistus: updatedValmistumisenVahvistus,
           });
         }}
