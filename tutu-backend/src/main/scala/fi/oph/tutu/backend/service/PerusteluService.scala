@@ -20,7 +20,8 @@ class PerusteluService(
   kasittelyVaiheService: KasittelyVaiheService,
   hakemuspalveluService: HakemuspalveluService,
   muistioService: MuistioService,
-  maakoodiService: MaakoodiService
+  maakoodiService: MaakoodiService,
+  koodistoService: KoodistoService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
@@ -119,6 +120,7 @@ class PerusteluService(
       muistioService.haeMuistio(hakemusOid, "perustelut-uo-ro-muu-tutkinto", false)
 
     val perusteluMuistio = generatePerusteluMuistio(
+      koodistoService,
       maakoodiService,
       hakemusMaybe,
       ataruHakemusMaybe,

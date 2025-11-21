@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.fixture.*
 import fi.oph.tutu.backend.utils.Constants
 
 import java.util.UUID
+import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
@@ -209,8 +210,31 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       jatkoOpintoKelpoisuusLisatieto = None,
       muuPerustelu = Some("Hyvin suoritettu"),
       lausuntoPyyntojenLisatiedot = None,
-      lausunnonSisalto = None,
-      lausuntopyynnot = Seq.empty,
+      lausunnonSisalto = Some("Hakija on suorittanut tutkinnon kirjeopintoina"),
+      lausuntopyynnot = Seq(
+        Lausuntopyynto(
+          id = None,
+          perusteluId = None,
+          lausunnonAntajaKoodiUri = Some("testi-korkeakoulu"),
+          lausunnonAntajaMuu = None,
+          lahetetty = Some(
+            LocalDateTime.parse("2025-07-01T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+          ),
+          saapunut = Some(
+            LocalDateTime.parse("2025-07-02T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+          )
+        ),
+        Lausuntopyynto(
+          id = None,
+          perusteluId = None,
+          lausunnonAntajaKoodiUri = Some("muu"),
+          lausunnonAntajaMuu = Some("HOKS tuutori"),
+          lahetetty = Some(
+            LocalDateTime.parse("2025-07-01T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
+          ),
+          saapunut = None
+        )
+      ),
       luotu = None,
       luoja = None,
       muokattu = None,
@@ -265,6 +289,28 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   )
 
   @Mock
+  var koodistoService: KoodistoService = _
+
+  def setupKorkeakoulut(): Unit = {
+    when(koodistoService.haeKorkeakoulut()).thenReturn(
+      Seq(
+        KoodistoItem(
+          koodiUri = "testi-korkeakoulu",
+          koodiArvo = "testi-korkeakoulu",
+          nimi = Map(
+            Kieli.fi -> "Paras korkeakoulu",
+            Kieli.sv -> "Bästa högskolan",
+            Kieli.en -> "Best college"
+          ),
+          voimassaAlkuPvm = None,
+          voimassaLoppuPvm = None,
+          tila = None
+        )
+      )
+    )
+  }
+
+  @Mock
   var maakoodiService: MaakoodiService = _
 
   def setupMaakoodit(): Unit = {
@@ -290,8 +336,10 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
     setupMaakoodit()
+    setupKorkeakoulut()
 
     val result = generate(
+      koodistoService,
       maakoodiService,
       noneHakemus,
       noneAtaruHakemus,
@@ -305,8 +353,10 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def generatesAStringWhenInputsDefined(): Unit = {
     setupMaakoodit()
+    setupKorkeakoulut()
 
     val result = generate(
+      koodistoService,
       maakoodiService,
       someHakemus,
       someAtaruHakemus,
@@ -494,5 +544,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("IMI-hälytykset tarkistettu"))
     assert(result.get.contains("Muut AP-päätöksen perustelut"))
     assert(result.get.contains("SEUT-arviointi"))
+  }
+
+  @Test
+  def haeLausuntopyynnotProducesString(): Unit = {
+    setupKorkeakoulut()
+
+    val result = haeLausuntopyynnot(koodistoService, somePerustelu)
+
+    assert(result.get.contains("Lausunnon antaja, muu: HOKS tuutori"))
+    assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
+    assert(result.get.contains("Lausuntopyynnön sisältö:"))
+    assert(result.get.contains("Hakija on suorittanut tutkinnon kirjeopintoina"))
   }
 }
