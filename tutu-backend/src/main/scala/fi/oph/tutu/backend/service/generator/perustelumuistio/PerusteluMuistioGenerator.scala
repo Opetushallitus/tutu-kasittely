@@ -488,7 +488,7 @@ def haeLausuntopyynnot(
         Seq(
           (pyynto.lausunnonAntajaKoodiUri, pyynto.lausunnonAntajaMuu) match {
             case (Some("muu"), Some(tarkenne)) => Some(s"Lausunnon antaja, muu: $tarkenne")
-            case (Some("muu"), _)              => Some(s"Lausunnon antaja, muu")
+            case (Some("muu"), None)           => Some(s"Lausunnon antaja, muu")
             case (Some(korkeakouluKoodi), _)   => {
               val korkeakoulu = korkeakoulut
                 .find(item => item.koodiUri == korkeakouluKoodi)
@@ -499,7 +499,7 @@ def haeLausuntopyynnot(
                 case Some(korkeakoulunNimi) => Some(s"Lausunnon antaja: $korkeakoulunNimi")
               }
             }
-            case (_, _) => Some(s"Lausunnon antaja: -")
+            case (None, _) => Some(s"Lausunnon antaja: -")
           },
           pyynto.lahetetty
             .map(formatDate)
