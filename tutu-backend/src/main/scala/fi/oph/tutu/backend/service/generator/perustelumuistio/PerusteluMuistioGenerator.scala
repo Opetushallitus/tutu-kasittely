@@ -1,10 +1,9 @@
 package fi.oph.tutu.backend.service.generator.perustelumuistio
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, MaakoodiService}
+import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, KoodistoService, MaakoodiService}
+import fi.oph.tutu.backend.service.generator.{formatDate, toKyllaEi}
 import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
-
-import java.time.format.DateTimeFormatter
 
 def toKyllaEi(value: Boolean): String = {
   if (value) { "Kyllä" }
@@ -19,7 +18,7 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
     val imiPyyntoNumero   = imiPyynto.flatMap(_.getNumeroIfPyyntoTrue).getOrElse(" - ")
     val imiPyyntoVastattu = imiPyynto
       .flatMap(_.getVastattuIfPyyntoTrue)
-      .map(date => date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+      .map(formatDate)
       .map(dateStr => s", vastattu ${dateStr}")
       .getOrElse("")
 
@@ -476,7 +475,53 @@ def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
   }
 }
 
+def haeLausuntopyynnot(
+  koodistoService: KoodistoService,
+  perusteluMaybe: Option[Perustelu]
+): Option[String] = {
+  perusteluMaybe match {
+    case None            => None
+    case Some(perustelu) => {
+      val korkeakoulut = koodistoService.haeKorkeakoulut()
+
+      val pyynnot = perustelu.lausuntopyynnot.map(pyynto => {
+        Seq(
+          (pyynto.lausunnonAntajaKoodiUri, pyynto.lausunnonAntajaMuu) match {
+            case (Some("muu"), Some(tarkenne)) => Some(s"Lausunnon antaja, muu: $tarkenne")
+            case (Some("muu"), _)              => Some(s"Lausunnon antaja, muu")
+            case (Some(korkeakouluKoodi), _)   => {
+              val korkeakoulu = korkeakoulut
+                .find(item => item.koodiUri == korkeakouluKoodi)
+                .flatMap(_.nimi.get(Kieli.fi))
+
+              korkeakoulu match {
+                case None                   => Some(s"Lausunnon antaja: $korkeakouluKoodi")
+                case Some(korkeakoulunNimi) => Some(s"Lausunnon antaja: $korkeakoulunNimi")
+              }
+            }
+            case (_, _) => Some(s"Lausunnon antaja: -")
+          },
+          pyynto.lahetetty
+            .map(formatDate)
+            .map(lahetetty => s"Lähetetty: $lahetetty"),
+          pyynto.saapunut
+            .map(formatDate)
+            .map(saapunut => s"Lähetetty: $saapunut")
+        ).flatten.mkString("\n")
+      })
+
+      val sisalto = perustelu.lausunnonSisalto
+        .map(sisalto => s"Lausuntopyynnön sisältö:\n$sisalto")
+
+      val yhdistetty = pyynnot :+ sisalto
+
+      Some(yhdistetty.mkString("\n\n"))
+    }
+  }
+}
+
 def generate(
+  koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
@@ -496,6 +541,7 @@ def generate(
     haeMuuPerustelu(perusteluMaybe),
     haeUoRoPerustelu(perusteluMaybe, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio),
     haeApPerustelu(perusteluMaybe),
+    haeLausuntopyynnot(koodistoService, perusteluMaybe),
     haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
