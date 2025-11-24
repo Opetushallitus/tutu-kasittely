@@ -28,14 +28,6 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   }
 }
 
-def haeSuostumusSahkoiseenAsiointiin(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  val suostumusValue = hakemusMaybe
-    .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA))
-    .flatMap(_.value.head.label.get(Kieli.fi))
-
-  suostumusValue.map(valinta => s"Suostumus sähköiseen asiointiin: ${valinta}")
-}
-
 def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val valmistumisenVahvistusMaybe: Option[ValmistumisenVahvistus] = hakemusMaybe
     .flatMap(_.asiakirja)
@@ -55,6 +47,22 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
   muotoiltuVastausMaybe.map(muotoiltuVastaus =>
     s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
   )
+}
+
+def haeSelvityksetSaatu(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  hakemusMaybe
+    .flatMap(_.asiakirja)
+    .map(_.selvityksetSaatu)
+    .map(toKyllaEi)
+    .map(muotoiltu => s"Kaikki tarvittavat selvitykset saatu: ${muotoiltu}")
+}
+
+def haeSuostumusSahkoiseenAsiointiin(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val suostumusValue = hakemusMaybe
+    .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA))
+    .flatMap(_.value.head.label.get(Kieli.fi))
+
+  suostumusValue.map(valinta => s"Suostumus sähköiseen asiointiin: ${valinta}")
 }
 
 def haeHakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -281,10 +289,10 @@ def haeMuuPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
 
 def haeUoRoPerustelu(
   perusteluMaybe: Option[Perustelu],
-  someKoulutuksenSisaltoMuistio: Option[Muistio],
-  someMuuTutkintoMuistio: Option[Muistio]
+  koulutuksenSisaltoMuistioMaybe: Option[Muistio],
+  muuTutkintoMuistioMaybe: Option[Muistio]
 ): Option[String] = {
-  val koulutuksenSisalto = someKoulutuksenSisaltoMuistio
+  val koulutuksenSisalto = koulutuksenSisaltoMuistioMaybe
     .map(_.sisalto)
     .map(sisalto => s"Koulutuksen sisältö:\n${sisalto}")
 
@@ -378,7 +386,7 @@ def haeUoRoPerustelu(
       ).flatten.mkString("\n")
     })
 
-  val muuTutkintoTaiOpintosuoritus = someMuuTutkintoMuistio
+  val muuTutkintoTaiOpintosuoritus = muuTutkintoMuistioMaybe
     .map(_.sisalto)
     .map(sisalto => s"Muu tutkinto tai opintosuoritus:\n${sisalto}")
 
@@ -520,32 +528,58 @@ def haeLausuntopyynnot(
   }
 }
 
+def haeAsiakirjat(
+  hakemusMaybe: Option[Hakemus],
+  asiakirjaMuistioMaybe: Option[Muistio]
+): Option[String] = {
+  val imipyyntoMaybe: Option[String]                = haeImiPyyntoTieto(hakemusMaybe)
+  val valmistuminenVahvistettuMaybe: Option[String] = haeValmistuminenVahvistettu(hakemusMaybe)
+  val selvityksetSaatuMaybe: Option[String]         = haeSelvityksetSaatu(hakemusMaybe)
+
+  val esittelijanHuomiotMaybe: Option[String] = asiakirjaMuistioMaybe
+    .map(_.sisalto)
+    .map(sisalto => s"Esittelijän huomioita asiakirjoista:\n${sisalto}")
+
+  val result = Seq(
+    imipyyntoMaybe,
+    valmistuminenVahvistettuMaybe,
+    selvityksetSaatuMaybe,
+    esittelijanHuomiotMaybe
+  ).flatten.mkString("\n")
+
+  if (result == "") {
+    None
+  } else {
+    Some(result)
+  }
+}
+
 def generate(
   koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
-  someKoulutuksenSisaltoMuistio: Option[Muistio],
-  someMuuTutkintoMuistio: Option[Muistio]
+  koulutuksenSisaltoMuistioMaybe: Option[Muistio],
+  muuTutkintoMuistioMaybe: Option[Muistio],
+  asiakirjaMuistioMaybe: Option[Muistio]
 ): String = {
   var result: Seq[String] = Seq[Option[String]](
     haeHakijanNimi(hakemusMaybe),
     haeHakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
     haeSuostumusSahkoiseenAsiointiin(hakemusMaybe),
-    haeImiPyyntoTieto(hakemusMaybe),
     haeYleisetPerustelut(perusteluMaybe),
     haeJatkoOpintoKelpoisuus(perusteluMaybe),
     haeAikaisemmatPaatokset(perusteluMaybe),
     haeMuuPerustelu(perusteluMaybe),
-    haeUoRoPerustelu(perusteluMaybe, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio),
+    haeUoRoPerustelu(perusteluMaybe, koulutuksenSisaltoMuistioMaybe, muuTutkintoMuistioMaybe),
     haeApPerustelu(perusteluMaybe),
     haeLausuntopyynnot(koodistoService, perusteluMaybe),
-    haeValmistuminenVahvistettu(hakemusMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
-    haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe)
+    haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe),
+    haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe)
   ).flatten
 
   result.mkString("\n\n")
