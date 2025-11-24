@@ -51,33 +51,35 @@ export const PaatosTietoComponent = ({
   }, [paatosTieto]);
 
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
+    const initial = {
+      ...currentPaatosTieto,
+      paatosTyyppi: paatosTyyppi,
+      kelpoisuudet: [],
+      rinnastettavatTutkinnotTaiOpinnot: [],
+      myonteinenPaatos: undefined,
+      kielteisenPaatoksenPerustelut: undefined,
+      tutkintoTaso: undefined,
+    };
+
     switch (paatosTyyppi) {
       case 'Taso':
       case 'TiettyTutkintoTaiOpinnot':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
-          paatosTyyppi: paatosTyyppi,
+          ...initial,
           sovellettuLaki: 'uo' as SovellettuLaki,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'Kelpoisuus':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
-          paatosTyyppi: paatosTyyppi,
+          ...initial,
           sovellettuLaki: undefined,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'RiittavatOpinnot':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
+          ...initial,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'ro' as SovellettuLaki,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
     }

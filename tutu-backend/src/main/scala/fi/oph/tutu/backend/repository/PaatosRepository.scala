@@ -6,7 +6,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.dbio.DBIO
-import slick.jdbc.GetResult
+import slick.jdbc.{GetResult, SQLActionBuilder}
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
@@ -160,24 +160,19 @@ class PaatosRepository extends BaseResultHandlers {
   /**
    * Tallentaa/poistaa uudet/muuttuneet/poistetut päätöstiedot
    *
-   * @param perusteluId
-   * vastaavan perustelun uuid
+   * @param paatosId
+   * vastaavan päätöksen uuid
    * @param modifyData
    * päätöstietojen muokkaustiedot
    * @param luojaTaiMuokkaaja
    * pyynnön luoja tai muokkaaja
    */
   def suoritaPaatosTietojenModifiointi(
-    perusteluId: UUID,
+    paatosId: UUID,
     modifyData: PaatosTietoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    val deleteTutkintosOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
-      haeTutkinnotTaiOpinnot(id).flatMap { tto =>
-        tto.id.map(poistaTutkintoTaiOpinto)
-      }
-    }
-    val tutkinnotTaiOpinnotActions = {
+    var tutkinnotTaiOpinnotActions = {
       modifyData.muutetut.flatMap { pt =>
         val paatostietoId     = pt.id.getOrElse(UUID.randomUUID())
         val existingTutkinnot = haeTutkinnotTaiOpinnot(paatostietoId)
@@ -199,13 +194,13 @@ class PaatosRepository extends BaseResultHandlers {
         deleteActions ++ updateActions ++ addActions
       }
     }
-
-    val deleteKelpoisuudetOfDeletedPaatosTiedot = modifyData.poistetut.flatMap { id =>
-      haeKelpoisuudet(id).flatMap { kelpoisuus =>
-        kelpoisuus.id.map(poistaKelpoisuus)
+    tutkinnotTaiOpinnotActions = tutkinnotTaiOpinnotActions ++ modifyData.poistetut.flatMap { id =>
+      haeTutkinnotTaiOpinnot(id).flatMap { tto =>
+        tto.id.map(poistaTutkintoTaiOpinto)
       }
     }
-    val kelpoisuusActions = {
+
+    var kelpoisuusActions = {
       modifyData.muutetut.flatMap { pt =>
         val paatostietoId        = pt.id.getOrElse(UUID.randomUUID())
         val existingKelpoisuudet = haeKelpoisuudet(paatostietoId)
@@ -227,12 +222,34 @@ class PaatosRepository extends BaseResultHandlers {
         deleteActions ++ updateActions ++ addActions
       }
     }
-    val paatostietoActions = modifyData.uudet.map(pt => lisaaPaatosTieto(perusteluId, pt, luojaTaiMuokkaaja)) ++
+    kelpoisuusActions = kelpoisuusActions ++ modifyData.poistetut.flatMap { id =>
+      haeKelpoisuudet(id).flatMap { kelpoisuus =>
+        kelpoisuus.id.map(poistaKelpoisuus)
+      }
+    }
+    val separatelySavedPaatostiedot =
+      modifyData.uudet.filter(_.containsTutkinnotOrKelpoisuudet)
+
+    val addEntityActionsForNewPaatostiedot = separatelySavedPaatostiedot.flatMap(pt => {
+      val paatostieto   = tallennaPaatosTieto(paatosId, pt, luojaTaiMuokkaaja)
+      val paatostietoId = paatostieto.id.get
+
+      val tutkinnotTaiOpinnotActions =
+        pt.rinnastettavatTutkinnotTaiOpinnot.map(tto => lisaaTutkintoTaiOpinto(paatostietoId, tto, luojaTaiMuokkaaja))
+
+      val kelpoisuusActions = pt.kelpoisuudet.map(k => lisaaKelpoisuus(paatostietoId, k, luojaTaiMuokkaaja))
+
+      tutkinnotTaiOpinnotActions ++ kelpoisuusActions
+    })
+
+    val paatostietoActions = modifyData.uudet
+      .filterNot(_.containsTutkinnotOrKelpoisuudet)
+      .map(pt => lisaaPaatosTieto(paatosId, pt, luojaTaiMuokkaaja).asUpdate) ++
       modifyData.muutetut.map(pt => paivitaPaatosTieto(pt, luojaTaiMuokkaaja)) ++
       modifyData.poistetut.map(poistaPaatosTieto)
 
     val combined = db.combineIntDBIOs(
-      deleteTutkintosOfDeletedPaatosTiedot ++ deleteKelpoisuudetOfDeletedPaatosTiedot ++ tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions
+      tutkinnotTaiOpinnotActions ++ kelpoisuusActions ++ paatostietoActions ++ addEntityActionsForNewPaatostiedot
     )
 
     db.runTransactionally(combined, "suorita_paatostietojen_modifiointi") match {
@@ -243,39 +260,53 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def lisaaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): DBIO[Int] = {
-    sqlu"""
-        INSERT INTO paatostieto (
-          paatos_id,
-          paatostyyppi,
-          sovellettulaki,
-          tutkinto_id,
-          lisaa_tutkinto_paatostekstiin,
-          myonteinen_paatos,
-          kielteisen_paatoksen_perustelut,
-          tutkintotaso,
-          luoja
-        )
-        VALUES (
-          ${paatosId.toString}::uuid,
-          ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
-          ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
-          ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
-          ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
-          ${paatosTieto.myonteinenPaatos}::boolean,
-          ${Serialization.write(paatosTieto.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
-          ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
-          $luoja
-        )"""
+  def lisaaPaatosTieto(
+    paatosId: UUID,
+    paatosTieto: PaatosTieto,
+    luoja: String,
+    setResultClause: Boolean = false
+  ): SQLActionBuilder = {
+    val resultClause = if (setResultClause) {
+      s"""
+        RETURNING id, paatos_id, paatostyyppi, sovellettulaki, tutkinto_id, lisaa_tutkinto_paatostekstiin,
+          myonteinen_paatos, kielteisen_paatoksen_perustelut,
+          tutkintotaso, luotu, luoja, null
+      """
+    } else {
+      ""
+    }
+
+    sql"""
+            INSERT INTO paatostieto (
+              paatos_id,
+              paatostyyppi,
+              sovellettulaki,
+              tutkinto_id,
+              lisaa_tutkinto_paatostekstiin,
+              myonteinen_paatos,
+              kielteisen_paatoksen_perustelut,
+              tutkintotaso,
+              luoja
+            )
+            VALUES (
+              ${paatosId.toString}::uuid,
+              ${paatosTieto.paatosTyyppi.map(_.toString).orNull}::paatostyyppi,
+              ${paatosTieto.sovellettuLaki.map(_.toString).orNull}::sovellettulaki,
+              ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
+              ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
+              ${paatosTieto.myonteinenPaatos}::boolean,
+              ${Serialization.write(paatosTieto.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
+              ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+              $luoja)
+              #$resultClause"""
   }
 
   def tallennaPaatosTieto(paatosId: UUID, paatosTieto: PaatosTieto, luoja: String): PaatosTieto = {
     try {
       db.run(
-        lisaaPaatosTieto(paatosId, paatosTieto, luoja),
+        lisaaPaatosTieto(paatosId, paatosTieto, luoja, true).as[PaatosTieto].head,
         "tallenna_paatostieto"
       )
-      paatosTieto
     } catch {
       case e: Exception =>
         LOG.error(s"Päätöstiedon tallennus epäonnistui: $e")

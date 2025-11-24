@@ -45,7 +45,10 @@ case class PaatosTieto(
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None
-)
+) {
+  def containsTutkinnotOrKelpoisuudet: Boolean =
+    rinnastettavatTutkinnotTaiOpinnot.nonEmpty || kelpoisuudet.nonEmpty
+}
 
 case class TutkintoTaiOpinto(
   id: Option[UUID] = None,
