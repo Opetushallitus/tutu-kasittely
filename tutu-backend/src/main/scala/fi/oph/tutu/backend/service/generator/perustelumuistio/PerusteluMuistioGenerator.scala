@@ -150,9 +150,12 @@ def haeYhteistutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
 
 def haeTutkintokohtaisetTiedot(
   maakoodiService: MaakoodiService,
+  koodistoService: KoodistoService,
   hakemusMaybe: Option[Hakemus]
 ): Option[String] = {
-  val lomakkeenKieli = hakemusMaybe.map(_.lomakkeenKieli)
+  val lomakkeenKieli                  = hakemusMaybe.map(_.lomakkeenKieli)
+  val koulutusalat: Seq[KoodistoItem] = koodistoService.getKoodisto("kansallinenkoulutusluokitus2016koulutusalataso1")
+
   hakemusMaybe
     .map(_.tutkinnot)
     .map((tutkinnot: Seq[Tutkinto]) => {
@@ -174,11 +177,21 @@ def haeTutkintokohtaisetTiedot(
           val suoritusvuodet = Seq(tutkinto.aloitusVuosi, tutkinto.paattymisVuosi).flatten
             .mkString(" - ")
 
+          val koulutusala: Option[String] = tutkinto.koulutusalaKoodiUri
+            .map(koulutusalaKoodiUri => koulutusalat.find(item => item.koodiUri == koulutusalaKoodiUri))
+            .flatMap(itemMaybe =>
+              itemMaybe match {
+                case None       => None
+                case Some(item) => item.nimi.get(Kieli.fi)
+              }
+            )
+
           Seq[String](
             s"Tutkinto ${tutkinto.jarjestys}:",
             s"  Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
             s"  Nimi: ${tutkinto.nimi.getOrElse("-")}",
             s"  Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
+            s"  Koulutusala: ${koulutusala.getOrElse("-")}",
             s"  Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
             s"  Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
             s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}",
@@ -578,7 +591,7 @@ def generate(
     haeLausuntopyynnot(koodistoService, perusteluMaybe),
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
-    haeTutkintokohtaisetTiedot(maakoodiService, hakemusMaybe),
+    haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, hakemusMaybe),
     haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe)
   ).flatten
 
