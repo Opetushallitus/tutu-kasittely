@@ -22,9 +22,8 @@ import {
 import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
-import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
-import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/KelpoisuusList';
-import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
+import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
+import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 
 interface PaatosTietoProps {
   t: TFunction;
@@ -51,51 +50,36 @@ export const PaatosTietoComponent = ({
     setCurrentPaatosTieto(paatosTieto);
   }, [paatosTieto]);
 
-  const updateMyonteinenPaatos = (value: boolean) => {
-    updatePaatosTietoAction(
-      value
-        ? {
-            ...currentPaatosTieto,
-            myonteinenPaatos: true,
-            kielteisenPaatoksenPerustelut: undefined,
-          }
-        : {
-            ...currentPaatosTieto,
-            myonteinenPaatos: false,
-            tutkintoTaso: undefined,
-            rinnastettavatTutkinnotTaiOpinnot: [],
-          },
-    );
-  };
-
   const handlePaatosTyyppiChange = (paatosTyyppi: Paatostyyppi) => {
+    const initial = {
+      ...currentPaatosTieto,
+      paatosTyyppi: paatosTyyppi,
+      kelpoisuudet: [],
+      rinnastettavatTutkinnotTaiOpinnot: [],
+      myonteinenPaatos: undefined,
+      kielteisenPaatoksenPerustelut: undefined,
+      tutkintoTaso: undefined,
+    };
+
     switch (paatosTyyppi) {
       case 'Taso':
       case 'TiettyTutkintoTaiOpinnot':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
-          paatosTyyppi: paatosTyyppi,
+          ...initial,
           sovellettuLaki: 'uo' as SovellettuLaki,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'Kelpoisuus':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
-          paatosTyyppi: paatosTyyppi,
+          ...initial,
           sovellettuLaki: undefined,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
       case 'RiittavatOpinnot':
         updatePaatosTietoAction({
-          ...currentPaatosTieto,
+          ...initial,
           paatosTyyppi: paatosTyyppi,
           sovellettuLaki: 'ro' as SovellettuLaki,
-          kelpoisuudet: [],
-          rinnastettavatTutkinnotTaiOpinnot: [],
         });
         break;
     }
@@ -167,12 +151,25 @@ export const PaatosTietoComponent = ({
             )}
             {currentPaatosTieto.paatosTyyppi === 'Taso' && (
               <>
-                <MyonteinenPaatos
+                <MyonteinenTaiKielteinenPaatosComponent
+                  myonteinenPaatos={paatosTieto.myonteinenPaatos}
+                  kielteisenPaatoksenPerustelut={
+                    paatosTieto.kielteisenPaatoksenPerustelut
+                  }
+                  updatePaatosAction={(paatos) => {
+                    const tobePaatostieto = {
+                      ...currentPaatosTieto,
+                      ...paatos,
+                    };
+                    // If paatos is changed to kielteinen, remove tutkintoTaso
+                    if (paatos.myonteinenPaatos === false) {
+                      tobePaatostieto.tutkintoTaso = undefined;
+                    }
+                    updatePaatosTietoAction(tobePaatostieto);
+                  }}
                   t={t}
-                  myonteinenPaatos={currentPaatosTieto.myonteinenPaatos}
-                  updateMyonteinenPaatosAction={updateMyonteinenPaatos}
                 />
-                {currentPaatosTieto.myonteinenPaatos ? (
+                {currentPaatosTieto.myonteinenPaatos && (
                   <OphSelectFormField
                     placeholder={t('yleiset.valitse')}
                     label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
@@ -185,12 +182,6 @@ export const PaatosTietoComponent = ({
                       })
                     }
                     data-testid={'paatos-tutkintotaso-dropdown'}
-                  />
-                ) : (
-                  <KielteisenPaatoksenPerusteluComponent
-                    paatosTieto={paatosTieto}
-                    updatePaatosTietoAction={updatePaatosTietoAction}
-                    t={t}
                   />
                 )}
               </>

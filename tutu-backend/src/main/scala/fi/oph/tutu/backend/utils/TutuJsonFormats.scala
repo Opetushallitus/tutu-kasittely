@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 trait TutuJsonFormats {
   implicit val formats: Formats =
-    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer
+    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
 }
 
 object AnswerValueSerializer
@@ -137,6 +137,22 @@ object KasittelyVaiheSerializer
         },
         { case vaihe: KasittelyVaihe =>
           JString(vaihe.toString)
+        }
+      )
+    )
+
+object AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
+    extends CustomSerializer[AmmattikokemusElinikainenOppiminenKorvaavuus](_ =>
+      (
+        {
+          case JString(value) => AmmattikokemusElinikainenOppiminenKorvaavuus.fromString(value)
+          case unexpected     =>
+            throw new MappingException(
+              s"Cannot deserialize AmmattikokemusElinikainenOppiminenKorvaavuus from $unexpected"
+            )
+        },
+        { case korvaavuus: AmmattikokemusElinikainenOppiminenKorvaavuus =>
+          JString(korvaavuus.toString)
         }
       )
     )

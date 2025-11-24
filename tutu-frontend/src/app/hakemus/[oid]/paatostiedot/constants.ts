@@ -1,5 +1,11 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Paatostyyppi } from '@/src/lib/types/paatos';
+import {
+  AmmattikokemusJaElinikainenOppiminen,
+  ErotAineenopettajanKoulutuksessa,
+  KelpoisuuskoeSisalto,
+  KorvaavaToimenpide,
+  Paatostyyppi,
+} from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/hakemus';
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
@@ -84,47 +90,132 @@ export const tutkintoOptions = (t: TFunction, tutkinnot: Tutkinto[]) => {
   );
 };
 
-export const myonteinenPaatosOptions = (t: TFunction) => {
-  return [
-    { value: 'true', label: t('hakemus.paatos.tutkinto.myonteinen') },
-    { value: 'false', label: t('hakemus.paatos.tutkinto.kielteinen') },
-  ];
-};
+export const myonteinenPaatosOptions = (t: TFunction) => [
+  { value: 'true', label: t('hakemus.paatos.myonteinen') },
+  { value: 'false', label: t('hakemus.paatos.kielteinen') },
+];
 
-export const tutkinnonTasoOptions = (t: TFunction) => {
-  return [
-    {
-      value: 'AlempiKorkeakoulu',
-      label: t('hakemus.paatos.tutkinto.alempiKorkeakoulu'),
-    },
-    {
-      value: 'YlempiKorkeakoulu',
-      label: t('hakemus.paatos.tutkinto.ylempiKorkeakoulu'),
-    },
-  ];
-};
+export const tutkinnonTasoOptions = (t: TFunction) => [
+  {
+    value: 'AlempiKorkeakoulu',
+    label: t('hakemus.paatos.tutkinto.alempiKorkeakoulu'),
+  },
+  {
+    value: 'YlempiKorkeakoulu',
+    label: t('hakemus.paatos.tutkinto.ylempiKorkeakoulu'),
+  },
+];
 
-export const direktiivitasoOptions = (t: TFunction) => {
-  return [
-    {
-      value: 'a_1384_2015_patevyystaso_1',
-      label: t('hakemus.paatos.direktiivitaso.a_1384_2015_patevyystaso_1'),
-    },
-    {
-      value: 'b_1384_2015_patevyystaso_2',
-      label: t('hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2'),
-    },
-    {
-      value: 'c_1384_2015_patevyystaso_3',
-      label: t('hakemus.paatos.direktiivitaso.c_1384_2015_patevyystaso_3'),
-    },
-    {
-      value: 'd_1384_2015_patevyystaso_4',
-      label: t('hakemus.paatos.direktiivitaso.d_1384_2015_patevyystaso_4'),
-    },
-    {
-      value: 'e_1384_2015_patevyystaso_5',
-      label: t('hakemus.paatos.direktiivitaso.e_1384_2015_patevyystaso_5'),
-    },
-  ];
-};
+export const direktiivitasoOptions = (t: TFunction) => [
+  {
+    value: 'a_1384_2015_patevyystaso_1',
+    label: t('hakemus.paatos.direktiivitaso.a_1384_2015_patevyystaso_1'),
+  },
+  {
+    value: 'b_1384_2015_patevyystaso_2',
+    label: t('hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2'),
+  },
+  {
+    value: 'c_1384_2015_patevyystaso_3',
+    label: t('hakemus.paatos.direktiivitaso.c_1384_2015_patevyystaso_3'),
+  },
+  {
+    value: 'd_1384_2015_patevyystaso_4',
+    label: t('hakemus.paatos.direktiivitaso.d_1384_2015_patevyystaso_4'),
+  },
+  {
+    value: 'e_1384_2015_patevyystaso_5',
+    label: t('hakemus.paatos.direktiivitaso.e_1384_2015_patevyystaso_5'),
+  },
+];
+
+export const olennaisiaErojaOptions = (t: TFunction) => [
+  { value: 'true', label: t('yleiset.kylla') },
+  { value: 'false', label: t('yleiset.ei') },
+];
+
+export const ammattikokemusElinikainenOppiminenKorvaavuusOptions = (
+  t: TFunction,
+) => [
+  {
+    value: 'Taysi',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.taysi',
+    ),
+  },
+  {
+    value: 'Osittainen',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.osittainen',
+    ),
+  },
+  {
+    value: 'Ei',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.ei',
+    ),
+  },
+];
+
+export const erotKoulutuksessaAineenopettajaFields = [
+  'eroOpetettavanAineenOpinnoissa',
+  'eroPedagogisissaOpinnoissa',
+  'syventavienOpintojenPuuttuminen',
+  'eriIkaryhma',
+  'muu',
+] as const satisfies (keyof ErotAineenopettajanKoulutuksessa)[];
+
+export const emptyErotKoulutuksessaAineenopettaja =
+  (): ErotAineenopettajanKoulutuksessa =>
+    erotKoulutuksessaAineenopettajaFields.reduce((acc, key) => {
+      acc[key] = false;
+      return acc;
+    }, {} as ErotAineenopettajanKoulutuksessa);
+
+export const korvaavaToimenpideOptions = [
+  'kelpoisuuskoe',
+  'sopeutumisaika',
+  'kelpoisuuskoeJaSopeutumisaika',
+] as const satisfies (keyof KorvaavaToimenpide)[];
+
+export const emptyKorvaavaToimenpide = (): KorvaavaToimenpide =>
+  korvaavaToimenpideOptions.reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {} as KorvaavaToimenpide);
+
+export const korvaavaToimenpideOptionsUO = [
+  'taydentavatOpinnot',
+  'kelpoisuuskoe',
+  'sopeutumisaika',
+] as const satisfies (keyof KorvaavaToimenpide)[];
+
+export const emptyKorvaavaToimenpideUO = (): KorvaavaToimenpide =>
+  korvaavaToimenpideOptionsUO.reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {} as KorvaavaToimenpide);
+
+export const kelpoisuuskoeFields = [
+  'aihealue1',
+  'aihealue2',
+  'aihealue3',
+] as const satisfies (keyof KelpoisuuskoeSisalto)[];
+
+export const emptyKelpoisuuskoeSisalto = (): KelpoisuuskoeSisalto =>
+  kelpoisuuskoeFields.reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {} as KelpoisuuskoeSisalto);
+
+export const ammattikokemusJaElinikainenOppiminenOptions = [
+  'ammattikokemus',
+  'elinikainenOppiminen',
+] as const satisfies (keyof AmmattikokemusJaElinikainenOppiminen)[];
+
+export const emptyAmmattikokemusJaElinikainenOppiminen =
+  (): AmmattikokemusJaElinikainenOppiminen =>
+    ammattikokemusJaElinikainenOppiminenOptions.reduce((acc, key) => {
+      acc[key] = false;
+      return acc;
+    }, {} as AmmattikokemusJaElinikainenOppiminen);

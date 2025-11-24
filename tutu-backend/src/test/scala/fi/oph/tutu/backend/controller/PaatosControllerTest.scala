@@ -79,6 +79,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   var paatosWithKielteisetPaatosTiedot: Paatos                                   = _
   var paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: Paatos          = _
   var paatosWithPaatosTiedotJaKelpoisuudet: Paatos                               = _
+  var paatosWithNewPaatosTiedotWithTutkinnotJaKelpoisuudet: Paatos               = _
 
   var paatosTiedot: Seq[PaatosTieto] =
     Seq(
@@ -152,7 +153,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       tutkintoId = None,
       lisaaTutkintoPaatostekstiin = None,
       myonteinenPaatos = None,
-      myonteisenPaatoksenLisavaatimukset = Some("{}"),
       kielteisenPaatoksenPerustelut = None,
       tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
     )
@@ -167,7 +167,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       tutkintoId = None,
       lisaaTutkintoPaatostekstiin = None,
       myonteinenPaatos = Some(false),
-      myonteisenPaatoksenLisavaatimukset = Some("{}"),
       kielteisenPaatoksenPerustelut = Some(
         KielteisenPaatoksenPerustelut(
           epavirallinenKorkeakoulu = true
@@ -202,7 +201,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
               myonteisenPaatoksenLisavaatimukset = Some(
                 MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true)
               ),
-              kielteisenPaatoksenPerustelut = Some("{}")
+              kielteisenPaatoksenPerustelut = None
             )
           )
         )
@@ -215,7 +214,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   private def makePaatosWithPaatosTiedotJaKelpoisuudet(
     givenHakemusId: Option[UUID],
     givenPaatosId: Option[UUID],
-    givenPaatosTietoId: Option[UUID]
+    givenPaatosTietoId: Option[UUID],
+    addTutkinnot: Seq[TutkintoTaiOpinto] = Seq.empty
   ): Paatos = {
     val ratkaisutyyppi = Ratkaisutyyppi.Paatos
     Paatos(
@@ -227,19 +227,53 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(
           id = givenPaatosTietoId,
+          rinnastettavatTutkinnotTaiOpinnot = addTutkinnot,
           kelpoisuudet = Seq(
             Kelpoisuus(
               id = None,
               paatostietoId = givenPaatosTietoId,
-              kelpoisuus = Some("kelpotesti"),
-              opetettavaAine = Some("latina"),
+              kelpoisuus = Some("Maajussi"),
+              opetettavaAine = Some("kyntäminen"),
               muuAmmattiKuvaus = None,
               direktiivitaso = Some(a_1384_2015_patevyystaso_1),
               kansallisestiVaadittavaDirektiivitaso = Some(b_1384_2015_patevyystaso_2),
               direktiivitasoLisatiedot = randomStringOption,
-              myonteinenPaatos = None,
-              myonteisenPaatoksenLisavaatimukset = Some("{}"),
-              kielteisenPaatoksenPerustelut = Some("{}")
+              myonteinenPaatos = Some(true),
+              myonteisenPaatoksenLisavaatimukset = Some(
+                KelpoisuudenLisavaatimukset(
+                  olennaisiaEroja = Some(true),
+                  erotAineenopettajanKoulutuksessa = Some(
+                    ErotAineenopettajanKoulutuksessa(
+                      eroOpetettavanAineenOpinnoissa = true,
+                      eroPedagogisissaOpinnoissa = true
+                    )
+                  ),
+                  korvaavaToimenpide = Some(
+                    KorvaavaToimenpide(
+                      kelpoisuuskoe = true,
+                      sopeutumisaika = true,
+                      kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue1 = true)),
+                      sopeutumiusaikaKestoKk = Some("6")
+                    )
+                  ),
+                  ammattikokemusJaElinikainenOppiminen = Some(
+                    AmmattikomemusJaElinikainenOppiminen(
+                      ammattikokemus = Some(true),
+                      elinikainenOppiminen = Some(true),
+                      lisatieto = Some("Lisätietoa"),
+                      korvaavuus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                      korvaavaToimenpide = Some(
+                        KorvaavaToimenpide(
+                          kelpoisuuskoeJaSopeutumisaika = Some(true),
+                          kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
+                          sopeutumiusaikaKestoKk = Some("3")
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              kielteisenPaatoksenPerustelut = Some(KielteisenPaatoksenPerustelut())
             )
           )
         )
@@ -251,12 +285,17 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   private def paatos2Json(paatos: Paatos, ignoreFields: String*): String = {
     val paatosTiedotAsMap =
-      if (paatos.paatosTiedot.nonEmpty)
-        paatos.paatosTiedot.map { pt =>
-          pt.productElementNames.toList.zip(pt.productIterator.toList).toMap -- ignoreFields
+      paatos.paatosTiedot.map { pt =>
+        val tutkinnotJaOpinnotAsMap = pt.rinnastettavatTutkinnotTaiOpinnot.map { t =>
+          t.productElementNames.toList.zip(t.productIterator.toList).toMap -- ignoreFields
         }
-      else
-        Seq.empty
+        val kelpoisuudetAsMap = pt.kelpoisuudet.map { k =>
+          k.productElementNames.toList.zip(k.productIterator.toList).toMap -- ignoreFields
+        }
+        pt.productElementNames.toList
+          .zip(pt.productIterator.toList)
+          .toMap -- ignoreFields + ("kelpoisuudet" -> kelpoisuudetAsMap) + ("rinnastettavatTutkinnotTaiOpinnot" -> tutkinnotJaOpinnotAsMap)
+      }
 
     val paatosAsMap = paatos.productElementNames.toList
       .zip(paatos.productIterator.toList)
@@ -327,10 +366,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         .id
         .get
     )
-    paatosRepository.tallennaPaatosTieto(paatosId.get, makePaatosTieto(paatosId), "test user")
-    paatosTietoId = Some(paatosRepository.haePaatosTiedot(paatosId.get).head.id.get)
-    paatosRepository.tallennaPaatosTieto(paatosId2.get, makePaatosTieto(paatosId2), "test user")
-    paatosTietoId2 = Some(paatosRepository.haePaatosTiedot(paatosId2.get).head.id.get)
+    paatosTietoId = paatosRepository.tallennaPaatosTieto(paatosId.get, makePaatosTieto(paatosId), "test user").id
+    paatosTietoId2 = paatosRepository.tallennaPaatosTieto(paatosId2.get, makePaatosTieto(paatosId2), "test user").id
     paatos = makePaatos(hakemusId)
     paatosWithPaatosTiedot = makePaatosWithPaatosTiedot(
       hakemusId
@@ -342,12 +379,19 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosTietoId
       )
     paatosWithPaatosTiedotJaKelpoisuudet = makePaatosWithPaatosTiedotJaKelpoisuudet(
-      hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
+      hakemusIdWithPaatosTiedotJaKelpoisuudet,
       paatosId2,
       paatosTietoId2
     )
     paatosWithKielteisetPaatosTiedot = makePaatosWithKielteisetPaatosTiedot(
       hakemusIdWithKielteisetPaatosTiedot
+    )
+    paatosWithNewPaatosTiedotWithTutkinnotJaKelpoisuudet = makePaatosWithPaatosTiedotJaKelpoisuudet(
+      hakemusIdWithPaatosTiedotJaKelpoisuudet,
+      paatosId2,
+      None,
+      paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.paatosTiedot.head.rinnastettavatTutkinnotTaiOpinnot
+        .map(_.copy(paatostietoId = None))
     )
   }
 
@@ -567,11 +611,10 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosWithPaatosTiedotJaKelpoisuudet,
         "luoja",
         "luotu",
-        "muokattu",
         "muokkaaja",
         "paatosTietoOptions"
       )
-    val result = mvc
+    mvc
       .perform(
         post(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/$lomakeId")
           .`with`(csrf())
@@ -582,13 +625,19 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].id").isString)
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
       .andExpect(
-        jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso")
-          .value("b_1384_2015_patevyystaso_2")
+        content().json(
+          paatos2Json(
+            paatosWithPaatosTiedotJaKelpoisuudet,
+            "id",
+            "luoja",
+            "luotu",
+            "muokkaaja",
+            "paatosTietoOptions"
+          )
+        )
       )
+
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
 
@@ -600,7 +649,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val paatosJSON =
       paatos2Json(
         paatosWithPaatosTiedotJaKelpoisuudet.copy(id = paatosId, luoja = Some("test user")),
-        "id",
         "luoja",
         "luotu",
         "muokattu",
@@ -616,12 +664,17 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].id").isString)
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kelpoisuus").value("kelpotesti"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].opetettavaAine").value("latina"))
-      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].direktiivitaso").value("a_1384_2015_patevyystaso_1"))
       .andExpect(
-        jsonPath("$.paatosTiedot[0].kelpoisuudet[0].kansallisestiVaadittavaDirektiivitaso")
-          .value("b_1384_2015_patevyystaso_2")
+        content().json(
+          paatos2Json(
+            paatosWithPaatosTiedotJaKelpoisuudet,
+            "id",
+            "luoja",
+            "luotu",
+            "muokkaaja",
+            "paatosTietoOptions"
+          )
+        )
       )
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
@@ -630,6 +683,47 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(11)
+  def tallennaPaatosUudenPaatosTiedonJaTutkinnonJaKelpoisuudenKanssaTallentaaJaPalauttaaKaikenDatan(): Unit = {
+    val paatosJSON =
+      paatos2Json(
+        paatosWithNewPaatosTiedotWithTutkinnotJaKelpoisuudet,
+        "luoja",
+        "luotu",
+        "muokkaaja",
+        "paatosTietoOptions"
+      )
+    mvc
+      .perform(
+        post(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/$lomakeId")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatosJSON)
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].kelpoisuudet[0].id").isString)
+      .andExpect(jsonPath("$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].id").isString)
+      .andExpect(
+        content().json(
+          paatos2Json(
+            paatosWithNewPaatosTiedotWithTutkinnotJaKelpoisuudet,
+            "id",
+            "paatostietoId",
+            "luoja",
+            "luotu",
+            "muokkaaja",
+            "paatosTietoOptions"
+          )
+        )
+      )
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(12)
   def tallennaPaatosPalauttaaKielteisenPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
       paatos2Json(
@@ -659,7 +753,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(12)
+  @Order(13)
   def haePaatosPalauttaaKielteisenPaatosTiedonKanssa200(): Unit = {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
@@ -688,7 +782,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(13)
+  @Order(14)
   def haePaatosTekstiPalauttaaPaatosTekstinKanssa200(): Unit = {
     when(onrService.haeHenkilo("1.2.246.562.24.00000000001"))
       .thenReturn(

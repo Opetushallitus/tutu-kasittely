@@ -1,34 +1,33 @@
-import {
-  KielteisenPaatoksenPerustelut,
-  PaatosTieto,
-} from '@/src/lib/types/paatos';
+import { KielteisenPaatoksenPerustelut } from '@/src/lib/types/paatos';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { Stack, useTheme } from '@mui/material';
-import { Muistio } from '@/src/components/Muistio';
-import { useHakemus } from '@/src/context/HakemusContext';
 
 interface KielteisenPaatoksenPerusteluComponentProps {
-  paatosTieto: PaatosTieto;
-  updatePaatosTietoAction: (updatedPaatosTieto: PaatosTieto) => void;
+  perustelut?: KielteisenPaatoksenPerustelut;
+  updatePerustelutAction: (
+    updatedPerustelut: Partial<KielteisenPaatoksenPerustelut>,
+  ) => void;
   t: TFunction;
 }
+const kielteisenPaatoksenPerustelutKeys = [
+  'epavirallinenKorkeakoulu',
+  'epavirallinenTutkinto',
+  'eiVastaaSuomessaSuoritettavaaTutkintoa',
+  'muuPerustelu',
+] as const satisfies (keyof KielteisenPaatoksenPerustelut)[];
 
 export const KielteisenPaatoksenPerusteluComponent = ({
-  paatosTieto,
-  updatePaatosTietoAction,
+  perustelut,
+  updatePerustelutAction,
   t,
 }: KielteisenPaatoksenPerusteluComponentProps) => {
   const theme = useTheme();
-  const { hakemusState } = useHakemus();
-
-  const kielteisenPaatoksenPerustelutKeys = [
-    'epavirallinenKorkeakoulu',
-    'epavirallinenTutkinto',
-    'eiVastaaSuomessaSuoritettavaaTutkintoa',
-    'muuPerustelu',
-  ] as const satisfies (keyof KielteisenPaatoksenPerustelut)[];
 
   return (
     <Stack direction="column" gap={theme.spacing(2)}>
@@ -40,24 +39,24 @@ export const KielteisenPaatoksenPerusteluComponent = ({
           key={key}
           data-testid={`kielteinenPaatos-${key}`}
           label={t(`hakemus.paatos.kielteisenPaatoksenPerustelut.${key}`)}
-          checked={paatosTieto.kielteisenPaatoksenPerustelut?.[key] || false}
+          checked={perustelut?.[key] || false}
           onChange={(e) =>
-            updatePaatosTietoAction({
-              ...paatosTieto,
-              kielteisenPaatoksenPerustelut: {
-                ...paatosTieto.kielteisenPaatoksenPerustelut,
-                [key]: e.target.checked,
-              } as KielteisenPaatoksenPerustelut,
+            updatePerustelutAction({
+              [key]: e.target.checked,
             })
           }
         />
       ))}
-      {paatosTieto.kielteisenPaatoksenPerustelut?.muuPerustelu && (
-        <Muistio
+      {perustelut?.muuPerustelu && (
+        <OphInputFormField
           label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu')}
-          hakemus={hakemusState.editedData}
-          sisainen={false}
-          hakemuksenOsa={'paatos'}
+          multiline={true}
+          minRows={3}
+          value={perustelut.muuPerusteluKuvaus || ''}
+          onChange={(e) =>
+            updatePerustelutAction({ muuPerusteluKuvaus: e.target.value })
+          }
+          data-testid={`kielteinenPaatos-muuPerustelu-kuvaus-input`}
         />
       )}
     </Stack>

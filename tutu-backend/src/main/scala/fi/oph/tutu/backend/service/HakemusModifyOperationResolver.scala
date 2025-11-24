@@ -41,7 +41,6 @@ object HakemusModifyOperationResolver {
       currentPaatosTieto.tutkintoId != toBePaatosTieto.tutkintoId ||
       currentPaatosTieto.lisaaTutkintoPaatostekstiin != toBePaatosTieto.lisaaTutkintoPaatostekstiin ||
       currentPaatosTieto.myonteinenPaatos != toBePaatosTieto.myonteinenPaatos ||
-      currentPaatosTieto.myonteisenPaatoksenLisavaatimukset != toBePaatosTieto.myonteisenPaatoksenLisavaatimukset ||
       currentPaatosTieto.kielteisenPaatoksenPerustelut != toBePaatosTieto.kielteisenPaatoksenPerustelut ||
       currentPaatosTieto.tutkintoTaso != toBePaatosTieto.tutkintoTaso ||
       currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot != toBePaatosTieto.rinnastettavatTutkinnotTaiOpinnot ||

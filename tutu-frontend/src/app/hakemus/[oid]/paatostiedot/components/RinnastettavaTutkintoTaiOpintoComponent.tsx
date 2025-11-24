@@ -18,6 +18,7 @@ import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
+import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
@@ -43,21 +44,6 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   deleteTutkintoTaiOpintoAction,
   tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const updateMyonteinenPaatos = (
-    myonteinenPaatos: boolean,
-    lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset,
-  ) => {
-    updateTutkintoTaiOpintoAction(
-      {
-        ...tutkintoTaiOpinto,
-        myonteinenPaatos: myonteinenPaatos,
-        ...(lisavaatimukset && {
-          myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
-        }),
-      },
-      index,
-    );
-  };
   const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
@@ -81,6 +67,13 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       },
       index,
     );
+  };
+
+  const myonteisenPaatoksenLisavaatimusProps = {
+    lisavaatimukset:
+      tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset as MyonteisenPaatoksenLisavaatimukset,
+    t: t,
+    theme: theme,
   };
 
   return (
@@ -152,11 +145,23 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           data-testid={'riittavat-opinnot-opetuskieli-input'}
         ></OphInputFormField>
       )}
-      <MyonteinenPaatos
-        t={t}
+      <MyonteinenTaiKielteinenPaatosComponent
+        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenPaatos}
+        lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
-        lisavaatimukset={tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset}
-        updateMyonteinenPaatosAction={updateMyonteinenPaatos}
+        kielteisenPaatoksenPerustelut={
+          tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
+        }
+        updatePaatosAction={(paatos) => {
+          updateTutkintoTaiOpintoAction(
+            {
+              ...tutkintoTaiOpinto,
+              ...paatos,
+            },
+            index,
+          );
+        }}
+        t={t}
       />
     </Stack>
   );

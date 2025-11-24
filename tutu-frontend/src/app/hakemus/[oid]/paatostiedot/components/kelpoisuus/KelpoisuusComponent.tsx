@@ -1,7 +1,8 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
+  KelpoisuudenLisavaatimukset,
   Kelpoisuus,
-  KelpoisuusFieldUpdateCallback,
+  KelpoisuusUpdateCallback,
   PaatosTietoOption,
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
@@ -21,10 +22,12 @@ import {
   getKelpoisuusMuuAmmattiDropdownOption,
   getKelpoisuusMuuAmmattiDropdownValue,
   getPaatosTietoDropdownOptions,
-  PaatosTietoDropdownOption,
 } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
 import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
+import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import { Theme } from '@mui/material/styles';
+import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
 
 type kelpoisuusComponentProps = {
   t: TFunction;
@@ -41,21 +44,26 @@ type kelpoisuusComponentProps = {
 
 const KelpoisuusDirektiiviLiitannaisComponent = ({
   t,
+  theme,
   kelpoisuus,
   muuAmmattiOptionSelected,
-  opetettavaAineOptions,
-  updateFieldAction,
+  updateAction,
 }: {
   t: TFunction;
+  theme: Theme;
   kelpoisuus: Kelpoisuus;
   muuAmmattiOptionSelected: boolean;
-  opetettavaAineOptions: PaatosTietoDropdownOption[];
-  updateFieldAction: KelpoisuusFieldUpdateCallback;
+  updateAction: KelpoisuusUpdateCallback;
 }) => {
-  const theme = useTheme();
+  const myonteisenPaatoksenLisavaatimusProps = {
+    lisavaatimukset:
+      kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
+    t: t,
+    theme: theme,
+  };
   return (
     <>
-      {muuAmmattiOptionSelected ? (
+      {muuAmmattiOptionSelected && (
         <Stack gap={theme.spacing(2)}>
           <OphTypography variant={'label'}>
             {t('hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmatti')}
@@ -70,28 +78,16 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
             multiline={true}
             minRows={3}
             value={kelpoisuus.muuAmmattiKuvaus || ''}
-            onChange={(e) =>
-              updateFieldAction('muuAmmattiKuvaus', e.target.value)
-            }
+            onChange={(e) => updateAction({ muuAmmattiKuvaus: e.target.value })}
             data-testid={`muuAmmattikuvaus-input`}
           />
         </Stack>
-      ) : (
-        <PaatosTietoDropdown
-          label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
-          value={kelpoisuus.opetettavaAine}
-          options={opetettavaAineOptions}
-          updateAction={(val) => updateFieldAction('opetettavaAine', val)}
-          dataTestId="opetettavaAine-select"
-        />
       )}
       <DirektiivitasoComponent
         t={t}
         label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.direktiivitaso`)}
         direktiivitaso={kelpoisuus.direktiivitaso}
-        updateDirektiivitaso={(taso) =>
-          updateFieldAction('direktiivitaso', taso)
-        }
+        updateDirektiivitaso={(taso) => updateAction({ direktiivitaso: taso })}
         dataTestId={'direktiivitaso-select'}
       />
       <OphInputFormField
@@ -102,7 +98,7 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
         minRows={3}
         value={kelpoisuus.direktiivitasoLisatiedot || ''}
         onChange={(e) =>
-          updateFieldAction('direktiivitasoLisatiedot', e.target.value)
+          updateAction({ direktiivitasoLisatiedot: e.target.value })
         }
         data-testid={`direktiivitasoLisatieto-input`}
       />
@@ -113,9 +109,19 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
         )}
         direktiivitaso={kelpoisuus.kansallisestiVaadittavaDirektiivitaso}
         updateDirektiivitaso={(taso) =>
-          updateFieldAction('kansallisestiVaadittavaDirektiivitaso', taso)
+          updateAction({ kansallisestiVaadittavaDirektiivitaso: taso })
         }
         dataTestId={'kansallisestiVaadittavaDirektiivitaso-select'}
+      />
+      <MyonteinenTaiKielteinenPaatosComponent
+        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatos}
+        lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
+        myonteinenPaatos={kelpoisuus.myonteinenPaatos}
+        kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
+        updatePaatosAction={(paatos) => {
+          updateAction({ ...kelpoisuus, ...paatos });
+        }}
+        t={t}
       />
     </>
   );
@@ -172,28 +178,22 @@ export const KelpoisuusComponent = ({
     muuAmmattiOptionValue,
   ]);
 
-  const updateField: KelpoisuusFieldUpdateCallback = <
-    K extends keyof Kelpoisuus,
-  >(
-    key: K,
-    value: Kelpoisuus[K],
+  const updateKelpoisuus: KelpoisuusUpdateCallback = (
+    updatedKelpoisuus: Partial<Kelpoisuus>,
   ) => {
     const tobeKelpoisuus = { ...kelpoisuus };
-    if (key === 'kelpoisuus') {
+    if (updatedKelpoisuus.kelpoisuus) {
       tobeKelpoisuus.opetettavaAine = undefined;
       tobeKelpoisuus.direktiivitaso = undefined;
       tobeKelpoisuus.direktiivitasoLisatiedot = undefined;
       tobeKelpoisuus.kansallisestiVaadittavaDirektiivitaso = undefined;
       tobeKelpoisuus.muuAmmattiKuvaus = undefined;
     }
-    updateKelpoisuusAction(
-      {
-        ...tobeKelpoisuus,
-        [key]: value,
-      },
-      index,
-    );
+    updateKelpoisuusAction({ ...tobeKelpoisuus, ...updatedKelpoisuus }, index);
   };
+
+  const muuAmmattiOptionSelected =
+    kelpoisuus.kelpoisuus === muuAmmattiOptionValue;
 
   return (
     <Stack
@@ -246,18 +246,26 @@ export const KelpoisuusComponent = ({
           label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.otsikko`)}
           value={kelpoisuus.kelpoisuus}
           options={topLevelOptions}
-          updateAction={(val) => updateField('kelpoisuus', val)}
+          updateAction={(val) => updateKelpoisuus({ kelpoisuus: val })}
           dataTestId="kelpoisuus-select"
         />
+        {!muuAmmattiOptionSelected &&
+          availableOpetettavaAineOptions.length > 0 && (
+            <PaatosTietoDropdown
+              label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
+              value={kelpoisuus.opetettavaAine}
+              options={availableOpetettavaAineOptions}
+              updateAction={(val) => updateKelpoisuus({ opetettavaAine: val })}
+              dataTestId="opetettavaAine-select"
+            />
+          )}
         {showDirektiivitasoFields && (
           <KelpoisuusDirektiiviLiitannaisComponent
             t={t}
+            theme={theme}
             kelpoisuus={kelpoisuus}
-            muuAmmattiOptionSelected={
-              kelpoisuus.kelpoisuus === muuAmmattiOptionValue
-            }
-            opetettavaAineOptions={availableOpetettavaAineOptions}
-            updateFieldAction={updateField}
+            muuAmmattiOptionSelected={muuAmmattiOptionSelected}
+            updateAction={updateKelpoisuus}
           />
         )}
       </Stack>
