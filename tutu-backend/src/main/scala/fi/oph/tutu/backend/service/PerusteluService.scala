@@ -118,6 +118,8 @@ class PerusteluService(
       muistioService.haeMuistio(hakemusOid, "perustelut-ro-uo", false)
     val muuTutkintoMuistioMaybe: Option[Muistio] =
       muistioService.haeMuistio(hakemusOid, "perustelut-uo-ro-muu-tutkinto", false)
+    val asiakirjaMuistioMaybe: Option[Muistio] =
+      muistioService.haeMuistio(hakemusOid, "asiakirjat", false)
 
     val perusteluMuistio = generatePerusteluMuistio(
       koodistoService,
@@ -126,7 +128,8 @@ class PerusteluService(
       ataruHakemusMaybe,
       perusteluMaybe,
       koulutuksenSisaltoMuistioMaybe,
-      muuTutkintoMuistioMaybe
+      muuTutkintoMuistioMaybe,
+      asiakirjaMuistioMaybe
     )
 
     Some(perusteluMuistio)

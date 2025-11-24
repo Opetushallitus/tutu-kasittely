@@ -144,6 +144,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       asiakirja = Some(
         Asiakirja(
+          selvityksetSaatu = true,
           valmistumisenVahvistus = ValmistumisenVahvistus(
             valmistumisenVahvistus = true,
             valmistumisenVahvistusPyyntoLahetetty = None,
@@ -288,6 +289,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
+  val someAsiakirjaMuistio: Option[Muistio] = Some(
+    Muistio(
+      id = UUID.randomUUID,
+      hakemus_id = UUID.randomUUID,
+      sisalto = "Muistioon merkittävää tekstiä asiakirjoista -- body",
+      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
+      luoja = "",
+      muokkaaja = ""
+    )
+  )
+
   @Mock
   var koodistoService: KoodistoService = _
 
@@ -345,6 +357,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       noneAtaruHakemus,
       nonePerustelu,
       noneMuistio,
+      noneMuistio,
       noneMuistio
     )
     assert(result.isEmpty)
@@ -362,7 +375,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       someAtaruHakemus,
       somePerustelu,
       someKoulutuksenSisaltoMuistio,
-      someMuuTutkintoMuistio
+      someMuuTutkintoMuistio,
+      someAsiakirjaMuistio
     )
     assert(!result.isEmpty)
   }
@@ -390,19 +404,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeSuostumusSahkoiseenAsiointiinProducesString(): Unit = {
     val result = haeSuostumusSahkoiseenAsiointiin(someHakemus)
     assert(result.get.contains("Sähköinen asiointi sallittu"))
-  }
-
-  @Test
-  def haeImiPyyntoTietoProducesString(): Unit = {
-    val result = haeImiPyyntoTieto(someHakemus)
-    assert(result.get.contains("IMI-nro 3"))
-    assert(result.get.contains("01.06.2020"))
-  }
-
-  @Test
-  def haeValmistuminenVahvistettuProducesString(): Unit = {
-    val result = haeValmistuminenVahvistettu(someHakemus)
-    assert(result.get.contains("myönteinen"))
   }
 
   @Test
@@ -556,5 +557,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
     assert(result.get.contains("Lausuntopyynnön sisältö:"))
     assert(result.get.contains("Hakija on suorittanut tutkinnon kirjeopintoina"))
+  }
+
+  @Test
+  def haeAsiakirjatProducesString(): Unit = {
+    val result = haeAsiakirjat(someHakemus, someAsiakirjaMuistio)
+
+    assert(result.get.contains("Kaikki tarvittavat selvitykset saatu: Kyllä"))
+    assert(result.get.contains("Esittelijän huomioita asiakirjoista"))
+    assert(result.get.contains("Muistioon merkittävää tekstiä asiakirjoista -- body"))
+    assert(result.get.contains("IMI-nro 3"))
+    assert(result.get.contains("01.06.2020"))
+    assert(result.get.contains("myönteinen"))
   }
 }
