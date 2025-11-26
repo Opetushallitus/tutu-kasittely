@@ -6,4 +6,5 @@ export const hakemusKoskeeOptions: Array<OphSelectOption<string>> = [
   { value: '2', label: 'tutkintoSuoritusRinnastaminen' },
   { value: '3', label: 'riittavatOpinnot' },
   { value: '4', label: 'kelpoisuusAmmattiinAPHakemus' },
+  { value: '5', label: 'lopullinenPaatos' },
 ].sort((a, b) => a.label.localeCompare(b.label));

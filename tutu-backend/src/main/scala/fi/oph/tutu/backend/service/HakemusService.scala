@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 @Component
 @Service
@@ -41,70 +41,15 @@ class HakemusService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
-  def tallennaHakemus(hakemus: UusiAtaruHakemus): UUID = {
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
-      case Left(error: Throwable) =>
-        throw error
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
-    }
-
-    val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
-
-    val esittelija = tutkinto_1_maakoodiUri match {
-      case Some(tutkinto_1_maakoodiUri) if tutkinto_1_maakoodiUri.nonEmpty =>
-        esittelijaRepository.haeEsittelijaMaakoodiUrilla(tutkinto_1_maakoodiUri)
-      case _ => None
-    }
-
-    val esittelijaId = esittelija.map(_.esittelijaId)
-
-    // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
-    val transactionalAction = for {
-      asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
-        Asiakirja(),
-        ATARU_SERVICE
-      )
-      hakemusId <- hakemusRepository.tallennaHakemusAction(
-        hakemus.hakemusOid,
-        hakemus.hakemusKoskee,
-        esittelijaId,
-        asiakirjaId,
-        ATARU_SERVICE
-      )
-      tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
-      _ <-
-        if (tutkinnot != null && tutkinnot.nonEmpty) {
-          DBIO.sequence(
-            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, ATARU_SERVICE))
-          )
-        } else {
-          DBIO.successful(Seq.empty)
-        }
-    } yield hakemusId
-
-    // Suoritetaan transaktio
-    db.runTransactionally(transactionalAction, "tallenna_ataru_hakemus") match {
-      case Success(hakemusId) =>
-        LOG.info(s"Ataru-hakemuksen ${hakemus.hakemusOid} tallennus onnistui")
-        hakemusId
-      case Failure(e) =>
-        LOG.error(s"Ataru-hakemuksen ${hakemus.hakemusOid} tallennus epäonnistui: ${e.getMessage}", e)
-        throw new RuntimeException(
-          s"Ataru-hakemuksen tallennus epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
   /**
-   * Luo kokonaisen hakemuksen transaktionaalises ti (hakemus + perustelu + paatos)
+   * Luo kokonaisen hakemuksen transaktionaalisesti (hakemus + perustelu + paatos)
    * Käytetään Ataru-hakemuksen luonnissa, jotta kaikki tiedot tallennetaan atomisesti.
    *
    * @param hakemus
    *   uusi Ataru-hakemus
-   * @param partialPerustelu
+   * @param perustelu
    *   perustelu
-   * @param partialPaatos
+   * @param paatos
    *   päätös
    * @param luoja
    *   luojan tunniste
@@ -113,28 +58,13 @@ class HakemusService(
    */
   def luoKokonainenHakemus(
     hakemus: UusiAtaruHakemus,
-    partialPerustelu: PartialPerustelu,
+    perustelu: Perustelu,
     paatos: Paatos,
     luoja: String
   ): (UUID, Perustelu, Paatos) = {
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
-      case Left(error: Throwable) =>
-        throw error
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
-    }
-
+    val ataruHakemus           = haeAtaruHakemus(hakemus.hakemusOid)
     val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
-
-    val esittelija = tutkinto_1_maakoodiUri match {
-      case Some(tutkinto_1_maakoodiUri) if tutkinto_1_maakoodiUri.nonEmpty =>
-        esittelijaRepository.haeEsittelijaMaakoodiUrilla(tutkinto_1_maakoodiUri)
-      case _ => None
-    }
-
-    val esittelijaId = esittelija.map(_.esittelijaId)
-
-    // Rakennetaan perustelu ja paatos domain objektit
-    val perustelu = Perustelu().mergeWith(partialPerustelu)
+    val esittelijaId           = resolveEsittelijaId(tutkinto_1_maakoodiUri)
 
     // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
     val transactionalAction = for {
@@ -170,13 +100,62 @@ class HakemusService(
       )
     } yield (hakemusId, savedPerustelu, savedPaatos)
 
-    // Suoritetaan transaktio
+    luoKokonaishakemus(hakemus.hakemusOid, transactionalAction)
+  }
+
+  def luoLopullisenPaatoksenHakemus(
+    hakemus: UusiAtaruHakemus,
+    luoja: String
+  ): UUID = {
+    val suoritusMaaKoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(haeAtaruHakemus(hakemus.hakemusOid))
+    val esittelijaId        = resolveEsittelijaId(suoritusMaaKoodiUri)
+
+    val transactionalAction = for {
+      // TODO tarvitaanko lopulliselle päätökselle oma asiakirja-tyyppi?
+      asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
+        Asiakirja(),
+        luoja
+      )
+      hakemusId <- hakemusRepository.tallennaHakemusAction(
+        hakemus.hakemusOid,
+        hakemus.hakemusKoskee,
+        esittelijaId,
+        asiakirjaId,
+        luoja
+      )
+      // TODO oma päätöstyypi lopulliselle päätökselle
+    } yield hakemusId
+
+    luoKokonaishakemus(hakemus.hakemusOid, transactionalAction)
+  }
+
+  private def haeAtaruHakemus(hakemusOid: HakemusOid): AtaruHakemus = {
+    hakemuspalveluService.haeHakemus(hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+  }
+
+  private def resolveEsittelijaId(
+    maaKoodiUri: Option[String]
+  ): Option[UUID] = {
+    val esittelija = maaKoodiUri match {
+      case Some(maakoodiUri) if maakoodiUri.nonEmpty =>
+        esittelijaRepository.haeEsittelijaMaakoodiUrilla(maakoodiUri)
+      case _ => None
+    }
+
+    esittelija.map(_.esittelijaId)
+  }
+
+  private def luoKokonaishakemus[R](hakemusOid: HakemusOid, transactionalAction: DBIO[R]): R = {
     db.runTransactionally(transactionalAction, "luo_kokonaishakemus") match {
       case Success(result) =>
-        LOG.info(s"Ataru-hakemuksen ${hakemus.hakemusOid} kokonaisluonti onnistui")
+        LOG.info(s"Ataru-hakemuksen ${hakemusOid} kokonaisluonti onnistui")
         result
       case Failure(e) =>
-        LOG.error(s"Ataru-hakemuksen ${hakemus.hakemusOid} kokonaisluonti epäonnistui: ${e.getMessage}", e)
+        LOG.error(s"Ataru-hakemuksen ${hakemusOid} kokonaisluonti epäonnistui: ${e.getMessage}", e)
         throw new RuntimeException(
           s"Ataru-hakemuksen kokonaisluonti epäonnistui: ${e.getMessage}",
           e
@@ -332,7 +311,9 @@ class HakemusService(
     ataruHakemus: AtaruHakemus,
     hakemus: HakemusListItem
   ): HakemusListItem = {
-    val hakemusKoskeeToUpdate = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+    val hakemusKoskeeToUpdate =
+      if (hakemus.hakemusKoskee == HAKEMUS_KOSKEE_LOPULLINEN_PAATOS) HAKEMUS_KOSKEE_LOPULLINEN_PAATOS
+      else ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
 
     if (hakemusKoskeeToUpdate != hakemus.hakemusKoskee) {
       hakemusRepository.suoritaPaivitaHakemusKoskee(

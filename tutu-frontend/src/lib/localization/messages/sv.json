@@ -1,5 +1,20 @@
 {
+  "valinnat": {
+    "hakemusKoskeeValinta": {
+      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
+      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
+      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
+      "riittavatOpinnot": "Päätös riittävistä opinnoista",
+      "lopullinenPaatos": "Lopullinen päätös"
+    }
+  },
   "hakemuslista": {
     "otsikko": "Erkännande av utbildningar"
+  },
+  "hakemus": {
+    "perustiedot": {
+      "mitaHakee": "Ansökan gäller"
+    }
   }
 }

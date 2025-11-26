@@ -9,7 +9,7 @@ import fi.oph.tutu.backend.fixture.{
 }
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
+import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, DATE_TIME_FORMAT}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -115,6 +115,15 @@ class HakemusControllerTest extends IntegrationTestBase {
           )
         )
       )
+  }
+
+  private def tallennaHakemus(hakemusOid: String, hakemusKoskee: Int): Unit = {
+    hakemusService.luoKokonainenHakemus(
+      UusiAtaruHakemus(HakemusOid(hakemusOid), hakemusKoskee),
+      Perustelu(jatkoOpintoKelpoisuusLisatieto = Some("")),
+      Paatos(),
+      ATARU_SERVICE
+    )
   }
 
   @Test
@@ -234,10 +243,10 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), 0))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0))
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), 1))
+    tallennaHakemus("1.2.246.562.11.00000000000000006665", 0)
+    tallennaHakemus("1.2.246.562.11.00000000000000006666", 1)
+    tallennaHakemus("1.2.246.562.11.00000000000000006667", 0)
+    tallennaHakemus("1.2.246.562.11.00000000000000006668", 1)
     mockMvc
       .perform(
         get("/api/hakemuslista")
@@ -474,7 +483,6 @@ class HakemusControllerTest extends IntegrationTestBase {
     @Override
     @MockitoBean
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006671")
-
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6671WithMissingTutkinto2.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus]))
@@ -497,7 +505,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
-    hakemusService.tallennaHakemus(UusiAtaruHakemus(hakemusOid, 0))
+    tallennaHakemus(hakemusOid.toString, 0)
     val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
     val tutkinnotBefore = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)

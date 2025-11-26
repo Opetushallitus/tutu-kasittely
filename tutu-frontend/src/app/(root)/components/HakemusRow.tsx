@@ -89,9 +89,13 @@ export default function HakemusRow({
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
-        <Link href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
-          {hakemus.hakija}
-        </Link>
+        {hakemus.hakemusKoskee !== 5 ? (
+          <Link href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
+            {hakemus.hakija}
+          </Link>
+        ) : (
+          <span>{hakemus.hakija}</span>
+        )}
       </StyledTableCell>
       <StyledTableCell>
         <Stack
