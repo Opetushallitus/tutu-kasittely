@@ -139,7 +139,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           ohjeellinenLaajuus = Some("20op"),
           opinnaytetyo = Some(true),
           harjoittelu = Some(false),
-          perustelunLisatietoja = Some("Vastaa perusopintoja")
+          perustelunLisatietoja = Some("Vastaa perusopintoja"),
+          koulutusalaKoodiUri = Some("testi-koulutusala-uri")
         )
       ),
       asiakirja = Some(
@@ -322,6 +323,26 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   }
 
+  def setupKoulutusalat(): Unit = {
+    when(koodistoService.getKoodisto("kansallinenkoulutusluokitus2016koulutusalataso1"))
+      .thenReturn(
+        Seq(
+          KoodistoItem(
+            koodiUri = "testi-koulutusala-uri",
+            koodiArvo = "testi-koulutusala-uri",
+            nimi = Map(
+              Kieli.fi -> "Alkutuotanto",
+              Kieli.sv -> "Bästa production",
+              Kieli.en -> "Primary production"
+            ),
+            voimassaAlkuPvm = None,
+            voimassaLoppuPvm = None,
+            tila = None
+          )
+        )
+      )
+  }
+
   @Mock
   var maakoodiService: MaakoodiService = _
 
@@ -349,6 +370,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
     setupMaakoodit()
     setupKorkeakoulut()
+    setupKoulutusalat()
 
     val result = generate(
       koodistoService,
@@ -367,6 +389,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def generatesAStringWhenInputsDefined(): Unit = {
     setupMaakoodit()
     setupKorkeakoulut()
+    setupKoulutusalat()
 
     val result = generate(
       koodistoService,
@@ -421,8 +444,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeTutkintokohtaisetTiedotProducesString(): Unit = {
     setupMaakoodit()
+    setupKoulutusalat()
 
-    val result = haeTutkintokohtaisetTiedot(maakoodiService, someHakemus)
+    val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus)
     assert(result.get.contains("Nimi: Paras tutkinto"))
     assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
     assert(result.get.contains("Suoritusvuodet: 2000 - 2001"))
@@ -431,6 +455,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("Tutkintoon sisältyi harjoittelu: Ei"))
     assert(result.get.contains("Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"))
     assert(result.get.contains("Vastaa perusopintoja"))
+    assert(result.get.contains("Koulutusala: Alkutuotanto"))
   }
 
   @Test
