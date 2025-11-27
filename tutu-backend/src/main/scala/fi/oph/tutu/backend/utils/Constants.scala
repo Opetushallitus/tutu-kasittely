@@ -7,6 +7,8 @@ object Constants {
   val ATARU_SERVICE = "Hakemuspalvelu"
   val TUTU_SERVICE  = "Tutu"
 
+  val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
+
   val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
 
   val ATARU_PAATOS_KIELI: AtaruKysymysId =
@@ -53,6 +55,9 @@ object Constants {
 
   val ATARU_HAKEMUS_KOSKEE: AtaruKysymysId =
     AtaruKysymysId("97840c6c-3642-48d0-9f47-adf9ee1793cc", "tutu-apply-reason")
+
+  val ATARU_LOPULLINEN_PAATOS_SUORITUSMAA: AtaruKysymysId =
+    AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "lopullinen-paatos-suoritusmaa")
 
   // Lomakkeen avaimet
   val ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS: AtaruKysymysId =

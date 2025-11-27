@@ -99,7 +99,41 @@ class HakemusController(
               HttpStatus.BAD_REQUEST
             )
         }
-        if (!hakemus.hakemusOid.isValid) {
+        if (hakemus.hakemusOid.isValid) {
+          var hakemusId: UUID = null
+          if (hakemus.onLopullinenPaatos) {
+            hakemusId = hakemusService.luoLopullisenPaatoksenHakemus(hakemus, "Hakemuspalvelu")
+          } else {
+            val result = hakemusService.luoKokonainenHakemus(
+              hakemus,
+              Perustelu(
+                jatkoOpintoKelpoisuusLisatieto = Some("")
+              ),
+              Paatos(),
+              "Hakemuspalvelu"
+            )
+            hakemusId = result._1
+            auditLog.logCreate(
+              auditLog.getUser(request),
+              Map("perusteluId" -> result._2.id.toString),
+              CreatePerustelu,
+              result._2.toString
+            )
+            auditLog.logCreate(
+              auditLog.getUser(request),
+              Map("paatosId" -> result._3.id.toString),
+              CreatePaatos,
+              result._3.toString
+            )
+          }
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("hakemusId" -> hakemusId.toString),
+            CreateHakemus,
+            hakemus.toString
+          )
+          ResponseEntity.status(HttpStatus.OK).body(hakemusId)
+        } else {
           LOG.error(
             s"Hakemuksen luonti epäonnistui, virheellinen hakemusOid: ${hakemus.hakemusOid}"
           )
@@ -107,35 +141,6 @@ class HakemusController(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
           )
-        } else {
-          val (hakemusId, perustelu, paatos) =
-            hakemusService.luoKokonainenHakemus(
-              hakemus,
-              PartialPerustelu(
-                jatkoOpintoKelpoisuusLisatieto = Some("")
-              ),
-              Paatos(),
-              "Hakemuspalvelu"
-            )
-          auditLog.logCreate(
-            auditLog.getUser(request),
-            Map("hakemusOid" -> hakemusId.toString),
-            CreateHakemus,
-            hakemus.toString
-          )
-          auditLog.logCreate(
-            auditLog.getUser(request),
-            Map("perusteluId" -> perustelu.id.toString),
-            CreatePerustelu,
-            perustelu.toString
-          )
-          auditLog.logCreate(
-            auditLog.getUser(request),
-            Map("paatosId" -> paatos.id.toString),
-            CreatePaatos,
-            paatos.toString
-          )
-          ResponseEntity.status(HttpStatus.OK).body(hakemusId)
         }
       }
     } catch {

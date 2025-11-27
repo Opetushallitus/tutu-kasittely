@@ -27,57 +27,6 @@ case class Perustelu(
   muokkaaja: Option[String] = None,
   uoRoSisalto: UoRoSisalto = UoRoSisalto(),
   apSisalto: APSisalto = APSisalto()
-) {
-  def mergeWith(partial: PartialPerustelu): Perustelu =
-    this.copy(
-      virallinenTutkinnonMyontaja = partial.virallinenTutkinnonMyontaja.orElse(this.virallinenTutkinnonMyontaja),
-      virallinenTutkinto = partial.virallinenTutkinto.orElse(this.virallinenTutkinto),
-      lahdeLahtomaanKansallinenLahde =
-        partial.lahdeLahtomaanKansallinenLahde.getOrElse(this.lahdeLahtomaanKansallinenLahde),
-      lahdeLahtomaanVirallinenVastaus =
-        partial.lahdeLahtomaanVirallinenVastaus.getOrElse(this.lahdeLahtomaanVirallinenVastaus),
-      lahdeKansainvalinenHakuteosTaiVerkkosivusto =
-        partial.lahdeKansainvalinenHakuteosTaiVerkkosivusto.getOrElse(this.lahdeKansainvalinenHakuteosTaiVerkkosivusto),
-      selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta =
-        partial.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta
-          .getOrElse(this.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta),
-      ylimmanTutkinnonAsemaLahtomaanJarjestelmassa =
-        partial.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.orElse(this.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa),
-      selvitysTutkinnonAsemastaLahtomaanJarjestelmassa = partial.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa
-        .getOrElse(this.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa),
-      aikaisemmatPaatokset = partial.aikaisemmatPaatokset
-        .orElse(this.aikaisemmatPaatokset),
-      jatkoOpintoKelpoisuus = partial.jatkoOpintoKelpoisuus
-        .orElse(this.jatkoOpintoKelpoisuus),
-      jatkoOpintoKelpoisuusLisatieto = partial.jatkoOpintoKelpoisuusLisatieto
-        .orElse(this.jatkoOpintoKelpoisuusLisatieto),
-      muuPerustelu = partial.muuPerustelu
-        .orElse(this.muuPerustelu),
-      uoRoSisalto = partial.uoRoSisalto.getOrElse(this.uoRoSisalto),
-      lausuntoPyyntojenLisatiedot = partial.lausuntoPyyntojenLisatiedot.orElse(this.lausuntoPyyntojenLisatiedot),
-      lausunnonSisalto = partial.lausunnonSisalto.orElse(this.lausunnonSisalto),
-      apSisalto = partial.apSisalto.getOrElse(this.apSisalto)
-    )
-}
-
-case class PartialPerustelu(
-  virallinenTutkinnonMyontaja: Option[Boolean] = None,
-  virallinenTutkinto: Option[Boolean] = None,
-  lahdeLahtomaanKansallinenLahde: Option[Boolean] = None,
-  lahdeLahtomaanVirallinenVastaus: Option[Boolean] = None,
-  lahdeKansainvalinenHakuteosTaiVerkkosivusto: Option[Boolean] = None,
-  selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: Option[String] = None,
-  ylimmanTutkinnonAsemaLahtomaanJarjestelmassa: Option[String] = None,
-  selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: Option[String] = None,
-  aikaisemmatPaatokset: Option[Boolean] = None,
-  jatkoOpintoKelpoisuus: Option[String] = None,
-  jatkoOpintoKelpoisuusLisatieto: Option[String] = None,
-  muuPerustelu: Option[String] = None,
-  uoRoSisalto: Option[UoRoSisalto] = None,
-  lausuntoPyyntojenLisatiedot: Option[String] = None,
-  lausunnonSisalto: Option[String] = None,
-  lausuntopyynnot: Seq[Lausuntopyynto] = Seq.empty,
-  apSisalto: Option[APSisalto] = None
 )
 
 case class UoRoSisalto(

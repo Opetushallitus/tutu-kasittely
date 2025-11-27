@@ -1,10 +1,9 @@
 'use client';
 
-import { Box, Stack, useTheme } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
 import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -21,6 +20,7 @@ import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { Muistio } from '@/src/components/Muistio';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { TranslatedHakemuskoskee } from '@/src/app/hakemus/[oid]/perustiedot/components/TranslatedHakemuskoskee';
 
 export default function PerustietoPage() {
   const theme = useTheme();
@@ -43,12 +43,6 @@ export default function PerustietoPage() {
 
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
-  const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
-    hakemusKoskeeOptions.find(
-      (option) => option.value === String(hakemus?.hakemusKoskee),
-    )?.label ?? ''
-  }`;
-
   const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
     hakemus.sisalto,
     [paatosJaAsiointikieli, paatosKieli],
@@ -69,14 +63,10 @@ export default function PerustietoPage() {
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
-      <Box>
-        <OphTypography variant={'label'}>
-          {t(`hakemus.perustiedot.mitaHakee.${hakemus.lomakkeenKieli}`)}
-        </OphTypography>
-        <OphTypography variant={'body1'} data-testid={'hakemus-koskee'}>
-          {t(`${hakemusKoskee}.${hakemus.lomakkeenKieli}`)}
-        </OphTypography>
-      </Box>
+      <TranslatedHakemuskoskee
+        hakemusKoskee={hakemus.hakemusKoskee}
+        kieli={hakemus.lomakkeenKieli}
+      />
       <Sisalto
         osiot={perustietoOsiot}
         sisalto={hakemus.sisalto}

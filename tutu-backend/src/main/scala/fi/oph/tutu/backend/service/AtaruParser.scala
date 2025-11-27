@@ -182,9 +182,14 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def parseTutkinto1MaakoodiUri(hakemus: AtaruHakemus): Option[String] = {
-    val answers     = hakemus.content.answers
-    val paatosKieli = findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, answers)
+    val answers = hakemus.content.answers
     findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_MAA, answers).map(value => s"maatjavaltiot2_$value")
+  }
+
+  def parseLopullinenPaatosSuoritusmaaMaakoodiUri(hakemus: AtaruHakemus): Option[String] = {
+    val answers = hakemus.content.answers
+    findAnswerByAtaruKysymysId(Constants.ATARU_LOPULLINEN_PAATOS_SUORITUSMAA, answers)
+      .map(value => s"maatjavaltiot2_$value")
   }
 
   def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {

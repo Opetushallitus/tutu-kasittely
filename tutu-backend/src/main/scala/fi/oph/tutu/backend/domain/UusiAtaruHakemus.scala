@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.domain
 
+import fi.oph.tutu.backend.utils.Constants.HAKEMUS_KOSKEE_LOPULLINEN_PAATOS
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
@@ -12,10 +13,12 @@ case class UusiAtaruHakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
   )
-  @BeanProperty hakemusOid: HakemusOid,
+  hakemusOid: HakemusOid,
   @(Schema @field)(
     example = "0",
     requiredMode = RequiredMode.REQUIRED
   )
-  @BeanProperty hakemusKoskee: Int
-)
+  hakemusKoskee: Int
+) {
+  def onLopullinenPaatos: Boolean = hakemusKoskee == HAKEMUS_KOSKEE_LOPULLINEN_PAATOS
+}
