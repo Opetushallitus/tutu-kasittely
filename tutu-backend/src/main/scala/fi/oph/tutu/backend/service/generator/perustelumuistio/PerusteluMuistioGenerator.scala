@@ -567,12 +567,108 @@ def haeAsiakirjat(
   }
 }
 
+///////////////
+// Päätökset
+
+def haeSeutArviointiTehty(paatos: Paatos): Option[String] = {
+  if (paatos.seutArviointi) {
+    Some("SEUT-arviointi tehty")
+  } else {
+    None
+  }
+}
+
+def haeRatkaisutyyppi(paatos: Paatos): Option[String] = {
+  paatos.ratkaisutyyppi
+    .map {
+      case Ratkaisutyyppi.Paatos                 => "Päätös"
+      case Ratkaisutyyppi.PeruutusTaiRaukeaminen => "Peruutus tai raukeaminen"
+      case Ratkaisutyyppi.Oikaisu                => "Oikaisu"
+      case Ratkaisutyyppi.JatetaanTutkimatta     => "Jätetään tutkimatta"
+      case Ratkaisutyyppi.Siirto                 => "Siirto"
+    }
+    .map((muotoiltu: String) => {
+      s"Ratkaisutyyppi: $muotoiltu"
+    })
+}
+
+def haePaatosTyyppi(paatosTiedot: PaatosTieto): Option[String] = {
+  paatosTiedot.paatosTyyppi
+    .map {
+      case PaatosTyyppi.Taso                     => "Taso"
+      case PaatosTyyppi.Kelpoisuus               => "Kelpoisuus"
+      case PaatosTyyppi.TiettyTutkintoTaiOpinnot => "Tietty tutkinto tai opinnot"
+      case PaatosTyyppi.RiittavatOpinnot         => "Riittävät opinnot"
+    }
+    .map((muotoiltu: String) => s"Päätöstyyppi: $muotoiltu")
+}
+
+def haeSovellettuLaki(paatosTiedot: PaatosTieto): Option[String] = {
+  paatosTiedot.sovellettuLaki
+    .map {
+      case SovellettuLaki.uo      => "Päätös UO"
+      case SovellettuLaki.ap      => "Päätös AP"
+      case SovellettuLaki.ap_seut => "Päätös AP/SEUT"
+      case SovellettuLaki.ro      => "Päätös RO"
+    }
+    .map((muotoiltu: String) => s"Sovellettu laki: $muotoiltu")
+}
+
+def haePaatostiedot(paatosMaybe: Option[Paatos]): Option[String] = {
+  paatosMaybe match {
+    case None         => None
+    case Some(paatos) => {
+      val seutArviointiTehty: Option[String] = haeSeutArviointiTehty(paatos)
+      val ratkaisutyyppi: Option[String]     = haeRatkaisutyyppi(paatos)
+
+      val osapaatoskohtaisetTiedot = paatos.paatosTiedot.zipWithIndex
+        .map((paatosTiedot: PaatosTieto, index: Int) => {
+          val paatosTyyppi   = haePaatosTyyppi(paatosTiedot)
+          val sovellettuLaki = haeSovellettuLaki(paatosTiedot)
+          val tutkinnonNimi  = None // TODO
+
+          Seq(
+            Some(s"Päätös: $index"),
+            paatosTyyppi,
+            sovellettuLaki,
+            tutkinnonNimi
+          ).flatten.mkString("\n")
+        })
+
+      Seq(
+        seutArviointiTehty,
+        ratkaisutyyppi
+      ).flatten.mkString("\n")
+    }
+  }
+
+  /*
+    Päätös:
+    - SEUT-arviointi tehty
+    - Ratkaisutyyppi-alasvetovalikko
+    - Päätöstyyppi-alasvetovalikko
+    - Sovellettu laki -alasvetovalikko
+
+    - Tutkinnon nimi -alasvetovalikko
+
+    - Päätöstyyppi Taso, myönteinen (Alempi korkeakoulututkinto / Ylempi korkeakoulututkinto)
+    - Päätöstyyppi Taso, kielteinen (+ perustelut)
+    - Ratkaisutyyppi 2 Peruutus tai raukeaminen
+    - Kelpoisuus-alasvetovalikko
+    - Rinnastettava tutkinto tai opinnot -alasvetovalikko
+    - Tietty tutkinto tai opinnot, lisävaatimukset
+    - Rinnastettavat opinnot -alasvetovalikko
+    - Valinta myönteinen / kielteinen
+   */
+}
+
 def generate(
   koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
+  paatosMaybe: Option[Paatos],
   koulutuksenSisaltoMuistioMaybe: Option[Muistio],
   muuTutkintoMuistioMaybe: Option[Muistio],
   asiakirjaMuistioMaybe: Option[Muistio]
@@ -592,7 +688,8 @@ def generate(
     haeMuuTutkinto(hakemusMaybe),
     haeYhteistutkinto(hakemusMaybe),
     haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, hakemusMaybe),
-    haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe)
+    haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe),
+    haePaatostiedot(paatosMaybe)
   ).flatten
 
   result.mkString("\n\n")

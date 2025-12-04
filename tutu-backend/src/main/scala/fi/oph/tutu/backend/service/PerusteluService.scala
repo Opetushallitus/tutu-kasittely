@@ -19,6 +19,7 @@ class PerusteluService(
   asiakirjaRepository: AsiakirjaRepository,
   kasittelyVaiheService: KasittelyVaiheService,
   hakemuspalveluService: HakemuspalveluService,
+  paatosService: PaatosService,
   muistioService: MuistioService,
   maakoodiService: MaakoodiService,
   koodistoService: KoodistoService
@@ -114,6 +115,7 @@ class PerusteluService(
     val hakemusMaybe: Option[Hakemus]                   = hakemusService.haeHakemus(hakemusOid)
     val ataruHakemusMaybe: Option[AtaruHakemus]         = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val perusteluMaybe: Option[Perustelu]               = haePerustelu(hakemusOid)
+    val paatosMaybe: Option[Paatos]                     = paatosService.haePaatos(hakemusOid)
     val koulutuksenSisaltoMuistioMaybe: Option[Muistio] =
       muistioService.haeMuistio(hakemusOid, "perustelut-ro-uo", false)
     val muuTutkintoMuistioMaybe: Option[Muistio] =
@@ -127,6 +129,7 @@ class PerusteluService(
       hakemusMaybe,
       ataruHakemusMaybe,
       perusteluMaybe,
+      paatosMaybe,
       koulutuksenSisaltoMuistioMaybe,
       muuTutkintoMuistioMaybe,
       asiakirjaMuistioMaybe
