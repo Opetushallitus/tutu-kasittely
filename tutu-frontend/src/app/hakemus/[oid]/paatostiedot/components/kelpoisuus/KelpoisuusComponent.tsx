@@ -46,24 +46,25 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   t,
   theme,
   kelpoisuus,
-  muuAmmattiOptionSelected,
+  kelpoisuusKey,
   updateAction,
 }: {
   t: TFunction;
   theme: Theme;
   kelpoisuus: Kelpoisuus;
-  muuAmmattiOptionSelected: boolean;
+  kelpoisuusKey?: string;
   updateAction: KelpoisuusUpdateCallback;
 }) => {
   const myonteisenPaatoksenLisavaatimusProps = {
     lisavaatimukset:
       kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
+    kelpoisuusKey,
     t: t,
     theme: theme,
   };
   return (
     <>
-      {muuAmmattiOptionSelected && (
+      {kelpoisuus.kelpoisuus === getKelpoisuusMuuAmmattiDropdownValue(t) && (
         <Stack gap={theme.spacing(2)}>
           <OphTypography variant={'label'}>
             {t('hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmatti')}
@@ -150,33 +151,26 @@ export const KelpoisuusComponent = ({
     [asiointikieli, kelpoisuusOptions, t],
   );
 
-  const muuAmmattiOptionValue = useMemo(
-    () => getKelpoisuusMuuAmmattiDropdownValue(t),
-    [t],
-  );
+  const selectedKelpoisuusKey = useMemo(() => {
+    if (
+      kelpoisuus.kelpoisuus &&
+      kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t)
+    ) {
+      return findOptionByValue(
+        asiointikieli,
+        kelpoisuusOptions,
+        kelpoisuus.kelpoisuus,
+      );
+    }
+    return null;
+  }, [asiointikieli, kelpoisuus.kelpoisuus, kelpoisuusOptions, t]);
 
   const availableOpetettavaAineOptions = useMemo(() => {
-    if (
-      !kelpoisuus.kelpoisuus ||
-      kelpoisuus.kelpoisuus === muuAmmattiOptionValue
-    ) {
-      return [];
-    }
-    const kelpoisuusOption = findOptionByValue(
-      asiointikieli,
-      kelpoisuusOptions,
-      kelpoisuus.kelpoisuus!,
-    );
     return getPaatosTietoDropdownOptions(
       asiointikieli,
-      kelpoisuusOption?.children || [],
+      selectedKelpoisuusKey?.children || [],
     );
-  }, [
-    asiointikieli,
-    kelpoisuusOptions,
-    kelpoisuus.kelpoisuus,
-    muuAmmattiOptionValue,
-  ]);
+  }, [asiointikieli, selectedKelpoisuusKey?.children]);
 
   const updateKelpoisuus: KelpoisuusUpdateCallback = (
     updatedKelpoisuus: Partial<Kelpoisuus>,
@@ -188,12 +182,12 @@ export const KelpoisuusComponent = ({
       tobeKelpoisuus.direktiivitasoLisatiedot = undefined;
       tobeKelpoisuus.kansallisestiVaadittavaDirektiivitaso = undefined;
       tobeKelpoisuus.muuAmmattiKuvaus = undefined;
+      tobeKelpoisuus.myonteinenPaatos = undefined;
+      tobeKelpoisuus.kielteisenPaatoksenPerustelut = undefined;
+      tobeKelpoisuus.myonteisenPaatoksenLisavaatimukset = undefined;
     }
     updateKelpoisuusAction({ ...tobeKelpoisuus, ...updatedKelpoisuus }, index);
   };
-
-  const muuAmmattiOptionSelected =
-    kelpoisuus.kelpoisuus === muuAmmattiOptionValue;
 
   return (
     <Stack
@@ -249,8 +243,8 @@ export const KelpoisuusComponent = ({
           updateAction={(val) => updateKelpoisuus({ kelpoisuus: val })}
           dataTestId="kelpoisuus-select"
         />
-        {!muuAmmattiOptionSelected &&
-          availableOpetettavaAineOptions.length > 0 && (
+        {availableOpetettavaAineOptions.length > 0 &&
+          kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) && (
             <PaatosTietoDropdown
               label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
               value={kelpoisuus.opetettavaAine}
@@ -264,7 +258,7 @@ export const KelpoisuusComponent = ({
             t={t}
             theme={theme}
             kelpoisuus={kelpoisuus}
-            muuAmmattiOptionSelected={muuAmmattiOptionSelected}
+            kelpoisuusKey={selectedKelpoisuusKey?.value?.['fi']}
             updateAction={updateKelpoisuus}
           />
         )}

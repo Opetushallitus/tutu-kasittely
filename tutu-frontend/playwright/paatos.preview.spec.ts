@@ -8,30 +8,27 @@ test.beforeEach(async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
   const paatosData = getPaatosWithPaatosTiedot();
-  await page.route(
-    `**/paatos/1.2.246.562.10.00000000001/12345`,
-    async (route) => {
-      if (route.request().method() === 'POST') {
-        const requestBody = route.request().postDataJSON();
-        const body = {
-          ...requestBody,
-        };
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(body),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            ...paatosData,
-          }),
-        });
-      }
-    },
-  );
+  await page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
+    if (route.request().method() === 'POST') {
+      const requestBody = route.request().postDataJSON();
+      const body = {
+        ...requestBody,
+      };
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(body),
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...paatosData,
+        }),
+      });
+    }
+  });
   await page.route(
     `**/paatos/1.2.246.562.10.00000000001/paatosteksti`,
     async (route) => {

@@ -69,13 +69,12 @@ case class MyonteisenPaatoksenLisavaatimukset(
   sopeutumisaika: Boolean = false
 )
 
-case class ErotAineenopettajanKoulutuksessa(
-  eroOpetettavanAineenOpinnoissa: Boolean = false,
-  eroPedagogisissaOpinnoissa: Boolean = false,
-  syventavienOpintojenPuuttuminen: Boolean = false,
-  eriIkaryhma: Boolean = false,
-  muu: Boolean = false,
-  muuKuvaus: Option[String] = None
+case class NamedBoolean(name: String, value: Boolean)
+
+case class ErotKoulutuksessa(
+  erot: Seq[NamedBoolean] = Seq(),
+  muuEro: Option[Boolean] = None,
+  muuEroKuvaus: Option[String] = None
 )
 
 case class KelpoisuuskoeSisalto(
@@ -90,7 +89,9 @@ case class KorvaavaToimenpide(
   kelpoisuuskoeSisalto: Option[KelpoisuuskoeSisalto] = None,
   sopeutumisaika: Boolean = false,
   sopeutumiusaikaKestoKk: Option[String] = None,
-  kelpoisuuskoeJaSopeutumisaika: Option[Boolean] = None
+  kelpoisuuskoeJaSopeutumisaika: Option[Boolean] = None,
+  kelpoisuuskoeJaSopeutumisaikaSisalto: Option[KelpoisuuskoeSisalto] = None,
+  kelpoisuuskoeJaSopeutumisaikaKestoKk: Option[String] = None
 )
 
 case class AmmattikomemusJaElinikainenOppiminen(
@@ -103,7 +104,7 @@ case class AmmattikomemusJaElinikainenOppiminen(
 
 case class KelpoisuudenLisavaatimukset(
   olennaisiaEroja: Option[Boolean] = None,
-  erotAineenopettajanKoulutuksessa: Option[ErotAineenopettajanKoulutuksessa] = None,
+  erotKoulutuksessa: Option[ErotKoulutuksessa] = None,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
   ammattikokemusJaElinikainenOppiminen: Option[AmmattikomemusJaElinikainenOppiminen] = None
 )

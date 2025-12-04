@@ -15,7 +15,7 @@ export function useKasittelyvaiheTranslation(
   const kasittelyVaihe = hakemus.kasittelyVaihe;
 
   if (kasittelyVaihe === 'HakemustaTaydennetty') {
-    return t(`hakemus.kasittelyvaihe.hakemustataydennetty`, {
+    return t(`hakemus.kasittelyvaihe.hakemustataydennettytalloin`, {
       date: dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER),
     });
   } else if (kasittelyVaihe === 'OdottaaTaydennysta') {

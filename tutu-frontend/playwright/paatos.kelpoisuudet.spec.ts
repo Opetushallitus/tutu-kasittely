@@ -192,7 +192,7 @@ const makeInitialKelpoisuusSelections = async (page: Page) => {
   await selectOption(
     page,
     page.getByTestId('kelpoisuus-select'),
-    'Erityisluokanopettaja',
+    'Aineenopettaja perusopetuksessa',
   );
 };
 
@@ -220,7 +220,7 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
 
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes('/paatos/') && req.method() === 'POST',
+      (req) => req.url().includes('/paatos/') && req.method() === 'PUT',
     ),
     await page.getByTestId('modal-confirm-button').click(),
   ]);
@@ -274,24 +274,49 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
   const olennaisiaErojaRadiogroup = page.getByTestId(
     'kelpoisuus-myonteinenPaatos-olennaisiaEroja-radio-group',
   );
-  const eroOpetettavanAineenOpinnoissaButton = page.getByTestId(
-    'erotKoulutuksessa-aineenopettaja-eroOpetettavanAineenOpinnoissa',
+  const erotKoulutuksessaButton1 = page.getByTestId('erotKoulutuksessa-ero1');
+  const erotKoulutuksessaButton2 = page.getByTestId('erotKoulutuksessa-ero2');
+  const erotKoulutuksessaButton3 = page.getByTestId('erotKoulutuksessa-ero3');
+  const erotKoulutuksessaButton4 = page.getByTestId(
+    'erotKoulutuksessa-eriIkaryhma',
   );
-  const muuEroButton = page.getByTestId('erotKoulutuksessa-aineenopettaja-muu');
-  const muuEroInput = page.getByTestId(
-    'erorotKoulutuksessa-aineenopettaja-muuKuvaus',
-  );
+  const muuEroButton = page.getByTestId('erotKoulutuksessa-muuEro');
+  const muuEroInput = page.getByTestId('erotKoulutuksessa-muuEroKuvaus');
   const kelpoisuuskoeButton = page.getByTestId(
     'lahtokohtainen-korvaavaToimenpide-kelpoisuuskoe',
   );
   const sopeutumisaikaButton = page.getByTestId(
     'lahtokohtainen-korvaavaToimenpide-sopeutumisaika',
   );
+  const dualButton = page.getByTestId(
+    'lahtokohtainen-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika',
+  );
   const aihealue1Button = page.getByTestId(
-    'lahtokohtainen-kelpoisuuskoe-sisalto-aihealue1',
+    'lahtokohtainen-singleChoice-kelpoisuuskoe-sisalto-aihealue1',
+  );
+  const aihealue1ButtonDual = page.getByTestId(
+    'lahtokohtainen-dualChoice-kelpoisuuskoe-sisalto-aihealue1',
   );
   const sopeutumisaikaInput = page.getByTestId(
-    'lahtokohtainen-korvaavaToimenpide-sopeutumisaika-input',
+    'lahtokohtainen-singleChoice-korvaavaToimenpide-sopeutumisaika-input',
+  );
+  const sopeutumisaikaInputDual = page.getByTestId(
+    'lahtokohtainen-dualChoice-korvaavaToimenpide-sopeutumisaika-input',
+  );
+  const kokemusJaOppiminenKelpoisuuskoeButton = page.getByTestId(
+    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-kelpoisuuskoe',
+  );
+  const kokemusJaOppiminenSopeutumisaikaButton = page.getByTestId(
+    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-sopeutumisaika',
+  );
+  const kokemusJaOppiminenDualButton = page.getByTestId(
+    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika',
+  );
+  const kokemusJaOppiminenAihealue1Button = page.getByTestId(
+    'ammattikokemusElinikainenOppiminen-singleChoice-kelpoisuuskoe-sisalto-aihealue1',
+  );
+  const kokemusJaOppiminenAihealue1ButtonDual = page.getByTestId(
+    'ammattikokemusElinikainenOppiminen-dualChoice-kelpoisuuskoe-sisalto-aihealue1',
   );
   const ammattikokemusButton = page.getByTestId(
     'ammattikokemusElinikainenOppiminen-ammattikokemus',
@@ -307,7 +332,10 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
   );
   await expect(myonteinenPaatosRadiogroup).toBeVisible();
   await expect(olennaisiaErojaRadiogroup).not.toBeVisible();
-  await expect(eroOpetettavanAineenOpinnoissaButton).not.toBeVisible();
+  await expect(erotKoulutuksessaButton1).not.toBeVisible();
+  await expect(erotKoulutuksessaButton2).not.toBeVisible();
+  await expect(erotKoulutuksessaButton3).not.toBeVisible();
+  await expect(erotKoulutuksessaButton4).not.toBeVisible();
   await expect(muuEroButton).not.toBeVisible();
   await expect(muuEroInput).not.toBeVisible();
   await expect(kelpoisuuskoeButton).not.toBeVisible();
@@ -340,28 +368,51 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
-  await expect(eroOpetettavanAineenOpinnoissaButton).toBeVisible();
+  await expect(erotKoulutuksessaButton1).toBeVisible();
+  await expect(erotKoulutuksessaButton2).toBeVisible();
+  await expect(erotKoulutuksessaButton3).toBeVisible();
+  await expect(erotKoulutuksessaButton4).toBeVisible();
   await expect(muuEroButton).toBeVisible();
   await expect(kelpoisuuskoeButton).toBeVisible();
   await expect(sopeutumisaikaButton).toBeVisible();
   await expect(ammattikokemusButton).toBeVisible();
   await expect(elinikainenOppiminenButton).toBeVisible();
 
-  lisavaatimusRequest.erotAineenopettajanKoulutuksessa = {
-    eroOpetettavanAineenOpinnoissa: true,
+  lisavaatimusRequest.erotKoulutuksessa = {
+    erot: [
+      { name: 'ero1', value: true },
+      { name: 'ero2', value: false },
+      { name: 'ero3', value: false },
+      { name: 'eriIkaryhma', value: false },
+    ],
   };
   await expectRequestData(
     page,
     '/paatos/',
-    eroOpetettavanAineenOpinnoissaButton.click(),
+    erotKoulutuksessaButton1.click(),
+    backendRequestMyonteinenPaatos(lisavaatimusRequest),
+  );
+
+  lisavaatimusRequest.erotKoulutuksessa = {
+    erot: [
+      { name: 'ero1', value: true },
+      { name: 'ero2', value: false },
+      { name: 'ero3', value: false },
+      { name: 'eriIkaryhma', value: true },
+    ],
+  };
+  await expectRequestData(
+    page,
+    '/paatos/',
+    erotKoulutuksessaButton4.click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
 
   await muuEroButton.click();
   await expect(muuEroInput).toBeVisible();
-  lisavaatimusRequest.erotAineenopettajanKoulutuksessa = {
-    muu: true,
-    muuKuvaus: 'Tämä on muu ero',
+  lisavaatimusRequest.erotKoulutuksessa = {
+    muuEro: true,
+    muuEroKuvaus: 'Tämä on muu ero',
   };
   await expectRequestData(
     page,
@@ -396,16 +447,13 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
 
-  const dualButton = page.getByTestId(
-    'lahtokohtainen-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika',
-  );
   await kelpoisuuskoeButton.click();
   await sopeutumisaikaButton.click();
   await expect(aihealue1Button).not.toBeVisible();
   await expect(sopeutumisaikaInput).not.toBeVisible();
   await dualButton.click();
-  await expect(aihealue1Button).toBeVisible();
-  await expect(sopeutumisaikaInput).toBeVisible();
+  await expect(aihealue1ButtonDual).toBeVisible();
+  await expect(sopeutumisaikaInputDual).toBeVisible();
   lisavaatimusRequest.korvaavaToimenpide = {
     kelpoisuuskoe: false,
     sopeutumisaika: false,
@@ -449,18 +497,15 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
-  const kokemusJaOppiminenKorvaavaButton1 = page.getByTestId(
-    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-kelpoisuuskoe',
-  );
-  const kokemusJaOppiminenKorvaavaButton2 = page.getByTestId(
-    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-sopeutumisaika',
-  );
-  const kokemusJaOppiminenKorvaavaButton3 = page.getByTestId(
-    'ammattikokemusElinikainenOppiminen-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika',
-  );
-  await expect(kokemusJaOppiminenKorvaavaButton1).toBeVisible();
-  await expect(kokemusJaOppiminenKorvaavaButton2).toBeVisible();
-  await expect(kokemusJaOppiminenKorvaavaButton3).toBeVisible();
+
+  await expect(kokemusJaOppiminenKelpoisuuskoeButton).toBeVisible();
+  await expect(kokemusJaOppiminenSopeutumisaikaButton).toBeVisible();
+  await expect(kokemusJaOppiminenDualButton).toBeVisible();
+
+  await kokemusJaOppiminenKelpoisuuskoeButton.click();
+  await kokemusJaOppiminenDualButton.click();
+  await expect(kokemusJaOppiminenAihealue1Button).toBeVisible();
+  await expect(kokemusJaOppiminenAihealue1ButtonDual).toBeVisible();
 
   lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
     korvaavuus: null,
@@ -475,9 +520,9 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
-  await expect(kokemusJaOppiminenKorvaavaButton1).not.toBeVisible();
-  await expect(kokemusJaOppiminenKorvaavaButton2).not.toBeVisible();
-  await expect(kokemusJaOppiminenKorvaavaButton3).not.toBeVisible();
+  await expect(kokemusJaOppiminenKelpoisuuskoeButton).not.toBeVisible();
+  await expect(kokemusJaOppiminenSopeutumisaikaButton).not.toBeVisible();
+  await expect(kokemusJaOppiminenDualButton).not.toBeVisible();
 
   await ammattikokemusButton.click();
   await elinikainenOppiminenButton.click();

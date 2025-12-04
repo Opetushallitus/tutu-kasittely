@@ -24,9 +24,17 @@ case class DbHakemus(
   @(Schema @field)(
     example = "1",
     requiredMode = RequiredMode.REQUIRED,
-    maxLength = 4
+    minimum = "-2147483647",
+    maximum = "2147483647"
   )
   hakemusKoskee: Int,
+  @(Schema @field)(
+    example = "1000",
+    requiredMode = RequiredMode.REQUIRED,
+    minimum = "-9223372036854775807",
+    maximum = "9223372036854775807"
+  )
+  formId: Long,
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,

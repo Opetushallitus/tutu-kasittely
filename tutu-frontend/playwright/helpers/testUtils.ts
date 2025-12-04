@@ -14,7 +14,7 @@ export const expectRequestData = async (
 
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes(expectedUrl) && req.method() === 'POST',
+      (req) => req.url().includes(expectedUrl) && req.method() === 'PUT',
     ),
     saveButton.click(),
   ]);

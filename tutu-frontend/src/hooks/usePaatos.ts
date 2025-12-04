@@ -2,18 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Paatos } from '@/src/lib/types/paatos';
-import { doApiFetch, doApiPost } from '@/src/lib/tutu-backend/api';
+import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
 
 export const getPaatos = async (
   hakemusOid: string | undefined,
-  lomakeId: number | undefined,
 ): Promise<Paatos> => {
-  return await doApiFetch(
-    `paatos/${hakemusOid}/${lomakeId}`,
-    undefined,
-    'no-store',
-  );
+  return await doApiFetch(`paatos/${hakemusOid}`, undefined, 'no-store');
 };
 
 export const getPaatosTeksti = async (
@@ -23,32 +18,25 @@ export const getPaatosTeksti = async (
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const postPaatos = (
-  hakemusOid: string,
-  lomakeId: number,
-  paatos: Paatos,
-) => {
-  return doApiPost(`paatos/${hakemusOid}/${lomakeId}`, paatos);
+export const putPaatos = (hakemusOid: string, paatos: Paatos) => {
+  return doApiPut(`paatos/${hakemusOid}`, paatos);
 };
 
-export const usePaatos = (
-  hakemusOid: string | undefined,
-  lomakeId: number | undefined,
-) => {
-  const queryKey = ['paatos', hakemusOid, lomakeId];
+export const usePaatos = (hakemusOid: string | undefined) => {
+  const queryKey = ['paatos', hakemusOid];
   const { showPaatosTekstiPreview } = useShowPreview();
 
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey,
-    queryFn: () => getPaatos(hakemusOid, lomakeId),
+    queryFn: () => getPaatos(hakemusOid),
     enabled: !!hakemusOid,
     throwOnError: false,
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (paatos: Paatos) => postPaatos(hakemusOid!, lomakeId!, paatos),
+    mutationFn: (paatos: Paatos) => putPaatos(hakemusOid!, paatos),
     onSuccess: async (response) => {
       const paivitettyPaatos = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatos);

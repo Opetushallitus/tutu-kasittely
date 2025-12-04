@@ -272,6 +272,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       hakemusRepository.tallennaHakemus(
         hakemusOid,
         1,
+        1,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
         "testi"
@@ -282,6 +283,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       hakemusRepository.tallennaHakemus(
         hakemusOid2,
         1,
+        1,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
         "testi"
@@ -291,6 +293,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     hakemusId3 = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOid3,
+        1,
         1,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
@@ -317,6 +320,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     hakemusId4 = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOid4,
+        1,
         1,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),

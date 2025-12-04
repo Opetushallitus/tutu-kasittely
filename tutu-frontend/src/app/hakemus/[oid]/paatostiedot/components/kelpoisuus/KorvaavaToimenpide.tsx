@@ -11,10 +11,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import {
-  emptyKelpoisuuskoeSisalto,
-  kelpoisuuskoeFields,
-} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { kelpoisuuskoeFields } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 
 const IndentedStack: React.FC<{
   theme: Theme;
@@ -33,20 +30,22 @@ const IndentedStack: React.FC<{
 
 const Kelpoisuuskoe = ({
   sisalto,
+  field,
   updateKelpoisuuskoeAction,
   t,
   theme,
   testIdPrefix,
 }: {
+  field: keyof KorvaavaToimenpide;
   sisalto?: KelpoisuuskoeSisalto;
   updateKelpoisuuskoeAction: (
+    field: keyof KorvaavaToimenpide,
     updatedKelpoisuuskoeSisalto: KelpoisuuskoeSisalto,
   ) => void;
   t: TFunction;
   theme: Theme;
   testIdPrefix: string;
 }) => {
-  const kelpoisuuskoeObj = sisalto || emptyKelpoisuuskoeSisalto();
   return (
     <Stack gap={theme.spacing(1)}>
       <OphTypography variant="h5">
@@ -61,10 +60,10 @@ const Kelpoisuuskoe = ({
           label={t(
             `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.${key}`,
           )}
-          checked={kelpoisuuskoeObj[key]}
+          checked={sisalto?.[key] || false}
           onChange={(e) => {
-            updateKelpoisuuskoeAction({
-              ...kelpoisuuskoeObj,
+            updateKelpoisuuskoeAction(field, {
+              ...sisalto,
               [key]: e.target.checked,
             });
           }}
@@ -94,12 +93,21 @@ export const KorvaavaToimenpideComponent = ({
   testIdPrefix,
 }: KorvaavaToimenpideProps) => {
   const kelpoisuuskoeElement = (
+    field: keyof KorvaavaToimenpide,
+    testIdPrefix: string,
+    sisalto?: KelpoisuuskoeSisalto,
+  ) => (
     <Kelpoisuuskoe
-      sisalto={korvaavaToimenpide?.kelpoisuuskoeSisalto}
-      updateKelpoisuuskoeAction={(updatedKelpoisuuskoeSisalto) => {
+      key={field}
+      field={field}
+      sisalto={sisalto}
+      updateKelpoisuuskoeAction={(
+        sisaltoField,
+        updatedKelpoisuuskoeSisalto,
+      ) => {
         updateKorvaavaToimenpide({
           ...korvaavaToimenpide,
-          kelpoisuuskoeSisalto: updatedKelpoisuuskoeSisalto,
+          [sisaltoField]: updatedKelpoisuuskoeSisalto,
         });
       }}
       t={t}
@@ -109,14 +117,19 @@ export const KorvaavaToimenpideComponent = ({
   );
 
   const sopeutumisaikaElement = (
+    field: keyof KorvaavaToimenpide,
+    testIdPrefix: string,
+    kesto?: string,
+  ) => (
     <OphInputFormField
+      key={field}
       label={t('hakemus.paatos.paatostyyppi.kelpoisuus.paatos.sopeutumisaika')}
       multiline={false}
-      value={korvaavaToimenpide?.sopeutumiusaikaKestoKk || ''}
+      value={kesto || ''}
       onChange={(e) => {
         updateKorvaavaToimenpide({
           ...korvaavaToimenpide,
-          sopeutumiusaikaKestoKk: e.target.value,
+          [field]: e.target.value,
         });
       }}
       data-testid={`${testIdPrefix}-korvaavaToimenpide-sopeutumisaika-input`}
@@ -145,7 +158,13 @@ export const KorvaavaToimenpideComponent = ({
         }}
       />
       {korvaavaToimenpide?.kelpoisuuskoe && (
-        <IndentedStack theme={theme}>{kelpoisuuskoeElement}</IndentedStack>
+        <IndentedStack theme={theme}>
+          {kelpoisuuskoeElement(
+            'kelpoisuuskoeSisalto',
+            `${testIdPrefix}-singleChoice`,
+            korvaavaToimenpide.kelpoisuuskoeSisalto,
+          )}
+        </IndentedStack>
       )}
       <OphCheckbox
         data-testid={`${testIdPrefix}-korvaavaToimenpide-sopeutumisaika`}
@@ -159,7 +178,13 @@ export const KorvaavaToimenpideComponent = ({
         }}
       />
       {korvaavaToimenpide?.sopeutumisaika && (
-        <IndentedStack theme={theme}>{sopeutumisaikaElement}</IndentedStack>
+        <IndentedStack theme={theme}>
+          {sopeutumisaikaElement(
+            'sopeutumiusaikaKestoKk',
+            `${testIdPrefix}-singleChoice`,
+            korvaavaToimenpide.sopeutumiusaikaKestoKk,
+          )}
+        </IndentedStack>
       )}
       <OphCheckbox
         data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika`}
@@ -176,7 +201,18 @@ export const KorvaavaToimenpideComponent = ({
       />
       {korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika && (
         <IndentedStack theme={theme}>
-          {[kelpoisuuskoeElement, sopeutumisaikaElement]}
+          {[
+            kelpoisuuskoeElement(
+              'kelpoisuuskoeJaSopeutumisaikaSisalto',
+              `${testIdPrefix}-dualChoice`,
+              korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaSisalto,
+            ),
+            sopeutumisaikaElement(
+              'kelpoisuuskoeJaSopeutumisaikaKestoKk',
+              `${testIdPrefix}-dualChoice`,
+              korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaKestoKk,
+            ),
+          ]}
         </IndentedStack>
       )}
     </Stack>

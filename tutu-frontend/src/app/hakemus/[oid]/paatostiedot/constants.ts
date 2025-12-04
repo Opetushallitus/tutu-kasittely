@@ -1,7 +1,6 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AmmattikokemusJaElinikainenOppiminen,
-  ErotAineenopettajanKoulutuksessa,
   KelpoisuuskoeSisalto,
   KorvaavaToimenpide,
   Paatostyyppi,
@@ -157,20 +156,38 @@ export const ammattikokemusElinikainenOppiminenKorvaavuusOptions = (
   },
 ];
 
-export const erotKoulutuksessaAineenopettajaFields = [
-  'eroOpetettavanAineenOpinnoissa',
-  'eroPedagogisissaOpinnoissa',
-  'syventavienOpintojenPuuttuminen',
-  'eriIkaryhma',
-  'muu',
-] as const satisfies (keyof ErotAineenopettajanKoulutuksessa)[];
+export const yleinenKoulutusEroTranslationKeys = {
+  eriIkaryhma:
+    'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.yleiset.eriIkaryhma',
+};
 
-export const emptyErotKoulutuksessaAineenopettaja =
-  (): ErotAineenopettajanKoulutuksessa =>
-    erotKoulutuksessaAineenopettajaFields.reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {} as ErotAineenopettajanKoulutuksessa);
+export type KoulutusEroModel = {
+  id: string;
+  kelpoisuusKey?: string;
+  lyhytNimiKaannosAvain?: string;
+  kelpoisuusKohtainenEroLkm: number;
+  yleisetErot: string[];
+  sisaltaaMuuEro: boolean;
+};
+
+export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
+  {
+    id: 'aineenopetus',
+    kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja perusopetuksessa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetus.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 3,
+    yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+];
+
+export const oletusKoulutusErot: KoulutusEroModel = {
+  id: 'oletus',
+  kelpoisuusKohtainenEroLkm: 5,
+  yleisetErot: [],
+  sisaltaaMuuEro: true,
+};
 
 export const korvaavaToimenpideOptions = [
   'kelpoisuuskoe',

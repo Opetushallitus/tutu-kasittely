@@ -110,7 +110,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
 
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes('/paatos/') && req.method() === 'POST',
+      (req) => req.url().includes('/paatos/') && req.method() === 'PUT',
     ),
     await page.getByTestId('modal-confirm-button').click(),
   ]);
