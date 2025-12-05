@@ -75,6 +75,7 @@ class HakemusService(
       hakemusId <- hakemusRepository.tallennaHakemusAction(
         hakemus.hakemusOid,
         hakemus.hakemusKoskee,
+        ataruHakemus.form_id,
         esittelijaId,
         asiakirjaId,
         luoja
@@ -107,6 +108,7 @@ class HakemusService(
     hakemus: UusiAtaruHakemus,
     luoja: String
   ): UUID = {
+    val ataruHakemus        = haeAtaruHakemus(hakemus.hakemusOid)
     val suoritusMaaKoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(haeAtaruHakemus(hakemus.hakemusOid))
     val esittelijaId        = resolveEsittelijaId(suoritusMaaKoodiUri)
 
@@ -119,6 +121,7 @@ class HakemusService(
       hakemusId <- hakemusRepository.tallennaHakemusAction(
         hakemus.hakemusOid,
         hakemus.hakemusKoskee,
+        ataruHakemus.form_id,
         esittelijaId,
         asiakirjaId,
         luoja

@@ -381,29 +381,23 @@ export const mockPerustelu = async (page: Page) => {
 
 export const mockPaatos = async (page: Page) => {
   let paatosData = getPaatos();
-  await page.route(
-    `**/paatos/1.2.246.562.10.00000000001/12345`,
-    async (route) => {
-      if (route.request().method() === 'POST') {
-        const postedData = route.request().postDataJSON() as Record<
-          string,
-          unknown
-        >;
-        paatosData = { ...paatosData, ...unwrapData(postedData) };
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(paatosData),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            ...paatosData,
-          }),
-        });
-      }
-    },
-  );
+  await page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
+    if (route.request().method() === 'PUT') {
+      const putData = route.request().postDataJSON() as Record<string, unknown>;
+      paatosData = { ...paatosData, ...unwrapData(putData) };
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(paatosData),
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...paatosData,
+        }),
+      });
+    }
+  });
 };

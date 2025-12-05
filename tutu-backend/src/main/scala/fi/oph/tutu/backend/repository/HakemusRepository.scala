@@ -30,6 +30,7 @@ class HakemusRepository extends BaseResultHandlers {
         UUID.fromString(r.nextString()),
         HakemusOid(r.nextString()),
         r.nextInt(),
+        r.nextLong(),
         Option(r.nextString()).map(UUID.fromString),
         Option(UserOid(r.nextString())),
         Option(r.nextString()).map(UUID.fromString),
@@ -95,6 +96,7 @@ class HakemusRepository extends BaseResultHandlers {
   def tallennaHakemusAction(
     hakemusOid: HakemusOid,
     hakemusKoskee: Int,
+    formId: Long,
     esittelijaId: Option[UUID],
     asiakirjaId: UUID,
     luoja: String
@@ -102,8 +104,8 @@ class HakemusRepository extends BaseResultHandlers {
     val hakemusOidString   = hakemusOid.toString
     val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
     sql"""
-      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, esittelija_id, asiakirja_id, luoja)
-      VALUES ($hakemusOidString, $hakemusKoskee, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, form_id, esittelija_id, asiakirja_id, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
       RETURNING id
     """.as[UUID].head
 
@@ -118,13 +120,14 @@ class HakemusRepository extends BaseResultHandlers {
   def tallennaHakemus(
     hakemusOid: HakemusOid,
     hakemusKoskee: Int,
+    formId: Long,
     esittelijaId: Option[UUID],
     asiakirjaId: UUID,
     luoja: String
   ): UUID =
     try
       db.run(
-        tallennaHakemusAction(hakemusOid, hakemusKoskee, esittelijaId, asiakirjaId, luoja),
+        tallennaHakemusAction(hakemusOid, hakemusKoskee, formId, esittelijaId, asiakirjaId, luoja),
         "tallenna_hakemus"
       )
     catch {
@@ -188,6 +191,7 @@ class HakemusRepository extends BaseResultHandlers {
               h.id,
               h.hakemus_oid,
               h.hakemus_koskee,
+              h.form_id,
               h.esittelija_id,
               e.esittelija_oid,
               h.asiakirja_id,

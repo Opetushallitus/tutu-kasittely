@@ -22,15 +22,15 @@ class PaatosService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
-  def haePaatos(hakemusOid: HakemusOid, formId: Long): Option[Paatos] = {
+  def haePaatos(hakemusOid: HakemusOid): Option[Paatos] = {
     hakemusRepository.haeHakemus(hakemusOid).flatMap { dbHakemus =>
       paatosRepository.haePaatos(dbHakemus.id).flatMap { paatos =>
         {
-          val paatosTietoOptions = hakemuspalveluService.haeLomake(formId) match {
+          val paatosTietoOptions = hakemuspalveluService.haeLomake(dbHakemus.formId) match {
             case Right(response: String) =>
               Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
             case Left(error) =>
-              LOG.error(s"Lomakkeeen $formId haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
+              LOG.error(s"Lomakkeeen ${dbHakemus.formId} haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
               None
           }
 
@@ -68,12 +68,11 @@ class PaatosService(
 
   def tallennaPaatos(
     hakemusOid: HakemusOid,
-    formId: Long,
     paatos: Paatos,
     luojaTaiMuokkaaja: String
   ): (Option[Paatos], Option[Paatos]) = {
     val dbHakemus     = hakemusRepository.haeHakemus(hakemusOid)
-    val currentPaatos = haePaatos(hakemusOid, formId)
+    val currentPaatos = haePaatos(hakemusOid)
     val updatedPaatos = dbHakemus match {
       case Some(dbHakemus) =>
         val latestSavedPaatos = paatosRepository.tallennaPaatos(
@@ -133,7 +132,7 @@ class PaatosService(
   ): String = {
     val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val paatos: Paatos                     = haePaatos(hakemusOid, ataruHakemus.get.form_id).get
+    val paatos: Paatos                     = haePaatos(hakemusOid).get
     val paatosKieli: String                = {
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
     }

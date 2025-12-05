@@ -55,7 +55,8 @@
       "odottaavahvistusta": "Odottaa vahvistusta",
       "odottaalausuntoa": "Odottaa lausuntoa",
       "valmiskasiteltavaksi": "Valmis käsiteltäväksi",
-      "hakemustataydennetty": "Hakemusta täydennetty {date}",
+      "hakemustataydennetty": "Hakemusta täydennetty",
+      "hakemustataydennettytalloin": "Hakemusta täydennetty {date}",
       "hyvaksynnassatailoppukasittelyssa": "Hyväksynnässä tai loppukäsittelyssä",
       "hyvaksyttyeilahetetty": "Hyväksytty, ei lähetetty",
       "loppukasittelyvalmis": "Loppukäsittely valmis"
@@ -440,16 +441,30 @@
           },
           "paatos": {
             "olennaisiaEroja": "Onko olennaisia eroja?",
-            "erotKoulutuksessa": "Erot koulutuksessa: {kelpoisuus}",
-            "aineenopetus": "aineenopetus",
-            "eroOpetettavanAineenOpinnoissa": "Ero opetettavan aineen opinnoissa",
-            "eroPedagogisissaOpinnoissa": "Ero pedagogisissa opinnoissa",
-            "syventavienOpintojenPuuttuminen": "Syventävien opintojen puuttuminen",
-            "eriIkaryhma": "Eri ikäryhmä",
-            "muu": "Muu",
-            "muuEro": "Muu ero",
             "lahtokohtainenKorvaavaToimenpide": "Lähtökohtainen korvaava toimenpide",
             "toimenpideLisatieto": "Jos valittu useampi vaihtoehto, ne ovat keskenään vaihtoehtoiset. Jos valittu vain yksi, lisävaatimus on vaihtoehdoton.",
+            "erotKoulutuksessa": {
+              "otsikko": "Erot koulutuksessa",
+              "otsikkoTiettyKelpoisuus": "Erot koulutuksessa: {kelpoisuus}",
+              "muuEro": "Muu",
+              "muuEroKuvaus": "Muu ero",
+              "aineenopetus": {
+                "lyhytNimi": "aineenopetus",
+                "ero1": "Ero opetettavan aineen opinnoissa",
+                "ero2": "Ero pedagogisissa opinnoissa",
+                "ero3": "Syventävien opintojen puuttuminen"
+              },
+              "yleiset": {
+                "eriIkaryhma": "Eri ikäryhmä"
+              },
+              "oletus": {
+                "ero1": "Ero 1",
+                "ero2": "Ero 2",
+                "ero3": "Ero 3",
+                "ero4": "Ero 4",
+                "ero5": "Ero 5"
+              }
+            },
             "kelpoisuusKoe": {
               "otsikko": "Kelpoisuuskoe sisältö",
               "aihealue1": "Aihealue 1",

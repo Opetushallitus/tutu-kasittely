@@ -1,4 +1,5 @@
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { NamedBoolean } from '@/src/lib/types/common';
 
 export type Ratkaisutyyppi =
   | 'Paatos'
@@ -81,18 +82,15 @@ export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
 
 export type KelpoisuudenLisavaatimukset = {
   olennaisiaEroja?: boolean | null;
-  erotAineenopettajanKoulutuksessa?: ErotAineenopettajanKoulutuksessa;
+  erotKoulutuksessa?: ErotKoulutuksessa;
   korvaavaToimenpide?: KorvaavaToimenpide;
   ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen;
 };
 
-export type ErotAineenopettajanKoulutuksessa = {
-  eroOpetettavanAineenOpinnoissa?: boolean;
-  eroPedagogisissaOpinnoissa?: boolean;
-  syventavienOpintojenPuuttuminen?: boolean;
-  eriIkaryhma?: boolean;
-  muu?: boolean;
-  muuKuvaus?: string;
+export type ErotKoulutuksessa = {
+  erot?: NamedBoolean[];
+  muuEro?: boolean;
+  muuEroKuvaus?: string;
 };
 
 export type KelpoisuuskoeSisalto = {
@@ -108,6 +106,8 @@ export type KorvaavaToimenpide = {
   sopeutumisaika?: boolean;
   sopeutumiusaikaKestoKk?: string;
   kelpoisuuskoeJaSopeutumisaika?: boolean;
+  kelpoisuuskoeJaSopeutumisaikaSisalto?: KelpoisuuskoeSisalto;
+  kelpoisuuskoeJaSopeutumisaikaKestoKk?: string;
 };
 
 export type AmmattikokemusJaElinikainenOppiminenKorvaavuus =

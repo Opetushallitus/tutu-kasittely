@@ -54,10 +54,7 @@ export default function PaatostiedotPage() {
     updatePaatos,
     updateOngoing,
     updateSuccess: paatosUpdateSuccess,
-  } = usePaatos(
-    hakemusState.editedData?.hakemusOid,
-    hakemusState.editedData?.lomakeId,
-  );
+  } = usePaatos(hakemusState.editedData?.hakemusOid);
 
   const paatosState = useEditableState(paatos, updatePaatos);
 
