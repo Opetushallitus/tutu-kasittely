@@ -21,6 +21,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   val noneAtaruHakemus: Option[AtaruHakemus] = None
   val nonePerustelu: Option[Perustelu]       = None
   val noneMuistio: Option[Muistio]           = None
+  val nonePaatos: Option[Paatos]             = None
 
   val emptyPerustelu: Option[Perustelu] = Some(
     Perustelu(
@@ -268,6 +269,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   )
 
+  val somePaatos: Option[Paatos] = Some(Paatos())
+
   val someKoulutuksenSisaltoMuistio: Option[Muistio] = Some(
     Muistio(
       id = UUID.randomUUID,
@@ -378,6 +381,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       noneHakemus,
       noneAtaruHakemus,
       nonePerustelu,
+      nonePaatos,
       noneMuistio,
       noneMuistio,
       noneMuistio
@@ -397,6 +401,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       someHakemus,
       someAtaruHakemus,
       somePerustelu,
+      somePaatos,
       someKoulutuksenSisaltoMuistio,
       someMuuTutkintoMuistio,
       someAsiakirjaMuistio
@@ -594,5 +599,47 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("IMI-nro 3"))
     assert(result.get.contains("01.06.2020"))
     assert(result.get.contains("myönteinen"))
+  }
+
+  @Test
+  def haeSeutArviointiTehtyProducesString(): Unit = {
+    val paatos = Paatos(
+      seutArviointi = true
+    )
+    val result = haeSeutArviointiTehty(paatos)
+
+    assert(result.get.contains("SEUT-arviointi tehty"))
+  }
+
+  @Test
+  def haeRatkaisutyyppiProducesString(): Unit = {
+    val paatos = Paatos(
+      ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)
+    )
+    val result = haeRatkaisutyyppi(paatos)
+
+    assert(result.get.contains("Ratkaisutyyppi: Päätös"))
+  }
+
+  @Test
+  def haePaatosTyyppiProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      paatosTyyppi = Some(PaatosTyyppi.Taso),
+      tutkintoTaso = None
+    )
+    val result = haePaatosTyyppi(paatosTiedot)
+
+    assert(result.get.contains("Päätöstyyppi: Taso"))
+  }
+
+  @Test
+  def haeSovellettuLakiProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      sovellettuLaki = Some(SovellettuLaki.uo),
+      tutkintoTaso = None
+    )
+    val result = haeSovellettuLaki(paatosTiedot)
+
+    assert(result.get.contains("Sovellettu laki: Päätös UO"))
   }
 }
