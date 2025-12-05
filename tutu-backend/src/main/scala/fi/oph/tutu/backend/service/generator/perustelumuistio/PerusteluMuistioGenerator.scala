@@ -627,18 +627,31 @@ def haePaatostiedot(paatosMaybe: Option[Paatos]): Option[String] = {
           val sovellettuLaki = haeSovellettuLaki(paatosTiedot)
           val tutkinnonNimi  = None // TODO
 
-          Seq(
+          val result = Seq(
             Some(s"Päätös: $index"),
             paatosTyyppi,
             sovellettuLaki,
             tutkinnonNimi
           ).flatten.mkString("\n")
+
+          if (result != "") {
+            Some(result)
+          } else {
+            None
+          }
         })
 
-      Seq(
+      val result = Seq(
         seutArviointiTehty,
-        ratkaisutyyppi
+        ratkaisutyyppi,
+        osapaatoskohtaisetTiedot
       ).flatten.mkString("\n")
+
+      if (result != "") {
+        Some(result)
+      } else {
+        None
+      }
     }
   }
 

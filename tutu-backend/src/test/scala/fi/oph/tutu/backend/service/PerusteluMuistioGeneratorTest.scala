@@ -603,7 +603,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeSeutArviointiTehtyProducesString(): Unit = {
-    val paatos = Paatos()
+    val paatos = Paatos(
+      seutArviointi = true
+    )
     val result = haeSeutArviointiTehty(paatos)
 
     assert(result.get.contains("SEUT-arviointi tehty"))
@@ -611,7 +613,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeRatkaisutyyppiProducesString(): Unit = {
-    val paatos = Paatos()
+    val paatos = Paatos(
+      ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)
+    )
     val result = haeRatkaisutyyppi(paatos)
 
     assert(result.get.contains("Ratkaisutyyppi: Päätös"))
@@ -619,16 +623,22 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haePaatosTyyppiProducesString(): Unit = {
-    val paatosTiedot = PaatosTieto()
-    val result       = haePaatosTyyppi(paatosTiedot)
+    val paatosTiedot = PaatosTieto(
+      paatosTyyppi = Some(PaatosTyyppi.Taso),
+      tutkintoTaso = None
+    )
+    val result = haePaatosTyyppi(paatosTiedot)
 
     assert(result.get.contains("Päätöstyyppi: Taso"))
   }
 
   @Test
   def haeSovellettuLakiProducesString(): Unit = {
-    val paatosTiedot = PaatosTieto()
-    val result       = haeSovellettuLaki(paatosTiedot)
+    val paatosTiedot = PaatosTieto(
+      sovellettuLaki = Some(SovellettuLaki.uo),
+      tutkintoTaso = None
+    )
+    val result = haeSovellettuLaki(paatosTiedot)
 
     assert(result.get.contains("Sovellettu laki: Päätös UO"))
   }
