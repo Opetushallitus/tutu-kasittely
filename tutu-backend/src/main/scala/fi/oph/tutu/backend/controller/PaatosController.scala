@@ -68,6 +68,7 @@ class PaatosController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
   @PutMapping(
     path = Array("paatos/{hakemusOid}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),

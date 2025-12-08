@@ -1,12 +1,13 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Perustelu, Tutkinto, UserOid}
-import fi.oph.tutu.backend.service.{HakemusModifyOperationResolver, PerusteluService, TutkintoService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{DeleteTutkinto, ReadPerustelu, UpdatePerustelu}
+import fi.oph.tutu.backend.domain.{HakemusOid, Tutkinto, UserOid}
+import fi.oph.tutu.backend.service.{HakemusModifyOperationResolver, TutkintoService, UserService}
+import fi.oph.tutu.backend.utils.AuditOperation.{DeleteTutkinto, ReadTutkinnot, TallennaTutkinnot}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.{Content, Schema}
+import io.swagger.v3.oas.annotations.media.{ArraySchema, Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -19,25 +20,24 @@ import org.springframework.web.bind.annotation.{
   RequestMapping,
   RestController
 }
-import software.amazon.awssdk.core.internal.waiters.ResponseOrException.response
 
 import scala.util.{Failure, Success, Try}
 import java.util.UUID
 
 @RestController
-@RequestMapping(path = Array("api/hakemus/"))
+@RequestMapping(path = Array("api"))
 class TutkintoController(
   tutkintoService: TutkintoService,
   userService: UserService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluController])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[TutkintoController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   @GetMapping(
-    path = Array("{hakemusOid}/tutkinto/"),
+    path = Array("hakemus/{hakemusOid}/tutkinto/"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
@@ -48,7 +48,7 @@ class TutkintoController(
         responseCode = "200",
         description = RESPONSE_200_DESCRIPTION,
         content = Array(
-          new Content(schema = new Schema(implementation = classOf[Seq[Tutkinto]]))
+          new Content(array = new ArraySchema(schema = new Schema(implementation = classOf[Tutkinto])))
         )
       ),
       new ApiResponse(
@@ -69,15 +69,16 @@ class TutkintoController(
       tutkintoService.haeTutkinnot(HakemusOid(hakemusOid))
     } match {
       case Success(result) =>
+        auditLog.logRead("Tutkinnot", hakemusOid, ReadTutkinnot, request)
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(result))
       case Failure(exception) =>
-        LOG.error(s"Perustelun haku epäonnistui", exception)
+        LOG.error(s"Tutkintojen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
 
   @PutMapping(
-    path = Array("{hakemusOid}/tutkinto/"),
+    path = Array("hakemus/{hakemusOid}/tutkinto/"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
@@ -86,13 +87,16 @@ class TutkintoController(
     description = "PUT endpoint kaikille hakemuksen tutkinnoille",
     requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = Array(
-        new Content(schema = new Schema(implementation = classOf[Seq[Tutkinto]]))
+        new Content(array = new ArraySchema(schema = new Schema(implementation = classOf[Tutkinto])))
       )
     ),
     responses = Array(
       new ApiResponse(
         responseCode = "200",
-        description = RESPONSE_200_DESCRIPTION
+        description = RESPONSE_200_DESCRIPTION,
+        content = Array(
+          new Content(array = new ArraySchema(schema = new Schema(implementation = classOf[Tutkinto])))
+        )
       ),
       new ApiResponse(
         responseCode = "400",
@@ -115,9 +119,8 @@ class TutkintoController(
   ): ResponseEntity[Any] = {
     Try {
       val user                     = userService.getEnrichedUserDetails(true)
-      val tutkinnot: Seq[Tutkinto] =
-        mapper.readValue(tutkintoBytes, classOf[Seq[Tutkinto]])
-      val tallennetutTutkinnot = tutkintoService.haeTutkinnot(HakemusOid(hakemusOid))
+      val tutkinnot: Seq[Tutkinto] = mapper.readValue(tutkintoBytes, new TypeReference[Seq[Tutkinto]] {})
+      val tallennetutTutkinnot     = tutkintoService.haeTutkinnot(HakemusOid(hakemusOid))
 
       tutkintoService.tallennaTutkinnot(
         HakemusModifyOperationResolver.resolveTutkintoModifyOperations(tallennetutTutkinnot, tutkinnot),
@@ -129,7 +132,7 @@ class TutkintoController(
         auditLog.logChanges(
           auditLog.getUser(request),
           Map("hakemusOid" -> hakemusOid),
-          UpdatePerustelu,
+          TallennaTutkinnot,
           AuditUtil.getChanges(
             Some(mapper.writeValueAsString(tallennetutTutkinnot)),
             Some(mapper.writeValueAsString(tutkinnot))
@@ -137,7 +140,7 @@ class TutkintoController(
         )
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(tutkinnot))
       case Failure(e) =>
-        LOG.error("Tutkintojen tallentaminen epäonnistui", e.getMessage)
+        LOG.error("Tutkintojen tallentaminen epäonnistui", e)
         errorMessageMapper.mapPlainErrorMessage(
           RESPONSE_400_DESCRIPTION,
           HttpStatus.BAD_REQUEST
@@ -145,7 +148,7 @@ class TutkintoController(
     }
   }
 
-  @DeleteMapping(path = Array("{hakemusOid}/tutkinto/{tutkintoId}"))
+  @DeleteMapping(path = Array("hakemus/{hakemusOid}/tutkinto/{tutkintoId}"))
   @Operation(
     summary = "Poistaa tutkinnon",
     description = "DELETE endpoint yksittäisen tutkinnon poistamiseen",
@@ -192,7 +195,7 @@ class TutkintoController(
           ResponseEntity.noContent().build()
         }
       case Failure(e) =>
-        LOG.error("Tutkinnon poistaminen epäonnistui", e.getMessage)
+        LOG.error("Tutkinnon poistaminen epäonnistui", e)
         errorMessageMapper.mapErrorMessage(e)
     }
   }

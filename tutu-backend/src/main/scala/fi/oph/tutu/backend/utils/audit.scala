@@ -221,8 +221,16 @@ object AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }
 
+  case object ReadTutkinnot extends AuditOperation {
+    val name = "TUTKINTOJEN_LUKU"
+  }
+
   case object DeleteTutkinto extends AuditOperation {
     val name = "TUTKINNON_POISTO"
+  }
+
+  case object TallennaTutkinnot extends AuditOperation {
+    val name = "TUTKINTOJEN_TALLENNUS"
   }
 }
 

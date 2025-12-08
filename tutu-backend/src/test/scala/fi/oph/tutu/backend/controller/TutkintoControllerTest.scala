@@ -7,12 +7,14 @@ import fi.oph.tutu.backend.domain.{
   HakemusOid,
   KansalaisuusKoodi,
   OnrUser,
+  User,
   UserOid,
   UusiAtaruHakemus
 }
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, OnrService, TutkintoService}
-import fi.oph.tutu.backend.utils.AuditLog
+import fi.oph.tutu.backend.service.{HakemusService, OnrService, TutkintoService, UserService}
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{BeforeAll, Order, Test, TestInstance, TestMethodOrder}
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -45,6 +48,9 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   var mockOnrService: OnrService = _
+
+  @MockitoBean
+  var userService: UserService = _
 
   @Autowired
   var hakemusService: HakemusService = _
@@ -102,19 +108,82 @@ class TutkintoControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(2)
+  @Order(1)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeTutkinnotValidRequestReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val tutkinnot = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+
     mockMvc
       .perform(
-        get(s"/api/hakemus/$hakemusOid/tutkinto")
+        get(s"/api/hakemus/${hakemusOid.toString}/tutkinto/")
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
       )
       .andExpect(status().isOk)
-      .andExpect(content().contentType(MediaType.valueOf("text/plain; charset=UTF-8")))
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(
         content().json(
-          """{"message":"Hakemusta ei löytynyt"}"""
+          mapper.writeValueAsString(tutkinnot)
         )
       )
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadTutkinnot), any())
+  }
+
+  @Test
+  @Order(2)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaTutkinnotValidRequestReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val tutkinnot         = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+    val muutetutTutkinnot = tutkinnot.map(_.copy(nimi = Some("Muutettu nimi")))
+
+    mockMvc
+      .perform(
+        put(s"/api/hakemus/${hakemusOid.toString}/tutkinto/")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(mapper.writeValueAsString(muutetutTutkinnot))
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(content().json(mapper.writeValueAsString(muutetutTutkinnot)))
+
+    val tutkinnot2 = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+
+    assertTrue(tutkinnot2.forall(_.nimi.contains("Muutettu nimi")))
+  }
+
+  @Test
+  @Order(3)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def poistaTutkintoValidRequestReturns204(): Unit = {
+    val tutkinnot1  = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+    val poistettuId = tutkinnot1.head.id.get
+
+    mockMvc
+      .perform(
+        delete(s"/api/hakemus/${hakemusOid.toString}/tutkinto/${poistettuId.toString}")
+          .`with`(csrf())
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isNoContent)
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.DeleteTutkinto), any())
+
+    val tutkinnot2 = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+
+    assertEquals(tutkinnot2.length, tutkinnot1.length - 1)
+    assertTrue(!tutkinnot2.exists(_.id.getOrElse("") == poistettuId))
   }
 }

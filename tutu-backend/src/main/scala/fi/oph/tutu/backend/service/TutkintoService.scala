@@ -1,14 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.{HakemusOid, Tutkinto, TutkintoModifyData, UserOid}
-import fi.oph.tutu.backend.repository.{
-  AsiakirjaRepository,
-  EsittelijaRepository,
-  PaatosRepository,
-  PerusteluRepository,
-  TutkintoRepository,
-  TutuDatabase
-}
+import fi.oph.tutu.backend.repository.TutkintoRepository
 import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
@@ -16,17 +9,7 @@ import java.util.UUID
 @Component
 @Service
 class TutkintoService(
-  esittelijaRepository: EsittelijaRepository,
-  asiakirjaRepository: AsiakirjaRepository,
-  perusteluRepository: PerusteluRepository,
-  tutkintoRepository: TutkintoRepository,
-  kasittelyVaiheService: KasittelyVaiheService,
-  paatosRepository: PaatosRepository,
-  hakemuspalveluService: HakemuspalveluService,
-  onrService: OnrService,
-  ataruHakemusParser: AtaruHakemusParser,
-  userService: UserService,
-  db: TutuDatabase
+  tutkintoRepository: TutkintoRepository
 ) {
   def haeTutkinnot(hakemusOid: HakemusOid): Seq[Tutkinto] = {
     tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)

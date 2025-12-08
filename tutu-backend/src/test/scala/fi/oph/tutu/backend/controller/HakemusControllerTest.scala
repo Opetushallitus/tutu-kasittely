@@ -53,7 +53,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   var auditLog: AuditLog = _
 
   @MockitoBean
-  var userService: fi.oph.tutu.backend.service.UserService = _
+  var userService: UserService = _
 
   @MockitoBean
   var mockOnrService: OnrService = _
@@ -154,7 +154,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   def paivitaHakemusMalformedJsonReturns400(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        fi.oph.tutu.backend.domain.User(
+        User(
           userOid = HakemusControllerTestConstants.ESITTELIJA_OID,
           authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
         )
