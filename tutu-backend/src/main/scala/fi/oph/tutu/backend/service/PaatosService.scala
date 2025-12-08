@@ -14,6 +14,7 @@ import org.springframework.stereotype.{Component, Service}
 class PaatosService(
   hakemusRepository: HakemusRepository,
   hakemusService: HakemusService,
+  tutkintoService: TutkintoService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   muistioService: MuistioService,
@@ -131,6 +132,7 @@ class PaatosService(
     hakemusOid: HakemusOid
   ): String = {
     val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
+    val tutkinnot: Seq[Tutkinto]           = tutkintoService.haeTutkinnot(hakemusOid)
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val paatos: Paatos                     = haePaatos(hakemusOid).get
     val paatosKieli: String                = {
@@ -141,7 +143,7 @@ class PaatosService(
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
-    generatePaatosTeksti(hakemus, paatos, paatosKieli, hallintoOikeus)
+    generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus)
   }
 
 }

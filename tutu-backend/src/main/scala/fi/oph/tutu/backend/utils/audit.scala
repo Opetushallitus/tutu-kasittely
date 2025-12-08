@@ -220,6 +220,10 @@ object AuditOperation {
   case object UpdateAsiatunnus extends AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }
+
+  case object DeleteTutkinto extends AuditOperation {
+    val name = "TUTKINNON_POISTO"
+  }
 }
 
 case class AuditException(message: String) extends Exception(message)

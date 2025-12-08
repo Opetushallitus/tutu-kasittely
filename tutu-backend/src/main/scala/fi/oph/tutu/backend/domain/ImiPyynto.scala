@@ -14,10 +14,10 @@ case class ImiPyynto(
 ) {
   def this(partialImiPyynto: Option[ImiPyynto]) =
     this(
-      imiPyynto = partialImiPyynto.flatMap(_.imiPyynto).orElse(None),
-      imiPyyntoNumero = partialImiPyynto.flatMap(_.imiPyyntoNumero).orElse(None),
-      imiPyyntoLahetetty = partialImiPyynto.flatMap(_.imiPyyntoLahetetty).orElse(None),
-      imiPyyntoVastattu = partialImiPyynto.flatMap(_.imiPyyntoVastattu).orElse(None)
+      imiPyynto = partialImiPyynto.flatMap(_.imiPyynto),
+      imiPyyntoNumero = partialImiPyynto.flatMap(_.imiPyyntoNumero),
+      imiPyyntoLahetetty = partialImiPyynto.flatMap(_.imiPyyntoLahetetty),
+      imiPyyntoVastattu = partialImiPyynto.flatMap(_.imiPyyntoVastattu)
     )
 
   @JsonIgnore

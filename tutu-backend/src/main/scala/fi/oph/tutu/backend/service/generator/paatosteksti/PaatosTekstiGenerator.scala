@@ -51,9 +51,10 @@ private def getTasoPaatosPerusteluText(lang: String, isYlempiKorkeakouluTutkinto
 }
 
 private def parseHallintoOikeusName(hallintoOikeus: String): String = {
-  hallintoOikeus.contains("hallintotuomioistuin") match {
-    case true  => hallintoOikeus.replace("hallintotuomioistuin", "hallintotuomioistuimelle")
-    case false => hallintoOikeus.replace("hallinto-oikeus", "hallinto-oikeudelle")
+  if (hallintoOikeus.contains("hallintotuomioistuin")) {
+    hallintoOikeus.replace("hallintotuomioistuin", "hallintotuomioistuimelle")
+  } else {
+    hallintoOikeus.replace("hallinto-oikeus", "hallinto-oikeudelle")
   }
 }
 
@@ -87,8 +88,8 @@ private def getSelectTutkintoTasoText(lang: String): String = lang match {
     s"""<p>Välj kvalifikationsnivå.</p>""".stripMargin
 }
 
-private def getTutkintoNimi(hakemus: Hakemus, paatosTieto: PaatosTieto): String = {
-  val tutkinto = hakemus.tutkinnot
+private def getTutkintoNimi(tutkinnot: Seq[Tutkinto], paatosTieto: PaatosTieto): String = {
+  val tutkinto = tutkinnot
     .find(tutkinto => tutkinto.id == paatosTieto.tutkintoId)
     .get
   if (tutkinto.jarjestys == "MUU") "Muu tutkinto" else tutkinto.nimi.get
@@ -96,6 +97,7 @@ private def getTutkintoNimi(hakemus: Hakemus, paatosTieto: PaatosTieto): String 
 
 private def generateTasoPaatosTeksti(
   hakemus: Hakemus,
+  tutkinnot: Seq[Tutkinto],
   paatos: Paatos,
   paatosKieli: String,
   hallintoOikeus: HallintoOikeus
@@ -118,7 +120,7 @@ private def generateTasoPaatosTeksti(
             getTasoPaatosTutkintoTextWithTutkintoName(
               paatosKieli,
               isYlempiKorkeakouluTutkinto,
-              getTutkintoNimi(hakemus, paatosTieto)
+              getTutkintoNimi(tutkinnot, paatosTieto)
             )
           } else {
             getTasoPaatosTutkintoText(
@@ -146,6 +148,7 @@ private def generateTasoPaatosTeksti(
 
 def generatePaatosTeksti(
   hakemus: Hakemus,
+  tutkinnot: Seq[Tutkinto],
   paatos: Paatos,
   paatosKieli: String,
   hallintoOikeus: HallintoOikeus
@@ -153,7 +156,7 @@ def generatePaatosTeksti(
   val containsTasoPaatos = paatos.paatosTiedot.exists(paatosTieto => paatosTieto.paatosTyyppi.get == Taso)
 
   if (containsTasoPaatos) {
-    generateTasoPaatosTeksti(hakemus, paatos, paatosKieli, hallintoOikeus)
+    generateTasoPaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus)
   } else {
     getTODOText(paatosKieli)
   }

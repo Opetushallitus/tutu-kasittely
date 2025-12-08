@@ -9,7 +9,7 @@ import fi.oph.tutu.backend.fixture.{
 }
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, DATE_TIME_FORMAT}
+import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 
 object HakemusControllerTestConstants {
@@ -118,11 +118,8 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   private def tallennaHakemus(hakemusOid: String, hakemusKoskee: Int): Unit = {
-    hakemusService.luoKokonainenHakemus(
-      UusiAtaruHakemus(HakemusOid(hakemusOid), hakemusKoskee),
-      Perustelu(jatkoOpintoKelpoisuusLisatieto = Some("")),
-      Paatos(),
-      ATARU_SERVICE
+    hakemusService.tallennaAtaruHakemus(
+      UusiAtaruHakemus(HakemusOid(hakemusOid), hakemusKoskee)
     )
   }
 
@@ -243,10 +240,10 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               } ]"""
 
-    tallennaHakemus("1.2.246.562.11.00000000000000006665", 0)
-    tallennaHakemus("1.2.246.562.11.00000000000000006666", 1)
-    tallennaHakemus("1.2.246.562.11.00000000000000006667", 0)
-    tallennaHakemus("1.2.246.562.11.00000000000000006668", 1)
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), 0))
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1))
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 0))
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), 1))
     mockMvc
       .perform(
         get("/api/hakemuslista")
@@ -265,7 +262,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     val hakemusOid    = HakemusOid("1.2.246.562.11.00000000000000006667")
     val asiakirjaId   = addAsiakirjaStuffToHakemus(virkailijaOid)
     val dbAsiakirja   = hakemusRepository.haeHakemus(hakemusOid).get
-    hakemusRepository.paivitaPartialHakemus(
+    hakemusRepository.paivitaHakemus(
       hakemusOid,
       dbAsiakirja.copy(asiakirjaId = Some(asiakirjaId)),
       virkailijaOid.toString
@@ -505,10 +502,10 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
-    tallennaHakemus(hakemusOid.toString, 0)
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid, 0))
     val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
-    val tutkinnotBefore = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+    val tutkinnotBefore = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
     val firstTutkintoBefore = tutkinnotBefore.find(tutkinto => tutkinto.jarjestys == "1").get
     assertEquals("tutkintotodistus", firstTutkintoBefore.todistusOtsikko.get)
@@ -532,7 +529,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
-    val tutkinnotAfter = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+    val tutkinnotAfter = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
     val firstTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "1").get
     assertEquals("maatjavaltiot2_103", firstTutkintoAfter.maakoodiUri.get)
@@ -550,15 +547,15 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals("Ammuu-instituutti, ypäjän hevosopisto", muuTutkintoAfter.muuTutkintoTieto.get)
 
     // Muokataan tutkintoja virkailijan toimesta
-    hakemusRepository.suoritaPaivitaTutkinto(
+    tutkintoRepository.suoritaPaivitaTutkinto(
       firstTutkintoAfter.copy(nimi = Some("Oikeasti Kirkan parhaat")),
       "Virkailija1"
     )
-    hakemusRepository.suoritaPaivitaTutkinto(
+    tutkintoRepository.suoritaPaivitaTutkinto(
       secondTutkintoAfter.copy(nimi = Some("Pienpanimo-tutkinto")),
       "Virkailija2"
     )
-    hakemusRepository.suoritaPaivitaTutkinto(
+    tutkintoRepository.suoritaPaivitaTutkinto(
       muuTutkintoAfter.copy(muuTutkintoTieto = Some("Tarkistettu: lemmikkigerbiilin hoito")),
       "Virkailija3"
     )
@@ -570,7 +567,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
-    val tutkinnotAfterVirkailijaUpdate = hakemusRepository.haeTutkinnotHakemusIdilla(hakemus.id)
+    val tutkinnotAfterVirkailijaUpdate = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
     val firstTutkintoAfterVirkailijaUpdate =
       tutkinnotAfterVirkailijaUpdate.find(tutkinto => tutkinto.jarjestys == "1").get

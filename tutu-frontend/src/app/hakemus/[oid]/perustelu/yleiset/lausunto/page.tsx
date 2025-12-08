@@ -47,6 +47,7 @@ export default function Lausuntotiedot() {
     editedData: editedPerustelu,
     hasChanges,
     updateLocal,
+    updateImmediately,
     save,
   } = useEditableState(perustelu, tallennaPerustelu);
 
@@ -99,7 +100,7 @@ export default function Lausuntotiedot() {
     const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
       omit(p, ['jarjestys']),
     );
-    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
+    updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
   if (isPerusteluLoading || !editedPerustelu) {

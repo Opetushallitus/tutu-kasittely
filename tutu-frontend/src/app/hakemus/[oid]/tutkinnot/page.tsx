@@ -54,13 +54,12 @@ export default function TutkintoPage() {
     hakemusState.updateLocal({ tutkinnot: [...oldTutkinnot, next] });
   };
 
-  const deleteTutkintoLocal = (id: string | undefined) => {
+  const deleteTutkinto = (id: string | undefined) => {
     const tutkinnot = editedTutkinnot.filter((tutkinto) => tutkinto.id !== id);
-    hakemusState.updateLocal({ tutkinnot });
+    hakemusState.updateImmediately({ tutkinnot });
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
-    id: '',
     hakemusId: hakemusId,
     jarjestys: jarjestys,
     nimi: '',
@@ -125,7 +124,7 @@ export default function TutkintoPage() {
               maatJaValtiotOptions={maatJaValtiotOptions}
               koulutusLuokitusOptions={koulutusLuokitusOptions}
               updateTutkintoAction={updateTutkintoLocal}
-              deleteTutkintoAction={deleteTutkintoLocal}
+              deleteTutkintoAction={deleteTutkinto}
               paatosKieli={hakemuksenPaatosKieli as string}
               t={t}
             />

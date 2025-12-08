@@ -141,7 +141,7 @@ const Paatostiedot = ({
   ) => {
     const newPaatos: Paatos = { ...paatos, ...updatedPaatos };
     if (immediateSave) {
-      paatosState.updateImmediatelly(updatedPaatos);
+      paatosState.updateImmediately(updatedPaatos);
       return;
     }
     paatosState.updateLocal(newPaatos);
