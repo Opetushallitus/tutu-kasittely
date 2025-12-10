@@ -259,4 +259,43 @@ class TutkintoRepository extends BaseResultHandlers {
     }
   }
 
+  def haeTutkintoIdlla(tutkintoId: UUID): Option[Tutkinto] = {
+    try
+      db.run(
+        sql"""
+        SELECT
+          id,
+          hakemus_id,
+          jarjestys,
+          nimi,
+          oppilaitos,
+          aloitus_vuosi,
+          paattymis_vuosi,
+          maakoodiuri,
+          muu_tutkinto_tieto,
+          todistuksen_paivamaara,
+          koulutusala_koodiuri,
+          paaaine_tai_erikoisala,
+          todistusotsikko,
+          muu_tutkinto_muistio_id,
+          ohjeellinen_laajuus,
+          opinnaytetyo,
+          harjoittelu,
+          perustelun_lisatietoja,
+          muokkaaja
+        FROM tutkinto
+        WHERE id = ${tutkintoId.toString}::uuid
+      """
+          .as[Tutkinto],
+        "hae_tutkinto_idlla"
+      ).headOption
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tutkinnon haku id:lla $tutkintoId epäonnistui: $e")
+        throw new RuntimeException(
+          s"Tutkinnon haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 }

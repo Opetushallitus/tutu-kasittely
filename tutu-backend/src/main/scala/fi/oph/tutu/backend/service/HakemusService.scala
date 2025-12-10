@@ -168,21 +168,27 @@ class HakemusService(
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
         // Ei tutkintoa järjestysnumerolla -> lisätään uusi
-        case None                     => tutkintoRepository.suoritaLisaaTutkinto(ataruTutkinto, TUTU_SERVICE)
+        case None                     => tutkintoRepository.suoritaLisaaTutkinto(ataruTutkinto, ATARU_SERVICE)
         case Some(existingDbTutkinto) =>
           existingDbTutkinto.muokkaaja match {
             // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
-            case Some(ATARU_SERVICE) | Some(TUTU_SERVICE) | None =>
-              tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
+            case Some(ATARU_SERVICE) | None =>
+              tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), ATARU_SERVICE)
             case Some(value) =>
-              tutkintoRepository.suoritaPaivitaTutkinto(
-                existingDbTutkinto.copy(
-                  todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                  aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                  paattymisVuosi = ataruTutkinto.paattymisVuosi
-                ),
-                TUTU_SERVICE
-              )
+              if (
+                existingDbTutkinto.todistusOtsikko != ataruTutkinto.todistusOtsikko
+                || existingDbTutkinto.aloitusVuosi != ataruTutkinto.aloitusVuosi
+                || existingDbTutkinto.paattymisVuosi != ataruTutkinto.paattymisVuosi
+              ) {
+                tutkintoRepository.suoritaPaivitaTutkinto(
+                  existingDbTutkinto.copy(
+                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
+                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
+                    paattymisVuosi = ataruTutkinto.paattymisVuosi
+                  ),
+                  ataruTutkinto.muokkaaja.getOrElse(TUTU_SERVICE)
+                )
+              } else { 0 }
           }
       }
     }

@@ -229,6 +229,10 @@ object AuditOperation {
     val name = "TUTKINNON_POISTO"
   }
 
+  case object UpdateTutkinto extends AuditOperation {
+    val name = "TUTKINNON_PAIVITYS"
+  }
+
   case object TallennaTutkinnot extends AuditOperation {
     val name = "TUTKINTOJEN_TALLENNUS"
   }

@@ -10,7 +10,7 @@ import {
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
 import { Perustelu } from '@/src/lib/types/perustelu';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 const expectRequestData = async (
   page: Page,

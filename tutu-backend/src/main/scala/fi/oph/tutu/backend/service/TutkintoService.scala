@@ -15,7 +15,11 @@ class TutkintoService(
     tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
   }
 
-  def tallennaTutkinto(tutkinto: Tutkinto, luoja: String): Int = {
+  def haeTutkinto(tutkintoId: UUID): Option[Tutkinto] = {
+    tutkintoRepository.haeTutkintoIdlla(tutkintoId)
+  }
+
+  def lisaaTutkinto(tutkinto: Tutkinto, luoja: String): Int = {
     tutkintoRepository.suoritaLisaaTutkinto(tutkinto, luoja)
   }
 
@@ -25,5 +29,9 @@ class TutkintoService(
 
   def tallennaTutkinnot(tutkintoModifyData: TutkintoModifyData, luojaTaiMuokkaaja: UserOid): Unit = {
     tutkintoRepository.suoritaTutkintojenModifiointi(tutkintoModifyData, luojaTaiMuokkaaja)
+  }
+
+  def paivitaTutkinto(tutkinto: Tutkinto, luojaTaiMuokkaaja: UserOid): Unit = {
+    tutkintoRepository.suoritaPaivitaTutkinto(tutkinto, luojaTaiMuokkaaja.toString)
   }
 }

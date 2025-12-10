@@ -1,7 +1,7 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import {
   OphButton,
   OphInputFormField,
@@ -53,7 +53,7 @@ export type TutkintoProps = {
   maatJaValtiotOptions: OphSelectOption<string>[];
   koulutusLuokitusOptions: OphSelectOption<string>[];
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
-  deleteTutkintoAction: (id: string | undefined) => void;
+  deleteTutkintoAction: (tutkinto: Tutkinto) => void;
   paatosKieli: string;
   t: TFunction;
 };
@@ -123,7 +123,7 @@ export const TutkintoComponent = ({
                 header: t('hakemus.tutkinnot.modal.otsikko'),
                 content: t('hakemus.tutkinnot.modal.teksti'),
                 confirmButtonText: t('hakemus.tutkinnot.modal.poistaPaatos'),
-                handleConfirmAction: () => deleteTutkintoAction(tutkinto.id),
+                handleConfirmAction: () => deleteTutkintoAction(tutkinto),
               })
             }
           >

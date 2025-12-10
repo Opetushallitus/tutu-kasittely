@@ -32,7 +32,6 @@ export const buildHakemusUpdateRequest = (
   esittelijaOid: hakemus.esittelijaOid || null,
   kasittelyVaihe: hakemus.kasittelyVaihe,
   yhteistutkinto: hakemus.yhteistutkinto,
-  tutkinnot: hakemus.tutkinnot,
   asiakirja: hakemus.asiakirja,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus:
     hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus || null,

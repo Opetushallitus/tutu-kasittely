@@ -11,7 +11,7 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
 import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { Add } from '@mui/icons-material';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
@@ -20,15 +20,23 @@ import {
   paatosKieli,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 
 export default function TutkintoPage() {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const { addToast } = useToaster();
-  const { isLoading, hakemusState, error, isSaving } = useHakemus();
+  const {
+    isLoading: isHakemusLoading,
+    hakemusState,
+    error: hakemusError,
+    isSaving: isHakemusSaving,
+  } = useHakemus();
+  const { isLoading, isSaving, error, tutkintoState, poistaTutkinto } =
+    useTutkinnot(hakemusState.editedData?.hakemusOid);
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
-  const editedTutkinnot = hakemusState.editedData?.tutkinnot ?? [];
+  const editedTutkinnot = tutkintoState.editedData ?? [];
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
@@ -44,19 +52,27 @@ export default function TutkintoPage() {
   }, [hakemusState.editedData, getLanguage]);
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
-  }, [error, addToast, t]);
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+    handleFetchError(addToast, error, 'virhe.tutkintojenLataus', t);
+  }, [error, hakemusError, addToast, t]);
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
-    hakemusState.updateLocal({ tutkinnot: [...oldTutkinnot, next] });
+    tutkintoState.updateLocal([...oldTutkinnot, next]);
   };
 
-  const deleteTutkinto = (id: string | undefined) => {
-    const tutkinnot = editedTutkinnot.filter((tutkinto) => tutkinto.id !== id);
-    hakemusState.updateImmediately({ tutkinnot });
+  const deleteTutkinto = async (tutkinto: Tutkinto) => {
+    if (!tutkinto.id) {
+      // jos tutkinnolla ei ole id:tä sitä ei ole vielä tallennettu tietokantaan ja riittää lokaalin tilan päivitys
+      const tutkinnot = editedTutkinnot.filter(
+        (t) => t.jarjestys !== tutkinto.jarjestys,
+      );
+      tutkintoState.updateLocal(tutkinnot);
+    } else {
+      await poistaTutkinto(tutkinto);
+    }
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
@@ -77,19 +93,23 @@ export default function TutkintoPage() {
     ).length;
 
     const hakemusId = editedTutkinnot[0]!.hakemusId;
-    hakemusState.updateLocal({
-      tutkinnot: [
-        ...editedTutkinnot,
-        emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
-      ],
-    });
+    tutkintoState.updateLocal([
+      ...editedTutkinnot,
+      emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
+    ]);
   };
 
   if (error) {
     return null;
   }
 
-  if (isLoading || !hakemusState.editedData) return <FullSpinner></FullSpinner>;
+  if (
+    isHakemusLoading ||
+    !hakemusState.editedData ||
+    isLoading ||
+    !tutkintoState.editedData
+  )
+    return <FullSpinner></FullSpinner>;
 
   const muuTutkinto = editedTutkinnot.find(
     (tutkinto) => tutkinto.jarjestys === 'MUU',
@@ -149,9 +169,12 @@ export default function TutkintoPage() {
         />
       </Stack>
       <SaveRibbon
-        onSave={hakemusState.save}
-        isSaving={isSaving || false}
-        hasChanges={hakemusState.hasChanges}
+        onSave={() => {
+          hakemusState.save();
+          tutkintoState.save();
+        }}
+        isSaving={isHakemusSaving || isSaving}
+        hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
       />
     </>
   );

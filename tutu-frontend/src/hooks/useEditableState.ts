@@ -24,7 +24,7 @@ export type EditableState<T> = {
   save: () => void;
 };
 
-export const useEditableState = <T extends Record<string, unknown>>(
+export const useEditableState = <T>(
   serverData: T | undefined,
   onSave: (data: T) => void,
 ): EditableState<T> => {

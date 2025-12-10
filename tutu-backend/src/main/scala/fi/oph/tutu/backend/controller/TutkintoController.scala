@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Tutkinto, UserOid}
 import fi.oph.tutu.backend.service.{HakemusModifyOperationResolver, TutkintoService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{DeleteTutkinto, ReadTutkinnot, TallennaTutkinnot}
+import fi.oph.tutu.backend.utils.AuditOperation.{DeleteTutkinto, ReadTutkinnot, TallennaTutkinnot, UpdateTutkinto}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{ArraySchema, Content, Schema}
@@ -145,6 +145,81 @@ class TutkintoController(
           RESPONSE_400_DESCRIPTION,
           HttpStatus.BAD_REQUEST
         )
+    }
+  }
+
+  @PutMapping(
+    path = Array("hakemus/{hakemusOid}/tutkinto/{tutkintoId}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivitä yksittäinen tutkinto",
+    description = "PUT endpoint yksittäisen tutkinnon päivittämiseen",
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[Tutkinto]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION,
+        content = Array(
+          new Content(schema = new Schema(implementation = classOf[Tutkinto]))
+        )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = RESPONSE_404_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def tallennaTutkinto(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("tutkintoId") tutkintoId: String,
+    @RequestBody tutkintoBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    tutkintoService.haeTutkinto(UUID.fromString(tutkintoId)) match {
+      case None                => ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+      case Some(vanhaTutkinto) =>
+        Try {
+          val user               = userService.getEnrichedUserDetails(true)
+          val tutkinto: Tutkinto = mapper.readValue(tutkintoBytes, classOf[Tutkinto])
+          tutkintoService.paivitaTutkinto(tutkinto, UserOid(user.userOid))
+          tutkinto
+        } match {
+          case Success(tutkinto: Tutkinto) =>
+            auditLog.logChanges(
+              auditLog.getUser(request),
+              Map("hakemusOid" -> hakemusOid, "tutkintoId" -> tutkintoId),
+              UpdateTutkinto,
+              AuditUtil.getChanges(
+                Some(mapper.writeValueAsString(vanhaTutkinto)),
+                Some(mapper.writeValueAsString(tutkinto))
+              )
+            )
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(tutkinto))
+          case Failure(e) =>
+            LOG.error("Tutkinnon tallentaminen epäonnistui", e)
+            errorMessageMapper.mapPlainErrorMessage(
+              RESPONSE_400_DESCRIPTION,
+              HttpStatus.BAD_REQUEST
+            )
+        }
     }
   }
 

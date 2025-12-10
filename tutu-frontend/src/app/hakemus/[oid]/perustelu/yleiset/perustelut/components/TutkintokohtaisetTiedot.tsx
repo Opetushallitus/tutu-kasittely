@@ -7,7 +7,9 @@ import { Stack, useTheme } from '@mui/material';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
-import { Hakemus, Tutkinto } from '@/src/lib/types/hakemus';
+import { Hakemus } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { type EditableState } from '@/src/hooks/useEditableState';
 
 const RangeDash = () => (
   <OphTypography variant="body1" sx={{ marginTop: '6px' }}>
@@ -129,6 +131,7 @@ const Lisatietoja = ({ tutkinto, updateTutkinto }: FieldProps) => {
 
 interface TutkintokohtaisetTiedotProps {
   hakemus: Hakemus | undefined;
+  tutkintoState: EditableState<Tutkinto[]>;
   updateHakemus: (patch: Partial<Hakemus>) => void;
 }
 
@@ -137,20 +140,18 @@ const sortTutkinnot = (tutkinnot: Tutkinto[]) => {
 };
 
 export const TutkintokohtaisetTiedot = ({
-  hakemus,
-  updateHakemus,
+  tutkintoState,
 }: TutkintokohtaisetTiedotProps) => {
   const theme = useTheme();
   const { t } = useTranslations();
-
-  const tutkinnot = hakemus?.tutkinnot || [];
+  const tutkinnot = tutkintoState.editedData ?? [];
 
   const updateTutkinto = (next: Tutkinto) => {
     const oldTutkinnot = tutkinnot.filter(
       (tutkinto) => tutkinto.id !== next.id,
     );
     const newTutkinnot = sortTutkinnot([...oldTutkinnot, next]);
-    updateHakemus({ tutkinnot: newTutkinnot });
+    tutkintoState.updateLocal(newTutkinnot);
   };
 
   const varsinaisetTutkinnot = tutkinnot.filter(
