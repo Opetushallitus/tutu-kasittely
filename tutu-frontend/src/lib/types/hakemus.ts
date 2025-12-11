@@ -32,7 +32,11 @@ export type Hakemus = {
   asiakirja: AsiakirjaTieto;
   yhteistutkinto: boolean;
   tutkinnot: Tutkinto[];
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus?: string;
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
 };
+
+export const LOPULLINEN_PAATOS_HAKEMUSKOSKEE = 5;
 
 /**
  * Täysi hakemuksen päivityspyyntö.
@@ -50,6 +54,8 @@ export type HakemusUpdateRequest = {
   yhteistutkinto: boolean;
   tutkinnot: Tutkinto[];
   asiakirja: AsiakirjaTieto;
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus: string | null;
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: string | null;
 };
 
 export type AsiakirjaTietoUpdateCallback = (

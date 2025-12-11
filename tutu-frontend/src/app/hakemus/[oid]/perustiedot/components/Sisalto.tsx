@@ -14,6 +14,8 @@ import {
 } from '@/src/lib/hakemuspalveluUtils';
 import { Language } from '@/src/lib/localization/localizationTypes';
 
+const TOP_LEVEL_ITEMS_ONLY_CHILDEN_SHOWN = [perustiedot];
+
 const getValue = (sisaltoValue: SisaltoValue, lomakkeenKieli: Language) => {
   return (
     sisaltoValue.label?.[lomakkeenKieli as keyof typeof sisaltoValue.label] ??
@@ -21,7 +23,11 @@ const getValue = (sisaltoValue: SisaltoValue, lomakkeenKieli: Language) => {
   );
 };
 
-const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
+const renderItem = (
+  item: SisaltoItem,
+  lomakkeenKieli: Language,
+  filterEmpty: boolean,
+) => {
   if (!isAttachmentField(item)) {
     let label = item.label?.[lomakkeenKieli as keyof typeof item.label];
 
@@ -40,43 +46,61 @@ const renderItem = (item: SisaltoItem, lomakkeenKieli: Language) => {
     ) : undefined;
     const isEuPatevyys = sisaltoItemMatches(item, eupatevyys);
 
-    const renderedValues = item.value.map((val) => {
-      const value = val.value;
-      const valueLabel = getValue(val, lomakkeenKieli);
-      return (
-        <Stack key={`${value}--item`}>
-          {valueLabel && valueLabel !== '' ? (
-            <OphTypography
-              key={`${value}--value`}
-              data-testid={`sisalto-item-${item.key}`}
-              variant={'body1'}
-            >
-              {valueLabel}
-            </OphTypography>
-          ) : undefined}
-          {isEuPatevyys || val.followups.length === 0 ? undefined : (
-            <Stack gap={2} key={`${value}--followups`} sx={{ paddingLeft: 2 }}>
-              {val.followups.map((v) => renderItem(v, lomakkeenKieli))}
-            </Stack>
-          )}
-        </Stack>
-      );
-    });
+    const renderedValues = item.value.map((val: SisaltoValue) => ({
+      value: val.value,
+      valueLabel: getValue(val, lomakkeenKieli),
+      followups: isEuPatevyys ? [] : val.followups,
+    }));
 
+    const anyRenderedValues = renderedValues.find(
+      (val) => val.valueLabel !== '' || val.followups.length > 0,
+    );
+
+    const renderedValueElements =
+      filterEmpty && !anyRenderedValues
+        ? []
+        : renderedValues.map((val) => {
+            return (
+              <Stack key={`${val.value}--item`}>
+                {val.valueLabel !== '' ? (
+                  <OphTypography
+                    key={`${val.value}--value`}
+                    data-testid={`sisalto-item-${item.key}`}
+                    variant={'body1'}
+                  >
+                    {val.valueLabel}
+                  </OphTypography>
+                ) : undefined}
+                {val.followups.length === 0 ? undefined : (
+                  <Stack
+                    gap={2}
+                    key={`${val.value}--followups`}
+                    sx={{ paddingLeft: 2 }}
+                  >
+                    {val.followups.map((v) =>
+                      renderItem(v, lomakkeenKieli, filterEmpty),
+                    )}
+                  </Stack>
+                )}
+              </Stack>
+            );
+          });
     const renderedChildren =
       item.children.length > 0 ? (
         <Stack gap={2} sx={{ paddingLeft: 2 }} key={`${item.key}-children`}>
-          {item.children.map((child) => renderItem(child, lomakkeenKieli))}
+          {item.children.map((child) =>
+            renderItem(child, lomakkeenKieli, filterEmpty),
+          )}
         </Stack>
       ) : undefined;
 
-    return (
+    return renderedValueElements.length > 0 || renderedChildren ? (
       <Stack key={`${item.key}`}>
         {renderedLabel}
-        {renderedValues}
+        {renderedValueElements}
         {renderedChildren}
       </Stack>
-    );
+    ) : null;
   }
 };
 
@@ -84,16 +108,20 @@ export const Sisalto = ({
   sisalto = [],
   osiot = [],
   lomakkeenKieli = 'fi',
+  filterEmpty = false,
 }: {
   sisalto: SisaltoItem[];
   osiot: HakemuspalveluSisaltoId[];
   lomakkeenKieli: Language;
+  filterEmpty: boolean;
 }) => {
   const itemsToRender = sisalto
-    .filter((item) => sisaltoItemMatchesToAny(item, osiot))
+    .filter(
+      (item) => osiot.length === 0 || sisaltoItemMatchesToAny(item, osiot),
+    )
     .map((item) => {
-      // Perustiedoissa ei haluta näyttää päätason kysymyksiä
-      if (sisaltoItemMatches(item, perustiedot)) {
+      // Näistä ei haluta näyttää päätason kysymyksiä
+      if (sisaltoItemMatchesToAny(item, TOP_LEVEL_ITEMS_ONLY_CHILDEN_SHOWN)) {
         return {
           ...item?.children?.[0],
           label: {},
@@ -104,5 +132,12 @@ export const Sisalto = ({
       return item;
     });
 
-  return <>{itemsToRender.map((item) => renderItem(item, lomakkeenKieli))}</>;
+  console.log('!!!!!!!!!!!!!!!', itemsToRender);
+  return (
+    <>
+      {itemsToRender.map((item) =>
+        renderItem(item, lomakkeenKieli, filterEmpty),
+      )}
+    </>
+  );
 };

@@ -5,7 +5,6 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
-import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
 import React, { useEffect } from 'react';
@@ -14,13 +13,14 @@ import {
   asiointiKieli,
   paatosJaAsiointikieli,
   paatosKieli,
-  perustietoOsiot,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { Muistio } from '@/src/components/Muistio';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { TranslatedHakemuskoskee } from '@/src/app/hakemus/[oid]/perustiedot/components/TranslatedHakemuskoskee';
+import { LOPULLINEN_PAATOS_HAKEMUSKOSKEE } from '@/src/lib/types/hakemus';
+import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
+import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
 
 export default function PerustietoPage() {
   const theme = useTheme();
@@ -29,7 +29,7 @@ export default function PerustietoPage() {
   const {
     isLoading,
     isSaving,
-    hakemusState: { editedData: hakemus, hasChanges, save },
+    hakemusState: { editedData: hakemus, hasChanges, save, updateLocal },
     error,
   } = useHakemus();
 
@@ -60,18 +60,16 @@ export default function PerustietoPage() {
       <OphTypography variant={'h2'}>
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>
-      <OphTypography variant={'h3'}>
-        {t('hakemus.perustiedot.hakemusKoskee')}
-      </OphTypography>
-      <TranslatedHakemuskoskee
-        hakemusKoskee={hakemus.hakemusKoskee}
-        kieli={hakemus.lomakkeenKieli}
-      />
-      <Sisalto
-        osiot={perustietoOsiot}
-        sisalto={hakemus.sisalto}
-        lomakkeenKieli={hakemus.lomakkeenKieli}
-      />
+      {hakemus.hakemusKoskee === LOPULLINEN_PAATOS_HAKEMUSKOSKEE ? (
+        <LopullisenHakemuksenSisalto
+          hakemus={hakemus}
+          t={t}
+          theme={theme}
+          updateHakemus={updateLocal}
+        />
+      ) : (
+        <EhdollisenHakemuksenSisalto hakemus={hakemus} t={t} />
+      )}
       <Muistio
         label={t('hakemus.perustiedot.esittelijanHuomioita')}
         hakemus={hakemus}

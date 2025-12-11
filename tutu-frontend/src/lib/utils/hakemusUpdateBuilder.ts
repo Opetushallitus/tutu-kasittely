@@ -34,5 +34,9 @@ export const buildHakemusUpdateRequest = (
   yhteistutkinto: hakemus.yhteistutkinto,
   tutkinnot: hakemus.tutkinnot,
   asiakirja: hakemus.asiakirja,
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus:
+    hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus || null,
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri:
+    hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri || null,
   ...overrides,
 });

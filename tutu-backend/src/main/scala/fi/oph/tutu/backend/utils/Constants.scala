@@ -58,6 +58,8 @@ object Constants {
 
   val ATARU_LOPULLINEN_PAATOS_SUORITUSMAA: AtaruKysymysId =
     AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "lopullinen-paatos-suoritusmaa")
+  val ATARU_LOPULLINEN_PAATOS_VASTAAVA_EHDOLLINEN: AtaruKysymysId =
+    AtaruKysymysId("ea25df4f-52a8-4540-83b7-19dffdd353f7", "lopullinen-paatos-vastaava-ehdollinen")
 
   // Lomakkeen avaimet
   val ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS: AtaruKysymysId =

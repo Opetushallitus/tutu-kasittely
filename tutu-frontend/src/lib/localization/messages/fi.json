@@ -116,6 +116,11 @@
         "kielet": "Päätös- ja asiointikieli",
         "paatoskieli": "Päätöskieli",
         "asiointikieli": "Asiointikieli"
+      },
+      "lopullinenPaatos": {
+        "vastaavaEhdollinenPaatos": "Opetushallituksen ehdollinen päätös",
+        "suoritusmaa": "Tutkinnon suoritusmaa",
+        "suoritusotsikko": "Mitä on suorittanut"
       }
     },
     "asiakirjat": {

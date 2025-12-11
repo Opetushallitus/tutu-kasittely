@@ -13,6 +13,7 @@ import React, { useRef, useEffect } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { usePathname } from 'next/navigation';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { LOPULLINEN_PAATOS_HAKEMUSKOSKEE } from '@/src/lib/types/hakemus';
 
 const InnerBoxWrapper = styled(Box)(() => ({
   border: DEFAULT_BOX_BORDER,
@@ -135,7 +136,13 @@ const LinkedTab = (props: TabLinkProps) => {
   );
 };
 
-export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
+export const HakemusTabs = ({
+  hakemusOid,
+  hakemusKoskee,
+}: {
+  hakemusOid: string;
+  hakemusKoskee: number;
+}) => {
   const { t } = useTranslations();
   const activeTab = useActiveTabFromPath();
   const [selectedTabName, setSelectedTabName] = React.useState(activeTab);
@@ -152,6 +159,31 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
   };
 
   const showSubTabs = SUB_TAB_NAMES.includes(selectedTabName);
+  const isEhdollinen = hakemusKoskee !== LOPULLINEN_PAATOS_HAKEMUSKOSKEE;
+
+  const tabProps = [
+    {
+      value: 'perustiedot',
+    },
+    {
+      value: 'asiakirjat',
+    },
+    isEhdollinen && { value: 'tutkinnot' },
+    isEhdollinen && {
+      value: 'perustelu.ylataso',
+      targetPage: 'perustelu.yleiset',
+      expandable: true,
+      expanded: showSubTabs,
+    },
+    isEhdollinen &&
+      showSubTabs && { value: 'perustelu.yleiset', isSubTab: true },
+    isEhdollinen && showSubTabs && { value: 'perustelu.uoro', isSubTab: true },
+    isEhdollinen && showSubTabs && { value: 'perustelu.ap', isSubTab: true },
+    { value: 'paatostiedot' },
+    { value: 'valitustiedot' },
+  ]
+    .filter(Boolean)
+    .map((prop) => ({ ...prop, hakemusOid: hakemusOid })) as TabLinkProps[];
 
   return (
     <InnerBoxWrapper>
@@ -171,40 +203,9 @@ export const HakemusTabs = ({ hakemusOid }: { hakemusOid: string }) => {
           },
         }}
       >
-        <LinkedTab value="perustiedot" hakemusOid={hakemusOid} />
-        <LinkedTab value="asiakirjat" hakemusOid={hakemusOid} />
-        <LinkedTab value="tutkinnot" hakemusOid={hakemusOid} />
-        <LinkedTab
-          value="perustelu.ylataso"
-          targetPage="perustelu.yleiset"
-          hakemusOid={hakemusOid}
-          expandable={true}
-          expanded={showSubTabs}
-        />
-        {showSubTabs && (
-          <LinkedTab
-            value="perustelu.yleiset"
-            hakemusOid={hakemusOid}
-            isSubTab={true}
-          />
-        )}
-        {showSubTabs && (
-          <LinkedTab
-            value="perustelu.uoro"
-            hakemusOid={hakemusOid}
-            wrapText={true}
-            isSubTab={true}
-          />
-        )}
-        {showSubTabs && (
-          <LinkedTab
-            value="perustelu.ap"
-            hakemusOid={hakemusOid}
-            isSubTab={true}
-          />
-        )}
-        <LinkedTab value="paatostiedot" hakemusOid={hakemusOid} />
-        <LinkedTab value="valitustiedot" hakemusOid={hakemusOid} />
+        {tabProps.map((prop) => (
+          <LinkedTab key={prop.value} {...prop} />
+        ))}
       </Tabs>
     </InnerBoxWrapper>
   );
