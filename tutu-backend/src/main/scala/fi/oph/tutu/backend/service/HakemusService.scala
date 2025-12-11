@@ -158,12 +158,16 @@ class HakemusService(
     }
   }
 
-  private def paivitaTutkinnotAtarusHakemukselta(
+  private def paivitaTutkinnotAtaruHakemukselta(
     ataruHakemus: AtaruHakemus,
     dbHakemus: DbHakemus,
     dbTutkinnot: Seq[Tutkinto]
   ): Seq[Tutkinto] = {
-    val ataruTutkinnot = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
+    val ataruTutkinnot       = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
+    val ataruHakemusModified = ZonedDateTime
+      .parse(ataruHakemus.submitted, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
+      .toLocalDateTime
 
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
@@ -173,12 +177,15 @@ class HakemusService(
           existingDbTutkinto.muokkaaja match {
             // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
             case Some(ATARU_SERVICE) | None =>
-              tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), ATARU_SERVICE)
+              if (existingDbTutkinto.muokattu.isEmpty || ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get))
+                tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), ATARU_SERVICE)
             case Some(value) =>
               if (
-                existingDbTutkinto.todistusOtsikko != ataruTutkinto.todistusOtsikko
-                || existingDbTutkinto.aloitusVuosi != ataruTutkinto.aloitusVuosi
-                || existingDbTutkinto.paattymisVuosi != ataruTutkinto.paattymisVuosi
+                (existingDbTutkinto.muokattu.isEmpty ||
+                  ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get)) &&
+                (existingDbTutkinto.todistusOtsikko != ataruTutkinto.todistusOtsikko
+                  || existingDbTutkinto.aloitusVuosi != ataruTutkinto.aloitusVuosi
+                  || existingDbTutkinto.paattymisVuosi != ataruTutkinto.paattymisVuosi)
               ) {
                 tutkintoRepository.suoritaPaivitaTutkinto(
                   existingDbTutkinto.copy(
@@ -301,44 +308,16 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
         )
-        val dbTutkinnot      = tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
-        val updatedTutkinnot = paivitaTutkinnotAtaruHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
+        paivitaTutkinnotAtaruHakemukselta(
+          ataruHakemus,
+          dbHakemus,
+          tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+        )
         Some(tutuHakemus)
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
     }
-  }
-
-  private def paivitaTutkinnotAtaruHakemukselta(
-    ataruHakemus: AtaruHakemus,
-    dbHakemus: DbHakemus,
-    dbTutkinnot: Seq[Tutkinto]
-  ): Seq[Tutkinto] = {
-    val ataruTutkinnot = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
-
-    ataruTutkinnot.foreach { ataruTutkinto =>
-      dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
-        // Ei tutkintoa järjestysnumerolla -> lisätään uusi
-        case None                     => tutkintoRepository.suoritaLisaaTutkinto(ataruTutkinto, TUTU_SERVICE)
-        case Some(existingDbTutkinto) =>
-          existingDbTutkinto.muokkaaja match {
-            // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
-            case Some(ATARU_SERVICE) | Some(TUTU_SERVICE) | None =>
-              tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
-            case Some(value) =>
-              tutkintoRepository.suoritaPaivitaTutkinto(
-                existingDbTutkinto.copy(
-                  todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                  aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                  paattymisVuosi = ataruTutkinto.paattymisVuosi
-                ),
-                TUTU_SERVICE
-              )
-          }
-      }
-    }
-    tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
   }
 
   private def paivitaHakemusKoskeeAtaruHakemukselta(

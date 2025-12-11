@@ -99,9 +99,8 @@ const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
         updatePerustelu={perusteluState.updateLocal}
       />
       <TutkintokohtaisetTiedot
-        hakemus={hakemusState.editedData}
-        tutkintoState={tutkintoState}
-        updateHakemus={hakemusState.updateLocal}
+        tutkinnot={tutkintoState.editedData ?? []}
+        updateTutkinnot={tutkintoState.updateLocal}
       />
       <OphTypography variant={'h3'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}

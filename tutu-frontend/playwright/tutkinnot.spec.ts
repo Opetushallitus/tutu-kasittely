@@ -5,7 +5,7 @@ import {
   mockKoodistot,
   mockUser,
 } from '@/playwright/mocks';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 test.beforeEach(mockBasicForHakemus);
 

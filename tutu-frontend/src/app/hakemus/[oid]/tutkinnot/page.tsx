@@ -5,7 +5,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import useToaster from '@/src/hooks/useToaster';
 import { useHakemus } from '@/src/context/HakemusContext';
 import React, { useEffect, useState } from 'react';
-import { handleFetchError } from '@/src/lib/utils';
+import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
@@ -58,24 +58,25 @@ export default function TutkintoPage() {
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(
-      (tutkinto) => tutkinto.id !== next.id,
+      (tutkinto) => tutkinto.jarjestys !== next.jarjestys,
     );
     tutkintoState.updateLocal([...oldTutkinnot, next]);
   };
 
   const deleteTutkinto = async (tutkinto: Tutkinto) => {
-    if (!tutkinto.id) {
-      // jos tutkinnolla ei ole id:tä sitä ei ole vielä tallennettu tietokantaan ja riittää lokaalin tilan päivitys
-      const tutkinnot = editedTutkinnot.filter(
-        (t) => t.jarjestys !== tutkinto.jarjestys,
-      );
+    if (!tutkinto.id || tutkinto.id?.startsWith('new')) {
+      const tutkinnot = editedTutkinnot
+        .filter((t) => t.id !== tutkinto.id)
+        .map((t) => updateTutkintoJarjestys(t, tutkinto.jarjestys));
       tutkintoState.updateLocal(tutkinnot);
     } else {
+      // jos tutkintoa ei ole vielä tallennettu tietokantaan, riittää lokaalin tilan päivitys
       await poistaTutkinto(tutkinto);
     }
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
+    id: `new-${Date.now()}`,
     hakemusId: hakemusId,
     jarjestys: jarjestys,
     nimi: '',
@@ -107,7 +108,8 @@ export default function TutkintoPage() {
     isHakemusLoading ||
     !hakemusState.editedData ||
     isLoading ||
-    !tutkintoState.editedData
+    !tutkintoState.editedData ||
+    isSaving
   )
     return <FullSpinner></FullSpinner>;
 
@@ -137,9 +139,9 @@ export default function TutkintoPage() {
         />
         {editedTutkinnot
           .filter((tutkinto) => tutkinto.jarjestys !== 'MUU')
-          .map((tutkinto, index) => (
+          .map((tutkinto) => (
             <TutkintoComponent
-              key={index}
+              key={tutkinto.id}
               tutkinto={tutkinto}
               maatJaValtiotOptions={maatJaValtiotOptions}
               koulutusLuokitusOptions={koulutusLuokitusOptions}

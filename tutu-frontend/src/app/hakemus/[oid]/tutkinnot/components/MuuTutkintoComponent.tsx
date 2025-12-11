@@ -1,7 +1,8 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Hakemus, Tutkinto } from '@/src/lib/types/hakemus';
+import { Hakemus } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import {
   OphButton,
   OphInputFormField,

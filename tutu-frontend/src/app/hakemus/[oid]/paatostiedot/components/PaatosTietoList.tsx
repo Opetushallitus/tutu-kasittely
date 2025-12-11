@@ -7,7 +7,7 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { DeleteOutline } from '@mui/icons-material';
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import React from 'react';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 
 interface PaatosTietoListProps {

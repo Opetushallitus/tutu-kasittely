@@ -1,13 +1,14 @@
 package fi.oph.tutu.backend.domain
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 case class Tutkinto(
   id: Option[UUID],
   hakemusId: UUID,
   jarjestys: String,
-  nimi: Option[String],
-  oppilaitos: Option[String],
+  nimi: Option[String] = None,
+  oppilaitos: Option[String] = None,
   aloitusVuosi: Option[Int] = None,
   paattymisVuosi: Option[Int] = None,
   maakoodiUri: Option[String] = None,
@@ -21,7 +22,8 @@ case class Tutkinto(
   opinnaytetyo: Option[Boolean] = None,
   harjoittelu: Option[Boolean] = None,
   perustelunLisatietoja: Option[String] = None,
-  muokkaaja: Option[String] = None
+  muokkaaja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None
 )
 
 case class TutkintoModifyData(uudet: Seq[Tutkinto], muutetut: Seq[Tutkinto], poistetut: Seq[UUID])

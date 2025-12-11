@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.repository
 
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -8,6 +9,8 @@ import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
@@ -42,7 +45,8 @@ class TutkintoRepository extends BaseResultHandlers {
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),
         perustelunLisatietoja = r.nextStringOption(),
-        muokkaaja = r.nextStringOption()
+        muokkaaja = r.nextStringOption(),
+        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -240,7 +244,8 @@ class TutkintoRepository extends BaseResultHandlers {
       opinnaytetyo,
       harjoittelu,
       perustelun_lisatietoja,
-      muokkaaja
+      muokkaaja,
+      muokattu
     FROM tutkinto
     WHERE hakemus_id IN
       (SELECT id FROM hakemus where hakemus_oid = ${hakemusOid.toString})
@@ -282,7 +287,8 @@ class TutkintoRepository extends BaseResultHandlers {
           opinnaytetyo,
           harjoittelu,
           perustelun_lisatietoja,
-          muokkaaja
+          muokkaaja,
+          muokattu
         FROM tutkinto
         WHERE id = ${tutkintoId.toString}::uuid
       """

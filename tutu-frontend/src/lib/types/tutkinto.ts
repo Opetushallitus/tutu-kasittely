@@ -1,0 +1,20 @@
+export type Tutkinto = {
+  id?: string;
+  hakemusId: string;
+  jarjestys: string;
+  nimi?: string;
+  oppilaitos?: string;
+  aloitusVuosi?: number;
+  paattymisVuosi?: number;
+  maakoodiUri?: string;
+  muuTutkintoTieto?: string;
+  todistuksenPaivamaara?: string;
+  koulutusalaKoodiUri?: string;
+  paaaaineTaiErikoisala?: string;
+  todistusOtsikko?: string;
+  muuTutkintoMuistioId?: string;
+  ohjeellinenLaajuus?: string;
+  opinnaytetyo?: boolean | null;
+  harjoittelu?: boolean | null;
+  perustelunLisatietoja?: string;
+};

@@ -5,7 +5,7 @@ import {
   KorvaavaToimenpide,
   Paatostyyppi,
 } from '@/src/lib/types/paatos';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
