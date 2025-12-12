@@ -6,6 +6,9 @@ import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
+import { Muistio } from '@/src/lib/types/muistio';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 
 export const mockAll = async ({ page }: { page: Page }) => {
@@ -18,6 +21,8 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockPerustelu(page),
     mockLiitteet(page),
     mockKoodistot(page),
+    mockTutkinnot(page),
+    mockMuistio(page),
   ]);
 };
 
@@ -186,56 +191,6 @@ export const mockHakemus = async (
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
         yhteistutkinto: null,
-        tutkinnot: [
-          {
-            id: '18732268-07ca-4898-a21f-e49b9dd68275',
-            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
-            jarjestys: '1',
-            nimi: 'Päälikkö',
-            oppilaitos: 'Butan Amattikoulu',
-            aloitusVuosi: 1999,
-            paattymisVuosi: 2000,
-            maakoodiUri: 'maatjavaltiot2_762',
-            muuTutkintoTieto: null,
-            todistuksenPaivamaara: null,
-            koulutusalaKoodi: null,
-            paaaaineTaiErikoisala: null,
-            todistusOtsikko: 'tutkintotodistus',
-            muuTutkintoMuistioId: null,
-          },
-          {
-            id: '589038c5-00eb-465b-98bf-3b9ce62bb94d',
-            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
-            jarjestys: '2',
-            nimi: 'Apu poika',
-            oppilaitos: 'Apu koulu',
-            aloitusVuosi: 2010,
-            paattymisVuosi: 2011,
-            maakoodiUri: 'maatjavaltiot2_762',
-            muuTutkintoTieto: null,
-            todistuksenPaivamaara: null,
-            koulutusalaKoodi: null,
-            paaaaineTaiErikoisala: null,
-            todistusOtsikko: 'muutodistus',
-            muuTutkintoMuistioId: null,
-          },
-          {
-            id: '07f503b7-7cf4-4437-b4c6-97512bd44450',
-            hakemusId: '3f140ba6-4018-402c-af32-5e5b802144fc',
-            jarjestys: 'MUU',
-            nimi: null,
-            oppilaitos: null,
-            aloitusVuosi: null,
-            paattymisVuosi: null,
-            maakoodiUri: null,
-            muuTutkintoTieto: 'En olekaan suorittanutkoulutusta',
-            todistuksenPaivamaara: null,
-            koulutusalaKoodi: null,
-            paaaaineTaiErikoisala: null,
-            todistusOtsikko: null,
-            muuTutkintoMuistioId: null,
-          },
-        ],
         asiakirja: {
           allekirjoituksetTarkistettu: false,
           allekirjoituksetTarkistettuLisatiedot: null,
@@ -423,5 +378,85 @@ export const mockPaatos = async (page: Page) => {
         }),
       });
     }
+  });
+};
+
+export const mockTutkinnot = async (page: Page) => {
+  let tutkinnotData = getMockTutkinnot();
+  await page.route(
+    `**/hakemus/1.2.246.562.10.00000000001/tutkinto/`,
+    async (route) => {
+      if (route.request().method() === 'PUT') {
+        tutkinnotData = route.request().postDataJSON() as Tutkinto[];
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(tutkinnotData),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(tutkinnotData),
+        });
+      }
+    },
+  );
+  await page.route(
+    /.\/hakemus\/1.2.246.562.10.00000000001\/tutkinto\/.+/,
+    async (route) => {
+      if (route.request().method() === 'PUT') {
+        const putData = route.request().postDataJSON() as Tutkinto;
+        tutkinnotData = tutkinnotData.map((t) => {
+          if (t.id === route.request().url().split('/').at(-1)) {
+            return putData;
+          }
+          return t;
+        });
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(putData),
+        });
+      } else if (route.request().method() === 'DELETE') {
+        tutkinnotData = tutkinnotData.filter(
+          (t) => t.id !== route.request().url().split('/').at(-1),
+        );
+        await route.fulfill({
+          status: 204,
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(
+            tutkinnotData.find(
+              (t) => t.id === route.request().url().split('/').at(-1),
+            ),
+          ),
+        });
+      }
+    },
+  );
+};
+
+export const mockMuistio = async (page: Page, initialData?: Muistio) => {
+  const mockMuistio: Muistio = initialData ?? {
+    hakemuksenOsa: '',
+    hakemusOid: '',
+    id: '',
+    luoja: '',
+    luotu: '',
+    muokattu: '',
+    muokkaaja: '',
+    sisainenHuomio: false,
+    sisalto: '',
+  };
+  await page.route(`**/muistio/**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(mockMuistio),
+    });
   });
 };

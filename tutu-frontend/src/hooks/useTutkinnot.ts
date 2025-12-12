@@ -7,24 +7,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 import { updateTutkintoJarjestys } from '@/src/lib/utils';
 
-export const getTutkinnot = async (
-  hakemusOid?: string,
-): Promise<Tutkinto[]> => {
+const getTutkinnot = async (hakemusOid?: string): Promise<Tutkinto[]> => {
   const url = `hakemus/${hakemusOid}/tutkinto/`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const putTutkinnot = (hakemusOid: string, tutkinnot: Tutkinto[]) => {
+const putTutkinnot = (hakemusOid: string, tutkinnot: Tutkinto[]) => {
   const url = `hakemus/${hakemusOid}/tutkinto/`;
   return doApiPut(url, tutkinnot);
 };
 
-export const putTutkinto = (hakemusOid: string, tutkinto: Tutkinto) => {
+const putTutkinto = (hakemusOid: string, tutkinto: Tutkinto) => {
   const url = `hakemus/${hakemusOid}/tutkinto/${tutkinto.id}`;
   return doApiPut(url, tutkinto);
 };
 
-export const deleteTutkinto = (hakemusOid: string, tutkintoId: string) => {
+const deleteTutkinto = (hakemusOid: string, tutkintoId: string) => {
   const url = `hakemus/${hakemusOid}/tutkinto/${tutkintoId}`;
   return doApiDelete(url);
 };

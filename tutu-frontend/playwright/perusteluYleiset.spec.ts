@@ -4,6 +4,8 @@ import {
   mockBasicForHakemus,
   mockHakemus,
   mockPerustelu,
+  mockTutkinnot,
+  mockMuistio,
 } from '@/playwright/mocks';
 import {
   clickSaveAndWaitForPUT,
@@ -36,9 +38,11 @@ const expectRequestData = async (
 
 test.beforeEach(async ({ page }) => {
   await mockBasicForHakemus({ page });
-  mockUser(page);
+  await mockUser(page);
   await mockHakemus(page);
   await mockPerustelu(page);
+  await mockTutkinnot(page);
+  await mockMuistio(page);
 });
 
 test.describe('Yleiset perustelut', () => {
@@ -359,7 +363,7 @@ test.describe('Yleiset perustelut', () => {
     );
   });
 
-  test('Syötetyt tutkintotiedot päivitetään hakemuksen kautta', async ({
+  test('Syötetyt tutkintotiedot päivitetään hakemuksen kanssa', async ({
     page,
   }) => {
     await page.goto(
@@ -398,9 +402,9 @@ test.describe('Yleiset perustelut', () => {
       .getByRole('textbox')
       .fill('Vastaa kandidaatintutkinnon perus- ja aineopintoja');
 
-    const request = await clickSaveAndWaitForPUT(page, '/hakemus/');
+    const request = await clickSaveAndWaitForPUT(page, '/tutkinto/');
 
-    const tutkinnot = request.postDataJSON().tutkinnot;
+    const tutkinnot = request.postDataJSON();
     const tutkinto1 = tutkinnot.find((t: Tutkinto) => t.jarjestys === '1');
 
     expect(tutkinto1).toMatchObject({
