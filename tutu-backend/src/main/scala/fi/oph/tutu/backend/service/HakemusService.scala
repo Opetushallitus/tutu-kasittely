@@ -165,7 +165,7 @@ class HakemusService(
   ): Seq[Tutkinto] = {
     val ataruTutkinnot       = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
     val ataruHakemusModified = ZonedDateTime
-      .parse(ataruHakemus.submitted, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+      .parse(ataruHakemus.modified, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
       .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
       .toLocalDateTime
 
@@ -311,7 +311,7 @@ class HakemusService(
         paivitaTutkinnotAtaruHakemukselta(
           ataruHakemus,
           dbHakemus,
-          tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+          tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
         )
         Some(tutuHakemus)
       case None =>
