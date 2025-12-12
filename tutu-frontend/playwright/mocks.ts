@@ -6,6 +6,7 @@ import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
+import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([
@@ -265,6 +266,29 @@ export const mockHakemus = async (
         },
       }),
     });
+  });
+};
+
+export const mockLopullisenPaatoksenHakemus = async (page: Page) => {
+  let hakemusData = getLopullinenHakemus();
+  await page.route(`**/tutu-backend/api/hakemus/*`, async (route) => {
+    if (route.request().method() === 'PUT') {
+      const putData = route.request().postDataJSON() as Record<string, unknown>;
+      hakemusData = { ...hakemusData, ...unwrapData(putData) };
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(hakemusData),
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...hakemusData,
+        }),
+      });
+    }
   });
 };
 

@@ -1,7 +1,17 @@
 import { expect, test } from '@playwright/test';
-import { mockUser, mockBasicForHakemus, mockHakemus } from '@/playwright/mocks';
+import {
+  mockUser,
+  mockBasicForHakemus,
+  mockHakemus,
+  mockLopullisenPaatoksenHakemus,
+  mockKoodistot,
+} from '@/playwright/mocks';
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
+import {
+  expectDataFromDropdownSelection,
+  expectRequestData,
+} from '@/playwright/helpers/testUtils';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -88,4 +98,52 @@ test('Hakemuksen perustiedot näkyvät sisällössä oikein', async ({ page }) =
   await expect(
     page.getByTestId('sisalto-item-1d4bb273-0889-401e-aae1-5134a12cf238'),
   ).toHaveText('Kyllä');
+});
+
+test('Lopullisen päätöksen hakemuksen perustiedot näkyvät oikein, ja muutoksista lähetetään PUT -kutsut backendille', async ({
+  page,
+}) => {
+  await mockUser(page);
+  await mockKoodistot(page);
+  await mockLopullisenPaatoksenHakemus(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000002/perustiedot',
+  );
+
+  const vastaavaEhdollinen = page.getByTestId('vastaavaEhdollinenPaatos-input');
+  const suoritusmaa = page.getByTestId('suoritusmaa-select');
+  await expect(vastaavaEhdollinen).toBeVisible();
+  await expect(vastaavaEhdollinen).toHaveValue('OPH-11-2025');
+
+  await expect(suoritusmaa).toBeVisible();
+  await expect(suoritusmaa).toHaveText('Tadžikistan');
+  await expect(
+    page.getByTestId('sisalto-item-917a7238-e839-4e0c-912f-05a8bd734042'),
+  ).toHaveText('Säätäjä');
+  await expect(
+    page.getByTestId('sisalto-item-8d416b6e-1739-4c67-a098-86f1106fd239'),
+  ).toHaveText('Oy Ab');
+  await expect(
+    page.getByTestId('sisalto-item-3af23df4-7255-445e-8c31-fa4f04ffab32'),
+  ).toHaveText('Elämän koulu');
+
+  await expectRequestData(
+    page,
+    '/hakemus/',
+    vastaavaEhdollinen.fill('OPH-15-2025'),
+    {
+      lopullinenPaatosVastaavaEhdollinenAsiatunnus: 'OPH-15-2025',
+    },
+  );
+
+  await expectDataFromDropdownSelection(
+    page,
+    suoritusmaa,
+    'Bahama',
+    '/hakemus/',
+    {
+      lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri:
+        'maatjavaltiot2_044',
+    },
+  );
 });

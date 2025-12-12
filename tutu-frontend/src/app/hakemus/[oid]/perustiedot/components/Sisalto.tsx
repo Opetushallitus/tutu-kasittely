@@ -132,7 +132,6 @@ export const Sisalto = ({
       return item;
     });
 
-  console.log('!!!!!!!!!!!!!!!', itemsToRender);
   return (
     <>
       {itemsToRender.map((item) =>

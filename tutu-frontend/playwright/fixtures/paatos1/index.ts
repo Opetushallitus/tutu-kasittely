@@ -27,7 +27,6 @@ export const getPaatosWithPaatosTiedot = (): Paatos => {
         tutkintoTaso: 'AlempiKorkeakoulu',
         rinnastettavatTutkinnotTaiOpinnot: [],
         kelpoisuudet: [],
-        myonteisenPaatoksenLisavaatimukset: '',
       },
     ],
     paatosTietoOptions: paatosTietoOptions,

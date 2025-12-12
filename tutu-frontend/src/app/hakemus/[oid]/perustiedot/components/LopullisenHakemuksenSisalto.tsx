@@ -68,7 +68,9 @@ export const LopullisenHakemuksenSisalto = ({
             lopullinenPaatosVastaavaEhdollinenAsiatunnus: e.target.value,
           })
         }
-        data-testid={`vastaavaEhdollinenPaatos-input`}
+        inputProps={{
+          'data-testid': `vastaavaEhdollinenPaatos-input`,
+        }}
       />
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
