@@ -651,11 +651,11 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val secondTutkintoAfter =
       tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "2").get
-    assertEquals(secondTutkintoAfter.todistusOtsikko.get, secondTutkintoAfter.todistusOtsikko.get)
-    assertEquals(secondTutkintoAfter.aloitusVuosi.get, secondTutkintoAfter.aloitusVuosi.get)
-    assertEquals(secondTutkintoAfter.paattymisVuosi.get, secondTutkintoAfter.paattymisVuosi.get)
-    assertEquals(secondTutkintoAfter.maakoodiUri.get, secondTutkintoAfter.maakoodiUri.get)
-    assertEquals(secondTutkintoAfter.nimi.get, secondTutkintoAfter.nimi.get)
+    assertEquals(secondTutkintoBefore.todistusOtsikko.get, secondTutkintoAfter.todistusOtsikko.get)
+    assertEquals(secondTutkintoBefore.aloitusVuosi.get, secondTutkintoAfter.aloitusVuosi.get)
+    assertEquals(secondTutkintoBefore.paattymisVuosi.get, secondTutkintoAfter.paattymisVuosi.get)
+    assertEquals(secondTutkintoBefore.maakoodiUri.get, secondTutkintoAfter.maakoodiUri.get)
+    assertEquals(secondTutkintoBefore.nimi.get, secondTutkintoAfter.nimi.get)
 
     val muuTutkintoAfter = tutkinnotAfter.find(tutkinto => tutkinto.jarjestys == "MUU").get
     assertEquals(muuTutkintoBefore.muuTutkintoTieto.get, muuTutkintoAfter.muuTutkintoTieto.get)

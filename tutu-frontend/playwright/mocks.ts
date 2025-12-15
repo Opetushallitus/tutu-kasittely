@@ -388,18 +388,12 @@ export const mockTutkinnot = async (page: Page) => {
     async (route) => {
       if (route.request().method() === 'PUT') {
         tutkinnotData = route.request().postDataJSON() as Tutkinto[];
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(tutkinnotData),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(tutkinnotData),
-        });
       }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(tutkinnotData),
+      });
     },
   );
   await page.route(
