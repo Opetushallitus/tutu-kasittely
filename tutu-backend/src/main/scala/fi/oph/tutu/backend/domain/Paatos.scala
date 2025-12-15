@@ -89,7 +89,7 @@ case class KorvaavaToimenpide(
   kelpoisuuskoeSisalto: Option[KelpoisuuskoeSisalto] = None,
   sopeutumisaika: Boolean = false,
   sopeutumiusaikaKestoKk: Option[String] = None,
-  kelpoisuuskoeJaSopeutumisaika: Option[Boolean] = None,
+  kelpoisuuskoeJaSopeutumisaika: Boolean = false,
   kelpoisuuskoeJaSopeutumisaikaSisalto: Option[KelpoisuuskoeSisalto] = None,
   kelpoisuuskoeJaSopeutumisaikaKestoKk: Option[String] = None
 )
