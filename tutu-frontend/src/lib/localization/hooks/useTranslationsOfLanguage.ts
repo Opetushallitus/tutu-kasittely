@@ -15,7 +15,7 @@ export function useTranslationsOfLanguage(language: string) {
     }
   }, [language, tolgee, loaded]);
 
-  const tLocal = useCallback(
+  const tAsync = useCallback(
     async (key: string) => {
       await ensureLoaded();
       return tolgee.t(key, { language });
@@ -23,5 +23,5 @@ export function useTranslationsOfLanguage(language: string) {
     [language, ensureLoaded, tolgee],
   );
 
-  return { tLocal };
+  return { tAsync };
 }

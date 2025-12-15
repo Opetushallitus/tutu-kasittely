@@ -78,6 +78,8 @@ class HakemusService(
         ataruHakemus.form_id,
         esittelijaId,
         asiakirjaId,
+        None,
+        None,
         luoja
       )
       tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
@@ -108,9 +110,10 @@ class HakemusService(
     hakemus: UusiAtaruHakemus,
     luoja: String
   ): UUID = {
-    val ataruHakemus        = haeAtaruHakemus(hakemus.hakemusOid)
-    val suoritusMaaKoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(haeAtaruHakemus(hakemus.hakemusOid))
-    val esittelijaId        = resolveEsittelijaId(suoritusMaaKoodiUri)
+    val ataruHakemus             = haeAtaruHakemus(hakemus.hakemusOid)
+    val suoritusMaaKoodiUri      = ataruHakemusParser.parseLopullinenPaatosSuoritusmaaMaakoodiUri(ataruHakemus)
+    val vastaavaEhdollinenPaatos = ataruHakemusParser.parseLopullinenPaatosVastaavaEhdollinen(ataruHakemus)
+    val esittelijaId             = resolveEsittelijaId(suoritusMaaKoodiUri)
 
     val transactionalAction = for {
       // TODO tarvitaanko lopulliselle päätökselle oma asiakirja-tyyppi?
@@ -124,6 +127,8 @@ class HakemusService(
         ataruHakemus.form_id,
         esittelijaId,
         asiakirjaId,
+        vastaavaEhdollinenPaatos,
+        suoritusMaaKoodiUri,
         luoja
       )
       // TODO oma päätöstyypi lopulliselle päätökselle
@@ -300,7 +305,10 @@ class HakemusService(
               )
             case _ =>
               None
-          }
+          },
+          lopullinenPaatosVastaavaEhdollinenAsiatunnus = dbHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
+          lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
+            dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
         )
         val updatedTutkinnot = paivitaTutkinnotAtarusHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
         Some(tutuHakemus.copy(tutkinnot = updatedTutkinnot))
@@ -455,7 +463,6 @@ class HakemusService(
         sortedList
       }
     }
-
   }
 
   /**
@@ -531,7 +538,11 @@ class HakemusService(
           asiatunnus = hakemusUpdateRequest.asiatunnus,
           esittelijaId = esittelijaId,
           yhteistutkinto = hakemusUpdateRequest.yhteistutkinto,
-          kasittelyVaihe = kasittelyVaihe
+          kasittelyVaihe = kasittelyVaihe,
+          lopullinenPaatosVastaavaEhdollinenAsiatunnus =
+            hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
+          lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
+            hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
         )
 
         hakemusRepository.paivitaTaysiHakemus(

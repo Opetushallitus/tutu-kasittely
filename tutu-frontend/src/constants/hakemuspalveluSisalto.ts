@@ -104,6 +104,12 @@ export const perustiedot: HakemuspalveluSisaltoId = createId(
   '68afefd2-daff-4d74-857c-1736a54eab1b',
   'hakemuksen-perustiedot',
 );
+
+export const lopullinenPaatosSuoritukset: HakemuspalveluSisaltoId = createId(
+  //'42d23ef4-7e1e-4de6-8d4d-a35d5ef0d786',
+  'adfb7a3d-d05c-477b-8d00-820ef2ed7328',
+  'lopullinen-paatos-suoritukset',
+);
 //TODO tähän saattaa tulla myöhemmin muutakin.
 export const perustietoOsiot = [perustiedot];
 

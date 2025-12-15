@@ -326,6 +326,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         lomakeId,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
         "testi"
       )
     )
@@ -336,6 +338,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         lomakeId,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
         "testi"
       )
     )
@@ -346,6 +350,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         lomakeId,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
         "testi"
       )
     )
@@ -356,6 +362,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         lomakeId,
         None,
         asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
         "testi"
       )
     )

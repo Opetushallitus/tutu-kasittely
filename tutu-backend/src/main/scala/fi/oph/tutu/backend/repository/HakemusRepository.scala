@@ -37,7 +37,9 @@ class HakemusRepository extends BaseResultHandlers {
         Option(r.nextString()),
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextBoolean()
+        r.nextBoolean(),
+        Option(r.nextString()),
+        Option(r.nextString())
       )
     )
 
@@ -99,13 +101,24 @@ class HakemusRepository extends BaseResultHandlers {
     formId: Long,
     esittelijaId: Option[UUID],
     asiakirjaId: UUID,
+    lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
+    lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
     luoja: String
   ): DBIO[UUID] =
-    val hakemusOidString   = hakemusOid.toString
-    val esittelijaIdOrNull = esittelijaId.map(_.toString).orNull
+    val hakemusOidString                                   = hakemusOid.toString
+    val esittelijaIdOrNull                                 = esittelijaId.map(_.toString).orNull
+    val lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull =
+      lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
+    val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
+      lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
+
     sql"""
-      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, form_id, esittelija_id, asiakirja_id, luoja)
-      VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid, $luoja)
+      INSERT INTO hakemus (hakemus_oid, hakemus_koskee, form_id, esittelija_id,
+        asiakirja_id, lopullinen_paatos_ehdollisen_asiatunnus,
+        lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja)
+      VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid,
+        $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
+        $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja)
       RETURNING id
     """.as[UUID].head
 
@@ -123,11 +136,22 @@ class HakemusRepository extends BaseResultHandlers {
     formId: Long,
     esittelijaId: Option[UUID],
     asiakirjaId: UUID,
+    lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
+    lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
     luoja: String
   ): UUID =
     try
       db.run(
-        tallennaHakemusAction(hakemusOid, hakemusKoskee, formId, esittelijaId, asiakirjaId, luoja),
+        tallennaHakemusAction(
+          hakemusOid,
+          hakemusKoskee,
+          formId,
+          esittelijaId,
+          asiakirjaId,
+          lopullinenPaatosVastaavaEhdollinenAsiatunnus,
+          lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
+          luoja
+        ),
         "tallenna_hakemus"
       )
     catch {
@@ -198,7 +222,9 @@ class HakemusRepository extends BaseResultHandlers {
               h.asiatunnus,
               h.kasittely_vaihe,
               h.muokattu,
-              h.yhteistutkinto
+              h.yhteistutkinto,
+              h.lopullinen_paatos_ehdollisen_asiatunnus,
+              h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -315,13 +341,17 @@ class HakemusRepository extends BaseResultHandlers {
     partialHakemus: DbHakemus,
     muokkaaja: String
   ): HakemusOid = {
-    val hakemusOidString   = hakemusOid.toString
-    val esittelijaIdOrNull = partialHakemus.esittelijaId.map(_.toString).orNull
-    val asiakirjaIdOrNull  = partialHakemus.asiakirjaId.map(_.toString).orNull
-    val asiatunnusOrNull   = partialHakemus.asiatunnus.map(identity).orNull
-    val hakemusKoskee      = partialHakemus.hakemusKoskee
-    val yhteistutkinto     = partialHakemus.yhteistutkinto
-    val kasittelyVaihe     = partialHakemus.kasittelyVaihe.toString
+    val hakemusOidString                                   = hakemusOid.toString
+    val esittelijaIdOrNull                                 = partialHakemus.esittelijaId.map(_.toString).orNull
+    val asiakirjaIdOrNull                                  = partialHakemus.asiakirjaId.map(_.toString).orNull
+    val asiatunnusOrNull                                   = partialHakemus.asiatunnus.orNull
+    val hakemusKoskee                                      = partialHakemus.hakemusKoskee
+    val yhteistutkinto                                     = partialHakemus.yhteistutkinto
+    val kasittelyVaihe                                     = partialHakemus.kasittelyVaihe.toString
+    val lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull =
+      partialHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
+    val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
+      partialHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
 
     try
       db.run(
@@ -334,7 +364,9 @@ class HakemusRepository extends BaseResultHandlers {
           asiatunnus = $asiatunnusOrNull,
           muokkaaja = $muokkaaja,
           yhteistutkinto = $yhteistutkinto,
-          kasittely_vaihe = $kasittelyVaihe
+          kasittely_vaihe = $kasittelyVaihe,
+          lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
+          lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
@@ -370,13 +402,17 @@ class HakemusRepository extends BaseResultHandlers {
     hakemus: DbHakemus,
     muokkaaja: String
   ): HakemusOid = {
-    val hakemusOidString   = hakemusOid.toString
-    val esittelijaIdOrNull = hakemus.esittelijaId.map(_.toString).orNull
-    val asiakirjaIdOrNull  = hakemus.asiakirjaId.map(_.toString).orNull
-    val asiatunnusOrNull   = hakemus.asiatunnus.orNull
-    val hakemusKoskee      = hakemus.hakemusKoskee
-    val yhteistutkinto     = hakemus.yhteistutkinto
-    val kasittelyVaihe     = hakemus.kasittelyVaihe.toString
+    val hakemusOidString                                   = hakemusOid.toString
+    val esittelijaIdOrNull                                 = hakemus.esittelijaId.map(_.toString).orNull
+    val asiakirjaIdOrNull                                  = hakemus.asiakirjaId.map(_.toString).orNull
+    val asiatunnusOrNull                                   = hakemus.asiatunnus.orNull
+    val hakemusKoskee                                      = hakemus.hakemusKoskee
+    val yhteistutkinto                                     = hakemus.yhteistutkinto
+    val kasittelyVaihe                                     = hakemus.kasittelyVaihe.toString
+    val lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull =
+      hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
+    val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
+      hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
 
     try
       db.run(
@@ -389,7 +425,9 @@ class HakemusRepository extends BaseResultHandlers {
           asiatunnus = $asiatunnusOrNull,
           muokkaaja = $muokkaaja,
           yhteistutkinto = $yhteistutkinto,
-          kasittely_vaihe = $kasittelyVaihe
+          kasittely_vaihe = $kasittelyVaihe,
+          lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
+          lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

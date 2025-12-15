@@ -4,7 +4,10 @@ import {
   SisaltoPathNode,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
-import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import {
+  Language,
+  TranslatedName,
+} from '@/src/lib/localization/localizationTypes';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 import * as dateFns from 'date-fns';
 
@@ -192,4 +195,19 @@ export const setLiitteenSaapumisaika = (
   const saapumisaika = liiteMetadata.saapumisaika || hakemuksenSaapumisaika;
   const formatoitu = dateFns.format(saapumisaika, 'dd.MM.yyyy HH:mm');
   return { ...liiteMetadata, saapumisaika: formatoitu };
+};
+
+export const buildLopullinenPaatosSuoritusItems = (
+  topLevelItem: SisaltoItem,
+  lomakkeenKieli: Language,
+  translatedOtsikko: string,
+): SisaltoItem[] => {
+  const suoritusValues = topLevelItem.children?.[0].value || [];
+  return suoritusValues.map((sVal, index) => ({
+    label: { [lomakkeenKieli]: translatedOtsikko },
+    value: [sVal],
+    key: sVal.label[lomakkeenKieli] || `${translatedOtsikko}_${index}`,
+    fieldType: '',
+    children: [],
+  }));
 };

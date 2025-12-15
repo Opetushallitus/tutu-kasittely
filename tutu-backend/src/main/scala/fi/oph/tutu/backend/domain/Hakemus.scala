@@ -75,7 +75,19 @@ case class DbHakemus(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  yhteistutkinto: Boolean
+  yhteistutkinto: Boolean,
+  @(Schema @field)(
+    example = "OPH-197-2025",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 40
+  )
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
+  @(Schema @field)(
+    example = "maatjavaltiot2_752",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]
 )
 
 case class Hakemus(
@@ -99,7 +111,9 @@ case class Hakemus(
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   yhteistutkinto: Boolean = false,
   tutkinnot: Seq[Tutkinto] = Seq.empty,
-  asiakirja: Option[Asiakirja] = None
+  asiakirja: Option[Asiakirja] = None,
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None
 )
 
 /**
@@ -117,7 +131,9 @@ case class HakemusUpdateRequest(
   kasittelyVaihe: KasittelyVaihe,
   yhteistutkinto: Boolean,
   tutkinnot: Seq[Tutkinto],
-  asiakirja: Asiakirja
+  asiakirja: Asiakirja,
+  lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]
 )
 
 case class AsiatunnusUpdateRequest(

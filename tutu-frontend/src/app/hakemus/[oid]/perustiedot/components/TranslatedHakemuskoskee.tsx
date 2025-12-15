@@ -12,7 +12,7 @@ export const TranslatedHakemuskoskee = ({
   hakemusKoskee: number;
   kieli: Language;
 }) => {
-  const { tLocal } = useTranslationsOfLanguage(kieli);
+  const { tAsync } = useTranslationsOfLanguage(kieli);
 
   const [mitaHakeeTranslated, setMitaHakeeTranslated] = useState('');
   const [hakemusKoskeeTranslated, setHakemusKoskeeTranslated] = useState('');
@@ -24,9 +24,9 @@ export const TranslatedHakemuskoskee = ({
       )?.label ?? ''
     }`;
 
-    tLocal('hakemus.perustiedot.mitaHakee').then(setMitaHakeeTranslated);
-    tLocal(hakemusKoskeeVal).then(setHakemusKoskeeTranslated);
-  }, [hakemusKoskee, tLocal]);
+    tAsync('hakemus.perustiedot.mitaHakee').then(setMitaHakeeTranslated);
+    tAsync(hakemusKoskeeVal).then(setHakemusKoskeeTranslated);
+  }, [hakemusKoskee, tAsync]);
   return (
     <Box>
       <OphTypography variant={'label'}>{mitaHakeeTranslated}</OphTypography>

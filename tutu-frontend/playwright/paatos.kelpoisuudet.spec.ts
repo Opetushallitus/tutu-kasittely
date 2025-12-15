@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään käyttäjälle oikea otsikko ja valittavat kentät, ja lähetetään POST -kutsut backendille', async ({
+test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään käyttäjälle oikea otsikko ja valittavat kentät, ja lähetetään PUT -kutsut backendille', async ({
   page,
 }) => {
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
@@ -196,7 +196,7 @@ const makeInitialKelpoisuusSelections = async (page: Page) => {
   );
 };
 
-test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähettävät POST -kutsut backendille', async ({
+test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähettävät PUT -kutsut backendille', async ({
   page,
 }) => {
   makeInitialKelpoisuusSelections(page);
@@ -264,7 +264,7 @@ const backendRequestMyonteinenPaatos = (
   return obj;
 };
 
-test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat POST -kutsut lähetetään backendille', async ({
+test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PUT -kutsut lähetetään backendille', async ({
   page,
 }) => {
   makeInitialKelpoisuusSelections(page);
@@ -571,7 +571,7 @@ const backendRequestKielteinenPaatos = (
   return obj;
 };
 
-test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat POST -kutsut lähetetään backendille', async ({
+test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PUT -kutsut lähetetään backendille', async ({
   page,
 }) => {
   makeInitialKelpoisuusSelections(page);
