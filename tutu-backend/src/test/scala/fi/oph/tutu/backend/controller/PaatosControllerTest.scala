@@ -258,7 +258,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
                     KorvaavaToimenpide(
                       kelpoisuuskoe = true,
                       sopeutumisaika = true,
-                      kelpoisuuskoeJaSopeutumisaika = Some(true),
+                      kelpoisuuskoeJaSopeutumisaika = true,
                       kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue1 = true)),
                       sopeutumiusaikaKestoKk = Some("6"),
                       kelpoisuuskoeJaSopeutumisaikaSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
@@ -273,7 +273,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
                       korvaavuus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
                       korvaavaToimenpide = Some(
                         KorvaavaToimenpide(
-                          kelpoisuuskoeJaSopeutumisaika = Some(true),
+                          kelpoisuuskoeJaSopeutumisaika = true,
                           kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
                           sopeutumiusaikaKestoKk = Some("3")
                         )

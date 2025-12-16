@@ -645,4 +645,258 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Sovellettu laki: Päätös UO"))
   }
+
+  @Test
+  def haeTutkinnonNimiProducesString(): Unit = {
+    val matchingUUID = UUID.randomUUID
+    val paatosTiedot = PaatosTieto(
+      tutkintoId = Some(matchingUUID),
+      tutkintoTaso = None
+    )
+    val tutkinnot = Seq(
+      Tutkinto(
+        id = Some(UUID.randomUUID),
+        hakemusId = UUID.randomUUID,
+        jarjestys = "1",
+        nimi = Some("Epätutkinto"),
+        oppilaitos = Some("Valkeakosken Yliopisto")
+      ),
+      Tutkinto(
+        id = Some(matchingUUID),
+        hakemusId = UUID.randomUUID,
+        jarjestys = "2",
+        nimi = Some("Paras tutkinto"),
+        oppilaitos = Some("Mansesterin Vapaakauppakoulu")
+      ),
+      Tutkinto(
+        id = Some(UUID.randomUUID),
+        hakemusId = UUID.randomUUID,
+        jarjestys = "3",
+        nimi = Some("Muuan tutkinto"),
+        oppilaitos = Some("Uraoppilaitos, Pääministerilinja")
+      )
+    )
+
+    val result = haeTutkinnonNimi(paatosTiedot, tutkinnot)
+
+    assert(result.get.contains("Tutkinnon nimi, jota päätös koskee"))
+    assert(result.get.contains("Paras tutkinto"))
+  }
+
+  @Test
+  def haeMyonteinenTaiKielteinenProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      myonteinenPaatos = Some(true),
+      tutkintoTaso = None
+    )
+    val result = haeMyonteinenTaiKielteinen(paatosTiedot)
+
+    assert(result.get.contains("Päätös on myönteinen: Kyllä"))
+  }
+
+  @Test
+  def haeTutkinnonTasoProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
+    )
+    val result = haeTutkinnonTaso(paatosTiedot)
+
+    assert(result.get.contains("Tutkinnon taso:"))
+    assert(result.get.contains("Ylempi korkeakoulututkinto"))
+  }
+
+  @Test
+  def haeKielteisenPaatoksenPerustelutProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      kielteisenPaatoksenPerustelut = Some(
+        KielteisenPaatoksenPerustelut(
+          epavirallinenKorkeakoulu = true,
+          epavirallinenTutkinto = true,
+          eiVastaaSuomessaSuoritettavaaTutkintoa = true,
+          muuPerustelu = true,
+          muuPerusteluKuvaus = Some("Tylsä tutkinto")
+        )
+      ),
+      tutkintoTaso = None
+    )
+    val result = haeKielteisenPaatoksenPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
+
+    assert(result.get.contains("Kielteisen päätöksen perustelut:"))
+    assert(result.get.contains("- Epävirallinen korkeakoulu"))
+    assert(result.get.contains("- Epävirallinen tutkinto"))
+    assert(result.get.contains("- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa"))
+    assert(result.get.contains("- Muu perustelu:"))
+    assert(result.get.contains("Tylsä tutkinto"))
+  }
+
+  @Test
+  def haeRinnastettavatTutkinnotTaiOpinnotProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      rinnastettavatTutkinnotTaiOpinnot = Seq(
+        TutkintoTaiOpinto(
+          tutkintoTaiOpinto = Some("AAA_BBB_Paras tutkinto")
+        )
+      ),
+      tutkintoTaso = None
+    )
+    val result = haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot)
+
+    assert(result.get.contains("Rinnastettavat tutkinnot tai opinnot:"))
+    assert(result.get.contains("Paras tutkinto"))
+  }
+
+  @Test
+  def haeKelpoisuudetProducesString(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      kelpoisuudet = Seq(
+        Kelpoisuus(
+          kelpoisuus = Some("AAA_BBB_Paras kelpoisuus")
+        )
+      ),
+      tutkintoTaso = None
+    )
+    val result = haeKelpoisuudet(paatosTiedot)
+
+    assert(result.get.contains("Kelpoisuudet:"))
+    assert(result.get.contains("Paras kelpoisuus"))
+  }
+
+  @Test
+  def haePeruutusTaiRaukeaminenProducesString(): Unit = {
+    val paatos = Paatos(
+      peruutuksenTaiRaukeamisenSyy = Some(
+        PeruutuksenTaiRaukeamisenSyy(
+          eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = Some(true),
+          muutenTyytymatonRatkaisuun = Some(true),
+          eiApMukainenTutkintoTaiHaettuaPatevyytta = Some(true),
+          eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = Some(true),
+          epavirallinenKorkeakouluTaiTutkinto = Some(true),
+          eiEdellytyksiaRoEikaTasopaatokselle = Some(true),
+          eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = Some(true),
+          hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = Some(true),
+          muuSyy = Some(true)
+        )
+      )
+    )
+    val result = haePeruutusTaiRaukeaminen(paatos)
+
+    assert(result.get.contains("Peruutuksen tai raukeamisen syyt:"))
+    assert(result.get.contains("- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada"))
+    assert(result.get.contains("- On muuten tyytymätön ratkaisuun"))
+    assert(result.get.contains("- Ei AP-lain mukainen tutkinto tai haettua ammattipätevyyttä"))
+    assert(result.get.contains("- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa"))
+    assert(result.get.contains("- Epävirallinen korkeakoulu tai tutkinto"))
+    assert(result.get.contains("- Ei edellytyksiä RO- eikä tasopäätökselle"))
+    assert(result.get.contains("- Ei edellytyksiä rinnastaa tiettyihin korkeakouluopintoihin"))
+    assert(result.get.contains("- Hakijalla on jo päätös samasta koulutuskokonaisuudesta"))
+    assert(result.get.contains("- Muu syy, esim. aikataulu"))
+  }
+
+  @Test
+  def haeTutkinnonTaiOpinnonLisavaatimuksetProducesString(): Unit = {
+    val lisavaatimuksetMaybe: Option[MyonteisenPaatoksenLisavaatimukset] =
+      Some(
+        MyonteisenPaatoksenLisavaatimukset(
+          taydentavatOpinnot = true,
+          kelpoisuuskoe = true,
+          sopeutumisaika = true
+        )
+      )
+
+    val result = haeTutkinnonTaiOpinnonLisavaatimukset(lisavaatimuksetMaybe)
+
+    assert(result.get.contains("Lisävaatimukset:"))
+    assert(result.get.contains("- Täydentävät opinnot"))
+    assert(result.get.contains("- Kelpoisuuskoe"))
+    assert(result.get.contains("- Sopeutumisaika"))
+  }
+
+  @Test
+  def haeKelpoisuudenLisavaatimuksetProducesString(): Unit = {
+    val lisavaatimuksetMaybe: Option[KelpoisuudenLisavaatimukset] =
+      Some(
+        KelpoisuudenLisavaatimukset(
+          olennaisiaEroja = Some(true),
+          erotKoulutuksessa = Some(
+            ErotKoulutuksessa(
+              erot = Seq(
+                NamedBoolean(name = "Koulutuksen laatu", value = true)
+              ),
+              muuEro = Some(true),
+              muuEroKuvaus = Some("Ihan eri")
+            )
+          ),
+          korvaavaToimenpide = Some(
+            KorvaavaToimenpide(
+              kelpoisuuskoe = true,
+              kelpoisuuskoeSisalto = Some(
+                KelpoisuuskoeSisalto(
+                  aihealue1 = true,
+                  aihealue2 = true,
+                  aihealue3 = true
+                )
+              ),
+              sopeutumisaika = true,
+              sopeutumiusaikaKestoKk = Some("6"),
+              kelpoisuuskoeJaSopeutumisaika = true,
+              kelpoisuuskoeJaSopeutumisaikaSisalto = Some(
+                KelpoisuuskoeSisalto(
+                  aihealue1 = true,
+                  aihealue2 = true,
+                  aihealue3 = true
+                )
+              ),
+              kelpoisuuskoeJaSopeutumisaikaKestoKk = Some("6")
+            )
+          ),
+          ammattikokemusJaElinikainenOppiminen = Some(
+            AmmattikomemusJaElinikainenOppiminen(
+              ammattikokemus = Some(true),
+              elinikainenOppiminen = Some(true),
+              lisatieto = Some("Kohtalainen kokemus"),
+              korvaavuus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Osittainen),
+              korvaavaToimenpide = Some(
+                KorvaavaToimenpide(
+                  kelpoisuuskoe = true,
+                  kelpoisuuskoeSisalto = Some(
+                    KelpoisuuskoeSisalto(
+                      aihealue1 = true,
+                      aihealue2 = true,
+                      aihealue3 = true
+                    )
+                  ),
+                  sopeutumisaika = true,
+                  sopeutumiusaikaKestoKk = Some("6"),
+                  kelpoisuuskoeJaSopeutumisaika = true,
+                  kelpoisuuskoeJaSopeutumisaikaSisalto = Some(
+                    KelpoisuuskoeSisalto(
+                      aihealue1 = true,
+                      aihealue2 = true,
+                      aihealue3 = true
+                    )
+                  ),
+                  kelpoisuuskoeJaSopeutumisaikaKestoKk = Some("6")
+                )
+              )
+            )
+          )
+        )
+      )
+
+    val result = haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe)
+
+    assert(result.get.contains("Lisävaatimukset:"))
+    assert(result.get.contains("Erot koulutuksessa"))
+    assert(result.get.contains("- Koulutuksen laatu: Kyllä"))
+    assert(result.get.contains("- Muu ero: Ihan eri"))
+    assert(result.get.contains("- Kelpoisuuskoe:"))
+    assert(result.get.contains("- Aihealue 1"))
+    assert(result.get.contains("- Aihealue 2"))
+    assert(result.get.contains("- Aihealue 3"))
+    assert(result.get.contains("- Ammattikokemus"))
+    assert(result.get.contains("- Elinikäinen oppiminen"))
+    assert(result.get.contains("- Lisätieto:"))
+    assert(result.get.contains("Kohtalainen kokemus"))
+    assert(result.get.contains("- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Osittain"))
+  }
 }
