@@ -3,11 +3,14 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
+  DATE_TIME_FORMAT,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
 import org.springframework.stereotype.{Component, Service}
 
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary
@@ -121,7 +124,7 @@ def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
   value match {
     case SingleValue(value)   => Seq(value)
     case MultiValue(values)   => values
-    case NestedValues(values) => values.flatten()
+    case NestedValues(values) => values.flatten
     case EmptyValue           => Seq()
     case null                 => Seq()
   }
@@ -342,7 +345,7 @@ class AtaruLomakeParser() {
     )
   }
 
-  def findOptionsByAtaruKysymysId(
+  private def findOptionsByAtaruKysymysId(
     kysymysId: AtaruKysymysId,
     lomake: AtaruLomake,
     rootItem: Option[PaatosTietoOption] = None

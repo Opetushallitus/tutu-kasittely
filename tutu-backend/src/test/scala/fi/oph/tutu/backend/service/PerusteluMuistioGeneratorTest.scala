@@ -119,31 +119,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muutosHistoria = Seq.empty,
       taydennyspyyntoLahetetty = None,
       yhteistutkinto = true,
-      tutkinnot = Seq(
-        Tutkinto(
-          id = None,
-          jarjestys = "MUU",
-          hakemusId = UUID.randomUUID,
-          nimi = None,
-          oppilaitos = None,
-          muuTutkintoTieto = Some("Muu tutkinto sisältö")
-        ),
-        Tutkinto(
-          id = None,
-          jarjestys = "1",
-          hakemusId = UUID.randomUUID,
-          nimi = Some("Paras tutkinto"),
-          oppilaitos = None,
-          maakoodiUri = Some("mock_maakoodiuri"),
-          aloitusVuosi = Some(2000),
-          paattymisVuosi = Some(2001),
-          ohjeellinenLaajuus = Some("20op"),
-          opinnaytetyo = Some(true),
-          harjoittelu = Some(false),
-          perustelunLisatietoja = Some("Vastaa perusopintoja"),
-          koulutusalaKoodiUri = Some("testi-koulutusala-uri")
-        )
-      ),
       asiakirja = Some(
         Asiakirja(
           selvityksetSaatu = true,
@@ -162,6 +137,32 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           )
         )
       )
+    )
+  )
+
+  val tutkinnot: Seq[Tutkinto] = Seq(
+    Tutkinto(
+      id = None,
+      jarjestys = "MUU",
+      hakemusId = UUID.randomUUID,
+      nimi = None,
+      oppilaitos = None,
+      muuTutkintoTieto = Some("Muu tutkinto sisältö")
+    ),
+    Tutkinto(
+      id = None,
+      jarjestys = "1",
+      hakemusId = UUID.randomUUID,
+      nimi = Some("Paras tutkinto"),
+      oppilaitos = None,
+      maakoodiUri = Some("mock_maakoodiuri"),
+      aloitusVuosi = Some(2000),
+      paattymisVuosi = Some(2001),
+      ohjeellinenLaajuus = Some("20op"),
+      opinnaytetyo = Some(true),
+      harjoittelu = Some(false),
+      perustelunLisatietoja = Some("Vastaa perusopintoja"),
+      koulutusalaKoodiUri = Some("testi-koulutusala-uri")
     )
   )
 
@@ -379,6 +380,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       koodistoService,
       maakoodiService,
       noneHakemus,
+      Seq(),
       noneAtaruHakemus,
       nonePerustelu,
       nonePaatos,
@@ -399,6 +401,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       koodistoService,
       maakoodiService,
       someHakemus,
+      tutkinnot,
       someAtaruHakemus,
       somePerustelu,
       somePaatos,
@@ -436,7 +439,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeMuuTutkintoProducesString(): Unit = {
-    val result = haeMuuTutkinto(someHakemus)
+    val result = haeMuuTutkinto(tutkinnot)
     assert(result.get.contains("Muu tutkinto sisältö"))
   }
 
@@ -451,7 +454,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupMaakoodit()
     setupKoulutusalat()
 
-    val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus)
+    val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus, tutkinnot)
     assert(result.get.contains("Nimi: Paras tutkinto"))
     assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
     assert(result.get.contains("Suoritusvuodet: 2000 - 2001"))

@@ -5,13 +5,13 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import useToaster from '@/src/hooks/useToaster';
 import { useHakemus } from '@/src/context/HakemusContext';
 import React, { useEffect, useState } from 'react';
-import { handleFetchError } from '@/src/lib/utils';
+import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
 import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { Add } from '@mui/icons-material';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
@@ -20,15 +20,23 @@ import {
   paatosKieli,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 
 export default function TutkintoPage() {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const { addToast } = useToaster();
-  const { isLoading, hakemusState, error, isSaving } = useHakemus();
+  const {
+    isLoading: isHakemusLoading,
+    hakemusState,
+    error: hakemusError,
+    isSaving: isHakemusSaving,
+  } = useHakemus();
+  const { isLoading, isSaving, error, tutkintoState, poistaTutkinto } =
+    useTutkinnot(hakemusState.editedData?.hakemusOid);
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
-  const editedTutkinnot = hakemusState.editedData?.tutkinnot ?? [];
+  const editedTutkinnot = tutkintoState.editedData ?? [];
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
@@ -44,23 +52,31 @@ export default function TutkintoPage() {
   }, [hakemusState.editedData, getLanguage]);
 
   useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
-  }, [error, addToast, t]);
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+    handleFetchError(addToast, error, 'virhe.tutkintojenLataus', t);
+  }, [error, hakemusError, addToast, t]);
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(
-      (tutkinto) => tutkinto.id !== next.id,
+      (tutkinto) => tutkinto.jarjestys !== next.jarjestys,
     );
-    hakemusState.updateLocal({ tutkinnot: [...oldTutkinnot, next] });
+    tutkintoState.updateLocal([...oldTutkinnot, next]);
   };
 
-  const deleteTutkintoLocal = (id: string | undefined) => {
-    const tutkinnot = editedTutkinnot.filter((tutkinto) => tutkinto.id !== id);
-    hakemusState.updateLocal({ tutkinnot });
+  const deleteTutkinto = async (tutkinto: Tutkinto) => {
+    if (!tutkinto.id || tutkinto.id?.startsWith('new')) {
+      const tutkinnot = editedTutkinnot
+        .filter((t) => t.id !== tutkinto.id)
+        .map((t) => updateTutkintoJarjestys(t, tutkinto.jarjestys));
+      tutkintoState.updateLocal(tutkinnot);
+    } else {
+      // jos tutkintoa ei ole vielä tallennettu tietokantaan, riittää lokaalin tilan päivitys
+      await poistaTutkinto(tutkinto);
+    }
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
-    id: '',
+    id: `new-${Date.now()}`,
     hakemusId: hakemusId,
     jarjestys: jarjestys,
     nimi: '',
@@ -78,19 +94,24 @@ export default function TutkintoPage() {
     ).length;
 
     const hakemusId = editedTutkinnot[0]!.hakemusId;
-    hakemusState.updateLocal({
-      tutkinnot: [
-        ...editedTutkinnot,
-        emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
-      ],
-    });
+    tutkintoState.updateLocal([
+      ...editedTutkinnot,
+      emptyTutkinto(hakemusId, (jarjestys + 1).toString()),
+    ]);
   };
 
   if (error) {
     return null;
   }
 
-  if (isLoading || !hakemusState.editedData) return <FullSpinner></FullSpinner>;
+  if (
+    isHakemusLoading ||
+    !hakemusState.editedData ||
+    isLoading ||
+    !tutkintoState.editedData ||
+    isSaving
+  )
+    return <FullSpinner></FullSpinner>;
 
   const muuTutkinto = editedTutkinnot.find(
     (tutkinto) => tutkinto.jarjestys === 'MUU',
@@ -118,14 +139,14 @@ export default function TutkintoPage() {
         />
         {editedTutkinnot
           .filter((tutkinto) => tutkinto.jarjestys !== 'MUU')
-          .map((tutkinto, index) => (
+          .map((tutkinto) => (
             <TutkintoComponent
-              key={index}
+              key={tutkinto.id}
               tutkinto={tutkinto}
               maatJaValtiotOptions={maatJaValtiotOptions}
               koulutusLuokitusOptions={koulutusLuokitusOptions}
               updateTutkintoAction={updateTutkintoLocal}
-              deleteTutkintoAction={deleteTutkintoLocal}
+              deleteTutkintoAction={deleteTutkinto}
               paatosKieli={hakemuksenPaatosKieli as string}
               t={t}
             />
@@ -150,9 +171,12 @@ export default function TutkintoPage() {
         />
       </Stack>
       <SaveRibbon
-        onSave={hakemusState.save}
-        isSaving={isSaving || false}
-        hasChanges={hakemusState.hasChanges}
+        onSave={() => {
+          hakemusState.save();
+          tutkintoState.save();
+        }}
+        isSaving={isHakemusSaving || isSaving}
+        hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
       />
     </>
   );

@@ -31,7 +31,6 @@ export type Hakemus = {
   liitteidenTilat: TarkistuksenTila[];
   asiakirja: AsiakirjaTieto;
   yhteistutkinto: boolean;
-  tutkinnot: Tutkinto[];
   lopullinenPaatosVastaavaEhdollinenAsiatunnus?: string;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
 };
@@ -52,7 +51,6 @@ export type HakemusUpdateRequest = {
   esittelijaOid: string | null;
   kasittelyVaihe: string;
   yhteistutkinto: boolean;
-  tutkinnot: Tutkinto[];
   asiakirja: AsiakirjaTieto;
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: string | null;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: string | null;
@@ -162,26 +160,4 @@ export type ValmistumisenVahvistus = {
   valmistumisenVahvistusSaatu: string | null;
   valmistumisenVahvistusVastaus: ValmistumisenVahvistusVastaus | null;
   valmistumisenVahvistusLisatieto: string | null;
-};
-
-export type Tutkinto = {
-  id?: string;
-  hakemusId: string;
-  jarjestys: string;
-  nimi?: string;
-  oppilaitos?: string;
-  aloitusVuosi?: number;
-  paattymisVuosi?: number;
-  maakoodiUri?: string;
-  muuTutkintoTieto?: string;
-  todistuksenPaivamaara?: string;
-  koulutusalaKoodiUri?: string;
-  paaaaineTaiErikoisala?: string;
-  todistusOtsikko?: string;
-  muuTutkintoMuistioId?: string;
-
-  ohjeellinenLaajuus?: string;
-  opinnaytetyo?: boolean | null;
-  harjoittelu?: boolean | null;
-  perustelunLisatietoja?: string;
 };

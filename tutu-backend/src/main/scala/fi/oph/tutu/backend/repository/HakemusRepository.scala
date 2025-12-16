@@ -62,31 +62,6 @@ class HakemusRepository extends BaseResultHandlers {
       )
     )
 
-  implicit val getTutkintoResult: GetResult[Tutkinto] =
-    GetResult(r =>
-      Tutkinto(
-        id = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
-        hakemusId = UUID.fromString(r.nextString()),
-        jarjestys = r.nextString(),
-        nimi = r.nextStringOption(),
-        oppilaitos = r.nextStringOption(),
-        aloitusVuosi = r.nextIntOption(),
-        paattymisVuosi = r.nextIntOption(),
-        maakoodiUri = r.nextStringOption(),
-        muuTutkintoTieto = r.nextStringOption(),
-        todistuksenPaivamaara = r.nextStringOption(),
-        koulutusalaKoodiUri = r.nextStringOption(),
-        paaaaineTaiErikoisala = r.nextStringOption(),
-        todistusOtsikko = r.nextStringOption(),
-        muuTutkintoMuistioId = Option(r.nextString()).map(UUID.fromString),
-        ohjeellinenLaajuus = r.nextStringOption(),
-        opinnaytetyo = r.nextBooleanOption(),
-        harjoittelu = r.nextBooleanOption(),
-        perustelunLisatietoja = r.nextStringOption(),
-        muokkaaja = r.nextStringOption()
-      )
-    )
-
   /**
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
    *
@@ -321,69 +296,6 @@ class HakemusRepository extends BaseResultHandlers {
   }
 
   /**
-   * Päivittää osan hakemuksesta
-   *
-   * @param hakemusOid
-   * hakemuksen oid
-   * @param hakemusKoskee
-   * hakemus koskee -koodi
-   * @param esittelijaId
-   * esittelijän id
-   * @param asiatunnus
-   * asiatunnus
-   * @param muokkaaja
-   * muokkaajan oid
-   * @return
-   * tallennetun hakemuksen id
-   */
-  def paivitaPartialHakemus(
-    hakemusOid: HakemusOid,
-    partialHakemus: DbHakemus,
-    muokkaaja: String
-  ): HakemusOid = {
-    val hakemusOidString                                   = hakemusOid.toString
-    val esittelijaIdOrNull                                 = partialHakemus.esittelijaId.map(_.toString).orNull
-    val asiakirjaIdOrNull                                  = partialHakemus.asiakirjaId.map(_.toString).orNull
-    val asiatunnusOrNull                                   = partialHakemus.asiatunnus.orNull
-    val hakemusKoskee                                      = partialHakemus.hakemusKoskee
-    val yhteistutkinto                                     = partialHakemus.yhteistutkinto
-    val kasittelyVaihe                                     = partialHakemus.kasittelyVaihe.toString
-    val lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull =
-      partialHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
-    val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
-      partialHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
-
-    try
-      db.run(
-        sql"""
-        UPDATE hakemus
-        SET
-          hakemus_koskee = $hakemusKoskee,
-          esittelija_id = $esittelijaIdOrNull::uuid,
-          asiakirja_id = $asiakirjaIdOrNull::uuid,
-          asiatunnus = $asiatunnusOrNull,
-          muokkaaja = $muokkaaja,
-          yhteistutkinto = $yhteistutkinto,
-          kasittely_vaihe = $kasittelyVaihe,
-          lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
-          lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull
-        WHERE hakemus_oid = $hakemusOidString
-        RETURNING
-          hakemus_oid
-      """.as[HakemusOid].head,
-        "paivita_hakemus"
-      )
-    catch {
-      case e: Exception =>
-        LOG.error(s"Hakemuksen päivitus epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Hakemuksen päivitys epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
    * Päivittää hakemuksen kokonaan (PUT endpoint).
    * Korvaa kaikki käyttäjän muokattavat kentät.
    * NULL arvo pyynnössä -> NULL tietokantaan.
@@ -397,7 +309,7 @@ class HakemusRepository extends BaseResultHandlers {
    * @return
    * tallennetun hakemuksen oid
    */
-  def paivitaTaysiHakemus(
+  def paivitaHakemus(
     hakemusOid: HakemusOid,
     hakemus: DbHakemus,
     muokkaaja: String
@@ -444,194 +356,6 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  /**
-   * Hakee hakemuksen tutkinnot
-   *
-   * @param hakemusId
-   * hakemuksen Id
-   * @return
-   * hakemuksen tutkinnot
-   */
-  def haeTutkinnotHakemusIdilla(hakemusId: UUID): Seq[Tutkinto] = {
-    try
-      db.run(
-        sql"""
-    SELECT
-      id,
-      hakemus_id,
-      jarjestys,
-      nimi,
-      oppilaitos,
-      aloitus_vuosi,
-      paattymis_vuosi,
-      maakoodiuri,
-      muu_tutkinto_tieto,
-      todistuksen_paivamaara,
-      koulutusala_koodiuri,
-      paaaine_tai_erikoisala,
-      todistusotsikko,
-      muu_tutkinto_muistio_id,
-      ohjeellinen_laajuus,
-      opinnaytetyo,
-      harjoittelu,
-      perustelun_lisatietoja,
-      muokkaaja
-    FROM tutkinto
-    WHERE hakemus_id = ${hakemusId.toString}::uuid
-    ORDER BY jarjestys ASC
-  """
-          .as[Tutkinto],
-        "hae_tutkinnot_hakemus_idlla"
-      )
-    catch {
-      case e: Exception =>
-        LOG.error(s"Tutkintojen haku hakemusId:llä $hakemusId epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Tutkintojen haku epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  def suoritaTutkintojenModifiointi(
-    hakemusId: UUID,
-    modifyData: TutkintoModifyData,
-    luojaTaiMuokkaja: UserOid
-  ): Unit = {
-    val actions = modifyData.uudet.map(t => lisaaTutkinto(hakemusId, t, luojaTaiMuokkaja.toString)) ++
-      modifyData.poistetut.map(poistaTutkinto) ++
-      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaja.toString))
-    val combined = db.combineIntDBIOs(actions)
-    db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
-      case Success(_) => ()
-      case Failure(e) =>
-        LOG.error(s"Virhe tutkintojen modifioinnissa: ${e.getMessage}", e)
-        throw new RuntimeException(s"Virhe tutkintojen modifioinnissa: ${e.getMessage}", e)
-    }
-  }
-
-  def lisaaTutkintoSeparately(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): Unit = {
-    try {
-      db.run(lisaaTutkinto(hakemusId, tutkinto, luoja), "lisaa_tutkinto")
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Tutkinnon lisääminen epäonnistui: ${e}")
-        throw new RuntimeException(
-          s"Tutkinnon lisääminen epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  def lisaaTutkinto(hakemusId: UUID, tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
-    val nimiOrNull                  = tutkinto.nimi.filter(_.nonEmpty).orNull
-    val oppilaitosOrNull            = tutkinto.oppilaitos.filter(_.nonEmpty).orNull
-    val aloitusVuosi                = tutkinto.aloitusVuosi
-    val paattymisVuosi              = tutkinto.paattymisVuosi
-    val maakoodiUri                 = tutkinto.maakoodiUri.filter(_.nonEmpty).orNull
-    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
-    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
-    val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
-    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull
-    val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
-    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
-    val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
-    val opinnaytetyo                = tutkinto.opinnaytetyo
-    val harjoittelu                 = tutkinto.harjoittelu
-    val perustelunLisatietoja       = tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull
-    sqlu"""
-      INSERT INTO tutkinto (
-        hakemus_id,
-        jarjestys,
-        nimi,
-        oppilaitos,
-        aloitus_vuosi,
-        paattymis_vuosi,
-        maakoodiuri,
-        muu_tutkinto_tieto,
-        todistuksen_paivamaara,
-        koulutusala_koodiuri,
-        paaaine_tai_erikoisala,
-        todistusotsikko,
-        muu_tutkinto_muistio_id,
-        ohjeellinen_laajuus,
-        opinnaytetyo,
-        harjoittelu,
-        perustelun_lisatietoja,
-        luoja
-      )
-      VALUES (
-        ${hakemusId.toString}::uuid,
-        ${tutkinto.jarjestys},
-        ${nimiOrNull},
-        ${oppilaitosOrNull},
-        ${aloitusVuosi},
-        ${paattymisVuosi},
-        ${maakoodiUri},
-        ${muuTutkintoTietoOrNull},
-        ${todistuksenPaivamaaraOrNull},
-        ${koulutusalaKoodiUri},
-        ${paaaineTaiErikoisala},
-        ${todistusOtsikko},
-        ${muuTutkintoMuistioId}::uuid,
-        ${ohjeellinenLaajuus},
-        ${opinnaytetyo},
-        ${harjoittelu},
-        ${perustelunLisatietoja},
-        $luoja
-      )
-    """
-  }
-
-  /**
-   * Päivittää hakemuksen tutkinnon
-   *
-   * @param tutkinto
-   * muokattava tutkinto
-   * @param virkailijaOid
-   * päivittävän virkailijan oid
-   */
-  def paivitaTutkinto(
-    tutkinto: Tutkinto,
-    muokkaaja: String
-  ): DBIO[Int] =
-    sqlu"""
-      UPDATE tutkinto
-      SET
-        jarjestys = ${tutkinto.jarjestys},
-        nimi = ${tutkinto.nimi.filter(_.nonEmpty).orNull},
-        oppilaitos = ${tutkinto.oppilaitos.filter(_.nonEmpty).orNull},
-        aloitus_vuosi = ${tutkinto.aloitusVuosi},
-        paattymis_vuosi = ${tutkinto.paattymisVuosi},
-        maakoodiuri = ${tutkinto.maakoodiUri.filter(_.nonEmpty).orNull},
-        muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull},
-        todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull},
-        koulutusala_koodiuri = ${tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull},
-        paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull},
-        todistusotsikko = ${tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull},
-        muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
-        ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull},
-        opinnaytetyo = ${tutkinto.opinnaytetyo},
-        harjoittelu = ${tutkinto.harjoittelu},
-        perustelun_lisatietoja = ${tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull},
-        muokkaaja = ${muokkaaja}
-      WHERE id = ${tutkinto.id.get.toString}::uuid
-    """
-
-  /**
-   * Poistaa hakemuksen tutkinnon
-   *
-   * @param id
-   * tutkinnon id
-   */
-  private def poistaTutkinto(
-    id: UUID
-  ): DBIO[Int] =
-    sqlu"""
-      DELETE FROM tutkinto
-      WHERE id = ${id.toString}::uuid
-    """
-
   private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] =
     sqlu"""
       UPDATE hakemus
@@ -647,17 +371,6 @@ class HakemusRepository extends BaseResultHandlers {
       case Failure(e)        =>
         LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
         throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
-    }
-  }
-
-  def suoritaPaivitaTutkinto(tutkinto: Tutkinto, muokkaaja: String): Int = {
-    Try {
-      db.run(paivitaTutkinto(tutkinto, muokkaaja), "PaivitaTutkinto")
-    } match {
-      case Success(modified) => modified
-      case Failure(e)        =>
-        LOG.error(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
-        throw new RuntimeException(s"Virhe tutkinnon päivittämisessä: ${e.getMessage}", e)
     }
   }
 

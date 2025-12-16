@@ -28,6 +28,8 @@ import {
   PreviewComponent,
   PreviewContent,
 } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
@@ -46,7 +48,7 @@ export default function PaatostiedotPage() {
     error: hakemusError,
     isSaving,
   } = useHakemus();
-
+  const { tutkintoState } = useTutkinnot(hakemusState.editedData?.hakemusOid);
   const {
     isPaatosLoading,
     paatos,
@@ -79,6 +81,7 @@ export default function PaatostiedotPage() {
       updateOngoing={isSaving || updateOngoing}
       hakemusState={hakemusState}
       updateSuccess={paatosUpdateSuccess}
+      tutkinnot={tutkintoState.editedData ?? []}
     />
   );
 }
@@ -88,11 +91,13 @@ const Paatostiedot = ({
   updateOngoing,
   hakemusState,
   updateSuccess,
+  tutkinnot,
 }: {
   paatosState: EditableState<Paatos>;
   updateOngoing: boolean;
   hakemusState: EditableState<Hakemus>;
   updateSuccess: boolean;
+  tutkinnot: Tutkinto[];
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
@@ -141,7 +146,7 @@ const Paatostiedot = ({
   ) => {
     const newPaatos: Paatos = { ...paatos, ...updatedPaatos };
     if (immediateSave) {
-      paatosState.updateImmediatelly(updatedPaatos);
+      paatosState.updateImmediately(updatedPaatos);
       return;
     }
     paatosState.updateLocal(newPaatos);
@@ -247,7 +252,7 @@ const Paatostiedot = ({
                 paatosTietoOptions={paatos.paatosTietoOptions}
                 updatePaatosTietoAction={updatePaatosTieto}
                 deletePaatosTieto={deletePaatosTieto}
-                tutkinnot={hakemus.tutkinnot}
+                tutkinnot={tutkinnot}
               />
               <OphButton
                 sx={{

@@ -101,7 +101,7 @@ object HakemusModifyOperationResolver {
     currentTutkinnot: Seq[Tutkinto],
     toBeTutkinnot: Seq[Tutkinto]
   ): TutkintoModifyData = {
-    val uudet     = toBeTutkinnot.filterNot(t => currentTutkinnot.exists(_.id == t.id))
+    val uudet     = toBeTutkinnot.filter(_.id.isEmpty)
     val poistetut =
       currentTutkinnot.filterNot(t => toBeTutkinnot.exists(_.id == t.id)).map(_.id.orNull).filter(_ != null)
     val muutetut = toBeTutkinnot.filter(t => currentTutkinnot.exists(ct => ct.id == t.id && ct != t))

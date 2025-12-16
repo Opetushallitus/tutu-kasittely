@@ -20,7 +20,7 @@ import {
   tutkintoOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Stack } from '@mui/material';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
 import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';

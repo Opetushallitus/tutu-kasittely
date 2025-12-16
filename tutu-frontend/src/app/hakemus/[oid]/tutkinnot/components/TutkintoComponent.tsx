@@ -1,7 +1,7 @@
 'use client';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Tutkinto } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import {
   OphButton,
   OphInputFormField,
@@ -53,7 +53,7 @@ export type TutkintoProps = {
   maatJaValtiotOptions: OphSelectOption<string>[];
   koulutusLuokitusOptions: OphSelectOption<string>[];
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
-  deleteTutkintoAction: (id: string | undefined) => void;
+  deleteTutkintoAction: (tutkinto: Tutkinto) => void;
   paatosKieli: string;
   t: TFunction;
 };
@@ -76,8 +76,6 @@ export const TutkintoComponent = ({
     hakemus?.lomakkeenKieli || 'fi',
   );
 
-  const [currentTutkinto, setCurrentTutkinto] =
-    React.useState<Tutkinto>(tutkinto);
   const [nimiAnchorEl, setNimiAnchorEl] = React.useState<HTMLElement | null>(
     null,
   );
@@ -89,13 +87,12 @@ export const TutkintoComponent = ({
   const { showConfirmation } = useGlobalConfirmationModal();
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
-    setCurrentTutkinto(value);
     updateTutkintoAction(value);
   };
 
   function resolveTutkintoTodistusOtsikkoOptions() {
     const key: 'fi' | 'sv' = paatosKieli === 'sv' ? 'sv' : 'fi';
-    return currentTutkinto.jarjestys === '1'
+    return tutkinto.jarjestys === '1'
       ? primaryTutkintotodistusOtsikko[key]
       : tutkintotodistusOtsikko[key];
   }
@@ -107,15 +104,14 @@ export const TutkintoComponent = ({
           variant={'h3'}
           data-testid={`tutkinto-otsikko-${tutkinto.jarjestys}`}
         >
-          {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')}{' '}
-          {currentTutkinto.jarjestys}
+          {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikko')} {tutkinto.jarjestys}
         </OphTypography>
-        {currentTutkinto.jarjestys !== '1' && (
+        {tutkinto.jarjestys !== '1' && (
           <OphButton
             sx={{
               alignSelf: 'flex-end',
             }}
-            data-testid={`poista-tutkinto-button-${currentTutkinto.jarjestys}`}
+            data-testid={`poista-tutkinto-button-${tutkinto.jarjestys}`}
             variant="text"
             startIcon={<DeleteOutline />}
             onClick={() =>
@@ -123,7 +119,7 @@ export const TutkintoComponent = ({
                 header: t('hakemus.tutkinnot.modal.otsikko'),
                 content: t('hakemus.tutkinnot.modal.teksti'),
                 confirmButtonText: t('hakemus.tutkinnot.modal.poistaPaatos'),
-                handleConfirmAction: () => deleteTutkintoAction(tutkinto.id),
+                handleConfirmAction: () => deleteTutkintoAction(tutkinto),
               })
             }
           >
@@ -135,10 +131,10 @@ export const TutkintoComponent = ({
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
         options={resolveTutkintoTodistusOtsikkoOptions()}
-        value={currentTutkinto.todistusOtsikko || ''}
+        value={tutkinto.todistusOtsikko ?? ''}
         onChange={(event) =>
           updateCurrentTutkinto({
-            ...currentTutkinto,
+            ...tutkinto,
             todistusOtsikko: event.target.value,
           })
         }
@@ -149,12 +145,12 @@ export const TutkintoComponent = ({
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               nimi: event.target.value,
             })
           }
           multiline={true}
-          value={currentTutkinto.nimi || ''}
+          value={tutkinto.nimi ?? ''}
           inputProps={{
             'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
           }}
@@ -181,12 +177,12 @@ export const TutkintoComponent = ({
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonPaaaineTaiErikoisala')}
         onChange={(event) =>
           updateCurrentTutkinto({
-            ...currentTutkinto,
+            ...tutkinto,
             paaaaineTaiErikoisala: event.target.value,
           })
         }
         multiline={true}
-        value={currentTutkinto.paaaaineTaiErikoisala || ''}
+        value={tutkinto.paaaaineTaiErikoisala ?? ''}
         inputProps={{
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
         }}
@@ -196,12 +192,12 @@ export const TutkintoComponent = ({
           label={t('hakemus.tutkinnot.tutkinto.oppilaitos')}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               oppilaitos: event.target.value,
             })
           }
           multiline={true}
-          value={currentTutkinto.oppilaitos || ''}
+          value={tutkinto.oppilaitos ?? ''}
           inputProps={{
             'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
           }}
@@ -230,10 +226,10 @@ export const TutkintoComponent = ({
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
           sx={{ width: '50%' }}
           options={maatJaValtiotOptions}
-          value={String(currentTutkinto.maakoodiUri) || ''}
+          value={tutkinto.maakoodiUri ?? ''}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               maakoodiUri: event.target.value,
             })
           }
@@ -263,11 +259,11 @@ export const TutkintoComponent = ({
           label={t('hakemus.tutkinnot.tutkinto.opintojenAloitusVuosi')}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               aloitusVuosi: Number(event.target.value),
             })
           }
-          value={currentTutkinto.aloitusVuosi || ''}
+          value={tutkinto.aloitusVuosi ?? ''}
           inputProps={{
             'data-testid': `tutkinto-aloitusvuosi-${tutkinto.jarjestys}`,
           }}
@@ -277,11 +273,11 @@ export const TutkintoComponent = ({
           label={t('hakemus.tutkinnot.tutkinto.opintojenPaattymisVuosi')}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               paattymisVuosi: Number(event.target.value),
             })
           }
-          value={currentTutkinto.paattymisVuosi || ''}
+          value={tutkinto.paattymisVuosi ?? ''}
           inputProps={{
             'data-testid': `tutkinto-paattymisvuosi-${tutkinto.jarjestys}`,
           }}
@@ -292,16 +288,16 @@ export const TutkintoComponent = ({
         label={t('hakemus.tutkinnot.tutkinto.todistuksenPvm')}
         onChange={(event) =>
           updateCurrentTutkinto({
-            ...currentTutkinto,
+            ...tutkinto,
             todistuksenPaivamaara: event.target.value,
           })
         }
-        value={currentTutkinto.todistuksenPaivamaara || ''}
+        value={tutkinto.todistuksenPaivamaara ?? ''}
         inputProps={{
           'data-testid': `tutkinto-todistuksenpvm-${tutkinto.jarjestys}`,
         }}
       />
-      {currentTutkinto.jarjestys === '1' && (
+      {tutkinto.jarjestys === '1' && (
         <OphSelectFormField
           placeholder={t('yleiset.valitse')}
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
@@ -309,11 +305,11 @@ export const TutkintoComponent = ({
           options={koulutusLuokitusOptions}
           onChange={(event) =>
             updateCurrentTutkinto({
-              ...currentTutkinto,
+              ...tutkinto,
               koulutusalaKoodiUri: event.target.value,
             })
           }
-          value={currentTutkinto.koulutusalaKoodiUri || ''}
+          value={tutkinto.koulutusalaKoodiUri ?? ''}
           data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
         />
       )}

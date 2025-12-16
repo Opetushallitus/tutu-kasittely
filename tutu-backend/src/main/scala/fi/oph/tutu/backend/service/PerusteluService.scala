@@ -14,6 +14,7 @@ import java.util.UUID
 @Service
 class PerusteluService(
   hakemusService: HakemusService,
+  tutkintoService: TutkintoService,
   hakemusRepository: HakemusRepository,
   perusteluRepository: PerusteluRepository,
   asiakirjaRepository: AsiakirjaRepository,
@@ -113,6 +114,7 @@ class PerusteluService(
     hakemusOid: HakemusOid
   ): Option[String] = {
     val hakemusMaybe: Option[Hakemus]                   = hakemusService.haeHakemus(hakemusOid)
+    val tutkinnot: Seq[Tutkinto]                        = tutkintoService.haeTutkinnot(hakemusOid)
     val ataruHakemusMaybe: Option[AtaruHakemus]         = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val perusteluMaybe: Option[Perustelu]               = haePerustelu(hakemusOid)
     val paatosMaybe: Option[Paatos]                     = paatosService.haePaatos(hakemusOid)
@@ -127,6 +129,7 @@ class PerusteluService(
       koodistoService,
       maakoodiService,
       hakemusMaybe,
+      tutkinnot,
       ataruHakemusMaybe,
       perusteluMaybe,
       paatosMaybe,

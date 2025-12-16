@@ -110,7 +110,6 @@ case class Hakemus(
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   yhteistutkinto: Boolean = false,
-  tutkinnot: Seq[Tutkinto] = Seq.empty,
   asiakirja: Option[Asiakirja] = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None
@@ -130,7 +129,6 @@ case class HakemusUpdateRequest(
   esittelijaOid: Option[String],
   kasittelyVaihe: KasittelyVaihe,
   yhteistutkinto: Boolean,
-  tutkinnot: Seq[Tutkinto],
   asiakirja: Asiakirja,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]

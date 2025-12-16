@@ -20,23 +20,22 @@ export type EditableState<T> = {
   editedData?: T;
   hasChanges: boolean;
   updateLocal: (newData: Partial<T>) => void;
-  updateImmediatelly: (newData: Partial<T>) => void;
+  updateImmediately: (newData: Partial<T>) => void;
   save: () => void;
 };
 
-export const useEditableState = <T extends Record<string, unknown>>(
+export const useEditableState = <T>(
   serverData: T | undefined,
   onSave: (data: T) => void,
 ): EditableState<T> => {
   const [editedData, setEditedData] = useState<T | undefined>(serverData);
-  const [preserveEditedData, setPreserveEditedData] = useState<boolean>(false);
 
   // Sync server data to local state when it changes
   useEffect(() => {
-    if (serverData && !preserveEditedData) {
+    if (serverData) {
       setEditedData(serverData);
     }
-  }, [preserveEditedData, serverData]);
+  }, [serverData]);
 
   // Track if there are unsaved changes using deep equality
   const hasChanges = useMemo(() => {
@@ -53,12 +52,11 @@ export const useEditableState = <T extends Record<string, unknown>>(
   };
 
   // Save immediately to server but keep local edits
-  const updateImmediatelly = (part: Partial<T>) => {
+  const updateImmediately = (part: Partial<T>) => {
     if (!serverData) return;
-    const tobeServerData = { ...serverData, ...part } as T;
-    setPreserveEditedData(true);
-    onSave(tobeServerData);
-    updateLocal(part);
+    const oldState = editedData;
+    onSave({ ...serverData, ...part });
+    updateLocal({ ...oldState, ...part });
   };
 
   // Save changes to server
@@ -66,14 +64,13 @@ export const useEditableState = <T extends Record<string, unknown>>(
     if (hasChanges && editedData) {
       onSave(editedData);
     }
-    setPreserveEditedData(false);
   };
 
   return {
     editedData,
     hasChanges,
     updateLocal,
-    updateImmediatelly,
+    updateImmediately,
     save,
   };
 };

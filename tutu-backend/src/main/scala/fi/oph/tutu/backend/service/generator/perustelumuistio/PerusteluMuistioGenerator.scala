@@ -1,14 +1,9 @@
 package fi.oph.tutu.backend.service.generator.perustelumuistio
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{findAnswerByAtaruKysymysId, KoodistoService, MaakoodiService}
+import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService}
 import fi.oph.tutu.backend.service.generator.{formatDate, toKyllaEi}
 import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
-
-def toKyllaEi(value: Boolean): String = {
-  if (value) { "Kyllä" }
-  else { "Ei" }
-}
 
 def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)
@@ -19,10 +14,10 @@ def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
     val imiPyyntoVastattu = imiPyynto
       .flatMap(_.getVastattuIfPyyntoTrue)
       .map(formatDate)
-      .map(dateStr => s", vastattu ${dateStr}")
+      .map(dateStr => s", vastattu $dateStr")
       .getOrElse("")
 
-    Some(s"IMI-pyyntö: ${imiPyyntoNumero} ${imiPyyntoVastattu}")
+    Some(s"IMI-pyyntö: $imiPyyntoNumero $imiPyyntoVastattu")
   } else {
     None
   }
@@ -36,16 +31,14 @@ def haeValmistuminenVahvistettu(hakemusMaybe: Option[Hakemus]): Option[String] =
   val muotoiltuVastausMaybe =
     valmistumisenVahvistusMaybe
       .flatMap(_.getVastausIfVahvistusTrue)
-      .map(value => {
-        value match {
-          case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
-          case ValmistumisenVahvistusVastaus.Kielteinen  => "kielteinen"
-          case ValmistumisenVahvistusVastaus.EiVastausta => "vahvistusta ei saatu"
-        }
-      })
+      .map {
+        case ValmistumisenVahvistusVastaus.Myonteinen  => "myönteinen"
+        case ValmistumisenVahvistusVastaus.Kielteinen  => "kielteinen"
+        case ValmistumisenVahvistusVastaus.EiVastausta => "vahvistusta ei saatu"
+      }
 
   muotoiltuVastausMaybe.map(muotoiltuVastaus =>
-    s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: ${muotoiltuVastaus}"
+    s"Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: $muotoiltuVastaus"
   )
 }
 
@@ -54,7 +47,7 @@ def haeSelvityksetSaatu(hakemusMaybe: Option[Hakemus]): Option[String] = {
     .flatMap(_.asiakirja)
     .map(_.selvityksetSaatu)
     .map(toKyllaEi)
-    .map(muotoiltu => s"Kaikki tarvittavat selvitykset saatu: ${muotoiltu}")
+    .map(muotoiltu => s"Kaikki tarvittavat selvitykset saatu: $muotoiltu")
 }
 
 def haeSuostumusSahkoiseenAsiointiin(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -62,7 +55,7 @@ def haeSuostumusSahkoiseenAsiointiin(hakemusMaybe: Option[Hakemus]): Option[Stri
     .flatMap(hakemus => haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA))
     .flatMap(_.value.head.label.get(Kieli.fi))
 
-  suostumusValue.map(valinta => s"Suostumus sähköiseen asiointiin: ${valinta}")
+  suostumusValue.map(valinta => s"Suostumus sähköiseen asiointiin: $valinta")
 }
 
 def haeHakijanNimi(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -73,8 +66,8 @@ def haeHakijanSyntymaaika(hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => s"Hakijan syntymäaika: ${hakemus.hakija.syntymaaika}")
 }
 
-def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 0): Seq[Tuple3[Int, String, String]] = {
-  if (item == None) {
+def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 0): Seq[(Int, String, String)] = {
+  if (item.isEmpty) {
     Seq.empty
   } else {
     val children: Seq[SisaltoItem]  = item.map(_.children).getOrElse(Seq.empty)
@@ -82,7 +75,7 @@ def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 
 
     val allChildren: Seq[SisaltoItem] = children ++ followups
 
-    val alirivit: Seq[Tuple3[Int, String, String]] = allChildren.flatMap(child => {
+    val alirivit: Seq[(Int, String, String)] = allChildren.flatMap(child => {
       haeHakemusKoskeeRivit(kieli, Option(child), level + 1)
     })
 
@@ -91,17 +84,16 @@ def haeHakemusKoskeeRivit(kieli: Kieli, item: Option[SisaltoItem], level: Int = 
     val fieldType  = item.map(_.fieldType).getOrElse("-")
 
     (labelMaybe, valueMaybe) match {
-      case (Some(label), Some(value)) => {
-        val rivi = s"${label}: ${value}"
+      case (Some(label), Some(value)) =>
+        val rivi = s"$label: $value"
         (level, rivi, fieldType) +: alirivit
-      }
       case (_, _) => alirivit
     }
   }
 }
 
 def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  if (hakemusMaybe == None) {
+  if (hakemusMaybe.isEmpty) {
     None
   } else {
     val hakemus = hakemusMaybe.get
@@ -113,32 +105,28 @@ def haeHakemusKoskee(hakemusMaybe: Option[Hakemus]): Option[String] = {
     }
 
     val hakemusKoskeeRoot: Option[SisaltoItem] = haeKysymyksenTiedot(hakemus.sisalto, Constants.ATARU_HAKEMUS_KOSKEE)
-    val hakemusKoskeeRivit: Seq[Tuple3[Int, String, String]] =
+    val hakemusKoskeeRivit: Seq[(Int, String, String)] =
       haeHakemusKoskeeRivit(hakemuksenKieli, hakemusKoskeeRoot)
-        .filter((t: Tuple3[Int, String, String]) => t._3 != "attachment")
+        .filter((t: (Int, String, String)) => t._3 != "attachment")
 
     val hakemusKoskeeContent = hakemusKoskeeRivit
-      .map((t: Tuple3[Int, String, String]) => {
+      .map((t: (Int, String, String)) => {
         val level  = t._1
         val rivi   = t._2
         val indent = " " * level * 2
-        s"${indent}${rivi}"
+        s"$indent$rivi"
       })
       .mkString("\n")
 
-    Some(s"Hakemus koskee:\n${hakemusKoskeeContent}")
+    Some(s"Hakemus koskee:\n$hakemusKoskeeContent")
   }
 }
 
-def haeMuuTutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
-  val tutkinnotMaybe: Option[Seq[Tutkinto]] = hakemusMaybe.map(_.tutkinnot)
-  val muuTutkintoMaybe: Option[Tutkinto]    = tutkinnotMaybe
-    .flatMap((tutkinnot: Seq[Tutkinto]) => {
-      tutkinnot.find((tutkinto: Tutkinto) => tutkinto.jarjestys == "MUU")
-    })
+def haeMuuTutkinto(tutkinnot: Seq[Tutkinto]): Option[String] = {
+  val muuTutkintoMaybe: Option[Tutkinto]    = tutkinnot.find((tutkinto: Tutkinto) => tutkinto.jarjestys == "MUU")
   val muuTutkintoTietoMaybe: Option[String] = muuTutkintoMaybe.flatMap(_.muuTutkintoTieto)
 
-  muuTutkintoTietoMaybe.map((muuTutkintoTieto: String) => s"Muu tutkinto:\n${muuTutkintoTieto}")
+  muuTutkintoTietoMaybe.map((muuTutkintoTieto: String) => s"Muu tutkinto:\n$muuTutkintoTieto")
 }
 
 def haeYhteistutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
@@ -151,72 +139,69 @@ def haeYhteistutkinto(hakemusMaybe: Option[Hakemus]): Option[String] = {
 def haeTutkintokohtaisetTiedot(
   maakoodiService: MaakoodiService,
   koodistoService: KoodistoService,
-  hakemusMaybe: Option[Hakemus]
+  hakemusMaybe: Option[Hakemus],
+  tutkinnot: Seq[Tutkinto]
 ): Option[String] = {
   val lomakkeenKieli                  = hakemusMaybe.map(_.lomakkeenKieli)
   val koulutusalat: Seq[KoodistoItem] = koodistoService.getKoodisto("kansallinenkoulutusluokitus2016koulutusalataso1")
 
-  hakemusMaybe
-    .map(_.tutkinnot)
-    .map((tutkinnot: Seq[Tutkinto]) => {
-      tutkinnot
-        .filter((tutkinto: Tutkinto) => tutkinto.jarjestys != "MUU")
-        .sortWith((a: Tutkinto, b: Tutkinto) => a.jarjestys.toInt < b.jarjestys.toInt)
-        .map((tutkinto: Tutkinto) => {
-          val kielistettyMaakoodi: Option[String] =
-            tutkinto.maakoodiUri
-              .flatMap(uri => maakoodiService.getMaakoodiByUri(uri))
-              .map(koodi =>
-                lomakkeenKieli match {
-                  case Some("sv") => koodi.sv
-                  case Some("en") => koodi.en
-                  case _          => koodi.fi
-                }
-              )
+  tutkinnot
+    .filter((tutkinto: Tutkinto) => tutkinto.jarjestys != "MUU")
+    .sortWith((a: Tutkinto, b: Tutkinto) => a.jarjestys.toInt < b.jarjestys.toInt)
+    .map((tutkinto: Tutkinto) => {
+      val kielistettyMaakoodi: Option[String] =
+        tutkinto.maakoodiUri
+          .flatMap(uri => maakoodiService.getMaakoodiByUri(uri))
+          .map(koodi =>
+            lomakkeenKieli match {
+              case Some("sv") => koodi.sv
+              case Some("en") => koodi.en
+              case _          => koodi.fi
+            }
+          )
+      val suoritusvuodet = Seq(tutkinto.aloitusVuosi, tutkinto.paattymisVuosi).flatten
+        .mkString(" - ")
 
-          val suoritusvuodet = Seq(tutkinto.aloitusVuosi, tutkinto.paattymisVuosi).flatten
-            .mkString(" - ")
+      val koulutusala: Option[String] = tutkinto.koulutusalaKoodiUri
+        .map(koulutusalaKoodiUri => koulutusalat.find(item => item.koodiUri == koulutusalaKoodiUri))
+        .flatMap {
+          case None       => None
+          case Some(item) => item.nimi.get(Kieli.fi)
+        }
 
-          val koulutusala: Option[String] = tutkinto.koulutusalaKoodiUri
-            .map(koulutusalaKoodiUri => koulutusalat.find(item => item.koodiUri == koulutusalaKoodiUri))
-            .flatMap(itemMaybe =>
-              itemMaybe match {
-                case None       => None
-                case Some(item) => item.nimi.get(Kieli.fi)
-              }
-            )
-
-          Seq[String](
-            s"Tutkinto ${tutkinto.jarjestys}:",
-            s"  Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
-            s"  Nimi: ${tutkinto.nimi.getOrElse("-")}",
-            s"  Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
-            s"  Koulutusala: ${koulutusala.getOrElse("-")}",
-            s"  Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
-            s"  Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
-            s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}",
-            s"  Suoritusvuodet: ${suoritusvuodet}",
-            s"  Ohjeellinen laajuus: ${tutkinto.ohjeellinenLaajuus.getOrElse("-")}",
-            s"  Tutkintoon sisältyi opinnäytetyö: ${tutkinto.opinnaytetyo.map(toKyllaEi).getOrElse("-")}",
-            s"  Tutkintoon sisältyi harjoittelu: ${tutkinto.harjoittelu.map(toKyllaEi).getOrElse("-")}",
-            s"  Lisätietoja opinnäytteisiin tai harjoitteluun liittyen: ${tutkinto.perustelunLisatietoja.getOrElse("-")}"
-          ).mkString("\n")
-        })
-        .mkString("\n\n")
+      Seq[String](
+        s"Tutkinto ${tutkinto.jarjestys}:",
+        s"  Tutkintotodistusotsikko: ${tutkinto.todistusOtsikko.getOrElse("-")}",
+        s"  Nimi: ${tutkinto.nimi.getOrElse("-")}",
+        s"  Pääaine tai erikoisala: ${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
+        s"  Koulutusala: ${koulutusala.getOrElse("-")}",
+        s"  Korkeakoulun tai oppilaitoksen nimi: ${tutkinto.oppilaitos.getOrElse("-")}",
+        s"  Korkeakoulun tai oppilaitoksen sijaintimaa: ${kielistettyMaakoodi.getOrElse("-")}",
+        s"  Todistuksen päivämäärä: ${tutkinto.todistuksenPaivamaara.getOrElse("-")}",
+        s"  Suoritusvuodet: $suoritusvuodet",
+        s"  Ohjeellinen laajuus: ${tutkinto.ohjeellinenLaajuus.getOrElse("-")}",
+        s"  Tutkintoon sisältyi opinnäytetyö: ${tutkinto.opinnaytetyo.map(toKyllaEi).getOrElse("-")}",
+        s"  Tutkintoon sisältyi harjoittelu: ${tutkinto.harjoittelu.map(toKyllaEi).getOrElse("-")}",
+        s"  Lisätietoja opinnäytteisiin tai harjoitteluun liittyen: ${tutkinto.perustelunLisatietoja.getOrElse("-")}"
+      ).mkString("\n")
     })
+    .mkString("\n\n") match {
+    case ""    => None
+    case value => Some(value)
+  }
 }
 
 def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe match {
     case None            => None
-    case Some(perustelu) => {
+    case Some(perustelu) =>
       val resultString = Seq(
         perustelu.virallinenTutkinnonMyontaja
           .map(toKyllaEi)
-          .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: ${muotoiltuValue}"),
+          .map(muotoiltuValue => s"Virallinen tutkinnon myöntäjä: $muotoiltuValue"),
         perustelu.virallinenTutkinto
           .map(toKyllaEi)
-          .map(muotoiltuValue => s"Virallinen tutkinto: ${muotoiltuValue}"),
+          .map(muotoiltuValue => s"Virallinen tutkinto: $muotoiltuValue"),
         if (perustelu.lahdeLahtomaanKansallinenLahde) {
           Some("Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)")
         } else None,
@@ -241,7 +226,7 @@ def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
             case "ei_korkeakouluaste"  => "Alle korkeakoulutasoinen koulutus"
           }
           .map(muotoiltuAsema => {
-            s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: ${muotoiltuAsema}"
+            s"Ylimmän tutkinnon asema lähtömaan järjestelmässä: $muotoiltuAsema"
           }),
         if (perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa != "") {
           Some(
@@ -254,14 +239,13 @@ def haeYleisetPerustelut(perusteluMaybe: Option[Perustelu]): Option[String] = {
         case "" => None
         case _  => Some(resultString)
       }
-    }
   }
 }
 
 def haeJatkoOpintoKelpoisuus(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe match {
     case None            => None
-    case Some(perustelu) => {
+    case Some(perustelu) =>
       val result = Seq(
         perustelu.jatkoOpintoKelpoisuus
           .map {
@@ -269,9 +253,9 @@ def haeJatkoOpintoKelpoisuus(perusteluMaybe: Option[Perustelu]): Option[String] 
             case "tieteellisiin_jatko-opintoihin"       => "tieteellisiin jatko-opintoihin"
             case "muu"                                  => "muu"
           }
-          .map(muotoiltu => s"Jatko-opintokelpoisuus: ${muotoiltu}"),
+          .map(muotoiltu => s"Jatko-opintokelpoisuus: $muotoiltu"),
         (perustelu.jatkoOpintoKelpoisuus, perustelu.jatkoOpintoKelpoisuusLisatieto) match {
-          case (Some("muu"), Some(lisatieto)) => Some(s"Jatko-opintokelpoisuuus, lisätieto:\n${lisatieto}")
+          case (Some("muu"), Some(lisatieto)) => Some(s"Jatko-opintokelpoisuuus, lisätieto:\n$lisatieto")
           case (_, _)                         => None
         }
       ).flatten.mkString("\n")
@@ -280,7 +264,6 @@ def haeJatkoOpintoKelpoisuus(perusteluMaybe: Option[Perustelu]): Option[String] 
         case "" => None
         case _  => Some(result)
       }
-    }
   }
 }
 
@@ -288,15 +271,15 @@ def haeAikaisemmatPaatokset(perusteluMaybe: Option[Perustelu]): Option[String] =
   perusteluMaybe.flatMap(perustelu => {
     perustelu.aikaisemmatPaatokset
       .map(toKyllaEi)
-      .map(muotoiltu => s"Opetushallitus on tehnyt vastaavia päätöksiä: ${muotoiltu}")
+      .map(muotoiltu => s"Opetushallitus on tehnyt vastaavia päätöksiä: $muotoiltu")
   })
 }
 
 def haeMuuPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe.flatMap(perustelu => {
     perustelu.muuPerustelu
-      .filter(!_.isEmpty)
-      .map(muotoiltu => s"Ratkaisun tai päätöksen muut perustelut:\n${muotoiltu}")
+      .filter(_.nonEmpty)
+      .map(muotoiltu => s"Ratkaisun tai päätöksen muut perustelut:\n$muotoiltu")
   })
 }
 
@@ -307,7 +290,7 @@ def haeUoRoPerustelu(
 ): Option[String] = {
   val koulutuksenSisalto = koulutuksenSisaltoMuistioMaybe
     .map(_.sisalto)
-    .map(sisalto => s"Koulutuksen sisältö:\n${sisalto}")
+    .map(sisalto => s"Koulutuksen sisältö:\n$sisalto")
 
   val erotKoulutuksenSisallossa = perusteluMaybe
     .map(_.uoRoSisalto)
@@ -354,7 +337,7 @@ def haeUoRoPerustelu(
         (uoRoSisalto.opettajatMuuEro, uoRoSisalto.opettajatMuuEroSelite) match {
           case (Some(true), Some(""))     => Some("Muu ero")
           case (Some(true), None)         => Some("Muu ero")
-          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n$selite")
           case (_, _)                     => None
         },
 
@@ -375,7 +358,7 @@ def haeUoRoPerustelu(
         (uoRoSisalto.vkOpettajatMuuEro, uoRoSisalto.vkOpettajatMuuEroSelite) match {
           case (Some(true), Some(""))     => Some("Muu ero")
           case (Some(true), None)         => Some("Muu ero")
-          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n$selite")
           case (_, _)                     => None
         },
 
@@ -393,7 +376,7 @@ def haeUoRoPerustelu(
         (uoRoSisalto.otmMuuEro, uoRoSisalto.otmMuuEroSelite) match {
           case (Some(true), Some(""))     => Some("Muu ero")
           case (Some(true), None)         => Some("Muu ero")
-          case (Some(true), Some(selite)) => Some(s"Muu ero:\n${selite}")
+          case (Some(true), Some(selite)) => Some(s"Muu ero:\n$selite")
           case (_, _)                     => None
         }
       ).flatten.mkString("\n")
@@ -401,7 +384,7 @@ def haeUoRoPerustelu(
 
   val muuTutkintoTaiOpintosuoritus = muuTutkintoMuistioMaybe
     .map(_.sisalto)
-    .map(sisalto => s"Muu tutkinto tai opintosuoritus:\n${sisalto}")
+    .map(sisalto => s"Muu tutkinto tai opintosuoritus:\n$sisalto")
 
   val result = Seq(
     koulutuksenSisalto,
@@ -418,7 +401,7 @@ def haeUoRoPerustelu(
 def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
   perusteluMaybe match {
     case None            => None
-    case Some(perustelu) => {
+    case Some(perustelu) =>
       val apSisalto = perustelu.apSisalto
       val result    = Seq(
         /////////////////////////////////
@@ -442,17 +425,17 @@ def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
 
         // ------- //
         apSisalto.todistusEUKansalaisuuteenRinnasteisestaAsemasta
-          .filter(!_.isEmpty)
-          .map(text => s"Todistus, joka todistaa EU-kansalaisuuteen rinnaisteisen aseman:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Todistus, joka todistaa EU-kansalaisuuteen rinnaisteisen aseman:\n$text\n"),
         apSisalto.ammattiJohonPatevoitynyt
-          .filter(!_.isEmpty)
-          .map(text => s"Mihin ammattiin hakija on pätevöitynyt toisessa jäsenmaassa:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Mihin ammattiin hakija on pätevöitynyt toisessa jäsenmaassa:\n$text\n"),
         apSisalto.ammattitoiminnanPaaAsiallinenSisalto
-          .filter(!_.isEmpty)
-          .map(text => s"Ammattitoiminnan pääasiallinen sisältö lähtömaassa:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Ammattitoiminnan pääasiallinen sisältö lähtömaassa:\n$text\n"),
         apSisalto.koulutuksenKestoJaSisalto
-          .filter(!_.isEmpty)
-          .map(text => s"Koulutuksen kesto ja pääasiallinen sisältö:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Koulutuksen kesto ja pääasiallinen sisältö:\n$text\n"),
 
         //////////////////////////////////////////////////////////////////////////////
         // Ammattipätevyyttä ja ammatin tai koulutuksen sääntelyä koskevat selvitykset
@@ -466,7 +449,7 @@ def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
           case (Some(true), Some(""))         => Some("Selvitetty aikaisempien samanlaisten tapausten yhteydessä")
           case (Some(true), None)             => Some("Selvitetty aikaisempien samanlaisten tapausten yhteydessä")
           case (Some(true), Some(asiatunnus)) =>
-            Some(s"Selvitetty aikaisempien samanlaisten tapausten yhteydessä. Asiatunnus: ${asiatunnus}")
+            Some(s"Selvitetty aikaisempien samanlaisten tapausten yhteydessä. Asiatunnus: $asiatunnus")
           case (_, _) => None
         },
         apSisalto.selvityksetIlmeneeAsiakirjoista
@@ -475,24 +458,23 @@ def haeApPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
 
         // ------- //
         apSisalto.lisatietoja
-          .filter(!_.isEmpty)
-          .map(text => s"Lisätietoja:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Lisätietoja:\n$text\n"),
         apSisalto.IMIHalytysTarkastettu
           .filter(_.==(true))
           .map(muotoiltuValinta => s"IMI-hälytykset tarkistettu"),
         apSisalto.muutAPPerustelut
-          .filter(!_.isEmpty)
-          .map(text => s"Muut AP-päätöksen perustelut:\n${text}\n"),
+          .filter(_.nonEmpty)
+          .map(text => s"Muut AP-päätöksen perustelut:\n$text\n"),
         apSisalto.SEUTArviointi
-          .filter(!_.isEmpty)
-          .map(text => s"SEUT-arviointi:\n${text}\n")
+          .filter(_.nonEmpty)
+          .map(text => s"SEUT-arviointi:\n$text\n")
       ).flatten.mkString("\n")
 
       result match {
         case "" => None
         case _  => Some(result)
       }
-    }
   }
 }
 
@@ -502,7 +484,7 @@ def haeLausuntopyynnot(
 ): Option[String] = {
   perusteluMaybe match {
     case None            => None
-    case Some(perustelu) => {
+    case Some(perustelu) =>
       val korkeakoulut = koodistoService.haeKorkeakoulut()
 
       val pyynnot = perustelu.lausuntopyynnot.map(pyynto => {
@@ -510,7 +492,7 @@ def haeLausuntopyynnot(
           (pyynto.lausunnonAntajaKoodiUri, pyynto.lausunnonAntajaMuu) match {
             case (Some("muu"), Some(tarkenne)) => Some(s"Lausunnon antaja, muu: $tarkenne")
             case (Some("muu"), None)           => Some(s"Lausunnon antaja, muu")
-            case (Some(korkeakouluKoodi), _)   => {
+            case (Some(korkeakouluKoodi), _)   =>
               val korkeakoulu = korkeakoulut
                 .find(item => item.koodiUri == korkeakouluKoodi)
                 .flatMap(_.nimi.get(Kieli.fi))
@@ -519,7 +501,6 @@ def haeLausuntopyynnot(
                 case None                   => Some(s"Lausunnon antaja: $korkeakouluKoodi")
                 case Some(korkeakoulunNimi) => Some(s"Lausunnon antaja: $korkeakoulunNimi")
               }
-            }
             case (None, _) => Some(s"Lausunnon antaja: -")
           },
           pyynto.lahetetty
@@ -537,7 +518,6 @@ def haeLausuntopyynnot(
       val yhdistetty = pyynnot :+ sisalto
 
       Some(yhdistetty.mkString("\n\n"))
-    }
   }
 }
 
@@ -551,7 +531,7 @@ def haeAsiakirjat(
 
   val esittelijanHuomiotMaybe: Option[String] = asiakirjaMuistioMaybe
     .map(_.sisalto)
-    .map(sisalto => s"Esittelijän huomioita asiakirjoista:\n${sisalto}")
+    .map(sisalto => s"Esittelijän huomioita asiakirjoista:\n$sisalto")
 
   val result = Seq(
     imipyyntoMaybe,
@@ -679,6 +659,7 @@ def generate(
   koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
   hakemusMaybe: Option[Hakemus],
+  tutkinnot: Seq[Tutkinto],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
   paatosMaybe: Option[Paatos],
@@ -686,7 +667,7 @@ def generate(
   muuTutkintoMuistioMaybe: Option[Muistio],
   asiakirjaMuistioMaybe: Option[Muistio]
 ): String = {
-  var result: Seq[String] = Seq[Option[String]](
+  val result: Seq[String] = Seq[Option[String]](
     haeHakijanNimi(hakemusMaybe),
     haeHakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
@@ -698,9 +679,9 @@ def generate(
     haeUoRoPerustelu(perusteluMaybe, koulutuksenSisaltoMuistioMaybe, muuTutkintoMuistioMaybe),
     haeApPerustelu(perusteluMaybe),
     haeLausuntopyynnot(koodistoService, perusteluMaybe),
-    haeMuuTutkinto(hakemusMaybe),
+    haeMuuTutkinto(tutkinnot),
     haeYhteistutkinto(hakemusMaybe),
-    haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, hakemusMaybe),
+    haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, hakemusMaybe, tutkinnot),
     haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe),
     haePaatostiedot(paatosMaybe)
   ).flatten

@@ -197,22 +197,25 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await page.getByTestId('poista-lausuntopyynto-button-2').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  await page.getByTestId('modal-confirm-button').click();
-
-  await clickSaveAndVerifyPayload(page, '/perustelu/', {
-    lausuntopyynnot: [
-      {
-        lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
-        lausunnonAntajaMuu: null,
-        lahetetty: '2025-09-01T00:00:00',
-        saapunut: '2025-09-30T00:00:00',
-      },
-      {
-        lausunnonAntajaKoodiUri: null,
-        lausunnonAntajaMuu: 'Pertti Keinonen',
-        lahetetty: null,
-        saapunut: null,
-      },
-    ],
-  });
+  await clickSaveAndVerifyPayload(
+    page,
+    '/perustelu/',
+    {
+      lausuntopyynnot: [
+        {
+          lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
+          lausunnonAntajaMuu: null,
+          lahetetty: '2025-09-01T00:00:00',
+          saapunut: '2025-09-30T00:00:00',
+        },
+        {
+          lausunnonAntajaKoodiUri: null,
+          lausunnonAntajaMuu: 'Pertti Keinonen',
+          lahetetty: null,
+          saapunut: null,
+        },
+      ],
+    },
+    page.getByTestId('modal-confirm-button'),
+  );
 });

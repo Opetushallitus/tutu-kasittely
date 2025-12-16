@@ -18,7 +18,6 @@ const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
     kelpoisuuskoe: false,
     sopeutumisaika: false,
   },
-  kielteisenPaatoksenPerustelut: '{}',
 });
 
 type RinnastettavatTutkinnotTaiOpinnotListProps = {

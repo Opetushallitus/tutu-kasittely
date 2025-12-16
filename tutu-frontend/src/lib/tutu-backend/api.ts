@@ -201,3 +201,13 @@ export async function doApiPatch(
     cache,
   );
 }
+
+export async function doApiDelete(resource: string, options?: Options) {
+  return apiFetch(resource, {
+    ...options,
+    method: 'DELETE',
+    headers: {
+      ...options?.headers,
+    },
+  });
+}

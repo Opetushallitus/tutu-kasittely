@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { FetchError } from '@/src/lib/common';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Toast } from '@/src/hooks/useToaster';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 export const hasTutuRole = (userRoles?: Array<string>) => {
   return userRoles?.includes('ROLE_APP_TUTU_ESITTELIJA');
@@ -65,3 +66,17 @@ export const LocalizeFetchError = (
 export const isDefined = (val: unknown) => val !== undefined && val !== null;
 
 export { buildHakemusUpdateRequest } from '@/src/lib/utils/hakemusUpdateBuilder';
+
+export const updateTutkintoJarjestys = (
+  tutkinto: Tutkinto,
+  poistettavaJarjestys: string,
+) => {
+  if (parseInt(tutkinto.jarjestys) > parseInt(poistettavaJarjestys)) {
+    return {
+      ...tutkinto,
+      jarjestys: (parseInt(tutkinto.jarjestys) - 1).toString(),
+    };
+  } else {
+    return tutkinto;
+  }
+};

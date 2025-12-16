@@ -7,6 +7,7 @@ import fi.oph.tutu.backend.repository.{
   HakemusRepository,
   PaatosRepository,
   PerusteluRepository,
+  TutkintoRepository,
   TutuDatabase
 }
 import fi.oph.tutu.backend.utils.Constants.*
@@ -22,7 +23,7 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 @Component
 @Service
@@ -31,6 +32,7 @@ class HakemusService(
   esittelijaRepository: EsittelijaRepository,
   asiakirjaRepository: AsiakirjaRepository,
   perusteluRepository: PerusteluRepository,
+  tutkintoRepository: TutkintoRepository,
   kasittelyVaiheService: KasittelyVaiheService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
@@ -41,36 +43,22 @@ class HakemusService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
-  /**
-   * Luo kokonaisen hakemuksen transaktionaalisesti (hakemus + perustelu + paatos)
-   * Käytetään Ataru-hakemuksen luonnissa, jotta kaikki tiedot tallennetaan atomisesti.
-   *
-   * @param hakemus
-   *   uusi Ataru-hakemus
-   * @param perustelu
-   *   perustelu
-   * @param paatos
-   *   päätös
-   * @param luoja
-   *   luojan tunniste
-   * @return
-   *   (hakemusId, perustelu, paatos) tuple
-   */
-  def luoKokonainenHakemus(
-    hakemus: UusiAtaruHakemus,
-    perustelu: Perustelu,
-    paatos: Paatos,
-    luoja: String
-  ): (UUID, Perustelu, Paatos) = {
-    val ataruHakemus           = haeAtaruHakemus(hakemus.hakemusOid)
+  def tallennaAtaruHakemus(hakemus: UusiAtaruHakemus): (UUID, Perustelu, Paatos) = {
+    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
+      case Left(error: Throwable) =>
+        throw error
+      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    }
+
     val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
-    val esittelijaId           = resolveEsittelijaId(tutkinto_1_maakoodiUri)
+
+    val esittelijaId = resolveEsittelijaId(tutkinto_1_maakoodiUri)
 
     // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
     val transactionalAction = for {
       asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
         Asiakirja(),
-        luoja
+        ATARU_SERVICE
       )
       hakemusId <- hakemusRepository.tallennaHakemusAction(
         hakemus.hakemusOid,
@@ -80,26 +68,26 @@ class HakemusService(
         asiakirjaId,
         None,
         None,
-        luoja
+        ATARU_SERVICE
       )
       tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
       _ <-
         if (tutkinnot != null && tutkinnot.nonEmpty) {
           DBIO.sequence(
-            tutkinnot.map(tutkinto => hakemusRepository.lisaaTutkinto(hakemusId, tutkinto, luoja))
+            tutkinnot.map(tutkinto => tutkintoRepository.lisaaTutkinto(tutkinto, ATARU_SERVICE))
           )
         } else {
           DBIO.successful(Seq.empty)
         }
       savedPerustelu <- perusteluRepository.tallennaPerusteluAction(
         hakemusId,
-        perustelu.copy(hakemusId = Some(hakemusId)),
-        luoja
+        Perustelu(hakemusId = Some(hakemusId), jatkoOpintoKelpoisuusLisatieto = Some("")),
+        TUTU_SERVICE
       )
       savedPaatos <- paatosRepository.tallennaPaatosAction(
         hakemusId,
-        paatos.copy(hakemusId = Some(hakemusId)),
-        luoja
+        Paatos(hakemusId = Some(hakemusId)),
+        TUTU_SERVICE
       )
     } yield (hakemusId, savedPerustelu, savedPaatos)
 
@@ -107,8 +95,7 @@ class HakemusService(
   }
 
   def luoLopullisenPaatoksenHakemus(
-    hakemus: UusiAtaruHakemus,
-    luoja: String
+    hakemus: UusiAtaruHakemus
   ): UUID = {
     val ataruHakemus             = haeAtaruHakemus(hakemus.hakemusOid)
     val suoritusMaaKoodiUri      = ataruHakemusParser.parseLopullinenPaatosSuoritusmaaMaakoodiUri(ataruHakemus)
@@ -119,7 +106,7 @@ class HakemusService(
       // TODO tarvitaanko lopulliselle päätökselle oma asiakirja-tyyppi?
       asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
         Asiakirja(),
-        luoja
+        ATARU_SERVICE
       )
       hakemusId <- hakemusRepository.tallennaHakemusAction(
         hakemus.hakemusOid,
@@ -129,7 +116,7 @@ class HakemusService(
         asiakirjaId,
         vastaavaEhdollinenPaatos,
         suoritusMaaKoodiUri,
-        luoja
+        ATARU_SERVICE
       )
       // TODO oma päätöstyypi lopulliselle päätökselle
     } yield hakemusId
@@ -160,10 +147,10 @@ class HakemusService(
   private def luoKokonaishakemus[R](hakemusOid: HakemusOid, transactionalAction: DBIO[R]): R = {
     db.runTransactionally(transactionalAction, "luo_kokonaishakemus") match {
       case Success(result) =>
-        LOG.info(s"Ataru-hakemuksen ${hakemusOid} kokonaisluonti onnistui")
+        LOG.info(s"Ataru-hakemuksen $hakemusOid kokonaisluonti onnistui")
         result
       case Failure(e) =>
-        LOG.error(s"Ataru-hakemuksen ${hakemusOid} kokonaisluonti epäonnistui: ${e.getMessage}", e)
+        LOG.error(s"Ataru-hakemuksen $hakemusOid kokonaisluonti epäonnistui: ${e.getMessage}", e)
         throw new RuntimeException(
           s"Ataru-hakemuksen kokonaisluonti epäonnistui: ${e.getMessage}",
           e
@@ -171,35 +158,48 @@ class HakemusService(
     }
   }
 
-  private def paivitaTutkinnotAtarusHakemukselta(
+  private def paivitaTutkinnotAtaruHakemukselta(
     ataruHakemus: AtaruHakemus,
     dbHakemus: DbHakemus,
     dbTutkinnot: Seq[Tutkinto]
   ): Seq[Tutkinto] = {
-    val ataruTutkinnot = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
+    val ataruTutkinnot       = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
+    val ataruHakemusModified = ZonedDateTime
+      .parse(ataruHakemus.modified, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
+      .toLocalDateTime
 
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
         // Ei tutkintoa järjestysnumerolla -> lisätään uusi
-        case None => hakemusRepository.lisaaTutkintoSeparately(dbHakemus.id, ataruTutkinto, TUTU_SERVICE)
+        case None                     => tutkintoRepository.suoritaLisaaTutkinto(ataruTutkinto, ATARU_SERVICE)
         case Some(existingDbTutkinto) =>
           existingDbTutkinto.muokkaaja match {
             // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
-            case Some(ATARU_SERVICE) | Some(TUTU_SERVICE) | None =>
-              hakemusRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), TUTU_SERVICE)
+            case Some(ATARU_SERVICE) | None =>
+              if (existingDbTutkinto.muokattu.isEmpty || ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get))
+                tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), ATARU_SERVICE)
             case Some(value) =>
-              hakemusRepository.suoritaPaivitaTutkinto(
-                existingDbTutkinto.copy(
-                  todistusOtsikko = ataruTutkinto.todistusOtsikko,
-                  aloitusVuosi = ataruTutkinto.aloitusVuosi,
-                  paattymisVuosi = ataruTutkinto.paattymisVuosi
-                ),
-                TUTU_SERVICE
-              )
+              if (
+                (existingDbTutkinto.muokattu.isEmpty ||
+                  ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get)) &&
+                (existingDbTutkinto.todistusOtsikko != ataruTutkinto.todistusOtsikko
+                  || existingDbTutkinto.aloitusVuosi != ataruTutkinto.aloitusVuosi
+                  || existingDbTutkinto.paattymisVuosi != ataruTutkinto.paattymisVuosi)
+              ) {
+                tutkintoRepository.suoritaPaivitaTutkinto(
+                  existingDbTutkinto.copy(
+                    todistusOtsikko = ataruTutkinto.todistusOtsikko,
+                    aloitusVuosi = ataruTutkinto.aloitusVuosi,
+                    paattymisVuosi = ataruTutkinto.paattymisVuosi
+                  ),
+                  ataruTutkinto.muokkaaja.getOrElse(TUTU_SERVICE)
+                )
+              } else { 0 }
           }
       }
     }
-    hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
+    tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
@@ -254,7 +254,6 @@ class HakemusService(
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val dbTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
         val tutuHakemus = Hakemus(
           hakemusOid = dbHakemus.hakemusOid.toString,
           lomakeOid = lomake.key,
@@ -293,7 +292,6 @@ class HakemusService(
               Some(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
           },
           yhteistutkinto = dbHakemus.yhteistutkinto,
-          tutkinnot = dbTutkinnot,
           asiakirja = asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
             case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
               Some(
@@ -310,8 +308,12 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
         )
-        val updatedTutkinnot = paivitaTutkinnotAtarusHakemukselta(ataruHakemus, dbHakemus, dbTutkinnot)
-        Some(tutuHakemus.copy(tutkinnot = updatedTutkinnot))
+        paivitaTutkinnotAtaruHakemukselta(
+          ataruHakemus,
+          dbHakemus,
+          tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+        )
+        Some(tutuHakemus)
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
@@ -377,9 +379,8 @@ class HakemusService(
     // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
       case Left(error)     => throw error
-      case Right(response) => {
+      case Right(response) =>
         parse(response).extract[Seq[AtaruHakemus]]
-      }
     }
 
     val hakemusList = hakemusRepository
@@ -425,8 +426,7 @@ class HakemusService(
       }
     sort match {
       case null => hakemusList
-      case _    => {
-
+      case _    =>
         val sortParam = sort.split(":").headOption.getOrElse("undefined")
         val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
 
@@ -461,7 +461,6 @@ class HakemusService(
           case SortDef.Undefined => hakemusList
         }
         sortedList
-      }
     }
   }
 
@@ -487,24 +486,12 @@ class HakemusService(
     }
 
     hakemusRepository.haeHakemus(hakemusOid) match {
-      case None => {
+      case None =>
         LOG.warn(s"Hakemuksen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         throw new RuntimeException(
           s"Hakemuksen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
-      }
-      case Some(dbHakemus) => {
-        // Tallennetaan tutkinnot (korvaa kaikki)
-        val tallennetutTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
-        hakemusRepository.suoritaTutkintojenModifiointi(
-          dbHakemus.id,
-          HakemusModifyOperationResolver.resolveTutkintoModifyOperations(
-            tallennetutTutkinnot,
-            hakemusUpdateRequest.tutkinnot
-          ),
-          userOid
-        )
-
+      case Some(dbHakemus) =>
         // Tallennetaan asiakirjatiedot täysin (korvaa kaikki kentät ilman mergeä)
         val finalAsiakirjaId = dbHakemus.asiakirjaId match {
           case Some(asiakirjaId) =>
@@ -545,12 +532,11 @@ class HakemusService(
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
         )
 
-        hakemusRepository.paivitaTaysiHakemus(
+        hakemusRepository.paivitaHakemus(
           hakemusOid,
           modifiedHakemus,
           userOid.toString
         )
-      }
     }
   }
 
@@ -572,7 +558,7 @@ class HakemusService(
       LOG.info(
         s"Päivitetään kasittelyVaihe: ${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe hakemukselle $hakemusOid"
       )
-      hakemusRepository.paivitaPartialHakemus(
+      hakemusRepository.paivitaHakemus(
         hakemusOid,
         dbHakemus.copy(kasittelyVaihe = kasittelyVaihe),
         luojaTaiMuokkaaja

@@ -1,4 +1,4 @@
-import { Page, expect, Request } from '@playwright/test';
+import { Page, expect, Request, Locator } from '@playwright/test';
 
 /**
  * Waits for the save button to appear, clicks it, and waits for the PUT request
@@ -7,6 +7,7 @@ import { Page, expect, Request } from '@playwright/test';
  *
  * @param page - Playwright page object
  * @param urlPattern - Pattern to match the API endpoint (e.g., '/hakemus/', '/perustelu/')
+ * @param saveButton - Optional Locator for button to be clicked for save
  * @returns The intercepted request object
  *
  * @example
@@ -16,19 +17,20 @@ import { Page, expect, Request } from '@playwright/test';
 export const clickSaveAndWaitForPUT = async (
   page: Page,
   urlPattern: string,
+  saveButton?: Locator,
 ): Promise<Request> => {
-  const saveButton = page.getByTestId('save-ribbon-button');
+  const button = saveButton ?? page.getByTestId('save-ribbon-button');
 
   // Wait for save button to be visible and enabled
-  await expect(saveButton).toBeVisible();
-  await expect(saveButton).toBeEnabled();
+  await expect(button).toBeVisible();
+  await expect(button).toBeEnabled();
 
   // Click save and wait for PUT request
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) => req.url().includes(urlPattern) && req.method() === 'PUT',
     ),
-    saveButton.click(),
+    button.click(),
   ]);
 
   return request;
@@ -59,12 +61,14 @@ export const waitForSaveComplete = async (
  * @param page - Playwright page object
  * @param urlPattern - Pattern to match the API endpoint
  * @param expectedPayload - Expected data in the request payload
+ * @param saveButton - Optional Locator for button to be clicked for save
  */
 export const clickSaveAndVerifyPayload = async (
   page: Page,
   urlPattern: string,
   expectedPayload: Record<string, unknown>,
+  saveButton?: Locator,
 ) => {
-  const request = await clickSaveAndWaitForPUT(page, urlPattern);
+  const request = await clickSaveAndWaitForPUT(page, urlPattern, saveButton);
   expect(request.postDataJSON()).toMatchObject(expectedPayload);
 };

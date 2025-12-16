@@ -22,6 +22,7 @@ import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus
 import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
 import { MuuPerustelu } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/MuuPerustelu';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
@@ -51,13 +52,21 @@ const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
   const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
     usePerustelu(hakemusState.editedData?.hakemusOid);
 
+  const { tutkintoState, isSaving: isTutkintoSaving } = useTutkinnot(
+    hakemusState.editedData?.hakemusOid,
+  );
+
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
 
   // Combined change tracking and save handler
-  const hasChanges = perusteluState.hasChanges || hakemusState.hasChanges;
+  const hasChanges =
+    perusteluState.hasChanges ||
+    hakemusState.hasChanges ||
+    tutkintoState.hasChanges;
 
   const handleSave = () => {
     perusteluState.save();
+    tutkintoState.save();
     hakemusState.save();
   };
 
@@ -90,8 +99,8 @@ const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
         updatePerustelu={perusteluState.updateLocal}
       />
       <TutkintokohtaisetTiedot
-        hakemus={hakemusState.editedData}
-        updateHakemus={hakemusState.updateLocal}
+        tutkinnot={tutkintoState.editedData ?? []}
+        updateTutkinnot={tutkintoState.updateLocal}
       />
       <OphTypography variant={'h3'}>
         {t('hakemus.perustelu.yleiset.muutPerustelut.otsikko')}
@@ -110,7 +119,7 @@ const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
       />
       <SaveRibbon
         onSave={handleSave}
-        isSaving={isSaving || false}
+        isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
       />
     </>
