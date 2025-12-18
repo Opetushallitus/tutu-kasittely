@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT, DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW, FINLAND_TZ}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.{BeforeEach, DisplayName, Nested, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 
+import java.time.{LocalDateTime, ZonedDateTime}
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
@@ -681,6 +684,66 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assert(options.kelpoisuusOptions.size == 2)
     assert(options.tiettyTutkintoTaiOpinnotOptions.size == 8)
     assert(options.riittavatOpinnotOptions.size == 4)
+  }
 
+  @Test
+  def parseLiitteidenTilat(): Unit = {
+    val liitteidenTilat = ataruHakemusParser.parseLiitteidenTilat(hakemus, lomake)
+    assert(liitteidenTilat.size == 15)
+    val notCheckedLiitteet = Seq(
+      "8b40d098-da19-4017-9e39-23568ec18140",
+      "c6e4b7d5-7d5e-4c79-b0be-ac8bd2db8b76",
+      "41a5a6eb-1824-43f4-a800-79291cdb2b3d",
+      "7a403a34-e551-4eed-93e7-52c7ab97ba13",
+      "7281aa4d-39ee-4e5b-a183-11a49e60d678",
+      "9d67450d-7f2a-4d25-8070-ec360c912fdb",
+      "01ecac40-44c3-4afa-91af-d8848a3eff7c",
+      "b04bc60f-2c1a-4e6b-8919-f7269a63ccf8",
+      "e5a0fcdc-7d82-4dfb-8919-e894020d8bcf",
+      "d4708528-1088-4532-a515-c142e07095f7",
+      "b2e6ddc3-f571-4937-8444-8042a6b725fe",
+      "c5bbd06e-01b1-4b29-af79-5e93da966940",
+      "ac90b133-1c67-4850-b24c-eb513d509a5c"
+    )
+    assert(
+      notCheckedLiitteet.sorted == liitteidenTilat
+        .filter(t => t.state == "not-checked" && t.updateTime.isEmpty)
+        .map(_.attachment)
+        .sorted
+    )
+    assertEquals(
+      AttachmentReview(
+        "582be518-e3ea-4692-8a2c-8370b40213e9",
+        "checked",
+        "form",
+        Some(
+          ZonedDateTime
+            .parse(
+              "2025-12-17T11:06:38.273123+00:00",
+              DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW)
+            )
+            .withZoneSameInstant(FINLAND_TZ)
+            .toLocalDateTime
+        )
+      ),
+      liitteidenTilat.find(_.attachment == "582be518-e3ea-4692-8a2c-8370b40213e9").orNull
+    )
+    assertEquals(
+      AttachmentReview(
+        "5b179002-91a4-449d-8c4a-d024637a516d",
+        "overdue",
+        "form",
+        Some(
+          ZonedDateTime
+            .parse(
+              "2025-12-17T11:06:38.273123+00:00",
+              DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW)
+            )
+            .withZoneSameInstant(FINLAND_TZ)
+            .toLocalDateTime
+        )
+      ),
+      liitteidenTilat.find(_.attachment == "5b179002-91a4-449d-8c4a-d024637a516d").orNull
+    )
   }
 }

@@ -8,6 +8,7 @@ export const _liitteet: Array<LiiteItem> = [
     filename: 'testiliite1.txt',
     'content-type': 'text/plain',
     'download-url': 'https://jotain.jossain.org',
+    saapumisaika: '2025-05-16T10:59:04.597',
   },
   {
     key: 'c95d7c76-5a4c-4ce5-a173-5c848664e6ed',

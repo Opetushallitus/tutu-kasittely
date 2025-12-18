@@ -42,10 +42,10 @@ import {
   ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
 import {
+  checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
   findSisaltoValuesByItem,
   haeAsiakirjat,
-  setLiitteenSaapumisaika,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
@@ -150,7 +150,7 @@ const AsiakirjaHookLayer = ({
     asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
   );
   const asiakirjaMetadataWithSaapumisaika = asiakirjaMetadata?.map((m) =>
-    setLiitteenSaapumisaika(m, hakemus!.kirjausPvm),
+    m.saapumisaika ? m : { ...m, saapumisaika: hakemus!.kirjausPvm },
   );
 
   /* ----------------------------------------- */
@@ -216,9 +216,8 @@ const AsiakirjaPagePure = ({
       );
       return {
         asiakirja,
-        saapumisaika: hakemus.kirjausPvm,
-        metadata,
-        liitteenTila,
+        metadata: metadata,
+        liitteenTila: checkLiitteenTila(metadata, liitteenTila),
         key: asiakirja.label.fi!,
       };
     },

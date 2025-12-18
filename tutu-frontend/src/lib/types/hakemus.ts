@@ -117,6 +117,7 @@ export type TarkistuksenTila = {
   attachment: string;
   state: string;
   hakukohde: string;
+  updateTime?: string;
 };
 
 export type AsiakirjaPyynto = {

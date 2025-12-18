@@ -26,6 +26,7 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 import * as R from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+import * as dateFns from 'date-fns';
 
 const UusiBadge = styled(Chip)(() => ({
   color: ophColors.green1,
@@ -52,7 +53,9 @@ const lomakeOtsake = (asiakirja: SisaltoValue) => {
 };
 
 const saapumisAika = (metadata?: AsiakirjaMetadata) => {
-  return metadata?.saapumisaika || '-';
+  return metadata?.saapumisaika
+    ? dateFns.format(metadata.saapumisaika, 'dd.MM.yyyy HH:mm')
+    : '-';
 };
 
 const tiedostoNimi = (metadata?: AsiakirjaMetadata) => {
@@ -82,19 +85,14 @@ const tarkistuksenTilaIcon = (data: AsiakirjaTaulukkoData) => {
   }
 };
 
-const uusiLiite = (t: TFunction, data: AsiakirjaTaulukkoData) => {
-  switch (data.liitteenTila?.state) {
-    case 'not-checked':
-      return (
-        <UusiBadge
-          className="asiakirja-row__uusi-liite"
-          label={t('hakemus.asiakirjat.uusi')}
-          size="small"
-        />
-      );
-    default:
-      return null;
+const isUusiLiite = (data: AsiakirjaTaulukkoData) => {
+  if (data.liitteenTila) {
+    if (data.liitteenTila.state === 'not-checked') {
+      return true;
+    }
   }
+
+  return false;
 };
 
 const pathToRoot = (value: SisaltoValue): SisaltoPathNode[] => {
@@ -132,6 +130,7 @@ const AsiakirjaTableHeader = () => {
 const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
   const { t } = useTranslations();
   const theme = useTheme();
+  const uusiLiite = isUusiLiite(data);
   return (
     <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
       <TableCell>
@@ -154,7 +153,13 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
           <OphTypography className="asiakirja-row__saapumisaika">
             {saapumisAika(data.metadata)}
           </OphTypography>
-          {uusiLiite(t, data)}
+          {uusiLiite && (
+            <UusiBadge
+              className="asiakirja-row__uusi-liite"
+              label={t('hakemus.asiakirjat.uusi')}
+              size="small"
+            />
+          )}
         </Stack>
       </TableCell>
       <TableCell>

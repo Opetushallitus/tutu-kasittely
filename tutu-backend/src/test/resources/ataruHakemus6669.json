@@ -727,66 +727,72 @@
   "henkilotunnus": "200760-9998",
   "person-oid": "1.2.246.562.198.36716440775",
   "information-request-timestamp": null,
-  "application-hakukohde-attachment-reviews": [
+  "latest-attachment-reviews": [
     {
       "attachment": "41a5a6eb-1824-43f4-a800-79291cdb2b3d",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "7281aa4d-39ee-4e5b-a183-11a49e60d678",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "8b40d098-da19-4017-9e39-23568ec18140",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "9d67450d-7f2a-4d25-8070-ec360c912fdb",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "ac90b133-1c67-4850-b24c-eb513d509a5c",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "b04bc60f-2c1a-4e6b-8919-f7269a63ccf8",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "b2e6ddc3-f571-4937-8444-8042a6b725fe",
-      "state": "not-checked",
-      "hakukohde": "form"
-    },
-    {
-      "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "c6e4b7d5-7d5e-4c79-b0be-ac8bd2db8b76",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     },
     {
       "attachment": "e5a0fcdc-7d82-4dfb-8919-e894020d8bcf",
-      "state": "not-checked",
-      "hakukohde": "form"
+      "state": "checked",
+      "hakukohde": "form",
+      "updateTime": "2025-12-17T11:06:38.273123+00:00"
     }
   ],
   "application-hakukohde-reviews": [
