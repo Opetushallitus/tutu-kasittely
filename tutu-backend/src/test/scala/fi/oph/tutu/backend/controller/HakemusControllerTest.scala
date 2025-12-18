@@ -330,7 +330,18 @@ class HakemusControllerTest extends IntegrationTestBase {
                                       "kuvaus" : "Jotain muuta kuvausta"
                                     }
                                   }
-                                }
+                                },
+                                "liitteidenTilat" : [ {
+                                  "attachment" : "88d627a1-47d9-4bb2-aad2-16384a900352",
+                                  "state" : "checked",
+                                  "hakukohde" : "form",
+                                  "updateTime" : "2025-12-17T09:30:00"
+                                }, {
+                                  "attachment" : "063912dd-2e57-4e69-a42c-35ff73d8953d",
+                                  "state" : "not-checked",
+                                  "hakukohde" : "form",
+                                  "updateTime" : null
+                                } ]
                               }"""
 
     val result = mockMvc
@@ -340,6 +351,9 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
+
+    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    println(result.andReturn().getResponse().getContentAsString())
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
 

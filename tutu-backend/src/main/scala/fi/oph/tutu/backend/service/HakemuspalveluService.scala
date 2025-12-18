@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
+import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT, FINLAND_TZ}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
@@ -150,7 +150,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
           val time      = (item \ "time").extract[String]
           val localTime = ZonedDateTime
             .parse(time, dateTimeFormatter)
-            .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
+            .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
 
           val keysOfModifiedFields = fields.keys.toSeq.diff(COMMON_MUUTOSHISTORIA_FIELDS)

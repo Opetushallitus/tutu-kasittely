@@ -4,13 +4,15 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
   DATE_TIME_FORMAT,
+  DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW,
+  FINLAND_TZ,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
 import org.springframework.stereotype.{Component, Service}
 
+import java.time.{LocalDateTime, ZonedDateTime}
 import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary
@@ -199,6 +201,43 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val answers = hakemus.content.answers
     findAnswerByAtaruKysymysId(Constants.ATARU_LOPULLINEN_PAATOS_VASTAAVA_EHDOLLINEN, answers)
       .map(identity)
+  }
+
+  private def getAttachementKeys(contentItems: Seq[LomakeContentItem]): Seq[String] = {
+    contentItems.flatMap(contentItem => {
+      val keysOfChildren    = getAttachementKeys(contentItem.children)
+      val keysFromFollowups = contentItem.options.flatMap(o => getAttachementKeys(o.followups))
+      if (contentItem.fieldType == "attachment")
+        keysOfChildren ++ keysFromFollowups :+ contentItem.id
+      else
+        keysOfChildren ++ keysFromFollowups
+    })
+  }
+
+  def parseLiitteidenTilat(ataruHakemus: AtaruHakemus, ataruLomake: AtaruLomake): Seq[AttachmentReview] = {
+    val dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW)
+    val allAttachmentKeys = getAttachementKeys(ataruLomake.content)
+    // TODO Ylemmän ehdon voi poistaa kunhan ataru ja tutu ovat ajantasalla
+    val tilat =
+      if (ataruHakemus.`application-hakukohde-attachment-reviews`.nonEmpty)
+        ataruHakemus.`application-hakukohde-attachment-reviews`
+      else
+        ataruHakemus.`latest-attachment-reviews`.map(r =>
+          AttachmentReview(
+            r.attachment,
+            r.state,
+            r.hakukohde,
+            Some(
+              ZonedDateTime
+                .parse(r.updateTime, dateTimeFormatter)
+                .withZoneSameInstant(FINLAND_TZ)
+                .toLocalDateTime
+            )
+          )
+        )
+    allAttachmentKeys.map(key => {
+      tilat.find(tila => tila.attachment == key).getOrElse(AttachmentReview(key, "not-checked", "form", None))
+    })
   }
 
   def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {

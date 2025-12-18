@@ -261,13 +261,13 @@ class HakemusService(
           lomakkeenKieli = ataruHakemus.lang,
           hakija = hakija,
           sisalto = ataruHakemusParser.parseSisalto(ataruHakemus, lomake),
-          liitteidenTilat = ataruHakemus.`application-hakukohde-attachment-reviews`,
+          liitteidenTilat = ataruHakemusParser.parseLiitteidenTilat(ataruHakemus, lomake),
           hakemusKoskee = dbHakemus.hakemusKoskee,
           asiatunnus = dbHakemus.asiatunnus,
           kirjausPvm = Some(
             ZonedDateTime
               .parse(ataruHakemus.submitted, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-              .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
+              .withZoneSameInstant(FINLAND_TZ)
               .toLocalDateTime
           ),
           // TODO: esittelyPvm, paatosPvm.

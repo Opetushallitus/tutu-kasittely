@@ -38,6 +38,7 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
 
   const asiakirjarivit = page.locator('.asiakirja-row');
   const hakemuksenLuontiaika = '14.05.2025 10:59';
+  const myohempiLiittenLisaysaika = '16.05.2025 10:59';
 
   await expect(asiakirjarivit).toHaveCount(6);
 
@@ -51,13 +52,13 @@ test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
   ).toContainText('testiliite1.txt');
   const row1_saapumisaika_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__saapumisaika`),
-  ).toContainText(hakemuksenLuontiaika);
+  ).toContainText(myohempiLiittenLisaysaika);
   const row1_uusiliite_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__uusi-liite`),
-  ).not.toBeAttached();
+  ).toBeAttached();
   const row1_tarkistuksentila_check = expect(
     page.locator(`${asiakirjaId1} .asiakirja-row__tarkistuksen-tila`),
-  ).toContainText('Tarkistettu');
+  ).toContainText('Tarkastamatta');
 
   const row2_otsake_check = expect(
     page.locator(`${asiakirjaId2} .asiakirja-row__otsake`),

@@ -3,13 +3,13 @@ import {
   SisaltoItem,
   SisaltoPathNode,
   SisaltoValue,
+  TarkistuksenTila,
 } from '@/src/lib/types/hakemus';
 import {
   Language,
   TranslatedName,
 } from '@/src/lib/localization/localizationTypes';
 import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
-import * as dateFns from 'date-fns';
 
 export const sisaltoItemMatches = (
   item: SisaltoItem,
@@ -188,13 +188,23 @@ const traverseTree = (
   traverseTree(expand, combine, handleItem, combinedList);
 };
 
-export const setLiitteenSaapumisaika = (
-  liiteMetadata: AsiakirjaMetadata,
-  hakemuksenSaapumisaika: string,
-) => {
-  const saapumisaika = liiteMetadata.saapumisaika || hakemuksenSaapumisaika;
-  const formatoitu = dateFns.format(saapumisaika, 'dd.MM.yyyy HH:mm');
-  return { ...liiteMetadata, saapumisaika: formatoitu };
+export const checkLiitteenTila = (
+  tiedostoKohtainenMetadata: AsiakirjaMetadata | undefined,
+  kokoLiitteenTila: TarkistuksenTila | undefined,
+): TarkistuksenTila | undefined => {
+  if (
+    kokoLiitteenTila?.updateTime &&
+    tiedostoKohtainenMetadata?.saapumisaika &&
+    kokoLiitteenTila?.state !== 'not-checked'
+  ) {
+    if (
+      new Date(tiedostoKohtainenMetadata.saapumisaika) >
+      new Date(kokoLiitteenTila.updateTime)
+    ) {
+      return { ...kokoLiitteenTila, state: 'not-checked' };
+    }
+  }
+  return kokoLiitteenTila;
 };
 
 export const buildLopullinenPaatosSuoritusItems = (

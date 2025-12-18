@@ -3,13 +3,17 @@ package fi.oph.tutu.backend.utils
 import fi.oph.tutu.backend.domain.Kieli.*
 import _root_.fi.oph.tutu.backend.domain.{AtaruKysymysId, PaatosTietoOption}
 
+import java.time.ZoneId
+
 object Constants {
   val ATARU_SERVICE = "Hakemuspalvelu"
   val TUTU_SERVICE  = "Tutu"
 
   val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
 
-  val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+  val DATE_TIME_FORMAT                         = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+  val DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX"
+  val FINLAND_TZ: ZoneId                       = ZoneId.of("Europe/Helsinki");
 
   val ATARU_PAATOS_KIELI: AtaruKysymysId =
     AtaruKysymysId("82c7260d-ebf0-4521-8f18-ad37e5490670", "paatos-kieli")

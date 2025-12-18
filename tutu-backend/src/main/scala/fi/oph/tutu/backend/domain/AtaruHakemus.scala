@@ -3,6 +3,8 @@ package fi.oph.tutu.backend.domain
 import org.json4s.*
 import org.json4s.native.JsonMethods.*
 
+import java.time.LocalDateTime
+
 sealed trait AnswerValue
 case class SingleValue(value: String)            extends AnswerValue
 case class MultiValue(value: Seq[String])        extends AnswerValue
@@ -24,7 +26,9 @@ case class AtaruHakemus(
   `application-review-notes`: Option[String],
   henkilotunnus: Option[String],
   `person-oid`: String,
-  `application-hakukohde-attachment-reviews`: Seq[AttachmentReview],
+  `application-hakukohde-attachment-reviews`: Seq[AttachmentReview] =
+    Seq(), // TODO tämän voi poistaa kunhan ataru ja tutu on päivitetty
+  `latest-attachment-reviews`: Seq[AttachmentReviewRaw] = Seq(),
   `application-hakukohde-reviews`: Seq[HakukohdeReview],
   hakutoiveet: Seq[String],
   `information-request-timestamp`: Option[String]
@@ -44,10 +48,18 @@ case class Answer(
   `duplikoitu-followup-hakukohde-oid`: Option[String] = None
 )
 
+case class AttachmentReviewRaw(
+  attachment: String,
+  state: String,
+  hakukohde: String,
+  updateTime: String
+)
+
 case class AttachmentReview(
   attachment: String,
   state: String,
-  hakukohde: String
+  hakukohde: String,
+  updateTime: Option[LocalDateTime]
 )
 
 case class HakukohdeReview(

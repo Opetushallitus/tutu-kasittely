@@ -342,21 +342,18 @@
     "henkilotunnus": null,
     "person-oid": "1.2.246.562.24.82970555881",
     "information-request-timestamp": null,
-    "application-hakukohde-attachment-reviews": [
+    "latest-attachment-reviews": [
       {
         "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       },
       {
         "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
-        "state": "not-checked",
-        "hakukohde": "form"
-      },
-      {
-        "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       }
     ],
     "application-hakukohde-reviews": [
@@ -702,21 +699,18 @@
     "henkilotunnus": null,
     "person-oid": "1.2.246.562.24.82970555881",
     "information-request-timestamp": "2025-07-14T11:06:38.273Z",
-    "application-hakukohde-attachment-reviews": [
+    "latest-attachment-reviews": [
       {
         "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       },
       {
         "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
-        "state": "not-checked",
-        "hakukohde": "form"
-      },
-      {
-        "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       }
     ],
     "application-hakukohde-reviews": [
@@ -1071,21 +1065,18 @@
     "henkilotunnus": null,
     "person-oid": "1.2.246.562.24.82970555881",
     "information-request-timestamp": "2025-07-21T11:06:38.273Z",
-    "application-hakukohde-attachment-reviews": [
+    "latest-attachment-reviews": [
       {
         "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       },
       {
         "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
-        "state": "not-checked",
-        "hakukohde": "form"
-      },
-      {
-        "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       }
     ],
     "application-hakukohde-reviews": [
@@ -1440,21 +1431,18 @@
     "henkilotunnus": "210281-9988",
     "person-oid": "1.2.246.562.24.82970555881",
     "information-request-timestamp": null,
-    "application-hakukohde-attachment-reviews": [
+    "latest-attachment-reviews": [
       {
         "attachment": "582be518-e3ea-4692-8a2c-8370b40213e9",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       },
       {
         "attachment": "5b179002-91a4-449d-8c4a-d024637a516d",
-        "state": "not-checked",
-        "hakukohde": "form"
-      },
-      {
-        "attachment": "c5bbd06e-01b1-4b29-af79-5e93da966940",
-        "state": "not-checked",
-        "hakukohde": "form"
+        "state": "checked",
+        "hakukohde": "form",
+        "updateTime": "2025-12-17T11:06:38.273123+00:00"
       }
     ],
     "application-hakukohde-reviews": [

@@ -4,6 +4,7 @@ export type LiiteItem = {
   size: number;
   uploaded: string;
   filename: string;
+  saapumisaika?: string;
   'content-type': string;
   'download-url': string;
 };
