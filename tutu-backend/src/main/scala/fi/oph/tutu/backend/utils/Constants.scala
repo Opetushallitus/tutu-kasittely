@@ -24,6 +24,10 @@ object Constants {
     AtaruKysymysId("b6b2fc1f-2749-42d1-823a-4b4a33fe30b6", "tutu-first-degree-end-year")
   val ATARU_TUTKINTO_1_MAA: AtaruKysymysId =
     AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "tutu-first-degree-country")
+  val ATARU_TUTKINTO_1_OPINNAYTETYO: AtaruKysymysId =
+    AtaruKysymysId("337c0b08-03d3-4659-9309-aa1bbe731717", "tutu-first-degree-final-project")
+  val ATARU_TUTKINTO_1_HARJOITTELU: AtaruKysymysId =
+    AtaruKysymysId("85d1aac5-b75f-4bba-9b52-6a42aad1c437", "tutu-first-degree-internship")
 
   val ATARU_TUTKINTO_2_NIMI: AtaruKysymysId =
     AtaruKysymysId("d7eb503d-44f0-4445-8eb1-5e65c22fe764", "tutu-second-degree-name")
@@ -35,6 +39,10 @@ object Constants {
     AtaruKysymysId("a76d09cf-a214-4abd-be63-cbbe63a5897b", "tutu-second-degree-start-year")
   val ATARU_TUTKINTO_2_LOPETUS_VUOSI: AtaruKysymysId =
     AtaruKysymysId("58345eb0-8179-4f5f-beb8-ef8397a63e8c", "tutu-second-degree-end-year")
+  val ATARU_TUTKINTO_2_OPINNAYTETYO: AtaruKysymysId =
+    AtaruKysymysId("f4da3e15-fcd6-4a65-a408-8550bfb4fbd2", "tutu-second-degree-final-project")
+  val ATARU_TUTKINTO_2_HARJOITTELU: AtaruKysymysId =
+    AtaruKysymysId("f0af0bb7-8e4a-4582-9e5c-dd3de9273beb", "tutu-second-degree-internship")
 
   val ATARU_TUTKINTO_3_NIMI: AtaruKysymysId =
     AtaruKysymysId("8a75125b-0677-4695-b76a-ed058a602b0a", "tutu-third-degree-name")
@@ -46,6 +54,10 @@ object Constants {
     AtaruKysymysId("8b30c1ab-885b-4989-ba1c-58b391ef35a7", "tutu-third-degree-start-year")
   val ATARU_TUTKINTO_3_LOPETUS_VUOSI: AtaruKysymysId =
     AtaruKysymysId("b7b38bf4-12bb-4e58-9399-4fb59fdb326e", "tutu-third-degree-end-year")
+  val ATARU_TUTKINTO_3_OPINNAYTETYO: AtaruKysymysId =
+    AtaruKysymysId("6f284c1d-15ed-4ca8-9474-69d310eed7cf", "tutu-third-degree-final-project")
+  val ATARU_TUTKINTO_3_HARJOITTELU: AtaruKysymysId =
+    AtaruKysymysId("7e2c9068-886e-4518-990d-938901116a1f", "tutu-third-degree-internship")
 
   val ATARU_MUU_TUTKINTO_TIETO: AtaruKysymysId =
     AtaruKysymysId("743fd221-6ec7-40d8-9758-7786e7ff2458", "tutu-other-degree-text")
