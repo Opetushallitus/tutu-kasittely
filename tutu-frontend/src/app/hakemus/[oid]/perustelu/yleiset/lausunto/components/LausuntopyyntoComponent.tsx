@@ -76,29 +76,27 @@ export const LausuntopyyntoComponent = ({
             numero: lausuntopyynto.jarjestys,
           })}
         </OphTypography>
-        {lausuntopyynto.jarjestys !== 1 && (
-          <OphButton
-            sx={{
-              alignSelf: 'flex-end',
-            }}
-            data-testid={`poista-lausuntopyynto-button-${lausuntopyynto.jarjestys}`}
-            variant="text"
-            startIcon={<DeleteOutline />}
-            onClick={() =>
-              showConfirmation({
-                header: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
-                content: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
-                confirmButtonText: t(
-                  'hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto',
-                ),
-                handleConfirmAction: () =>
-                  deleteLausuntopyyntoAction(lausuntopyynto.jarjestys!),
-              })
-            }
-          >
-            {t('hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto')}
-          </OphButton>
-        )}
+        <OphButton
+          sx={{
+            alignSelf: 'flex-end',
+          }}
+          data-testid={`poista-lausuntopyynto-button-${lausuntopyynto.jarjestys}`}
+          variant="text"
+          startIcon={<DeleteOutline />}
+          onClick={() =>
+            showConfirmation({
+              header: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
+              content: t('hakemus.perustelu.lausuntotiedot.modal.otsikko'),
+              confirmButtonText: t(
+                'hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto',
+              ),
+              handleConfirmAction: () =>
+                deleteLausuntopyyntoAction(lausuntopyynto.jarjestys!),
+            })
+          }
+        >
+          {t('hakemus.perustelu.lausuntotiedot.poistaLausuntopyynto')}
+        </OphButton>
       </Stack>
       <OphSelectFormField
         label={t('hakemus.perustelu.lausuntotiedot.lausunnonAntaja')}
