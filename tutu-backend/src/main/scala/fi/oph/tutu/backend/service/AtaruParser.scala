@@ -16,6 +16,16 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary
 import scala.util.boundary.break
 
+def ataruAnswerToBoolean(value: String): Option[Boolean] = {
+  if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "1") {
+    Some(true)
+  } else if (value == "Ei" || value == "No" || value == "Nej" || value == "0") {
+    Some(false)
+  } else {
+    None
+  }
+}
+
 def findAnswer(key: String, allAnswers: Seq[Answer]): Option[AnswerValue] = {
   allAnswers.find(_.key == key).map(_.value)
 }
@@ -226,7 +236,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           case Some("swedish") => Some("examensbevis")
           case _               => Some("tutkintotodistus")
         },
-        muuTutkintoMuistioId = None
+        muuTutkintoMuistioId = None,
+        opinnaytetyo =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
+        harjoittelu =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
       )
     )
     val isTutkinto2Defined = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined
@@ -254,7 +268,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           case Some("swedish") => Some("ovrigbevis")
           case _               => Some("muutodistus")
         },
-        muuTutkintoMuistioId = None
+        muuTutkintoMuistioId = None,
+        opinnaytetyo =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
+        harjoittelu =
+          findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
       )
     }
 
@@ -283,7 +301,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
                 case Some("swedish") => Some("ovrigbevis")
                 case _               => Some("muutodistus")
               },
-          muuTutkintoMuistioId = None
+          muuTutkintoMuistioId = None,
+          opinnaytetyo =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
+          harjoittelu =
+            findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
         )
     }
 

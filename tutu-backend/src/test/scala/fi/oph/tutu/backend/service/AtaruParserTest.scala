@@ -500,6 +500,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
     assertEquals(Some("examensbevis"), tutkinto1.todistusOtsikko)
     assertEquals(None, tutkinto1.muuTutkintoMuistioId)
+    assertEquals(Some(false), tutkinto1.opinnaytetyo)
+    assertEquals(Some(true), tutkinto1.harjoittelu)
 
     assertEquals(tutkinto2.hakemusId, hakemusId)
     assertEquals(Some("Tutkinto2"), tutkinto2.nimi)
@@ -514,6 +516,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
     assertEquals(Some("ovrigbevis"), tutkinto2.todistusOtsikko)
     assertEquals(None, tutkinto2.muuTutkintoMuistioId)
+    assertEquals(Some(true), tutkinto2.opinnaytetyo)
+    assertEquals(Some(true), tutkinto2.harjoittelu)
 
     assertEquals(tutkinto3.hakemusId, hakemusId)
     assertEquals(Some("Tutkinto3"), tutkinto3.nimi)
@@ -528,6 +532,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
     assertEquals(None, tutkinto3.todistusOtsikko)
     assertEquals(None, tutkinto3.muuTutkintoMuistioId)
+    assertEquals(Some(true), tutkinto3.opinnaytetyo)
+    assertEquals(Some(true), tutkinto3.harjoittelu)
 
     assertEquals(muuTutkinto.jarjestys, "MUU")
     assertEquals(muuTutkinto.hakemusId, hakemusId)
@@ -573,6 +579,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto1.paaaaineTaiErikoisala)
     assertEquals(Some("examensbevis"), tutkinto1.todistusOtsikko)
     assertEquals(None, tutkinto1.muuTutkintoMuistioId)
+    assertEquals(Some(true), tutkinto1.opinnaytetyo)
+    assertEquals(Some(true), tutkinto1.harjoittelu)
 
     assertEquals(tutkinto2.hakemusId, hakemusId)
     assertEquals(Some("Johto tehtävä"), tutkinto2.nimi)
@@ -587,6 +595,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto2.paaaaineTaiErikoisala)
     assertEquals(Some("ovrigbevis"), tutkinto2.todistusOtsikko)
     assertEquals(None, tutkinto2.muuTutkintoMuistioId)
+    assertEquals(Some(true), tutkinto2.opinnaytetyo)
+    assertEquals(Some(true), tutkinto2.harjoittelu)
 
     assertEquals(tutkinto3.hakemusId, hakemusId)
     assertEquals(Some("Apu poika"), tutkinto3.nimi)
@@ -601,6 +611,8 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     assertEquals(None, tutkinto3.paaaaineTaiErikoisala)
     assertEquals(None, tutkinto3.todistusOtsikko)
     assertEquals(None, tutkinto3.muuTutkintoMuistioId)
+    assertEquals(Some(true), tutkinto3.opinnaytetyo)
+    assertEquals(Some(false), tutkinto3.harjoittelu)
 
     assertEquals(muuTutkinto.hakemusId, hakemusId)
     assertEquals(None, muuTutkinto.nimi)
