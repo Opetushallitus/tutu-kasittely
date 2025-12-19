@@ -27,7 +27,7 @@ import { useEffect } from 'react';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const FIELD_KEYS = {
-  hakijannimi: 'hakijannimi',
+  hakija: 'hakija',
   asiatunnus: 'asiatunnus',
   esittelija: 'esittelija',
   kasittelyvaihe: 'kasittelyvaihe',
