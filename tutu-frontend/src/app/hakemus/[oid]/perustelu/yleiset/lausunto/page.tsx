@@ -67,8 +67,7 @@ export default function Lausuntotiedot() {
       }),
     );
     setLausuntopyynnot(indexedLausuntopyynnot);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editedPerustelu?.lausuntopyynnot]);
+  }, [editedPerustelu, editedPerustelu?.lausuntopyynnot]);
 
   const addLausuntopyynto = () => {
     const newJarjestys =
