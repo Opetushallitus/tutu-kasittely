@@ -21,24 +21,26 @@ start-dev-backend:
 
 [working-directory: 'tutu-frontend']
 start-dev-frontend:
-    npm run dev
+    pnpm run dev
     @echo "✅ Frontend running!"
 
 install-local:
     cd tutu-backend && ./mvnw install
-    cd tutu-frontend && npm ci
-    cd tutu-frontend && npx playwright install
+    cd tutu-frontend && pnpm install
+    cd tutu-frontend && pnpm exec playwright install
 
 
 # CI
 [working-directory: 'tutu-frontend']
 _playwright-in-docker:
     #!/usr/bin/env bash
-    PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")
+    pnpm list --json @playwright/test > pw.json
+    PLAYWRIGHT_VERSION=$(node -e "console.log(require('./pw.json')[0].devDependencies['@playwright/test'].version)")
+    rm pw.json
     docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
     --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
     mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
-    npx playwright test --project=$PLAYWRIGHT_PROJECT
+    pnpm exec playwright test --project=$PLAYWRIGHT_PROJECT
 
 start-all:
     @echo "🚀 Starting tutu, hit CTRL+C few times to quit."

@@ -3,28 +3,32 @@ description: "Prepare next env"
 runs:
   using: "composite"
   steps:
-    - name: Set up npm
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+    - name: Set up node
       uses: actions/setup-node@v4
       with:
         node-version-file: "tutu-frontend/.nvmrc"
-        cache: "npm"
-        cache-dependency-path: tutu-frontend/package-lock.json
+        cache: "pnpm"
+        cache-dependency-path: tutu-frontend/pnpm-lock.yaml
         registry-url: "https://npm.pkg.github.com"
         scope: "@opetushallitus"
     - name: node_modules-cache
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/tutu-frontend/node_modules
-        key: ${{ runner.os }}-node_modules-${{ hashFiles('./tutu-frontend/package-lock.json') }}
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}
     - name: Cache Next.js
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/tutu-frontend/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/package-lock.json') }}-${{ hashFiles('./tutu-frontend/next.config.*', './tutu-frontend/src/**/*.ts', './tutu-frontend/src/**/*.tsx') }}
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}-${{ hashFiles('./tutu-frontend/next.config.*', './tutu-frontend/src/**/*.ts', './tutu-frontend/src/**/*.tsx') }}
         restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/package-lock.json') }}-
+          ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}-
     - name: Install dependencies
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
       working-directory: ./tutu-frontend
       shell: bash
-      run: npm ci
+      run: pnpm install

@@ -28,25 +28,25 @@ Alternatively, you can use aws cli v2:
 
 With aws sso login spell above, you must define `--profile <target-account-aws-profile>`
 
-Example: `npx cdk deploy -c environment=dev DataAnalyticsAuroraStack --profile example-dev`
+Example: `pnpm exec cdk deploy -c environment=dev DataAnalyticsAuroraStack --profile example-dev`
 
 ## cdk command examples for deploying the project stacks
 
-If you wish to run the CDK - commands from your local machine, install the global depencencies: `nodejs 20, npm, npx` and install the project dependencies with `npm install` in the `/infra` - directory.
+If you wish to run the CDK - commands from your local machine, enable corepack `corepack enable` and install the project dependencies with `pnpm install` in the `/infra` - directory.
 
-- `npx cdk deploy -c environment=<dev/qa/prod/utility> --all` deploy all stacks to the target environment
-- `npx cdk destroy -c environment=<dev/qa/prod/utility> --all` destroy all stacks to the target environment (note: you need to empty S3 - buckets etc. manually)
-- `npx npx cdk deploy -c environment=dev WebBackendAuroraStack` deploy only WebBackendAuroraStack (and any change in it's dependencies)
-- `npx npx cdk deploy -c environment=dev *AuroraStack` deploy all AuroraStacks (and any change in their dependencies)
-- `npx npx cdk destroy -c environment=dev WebBackendAuroraStack` destroy only WebBackendAuroraStack (and any change in it's dependencies)
+- `pnpm exec cdk deploy -c environment=<dev/qa/prod/utility> --all` deploy all stacks to the target environment
+- `pnpm exec cdk destroy -c environment=<dev/qa/prod/utility> --all` destroy all stacks to the target environment (note: you need to empty S3 - buckets etc. manually)
+- `pnpm exec cdk deploy -c environment=dev WebBackendAuroraStack` deploy only WebBackendAuroraStack (and any change in it's dependencies)
+- `pnpm exec cdk deploy -c environment=dev *AuroraStack` deploy all AuroraStacks (and any change in their dependencies)
+- `pnpm exec cdk destroy -c environment=dev WebBackendAuroraStack` destroy only WebBackendAuroraStack (and any change in it's dependencies)
 
 ## Generic cdk commands
 
-- `npx cdk diff` compare deployed stack with current state
-- `npx npm run build` compile typescript to js
-- `npx npm run watch` watch for changes and compile
-- `npx npm run test` perform the jest unit tests
-- `npx cdk synth` emits the synthesized CloudFormation template
+- `pnpm exec cdk diff` compare deployed stack with current state
+- `pnpm run build` compile typescript to js
+- `pnpm run watch` watch for changes and compile
+- `pnpm run test` perform the jest unit tests
+- `pnpm exec cdk synth` emits the synthesized CloudFormation template
 
 ## Environment variables
 
