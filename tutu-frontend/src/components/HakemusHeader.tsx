@@ -19,7 +19,8 @@ export const HakemusHeader = () => {
   const theme = useTheme();
   const { t } = useTranslations();
   const { options: esittelijaOptions } = useEsittelijat();
-  const kasittelyVaiheTranslation = useKasittelyvaiheTranslation(hakemus);
+  const { translation: kasittelyVaiheTranslation } =
+    useKasittelyvaiheTranslation(hakemus);
   return (
     hakemus && (
       <Stack

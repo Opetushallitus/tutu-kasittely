@@ -85,6 +85,8 @@ export default function HakemusRow({
       (option) => option.value === String(hakemus.hakemusKoskee),
     )?.label || ''
   }`;
+  const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
+    useKasittelyvaiheTranslation(hakemus);
 
   return (
     <TableRow data-testid={'hakemus-row'}>
@@ -133,7 +135,12 @@ export default function HakemusRow({
         </StyledTableCell>
       )}
       <StyledTableCell data-testid={'hakemus-row-kasittelyvaihe'}>
-        {useKasittelyvaiheTranslation(hakemus)}
+        <OphTypography
+          variant="body1"
+          {...(timeLimitExceeded && { sx: { color: ophColors.alias.error } })}
+        >
+          {kasittelyVaiheTranslation}
+        </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
         {t(hakemusKoskee)}{' '}

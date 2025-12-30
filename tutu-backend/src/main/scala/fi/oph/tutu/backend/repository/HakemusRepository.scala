@@ -48,9 +48,11 @@ class HakemusRepository extends BaseResultHandlers {
       HakemusListItem(
         null,
         null,
+        UUID.fromString(r.nextString()),
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
+        Option(r.nextString()).map(UUID.fromString),
         Option(r.nextString()),
         null,
         null,
@@ -155,7 +157,7 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
+              h.id, h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiakirja_id, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -230,9 +232,9 @@ class HakemusRepository extends BaseResultHandlers {
    * hakuehtojen mukaisten hakemusten Oid:t
    */
   def haeHakemusOidit(
-    userOids: Option[Seq[String]],
-    hakemusKoskee: Option[Seq[String]],
-    vaiheet: Option[Seq[String]],
+    userOids: Seq[String],
+    hakemusKoskee: Seq[Int],
+    vaiheet: Seq[String],
     apHakemus: Boolean
   ): Seq[HakemusOid] = {
     try {
@@ -240,11 +242,9 @@ class HakemusRepository extends BaseResultHandlers {
 
       val joinClauses = Seq.newBuilder[String]
 
-      userOids.foreach { oid =>
-        if (oid.nonEmpty) {
-          val oidList = oid.map(o => s"'$o'").mkString(", ")
-          joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN (${oidList})"
-        }
+      if (userOids.nonEmpty) {
+        val oidList = userOids.map(o => s"'$o'").mkString(", ")
+        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN (${oidList})"
       }
 
       if (apHakemus) {
@@ -258,18 +258,14 @@ class HakemusRepository extends BaseResultHandlers {
 
       val whereClauses = Seq.newBuilder[String]
 
-      hakemusKoskee.foreach { h =>
-        if (h.nonEmpty) {
-          val hakemusKoskeeList = h.map(hakemusKoskee => s"'${hakemusKoskee}'").mkString(", ")
-          whereClauses += s"h.hakemus_koskee IN (${hakemusKoskeeList})"
-        }
+      if (hakemusKoskee.nonEmpty) {
+        val hakemusKoskeeList = hakemusKoskee.map(hk => s"$hk").mkString(", ")
+        whereClauses += s"h.hakemus_koskee IN (${hakemusKoskeeList})"
       }
 
-      vaiheet.foreach { v =>
-        if (v.nonEmpty) {
-          val vaiheList = v.map(vaihe => s"'${vaihe}'").mkString(", ")
-          whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
-        }
+      if (vaiheet.nonEmpty) {
+        val vaiheList = vaiheet.map(vaihe => s"'${vaihe}'").mkString(", ")
+        whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
       }
 
       val whereClause = {
@@ -374,16 +370,29 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  private def paivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): DBIO[Int] =
+  private def paivitaVaiheJaHakemusKoskee(
+    hakemusOid: HakemusOid,
+    kasittelyVaihe: KasittelyVaihe,
+    hakemusKoskee: Int,
+    muokkaaja: String
+  ): DBIO[Int] =
     sqlu"""
         UPDATE hakemus
-        SET hakemus_koskee = ${hakemusKoskee}, muokkaaja = ${muokkaaja}
+        SET kasittely_vaihe = ${kasittelyVaihe.toString}, hakemus_koskee = ${hakemusKoskee}, muokkaaja = ${muokkaaja}
         WHERE hakemus_oid = ${hakemusOid.toString}
       """
 
-  def suoritaPaivitaHakemusKoskee(hakemusOid: HakemusOid, hakemusKoskee: Int, muokkaaja: String): Int = {
+  def suoritaPaivitaVaiheJaHakemusKoskee(
+    hakemusOid: HakemusOid,
+    kasittelyVaihe: KasittelyVaihe,
+    hakemusKoskee: Int,
+    muokkaaja: String
+  ): Int = {
     Try {
-      db.run(paivitaHakemusKoskee(hakemusOid, hakemusKoskee, muokkaaja), "PaivitaHakemusKoskee")
+      db.run(
+        paivitaVaiheJaHakemusKoskee(hakemusOid, kasittelyVaihe, hakemusKoskee, muokkaaja),
+        "PaivitaVaiheJaHakemusKoskee"
+      )
     } match {
       case Success(modified) => modified
       case Failure(e)        =>

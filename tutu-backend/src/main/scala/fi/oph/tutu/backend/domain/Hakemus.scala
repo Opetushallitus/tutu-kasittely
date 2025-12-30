@@ -90,6 +90,12 @@ case class DbHakemus(
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]
 )
 
+trait UpdatedFromAtaru {
+  def hakemusOid: String
+  def hakemusKoskee: Int
+  def kasittelyVaihe: KasittelyVaihe
+}
+
 case class Hakemus(
   hakemusOid: String,
   lomakeOid: String,
@@ -113,7 +119,7 @@ case class Hakemus(
   asiakirja: Option[Asiakirja] = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None
-)
+) extends UpdatedFromAtaru
 
 /**
  * Täysi hakemuksen päivityspyyntö.
