@@ -389,7 +389,10 @@ class HakemusRepository extends BaseResultHandlers {
     muokkaaja: String
   ): Int = {
     Try {
-      db.run(paivitaVaiheJaHakemusKoskee(hakemusOid, kasittelyVaihe, hakemusKoskee, muokkaaja), "PaivitaHakemusKoskee")
+      db.run(
+        paivitaVaiheJaHakemusKoskee(hakemusOid, kasittelyVaihe, hakemusKoskee, muokkaaja),
+        "PaivitaVaiheJaHakemusKoskee"
+      )
     } match {
       case Success(modified) => modified
       case Failure(e)        =>
