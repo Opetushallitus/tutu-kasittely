@@ -1082,7 +1082,7 @@
     "application-hakukohde-reviews": [
       {
         "requirement": "processing-state",
-        "state": "processing-fee-paid",
+        "state": "information-request",
         "hakukohde": "form"
       }
     ],

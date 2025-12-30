@@ -32,6 +32,23 @@ case class AtaruHakemus(
   `application-hakukohde-reviews`: Seq[HakukohdeReview],
   hakutoiveet: Seq[String],
   `information-request-timestamp`: Option[String]
+) {
+  def hakemuksenTila(): AtaruHakemuksenTila =
+    AtaruHakemuksenTila.fromString(
+      `application-hakukohde-reviews`
+        .collectFirst(review => review.state)
+        .getOrElse(AtaruHakemuksenTila.UNDEFINED)
+    )
+}
+
+case class AtaruHakemusListItem(
+  key: HakemusOid,
+  etunimet: String,
+  sukunimi: String,
+  submitted: String,
+  tila: AtaruHakemuksenTila,
+  hakemusKoskee: Int,
+  taydennyspyyntoLahetetty: Option[String]
 )
 
 case class Content(

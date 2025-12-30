@@ -9,23 +9,33 @@ export function useKasittelyvaiheTranslation(
 ) {
   const { t } = useTranslations();
   if (!hakemus) {
-    return '';
+    return { translation: '', timeLimitExceeded: false };
   }
 
   const kasittelyVaihe = hakemus.kasittelyVaihe;
 
   if (kasittelyVaihe === 'HakemustaTaydennetty') {
-    return t(`hakemus.kasittelyvaihe.hakemustataydennettytalloin`, {
-      date: dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER),
-    });
+    return {
+      translation: t(`hakemus.kasittelyvaihe.hakemustataydennettytalloin`, {
+        date: dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER),
+      }),
+      timeLimitExceeded: false,
+    };
   } else if (kasittelyVaihe === 'OdottaaTaydennysta') {
-    return t(`hakemus.kasittelyvaihe.odottaataydennystamennessa`, {
-      date: dateFns.format(
-        dateFns.addWeeks(Date.parse(hakemus.taydennyspyyntoLahetetty), 2),
-        DATE_PLACEHOLDER,
-      ),
-    });
+    const dateLimit = dateFns.addWeeks(
+      Date.parse(hakemus.taydennyspyyntoLahetetty),
+      2,
+    );
+    return {
+      translation: t(`hakemus.kasittelyvaihe.odottaataydennystamennessa`, {
+        date: dateFns.format(dateLimit, DATE_PLACEHOLDER),
+      }),
+      timeLimitExceeded: dateLimit < new Date(),
+    };
   } else {
-    return t(`hakemus.kasittelyvaihe.${kasittelyVaihe.toLowerCase()}`);
+    return {
+      translation: t(`hakemus.kasittelyvaihe.${kasittelyVaihe.toLowerCase()}`),
+      timeLimitExceeded: false,
+    };
   }
 }

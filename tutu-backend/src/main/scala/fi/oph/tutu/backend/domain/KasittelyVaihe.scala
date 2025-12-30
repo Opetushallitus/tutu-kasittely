@@ -1,5 +1,7 @@
 package fi.oph.tutu.backend.domain
 
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
+
 enum KasittelyVaihe:
   case AlkukasittelyKesken, OdottaaTaydennysta, OdottaaIMIVastausta,
     OdottaaVahvistusta, OdottaaLausuntoa, ValmisKasiteltavaksi,
@@ -22,3 +24,9 @@ object KasittelyVaihe:
 
   // Implicit ordering for sorting - uses the enum's ordinal (declaration order)
   implicit val ordering: Ordering[KasittelyVaihe] = Ordering.by(_.ordinal)
+
+  def fromAtaruHakemuksenTila(ataruHakemuksenTila: AtaruHakemuksenTila): Option[KasittelyVaihe] =
+    ataruHakemuksenTila match {
+      case TaydennysPyynto => Some(OdottaaTaydennysta)
+      case _               => None
+    }

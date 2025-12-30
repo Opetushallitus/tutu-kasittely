@@ -31,7 +31,8 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
   const {
     hakemusState: { editedData: hakemus },
   } = useHakemus();
-  const kasittelyVaiheTranslation = useKasittelyvaiheTranslation(hakemus);
+  const { translation: kasittelyVaiheTranslation } =
+    useKasittelyvaiheTranslation(hakemus);
 
   return (
     <KasittelyvaiheStack gap={theme.spacing(2)}>

@@ -6,6 +6,7 @@ import fi.oph.tutu.backend.utils.Constants.{
   DATE_TIME_FORMAT,
   DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW,
   FINLAND_TZ,
+  HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
@@ -193,7 +194,9 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
 
   def parseHakemusKoskee(hakemus: AtaruHakemus): Int = {
     val answers = hakemus.content.answers
-    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_KOSKEE, answers).get.toInt
+    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_KOSKEE, answers)
+      .map(_.toInt)
+      .getOrElse(HAKEMUS_KOSKEE_LOPULLINEN_PAATOS)
   }
 
   def parseTutkinto1MaakoodiUri(hakemus: AtaruHakemus): Option[String] = {

@@ -188,9 +188,9 @@ class IntegrationTestBase {
     pick(Seq(None, Some(value)))
   }
 
-  def initAtaruHakemusRequests(): Unit = {
+  def initAtaruHakemusRequests(hakemusFile: String = "ataruHakemus6667.json"): Unit = {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
-      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
+      .thenReturn(Right(loadJson(hakemusFile)))
     when(hakemuspalveluService.haeMuutoshistoria(any[HakemusOid])).thenReturn(
       Right(loadJson("muutosHistoria.json"))
     )
