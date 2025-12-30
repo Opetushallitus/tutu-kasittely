@@ -105,7 +105,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kuts
     },
   );
 
-  page.getByTestId('poista-paatos-button').last().click();
+  await page.getByTestId('poista-paatos-button').last().click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
   const [request] = await Promise.all([

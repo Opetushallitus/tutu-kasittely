@@ -20,7 +20,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   val noneHakemus: Option[Hakemus]           = None
   val noneAtaruHakemus: Option[AtaruHakemus] = None
   val nonePerustelu: Option[Perustelu]       = None
-  val noneMuistio: Option[Muistio]           = None
   val nonePaatos: Option[Paatos]             = None
 
   val emptyPerustelu: Option[Perustelu] = Some(
@@ -134,9 +133,11 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
             imiPyyntoNumero = Some("IMI-nro 3"),
             imiPyyntoLahetetty = Some(LocalDateTime.of(2020, 5, 15, 0, 0)),
             imiPyyntoVastattu = Some(LocalDateTime.of(2020, 6, 1, 0, 0))
-          )
+          ),
+          esittelijanHuomioita = Some("Muistioon merkittävää tekstiä asiakirjoista -- body")
         )
-      )
+      ),
+      esittelijanHuomioita = None
     )
   )
 
@@ -246,7 +247,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       uoRoSisalto = UoRoSisalto(
         opettajatEroMonialaisetOpinnotSisalto = Some(true),
         opettajatMuuEro = Some(true),
-        opettajatMuuEroSelite = Some("Tutkinto ei vaadi opetusnäytettä")
+        opettajatMuuEroSelite = Some("Tutkinto ei vaadi opetusnäytettä"),
+        muuTutkinto = Some("Muu tutkinto tai opintosuoritus -- body"),
+        koulutuksenSisalto = Some("Koulutuksen sisältö muistio -- body")
       ),
       apSisalto = APSisalto(
         lakiperusteToisessaJasenmaassaSaannelty = Some(true),
@@ -271,39 +274,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   )
 
   val somePaatos: Option[Paatos] = Some(Paatos())
-
-  val someKoulutuksenSisaltoMuistio: Option[Muistio] = Some(
-    Muistio(
-      id = UUID.randomUUID,
-      hakemus_id = UUID.randomUUID,
-      sisalto = "Koulutuksen sisältö muistio -- body",
-      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
-      luoja = "",
-      muokkaaja = ""
-    )
-  )
-
-  val someMuuTutkintoMuistio: Option[Muistio] = Some(
-    Muistio(
-      id = UUID.randomUUID,
-      hakemus_id = UUID.randomUUID,
-      sisalto = "Muu tutkinto tai opintosuoritus -- body",
-      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
-      luoja = "",
-      muokkaaja = ""
-    )
-  )
-
-  val someAsiakirjaMuistio: Option[Muistio] = Some(
-    Muistio(
-      id = UUID.randomUUID,
-      hakemus_id = UUID.randomUUID,
-      sisalto = "Muistioon merkittävää tekstiä asiakirjoista -- body",
-      luotu = LocalDateTime.of(2020, 5, 15, 0, 0),
-      luoja = "",
-      muokkaaja = ""
-    )
-  )
 
   @Mock
   var koodistoService: KoodistoService = _
@@ -383,10 +353,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       Seq(),
       noneAtaruHakemus,
       nonePerustelu,
-      nonePaatos,
-      noneMuistio,
-      noneMuistio,
-      noneMuistio
+      nonePaatos
     )
     assert(result.isEmpty)
   }
@@ -404,12 +371,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       tutkinnot,
       someAtaruHakemus,
       somePerustelu,
-      somePaatos,
-      someKoulutuksenSisaltoMuistio,
-      someMuuTutkintoMuistio,
-      someAsiakirjaMuistio
+      somePaatos
     )
-    assert(!result.isEmpty)
+    assert(result.nonEmpty)
   }
 
   @Test
@@ -533,7 +497,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeUoRoPerusteluProducesString(): Unit = {
-    val result = haeUoRoPerustelu(somePerustelu, someKoulutuksenSisaltoMuistio, someMuuTutkintoMuistio)
+    val result = haeUoRoPerustelu(somePerustelu)
 
     assert(result.get.contains("Ero monialaisten opintojen sisällössä"))
     assert(result.get.contains("Muu ero"))
@@ -594,7 +558,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeAsiakirjatProducesString(): Unit = {
-    val result = haeAsiakirjat(someHakemus, someAsiakirjaMuistio)
+    val result = haeAsiakirjat(someHakemus)
 
     assert(result.get.contains("Kaikki tarvittavat selvitykset saatu: Kyllä"))
     assert(result.get.contains("Esittelijän huomioita asiakirjoista"))

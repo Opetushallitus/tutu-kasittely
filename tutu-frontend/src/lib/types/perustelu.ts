@@ -26,4 +26,5 @@ export type Perustelu = {
   lausuntoPyyntojenLisatiedot?: string;
   lausunnonSisalto?: string;
   lausuntopyynnot: Lausuntopyynto[];
+  tarkempiaSelvityksia?: string;
 };

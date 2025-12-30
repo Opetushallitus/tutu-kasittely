@@ -9,7 +9,6 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { Hakemus } from '@/src/lib/types/hakemus';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { FullSpinner } from '@/src/components/FullSpinner';
 
 import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinnonMyontaja';
 import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
@@ -23,10 +22,19 @@ import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yle
 import { MuuPerustelu } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/MuuPerustelu';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error } = useHakemus();
+  const { hakemusState, isLoading, error, isSaving } = useHakemus();
+
+  const {
+    perustelu,
+    tallennaPerustelu,
+    isPerusteluLoading,
+    perusteluIsSaving,
+  } = usePerustelu(hakemusState.editedData?.hakemusOid);
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
 
   return (
     <PerusteluLayout
@@ -34,30 +42,35 @@ export default function YleisetPage() {
       title="hakemus.perustelu.yleiset.otsikko"
       t={t}
       hakemus={hakemusState.editedData}
-      isHakemusLoading={isLoading}
+      perusteluState={perusteluState}
+      isLoading={isLoading || isPerusteluLoading}
       hakemusError={error}
     >
-      <YleisetPerustelut hakemusState={hakemusState} />
+      <YleisetPerustelut
+        hakemusState={hakemusState}
+        perusteluState={perusteluState}
+        isSaving={perusteluIsSaving || isSaving}
+      />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
   hakemusState: EditableState<Hakemus>;
+  perusteluState: EditableState<Perustelu>;
+  isSaving: boolean;
 }
 
-const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
+const YleisetPerustelut = ({
+  hakemusState,
+  perusteluState,
+  isSaving,
+}: YleisetPerustelutProps) => {
   const { t } = useTranslations();
-
-  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
-    usePerustelu(hakemusState.editedData?.hakemusOid);
 
   const { tutkintoState, isSaving: isTutkintoSaving } = useTutkinnot(
     hakemusState.editedData?.hakemusOid,
   );
-
-  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
-
   // Combined change tracking and save handler
   const hasChanges =
     perusteluState.hasChanges ||
@@ -70,9 +83,7 @@ const YleisetPerustelut = ({ hakemusState }: YleisetPerustelutProps) => {
     hakemusState.save();
   };
 
-  return isPerusteluLoading || !perusteluState.editedData ? (
-    <FullSpinner></FullSpinner>
-  ) : (
+  return (
     <>
       <VirallinenTutkinnonMyontaja
         perustelu={perusteluState.editedData}

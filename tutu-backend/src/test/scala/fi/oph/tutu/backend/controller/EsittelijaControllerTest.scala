@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.controller
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.{KansalaisuusKoodi, OnrUser}
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{KayttooikeusService, OnrService}
+import fi.oph.tutu.backend.service.OnrService
 import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle

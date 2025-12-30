@@ -17,7 +17,6 @@ class PaatosService(
   tutkintoService: TutkintoService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
-  muistioService: MuistioService,
   hallintoOikeusService: HallintoOikeusService,
   ataruLomakeParser: AtaruLomakeParser
 ) extends TutuJsonFormats {

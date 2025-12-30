@@ -15,7 +15,6 @@ import { Add } from '@mui/icons-material';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { FullSpinner } from '@/src/components/FullSpinner';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { omit } from 'remeda';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
@@ -37,20 +36,25 @@ export default function Lausuntotiedot() {
     hakemusState: { editedData: hakemus },
     error,
   } = useHakemus();
-  const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
+  const {
+    perustelu,
+    isPerusteluLoading,
+    tallennaPerustelu,
+    perusteluIsSaving,
+  } = usePerustelu(hakemus?.hakemusOid);
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =
     useKoodistoOptions();
 
   // Use editableState hook for perustelu management
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
   const {
     editedData: editedPerustelu,
     hasChanges,
     updateLocal,
     updateImmediately,
     save,
-  } = useEditableState(perustelu, tallennaPerustelu);
-
+  } = perusteluState;
   // Separate state for indexed lausuntopyynnot (UI-specific)
   const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
     Lausuntopyynto[]
@@ -102,17 +106,14 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
-  if (isPerusteluLoading || !editedPerustelu) {
-    return <FullSpinner />;
-  }
-
   return (
     <PerusteluLayout
       showTabs={true}
       title="hakemus.perustelu.lausuntotiedot.lausuntopyynnot"
       t={t}
       hakemus={hakemus}
-      isHakemusLoading={isLoading || isPerusteluLoading || !perustelu}
+      perusteluState={perusteluState}
+      isLoading={isLoading || isPerusteluLoading}
       hakemusError={error}
     >
       <Stack
@@ -155,7 +156,7 @@ export default function Lausuntotiedot() {
         </OphButton>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.pyyntojenLisatiedot')}
-          value={editedPerustelu.lausuntoPyyntojenLisatiedot || ''}
+          value={editedPerustelu?.lausuntoPyyntojenLisatiedot || ''}
           onChange={(e) =>
             updateLocal({ lausuntoPyyntojenLisatiedot: e.target.value })
           }
@@ -169,7 +170,7 @@ export default function Lausuntotiedot() {
         </OphTypography>
         <OphInputFormField
           label={t('hakemus.perustelu.lausuntotiedot.sisalto')}
-          value={editedPerustelu.lausunnonSisalto || ''}
+          value={editedPerustelu?.lausunnonSisalto || ''}
           onChange={(e) => updateLocal({ lausunnonSisalto: e.target.value })}
           multiline
           minRows={4}
@@ -177,7 +178,7 @@ export default function Lausuntotiedot() {
         />
         <SaveRibbon
           onSave={save}
-          isSaving={isSaving || false}
+          isSaving={perusteluIsSaving || false}
           hasChanges={hasChanges}
         />
       </Stack>
