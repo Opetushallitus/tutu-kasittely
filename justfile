@@ -29,6 +29,15 @@ install-local:
     cd tutu-frontend && pnpm install
     cd tutu-frontend && pnpm exec playwright install
 
+start-all:
+    @echo "🚀 Starting tutu, hit CTRL+C few times to quit."
+    just start-db-and-wait
+    just start-dev-backend &
+    @until curl -s http://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu' || curl -s https://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
+        echo "🕐 Waiting for tutu-backend to get up..."; \
+        sleep 5; \
+    done; \
+    just start-dev-frontend
 
 # CI
 [working-directory: 'tutu-frontend']
@@ -40,15 +49,4 @@ _playwright-in-docker:
     docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
     --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
     mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
-    pnpm exec playwright test --project=$PLAYWRIGHT_PROJECT
-
-start-all:
-    @echo "🚀 Starting tutu, hit CTRL+C few times to quit."
-    just start-db-and-wait
-    just start-dev-backend &
-    @until curl -s http://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu' || curl -s https://localhost:8444/tutu-backend/api/healthcheck | grep -q 'Tutu'; do \
-        echo "🕐 Waiting for tutu-backend to get up..."; \
-        sleep 5; \
-    done; \
-    
-    just start-dev-frontend
+    npx playwright test --project=$PLAYWRIGHT_PROJECT
