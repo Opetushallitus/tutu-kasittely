@@ -26,6 +26,10 @@ jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/checkout@v4
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'dev' }}
