@@ -10,7 +10,7 @@
     "build": "STANDALONE=true next build",
     "start": "next start",
     "lint": "eslint --max-warnings=0",
-    "lint:fix": "pnpm run lint --fix",
+    "lint:fix": "pnpm lint --fix",
     "prettier": "prettier -u -c *",
     "prettier:fix": "prettier --write -u *",
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install",

@@ -21,7 +21,7 @@ start-dev-backend:
 
 [working-directory: 'tutu-frontend']
 start-dev-frontend:
-    pnpm run dev
+    pnpm dev
     @echo "✅ Frontend running!"
 
 install-local:

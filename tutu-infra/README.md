@@ -43,9 +43,7 @@ If you wish to run the CDK - commands from your local machine, enable corepack `
 ## Generic cdk commands
 
 - `pnpm exec cdk diff` compare deployed stack with current state
-- `pnpm run build` compile typescript to js
-- `pnpm run watch` watch for changes and compile
-- `pnpm run test` perform the jest unit tests
+- `pnpm build` compile typescript to js
 - `pnpm exec cdk synth` emits the synthesized CloudFormation template
 
 ## Environment variables
