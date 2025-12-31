@@ -302,7 +302,8 @@ class HakemusService(
           },
           lopullinenPaatosVastaavaEhdollinenAsiatunnus = dbHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
-            dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
+            dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
+          esittelijanHuomioita = dbHakemus.esittelijanHuomioita
         )
         paivitaTutkinnotAtaruHakemukselta(
           ataruHakemus,
@@ -534,7 +535,7 @@ class HakemusService(
         val finalAsiakirjaId = dbHakemus.asiakirjaId match {
           case Some(asiakirjaId) =>
             // Päivitä olemassa oleva asiakirja täysin
-            asiakirjaRepository.paivitaTaysiAsiakirjaTiedot(
+            asiakirjaRepository.paivitaAsiakirjaTiedot(
               asiakirjaId,
               hakemusUpdateRequest.asiakirja,
               userOid

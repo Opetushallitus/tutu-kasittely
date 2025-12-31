@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 import io.swagger.v3.oas.annotations.media.Schema
@@ -110,7 +109,17 @@ case class DbAsiakirja(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime]
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "Huomiot muistioon",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  huomiotMuistioon: Option[String],
+  @(Schema @field)(
+    example = "Esittelijän huomioita",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  esittelijanHuomioita: Option[String]
 )
 
 case class Asiakirja(
@@ -136,9 +145,10 @@ case class Asiakirja(
   ),
   pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty,
   asiakirjamallitTutkinnoista: Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = Map.empty,
-  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
+  huomiotMuistioon: Option[String] = None,
+  esittelijanHuomioita: Option[String] = None
 ) {
-
   def this(
     dbAsiakirja: DbAsiakirja,
     pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja],
@@ -166,7 +176,9 @@ case class Asiakirja(
     ),
     pyydettavatAsiakirjat = pyydettavatAsiakirjat,
     asiakirjamallitTutkinnoista = asiakirjamallitTutkinnoista,
-    viimeinenAsiakirjaHakijalta = dbAsiakirja.viimeinenAsiakirjaHakijalta
+    viimeinenAsiakirjaHakijalta = dbAsiakirja.viimeinenAsiakirjaHakijalta,
+    huomiotMuistioon = dbAsiakirja.huomiotMuistioon,
+    esittelijanHuomioita = dbAsiakirja.esittelijanHuomioita
   )
 }
 
@@ -204,6 +216,14 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
       val viimeinenAsiakirjaHakijalta = Option(node.get("viimeinenAsiakirjaHakijalta"))
         .filterNot(_.isNull)
         .map(date => LocalDateTime.parse(date.asText))
+
+      val huomiotMuistioon = Option(node.get("huomiotMuistioon"))
+        .filterNot(_.isNull)
+        .map(_.asText)
+
+      val esittelijanHuomioita = Option(node.get("esittelijanHuomioita"))
+        .filterNot(_.isNull)
+        .map(_.asText)
 
       // Parse Option[Boolean] field
       val apHakemus = Option(node.get("apHakemus")) match {
@@ -279,7 +299,9 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
         valmistumisenVahvistus = valmistumisenVahvistus,
         pyydettavatAsiakirjat = pyydettavatAsiakirjat,
         asiakirjamallitTutkinnoista = asiakirjamallitTutkinnoista,
-        viimeinenAsiakirjaHakijalta = viimeinenAsiakirjaHakijalta
+        viimeinenAsiakirjaHakijalta = viimeinenAsiakirjaHakijalta,
+        huomiotMuistioon = huomiotMuistioon,
+        esittelijanHuomioita = esittelijanHuomioita
       )
     }
   }

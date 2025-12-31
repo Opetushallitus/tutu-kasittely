@@ -56,4 +56,6 @@ export type UoRoSisalto = {
   sovellettuLuokanopettaja?: SovellettuTilanne;
   sovellettuMuuTilanne?: boolean;
   sovellettuMuuTilanneSelite?: string;
+  koulutuksenSisalto?: string;
+  muuTutkinto?: string;
 };

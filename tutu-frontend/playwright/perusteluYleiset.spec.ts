@@ -5,7 +5,6 @@ import {
   mockHakemus,
   mockPerustelu,
   mockTutkinnot,
-  mockMuistio,
 } from '@/playwright/mocks';
 import {
   clickSaveAndWaitForPUT,
@@ -42,7 +41,6 @@ test.beforeEach(async ({ page }) => {
   await mockHakemus(page);
   await mockPerustelu(page);
   await mockTutkinnot(page);
-  await mockMuistio(page);
 });
 
 test.describe('Yleiset perustelut', () => {

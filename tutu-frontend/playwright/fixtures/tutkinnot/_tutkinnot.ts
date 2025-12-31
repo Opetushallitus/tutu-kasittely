@@ -15,7 +15,6 @@ export const _tutkinnot: Tutkinto[] = [
     koulutusalaKoodiUri: undefined,
     paaaaineTaiErikoisala: undefined,
     todistusOtsikko: 'tutkintotodistus',
-    muuTutkintoMuistioId: undefined,
   },
   {
     id: '589038c5-00eb-465b-98bf-3b9ce62bb94d',
@@ -31,7 +30,6 @@ export const _tutkinnot: Tutkinto[] = [
     koulutusalaKoodiUri: undefined,
     paaaaineTaiErikoisala: undefined,
     todistusOtsikko: 'muutodistus',
-    muuTutkintoMuistioId: undefined,
   },
   {
     id: '07f503b7-7cf4-4437-b4c6-97512bd44450',
@@ -47,6 +45,6 @@ export const _tutkinnot: Tutkinto[] = [
     koulutusalaKoodiUri: undefined,
     paaaaineTaiErikoisala: undefined,
     todistusOtsikko: undefined,
-    muuTutkintoMuistioId: undefined,
+    muuTutkintoMuistio: 'HUOMIO!',
   },
 ];

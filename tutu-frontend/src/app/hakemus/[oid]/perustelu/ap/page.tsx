@@ -11,7 +11,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { FullSpinner } from '@/src/components/FullSpinner';
 import { APSisalto } from '@/src/lib/types/APSisalto';
 import * as R from 'remeda';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
@@ -26,17 +25,22 @@ export default function ApPage() {
     error,
   } = useHakemus();
   const hakija = hakemus?.hakija;
-  const { perustelu, isPerusteluLoading, tallennaPerustelu, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
+  const {
+    perustelu,
+    isPerusteluLoading,
+    tallennaPerustelu,
+    perusteluIsSaving,
+  } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
   const {
     editedData: editedPerustelu,
     hasChanges,
     updateLocal,
     save,
-  } = useEditableState(perustelu, tallennaPerustelu);
-
+  } = perusteluState;
   // Update local state only
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
     const currentAPSisalto = editedPerustelu?.apSisalto;
@@ -50,11 +54,7 @@ export default function ApPage() {
     updateLocal({ apSisalto: next });
   };
 
-  if (isLoading || isPerusteluLoading || !editedPerustelu) {
-    return <FullSpinner />;
-  }
-
-  const apSisalto = editedPerustelu.apSisalto;
+  const apSisalto = editedPerustelu?.apSisalto;
 
   return (
     <>
@@ -63,7 +63,8 @@ export default function ApPage() {
         title={t('hakemus.perustelu.ap.otsikko')}
         t={t}
         hakemus={hakemus}
-        isHakemusLoading={isLoading}
+        perusteluState={perusteluState}
+        isLoading={isLoading || isPerusteluLoading}
         hakemusError={error}
       >
         <OphFormFieldWrapper
@@ -344,7 +345,7 @@ export default function ApPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={save}
-        isSaving={isSaving || false}
+        isSaving={perusteluIsSaving || false}
         hasChanges={hasChanges}
       />
     </>

@@ -63,7 +63,7 @@ jobs:
         env:
           SKIP_OPENNEXT_BUILD: true
         run: |
-          npm ci
-          npm install -g aws-cdk
+          pnpm install --prefer-offline
+          pnpm install -g aws-cdk
           cdk cli-telemetry --disable
           cdk deploy TutuFrontendNextjsStack --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=frontendonly"

@@ -12,7 +12,7 @@ export type Tutkinto = {
   koulutusalaKoodiUri?: string;
   paaaaineTaiErikoisala?: string;
   todistusOtsikko?: string;
-  muuTutkintoMuistioId?: string;
+  muuTutkintoMuistio?: string;
   ohjeellinenLaajuus?: string;
   opinnaytetyo?: boolean | null;
   harjoittelu?: boolean | null;

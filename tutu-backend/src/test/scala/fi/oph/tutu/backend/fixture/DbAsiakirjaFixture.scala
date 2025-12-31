@@ -20,5 +20,7 @@ val dbAsiakirjaFixture = DbAsiakirja(
   valmistumisenVahvistusSaatu = None,
   valmistumisenVahvistusVastaus = None,
   valmistumisenVahvistusLisatieto = None,
-  viimeinenAsiakirjaHakijalta = None
+  viimeinenAsiakirjaHakijalta = None,
+  huomiotMuistioon = None,
+  esittelijanHuomioita = None
 )

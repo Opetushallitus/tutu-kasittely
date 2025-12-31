@@ -87,7 +87,12 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 255
   )
-  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
+  @(Schema @field)(
+    example = "Esittelijän huomioita",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  esittelijanHuomioita: Option[String]
 )
 
 trait UpdatedFromAtaru {
@@ -118,7 +123,8 @@ case class Hakemus(
   yhteistutkinto: Boolean = false,
   asiakirja: Option[Asiakirja] = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
-  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None,
+  esittelijanHuomioita: Option[String]
 ) extends UpdatedFromAtaru
 
 /**
@@ -137,7 +143,8 @@ case class HakemusUpdateRequest(
   yhteistutkinto: Boolean,
   asiakirja: Asiakirja,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
-  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String]
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
+  esittelijanHuomioita: Option[String]
 )
 
 case class AsiatunnusUpdateRequest(

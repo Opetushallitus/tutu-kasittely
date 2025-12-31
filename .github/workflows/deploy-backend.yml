@@ -26,6 +26,10 @@ jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/checkout@v4
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'dev' }}
@@ -46,7 +50,7 @@ jobs:
         env:
           SKIP_OPENNEXT_BUILD: true
         run: |
-          npm ci --prefer-offline
-          npm install -g aws-cdk
+          pnpm install --prefer-offline
+          pnpm install -g aws-cdk
           cdk cli-telemetry --disable
           cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}" -c "skipfrontend=true"

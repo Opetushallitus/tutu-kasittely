@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { mockAll, mockMuistio } from '@/playwright/mocks';
+import { mockAll } from '@/playwright/mocks';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 test.beforeEach(mockAll);
@@ -14,18 +14,6 @@ test('Yhteistutkinto-checkbox näkyy', async ({ page }) => {
 });
 
 test('Tutkinnot näkyvät oikein', async ({ page }) => {
-  await mockMuistio(page, {
-    id: 'mock_uuid_1',
-    hakemusOid: '1.2.246.562.10.00000000001',
-    sisalto: 'HUOMIO!',
-    luotu: '2025-08-21T12:52:00',
-    luoja: 'Hakemuspalvelu',
-    muokattu: '2025-08-21T12:52:00',
-    muokkaaja: 'Virkailija1',
-    sisainenHuomio: false,
-    hakemuksenOsa: 'tutkinnot_muu_tutkinto_huomio',
-  });
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
@@ -188,18 +176,6 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
 });
 
 test('Tutkinnon muistion esittäminen ja tallennus', async ({ page }) => {
-  await mockMuistio(page, {
-    id: 'mock_uuid_1',
-    hakemusOid: '1.2.246.562.10.00000000001',
-    sisalto: 'HUOMIO!',
-    luotu: '2025-08-21T12:52:00',
-    luoja: 'Hakemuspalvelu',
-    muokattu: '2025-08-21T12:52:00',
-    muokkaaja: 'Hakemuspalvelu',
-    sisainenHuomio: false,
-    hakemuksenOsa: 'tutkinnot_muu_tutkinto_huomio',
-  });
-
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
@@ -211,14 +187,26 @@ test('Tutkinnon muistion esittäminen ja tallennus', async ({ page }) => {
   await expect(muistio).toBeVisible();
   await expect(muistio).toContainText('HUOMIO!');
 
+  await muistio.fill('EIKU!');
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
   const [request] = await Promise.all([
     page.waitForRequest(
-      (req) => req.url().includes(`/muistio/`) && req.method() === 'PUT',
+      (r) =>
+        r.url().includes('/hakemus/1.2.246.562.10.00000000001/tutkinto') &&
+        r.method() === 'PUT',
     ),
-    muistio.fill('EIKU!'),
+    saveButton.click(),
   ]);
 
-  expect(request.postDataJSON().sisalto).toEqual('EIKU!');
+  const tutkinnot = request.postDataJSON() as Tutkinto[];
+  const muuTutkintoData = tutkinnot.find(
+    (t: Tutkinto) => t.jarjestys === 'MUU',
+  );
+
+  expect(muuTutkintoData?.muuTutkintoMuistio).toEqual('EIKU!');
 });
 
 test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {

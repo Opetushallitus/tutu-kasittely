@@ -27,19 +27,20 @@ class HakemusRepository extends BaseResultHandlers {
   implicit val getHakemusResult: GetResult[DbHakemus] =
     GetResult(r =>
       DbHakemus(
-        UUID.fromString(r.nextString()),
-        HakemusOid(r.nextString()),
-        r.nextInt(),
-        r.nextLong(),
-        Option(r.nextString()).map(UUID.fromString),
-        Option(UserOid(r.nextString())),
-        Option(r.nextString()).map(UUID.fromString),
-        Option(r.nextString()),
-        KasittelyVaihe.fromString(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextBoolean(),
-        Option(r.nextString()),
-        Option(r.nextString())
+        id = UUID.fromString(r.nextString()),
+        hakemusOid = HakemusOid(r.nextString()),
+        hakemusKoskee = r.nextInt(),
+        formId = r.nextLong(),
+        esittelijaId = r.nextStringOption().map(UUID.fromString),
+        esittelijaOid = Option(UserOid(r.nextString())),
+        asiakirjaId = r.nextStringOption().map(UUID.fromString),
+        asiatunnus = r.nextStringOption(),
+        kasittelyVaihe = KasittelyVaihe.fromString(r.nextString()),
+        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        yhteistutkinto = r.nextBoolean(),
+        lopullinenPaatosVastaavaEhdollinenAsiatunnus = r.nextStringOption(),
+        lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = r.nextStringOption(),
+        esittelijanHuomioita = r.nextStringOption()
       )
     )
 
@@ -133,7 +134,7 @@ class HakemusRepository extends BaseResultHandlers {
       )
     catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e}")
+        LOG.error(s"Hakemuksen tallennus epäonnistui: $e")
         throw new RuntimeException(
           s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
           e
@@ -151,9 +152,9 @@ class HakemusRepository extends BaseResultHandlers {
    * @return
    *   HakemusOid-listan mukaiset hakemukset tietoineen
    */
-  def haeHakemusLista(hakemusOidt: Seq[HakemusOid]): Seq[HakemusListItem] = {
+  def haeHakemusLista(hakemusOidit: Seq[HakemusOid]): Seq[HakemusListItem] = {
     try {
-      val oidt = hakemusOidt.map(oid => s"'${oid.s}'").mkString(", ")
+      val oidt = hakemusOidit.map(oid => s"'${oid.s}'").mkString(", ")
       db.run(
         sql"""
             SELECT
@@ -201,7 +202,8 @@ class HakemusRepository extends BaseResultHandlers {
               h.muokattu,
               h.yhteistutkinto,
               h.lopullinen_paatos_ehdollisen_asiatunnus,
-              h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri
+              h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri,
+              h.esittelijan_huomioita
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -222,7 +224,7 @@ class HakemusRepository extends BaseResultHandlers {
   /**
    * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
    *
-   * @param userOid
+   * @param userOids
    * esittelijän oid
    * @param hakemusKoskee
    * hakemuspalvelun hakemuksen syy
@@ -244,7 +246,7 @@ class HakemusRepository extends BaseResultHandlers {
 
       if (userOids.nonEmpty) {
         val oidList = userOids.map(o => s"'$o'").mkString(", ")
-        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN (${oidList})"
+        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN ($oidList)"
       }
 
       if (apHakemus) {
@@ -264,8 +266,8 @@ class HakemusRepository extends BaseResultHandlers {
       }
 
       if (vaiheet.nonEmpty) {
-        val vaiheList = vaiheet.map(vaihe => s"'${vaihe}'").mkString(", ")
-        whereClauses += s"h.kasittely_vaihe IN (${vaiheList})"
+        val vaiheList = vaiheet.map(vaihe => s"'$vaihe'").mkString(", ")
+        whereClauses += s"h.kasittely_vaihe IN ($vaiheList)"
       }
 
       val whereClause = {
@@ -321,6 +323,7 @@ class HakemusRepository extends BaseResultHandlers {
       hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
     val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
       hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
+    val esittelijanHuomioita = hakemus.esittelijanHuomioita
 
     try
       db.run(
@@ -335,7 +338,8 @@ class HakemusRepository extends BaseResultHandlers {
           yhteistutkinto = $yhteistutkinto,
           kasittely_vaihe = $kasittelyVaihe,
           lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
-          lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull
+          lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull,
+          esittelijan_huomioita = $esittelijanHuomioita
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
@@ -344,7 +348,7 @@ class HakemusRepository extends BaseResultHandlers {
       )
     catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen täysi päivitys epäonnistui: ${e}")
+        LOG.error(s"Hakemuksen täysi päivitys epäonnistui: $e")
         throw new RuntimeException(
           s"Hakemuksen täysi päivitys epäonnistui: ${e.getMessage}",
           e
@@ -355,7 +359,7 @@ class HakemusRepository extends BaseResultHandlers {
   private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] =
     sqlu"""
       UPDATE hakemus
-      SET asiatunnus = ${asiatunnus}, muokkaaja = ${muokkaaja}
+      SET asiatunnus = $asiatunnus, muokkaaja = $muokkaaja
       WHERE hakemus_oid = ${hakemusOid.toString}
     """
 
@@ -378,7 +382,7 @@ class HakemusRepository extends BaseResultHandlers {
   ): DBIO[Int] =
     sqlu"""
         UPDATE hakemus
-        SET kasittely_vaihe = ${kasittelyVaihe.toString}, hakemus_koskee = ${hakemusKoskee}, muokkaaja = ${muokkaaja}
+        SET kasittely_vaihe = ${kasittelyVaihe.toString}, hakemus_koskee = $hakemusKoskee, muokkaaja = $muokkaaja
         WHERE hakemus_oid = ${hakemusOid.toString}
       """
 

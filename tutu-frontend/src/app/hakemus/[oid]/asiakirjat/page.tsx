@@ -273,15 +273,18 @@ const AsiakirjaPagePure = ({
         <Muistio
           label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
           helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
-          hakemus={hakemus}
-          sisainen={true}
-          hakemuksenOsa={'asiakirjat'}
+          sisalto={asiakirja.esittelijanHuomioita}
+          updateMuistio={(value: string) => {
+            asiakirjaTietoUpdateAction({ esittelijanHuomioita: value });
+          }}
+          testId={'muistio-asiakirjat-sisainen'}
         />
         <Muistio
           label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
-          hakemus={hakemus}
-          sisainen={false}
-          hakemuksenOsa={'asiakirjat'}
+          sisalto={asiakirja.huomiotMuistioon}
+          updateMuistio={(value: string) => {
+            asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
+          }}
         />
 
         {hakemus.hakemusKoskee === 1 && (

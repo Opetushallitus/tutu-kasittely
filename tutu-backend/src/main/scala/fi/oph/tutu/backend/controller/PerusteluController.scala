@@ -64,23 +64,6 @@ class PerusteluController(
     }
   }
 
-  @GetMapping(
-    path = Array("perustelu/{hakemusOid}/perustelumuistio"),
-    produces = Array(MediaType.APPLICATION_JSON_VALUE)
-  )
-  def haePerusteluMuistio(@PathVariable hakemusOid: String): ResponseEntity[Any] = {
-    Try {
-      perusteluService.haePerusteluMuistio(HakemusOid(hakemusOid))
-    } match {
-      case Success(perusteluMuistio) =>
-        val response = mapper.writeValueAsString(perusteluMuistio)
-        ResponseEntity.status(HttpStatus.OK).body(response)
-      case Failure(exception) =>
-        LOG.error("Perustelumuistion haku epäonnistui", exception.getMessage)
-        errorMessageMapper.mapErrorMessage(exception)
-    }
-  }
-
   @PutMapping(
     path = Array("perustelu/{hakemusOid}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),

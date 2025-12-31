@@ -72,9 +72,10 @@ export default function PerustietoPage() {
       )}
       <Muistio
         label={t('hakemus.perustiedot.esittelijanHuomioita')}
-        hakemus={hakemus}
-        sisainen={true}
-        hakemuksenOsa={'asiakirjat'}
+        sisalto={hakemus.esittelijanHuomioita}
+        updateMuistio={(value) => {
+          updateLocal({ esittelijanHuomioita: value });
+        }}
       />
       <Stack gap={theme.spacing(3)} width={'60%'}>
         <Henkilotiedot

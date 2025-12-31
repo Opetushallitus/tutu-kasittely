@@ -20,7 +20,6 @@ import {
 } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { FullSpinner } from '@/src/components/FullSpinner';
 
 export default function UoroPage() {
   const { t } = useTranslations();
@@ -29,8 +28,12 @@ export default function UoroPage() {
     isLoading,
     error,
   } = useHakemus();
-  const { perustelu, tallennaPerustelu, isPerusteluLoading, isSaving } =
-    usePerustelu(hakemus?.hakemusOid);
+  const {
+    perustelu,
+    tallennaPerustelu,
+    isPerusteluLoading,
+    perusteluIsSaving,
+  } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editable state hook for automatic change tracking and save handling
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
@@ -61,11 +64,7 @@ export default function UoroPage() {
     });
   };
 
-  if (isPerusteluLoading || !perusteluState.editedData) {
-    return <FullSpinner />;
-  }
-
-  const uoRoSisalto = perusteluState.editedData.uoRoSisalto;
+  const uoRoSisalto = perusteluState.editedData?.uoRoSisalto;
   return (
     <>
       <PerusteluLayout
@@ -73,16 +72,18 @@ export default function UoroPage() {
         title="hakemus.perustelu.uoro.otsikko"
         t={t}
         hakemus={hakemus}
-        isHakemusLoading={isLoading}
+        perusteluState={perusteluState}
+        isLoading={isLoading || isPerusteluLoading}
         hakemusError={error}
       >
         <Stack direction="column" spacing={2}>
           <Muistio
             label={t('hakemus.perustelu.uoro.koulutuksenSisalto')}
             helperText={t('hakemus.perustelu.uoro.koulutuksenSisaltoSelite')}
-            hakemus={hakemus}
-            sisainen={false}
-            hakemuksenOsa={'perustelut-ro-uo'}
+            sisalto={uoRoSisalto?.koulutuksenSisalto}
+            updateMuistio={(value) => {
+              updatePerusteluUoRo('koulutuksenSisalto', value);
+            }}
           />
           <OphTypography variant={'h3'}>
             {t('hakemus.perustelu.uoro.erotKoulutuksenSisallossa')}
@@ -166,9 +167,10 @@ export default function UoroPage() {
           )}
           <Muistio
             label={t('hakemus.perustelu.uoro.muuTutkinto')}
-            hakemus={hakemus}
-            sisainen={false}
-            hakemuksenOsa={'perustelut-uo-ro-muu-tutkinto'}
+            sisalto={uoRoSisalto?.muuTutkinto}
+            updateMuistio={(value) => {
+              updatePerusteluUoRo('muuTutkinto', value);
+            }}
           />
           <OphTypography variant={'h4'}>
             {t('hakemus.perustelu.uoro.sovellettuTilanne.otsikko')}
@@ -182,7 +184,7 @@ export default function UoroPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={perusteluState.save}
-        isSaving={isSaving || false}
+        isSaving={perusteluIsSaving || false}
         hasChanges={perusteluState.hasChanges}
       />
     </>

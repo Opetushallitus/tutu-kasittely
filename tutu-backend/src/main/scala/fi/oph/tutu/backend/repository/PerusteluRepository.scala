@@ -45,6 +45,7 @@ class PerusteluRepository extends BaseResultHandlers {
         apSisalto = org.json4s.jackson.Serialization.read[APSisalto](r.nextString()),
         lausuntoPyyntojenLisatiedot = r.nextStringOption(),
         lausunnonSisalto = r.nextStringOption(),
+        tarkempiaSelvityksia = r.nextStringOption(),
         luotu = Option(r.nextTimestamp().toLocalDateTime),
         luoja = r.nextStringOption(),
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
@@ -72,7 +73,9 @@ class PerusteluRepository extends BaseResultHandlers {
    * @param hakemusId
    *   hakemuksen uuid
    * @param perustelu
+   *   Uusi perustelu
    * @param luoja
+   *   Perustelun luoja
    * @return
    *   DBIO action joka palauttaa tallennetun perustelun
    */
@@ -103,6 +106,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ap_sisalto,
         lausunto_pyynto_lisatiedot,
         lausunto_sisalto,
+        tarkempia_selvityksia,
         luoja
       )
       VALUES (
@@ -123,6 +127,7 @@ class PerusteluRepository extends BaseResultHandlers {
         $APJson::jsonb,
         ${perustelu.lausuntoPyyntojenLisatiedot},
         ${perustelu.lausunnonSisalto},
+        ${perustelu.tarkempiaSelvityksia},
         $luoja
       )
       ON CONFLICT (hakemus_id)
@@ -143,6 +148,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ap_sisalto = $APJson::jsonb,
         lausunto_pyynto_lisatiedot = ${perustelu.lausuntoPyyntojenLisatiedot},
         lausunto_sisalto = ${perustelu.lausunnonSisalto},
+        tarkempia_selvityksia = ${perustelu.tarkempiaSelvityksia},
         muokkaaja = $luoja
       RETURNING
         id,
@@ -163,6 +169,7 @@ class PerusteluRepository extends BaseResultHandlers {
         ap_sisalto,
         lausunto_pyynto_lisatiedot,
         lausunto_sisalto,
+        tarkempia_selvityksia,
         luotu,
         luoja,
         muokattu,
@@ -176,7 +183,9 @@ class PerusteluRepository extends BaseResultHandlers {
    * @param hakemusId
    *   hakemuksen uuid
    * @param perustelu
+   *   uusi perustelu
    * @param luoja
+   *   perustelun luoja
    * @return
    *   tallennetun perustelun id
    */
@@ -192,7 +201,7 @@ class PerusteluRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Perustelun tallennus epäonnistui: ${e}")
+        LOG.error(s"Perustelun tallennus epäonnistui: $e")
         throw new RuntimeException(
           s"Perustelun tallennus epäonnistui: ${e.getMessage}",
           e
@@ -233,6 +242,7 @@ class PerusteluRepository extends BaseResultHandlers {
               p.ap_sisalto,
               p.lausunto_pyynto_lisatiedot,
               p.lausunto_sisalto,
+              p.tarkempia_selvityksia,
               p.luotu,
               p.luoja,
               p.muokattu,
@@ -246,9 +256,9 @@ class PerusteluRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Perustelun haku epäonnistui (hakemusId: ${hakemusId}): ${e}")
+        LOG.error(s"Perustelun haku epäonnistui (hakemusId: $hakemusId): $e")
         throw new RuntimeException(
-          s"Perustelun haku epäonnistui (hakemusId: ${hakemusId}): ${e.getMessage}",
+          s"Perustelun haku epäonnistui (hakemusId: $hakemusId): ${e.getMessage}",
           e
         )
     }
@@ -316,7 +326,7 @@ class PerusteluRepository extends BaseResultHandlers {
     }
   }
 
-  def lisaaLausuntopyynto(
+  private def lisaaLausuntopyynto(
     perusteluId: UUID,
     lausuntopyynto: Lausuntopyynto,
     luoja: String

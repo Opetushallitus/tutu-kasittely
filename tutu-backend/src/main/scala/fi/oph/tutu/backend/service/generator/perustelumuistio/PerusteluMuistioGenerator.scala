@@ -284,12 +284,10 @@ def haeMuuPerustelu(perusteluMaybe: Option[Perustelu]): Option[String] = {
 }
 
 def haeUoRoPerustelu(
-  perusteluMaybe: Option[Perustelu],
-  koulutuksenSisaltoMuistioMaybe: Option[Muistio],
-  muuTutkintoMuistioMaybe: Option[Muistio]
+  perusteluMaybe: Option[Perustelu]
 ): Option[String] = {
-  val koulutuksenSisalto = koulutuksenSisaltoMuistioMaybe
-    .map(_.sisalto)
+  val koulutuksenSisalto = perusteluMaybe
+    .flatMap(_.uoRoSisalto.koulutuksenSisalto)
     .map(sisalto => s"Koulutuksen sisältö:\n$sisalto")
 
   val erotKoulutuksenSisallossa = perusteluMaybe
@@ -382,8 +380,8 @@ def haeUoRoPerustelu(
       ).flatten.mkString("\n")
     })
 
-  val muuTutkintoTaiOpintosuoritus = muuTutkintoMuistioMaybe
-    .map(_.sisalto)
+  val muuTutkintoTaiOpintosuoritus = perusteluMaybe
+    .flatMap(_.uoRoSisalto.muuTutkinto)
     .map(sisalto => s"Muu tutkinto tai opintosuoritus:\n$sisalto")
 
   val result = Seq(
@@ -522,15 +520,15 @@ def haeLausuntopyynnot(
 }
 
 def haeAsiakirjat(
-  hakemusMaybe: Option[Hakemus],
-  asiakirjaMuistioMaybe: Option[Muistio]
+  hakemusMaybe: Option[Hakemus]
 ): Option[String] = {
   val imipyyntoMaybe: Option[String]                = haeImiPyyntoTieto(hakemusMaybe)
   val valmistuminenVahvistettuMaybe: Option[String] = haeValmistuminenVahvistettu(hakemusMaybe)
   val selvityksetSaatuMaybe: Option[String]         = haeSelvityksetSaatu(hakemusMaybe)
 
-  val esittelijanHuomiotMaybe: Option[String] = asiakirjaMuistioMaybe
-    .map(_.sisalto)
+  val esittelijanHuomiotMaybe: Option[String] = hakemusMaybe
+    .flatMap(_.asiakirja)
+    .flatMap(_.esittelijanHuomioita)
     .map(sisalto => s"Esittelijän huomioita asiakirjoista:\n$sisalto")
 
   val result = Seq(
@@ -649,7 +647,7 @@ def haeKielteisenPaatoksenPerustelut(perustelut: Option[KielteisenPaatoksenPerus
     muuPerustelu
   ).flatten
 
-  if (result.size > 0) {
+  if (result.nonEmpty) {
     val resultWithTitle = "Kielteisen päätöksen perustelut:" +: result
     Some(resultWithTitle.mkString("\n"))
   } else {
@@ -709,7 +707,7 @@ def haePeruutusTaiRaukeaminen(paatos: Paatos): Option[String] = {
     muuSyy
   ).flatten
 
-  if (result.size > 0) {
+  if (result.nonEmpty) {
     Some(("Peruutuksen tai raukeamisen syyt:" +: result).mkString("\n"))
   } else {
     None
@@ -720,8 +718,8 @@ def haePeruutusTaiRaukeaminen(paatos: Paatos): Option[String] = {
 /* ------- */
 
 def haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot: PaatosTieto): Option[String] = {
-  val resultList: Seq[String] = paatosTiedot.rinnastettavatTutkinnotTaiOpinnot
-    .map((tutkintoTaiOpinto: TutkintoTaiOpinto) => {
+  val resultList: Seq[String] =
+    paatosTiedot.rinnastettavatTutkinnotTaiOpinnot.flatMap((tutkintoTaiOpinto: TutkintoTaiOpinto) => {
       val nimi: Option[String] = tutkintoTaiOpinto.tutkintoTaiOpinto
         .map(_.split("_"))
         .map(_.last)
@@ -744,9 +742,8 @@ def haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot: PaatosTieto): Option[Stri
         None
       }
     })
-    .flatten
 
-  if (resultList.size > 0) {
+  if (resultList.nonEmpty) {
     val resultWithTitle = "Rinnastettavat tutkinnot tai opinnot:" +: resultList
     Some(resultWithTitle.mkString("\n"))
   } else {
@@ -755,33 +752,31 @@ def haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot: PaatosTieto): Option[Stri
 }
 
 def haeKelpoisuudet(paatosTiedot: PaatosTieto): Option[String] = {
-  val resultList: Seq[String] = paatosTiedot.kelpoisuudet
-    .map((kelpoisuus: Kelpoisuus) => {
-      val nimi: Option[String] = kelpoisuus.kelpoisuus
-        .map(_.split("_"))
-        .map(_.last)
+  val resultList: Seq[String] = paatosTiedot.kelpoisuudet.flatMap((kelpoisuus: Kelpoisuus) => {
+    val nimi: Option[String] = kelpoisuus.kelpoisuus
+      .map(_.split("_"))
+      .map(_.last)
 
-      val kielteisenPaatoksenPerustelut: Option[String] =
-        haeKielteisenPaatoksenPerustelut(kelpoisuus.kielteisenPaatoksenPerustelut)
+    val kielteisenPaatoksenPerustelut: Option[String] =
+      haeKielteisenPaatoksenPerustelut(kelpoisuus.kielteisenPaatoksenPerustelut)
 
-      val myonteisenPaatoksenLisavaatimukset: Option[String] =
-        haeKelpoisuudenLisavaatimukset(kelpoisuus.myonteisenPaatoksenLisavaatimukset)
+    val myonteisenPaatoksenLisavaatimukset: Option[String] =
+      haeKelpoisuudenLisavaatimukset(kelpoisuus.myonteisenPaatoksenLisavaatimukset)
 
-      val result = Seq(
-        nimi,
-        kielteisenPaatoksenPerustelut,
-        myonteisenPaatoksenLisavaatimukset
-      ).flatten.mkString("\n")
+    val result = Seq(
+      nimi,
+      kielteisenPaatoksenPerustelut,
+      myonteisenPaatoksenLisavaatimukset
+    ).flatten.mkString("\n")
 
-      if (result != "") {
-        Some(result)
-      } else {
-        None
-      }
-    })
-    .flatten
+    if (result != "") {
+      Some(result)
+    } else {
+      None
+    }
+  })
 
-  if (resultList.size > 0) {
+  if (resultList.nonEmpty) {
     val resultWithTitle = "Kelpoisuudet:" +: resultList
     Some(resultWithTitle.mkString("\n"))
   } else {
@@ -796,27 +791,26 @@ def haeTutkinnonTaiOpinnonLisavaatimukset(
 ): Option[String] = {
   lisavaatimuksetMaybe match {
     case None                  => None
-    case Some(lisavaatimukset) => {
+    case Some(lisavaatimukset) =>
       val result = Seq(
         if (lisavaatimukset.taydentavatOpinnot) Some("- Täydentävät opinnot") else None,
         if (lisavaatimukset.kelpoisuuskoe) Some("- Kelpoisuuskoe") else None,
         if (lisavaatimukset.sopeutumisaika) Some("- Sopeutumisaika") else None
       ).flatten
 
-      if (result.size > 0) {
+      if (result.nonEmpty) {
         val resultWithTitle = "Lisävaatimukset:" +: result
         Some(resultWithTitle.mkString("\n"))
       } else {
         None
       }
-    }
   }
 }
 
 def haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe: Option[KelpoisuudenLisavaatimukset]): Option[String] = {
   lisavaatimuksetMaybe match {
     case None                  => None
-    case Some(lisavaatimukset) => {
+    case Some(lisavaatimukset) =>
       val olennaisiaEroja = lisavaatimukset.olennaisiaEroja.map(_ => "- Olennaisia eroja")
 
       val erotKoulutuksessa = lisavaatimukset.erotKoulutuksessa
@@ -830,7 +824,7 @@ def haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe: Option[KelpoisuudenLisa
 
           val kaikkiErot = (nimetytErot :+ muuEro).flatten
 
-          if (kaikkiErot.size > 0) {
+          if (kaikkiErot.nonEmpty) {
             Some(
               ("Erot koulutuksessa:" +: kaikkiErot).mkString("\n")
             )
@@ -895,13 +889,12 @@ def haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe: Option[KelpoisuudenLisa
         ammattikokemusJaElinikainenOppiminen
       ).flatten
 
-      if (result.size > 0) {
+      if (result.nonEmpty) {
         val resultWithTitle = Some("Lisävaatimukset:") +: result
         Some(resultWithTitle.mkString("\n"))
       } else {
         None
       }
-    }
   }
 }
 
@@ -924,7 +917,7 @@ def haeKorvaavaToimenpide(korvaavaToimenpide: KorvaavaToimenpide): Option[String
     yhdistettySopeutumisaika
   ).flatten
 
-  if (resultList.size > 0) {
+  if (resultList.nonEmpty) {
     Some(
       ("Korvaava toimenpide:" +: resultList).mkString("\n")
     )
@@ -942,7 +935,7 @@ def haeKelpoisuuskoe(valittu: Boolean, sisaltoMaybe: Option[KelpoisuuskoeSisalto
         if (sisalto.aihealue3) Some("  - Aihealue 3") else None
       ).flatten
 
-      if (result.size > 0) {
+      if (result.nonEmpty) {
         Some(
           ("- Kelpoisuuskoe:" +: result).mkString("\n")
         )
@@ -957,7 +950,7 @@ def haeKelpoisuuskoe(valittu: Boolean, sisaltoMaybe: Option[KelpoisuuskoeSisalto
 
 def haeSopeutumisaika(valittu: Boolean, kestoMaybe: Option[String]): Option[String] = {
   if (valittu) {
-    kestoMaybe.map(kesto => s"- Sopeutumisajan kesto: ${kesto}")
+    kestoMaybe.map(kesto => s"- Sopeutumisajan kesto: $kesto")
   } else {
     None
   }
@@ -969,7 +962,7 @@ def haeSopeutumisaika(valittu: Boolean, kestoMaybe: Option[String]): Option[Stri
 def haePaatostiedot(paatosMaybe: Option[Paatos], tutkinnot: Seq[Tutkinto]): Option[String] = {
   paatosMaybe match {
     case None         => None
-    case Some(paatos) => {
+    case Some(paatos) =>
       val seutArviointiTehty: Option[String] = haeSeutArviointiTehty(paatos)
       val ratkaisutyyppi: Option[String]     = haeRatkaisutyyppi(paatos)
 
@@ -1018,7 +1011,6 @@ def haePaatostiedot(paatosMaybe: Option[Paatos], tutkinnot: Seq[Tutkinto]): Opti
       } else {
         None
       }
-    }
   }
 }
 
@@ -1029,10 +1021,7 @@ def generate(
   tutkinnot: Seq[Tutkinto],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
-  paatosMaybe: Option[Paatos],
-  koulutuksenSisaltoMuistioMaybe: Option[Muistio],
-  muuTutkintoMuistioMaybe: Option[Muistio],
-  asiakirjaMuistioMaybe: Option[Muistio]
+  paatosMaybe: Option[Paatos]
 ): String = {
   val result: Seq[String] = Seq[Option[String]](
     haeHakijanNimi(hakemusMaybe),
@@ -1043,13 +1032,13 @@ def generate(
     haeJatkoOpintoKelpoisuus(perusteluMaybe),
     haeAikaisemmatPaatokset(perusteluMaybe),
     haeMuuPerustelu(perusteluMaybe),
-    haeUoRoPerustelu(perusteluMaybe, koulutuksenSisaltoMuistioMaybe, muuTutkintoMuistioMaybe),
+    haeUoRoPerustelu(perusteluMaybe),
     haeApPerustelu(perusteluMaybe),
     haeLausuntopyynnot(koodistoService, perusteluMaybe),
     haeMuuTutkinto(tutkinnot),
     haeYhteistutkinto(hakemusMaybe),
     haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, hakemusMaybe, tutkinnot),
-    haeAsiakirjat(hakemusMaybe, asiakirjaMuistioMaybe),
+    haeAsiakirjat(hakemusMaybe),
     haePaatostiedot(paatosMaybe, tutkinnot)
   ).flatten
 

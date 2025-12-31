@@ -16,5 +16,6 @@ val dbHakemusFixture = DbHakemus(
   yhteistutkinto = false,
   asiakirjaId = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus = None,
-  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = None
+  lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = None,
+  esittelijanHuomioita = None
 )
