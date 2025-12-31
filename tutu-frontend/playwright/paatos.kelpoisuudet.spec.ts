@@ -199,7 +199,7 @@ const makeInitialKelpoisuusSelections = async (page: Page) => {
 test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähettävät PUT -kutsut backendille', async ({
   page,
 }) => {
-  makeInitialKelpoisuusSelections(page);
+  await makeInitialKelpoisuusSelections(page);
   await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
 
   const lisaaKelpoisuusButton = page.getByTestId('lisaa-kelpoisuus-button');
@@ -215,7 +215,7 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
     ],
   });
 
-  page.getByTestId('poista-kelpoisuus-button-1').click();
+  await page.getByTestId('poista-kelpoisuus-button-1').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
   const [request] = await Promise.all([
@@ -267,7 +267,7 @@ const backendRequestMyonteinenPaatos = (
 test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PUT -kutsut lähetetään backendille', async ({
   page,
 }) => {
-  makeInitialKelpoisuusSelections(page);
+  await makeInitialKelpoisuusSelections(page);
   const myonteinenPaatosRadiogroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
   );
@@ -574,7 +574,7 @@ const backendRequestKielteinenPaatos = (
 test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PUT -kutsut lähetetään backendille', async ({
   page,
 }) => {
-  makeInitialKelpoisuusSelections(page);
+  await makeInitialKelpoisuusSelections(page);
   const myonteinenPaatosRadiogroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
   );
