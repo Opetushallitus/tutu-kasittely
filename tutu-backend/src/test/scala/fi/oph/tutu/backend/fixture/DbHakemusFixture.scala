@@ -13,6 +13,7 @@ val dbHakemusFixture = DbHakemus(
   asiatunnus = Some("OPH-123-2025"),
   kasittelyVaihe = AlkukasittelyKesken,
   muokattu = None,
+  muokkaaja = None,
   yhteistutkinto = false,
   asiakirjaId = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus = None,

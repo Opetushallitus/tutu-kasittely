@@ -267,6 +267,17 @@ class HakemusService(
         )
         val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
         val tutuHakemus   = Hakemus(
+        val dbTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
+        val henkilo     = dbHakemus.muokkaaja match {
+          case None            => (null, null)
+          case Some(muokkaaja) =>
+            onrService.haeHenkilo(dbHakemus.muokkaaja.get) match {
+              case Left(error)    => (null, null)
+              case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
+            }
+        }
+
+        val tutuHakemus = Hakemus(
           hakemusOid = dbHakemus.hakemusOid.toString,
           lomakeOid = lomake.key,
           lomakeId = lomake.id,
@@ -289,6 +300,8 @@ class HakemusService(
           kasittelyVaihe =
             dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
           muokattu = dbHakemus.muokattu,
+          muokkaajaKutsumanimi = henkilo(0),
+          muokkaajaSukunimi = henkilo(1),
           muutosHistoria = Seq(),
           taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
             case None            => None
