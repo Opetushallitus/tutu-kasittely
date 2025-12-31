@@ -71,7 +71,8 @@ jobs:
       - name: Build and upload zip to S3
         working-directory: ./tutu-frontend
         run: |
-          pnpm install --shamefully-hoist
+          pnpm config set nodeLinker=hoisted
+          pnpm install
           pnpm build
           zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
           aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://tutu-frontend-builds/ga-${{github.run_number}}.zip
