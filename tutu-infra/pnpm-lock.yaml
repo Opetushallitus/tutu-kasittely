@@ -12,7 +12,7 @@ importers:
         specifier: ^2.202.0
         version: 2.233.0(constructs@10.4.4)
       cdk-nextjs-standalone:
-        specifier: ^4.3.0
+        specifier: ^4.3.3
         version: 4.3.3(aws-cdk-lib@2.233.0(constructs@10.4.4))(constructs@10.4.4)
       constructs:
         specifier: ^10.4.2
