@@ -178,6 +178,9 @@ export default function TutkintoPage() {
         }}
         isSaving={isHakemusSaving || isSaving}
         hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
+        lastSaved={hakemusState.editedData.muokattu}
+        modifierFirstName={hakemusState.editedData.muokkaajaKutsumanimi}
+        modifierLastName={hakemusState.editedData.muokkaajaSukunimi}
       />
     </>
   );
