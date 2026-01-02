@@ -55,12 +55,12 @@ export const SaveRibbon = ({
       }}
     >
       <Grid2 container wrap="nowrap">
-        <Grid2 size={1} direction="column">
+        <Grid2 size={1}>
           <IconButton>
             <StyledInfoOutlinedIcon />
           </IconButton>
         </Grid2>
-        <Grid2 size={8}>
+        <Grid2 size={8} paddingTop={0.5}>
           <OphTypography variant="body1">
             {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
           </OphTypography>
@@ -73,7 +73,7 @@ export const SaveRibbon = ({
             {modifierLastName ? modifierLastName : ''}
           </OphTypography>
         </Grid2>
-        <Grid2 size={4}>
+        <Grid2 size={4} paddingTop={0.5}>
           <OphButton
             variant="contained"
             onClick={onSave}
