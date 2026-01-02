@@ -278,6 +278,9 @@ const Paatostiedot = ({
             }}
             isSaving={updateOngoing}
             hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
+            lastSaved={hakemus.muokattu}
+            modifierFirstName={hakemus.muokkaajaKutsumanimi}
+            modifierLastName={hakemus.muokkaajaSukunimi}
           />
         </Stack>
         {showPaatosTekstiPreview && (

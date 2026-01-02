@@ -56,6 +56,8 @@ export default function PerustietoPage() {
     hakemus.lomakkeenKieli as keyof TranslatedName,
   );
 
+  console.log('Hakemus: ', hakemus);
+
   return (
     <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
       <OphTypography variant={'h2'}>
@@ -89,6 +91,9 @@ export default function PerustietoPage() {
         onSave={save}
         isSaving={isSaving ?? false}
         hasChanges={hasChanges}
+        lastSaved={hakemus.muokattu}
+        modifierFirstName={hakemus.muokkaajaKutsumanimi}
+        modifierLastName={hakemus.muokkaajaSukunimi}
       />
     </Stack>
   );

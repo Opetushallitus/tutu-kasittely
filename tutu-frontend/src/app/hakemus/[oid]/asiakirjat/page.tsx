@@ -343,7 +343,14 @@ const AsiakirjaPagePure = ({
           </>
         )}
       </Stack>
-      <SaveRibbon onSave={onSave} isSaving={isSaving} hasChanges={hasChanges} />
+      <SaveRibbon
+        onSave={onSave}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+        lastSaved={hakemus.muokattu}
+        modifierFirstName={hakemus.muokkaajaKutsumanimi}
+        modifierLastName={hakemus.muokkaajaSukunimi}
+      />
     </>
   );
 };

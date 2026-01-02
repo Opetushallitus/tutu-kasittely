@@ -187,6 +187,9 @@ export default function UoroPage() {
         onSave={perusteluState.save}
         isSaving={perusteluIsSaving || false}
         hasChanges={perusteluState.hasChanges}
+        lastSaved={hakemus?.muokattu}
+        modifierFirstName={hakemus?.muokkaajaKutsumanimi}
+        modifierLastName={hakemus?.muokkaajaSukunimi}
       />
     </>
   );

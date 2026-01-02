@@ -130,6 +130,9 @@ const YleisetPerustelut = ({
         onSave={handleSave}
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
+        lastSaved={hakemusState?.editedData?.muokattu}
+        modifierFirstName={hakemusState?.editedData?.muokkaajaKutsumanimi}
+        modifierLastName={hakemusState?.editedData?.muokkaajaSukunimi}
       />
     </>
   );
