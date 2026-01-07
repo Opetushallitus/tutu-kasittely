@@ -133,7 +133,7 @@ export const PerusteluMuistioModal = ({
                 data-testid="modal-confirm-button"
                 variant="contained"
                 onClick={handleCopy}
-                disabled={!!isLoading}
+                disabled={isLoading}
                 startIcon={<CopyAllIcon />}
               >
                 {t('hakemus.perustelumuistio.kopioi')}

@@ -41,7 +41,9 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
       const paivitettyPerustelu = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPerustelu);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
+      await queryClient.invalidateQueries({
+        queryKey: ['getHakemus', hakemusOid],
+      });
     },
   });
 

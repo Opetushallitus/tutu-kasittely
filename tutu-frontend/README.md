@@ -3,6 +3,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 First, enable corepack `corepack enable`
+
+Install dependencies `pnpm install`
+If dependencies change or versions in lockfile need to be updated use `pnpm install --no-frozen-lockfile`
+
 Then, run the development server:
 
 ```bash
