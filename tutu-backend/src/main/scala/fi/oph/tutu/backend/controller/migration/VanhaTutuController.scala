@@ -111,4 +111,35 @@ class VanhaTutuController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
+  /**
+   * Listaa vanhoja TUTU-hakemuksia
+   * @param page sivu
+   */
+  @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
+  @Operation(
+    summary = "Hakee vanha tutu -tietoja listaan",
+    responses = Array(
+      new ApiResponse(responseCode = "200", description = "Haku onnistui"),
+      new ApiResponse(responseCode = "500", description = "Palvelinvirhe")
+    )
+  )
+  def listaaVanhojaHakemuksia(
+    @RequestParam("page") page: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      page.toInt
+    } match {
+      case Success(pageNum) => {
+        val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum)
+        val json         = "[" + hakemusLista.mkString(",") + "]"
+        ResponseEntity.status(HttpStatus.OK).body(json)
+      }
+      case Failure(exception) => {
+        LOG.error(s"Virhe haettaessa vanhojen hakemusten listaa", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+      }
+    }
+  }
 }
