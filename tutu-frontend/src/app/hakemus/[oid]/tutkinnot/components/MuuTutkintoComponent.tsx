@@ -13,6 +13,7 @@ import { Divider, Stack, Box } from '@mui/material';
 import { Muistio } from '@/src/components/Muistio';
 import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
+import { FullSpinner } from '@/src/components/FullSpinner';
 
 export type TutkintoProps = {
   tutkinto?: Tutkinto;
@@ -48,6 +49,8 @@ export const MuuTutkintoComponent = ({
     setCurrentTutkinto(value);
   };
 
+  if (!currentTutkinto) return <FullSpinner></FullSpinner>;
+
   return (
     <Stack direction="column" gap={2}>
       <OphTypography variant={'h3'} data-testid={'tutkinto-otsikko-MUU'}>
@@ -60,12 +63,10 @@ export const MuuTutkintoComponent = ({
         <OphInputFormField
           minRows={9}
           multiline={true}
-          value={currentTutkinto?.muuTutkintoTieto || ''}
+          value={currentTutkinto.muuTutkintoTieto || ''}
           onChange={(event) =>
             updateCurrentTutkinto({
               ...currentTutkinto,
-              hakemusId: currentTutkinto?.hakemusId || '',
-              jarjestys: 'MUU',
               muuTutkintoTieto: event.target.value,
             })
           }
@@ -91,10 +92,14 @@ export const MuuTutkintoComponent = ({
       </Stack>
       <Muistio
         label={t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomio')}
-        hakemus={hakemus}
-        sisainen={false}
-        hakemuksenOsa={'tutkinnot_muu_tutkinto_huomio'}
-        data-testid={'tutkinto-huomio-MUU'}
+        sisalto={currentTutkinto.muuTutkintoMuistio}
+        updateMuistio={(value) => {
+          updateCurrentTutkinto({
+            ...currentTutkinto,
+            muuTutkintoMuistio: value,
+          });
+        }}
+        testId={'muistio-tutkinnot_muu_tutkinto_huomio-muistio'}
       />
       <HakijanIlmoittamaPopover
         anchorEl={muuTutkintoAnchorEl}

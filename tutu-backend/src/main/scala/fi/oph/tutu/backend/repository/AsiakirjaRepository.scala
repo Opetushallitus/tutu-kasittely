@@ -36,30 +36,26 @@ class AsiakirjaRepository extends BaseResultHandlers {
   implicit val getAsiakirjaResult: GetResult[DbAsiakirja] =
     GetResult(r =>
       DbAsiakirja(
-        UUID.fromString(r.nextString()),
-        r.nextBoolean(),
-        Option(r.nextString()),
-        Option(r.nextObject()) match {
-          case Some(value: java.lang.Boolean) => Some(value.booleanValue())
-          case _                              => None
-        },
-        Option(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        r.nextBoolean(),
-        Option(r.nextString()),
-        r.nextBoolean(),
-        Option(r.nextObject()) match {
-          case Some(value: java.lang.Boolean) => Some(value.booleanValue())
-          case _                              => None
-        },
-        r.nextBoolean(),
-        r.nextBoolean(),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        Option(ValmistumisenVahvistusVastaus.fromString(r.nextString())),
-        Option(r.nextString()),
-        Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        id = UUID.fromString(r.nextString()),
+        allekirjoituksetTarkistettu = r.nextBoolean(),
+        allekirjoituksetTarkistettuLisatiedot = r.nextStringOption(),
+        imiPyynto = r.nextBooleanOption(),
+        imiPyyntoNumero = r.nextStringOption(),
+        imiPyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        imiPyyntoVastattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        alkuperaisetAsiakirjatSaatuNahtavaksi = r.nextBoolean(),
+        alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = r.nextStringOption(),
+        selvityksetSaatu = r.nextBoolean(),
+        apHakemus = r.nextBooleanOption(),
+        suostumusVahvistamiselleSaatu = r.nextBoolean(),
+        valmistumisenVahvistus = r.nextBoolean(),
+        valmistumisenVahvistusPyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        valmistumisenVahvistusSaatu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        valmistumisenVahvistusVastaus = Option(ValmistumisenVahvistusVastaus.fromString(r.nextString())),
+        valmistumisenVahvistusLisatieto = r.nextStringOption(),
+        viimeinenAsiakirjaHakijalta = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        huomiotMuistioon = r.nextStringOption(),
+        esittelijanHuomioita = r.nextStringOption()
       )
     )
 
@@ -139,7 +135,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
           )
         } catch {
           case e: Exception =>
-            LOG.error(s"Käsittelyvaiheen tietojen haku epäonnistui: ${e}")
+            LOG.error(s"Käsittelyvaiheen tietojen haku epäonnistui: $e")
             throw new RuntimeException(
               s"Käsittelyvaiheen tietojen haku epäonnistui: ${e.getMessage}",
               e
@@ -187,7 +183,9 @@ class AsiakirjaRepository extends BaseResultHandlers {
               a.valmistumisen_vahvistus_saatu,
               a.valmistumisen_vahvistus_vastaus,
               a.valmistumisen_vahvistus_lisatieto,
-              a.viimeinen_asiakirja_hakijalta            
+              a.viimeinen_asiakirja_hakijalta,
+              a.huomiot_muistioon,
+              a.esittelijan_huomioita
             FROM
               asiakirja a
             WHERE
@@ -228,6 +226,8 @@ class AsiakirjaRepository extends BaseResultHandlers {
         valmistumisen_vahvistus_vastaus,
         valmistumisen_vahvistus_lisatieto,
         viimeinen_asiakirja_hakijalta,
+        huomiot_muistioon,
+        esittelijan_huomioita,
         luoja)
       VALUES (
         ${asiakirja.allekirjoituksetTarkistettu},
@@ -249,7 +249,9 @@ class AsiakirjaRepository extends BaseResultHandlers {
         $valmistumisenVahvistusVastausOrNull::valmistumisen_vahvistus_vastaus_enum,
         ${asiakirja.valmistumisenVahvistus.valmistumisenVahvistusLisatieto.orNull},
         ${asiakirja.viimeinenAsiakirjaHakijalta.map(java.sql.Timestamp.valueOf).orNull},
-        ${luoja.toString})
+        ${asiakirja.huomiotMuistioon},
+        ${asiakirja.esittelijanHuomioita},
+        $luoja)
       RETURNING id
     """.as[UUID].head
   }
@@ -291,7 +293,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
       asiakirjaId
     catch {
       case e: Exception =>
-        LOG.error(s"Asiakirjatietojen tallennus epäonnistui: ${e}")
+        LOG.error(s"Asiakirjatietojen tallennus epäonnistui: $e")
         throw new RuntimeException(
           s"Asiakirjatietojen tallennus epäonnistui: ${e.getMessage}",
           e
@@ -299,55 +301,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     }
   }
 
-  def paivitaAsiakirjaTiedot(updatedAsiakirja: DbAsiakirja, muokkaaja: UserOid): UUID = {
-    val asiakirjaId                         = updatedAsiakirja.id
-    val valmistumisenVahvistusVastausOrNull = updatedAsiakirja.valmistumisenVahvistusVastaus.map(_.toString).orNull
-
-    try {
-      db.run(
-        sql"""
-          UPDATE asiakirja
-          SET
-            allekirjoitukset_tarkistettu = ${updatedAsiakirja.allekirjoituksetTarkistettu},
-            allekirjoitukset_tarkistettu_lisatiedot = ${updatedAsiakirja.allekirjoituksetTarkistettuLisatiedot.orNull},
-            imi_pyynto = ${updatedAsiakirja.imiPyynto},
-            imi_pyynto_numero = ${updatedAsiakirja.imiPyyntoNumero.orNull},
-            imi_pyynto_lahetetty = ${updatedAsiakirja.imiPyyntoLahetetty.map(java.sql.Timestamp.valueOf).orNull},
-            imi_pyynto_vastattu = ${updatedAsiakirja.imiPyyntoVastattu.map(java.sql.Timestamp.valueOf).orNull},
-            alkuperaiset_asiakirjat_saatu_nahtavaksi = ${updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksi},
-            alkuperaiset_asiakirjat_saatu_nahtavaksi_lisatiedot = ${updatedAsiakirja.alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot.orNull},
-            selvitykset_saatu = ${updatedAsiakirja.selvityksetSaatu},
-            ap_hakemus = ${updatedAsiakirja.apHakemus.getOrElse(false)},
-            suostumus_vahvistamiselle_saatu = ${updatedAsiakirja.suostumusVahvistamiselleSaatu},
-            valmistumisen_vahvistus = ${updatedAsiakirja.valmistumisenVahvistus},
-            valmistumisen_vahvistus_pyynto_lahetetty = ${updatedAsiakirja.valmistumisenVahvistusPyyntoLahetetty
-            .map(java.sql.Timestamp.valueOf)
-            .orNull},
-            valmistumisen_vahvistus_saatu = ${updatedAsiakirja.valmistumisenVahvistusSaatu
-            .map(java.sql.Timestamp.valueOf)
-            .orNull},
-            valmistumisen_vahvistus_vastaus = $valmistumisenVahvistusVastausOrNull::valmistumisen_vahvistus_vastaus_enum,
-            valmistumisen_vahvistus_lisatieto = ${updatedAsiakirja.valmistumisenVahvistusLisatieto.orNull},
-            viimeinen_asiakirja_hakijalta = ${updatedAsiakirja.viimeinenAsiakirjaHakijalta
-            .map(java.sql.Timestamp.valueOf)
-            .orNull},
-            muokkaaja = ${muokkaaja.toString}
-          WHERE id = ${asiakirjaId.toString}::uuid
-          RETURNING id
-            """.as[UUID].head,
-        "paivita_asiakirjatiedot"
-      )
-    } catch {
-      case e: Exception =>
-        LOG.error(s"Asiakirjatietojen päivitys epäonnistui: $e")
-        throw new RuntimeException(
-          s"Asiakirjatietojen päivitys epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  def suoritaPyydettavienAsiakirjojenModifiointi(
+  private def suoritaPyydettavienAsiakirjojenModifiointi(
     asiakirjaId: UUID,
     modifyData: PyydettavaAsiakirjaModifyData,
     virkailijaOid: UserOid
@@ -381,7 +335,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
   ): DBIO[Int] =
     sqlu"""
           INSERT INTO pyydettava_asiakirja (asiakirja_id, asiakirja_tyyppi, luoja)
-          VALUES (${asiakirjaId.toString}::uuid, ${asiakirjaTyyppi}::asiakirjan_tyyppi, ${virkailijaOid.toString})
+          VALUES (${asiakirjaId.toString}::uuid, $asiakirjaTyyppi::asiakirjan_tyyppi, ${virkailijaOid.toString})
         """
 
   /**
@@ -394,7 +348,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @param virkailijaOid
    * päivittävän virkailijan oid
    */
-  def paivitaPyydettavaAsiakirja(
+  private def paivitaPyydettavaAsiakirja(
     id: UUID,
     asiakirjaTyyppi: String,
     virkailijaOid: UserOid
@@ -411,7 +365,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @param id
    * pyydettävän asiakirjan id
    */
-  def poistaPyydettavaAsiakirja(
+  private def poistaPyydettavaAsiakirja(
     id: UUID
   ): DBIO[Int] =
     sqlu"""
@@ -427,7 +381,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @return
    * hakemuksen pyydettävät asiakirjat
    */
-  def haePyydettavatAsiakirjat(asiakirjaId: UUID): Seq[PyydettavaAsiakirja] = {
+  private def haePyydettavatAsiakirjat(asiakirjaId: UUID): Seq[PyydettavaAsiakirja] = {
     try {
       db.run(
         sql"""
@@ -440,7 +394,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e}")
+        LOG.error(s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: $e")
         throw new RuntimeException(
           s"Hakemuksen pyydettävien asiakirjojen haku epäonnistui: ${e.getMessage}",
           e
@@ -448,7 +402,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     }
   }
 
-  def suoritaAsiakirjamallienModifiointi(
+  private def suoritaAsiakirjamallienModifiointi(
     asiakirjaId: UUID,
     modifyData: AsiakirjamalliModifyData,
     virkailijaOid: UserOid
@@ -481,7 +435,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
       )
     """
 
-  def muokkaaAsiakirjamallia(
+  private def muokkaaAsiakirjamallia(
     asiakirjaId: UUID,
     asiakirjamalli: AsiakirjamalliTutkinnosta,
     virkailijaOid: UserOid
@@ -495,7 +449,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
         AND lahde = ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde
     """
 
-  def poistaAsiakirjamalli(asiakirjaId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] =
+  private def poistaAsiakirjamalli(asiakirjaId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] =
     sqlu"""
       DELETE FROM asiakirjamalli_tutkinnosta
       WHERE asiakirja_id = ${asiakirjaId.toString}::uuid
@@ -510,7 +464,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @return
    * hakemuksen asiakirjamallit tutkinnosta
    */
-  def haeAsiakirjamallitTutkinnoista(
+  private def haeAsiakirjamallitTutkinnoista(
     asiakirjaId: UUID
   ): Map[AsiakirjamalliLahde, AsiakirjamalliTutkinnosta] = {
     try {
@@ -526,7 +480,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
         .toMap
     } catch {
       case e: Exception =>
-        LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: ${e}")
+        LOG.error(s"Hakemuksen asiakirjamallien haku epäonnistui: $e")
         throw new RuntimeException(
           s"Hakemuksen asiakirjamallien haku epäonnistui: ${e.getMessage}",
           e
@@ -543,7 +497,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @param muokkaaja muokkaajan käyttäjätunnus
    * @return päivitetyn asiakirjan id
    */
-  def paivitaTaysiAsiakirjaTiedot(
+  def paivitaAsiakirjaTiedot(
     asiakirjaId: UUID,
     asiakirja: Asiakirja,
     muokkaaja: UserOid
@@ -589,6 +543,8 @@ class AsiakirjaRepository extends BaseResultHandlers {
             viimeinen_asiakirja_hakijalta = ${asiakirja.viimeinenAsiakirjaHakijalta
             .map(java.sql.Timestamp.valueOf)
             .orNull},
+            huomiot_muistioon = ${asiakirja.huomiotMuistioon},
+            esittelijan_huomioita = ${asiakirja.esittelijanHuomioita},
             muokkaaja = ${muokkaaja.toString}
           WHERE id = ${asiakirjaId.toString}::uuid
           RETURNING id
@@ -623,7 +579,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
       updatedId
     } catch {
       case e: Exception =>
-        LOG.error(s"Asiakirjatietojen täysi päivitys epäonnistui: ${e}")
+        LOG.error(s"Asiakirjatietojen täysi päivitys epäonnistui: $e")
         throw new RuntimeException(
           s"Asiakirjatietojen täysi päivitys epäonnistui: ${e.getMessage}",
           e

@@ -278,7 +278,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           case Some("swedish") => Some("examensbevis")
           case _               => Some("tutkintotodistus")
         },
-        muuTutkintoMuistioId = None,
         opinnaytetyo =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
         harjoittelu =
@@ -310,7 +309,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           case Some("swedish") => Some("ovrigbevis")
           case _               => Some("muutodistus")
         },
-        muuTutkintoMuistioId = None,
         opinnaytetyo =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
         harjoittelu =
@@ -343,7 +341,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
                 case Some("swedish") => Some("ovrigbevis")
                 case _               => Some("muutodistus")
               },
-          muuTutkintoMuistioId = None,
           opinnaytetyo =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
           harjoittelu =
@@ -366,8 +363,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           todistuksenPaivamaara = None,
           koulutusalaKoodiUri = None,
           paaaaineTaiErikoisala = None,
-          todistusOtsikko = None,
-          muuTutkintoMuistioId = None
+          todistusOtsikko = None
         )
     }
     tutkinnot.toSeq

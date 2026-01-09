@@ -41,7 +41,9 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
       const paivitettyPerustelu = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPerustelu);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      queryClient.invalidateQueries({ queryKey: ['getHakemus', hakemusOid] });
+      await queryClient.invalidateQueries({
+        queryKey: ['getHakemus', hakemusOid],
+      });
     },
   });
 
@@ -54,6 +56,6 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
     tallennaPerustelu,
     perustelu: query.data,
     isPerusteluLoading: query.isLoading,
-    isSaving: mutationTallenna.isPending,
+    perusteluIsSaving: mutationTallenna.isPending,
   };
 };

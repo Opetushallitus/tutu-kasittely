@@ -20,6 +20,8 @@ import {
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { Perustelu } from '@/src/lib/types/perustelu';
+import { EditableState } from '@/src/hooks/useEditableState';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -90,8 +92,9 @@ interface PerusteluYleisetLayoutProps {
   showTabs: boolean;
   title: string;
   t: TFunction;
-  hakemus: Hakemus | undefined;
-  isHakemusLoading: boolean;
+  hakemus?: Hakemus;
+  perusteluState: EditableState<Perustelu>;
+  isLoading: boolean;
   hakemusError: Error | null;
   children: ReactNode;
 }
@@ -101,7 +104,8 @@ export const PerusteluLayout = ({
   title,
   t,
   hakemus,
-  isHakemusLoading,
+  perusteluState,
+  isLoading,
   hakemusError,
   children,
 }: PerusteluYleisetLayoutProps) => {
@@ -116,7 +120,8 @@ export const PerusteluLayout = ({
     return null;
   }
 
-  if (isHakemusLoading || !hakemus) return <FullSpinner></FullSpinner>;
+  if (isLoading || !hakemus || !perusteluState.editedData)
+    return <FullSpinner></FullSpinner>;
 
   return (
     <Stack
@@ -134,9 +139,10 @@ export const PerusteluLayout = ({
       <Divider orientation={'horizontal'} />
       <Muistio
         label={t('hakemus.perustelu.muistio.sisainenOtsake')}
-        hakemus={hakemus}
-        sisainen={true}
-        hakemuksenOsa={'perustelut-yleiset'}
+        sisalto={perusteluState.editedData?.tarkempiaSelvityksia}
+        updateMuistio={(value) => {
+          perusteluState?.updateLocal({ tarkempiaSelvityksia: value });
+        }}
       />
     </Stack>
   );

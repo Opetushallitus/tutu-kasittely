@@ -26,7 +26,8 @@ case class Perustelu(
   muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
   uoRoSisalto: UoRoSisalto = UoRoSisalto(),
-  apSisalto: APSisalto = APSisalto()
+  apSisalto: APSisalto = APSisalto(),
+  tarkempiaSelvityksia: Option[String] = None
 )
 
 case class UoRoSisalto(
@@ -66,7 +67,9 @@ case class UoRoSisalto(
   sovellettuRinnastaminenOtmTutkintoon: SovellettuTilanne = SovellettuTilanne(),
   sovellettuLuokanopettaja: SovellettuTilanne = SovellettuTilanne(),
   sovellettuMuuTilanne: Option[Boolean] = None,
-  sovellettuMuuTilanneSelite: Option[String] = None
+  sovellettuMuuTilanneSelite: Option[String] = None,
+  koulutuksenSisalto: Option[String] = None,
+  muuTutkinto: Option[String] = None
 )
 
 case class Aine(

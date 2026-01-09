@@ -27,8 +27,8 @@ jobs:
       - name: Run linter
         working-directory: ./tutu-frontend
         run: |
-          npm run lint
-          npm run prettier
+          pnpm lint
+          pnpm prettier
 
   playwright:
     runs-on: ubuntu-latest
@@ -41,12 +41,12 @@ jobs:
       - uses: ./.github/actions/prepare-next-env
       - name: Create self-signed dev certificates
         working-directory: ./tutu-frontend
-        run: npm run create-self-signed-dev-certs
+        run: pnpm create-self-signed-dev-certs
       - name: Run playwright
         working-directory: ./tutu-frontend
         env:
           PLAYWRIGHT_PROJECT: ${{ matrix.browser }}
-        run: npm run start-server-and-test-playwright
+        run: pnpm start-server-and-test-playwright
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -70,7 +70,10 @@ jobs:
           aws-region: eu-west-1
       - name: Build and upload zip to S3
         working-directory: ./tutu-frontend
+        env:
+          NODE_LINKER: hoisted
         run: |
-          npm run build
+          pnpm install
+          pnpm build
           zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
           aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://tutu-frontend-builds/ga-${{github.run_number}}.zip

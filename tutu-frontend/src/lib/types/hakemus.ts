@@ -33,6 +33,7 @@ export type Hakemus = {
   yhteistutkinto: boolean;
   lopullinenPaatosVastaavaEhdollinenAsiatunnus?: string;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
+  esittelijanHuomioita?: string;
 };
 
 export const LOPULLINEN_PAATOS_HAKEMUSKOSKEE = 5;
@@ -74,6 +75,8 @@ export type AsiakirjaTieto = {
   apHakemus?: boolean | null;
   suostumusVahvistamiselleSaatu: boolean;
   valmistumisenVahvistus: ValmistumisenVahvistus;
+  huomiotMuistioon?: string;
+  esittelijanHuomioita?: string;
 };
 
 export type InfoText = {

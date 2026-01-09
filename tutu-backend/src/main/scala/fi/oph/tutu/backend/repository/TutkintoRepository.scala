@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.repository
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -9,8 +8,6 @@ import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
@@ -40,11 +37,11 @@ class TutkintoRepository extends BaseResultHandlers {
         koulutusalaKoodiUri = r.nextStringOption(),
         paaaaineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
-        muuTutkintoMuistioId = Option(r.nextString()).map(UUID.fromString),
         ohjeellinenLaajuus = r.nextStringOption(),
         opinnaytetyo = r.nextBooleanOption(),
         harjoittelu = r.nextBooleanOption(),
         perustelunLisatietoja = r.nextStringOption(),
+        muuTutkintoMuistio = r.nextStringOption(),
         muokkaaja = r.nextStringOption(),
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
@@ -62,7 +59,7 @@ class TutkintoRepository extends BaseResultHandlers {
     val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
     val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull
     val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
-    val muuTutkintoMuistioId        = tutkinto.muuTutkintoMuistioId.map(_.toString).orNull
+    val muuTutkintoMuistio          = tutkinto.muuTutkintoMuistio.orNull
     val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
     val opinnaytetyo                = tutkinto.opinnaytetyo
     val harjoittelu                 = tutkinto.harjoittelu
@@ -81,11 +78,11 @@ class TutkintoRepository extends BaseResultHandlers {
         koulutusala_koodiuri,
         paaaine_tai_erikoisala,
         todistusotsikko,
-        muu_tutkinto_muistio_id,
         ohjeellinen_laajuus,
         opinnaytetyo,
         harjoittelu,
         perustelun_lisatietoja,
+        muu_tutkinto_muistio,
         luoja
       )
       VALUES (
@@ -101,11 +98,11 @@ class TutkintoRepository extends BaseResultHandlers {
         $koulutusalaKoodiUri,
         $paaaineTaiErikoisala,
         $todistusOtsikko,
-        $muuTutkintoMuistioId::uuid,
         $ohjeellinenLaajuus,
         $opinnaytetyo,
         $harjoittelu,
         $perustelunLisatietoja,
+        $muuTutkintoMuistio,
         $luoja
       )
     """
@@ -170,9 +167,9 @@ class TutkintoRepository extends BaseResultHandlers {
       db.run(poistaTutkinto(id), "poista_tutkinto")
     } catch {
       case e: Exception =>
-        LOG.error(s"Tutkinnon lisääminen epäonnistui: $e")
+        LOG.error(s"Tutkinnon poistaminen epäonnistui: $e")
         throw new RuntimeException(
-          s"Tutkinnon lisääminen epäonnistui: ${e.getMessage}",
+          s"Tutkinnon poistaminen epäonnistui: ${e.getMessage}",
           e
         )
     }
@@ -204,7 +201,7 @@ class TutkintoRepository extends BaseResultHandlers {
         koulutusala_koodiuri = ${tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull},
         paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull},
         todistusotsikko = ${tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull},
-        muu_tutkinto_muistio_id = ${tutkinto.muuTutkintoMuistioId.map(_.toString).orNull}::uuid,
+        muu_tutkinto_muistio = ${tutkinto.muuTutkintoMuistio.orNull},
         ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull},
         opinnaytetyo = ${tutkinto.opinnaytetyo},
         harjoittelu = ${tutkinto.harjoittelu},
@@ -239,11 +236,11 @@ class TutkintoRepository extends BaseResultHandlers {
       koulutusala_koodiuri,
       paaaine_tai_erikoisala,
       todistusotsikko,
-      muu_tutkinto_muistio_id,
       ohjeellinen_laajuus,
       opinnaytetyo,
       harjoittelu,
       perustelun_lisatietoja,
+      muu_tutkinto_muistio,
       muokkaaja,
       muokattu
     FROM tutkinto
@@ -282,11 +279,11 @@ class TutkintoRepository extends BaseResultHandlers {
           koulutusala_koodiuri,
           paaaine_tai_erikoisala,
           todistusotsikko,
-          muu_tutkinto_muistio_id,
           ohjeellinen_laajuus,
           opinnaytetyo,
           harjoittelu,
           perustelun_lisatietoja,
+          muu_tutkinto_muistio,
           muokkaaja,
           muokattu
         FROM tutkinto

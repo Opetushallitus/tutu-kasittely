@@ -8,8 +8,8 @@ import { Language } from '@/src/lib/localization/localizationTypes';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
-import { Muistio } from '@/src/lib/types/muistio';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([
@@ -22,7 +22,6 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockLiitteet(page),
     mockKoodistot(page),
     mockTutkinnot(page),
-    mockMuistio(page),
   ]);
 };
 
@@ -147,6 +146,7 @@ export const mockHakemus = async (
         lomakeOid: '74825f61-e561-447e-bef4-1bb5be4ea44a',
         lomakeId: 12345,
         lomakkeenKieli: lomakkeenKieli,
+        hakemusKoskee: 1,
         hakija: {
           etunimet: 'Heikki Hemuli',
           kutsumanimi: 'Hessu',
@@ -179,6 +179,7 @@ export const mockHakemus = async (
             sv: 'Helsingfors',
           },
           sahkopostiosoite: 'hessu@hemuli.com',
+          yksiloityVTJ: true,
         },
         asiatunnus: 'OPH-111-2025',
         kirjausPvm: '2025-05-14T10:59:47.597',
@@ -190,7 +191,7 @@ export const mockHakemus = async (
         muokattu: '2025-06-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
-        yhteistutkinto: null,
+        yhteistutkinto: false,
         asiakirja: {
           allekirjoituksetTarkistettu: false,
           allekirjoituksetTarkistettuLisatiedot: null,
@@ -217,9 +218,17 @@ export const mockHakemus = async (
           },
           valmistumisenVahvistus: {
             valmistumisenVahvistus: false,
+            valmistumisenVahvistusLisatieto: null,
+            valmistumisenVahvistusPyyntoLahetetty: null,
+            valmistumisenVahvistusSaatu: null,
+            valmistumisenVahvistusVastaus: null,
           },
+          suostumusVahvistamiselleSaatu: true,
+          esittelijanHuomioita: 'Muistion alkuperäinen sisältö',
         },
-      }),
+        taydennyspyyntoLahetetty: '2025-12-14T10:59:47.597',
+        liitteidenTilat: [],
+      } as Hakemus),
     });
   });
 };
@@ -432,25 +441,4 @@ export const mockTutkinnot = async (page: Page) => {
       }
     },
   );
-};
-
-export const mockMuistio = async (page: Page, initialData?: Muistio) => {
-  const mockMuistio: Muistio = initialData ?? {
-    hakemuksenOsa: '',
-    hakemusOid: '',
-    id: '',
-    luoja: '',
-    luotu: '',
-    muokattu: '',
-    muokkaaja: '',
-    sisainenHuomio: false,
-    sisalto: '',
-  };
-  await page.route(`**/muistio/**`, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(mockMuistio),
-    });
-  });
 };

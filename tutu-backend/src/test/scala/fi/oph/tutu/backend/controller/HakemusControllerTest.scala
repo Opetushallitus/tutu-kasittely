@@ -404,7 +404,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     val asiakirjaId = hakemus.asiakirjaId.get
     val asiakirja   = asiakirjaRepository.haeAsiakirjaTiedot(asiakirjaId).get
     asiakirjaRepository.paivitaAsiakirjaTiedot(
-      asiakirja.copy(apHakemus = Some(true)),
+      asiakirjaId,
+      new Asiakirja(asiakirja.copy(apHakemus = Some(true)), Seq.empty, Map.empty),
       UserOid(esittelijaOidString)
     )
 
@@ -471,7 +472,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     val asiakirjaId = hakemus.asiakirjaId.get
     val asiakirja   = asiakirjaRepository.haeAsiakirjaTiedot(asiakirjaId).get
     asiakirjaRepository.paivitaAsiakirjaTiedot(
-      asiakirja.copy(apHakemus = Some(true)),
+      asiakirjaId,
+      new Asiakirja(asiakirja.copy(apHakemus = Some(true)), Seq.empty, Map.empty),
       UserOid(esittelijaOidString)
     )
 

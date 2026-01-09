@@ -21,7 +21,6 @@ class PerusteluService(
   kasittelyVaiheService: KasittelyVaiheService,
   hakemuspalveluService: HakemuspalveluService,
   paatosService: PaatosService,
-  muistioService: MuistioService,
   maakoodiService: MaakoodiService,
   koodistoService: KoodistoService
 ) extends TutuJsonFormats {
@@ -109,36 +108,4 @@ class PerusteluService(
     }
     (currentPerustelu, newPerustelu)
   }
-
-  def haePerusteluMuistio(
-    hakemusOid: HakemusOid
-  ): Option[String] = {
-    val hakemusMaybe: Option[Hakemus]                   = hakemusService.haeHakemus(hakemusOid)
-    val tutkinnot: Seq[Tutkinto]                        = tutkintoService.haeTutkinnot(hakemusOid)
-    val ataruHakemusMaybe: Option[AtaruHakemus]         = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val perusteluMaybe: Option[Perustelu]               = haePerustelu(hakemusOid)
-    val paatosMaybe: Option[Paatos]                     = paatosService.haePaatos(hakemusOid)
-    val koulutuksenSisaltoMuistioMaybe: Option[Muistio] =
-      muistioService.haeMuistio(hakemusOid, "perustelut-ro-uo", false)
-    val muuTutkintoMuistioMaybe: Option[Muistio] =
-      muistioService.haeMuistio(hakemusOid, "perustelut-uo-ro-muu-tutkinto", false)
-    val asiakirjaMuistioMaybe: Option[Muistio] =
-      muistioService.haeMuistio(hakemusOid, "asiakirjat", false)
-
-    val perusteluMuistio = generatePerusteluMuistio(
-      koodistoService,
-      maakoodiService,
-      hakemusMaybe,
-      tutkinnot,
-      ataruHakemusMaybe,
-      perusteluMaybe,
-      paatosMaybe,
-      koulutuksenSisaltoMuistioMaybe,
-      muuTutkintoMuistioMaybe,
-      asiakirjaMuistioMaybe
-    )
-
-    Some(perusteluMuistio)
-  }
-
 }

@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
 import java.io.FileNotFoundException
@@ -40,11 +40,8 @@ import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 
-class OphPostgresContainer(dockerImageName: String)
-    extends PostgreSQLContainer[OphPostgresContainer](dockerImageName) {}
-
 object IntegrationTestBase extends Object {
-  private val postgresContainer = new OphPostgresContainer("postgres:15")
+  private val postgresContainer = new PostgreSQLContainer("postgres:15")
     .withDatabaseName("tutu")
     .withUsername("app")
     .withPassword("app")
@@ -109,7 +106,7 @@ class IntegrationTestBase {
   val POSTGRES_USERNAME     = "app"
   val POSTGRES_PASSWORD     = "app"
 
-  val postgres: OphPostgresContainer = IntegrationTestBase.postgresContainer
+  val postgres: PostgreSQLContainer = IntegrationTestBase.postgresContainer
 
   val PROTECTED_TABLES: Seq[String] =
     Seq("flyway_schema_history", "virkailija_session", "virkailija_session_attributes", "virkailija_cas_client_session")
