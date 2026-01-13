@@ -144,6 +144,32 @@ class HakemusController(
   }
 
   @GetMapping(
+    path = Array("hakemus-update-notification/{hakemusOid}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def paivitaHakemuksenTiedotAtarusta(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    LOG.info(s"Vastaanotettu ataru-päivitys hakemukselle $hakemusOid")
+    ResponseEntity.status(HttpStatus.OK).body("")
+  }
+
+  @GetMapping(
+    path = Array("state-change-notification/{hakemusOid}/{tila}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def paivitaHakemuksenTilaAtarusta(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("tila") tila: String,
+    @RequestParam(required = false) aikaleima: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    LOG.info(s"Vastaanotettu tila-päivitys hakemukselle $hakemusOid, tila $tila, aikaleima $aikaleima")
+    ResponseEntity.status(HttpStatus.OK).body("")
+  }
+
+  @GetMapping(
     path = Array("hakemus/{hakemusOid}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
