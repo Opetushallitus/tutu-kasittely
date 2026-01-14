@@ -162,10 +162,10 @@ class HakemusController(
   def paivitaHakemuksenTilaAtarusta(
     @PathVariable("hakemusOid") hakemusOid: String,
     @PathVariable("tila") tila: String,
-    @RequestParam(required = false) aikaleima: String,
+    @RequestParam(required = false) timestamp: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    LOG.info(s"Vastaanotettu tila-päivitys hakemukselle $hakemusOid, tila $tila, aikaleima $aikaleima")
+    LOG.info(s"Vastaanotettu tila-päivitys hakemukselle $hakemusOid, tila $tila, aikaleima $timestamp")
     ResponseEntity.status(HttpStatus.OK).body("")
   }
 
