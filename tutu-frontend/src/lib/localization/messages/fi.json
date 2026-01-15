@@ -27,7 +27,12 @@
     "hakijanaika": "Hakijan aika",
     "kokonaisaikaKk": "{aika, number} kk",
     "hakemusta": "hakemusta",
-    "saapumisPvm": "Hakemus saapunut"
+    "saapumisPvm": "Hakemus saapunut",
+    "tyyppi": {
+      "tabs": "Hakemuslistan tyyppi",
+      "hakemukset": "Hakemukset",
+      "filemakerHakemukset": "Filemakerin hakemukset"
+    }
   },
   "hakemus": {
     "apHakemus": "AP-hakemus",

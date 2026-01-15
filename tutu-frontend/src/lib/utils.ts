@@ -18,6 +18,19 @@ export async function setQueryStateAndLocalStorage<T>(
   await queryClient.invalidateQueries({ queryKey: ['getHakemukset'] });
 }
 
+export async function setFilemakerQueryStateAndLocalStorage<T>(
+  queryClient: QueryClient,
+  setQueryState: (val: T) => Promise<URLSearchParams>,
+  value: unknown,
+) {
+  const newSearchParams = await setQueryState(value as T);
+  localStorage.setItem(
+    'tutu-filemaker-query-string',
+    newSearchParams.toString(),
+  );
+  await queryClient.invalidateQueries({ queryKey: ['getFilemakerHakemukset'] });
+}
+
 export const setLocalStorageAndLaunchHakemusQuery = async (
   queryClient: QueryClient,
   storageKey: string,
