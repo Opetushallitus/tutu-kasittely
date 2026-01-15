@@ -24,4 +24,8 @@ class VanhaTutuService(
       Failure(e)
     }
   }
+
+  def listaaHakemuksia(pageNum: Int): Seq[String] = {
+    vanhaTutuRepository.list(pageNum)
+  }
 }
