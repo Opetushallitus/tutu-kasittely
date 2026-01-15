@@ -5,7 +5,7 @@
 
 Palvelu tutu-hakemusten käsittelyyn.
 
-# Tutu-backend
+## Tutu-backend
 
 Backend käyttää Java Corretton versiota 21.
 
@@ -59,12 +59,26 @@ Lokaalisti Ideassa backendia ajaessa lisää `spring.profiles.active=dev`-rivi `
 tai anna käynnistysparametri `--spring.profiles.active=dev`.
 Jotta properties-tiedostot luetaan hakemiston oph-configuration alta, tulee antaa käynnistysparametri `spring.config.additional-location=classpath:/oph-configuration/application.properties`
 
-# Lokaali HTTPS
+Tarvitset myös [mkcert](https://github.com/FiloSottile/mkcert)'in asentamisen frontendia varten.
+
+## Maven / GitHub Packages
+
+Pakettien asentamiseen tarvitset Github tokenin: [ohjeet täältä](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries).
+
+Anna tokenille `read:packages` oikeudet ja tallenna tiedostoon `~/.m2/settings.xml` [tässä muodossa](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token). Urliksi voi asettaa `https://maven.pkg.github.com/opetushallitus/*`.
+
+Frontendille tarvitset saman tokenin user-configiin `~/.npmrc`, jonka voi asettaa komennolla:
+
+```bash
+npm config set //npm.pkg.github.com/:_authToken "<GITHUB_TOKEN>"
+```
+
+## Lokaali HTTPS
 
 Lokaaliympäristössä backendin ja käyttöliittymän käyttö https yli cas-autentikoinnilla ja sessiohallinnalla edellyttää sertifikaattien ja keystoren generointia.
 Nämä saa luotua ajamalla projektin juuressa skriptin `generate_certs.sh`.
 
-# Swagger
+## Swagger
 
 Tutu-backendin rajapinnat on dokumentoitu Swaggeriä käyttäen ja se löytyy osoitteesta: `http://localhost:8444/tutu-backend/swagger-ui/index.html`.
 

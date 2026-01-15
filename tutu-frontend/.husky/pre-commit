@@ -2,4 +2,4 @@ cd tutu-frontend
 ./node_modules/.bin/lint-staged
 
 cd .. && cd tutu-backend
-mvn spotless:check
+./mvnw spotless:check

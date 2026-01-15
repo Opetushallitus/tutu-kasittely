@@ -16,7 +16,7 @@ start-db-and-wait: start-postgresql wait-for-db
 
 [working-directory: 'tutu-backend']
 start-dev-backend:
-    mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev --spring.config.additional-location=classpath:/oph-configuration/application.properties"
+    ./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev --spring.config.additional-location=classpath:/oph-configuration/application.properties"
     @echo "✅ Backend running!"
 
 [working-directory: 'tutu-frontend']
