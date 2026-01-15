@@ -44,11 +44,7 @@ class HakemusService(
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
   def tallennaAtaruHakemus(hakemus: UusiAtaruHakemus): (UUID, Perustelu, Paatos) = {
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemus.hakemusOid) match {
-      case Left(error: Throwable) =>
-        throw error
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
-    }
+    val ataruHakemus = haeAtaruHakemus(hakemus.hakemusOid)
 
     val tutkinto_1_maakoodiUri = ataruHakemusParser.parseTutkinto1MaakoodiUri(ataruHakemus)
 
@@ -128,6 +124,9 @@ class HakemusService(
 
     luoKokonaishakemus(hakemus.hakemusOid, transactionalAction)
   }
+
+  def onkoHakemusJoOlemassa(hakemusOid: HakemusOid): Boolean =
+    hakemusRepository.onkoHakemusOlemassa(hakemusOid)
 
   private def haeAtaruHakemus(hakemusOid: HakemusOid): AtaruHakemus = {
     hakemuspalveluService.haeHakemus(hakemusOid) match {
