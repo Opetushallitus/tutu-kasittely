@@ -255,6 +255,7 @@ const AsiakirjaPagePure = ({
         <AsiakirjaPyynnot
           asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
           updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+          hakemusKoskee={hakemus.hakemusKoskee}
         ></AsiakirjaPyynnot>
         <Divider orientation={'horizontal'} />
         <OphTypography variant={'h3'}>

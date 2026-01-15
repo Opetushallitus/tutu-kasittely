@@ -124,7 +124,7 @@ export type TarkistuksenTila = {
 };
 
 export type AsiakirjaPyynto = {
-  id?: string;
+  id: string;
   asiakirjanTyyppi: string;
 };
 
