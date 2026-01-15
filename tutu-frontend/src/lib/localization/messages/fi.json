@@ -144,7 +144,8 @@
           "pyydettavatasiakirjat": "Pyydettävät asiakirjat",
           "tutkinnottaikoulutukset": "Tutkinnot tai koulutukset",
           "kelpoisuusammattiin": "Kelpoisuus ammattiin",
-          "henkilotiedot": "Henkilötiedot"
+          "henkilotiedot": "Henkilötiedot",
+          "sopeutumisaikataikelpoisuuskoetaitaydentavatopinnot": "Sopeutumisaika, kelpoisuuskoe tai täydentävät opinnot"
         },
         "asiakirjat": {
           "tutkintotodistustenjaljennokset": "Tutkintotodistusten jäljennökset",
@@ -157,7 +158,10 @@
           "tyotodistukset": "Työtodistukset tai todistukset elinikäisestä oppimisesta",
           "ammattipatevyys": "Ammattipätevyyden todistavan asiakirjan jäljennös",
           "kansalaisuus": "Kansalaisuuden todistava asiakirja",
-          "nimenmuutos": "Nimenmuutoksen todistava asiakirja"
+          "nimenmuutos": "Nimenmuutoksen todistava asiakirja",
+          "sopeutumisaika": "Todistus sopeutumisajan suorittamisesta",
+          "kelpoisuuskoe": "Todistus kelpoisuuskokeen suorittamisesta",
+          "taydentavatopinnot": "Todistus täydentävien opintojen suorittamisesta"
         }
       },
       "imiPyynnot": {
