@@ -404,4 +404,18 @@ class HakemusRepository extends BaseResultHandlers {
         throw new RuntimeException(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage} ${e.getMessage}", e)
     }
   }
+
+  def onkoHakemusOlemassa(hakemusOid: HakemusOid): Boolean =
+    try {
+      db.run(
+        sql"""SELECT EXISTS (SELECT 1 FROM hakemus where hakemus_oid = ${hakemusOid.s}) """.as[Boolean].head,
+        "tarkista_hakemuksen_olemassaolo"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Hakemuksen olemassaolon tarkistus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
 }
