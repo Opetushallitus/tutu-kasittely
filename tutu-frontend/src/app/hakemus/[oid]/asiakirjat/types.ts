@@ -1,4 +1,4 @@
-export const pyydettavatAsiakirjat = {
+export const PYYDETTAVAT_ASIAKIRJAT = {
   tutkinnottaikoulutukset: [
     'tutkintotodistustenjaljennokset',
     'liitteidenjaljennokset',
@@ -9,5 +9,14 @@ export const pyydettavatAsiakirjat = {
     'vaitoskirja',
   ],
   kelpoisuusammattiin: ['tyotodistukset', 'ammattipatevyys'],
+  henkilotiedot: ['kansalaisuus', 'nimenmuutos'],
+} as const;
+
+export const LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT = {
+  sopeutumisaikataikelpoisuuskoetaitaydentavatopinnot: [
+    'sopeutumisaika',
+    'kelpoisuuskoe',
+    'taydentavatopinnot',
+  ],
   henkilotiedot: ['kansalaisuus', 'nimenmuutos'],
 } as const;
