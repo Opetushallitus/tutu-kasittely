@@ -131,7 +131,8 @@ class VanhaTutuController(
     Try {
       page.toInt
     } match {
-      case Success(pageNum) => {
+      case Success(rawPageNum) => {
+        val pageNum      = rawPageNum.max(1) // Sivut alkaen numerosta 1
         val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum)
         val json         = "[" + hakemusLista.mkString(",") + "]"
         ResponseEntity.status(HttpStatus.OK).body(json)

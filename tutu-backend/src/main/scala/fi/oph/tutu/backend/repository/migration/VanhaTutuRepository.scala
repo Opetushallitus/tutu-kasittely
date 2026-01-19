@@ -61,12 +61,13 @@ class VanhaTutuRepository extends BaseResultHandlers {
 
   def list(pageNum: Int): Seq[String] = {
     val PAGE_SIZE = 20
+    val offset    = (pageNum - 1) * PAGE_SIZE // pageNum alkaa 1:stä
     try {
       val query = sql"""
         SELECT data_json::text
         FROM vanha_tutu
         ORDER BY data_json->>'luontipvm' DESC
-        OFFSET ${pageNum * PAGE_SIZE}
+        OFFSET ${offset}
         LIMIT ${PAGE_SIZE}
       """.as[String]
 
