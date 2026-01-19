@@ -9,7 +9,7 @@ import {
 
 interface ApHakemusProps {
   asiakirjaTieto: AsiakirjaTieto;
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusTyyppi;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 

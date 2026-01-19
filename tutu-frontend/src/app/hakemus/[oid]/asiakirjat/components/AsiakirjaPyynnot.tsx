@@ -33,7 +33,7 @@ import { IconButton } from '@/src/components/IconButton';
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];
   updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusTyyppi;
 }
 
 interface AsiakirjaPyyntoProps {

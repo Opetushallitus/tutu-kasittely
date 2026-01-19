@@ -141,7 +141,7 @@ export const HakemusTabs = ({
   hakemusKoskee,
 }: {
   hakemusOid: string;
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusTyyppi;
 }) => {
   const { t } = useTranslations();
   const activeTab = useActiveTabFromPath();

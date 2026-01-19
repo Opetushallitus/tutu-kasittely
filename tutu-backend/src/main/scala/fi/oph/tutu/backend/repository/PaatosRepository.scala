@@ -141,7 +141,7 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-        SELECT id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, null, muokkaaja
+        SELECT id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokkaaja
         FROM paatos
         WHERE hakemus_id = ${hakemusId.toString}::uuid
       """.as[Paatos].headOption,

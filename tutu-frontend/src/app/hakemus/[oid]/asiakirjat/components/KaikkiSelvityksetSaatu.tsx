@@ -15,7 +15,7 @@ type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
   kirjausPvm: string;
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusTyyppi;
 };
 
 export const KaikkiSelvityksetSaatu = ({
