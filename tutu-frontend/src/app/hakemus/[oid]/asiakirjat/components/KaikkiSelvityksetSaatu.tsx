@@ -6,6 +6,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
+  HakemusTyyppi,
 } from '@/src/lib/types/hakemus';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
@@ -14,12 +15,14 @@ type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
   kirjausPvm: string;
+  hakemusKoskee: number;
 };
 
 export const KaikkiSelvityksetSaatu = ({
   asiakirjaTieto,
   updateAsiakirjaTieto,
   kirjausPvm,
+  hakemusKoskee,
 }: KaikkiSelvityksetSaatuProps) => {
   const { t } = useTranslations();
 
@@ -55,24 +58,26 @@ export const KaikkiSelvityksetSaatu = ({
         }}
         data-testid={'kaikki-selvitykset-saatu'}
       />
-      <CalendarComponent
-        selectedValue={viimeinenAsiakirjaHakijalta}
-        setDate={(value) => {
-          if (value) {
-            setViimeinenAsiakirjaHakijalta(value);
-            updateAsiakirjaTieto({
-              viimeinenAsiakirjaHakijalta: dateFns.format(
-                value,
-                "yyyy-MM-dd'T'HH:mm",
-              ),
-            });
-          }
-        }}
-        label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
-        dataTestId={'viimeinen-asiakirja-hakijalta'}
-        maxDate={new Date()}
-        minDate={new Date(kirjausPvm)}
-      />
+      {hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+        <CalendarComponent
+          selectedValue={viimeinenAsiakirjaHakijalta}
+          setDate={(value) => {
+            if (value) {
+              setViimeinenAsiakirjaHakijalta(value);
+              updateAsiakirjaTieto({
+                viimeinenAsiakirjaHakijalta: dateFns.format(
+                  value,
+                  "yyyy-MM-dd'T'HH:mm",
+                ),
+              });
+            }
+          }}
+          label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
+          dataTestId={'viimeinen-asiakirja-hakijalta'}
+          maxDate={new Date()}
+          minDate={new Date(kirjausPvm)}
+        />
+      )}
     </>
   );
 };

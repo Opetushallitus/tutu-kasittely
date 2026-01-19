@@ -29,6 +29,7 @@ import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   Hakemus,
+  HakemusTyyppi,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
@@ -263,6 +264,7 @@ const AsiakirjaPagePure = ({
         </OphTypography>
         <KaikkiSelvityksetSaatu
           asiakirjaTieto={asiakirja}
+          hakemusKoskee={hakemus.hakemusKoskee}
           updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           kirjausPvm={hakemus.kirjausPvm}
         />
@@ -280,15 +282,17 @@ const AsiakirjaPagePure = ({
           }}
           testId={'muistio-asiakirjat-sisainen'}
         />
-        <Muistio
-          label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
-          sisalto={asiakirja.huomiotMuistioon}
-          updateMuistio={(value: string) => {
-            asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
-          }}
-        />
+        {hakemus.hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+          <Muistio
+            label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
+            sisalto={asiakirja.huomiotMuistioon}
+            updateMuistio={(value: string) => {
+              asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
+            }}
+          />
+        )}
 
-        {hakemus.hakemusKoskee === 1 && (
+        {hakemus.hakemusKoskee === HakemusTyyppi.KELPOISUUS_AMMATTIIN && (
           <ImiPyyntoComponent
             imiPyynto={asiakirja.imiPyynto}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
@@ -296,43 +300,47 @@ const AsiakirjaPagePure = ({
         )}
         <Divider orientation={'horizontal'} />
 
-        <OphTypography variant={'h3'}>
-          {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
-        </OphTypography>
-        <Stack>
-          <OphTypography
-            variant={'label'}
-            data-testid="todistus-tarkistus-lupa-label"
-          >
-            {todistusTarkistusLupaLabel}
-          </OphTypography>
-          <OphTypography
-            variant={'body1'}
-            data-testid="todistus-tarkistus-lupa-value"
-          >
-            {todistusAitoustarkistusLupaValue}
-          </OphTypography>
-        </Stack>
-        <SuostumusVahvistamiselle
-          asiakirjaTieto={asiakirja}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
-        <ValmistumisenVahvistusComponent
-          asiakirjaTieto={asiakirja}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
-        <AllekirjoitustenTarkistus
-          asiakirjaTieto={asiakirja}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
-        <AlkuperaisetAsiakirjat
-          asiakirja={asiakirja}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
-        <AsiakirjaMallejaVastaavistaTutkinnoista
-          asiakirjaTieto={asiakirja}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
+        {hakemus.hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+          <>
+            <OphTypography variant={'h3'}>
+              {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
+            </OphTypography>
+            <Stack>
+              <OphTypography
+                variant={'label'}
+                data-testid="todistus-tarkistus-lupa-label"
+              >
+                {todistusTarkistusLupaLabel}
+              </OphTypography>
+              <OphTypography
+                variant={'body1'}
+                data-testid="todistus-tarkistus-lupa-value"
+              >
+                {todistusAitoustarkistusLupaValue}
+              </OphTypography>
+            </Stack>
+            <SuostumusVahvistamiselle
+              asiakirjaTieto={asiakirja}
+              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+            />
+            <ValmistumisenVahvistusComponent
+              asiakirjaTieto={asiakirja}
+              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+            />
+            <AllekirjoitustenTarkistus
+              asiakirjaTieto={asiakirja}
+              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+            />
+            <AlkuperaisetAsiakirjat
+              asiakirja={asiakirja}
+              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+            />
+            <AsiakirjaMallejaVastaavistaTutkinnoista
+              asiakirjaTieto={asiakirja}
+              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+            />
+          </>
+        )}
       </Stack>
       <SaveRibbon onSave={onSave} isSaving={isSaving} hasChanges={hasChanges} />
     </>

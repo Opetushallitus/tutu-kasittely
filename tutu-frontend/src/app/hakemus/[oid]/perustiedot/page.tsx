@@ -18,7 +18,7 @@ import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { Muistio } from '@/src/components/Muistio';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { LOPULLINEN_PAATOS_HAKEMUSKOSKEE } from '@/src/lib/types/hakemus';
+import { HakemusTyyppi } from '@/src/lib/types/hakemus';
 import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
 import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
 
@@ -60,7 +60,7 @@ export default function PerustietoPage() {
       <OphTypography variant={'h2'}>
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>
-      {hakemus.hakemusKoskee === LOPULLINEN_PAATOS_HAKEMUSKOSKEE ? (
+      {hakemus.hakemusKoskee === HakemusTyyppi.LOPULLINEN_PAATOS ? (
         <LopullisenHakemuksenSisalto
           hakemus={hakemus}
           t={t}

@@ -25,7 +25,7 @@ import {
 import {
   AsiakirjaPyynto,
   AsiakirjaTietoUpdateCallback,
-  LOPULLINEN_PAATOS_HAKEMUSKOSKEE,
+  HakemusTyyppi,
 } from '@/src/lib/types/hakemus';
 import { DeleteOutline } from '@mui/icons-material';
 import { IconButton } from '@/src/components/IconButton';
@@ -50,7 +50,7 @@ export const AsiakirjaPyynnot = ({
   const theme = useTheme();
 
   const pyydettavatAsiakirjat =
-    hakemusKoskee === LOPULLINEN_PAATOS_HAKEMUSKOSKEE
+    hakemusKoskee === HakemusTyyppi.LOPULLINEN_PAATOS
       ? LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT
       : PYYDETTAVAT_ASIAKIRJAT;
 
@@ -238,7 +238,10 @@ export const AsiakirjaPyynnot = ({
           <AsiakirjaPyyntoItem pyynto={pyynto} key={pyynto.id} index={index} />
         ))}
       {showEmptyAsiakirjaPyyntoDropdown && <AsiakirjaPyyntoItem />}
-      <Divider orientation="horizontal" />
+      {(showEmptyAsiakirjaPyyntoDropdown ||
+        currentAsiakirjaPyynnot.length > 0) && (
+        <Divider orientation="horizontal" />
+      )}
       <OphButton
         data-testid="pyyda-asiakirja-button"
         variant="outlined"
