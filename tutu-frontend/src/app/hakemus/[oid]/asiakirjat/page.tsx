@@ -29,7 +29,7 @@ import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   Hakemus,
-  HakemusTyyppi,
+  HakemusKoskee,
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
@@ -282,7 +282,7 @@ const AsiakirjaPagePure = ({
           }}
           testId={'muistio-asiakirjat-sisainen'}
         />
-        {hakemus.hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+        {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
           <Muistio
             label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
             sisalto={asiakirja.huomiotMuistioon}
@@ -292,7 +292,7 @@ const AsiakirjaPagePure = ({
           />
         )}
 
-        {hakemus.hakemusKoskee === HakemusTyyppi.KELPOISUUS_AMMATTIIN && (
+        {hakemus.hakemusKoskee === HakemusKoskee.KELPOISUUS_AMMATTIIN && (
           <ImiPyyntoComponent
             imiPyynto={asiakirja.imiPyynto}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
@@ -300,7 +300,7 @@ const AsiakirjaPagePure = ({
         )}
         <Divider orientation={'horizontal'} />
 
-        {hakemus.hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+        {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
           <>
             <OphTypography variant={'h3'}>
               {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}

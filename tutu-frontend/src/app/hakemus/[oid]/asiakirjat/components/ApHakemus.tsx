@@ -4,12 +4,12 @@ import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear'
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
-  HakemusTyyppi,
+  HakemusKoskee,
 } from '@/src/lib/types/hakemus';
 
 interface ApHakemusProps {
   asiakirjaTieto: AsiakirjaTieto;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }
 
@@ -29,7 +29,7 @@ export const ApHakemus = ({
   };
 
   return (
-    hakemusKoskee === HakemusTyyppi.KELPOISUUS_AMMATTIIN && (
+    hakemusKoskee === HakemusKoskee.KELPOISUUS_AMMATTIIN && (
       <OphRadioGroupWithClear
         label={t('hakemus.apHakemus')}
         labelId="ap-hakemus-radio-group-label"

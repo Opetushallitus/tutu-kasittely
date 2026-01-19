@@ -25,7 +25,7 @@ import {
 import {
   AsiakirjaPyynto,
   AsiakirjaTietoUpdateCallback,
-  HakemusTyyppi,
+  HakemusKoskee,
 } from '@/src/lib/types/hakemus';
 import { DeleteOutline } from '@mui/icons-material';
 import { IconButton } from '@/src/components/IconButton';
@@ -33,7 +33,7 @@ import { IconButton } from '@/src/components/IconButton';
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];
   updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
 }
 
 interface AsiakirjaPyyntoProps {
@@ -50,7 +50,7 @@ export const AsiakirjaPyynnot = ({
   const theme = useTheme();
 
   const pyydettavatAsiakirjat =
-    hakemusKoskee === HakemusTyyppi.LOPULLINEN_PAATOS
+    hakemusKoskee === HakemusKoskee.LOPULLINEN_PAATOS
       ? LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT
       : PYYDETTAVAT_ASIAKIRJAT;
 

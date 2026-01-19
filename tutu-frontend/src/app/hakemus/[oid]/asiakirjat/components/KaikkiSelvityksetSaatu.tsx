@@ -6,7 +6,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
-  HakemusTyyppi,
+  HakemusKoskee,
 } from '@/src/lib/types/hakemus';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
@@ -15,7 +15,7 @@ type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
   kirjausPvm: string;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
 };
 
 export const KaikkiSelvityksetSaatu = ({
@@ -58,7 +58,7 @@ export const KaikkiSelvityksetSaatu = ({
         }}
         data-testid={'kaikki-selvitykset-saatu'}
       />
-      {hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS && (
+      {hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
         <CalendarComponent
           selectedValue={viimeinenAsiakirjaHakijalta}
           setDate={(value) => {

@@ -13,7 +13,7 @@ import React, { useRef, useEffect } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { usePathname } from 'next/navigation';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { HakemusTyyppi } from '@/src/lib/types/hakemus';
+import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 const InnerBoxWrapper = styled(Box)(() => ({
   border: DEFAULT_BOX_BORDER,
@@ -141,7 +141,7 @@ export const HakemusTabs = ({
   hakemusKoskee,
 }: {
   hakemusOid: string;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
 }) => {
   const { t } = useTranslations();
   const activeTab = useActiveTabFromPath();
@@ -159,7 +159,7 @@ export const HakemusTabs = ({
   };
 
   const showSubTabs = SUB_TAB_NAMES.includes(selectedTabName);
-  const isEhdollinen = hakemusKoskee !== HakemusTyyppi.LOPULLINEN_PAATOS;
+  const isEhdollinen = hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS;
 
   const tabProps = [
     {

@@ -10,7 +10,7 @@ export type MuutosHistoriaItem = {
   modifiedBy: string;
 };
 
-export enum HakemusTyyppi {
+export enum HakemusKoskee {
   TUTKINNON_TASON_RINNASTAMINEN = 0,
   KELPOISUUS_AMMATTIIN = 1,
   TUTKINTO_SUORITUS_RINNASTAMINEN = 2,
@@ -24,7 +24,7 @@ export type Hakemus = {
   lomakeOid: string;
   lomakeId: number;
   lomakkeenKieli: Language;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
   readonly hakija: Hakija;
   asiatunnus: string;
   kirjausPvm: string;
@@ -51,7 +51,7 @@ export type Hakemus = {
  * NULL-arvot pyynnössä → NULL tietokantaan.
  */
 export type HakemusUpdateRequest = {
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
   asiatunnus: string | null;
   kirjausPvm: string | null;
   esittelyPvm: string | null;

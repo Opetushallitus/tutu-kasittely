@@ -1,4 +1,4 @@
-import { HakemusTyyppi } from './hakemus.js';
+import { HakemusKoskee } from './hakemus.js';
 
 export type HakemusListItem = {
   asiatunnus: string;
@@ -7,7 +7,7 @@ export type HakemusListItem = {
   aika: string;
   viimeinenAsiakirjaHakijalta?: string;
   hakemusOid: string;
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
   esittelijaOid: string;
   esittelijaKutsumanimi: string;
   esittelijaSukunimi: string;

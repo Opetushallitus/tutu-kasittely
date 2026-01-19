@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { Language } from '@/src/lib/localization/localizationTypes';
-import { HakemusTyyppi } from '@/src/lib/types/hakemus.js';
+import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
 
 export const TranslatedHakemuskoskee = ({
   hakemusKoskee,
   kieli,
 }: {
-  hakemusKoskee: HakemusTyyppi;
+  hakemusKoskee: HakemusKoskee;
   kieli: Language;
 }) => {
   const { tAsync } = useTranslationsOfLanguage(kieli);
