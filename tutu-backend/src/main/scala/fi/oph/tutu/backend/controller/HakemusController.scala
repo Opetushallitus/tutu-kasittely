@@ -151,17 +151,33 @@ class HakemusController(
     path = Array("hakemus-update-notification/{hakemusOid}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
+  @Operation(
+    summary = "Päivittää hakemuksen tiedot hakemuspalvelusta",
+    tags = Array("External")
+  )
   def paivitaHakemuksenTiedotAtarusta(
     @PathVariable("hakemusOid") hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    LOG.info(s"Vastaanotettu ataru-päivitys hakemukselle $hakemusOid")
-    ResponseEntity.status(HttpStatus.OK).body("")
+    Try {
+      hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid))
+    } match {
+      case Success(_) =>
+        LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
+        ResponseEntity.status(HttpStatus.OK).body("")
+      case Failure(exception) =>
+        LOG.error(s"Hakemuksen päivitys atarusta epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
   }
 
   @GetMapping(
     path = Array("state-change-notification/{hakemusOid}/{tila}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää hakemuksen tilan hakemuspalvelusta",
+    tags = Array("External")
   )
   def paivitaHakemuksenTilaAtarusta(
     @PathVariable("hakemusOid") hakemusOid: String,
@@ -169,8 +185,17 @@ class HakemusController(
     @RequestParam(required = false) timestamp: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    LOG.info(s"Vastaanotettu tila-päivitys hakemukselle $hakemusOid, tila $tila, aikaleima $timestamp")
-    ResponseEntity.status(HttpStatus.OK).body("")
+    Try {
+      hakemusService.paivitaKasittelyVaihe(HakemusOid(hakemusOid), AtaruHakemuksenTila.fromString(tila))
+    } match {
+      case Success(_) =>
+        val aikaleima = if (Option(timestamp).exists(_.nonEmpty)) timestamp else "<tyhjä>"
+        LOG.info(s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, aikaleima $aikaleima")
+        ResponseEntity.status(HttpStatus.OK).body("")
+      case Failure(exception) =>
+        LOG.error(s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: $hakemusOid, tila $tila", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
   }
 
   @GetMapping(

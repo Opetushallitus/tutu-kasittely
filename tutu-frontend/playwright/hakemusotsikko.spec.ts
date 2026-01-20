@@ -19,7 +19,7 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
 
   const esittelyPvm = page.getByTestId('hakemusotsikko-kasittelyvaihe');
   await expect(esittelyPvm).toContainText(
-    'Käsittelyvaihe: Hakemusta täydennetty 28.06.2025',
+    'Käsittelyvaihe: Hakemusta täydennetty 28.07.2025',
   );
 
   const esittelija = page

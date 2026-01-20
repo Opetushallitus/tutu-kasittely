@@ -18,5 +18,5 @@ test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
 
   const kasittelyVaihe = page.getByTestId('hakemus-sidebar-kasittelyvaihe');
 
-  await expect(kasittelyVaihe).toHaveText('Hakemusta täydennetty 28.06.2025');
+  await expect(kasittelyVaihe).toHaveText('Hakemusta täydennetty 28.07.2025');
 });

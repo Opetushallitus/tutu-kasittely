@@ -95,12 +95,6 @@ case class DbHakemus(
   esittelijanHuomioita: Option[String]
 )
 
-trait UpdatedFromAtaru {
-  def hakemusOid: String
-  def hakemusKoskee: Int
-  def kasittelyVaihe: KasittelyVaihe
-}
-
 case class Hakemus(
   hakemusOid: String,
   lomakeOid: String,
@@ -120,12 +114,13 @@ case class Hakemus(
   muokattu: Option[LocalDateTime] = None,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
+  ataruHakemustaMuokattu: Option[LocalDateTime] = None,
   yhteistutkinto: Boolean = false,
   asiakirja: Option[Asiakirja] = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None,
   esittelijanHuomioita: Option[String]
-) extends UpdatedFromAtaru
+)
 
 /**
  * Täysi hakemuksen päivityspyyntö.

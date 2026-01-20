@@ -112,6 +112,31 @@ class KasittelyVaiheServiceTest {
   }
 
   @Test
+  def testResolveReturnsHakemustaTaydennetty(): Unit = {
+    val tiedot = KasittelyVaiheTiedot(
+      selvityksetSaatu = false,
+      vahvistusPyyntoLahetetty = None,
+      vahvistusSaatu = None,
+      imiPyyntoLahetetty = None,
+      imiPyyntoVastattu = None,
+      lausuntoKesken = false,
+      paatosHyvaksymispaiva = None,
+      paatosLahetyspaiva = None
+    )
+
+    when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
+      .thenReturn(Some(tiedot))
+
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(
+      Some(asiakirjaId),
+      hakemusId,
+      AtaruHakemuksenTila.TaydennysPyyntoVastattu
+    )
+
+    assertEquals(KasittelyVaihe.HakemustaTaydennetty, result)
+  }
+
+  @Test
   def testResolveReturnsValmisKasiteltavaksi(): Unit = {
     val tiedot = KasittelyVaiheTiedot(
       selvityksetSaatu = true,
