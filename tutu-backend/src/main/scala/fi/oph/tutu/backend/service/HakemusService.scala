@@ -585,10 +585,6 @@ class HakemusService(
         val ataruHakemus   = haeAtaruHakemus(hakemusOid)
         val hakemusKoskee  = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
         var kasittelyVaihe = dbHakemus.kasittelyVaihe
-        LOG.info("!!!!!!!!!!!! dbHakemus" + dbHakemus.hakemusOid.s + ", " + dbHakemus.kasittelyVaihe)
-        LOG.info(
-          "!!!!!!!!!!!! ataruHakemus" + ataruHakemus.`information-request-timestamp` + ", " + ataruHakemus.modified
-        )
         if (dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined) {
           val hakemustaMuokattu    = toLocalDateTime(ataruHakemus.modified)
           val infoRequestTimestamp = toLocalDateTime(ataruHakemus.`information-request-timestamp`.get)
