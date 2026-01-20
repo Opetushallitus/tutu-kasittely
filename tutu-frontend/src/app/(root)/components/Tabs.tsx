@@ -44,6 +44,7 @@ const TabButton = ({
   tabName,
   tPrefix,
   active,
+  ...rest
 }: TabButtonProps) => {
   const { t } = useTranslations();
   const activeTabName = useActiveHakuTabName();
@@ -58,7 +59,9 @@ const TabButton = ({
   };
 
   return (
-    <StyledButton {...clickHandlers}>{t(`${tPrefix}.${tabName}`)}</StyledButton>
+    <StyledButton {...clickHandlers} {...rest}>
+      {t(`${tPrefix}.${tabName}`)}
+    </StyledButton>
   );
 };
 
@@ -93,6 +96,7 @@ const Tabs = ({ buttons, tPrefix }: TabsParams) => {
         return (
           <TabButton
             key={`${tPrefix}.${tabName}`}
+            data-testid={`hakemuslista-tab--${tabName}`}
             tPrefix={tPrefix}
             {...button}
           />

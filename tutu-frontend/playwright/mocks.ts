@@ -91,6 +91,21 @@ export const mockHakemusLista = async (page: Page) => {
   );
 };
 
+export const mockFilemakerList = async (page: Page) => {
+  await page.route(
+    '**/tutu-backend/api/vanha-tutu/lista*',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: await readFile(
+          path.join(__dirname, './fixtures/filemakerHakemukset.json'),
+        ),
+      });
+    },
+  );
+};
+
 export const mockUser = async (page: Page, kieli: string = 'fi') => {
   await page.route('**/tutu-backend/api/user', async (route: Route) => {
     await route.fulfill({

@@ -177,11 +177,11 @@ const Pagination = ({
   const disabled = page === 1 ? { disabled: true } : {};
   return (
     <PaginationRow>
-      <OphButton {...disabled} onClick={prevPage}>
+      <OphButton data-testid="fm-prev-page" {...disabled} onClick={prevPage}>
         <PrevIcon /> Edellinen
       </OphButton>
-      {page}
-      <OphButton onClick={nextPage}>
+      <span data-testid="fm-page-view">{page}</span>
+      <OphButton data-testid="fm-next-page" onClick={nextPage}>
         Seuraava <NextIcon />
       </OphButton>
     </PaginationRow>
