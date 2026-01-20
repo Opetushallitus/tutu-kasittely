@@ -2,11 +2,7 @@
 
 import { Grid2 as Grid, useTheme } from '@mui/material';
 import { OphInputFormField } from '@opetushallitus/oph-design-system';
-import {
-  //parseAsInteger,
-  parseAsString,
-  useQueryState,
-} from 'nuqs';
+import { parseAsString, useQueryState } from 'nuqs';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   handleFetchError,
@@ -33,7 +29,6 @@ export default function HakemusListFilters() {
     'fm-haku',
     parseAsString.withDefault(''),
   );
-  //const [page, setPage] = useQueryState('fm-page', parseAsInteger.withDefault(1));
 
   const searchParams = useSearchParams();
 
@@ -76,9 +71,6 @@ export default function HakemusListFilters() {
             {hakemukset?.length} {t('hakemuslista.hakemusta')}
           </Grid>
         )}
-        <Grid size={'auto'}>
-          <div>sivutus</div>
-        </Grid>
       </Grid>
     </Grid>
   );

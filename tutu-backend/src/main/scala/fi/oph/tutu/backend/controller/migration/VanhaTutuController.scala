@@ -114,7 +114,7 @@ class VanhaTutuController(
 
   /**
    * Listaa vanhoja TUTU-hakemuksia
-   * @param page sivu
+   * @param fm-page sivu
    */
   @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
@@ -125,11 +125,14 @@ class VanhaTutuController(
     )
   )
   def listaaVanhojaHakemuksia(
-    @RequestParam("page") page: String,
+    @RequestParam("fm-page", required = false) page: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      page.toInt
+      page match {
+        case null  => 1
+        case value => page.toInt
+      }
     } match {
       case Success(rawPageNum) => {
         val pageNum      = rawPageNum.max(1) // Sivut alkaen numerosta 1
