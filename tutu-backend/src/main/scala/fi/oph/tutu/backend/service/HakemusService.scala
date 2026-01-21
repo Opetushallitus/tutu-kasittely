@@ -399,7 +399,7 @@ class HakemusService(
                   case None            => None
                   case Some(timestamp) => Some(toLocalDateTime(timestamp))
                 },
-                ataruHakemustaMuokattu = Option(ataruHakemus.modified).map(toLocalDateTime),
+                ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
                 apHakemus = hakemus.apHakemus
               )
             )
