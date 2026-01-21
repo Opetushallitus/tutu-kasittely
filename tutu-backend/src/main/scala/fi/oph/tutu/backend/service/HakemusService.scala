@@ -582,17 +582,24 @@ class HakemusService(
   def paivitaTiedotAtarusta(hakemusOid: HakemusOid): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val ataruHakemus   = haeAtaruHakemus(hakemusOid)
-        val hakemusKoskee  = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        var kasittelyVaihe = dbHakemus.kasittelyVaihe
-        if (dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined) {
-          val hakemustaMuokattu    = toLocalDateTime(ataruHakemus.modified)
-          val infoRequestTimestamp = toLocalDateTime(ataruHakemus.`information-request-timestamp`.get)
-          if (hakemustaMuokattu.isAfter(infoRequestTimestamp)) {
-            kasittelyVaihe =
-              kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus.asiakirjaId, dbHakemus.id, TaydennysPyyntoVastattu)
+        val ataruHakemus  = haeAtaruHakemus(hakemusOid)
+        val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val kasittelyVaihe =
+          if (dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined) {
+            val hakemustaMuokattu    = toLocalDateTime(ataruHakemus.modified)
+            val infoRequestTimestamp = toLocalDateTime(ataruHakemus.`information-request-timestamp`.get)
+            if (hakemustaMuokattu.isAfter(infoRequestTimestamp)) {
+              kasittelyVaiheService.resolveKasittelyVaihe(
+                dbHakemus.asiakirjaId,
+                dbHakemus.id,
+                TaydennysPyyntoVastattu
+              )
+            } else {
+              dbHakemus.kasittelyVaihe
+            }
+          } else {
+            dbHakemus.kasittelyVaihe
           }
-        }
         val muutokset = new StringBuilder
         if (kasittelyVaihe != dbHakemus.kasittelyVaihe)
           muutokset ++= s"${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe"
