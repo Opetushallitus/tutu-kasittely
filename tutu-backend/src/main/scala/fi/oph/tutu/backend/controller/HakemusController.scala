@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.Tuntematon
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
@@ -159,15 +160,25 @@ class HakemusController(
     @PathVariable("hakemusOid") hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    Try {
-      hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid))
-    } match {
-      case Success(_) =>
-        LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
-        ResponseEntity.status(HttpStatus.OK).body("")
-      case Failure(exception) =>
-        LOG.error(s"Hakemuksen päivitys atarusta epäonnistui, hakemusOid: $hakemusOid", exception)
-        errorMessageMapper.mapErrorMessage(exception)
+    val user        = userService.getEnrichedUserDetails(true)
+    val authorities = user.authorities
+
+    if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+      errorMessageMapper.mapPlainErrorMessage(
+        RESPONSE_403_DESCRIPTION,
+        HttpStatus.FORBIDDEN
+      )
+    } else {
+      Try {
+        hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid))
+      } match {
+        case Success(_) =>
+          LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
+          ResponseEntity.status(HttpStatus.OK).body("")
+        case Failure(exception) =>
+          LOG.error(s"Hakemuksen päivitys atarusta epäonnistui, hakemusOid: $hakemusOid", exception)
+          errorMessageMapper.mapErrorMessage(exception)
+      }
     }
   }
 
@@ -185,16 +196,36 @@ class HakemusController(
     @RequestParam(required = false) timestamp: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    Try {
-      hakemusService.paivitaKasittelyVaihe(HakemusOid(hakemusOid), AtaruHakemuksenTila.fromString(tila))
-    } match {
-      case Success(_) =>
-        val aikaleima = if (Option(timestamp).exists(_.nonEmpty)) timestamp else "<tyhjä>"
-        LOG.info(s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, aikaleima $aikaleima")
-        ResponseEntity.status(HttpStatus.OK).body("")
-      case Failure(exception) =>
-        LOG.error(s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: $hakemusOid, tila $tila", exception)
-        errorMessageMapper.mapErrorMessage(exception)
+    val user        = userService.getEnrichedUserDetails(true)
+    val authorities = user.authorities
+    val tilaEnum    =
+      if (AtaruHakemuksenTila.isValidAtarutila(tila)) AtaruHakemuksenTila.fromString(tila)
+      else Tuntematon
+
+    if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+      errorMessageMapper.mapPlainErrorMessage(
+        RESPONSE_403_DESCRIPTION,
+        HttpStatus.FORBIDDEN
+      )
+    } else if (tilaEnum == Tuntematon) {
+      LOG.error(
+        s"Hakemuksen tilapäivitys atarusta hakemukselle $hakemusOid epäonnistui, virheellinen ataru-tila: $tila"
+      )
+      errorMessageMapper.mapPlainErrorMessage(
+        RESPONSE_400_DESCRIPTION,
+        HttpStatus.BAD_REQUEST
+      )
+    } else {
+      Try {
+        hakemusService.paivitaKasittelyVaihe(HakemusOid(hakemusOid), tilaEnum)
+      } match {
+        case Success(_) =>
+          LOG.info(s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, aikaleima $timestamp")
+          ResponseEntity.status(HttpStatus.OK).body("")
+        case Failure(exception) =>
+          LOG.error(s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: $hakemusOid, tila $tila", exception)
+          errorMessageMapper.mapErrorMessage(exception)
+      }
     }
   }
 

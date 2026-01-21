@@ -19,7 +19,7 @@ import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT, TUTU_SERVICE}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -354,7 +354,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(4)
+  @Order(3)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeHakemuslistaReturns200AndArrayOfHakemusListItemsWithNaytaAndHakemuskoskeeQueryParameters(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -397,7 +397,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(6)
+  @Order(4)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeLiitteidenTiedotReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -457,7 +457,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(8)
+  @Order(5)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def paivitaAsiatunnusReturns400(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -477,6 +477,68 @@ class HakemusControllerTest extends IntegrationTestBase {
           .content(requestJson)
           .header(dummyUserAgent, dummyUserAgentValue)
           .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  @Order(6)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaHakemuksenTiedotAtarustaReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+    initAtaruHakemusRequests("ataruHakemus6667_modified.json")
+    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(2)
+
+    val result = mockMvc
+      .perform(
+        get("/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
+      )
+      .andExpect(status().isOk)
+
+    val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid)
+    assertEquals(2, paivitettyHakemus.get.hakemusKoskee)
+  }
+
+  @Test
+  @Order(7)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaHakemuksenTilaAtarustaReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+    initAtaruHakemusRequests()
+    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
+
+    val result = mockMvc
+      .perform(
+        get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
+      )
+      .andExpect(status().isOk)
+
+    val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid)
+    assertEquals(KasittelyVaihe.OdottaaTaydennysta, paivitettyHakemus.get.kasittelyVaihe)
+  }
+
+  @Test
+  @Order(8)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def paivitaHakemuksenTilaAtarustaPalauttaa400JosTilatietoVirheellinen(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    val result = mockMvc
+      .perform(
+        get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
       )
       .andExpect(status().isBadRequest)
   }

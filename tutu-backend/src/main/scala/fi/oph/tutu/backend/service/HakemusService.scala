@@ -582,10 +582,12 @@ class HakemusService(
   def paivitaTiedotAtarusta(hakemusOid: HakemusOid): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val ataruHakemus  = haeAtaruHakemus(hakemusOid)
-        val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val ataruHakemus   = haeAtaruHakemus(hakemusOid)
+        val hakemusKoskee  = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
         val kasittelyVaihe =
-          if (dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined) {
+          if (
+            dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined
+          ) {
             val hakemustaMuokattu    = toLocalDateTime(ataruHakemus.modified)
             val infoRequestTimestamp = toLocalDateTime(ataruHakemus.`information-request-timestamp`.get)
             if (hakemustaMuokattu.isAfter(infoRequestTimestamp)) {

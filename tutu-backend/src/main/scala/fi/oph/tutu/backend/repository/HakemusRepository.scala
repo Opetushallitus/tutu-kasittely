@@ -407,7 +407,7 @@ class HakemusRepository extends BaseResultHandlers {
   def onkoHakemusOlemassa(hakemusOid: HakemusOid): Boolean =
     try {
       db.run(
-        sql"""SELECT EXISTS (SELECT 1 FROM hakemus where hakemus_oid = ${hakemusOid.s}) """.as[Boolean].head,
+        sql"""SELECT EXISTS (SELECT 1 FROM hakemus WHERE hakemus_oid = ${hakemusOid.s}) """.as[Boolean].head,
         "tarkista_hakemuksen_olemassaolo"
       )
     } catch {

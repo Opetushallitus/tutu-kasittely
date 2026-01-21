@@ -199,7 +199,6 @@ class IntegrationTestBase {
         val uuid = invocation.getArgument[UUID](0)
         createTutkinnotFixture(uuid)
       }
-    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0).thenReturn(1)
     when(ataruHakemusParser.parseLiitteidenTilat(any[AtaruHakemus], any[AtaruLomake])).thenReturn(
       Seq(
         AttachmentReview(
