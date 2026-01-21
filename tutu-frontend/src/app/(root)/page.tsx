@@ -6,16 +6,29 @@ import { HakemusList } from '@/src/app/(root)/components/HakemusList';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 import HakemusListFilters from '@/src/app/(root)/components/HakemusListFilters';
+import { Tabs } from '@/src/app/(root)/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import Link from 'next/link';
 import { Box } from '@mui/material';
+import { useState } from 'react';
+import { User } from '@/src/lib/types/user';
+import FilemakerFilters from './components/FilemakerFilters';
+import { FilemakerList } from './components/FilemakerList';
 
 export default function ListViewPage() {
   const { t } = useTranslations();
   const user = useAuthorizedUser();
   const userRoles = user?.authorities;
   const hasTutuUserRights = hasTutuRole(userRoles);
+
+  const [tab, setTab] = useState<string>('hakemukset');
+
+  const handleTabChange = (newTab: string) => () => {
+    if (newTab !== tab) {
+      setTab(newTab);
+    }
+  };
 
   return (
     <PageLayout
@@ -44,8 +57,26 @@ export default function ListViewPage() {
             </Box>
           </BoxWrapper>
           <BoxWrapper>
-            <HakemusListFilters />
-            <HakemusList user={user}></HakemusList>
+            <Tabs
+              tPrefix="hakemuslista.tyyppi"
+              buttons={[
+                {
+                  onClick: handleTabChange('hakemukset'),
+                  tabName: 'hakemukset',
+                  active: tab === 'hakemukset',
+                },
+                {
+                  onClick: handleTabChange('filemakerHakemukset'),
+                  tabName: 'filemakerHakemukset',
+                  active: tab === 'filemakerHakemukset',
+                },
+              ]}
+            />
+            {tab === 'filemakerHakemukset' ? (
+              <FilemakerHakemukset />
+            ) : (
+              <UudetHakemukset user={user} />
+            )}
           </BoxWrapper>
         </>
       ) : (
@@ -56,3 +87,17 @@ export default function ListViewPage() {
     </PageLayout>
   );
 }
+
+const UudetHakemukset = ({ user }: { user: User | null }) => (
+  <>
+    <HakemusListFilters />
+    <HakemusList user={user}></HakemusList>
+  </>
+);
+
+const FilemakerHakemukset = () => (
+  <>
+    <FilemakerFilters />
+    <FilemakerList />
+  </>
+);

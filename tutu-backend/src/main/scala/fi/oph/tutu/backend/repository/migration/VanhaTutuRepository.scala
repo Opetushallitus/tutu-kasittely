@@ -59,6 +59,29 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
+  def list(pageNum: Int): Seq[String] = {
+    val PAGE_SIZE = 20
+    val offset    = (pageNum - 1) * PAGE_SIZE // pageNum alkaa 1:stä
+    try {
+      val query = sql"""
+        SELECT data_json::text
+        FROM vanha_tutu
+        ORDER BY data_json->>'luontipvm' DESC
+        OFFSET ${offset}
+        LIMIT ${PAGE_SIZE}
+      """.as[String]
+
+      db.run(query, "vanha-tutu-list")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Vanha tutu listaus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Vanha tutu listaus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
   def delete(id: UUID): Int = {
     try {
       val query = sqlu"""
