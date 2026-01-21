@@ -285,7 +285,7 @@ class HakemusService(
             case Some(esittelijaOid) => Some(esittelijaOid.toString)
           },
           ataruHakemuksenTila = ataruHakemus.hakemuksenTila(),
-          ataruHakemustaMuokattu = Option(ataruHakemus.modified).map(toLocalDateTime),
+          ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
           kasittelyVaihe =
             dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
           muokattu = dbHakemus.muokattu,
