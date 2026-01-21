@@ -13,6 +13,7 @@ export type HakemusListItem = {
   esittelijaSukunimi: string;
   kasittelyVaihe: string;
   muokattu: string;
-  taydennyspyyntoLahetetty: string;
+  taydennyspyyntoLahetetty?: string;
+  ataruHakemustaMuokattu?: string;
   apHakemus?: boolean;
 };

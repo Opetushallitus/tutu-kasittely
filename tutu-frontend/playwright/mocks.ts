@@ -189,6 +189,7 @@ export const mockHakemus = async (
         ataruHakemuksenTila: 'kasittelymaksamatta',
         kasittelyVaihe: 'HakemustaTaydennetty',
         muokattu: '2025-06-28T10:59:47.597',
+        ataruHakemustaMuokattu: '2025-07-28T10:59:47.597',
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
         yhteistutkinto: false,

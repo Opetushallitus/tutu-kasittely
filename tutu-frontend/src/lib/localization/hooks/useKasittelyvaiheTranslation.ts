@@ -14,14 +14,23 @@ export function useKasittelyvaiheTranslation(
 
   const kasittelyVaihe = hakemus.kasittelyVaihe;
 
-  if (kasittelyVaihe === 'HakemustaTaydennetty') {
+  if (
+    kasittelyVaihe === 'HakemustaTaydennetty' &&
+    hakemus.ataruHakemustaMuokattu
+  ) {
     return {
       translation: t(`hakemus.kasittelyvaihe.hakemustataydennettytalloin`, {
-        date: dateFns.format(Date.parse(hakemus?.muokattu), DATE_PLACEHOLDER),
+        date: dateFns.format(
+          Date.parse(hakemus.ataruHakemustaMuokattu),
+          DATE_PLACEHOLDER,
+        ),
       }),
       timeLimitExceeded: false,
     };
-  } else if (kasittelyVaihe === 'OdottaaTaydennysta') {
+  } else if (
+    kasittelyVaihe === 'OdottaaTaydennysta' &&
+    hakemus.taydennyspyyntoLahetetty
+  ) {
     const dateLimit = dateFns.addWeeks(
       Date.parse(hakemus.taydennyspyyntoLahetetty),
       2,

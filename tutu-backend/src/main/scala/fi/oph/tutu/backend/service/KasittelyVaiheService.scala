@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.{TaydennysPyynto, TaydennysPyyntoVastattu}
 import fi.oph.tutu.backend.domain.KasittelyVaihe.{
   AlkukasittelyKesken,
   HakemustaTaydennetty,
@@ -42,17 +42,6 @@ class KasittelyVaiheService(
   asiakirjaRepository: AsiakirjaRepository
 ) {
 
-  private val ataruOriginatedStates                = Seq(OdottaaTaydennysta, HakemustaTaydennetty)
-  val statesWhereDataUpdatableInAtaru: Seq[String] = Seq(
-    AlkukasittelyKesken,
-    OdottaaTaydennysta,
-    HakemustaTaydennetty,
-    OdottaaIMIVastausta,
-    OdottaaVahvistusta,
-    OdottaaLausuntoa,
-    ValmisKasiteltavaksi
-  ).map(_.toString)
-
   /**
    * Ratkaisee hakemuksen käsittelyvaiheen perustuen hakemuksen tietoihin.
    *
@@ -87,7 +76,8 @@ class KasittelyVaiheService(
    * 1. Jos päätös tehty (päivämäärät asetettu) -> LoppukasittelyValmis tai HyvaksyttyEiLahetetty
    * 2. Jos jokin toimenpide kesken -> palauta kyseinen tila (OdottaaVahvistusta/Lausuntoa/IMIVastausta)
    * 3. Jos selvitykset saatu ja kaikki toimenpiteet valmiit -> ValmisKasiteltavaksi
-   * 4. Muuten -> AlkukasittelyKesken
+   * 4. Jos kaikkia selvityksiä ei vielä saatu, mutta täydennyspyyntöön vastattu -> HakemustaTaydennetty
+   * 5. Muuten -> AlkukasittelyKesken
    *
    * @param tiedot Käsittelyvaiheen ratkaisemiseen tarvittavat minimaaliset tiedot
    * @return Ratkaistu käsittelyvaihe
@@ -99,25 +89,25 @@ class KasittelyVaiheService(
       tiedot.lausuntoKesken,
       tiedot.imiPyyntoLahetetty.isDefined && tiedot.imiPyyntoVastattu.isEmpty,
       tiedot.selvityksetSaatu,
+      ataruHakemuksenTila == TaydennysPyyntoVastattu,
       tiedot.paatosLahetyspaiva.isDefined,
       tiedot.paatosHyvaksymispaiva.isDefined
     ) match
       // Päätöksen tilat - tarkistetaan onko päätös tehty
-      case (_, _, _, _, _, true, true) => KasittelyVaihe.LoppukasittelyValmis
-      case (_, _, _, _, _, _, true)    => KasittelyVaihe.HyvaksyttyEiLahetetty
+      case (_, _, _, _, _, _, true, true) => KasittelyVaihe.LoppukasittelyValmis
+      case (_, _, _, _, _, _, _, true)    => KasittelyVaihe.HyvaksyttyEiLahetetty
 
       // Prioriteettijärjestys: Tarkista ensin kesken olevat toimenpiteet
-      case (true, _, _, _, _, _, _) => KasittelyVaihe.OdottaaTaydennysta
-      case (_, true, _, _, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
-      case (_, _, true, _, _, _, _) => KasittelyVaihe.OdottaaLausuntoa
-      case (_, _, _, true, _, _, _) => KasittelyVaihe.OdottaaIMIVastausta
+      case (true, _, _, _, _, _, _, _) => KasittelyVaihe.OdottaaTaydennysta
+      case (_, true, _, _, _, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
+      case (_, _, true, _, _, _, _, _) => KasittelyVaihe.OdottaaLausuntoa
+      case (_, _, _, true, _, _, _, _) => KasittelyVaihe.OdottaaIMIVastausta
 
       // Jos selvitykset saatu ja ei toimenpiteitä kesken -> valmis käsiteltäväksi
-      case (false, false, false, false, true, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
+      case (false, false, false, false, true, _, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
+      // Jos kaikkia selvityksiä ei vielä saatu, mutta täydennyspyyntöön vastattu -> hakemusta täydennetty
+      case (false, false, false, false, false, true, _, _) => KasittelyVaihe.HakemustaTaydennetty
       // Oletusarvo: alkukäsittely kesken
       // (mahdollistaa tilan regression kun toimenpiteitä poistetaan)
       case _ => AlkukasittelyKesken
-
-  def sisaltaaAtarustaPaivittyviaTiloja(tilat: Seq[String]): Boolean =
-    tilat.exists(tila => ataruOriginatedStates.contains(KasittelyVaihe.fromString(tila)))
 }

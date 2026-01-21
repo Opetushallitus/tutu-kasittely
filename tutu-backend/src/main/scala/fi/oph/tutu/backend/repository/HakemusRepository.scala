@@ -49,16 +49,15 @@ class HakemusRepository extends BaseResultHandlers {
       HakemusListItem(
         null,
         null,
-        UUID.fromString(r.nextString()),
         r.nextString(),
         r.nextInt(),
         Option(r.nextString()),
-        Option(r.nextString()).map(UUID.fromString),
         Option(r.nextString()),
         null,
         null,
         KasittelyVaihe.fromString(r.nextString()),
         Option(r.nextString()),
+        null,
         null,
         Option(r.nextBoolean()),
         Option(r.nextString())
@@ -158,7 +157,7 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
             SELECT
-              h.id, h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiakirja_id, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -404,4 +403,18 @@ class HakemusRepository extends BaseResultHandlers {
         throw new RuntimeException(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage} ${e.getMessage}", e)
     }
   }
+
+  def onkoHakemusOlemassa(hakemusOid: HakemusOid): Boolean =
+    try {
+      db.run(
+        sql"""SELECT EXISTS (SELECT 1 FROM hakemus WHERE hakemus_oid = ${hakemusOid.s}) """.as[Boolean].head,
+        "tarkista_hakemuksen_olemassaolo"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Hakemuksen olemassaolon tarkistus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
 }

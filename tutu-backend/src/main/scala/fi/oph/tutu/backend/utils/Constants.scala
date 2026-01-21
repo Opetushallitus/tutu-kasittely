@@ -9,8 +9,7 @@ object Constants {
   val ATARU_SERVICE = "Hakemuspalvelu"
   val TUTU_SERVICE  = "Tutu"
 
-  val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS                           = 5
-  val HAKEMUS_KOSKEE_AINOASTAAN_LOPULLISTA_PAATOSTA: Seq[String] = Seq(HAKEMUS_KOSKEE_LOPULLINEN_PAATOS.toString)
+  val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
 
   val DATE_TIME_FORMAT                         = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
   val DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX"
