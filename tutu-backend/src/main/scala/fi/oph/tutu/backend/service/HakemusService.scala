@@ -96,7 +96,7 @@ class HakemusService(
 
   def luoLopullisenPaatoksenHakemus(
     hakemus: UusiAtaruHakemus
-  ): UUID = {
+  ): (UUID, Paatos) = {
     val ataruHakemus             = haeAtaruHakemus(hakemus.hakemusOid)
     val suoritusMaaKoodiUri      = ataruHakemusParser.parseLopullinenPaatosSuoritusmaaMaakoodiUri(ataruHakemus)
     val vastaavaEhdollinenPaatos = ataruHakemusParser.parseLopullinenPaatosVastaavaEhdollinen(ataruHakemus)
@@ -119,7 +119,12 @@ class HakemusService(
         ATARU_SERVICE
       )
       // TODO oma päätöstyypi lopulliselle päätökselle
-    } yield hakemusId
+      savedPaatos <- paatosRepository.tallennaPaatosAction(
+        hakemusId,
+        Paatos(hakemusId = Some(hakemusId)),
+        TUTU_SERVICE
+      )
+    } yield (hakemusId, savedPaatos)
 
     luoKokonaishakemus(hakemus.hakemusOid, transactionalAction)
   }

@@ -100,28 +100,25 @@ class HakemusController(
             )
         }
         if (hakemus.hakemusOid.isValid) {
-          var hakemusId: UUID = null
-          if (hakemus.onLopullinenPaatos) {
-            hakemusId = hakemusService.luoLopullisenPaatoksenHakemus(hakemus)
+          val (hakemusId, paatos): (UUID, Paatos) = if (hakemus.onLopullinenPaatos) {
+            hakemusService.luoLopullisenPaatoksenHakemus(hakemus)
           } else {
-            val result: (UUID, Perustelu, Paatos) = hakemusService.tallennaAtaruHakemus(hakemus)
-            hakemusId = result._1
-            val perustelu = result._2
-            val paatos    = result._3
-
+            val (hakemusId, perustelu, paatos) = hakemusService.tallennaAtaruHakemus(hakemus)
             auditLog.logCreate(
               auditLog.getUser(request),
               Map("perusteluId" -> perustelu.id.toString),
               CreatePerustelu,
               perustelu.toString
             )
-            auditLog.logCreate(
-              auditLog.getUser(request),
-              Map("paatosId" -> paatos.id.toString),
-              CreatePaatos,
-              paatos._3.toString
-            )
+            (hakemusId, paatos)
           }
+
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("paatosId" -> paatos.id.toString),
+            CreatePaatos,
+            paatos.toString
+          )
           auditLog.logCreate(
             auditLog.getUser(request),
             Map("hakemusId" -> hakemusId.toString),

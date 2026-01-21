@@ -9,13 +9,15 @@ import { clone } from 'remeda';
 import {
   AsiakirjamallitTutkinnoista,
   Hakemus,
+  HakemusKoskee,
   MuutosHistoriaItem,
   SisaltoItem,
 } from '@/src/lib/types/hakemus';
 import { LiiteItem } from '@/src/lib/types/liiteItem';
 
-export const getHakemus = () => {
+export const getHakemus = (hakemusKoskee?: HakemusKoskee) => {
   const hakemus: Hakemus = { ..._hakemus };
+  hakemus.hakemusKoskee = hakemusKoskee ?? hakemus.hakemusKoskee;
   const sisalto: Array<SisaltoItem> = [..._sisalto];
   const liitteidenTilat = [..._liitteidenTilat];
   const muutoshistoria: Array<MuutosHistoriaItem> = [..._muutoshistoria];

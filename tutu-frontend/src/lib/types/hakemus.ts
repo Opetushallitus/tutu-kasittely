@@ -10,12 +10,21 @@ export type MuutosHistoriaItem = {
   modifiedBy: string;
 };
 
+export enum HakemusKoskee {
+  TUTKINNON_TASON_RINNASTAMINEN = 0,
+  KELPOISUUS_AMMATTIIN = 1,
+  TUTKINTO_SUORITUS_RINNASTAMINEN = 2,
+  RIITTAVAT_OPINNOT = 3,
+  KELPOISUUS_AMMATTIIN_AP = 4,
+  LOPULLINEN_PAATOS = 5,
+}
+
 export type Hakemus = {
   hakemusOid: string;
   lomakeOid: string;
   lomakeId: number;
   lomakkeenKieli: Language;
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusKoskee;
   readonly hakija: Hakija;
   asiatunnus: string;
   kirjausPvm: string;
@@ -36,15 +45,13 @@ export type Hakemus = {
   esittelijanHuomioita?: string;
 };
 
-export const LOPULLINEN_PAATOS_HAKEMUSKOSKEE = 5;
-
 /**
  * Täysi hakemuksen päivityspyyntö.
  * Käytetään PUT-endpointissa kaikkien käyttäjän muokattavien kenttien korvaamiseen.
  * NULL-arvot pyynnössä → NULL tietokantaan.
  */
 export type HakemusUpdateRequest = {
-  hakemusKoskee: number;
+  hakemusKoskee: HakemusKoskee;
   asiatunnus: string | null;
   kirjausPvm: string | null;
   esittelyPvm: string | null;
@@ -124,7 +131,7 @@ export type TarkistuksenTila = {
 };
 
 export type AsiakirjaPyynto = {
-  id?: string;
+  id: string;
   asiakirjanTyyppi: string;
 };
 

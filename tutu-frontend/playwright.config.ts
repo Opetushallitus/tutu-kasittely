@@ -22,6 +22,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
     bypassCSP: true,
     timezoneId: 'Europe/Helsinki',
+    video: process.env.VIDEO ? 'retain-on-failure' : 'off',
   },
 
   /* Configure projects for major browsers */

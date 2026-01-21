@@ -8,7 +8,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   Divider,
   ListSubheader,
@@ -18,10 +18,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { StyledTooltip } from '@/src/components/ToolTip';
-import { pyydettavatAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/types';
+import {
+  PYYDETTAVAT_ASIAKIRJAT,
+  LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT,
+} from '@/src/app/hakemus/[oid]/asiakirjat/types';
 import {
   AsiakirjaPyynto,
   AsiakirjaTietoUpdateCallback,
+  HakemusKoskee,
 } from '@/src/lib/types/hakemus';
 import { DeleteOutline } from '@mui/icons-material';
 import { IconButton } from '@/src/components/IconButton';
@@ -29,6 +33,7 @@ import { IconButton } from '@/src/components/IconButton';
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];
   updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  hakemusKoskee: HakemusKoskee;
 }
 
 interface AsiakirjaPyyntoProps {
@@ -39,9 +44,15 @@ interface AsiakirjaPyyntoProps {
 export const AsiakirjaPyynnot = ({
   asiakirjaPyynnot,
   updateAsiakirjaTietoAction,
+  hakemusKoskee,
 }: AsiakirjaPyynnotProps) => {
   const { t } = useTranslations();
   const theme = useTheme();
+
+  const pyydettavatAsiakirjat =
+    hakemusKoskee === HakemusKoskee.LOPULLINEN_PAATOS
+      ? LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT
+      : PYYDETTAVAT_ASIAKIRJAT;
 
   const [currentAsiakirjaPyynnot, setCurrentAsiakirjaPyynnot] =
     React.useState<AsiakirjaPyynto[]>(asiakirjaPyynnot);
@@ -56,9 +67,10 @@ export const AsiakirjaPyynnot = ({
   }, [asiakirjaPyynnot]);
 
   const addOrUpdateAsiakirjapyynto = (selectedValue: string, id?: string) => {
-    const pyynto = id
-      ? { id: id, asiakirjanTyyppi: selectedValue }
-      : { asiakirjanTyyppi: selectedValue };
+    const pyynto = {
+      id: id || crypto.randomUUID(), // Käytä väliaikaista idtä niin uusien pyyntöjen poisto toimii
+      asiakirjanTyyppi: selectedValue,
+    };
 
     const toBePyynnot = id
       ? currentAsiakirjaPyynnot.map((p) => (p.id === id ? pyynto : p))
@@ -101,24 +113,34 @@ export const AsiakirjaPyynnot = ({
     color: ophColors.black,
   });
 
-  const pyydettavatAsiakirjatGroupedOptions = Object.entries(
-    pyydettavatAsiakirjat,
-  ).map(([category, items]) => {
-    return [
-      <ListSubheader key={`header-${category}`}>
-        <OphTypography variant="h5">
-          {t(`hakemus.asiakirjat.asiakirjapyynnot.otsikko.${category}`)}
-        </OphTypography>
-      </ListSubheader>,
-      items.map((item) => (
-        <MenuItem key={item} value={item}>
-          <OphTypography style={{ paddingLeft: theme.spacing(1) }}>
-            {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
-          </OphTypography>
-        </MenuItem>
-      )),
-    ];
-  });
+  const selectedTypes = useMemo(
+    () => new Set(currentAsiakirjaPyynnot.map((p) => p.asiakirjanTyyppi)),
+    [currentAsiakirjaPyynnot],
+  );
+
+  const pyydettavatAsiakirjatGroupedOptions = (excludeValue?: string) => {
+    return Object.entries(pyydettavatAsiakirjat).map(
+      ([category, items]: [string, string[]]) => {
+        return [
+          <ListSubheader key={`header-${category}`}>
+            <OphTypography variant="h5">
+              {t(`hakemus.asiakirjat.asiakirjapyynnot.otsikko.${category}`)}
+            </OphTypography>
+          </ListSubheader>,
+          items.map((item) => {
+            const isDisabled = selectedTypes.has(item) && item !== excludeValue;
+            return (
+              <MenuItem key={item} value={item} disabled={isDisabled}>
+                <OphTypography style={{ paddingLeft: theme.spacing(1) }}>
+                  {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
+                </OphTypography>
+              </MenuItem>
+            );
+          }),
+        ];
+      },
+    );
+  };
 
   const asiakirjatTooltip = (
     <>
@@ -137,20 +159,22 @@ export const AsiakirjaPyynnot = ({
           style={{ alignSelf: 'top' }}
         />
       </div>
-      {Object.entries(pyydettavatAsiakirjat).map(([category, items]) => (
-        <React.Fragment key={category}>
-          <OphTypography variant="h5">
-            {t(`hakemus.asiakirjat.asiakirjapyynnot.otsikko.${category}`)}
-          </OphTypography>
-          <Stack direction="column" style={{ paddingBottom: '10px' }}>
-            {items.map((item) => (
-              <OphTypography key={item}>
-                {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
-              </OphTypography>
-            ))}
-          </Stack>
-        </React.Fragment>
-      ))}
+      {Object.entries(pyydettavatAsiakirjat).map(
+        ([category, items]: [string, string[]]) => (
+          <React.Fragment key={category}>
+            <OphTypography variant="h5">
+              {t(`hakemus.asiakirjat.asiakirjapyynnot.otsikko.${category}`)}
+            </OphTypography>
+            <Stack direction="column" style={{ paddingBottom: '10px' }}>
+              {items.map((item) => (
+                <OphTypography key={item}>
+                  {t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${item}`)}
+                </OphTypography>
+              ))}
+            </Stack>
+          </React.Fragment>
+        ),
+      )}
     </>
   );
 
@@ -168,7 +192,7 @@ export const AsiakirjaPyynnot = ({
             addOrUpdateAsiakirjapyynto(e.target.value, pyynto?.id)
           }
         >
-          {pyydettavatAsiakirjatGroupedOptions}
+          {pyydettavatAsiakirjatGroupedOptions(pyynto?.asiakirjanTyyppi)}
         </Select>
       </Stack>
 
@@ -211,10 +235,13 @@ export const AsiakirjaPyynnot = ({
       </div>
       {currentAsiakirjaPyynnot.length > 0 &&
         currentAsiakirjaPyynnot.map((pyynto, index) => (
-          <AsiakirjaPyyntoItem pyynto={pyynto} key={index} index={index} />
+          <AsiakirjaPyyntoItem pyynto={pyynto} key={pyynto.id} index={index} />
         ))}
       {showEmptyAsiakirjaPyyntoDropdown && <AsiakirjaPyyntoItem />}
-      <Divider orientation="horizontal" />
+      {(showEmptyAsiakirjaPyyntoDropdown ||
+        currentAsiakirjaPyynnot.length > 0) && (
+        <Divider orientation="horizontal" />
+      )}
       <OphButton
         data-testid="pyyda-asiakirja-button"
         variant="outlined"
