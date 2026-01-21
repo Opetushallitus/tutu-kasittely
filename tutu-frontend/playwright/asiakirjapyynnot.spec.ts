@@ -86,6 +86,7 @@ test.describe('Asiakirjapyynnöt', () => {
 
     const pyydaSelect = page.getByTestId('pyyda-asiakirja-select').first();
     await expect(pyydaSelect).toBeVisible();
+    await expect(pyydaSelect).toHaveText('Valitse...');
     await pyydaSelect.click();
 
     const menuItems = page.locator('[role="option"]');
@@ -129,6 +130,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await addButton.click();
 
     let selects = page.getByTestId('pyyda-asiakirja-select');
+    await expect(selects.nth(0)).toHaveText('Valitse...');
     await selects.nth(0).click();
 
     await page

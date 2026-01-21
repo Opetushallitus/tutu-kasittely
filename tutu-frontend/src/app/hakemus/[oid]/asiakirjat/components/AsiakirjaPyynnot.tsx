@@ -191,6 +191,14 @@ export const AsiakirjaPyynnot = ({
           onChange={(e) =>
             addOrUpdateAsiakirjapyynto(e.target.value, pyynto?.id)
           }
+          displayEmpty
+          renderValue={(value) => {
+            if (!value) {
+              return t('yleiset.valitse');
+            }
+
+            return t(`hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.${value}`);
+          }}
         >
           {pyydettavatAsiakirjatGroupedOptions(pyynto?.asiakirjanTyyppi)}
         </Select>
