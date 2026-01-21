@@ -117,6 +117,7 @@ export type CalendarProps = {
   label: string;
   minDate?: Date | null;
   maxDate?: Date | null;
+  disabled?: boolean;
   dataTestId?: string;
 };
 
@@ -126,6 +127,7 @@ export const CalendarComponent = ({
   label,
   minDate = new Date(0),
   maxDate,
+  disabled,
   dataTestId,
 }: CalendarProps) => {
   const { t, getLanguage } = useTranslations();
@@ -155,10 +157,12 @@ export const CalendarComponent = ({
     <CalendarStyles>
       <OphFormFieldWrapper
         data-testid={dataTestId}
+        disabled={disabled}
         label={label}
         renderInput={({ labelId }) => (
           <DatePicker
             ariaLabelledBy={labelId}
+            disabled={disabled}
             selected={selectedValue}
             onChange={(date) => setDate(date)}
             minDate={minDate || undefined}

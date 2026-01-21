@@ -49,7 +49,8 @@ export const PaatosHeader = ({
               })
             }
             selectedValue={hyvaksymispaiva}
-            maxDate={null}
+            minDate={null}
+            maxDate={lahetyspaiva}
             label={t('hakemus.paatos.hyvaksymispaiva')}
             dataTestId="paatos-hyvaksymispaiva-calendar"
           />
@@ -61,7 +62,9 @@ export const PaatosHeader = ({
                   : null,
               })
             }
+            disabled={!hyvaksymispaiva}
             selectedValue={lahetyspaiva}
+            minDate={hyvaksymispaiva}
             maxDate={null}
             label={t('hakemus.paatos.lahetyspaiva')}
             dataTestId="paatos-lahetyspaiva-calendar"
