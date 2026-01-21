@@ -117,7 +117,7 @@ class HakemusController(
             auditLog.getUser(request),
             Map("paatosId" -> paatos.id.toString),
             CreatePaatos,
-            paatos._3.toString
+            paatos.toString
           )
           auditLog.logCreate(
             auditLog.getUser(request),
