@@ -114,7 +114,7 @@ class VanhaTutuController(
 
   /**
    * Listaa vanhoja TUTU-hakemuksia
-   * @param fm-page sivu
+   * @param page sivu - request param fm-page
    */
   @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
@@ -137,7 +137,12 @@ class VanhaTutuController(
       case Success(rawPageNum) => {
         val pageNum      = rawPageNum.max(1) // Sivut alkaen numerosta 1
         val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum)
-        val json         = "[" + hakemusLista.mkString(",") + "]"
+        val arrayNode    = mapper.createArrayNode()
+        hakemusLista.foreach { item =>
+          arrayNode.add(mapper.readTree(item))
+        }
+        val json = mapper.writeValueAsString(arrayNode)
+
         ResponseEntity.status(HttpStatus.OK).body(json)
       }
       case Failure(exception) => {

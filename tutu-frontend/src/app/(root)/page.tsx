@@ -66,13 +66,13 @@ export default function ListViewPage() {
                   active: tab === 'hakemukset',
                 },
                 {
-                  onClick: handleTabChange('filemaker-hakemukset'),
+                  onClick: handleTabChange('filemakerHakemukset'),
                   tabName: 'filemakerHakemukset',
-                  active: tab === 'filemaker-hakemukset',
+                  active: tab === 'filemakerHakemukset',
                 },
               ]}
             />
-            {tab === 'filemaker-hakemukset' ? (
+            {tab === 'filemakerHakemukset' ? (
               <FilemakerHakemukset />
             ) : (
               <UudetHakemukset user={user} />

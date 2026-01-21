@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
 import { redirect, useSearchParams } from 'next/navigation';
 
-export default function HakemusListFilters() {
+export default function FilemakerFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();

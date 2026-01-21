@@ -72,7 +72,7 @@ class MigrationService(
     cleanupExistingData() // Tulevaisuudessa voi olla kaksi eri XML tiedostoa yhden sijaan ja tämä pitää poistaa
 
     // XML File to chunks
-    val fileEntity = fetchFileLocal(key) // fetchFile(key)
+    val fileEntity = fetchFile(key)
     logFileInfo(fileEntity)
 
     try {
@@ -139,24 +139,6 @@ class MigrationService(
         LOG.error(s"Tiedoston haku epäonnistui: key=$fileKey", e)
         throw new RuntimeException(s"Tiedoston haku epäonnistui avaimella '$fileKey': ${e.getMessage}", e)
     }
-  }
-
-  private def fetchFileLocal(fileKey: String) = {
-    fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectEntity(
-      new java.io.ByteArrayInputStream(
-        scala.io.Source
-          .fromFile(fileKey)
-          .getLines()
-          .mkString("\n")
-          .getBytes(java.nio.charset.StandardCharsets.UTF_8)
-      ),
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    )
   }
 
   private def logFileInfo(fileEntity: fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectEntity): Unit = {

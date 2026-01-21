@@ -32,7 +32,9 @@
       "tabs": "Hakemuslistan tyyppi",
       "hakemukset": "Hakemukset",
       "filemakerHakemukset": "Filemakerin hakemukset"
-    }
+    },
+    "seuraava": "Seuraava",
+    "edellinen": "Edellinen"
   },
   "hakemus": {
     "apHakemus": "AP-hakemus",

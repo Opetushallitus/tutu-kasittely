@@ -30,7 +30,7 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   expect(await hakemusRow.count()).toBe(4);
 });
 
-test('Hakemuslistan filtteri ja sivutu saa oikeat arvot query-parametreista', async ({
+test('Hakemuslistan filtteri ja sivutus saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
   // Navigoi filemaker-hakemuksiin

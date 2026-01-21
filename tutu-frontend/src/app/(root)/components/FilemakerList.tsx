@@ -174,15 +174,16 @@ const Pagination = ({
   nextPage: VoidFunction;
   prevPage: VoidFunction;
 }) => {
+  const { t } = useTranslations();
   const disabled = page === 1 ? { disabled: true } : {};
   return (
     <PaginationRow>
       <OphButton data-testid="fm-prev-page" {...disabled} onClick={prevPage}>
-        <PrevIcon /> Edellinen
+        <PrevIcon /> {t('hakemuslista.edellinen')}
       </OphButton>
       <span data-testid="fm-page-view">{page}</span>
       <OphButton data-testid="fm-next-page" onClick={nextPage}>
-        Seuraava <NextIcon />
+        {t('hakemuslista.seuraava')} <NextIcon />
       </OphButton>
     </PaginationRow>
   );
