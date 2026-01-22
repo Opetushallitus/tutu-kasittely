@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Box, FormControl, useTheme } from '@mui/material';
 import {
   OphCheckbox,
@@ -20,11 +21,8 @@ import { APSisalto } from '@/src/lib/types/APSisalto';
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
-  const {
-    hakemusState: { editedData: hakemus },
-    isLoading,
-    error,
-  } = useHakemus();
+  const { hakemusState, isLoading, error } = useHakemus();
+  const { editedData: hakemus } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
     perustelu,
@@ -54,6 +52,8 @@ export default function ApPage() {
     const next = { ...currentAPSisalto, [key]: value };
     updateLocal({ apSisalto: next });
   };
+
+  useUnsavedChanges(hasChanges || hakemusState.hasChanges);
 
   const apSisalto = editedPerustelu?.apSisalto;
 

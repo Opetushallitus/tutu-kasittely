@@ -1,6 +1,7 @@
 'use client';
 
 import { Add } from '@mui/icons-material';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphButton,
@@ -106,6 +107,8 @@ export default function Lausuntotiedot() {
     );
     updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
+
+  useUnsavedChanges(hasChanges);
 
   return (
     <PerusteluLayout

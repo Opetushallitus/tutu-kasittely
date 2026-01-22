@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Stack } from '@mui/material';
 import {
   OphCheckbox,
@@ -66,6 +67,9 @@ export default function UoroPage() {
   };
 
   const uoRoSisalto = perusteluState.editedData?.uoRoSisalto;
+
+  useUnsavedChanges(perusteluState.hasChanges || hakemusState.hasChanges);
+
   return (
     <>
       <PerusteluLayout
