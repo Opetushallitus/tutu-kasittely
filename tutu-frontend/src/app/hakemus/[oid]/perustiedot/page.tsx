@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
@@ -33,6 +34,8 @@ export default function PerustietoPage() {
     hakemusState: { editedData: hakemus, hasChanges, save, updateLocal },
     error,
   } = useHakemus();
+
+  useUnsavedChanges(hasChanges);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);

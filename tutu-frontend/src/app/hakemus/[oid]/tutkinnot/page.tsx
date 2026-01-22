@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
@@ -41,6 +42,8 @@ export default function TutkintoPage() {
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
+
+  useUnsavedChanges(hakemusState.hasChanges);
 
   useEffect(() => {
     if (!hakemusState.editedData) return;

@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
@@ -80,6 +81,8 @@ const YleisetPerustelut = ({
     tutkintoState.save();
     hakemusState.save();
   };
+
+  useUnsavedChanges(hasChanges);
 
   return (
     <>

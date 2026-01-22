@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
@@ -110,6 +111,8 @@ const Paatostiedot = ({
   const [paatosTeksti, setPaatosTeksti] = useState<string>('');
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
+
+  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges);
 
   useEffect(() => {
     if (showPaatosTekstiPreview) {
