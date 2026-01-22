@@ -6,7 +6,6 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { StyledLink } from '@/src/components/StyledLink';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
-import { HakemusKoskee as HakemusKoskeeEnum } from '@/src/lib/types/hakemus';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { CenteredRow } from '@/src/components/CenteredRow';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
@@ -36,17 +35,11 @@ export const HakemusKoskee = () => {
   const { hakemusState } = useHakemus();
 
   const hakemus = hakemusState.editedData!;
-  let hakemusKoskee = hakemus.hakemusKoskee;
 
-  const isAPHakemus =
-    hakemusKoskee === HakemusKoskeeEnum.KELPOISUUS_AMMATTIIN_AP;
-
-  if (isAPHakemus) {
-    hakemusKoskee = HakemusKoskeeEnum.KELPOISUUS_AMMATTIIN;
-  }
+  const isAPHakemus = hakemus.asiakirja.apHakemus;
 
   const hakemusKoskeeLabel = hakemusKoskeeOptions.find(
-    (option) => option.value === String(hakemusKoskee),
+    (option) => option.value === String(hakemus.hakemusKoskee),
   )?.label;
 
   return (
