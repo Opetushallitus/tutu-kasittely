@@ -85,7 +85,8 @@
       },
       "kirjoitaViesti": "Kirjoita viesti",
       "perustelumuistio": "Perustelumuistio",
-      "kirjoitaPaatos": "Kirjoita päätös"
+      "kirjoitaPaatos": "Kirjoita päätös",
+      "avaaHakemus": "Avaa hakemus"
     },
     "perustelumuistio": {
       "otsikko": "Perustelumuistio",

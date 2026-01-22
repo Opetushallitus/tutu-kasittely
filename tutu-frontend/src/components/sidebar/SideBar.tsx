@@ -11,6 +11,7 @@ import { Paatos } from '@/src/components/sidebar/Paatos';
 import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
 import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
+import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
 
 const MailOutlineIconBlue = styled(MailOutlineIcon)({
   color: ophColors.blue2,
@@ -37,6 +38,11 @@ const showTaydennyspyynto = (pathName: string) => {
   return pathContainsOneOf(SHOW_TAYDENNYSPYYNTO_PATHS, pathName);
 };
 
+const SidebarInfoStack = styled(Stack)(({ theme }) => ({
+  backgroundColor: ophColors.grey50,
+  padding: theme.spacing(1, 1),
+}));
+
 export const SideBar = () => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -50,8 +56,15 @@ export const SideBar = () => {
       sx={{ maxWidth: '20%' }}
     >
       <KasittelyVaihe showExtended={showExtendedKasittelyvaihe(pathName)} />
-      <Paatos />
-      {showTaydennyspyynto(pathName) && <Taydennyspyynto />}
+      <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
+        <HakemusKoskee />
+        <Paatos />
+      </SidebarInfoStack>
+      {showTaydennyspyynto(pathName) && (
+        <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
+          <Taydennyspyynto />
+        </SidebarInfoStack>
+      )}
       <ToimintoLinkki
         href="/"
         gap={theme.spacing(1)}
