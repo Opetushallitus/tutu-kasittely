@@ -16,7 +16,7 @@ import {
 import { doApiPatch } from '@/src/lib/tutu-backend/api';
 import useToaster from '@/src/hooks/useToaster';
 import { handleFetchError } from '@/src/lib/utils';
-import { ApHakemusBadge } from '@/src/components/Badges';
+import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
@@ -83,6 +83,9 @@ export default function HakemusRow({
   const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
     useKasittelyvaiheTranslation(hakemus);
 
+  // TODO: Lisää oikea ataruHakemuksenTila
+  const isPeruutettu = true;
+
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
@@ -132,9 +135,19 @@ export default function HakemusRow({
       <StyledTableCell data-testid={'hakemus-row-kasittelyvaihe'}>
         <OphTypography
           variant="body1"
-          {...(timeLimitExceeded && { sx: { color: ophColors.alias.error } })}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            ...(timeLimitExceeded && { color: ophColors.alias.error }),
+          }}
         >
           {kasittelyVaiheTranslation}
+          {isPeruutettu && (
+            <PeruutettuBadge
+              label={t('hakemus.ataruhakemuksentila.peruutettu')}
+            />
+          )}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>

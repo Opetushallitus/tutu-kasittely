@@ -52,7 +52,8 @@
       "paatosmaksuavoin": "Päätösmaksu avoin",
       "paatosmaksamatta": "Päätösmaksu maksamatta",
       "paatosmaksettu": "Päätösmaksu maksettu",
-      "laskutuksessa": "Laskutuksessa"
+      "laskutuksessa": "Laskutuksessa",
+      "peruutettu": "Peruutettu"
     },
     "kasittelyvaihe": {
       "alkukasittelykesken": "Alkukäsittely kesken",
@@ -570,7 +571,6 @@
     "asiatunnusPuuttuu": "Asiatunnus puuttuu",
     "kirjausPvm": "Kirjauspäivämäärä:",
     "paatosPvm": "Lopullinen päätös:",
-    "kasittelyvaihe": "Käsittelyvaihe:",
     "esittelija": "Esittelijä:",
     "lopullinenPaatosPvm": "Lopullinen päätös:"
   },

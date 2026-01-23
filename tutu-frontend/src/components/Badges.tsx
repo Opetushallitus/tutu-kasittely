@@ -29,7 +29,6 @@ export const UusiBadge = styled(Chip)(() => ({
   },
 }));
 
-// TODO: check colors for these
 export const PeruutettuBadge = styled(Chip)(() => ({
   ...baseBadgeStyles,
   color: ophColors.grey900,

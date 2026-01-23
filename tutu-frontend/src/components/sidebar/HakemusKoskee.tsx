@@ -36,7 +36,7 @@ export const HakemusKoskee = () => {
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
       <OphTypography variant={'body1'}>
-        {t(`valinnat.hakemusKoskeeValinta.${hakemusKoskeeLabel}`)}
+        {t(`valinnat.hakemusKoskeeValinta.${hakemusKoskeeLabel ?? ''}`)}
       </OphTypography>
       {isAPHakemus && (
         <ApHakemusBadge
