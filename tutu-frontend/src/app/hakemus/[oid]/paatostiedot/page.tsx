@@ -19,7 +19,7 @@ import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/p
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { Add } from '@mui/icons-material';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
@@ -210,16 +210,18 @@ const Paatostiedot = ({
           <OphTypography variant={'h3'}>
             {t('hakemus.paatos.ratkaisuJaPaatos')}
           </OphTypography>
-          <OphCheckbox
-            label={t('hakemus.paatos.seut')}
-            checked={paatos.seutArviointi}
-            onChange={() => {
-              updatePaatosField({
-                seutArviointi: !paatos.seutArviointi,
-              });
-            }}
-            data-testid={'paatos-seut'}
-          />
+          {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
+            <OphCheckbox
+              label={t('hakemus.paatos.seut')}
+              checked={paatos.seutArviointi}
+              onChange={() => {
+                updatePaatosField({
+                  seutArviointi: !paatos.seutArviointi,
+                });
+              }}
+              data-testid={'paatos-seut'}
+            />
+          )}
           <OphSelectFormField
             placeholder={t('yleiset.valitse')}
             label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
