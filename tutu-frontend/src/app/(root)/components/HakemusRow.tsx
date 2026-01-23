@@ -1,5 +1,5 @@
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
-import { Chip, Stack, styled, TableCell, TableRow } from '@mui/material';
+import { Stack, styled, TableCell, TableRow } from '@mui/material';
 import Link from 'next/link';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -16,16 +16,11 @@ import {
 import { doApiPatch } from '@/src/lib/tutu-backend/api';
 import useToaster from '@/src/hooks/useToaster';
 import { handleFetchError } from '@/src/lib/utils';
+import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',
 });
-
-const ApHakemusBadge = styled(Chip)(() => ({
-  color: ophColors.blue3,
-  backgroundColor: ophColors.lightBlue1,
-  borderRadius: '2px',
-}));
 
 export const muotoileKokonaisaikaPure = (nyt: Date, luotu: Date) => {
   const kuukausiYlitetty = luotu.getDate() > nyt.getDate();
@@ -88,6 +83,9 @@ export default function HakemusRow({
   const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
     useKasittelyvaiheTranslation(hakemus);
 
+  // TODO: Lisää oikea ataruHakemuksenTila
+  const isPeruutettu = false;
+
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
@@ -137,9 +135,19 @@ export default function HakemusRow({
       <StyledTableCell data-testid={'hakemus-row-kasittelyvaihe'}>
         <OphTypography
           variant="body1"
-          {...(timeLimitExceeded && { sx: { color: ophColors.alias.error } })}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            ...(timeLimitExceeded && { color: ophColors.alias.error }),
+          }}
         >
           {kasittelyVaiheTranslation}
+          {isPeruutettu && (
+            <PeruutettuBadge
+              label={t('hakemus.ataruhakemuksentila.peruutettu')}
+            />
+          )}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
@@ -151,7 +159,6 @@ export default function HakemusRow({
               data-testid="ap-hakemus-badge"
               className="hakemusrow-aphakemus-badge"
               label={t('hakemus.apHakemus')}
-              size="small"
             />
           </>
         )}

@@ -1,7 +1,5 @@
 import {
-  Chip,
   Stack,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -27,12 +25,7 @@ import {
 import * as R from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
-
-const UusiBadge = styled(Chip)(() => ({
-  color: ophColors.green1,
-  backgroundColor: ophColors.green5,
-  borderRadius: '2px',
-}));
+import { UusiBadge } from '@/src/components/Badges';
 
 export type AsiakirjaTaulukkoData = {
   key: string;
@@ -157,7 +150,6 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
             <UusiBadge
               className="asiakirja-row__uusi-liite"
               label={t('hakemus.asiakirjat.uusi')}
-              size="small"
             />
           )}
         </Stack>

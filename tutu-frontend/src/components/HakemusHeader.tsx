@@ -11,6 +11,7 @@ import * as dateFns from 'date-fns';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
+import { PeruutettuBadge } from './Badges';
 
 export const HakemusHeader = () => {
   const {
@@ -21,6 +22,10 @@ export const HakemusHeader = () => {
   const { options: esittelijaOptions } = useEsittelijat();
   const { translation: kasittelyVaiheTranslation } =
     useKasittelyvaiheTranslation(hakemus);
+
+  // TODO: Lisää oikea ataruHakemuksenTila
+  const isPeruutettu = hakemus?.ataruHakemuksenTila == 'Peruutettu';
+
   return (
     hakemus && (
       <Stack
@@ -46,8 +51,19 @@ export const HakemusHeader = () => {
                 )
               : t('puuttuu')}
           </OphTypography>
-          <OphTypography data-testid="hakemusotsikko-kasittelyvaihe">
-            {t('hakemusotsikko.kasittelyvaihe')} {kasittelyVaiheTranslation}
+          <OphTypography
+            data-testid="hakemusotsikko-kasittelyvaihe"
+            sx={{
+              display: 'flex',
+              gap: '13px',
+            }}
+          >
+            {kasittelyVaiheTranslation}
+            {isPeruutettu && (
+              <PeruutettuBadge
+                label={t('hakemus.ataruhakemuksentila.peruutettu')}
+              />
+            )}
           </OphTypography>
         </Stack>
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>

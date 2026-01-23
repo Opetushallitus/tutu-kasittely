@@ -1,6 +1,5 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { PaatosTaydennyspyyntoStack } from '@/src/components/sidebar/PaatosTaydennyspyyntoStack';
 import { Stack, useTheme } from '@mui/material';
 import {
   TFunction,
@@ -19,7 +18,7 @@ const AikaisempiPaatos = ({
 }) => {
   return (
     <Stack direction="column" gap={gap}>
-      <OphTypography variant={'h4'}>
+      <OphTypography variant={'h5'}>
         {t('hakemus.sivupalkki.paatos.otsikkoAikaisempi')}
       </OphTypography>
       <OphTypography variant={'body1'}>
@@ -35,8 +34,8 @@ export const Paatos = () => {
   const { t } = useTranslations();
 
   return (
-    <PaatosTaydennyspyyntoStack gap={theme.spacing(2)}>
-      <OphTypography variant={'h4'}>
+    <>
+      <OphTypography variant={'h5'}>
         {t('hakemus.sivupalkki.paatos.otsikko', '', {
           numero: 1,
         })}
@@ -46,6 +45,6 @@ export const Paatos = () => {
         asiatunnus="OPH-1234-5678"
         gap={theme.spacing(1)}
       ></AikaisempiPaatos>
-    </PaatosTaydennyspyyntoStack>
+    </>
   );
 };

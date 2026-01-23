@@ -52,7 +52,8 @@
       "paatosmaksuavoin": "Päätösmaksu avoin",
       "paatosmaksamatta": "Päätösmaksu maksamatta",
       "paatosmaksettu": "Päätösmaksu maksettu",
-      "laskutuksessa": "Laskutuksessa"
+      "laskutuksessa": "Laskutuksessa",
+      "peruutettu": "Peruutettu"
     },
     "kasittelyvaihe": {
       "alkukasittelykesken": "Alkukäsittely kesken",
@@ -85,7 +86,8 @@
       },
       "kirjoitaViesti": "Kirjoita viesti",
       "perustelumuistio": "Perustelumuistio",
-      "kirjoitaPaatos": "Kirjoita päätös"
+      "kirjoitaPaatos": "Kirjoita päätös",
+      "avaaHakemus": "Avaa hakemus"
     },
     "perustelumuistio": {
       "otsikko": "Perustelumuistio",
@@ -569,7 +571,6 @@
     "asiatunnusPuuttuu": "Asiatunnus puuttuu",
     "kirjausPvm": "Kirjauspäivämäärä:",
     "paatosPvm": "Lopullinen päätös:",
-    "kasittelyvaihe": "Käsittelyvaihe:",
     "esittelija": "Esittelijä:",
     "lopullinenPaatosPvm": "Lopullinen päätös:"
   },
