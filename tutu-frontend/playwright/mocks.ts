@@ -149,6 +149,12 @@ export const mockHakemus = async (
       },
     ];
 
+    let apHakemus = false;
+    if (oid === '1.2.246.562.11.00000000004') {
+      // hakemukset.json oleva AP-hakemus
+      apHakemus = true;
+    }
+
     const muutoshistoria = isDescMuutoshistoriaSortOrder
       ? sortBy(muutosHistoriaRaw, (mh) => mh.time).reverse()
       : muutosHistoriaRaw;
@@ -216,6 +222,7 @@ export const mockHakemus = async (
           selvityksetSaatu: false,
           pyydettavatAsiakirjat: [],
           imiPyynto: {},
+          apHakemus: apHakemus,
           asiakirjamallitTutkinnoista: {
             ece: {
               lahde: 'ece',

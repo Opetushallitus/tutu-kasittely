@@ -84,7 +84,7 @@ export default function HakemusRow({
     useKasittelyvaiheTranslation(hakemus);
 
   // TODO: Lisää oikea ataruHakemuksenTila
-  const isPeruutettu = true;
+  const isPeruutettu = false;
 
   return (
     <TableRow data-testid={'hakemus-row'}>

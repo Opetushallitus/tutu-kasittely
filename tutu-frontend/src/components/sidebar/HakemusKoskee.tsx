@@ -35,7 +35,10 @@ export const HakemusKoskee = () => {
       <OphTypography variant={'h5'}>
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
-      <OphTypography variant={'body1'}>
+      <OphTypography
+        variant={'body1'}
+        data-testid="hakemus-sidebar-hakemus-koskee"
+      >
         {t(`valinnat.hakemusKoskeeValinta.${hakemusKoskeeLabel ?? ''}`)}
       </OphTypography>
       {isAPHakemus && (
@@ -44,6 +47,7 @@ export const HakemusKoskee = () => {
             alignSelf: 'flex-start',
           }}
           label={t('hakemus.apHakemus')}
+          data-testid="hakemus-sidebar-ap-hakemus-badge"
         />
       )}
       <StyledLink

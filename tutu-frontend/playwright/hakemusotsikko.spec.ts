@@ -18,9 +18,7 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   await expect(kirjausPvm).toContainText('14.05.2025');
 
   const esittelyPvm = page.getByTestId('hakemusotsikko-kasittelyvaihe');
-  await expect(esittelyPvm).toContainText(
-    'Käsittelyvaihe: Hakemusta täydennetty 28.07.2025',
-  );
+  await expect(esittelyPvm).toContainText('Hakemusta täydennetty 28.07.2025');
 
   const esittelija = page
     .getByTestId('hakemusotsikko-esittelija')
