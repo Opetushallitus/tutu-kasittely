@@ -20,18 +20,17 @@ export interface OphSelectOption<T> {
   value: T;
 }
 
-export interface OphSelectProps<T>
-  extends Omit<
-    SelectProps<T>,
-    | 'children'
-    | 'label'
-    | 'variant'
-    | 'components'
-    | 'componentsProps'
-    | 'disableUnderline'
-    | 'value'
-    | 'onChange'
-  > {
+export interface OphSelectProps<T> extends Omit<
+  SelectProps<T>,
+  | 'children'
+  | 'label'
+  | 'variant'
+  | 'components'
+  | 'componentsProps'
+  | 'disableUnderline'
+  | 'value'
+  | 'onChange'
+> {
   value?: T;
   /**
    * Selectable options for the select component.

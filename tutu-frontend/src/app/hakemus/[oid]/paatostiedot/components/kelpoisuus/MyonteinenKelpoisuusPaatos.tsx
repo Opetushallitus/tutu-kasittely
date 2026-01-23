@@ -89,6 +89,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
     lisavaatimukset?.erotKoulutuksessa,
     kelpoisuusKey,
   ]);
+
   return (
     <Stack gap={theme.spacing(3)}>
       <OphRadioGroupWithClear

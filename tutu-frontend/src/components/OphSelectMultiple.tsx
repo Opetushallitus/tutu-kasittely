@@ -11,8 +11,10 @@ import {
   OphSelectProps,
 } from '@/src/components/OphSelect';
 
-export interface OphSelectMultipleProps<T>
-  extends Omit<OphSelectProps<Array<T>>, 'options'> {
+export interface OphSelectMultipleProps<T> extends Omit<
+  OphSelectProps<Array<T>>,
+  'options'
+> {
   /**
    * Selectable options for the select component.
    */
