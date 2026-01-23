@@ -37,5 +37,6 @@ export const buildHakemusUpdateRequest = (
     hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus || null,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri:
     hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri || null,
+  esittelijanHuomioita: hakemus.esittelijanHuomioita ?? null,
   ...overrides,
 });

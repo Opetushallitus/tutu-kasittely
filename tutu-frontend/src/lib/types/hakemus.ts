@@ -63,6 +63,7 @@ export type HakemusUpdateRequest = {
   asiakirja: AsiakirjaTieto;
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: string | null;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: string | null;
+  esittelijanHuomioita: string | null;
 };
 
 export type AsiakirjaTietoUpdateCallback = (
