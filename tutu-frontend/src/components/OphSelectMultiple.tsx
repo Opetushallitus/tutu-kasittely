@@ -1,10 +1,10 @@
 'use client';
 
-import { Select, Box, Chip, MenuItem } from '@mui/material';
-
-import * as React from 'react';
 import { Close } from '@mui/icons-material';
+import { Select, Box, Chip, MenuItem } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import * as React from 'react';
+
 import {
   ClearSelect,
   OphSelectOption,

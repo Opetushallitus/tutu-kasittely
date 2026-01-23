@@ -1,14 +1,7 @@
 'use client';
-import { styled } from '@/src/lib/theme';
-import {
-  OphButton,
-  ophColors,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { DeleteOutline } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useEffect, useMemo } from 'react';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   Divider,
   ListSubheader,
@@ -17,18 +10,26 @@ import {
   Stack,
   useTheme,
 } from '@mui/material';
-import { StyledTooltip } from '@/src/components/ToolTip';
+import {
+  OphButton,
+  ophColors,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import React, { useEffect, useMemo } from 'react';
+
 import {
   PYYDETTAVAT_ASIAKIRJAT,
   LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT,
 } from '@/src/app/hakemus/[oid]/asiakirjat/types';
+import { IconButton } from '@/src/components/IconButton';
+import { StyledTooltip } from '@/src/components/ToolTip';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { styled } from '@/src/lib/theme';
 import {
   AsiakirjaPyynto,
   AsiakirjaTietoUpdateCallback,
   HakemusKoskee,
 } from '@/src/lib/types/hakemus';
-import { DeleteOutline } from '@mui/icons-material';
-import { IconButton } from '@/src/components/IconButton';
 
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];

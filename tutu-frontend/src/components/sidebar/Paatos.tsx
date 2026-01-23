@@ -1,11 +1,12 @@
+import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Stack, useTheme } from '@mui/material';
+
+import { StyledLink } from '@/src/components/StyledLink';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { StyledLink } from '@/src/components/StyledLink';
 
 const AikaisempiPaatos = ({
   t,

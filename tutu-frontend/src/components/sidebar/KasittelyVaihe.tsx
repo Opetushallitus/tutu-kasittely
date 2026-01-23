@@ -1,19 +1,20 @@
 'use client';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Stack, styled, useTheme } from '@mui/material';
 import {
   ophColors,
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as R from 'remeda';
-import { kasittelyVaiheet } from '@/src/app/(root)/components/types';
 import React from 'react';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { StyledLink } from '@/src/components/StyledLink';
+import * as R from 'remeda';
+
+import { kasittelyVaiheet } from '@/src/app/(root)/components/types';
 import { CenteredRow } from '@/src/components/CenteredRow';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { StyledLink } from '@/src/components/StyledLink';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const OpenInNewIconBlue = styled(OpenInNewIcon)({
   color: ophColors.blue2,

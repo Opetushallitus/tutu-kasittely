@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Hakemus } from '@/src/lib/types/hakemus';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import React, { useEffect, useState } from 'react';
 import { isDefined } from 'remeda';
+
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 export type YhteistutkintoProps = {
   hakemus: Hakemus;

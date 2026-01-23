@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+
 import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(mockAll);

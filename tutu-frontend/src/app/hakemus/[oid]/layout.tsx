@@ -1,5 +1,5 @@
-import { PageLayout } from '@/src/components/PageLayout';
 import { HakemusDetailLayout } from '@/src/components/HakemusDetailLayout';
+import { PageLayout } from '@/src/components/PageLayout';
 import { HakemusProvider } from '@/src/context/HakemusContext';
 import { ShowPreviewProvider } from '@/src/context/ShowPreviewContext';
 

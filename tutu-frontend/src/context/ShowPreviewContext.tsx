@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import React, {
   createContext,
   useContext,
@@ -7,7 +8,6 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
-import { usePathname } from 'next/navigation';
 
 interface PreviewContextType {
   showPaatosTekstiPreview: boolean;

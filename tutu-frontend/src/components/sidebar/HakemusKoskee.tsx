@@ -1,14 +1,16 @@
 'use client';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+import { Stack, useTheme, styled } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Stack, useTheme, styled } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { StyledLink } from '@/src/components/StyledLink';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+
 import { CenteredRow } from '@/src/components/CenteredRow';
+import { StyledLink } from '@/src/components/StyledLink';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import { useHakemus } from '@/src/context/HakemusContext';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
 import { ApHakemusBadge } from '../Badges';
 
 const OpenInNewOutlinedIconBlue = styled(OpenInNewOutlinedIcon)({

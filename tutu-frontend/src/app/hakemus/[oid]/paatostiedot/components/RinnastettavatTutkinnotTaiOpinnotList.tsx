@@ -1,15 +1,16 @@
 'use client';
 
+import { Add } from '@mui/icons-material';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import React, { useEffect } from 'react';
+
+import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   PaatosTieto,
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
-import { OphButton } from '@opetushallitus/oph-design-system';
-import { Add } from '@mui/icons-material';
-import React, { useEffect } from 'react';
-import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
   paatostietoId: paatostietoId,

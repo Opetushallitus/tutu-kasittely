@@ -1,9 +1,4 @@
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  MyonteisenPaatoksenLisavaatimukset,
-  PaatosTietoOptionGroup,
-  TutkintoTaiOpinto,
-} from '@/src/lib/types/paatos';
+import { DeleteOutline } from '@mui/icons-material';
 import { Stack, useTheme } from '@mui/material';
 import {
   OphButton,
@@ -12,13 +7,19 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
+
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
-import { DeleteOutline } from '@mui/icons-material';
-import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
-import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
-import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
+import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  MyonteisenPaatoksenLisavaatimukset,
+  PaatosTietoOptionGroup,
+  TutkintoTaiOpinto,
+} from '@/src/lib/types/paatos';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;

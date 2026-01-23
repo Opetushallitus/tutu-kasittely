@@ -1,9 +1,5 @@
 'use client';
 
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { Box, FormControl, useTheme } from '@mui/material';
 import {
   OphCheckbox,
@@ -11,10 +7,15 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { APSisalto } from '@/src/lib/types/APSisalto';
 import * as R from 'remeda';
+
+import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
+import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { APSisalto } from '@/src/lib/types/APSisalto';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();

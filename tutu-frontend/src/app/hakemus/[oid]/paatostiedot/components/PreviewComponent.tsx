@@ -1,8 +1,9 @@
-import Box from '@mui/material/Box';
-import { Stack, styled } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import CloseIcon from '@mui/icons-material/Close';
+import { Stack, styled } from '@mui/material';
+import Box from '@mui/material/Box';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 interface PreviewComponentProps {

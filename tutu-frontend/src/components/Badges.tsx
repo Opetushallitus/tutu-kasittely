@@ -1,5 +1,6 @@
-import { ophColors } from '@/src/lib/theme';
 import { Chip, styled } from '@mui/material';
+
+import { ophColors } from '@/src/lib/theme';
 
 const baseBadgeStyles = {
   borderRadius: '2px',

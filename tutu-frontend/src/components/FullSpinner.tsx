@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, CircularProgress } from '@mui/material';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export const FullSpinner = ({

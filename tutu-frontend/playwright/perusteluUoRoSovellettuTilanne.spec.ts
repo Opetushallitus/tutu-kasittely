@@ -1,6 +1,6 @@
 import { expect, Page, test } from '@playwright/test';
-import { mockAll } from '@/playwright/mocks';
 
+import { mockAll } from '@/playwright/mocks';
 import {
   sovellettuErityisOpetusOptions,
   sovellettuLuokanOpettajaOptions,

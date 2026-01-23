@@ -1,17 +1,17 @@
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { Stack, styled, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
-
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+
+import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
 import { KasittelyVaihe } from '@/src/components/sidebar/KasittelyVaihe';
 import { Paatos } from '@/src/components/sidebar/Paatos';
+import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
 import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
-import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
-import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const MailOutlineIconBlue = styled(MailOutlineIcon)({
   color: ophColors.blue2,

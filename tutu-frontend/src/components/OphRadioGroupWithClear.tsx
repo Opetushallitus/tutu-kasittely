@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
 import { Stack, Box } from '@mui/material';
 import {
   OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { IconButton } from '@/src/components/IconButton';
+import React from 'react';
+
 import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
+import { IconButton } from '@/src/components/IconButton';
 import { OphRadioOption } from '@/src/lib/types/common';
 
 interface OphRadioGroupWithClearProps<T extends string> {

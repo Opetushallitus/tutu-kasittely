@@ -1,13 +1,14 @@
+import { Add } from '@mui/icons-material';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import { useEffect, useState } from 'react';
+
+import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusComponent';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   Kelpoisuus,
   PaatosTieto,
   PaatosTietoOption,
 } from '@/src/lib/types/paatos';
-import { useEffect, useState } from 'react';
-import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusComponent';
-import { OphButton } from '@opetushallitus/oph-design-system';
-import { Add } from '@mui/icons-material';
 
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,

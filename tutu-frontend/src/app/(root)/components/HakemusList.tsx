@@ -8,23 +8,25 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import TableSortLabel from './TableSortLabel';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import { useQueryClient } from '@tanstack/react-query';
 import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
+import { useEffect } from 'react';
+import * as R from 'remeda';
+
+import HakemusRow from '@/src/app/(root)/components/HakemusRow';
 import { naytaQueryStates } from '@/src/app/(root)/components/types';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { useHakemukset } from '@/src/hooks/useHakemukset';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { User } from '@/src/lib/types/user';
 import {
   handleFetchError,
   setQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
-import { ophColors } from '@opetushallitus/oph-design-system';
-import { useHakemukset } from '@/src/hooks/useHakemukset';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import * as R from 'remeda';
-import HakemusRow from '@/src/app/(root)/components/HakemusRow';
-import { User } from '@/src/lib/types/user';
-import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
+import TableSortLabel from './TableSortLabel';
 
 const FIELD_KEYS = {
   hakija: 'hakija',

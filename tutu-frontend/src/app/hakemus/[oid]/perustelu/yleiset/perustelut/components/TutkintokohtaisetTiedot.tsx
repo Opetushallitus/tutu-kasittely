@@ -1,12 +1,12 @@
-import React from 'react';
+import { Stack, useTheme } from '@mui/material';
 import {
   OphTypography,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
-import { Stack, useTheme } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import React from 'react';
 
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 const RangeDash = () => (

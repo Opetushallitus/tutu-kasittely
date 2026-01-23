@@ -1,15 +1,16 @@
 'use client';
 import { Divider, Stack, useTheme } from '@mui/material';
-import { HakemusTabs } from '@/src/components/HakemusTabs';
-import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { HakemusHeader } from '@/src/components/HakemusHeader';
-import { SideBar } from '@/src/components/sidebar/SideBar';
-import { useShowPreview } from '@/src/context/ShowPreviewContext';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import useToaster from '@/src/hooks/useToaster';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { FullSpinner } from '@/src/components/FullSpinner';
 import React, { useEffect } from 'react';
+
+import { BoxWrapper } from '@/src/components/BoxWrapper';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { HakemusHeader } from '@/src/components/HakemusHeader';
+import { HakemusTabs } from '@/src/components/HakemusTabs';
+import { SideBar } from '@/src/components/sidebar/SideBar';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
 export const HakemusDetailLayout = ({

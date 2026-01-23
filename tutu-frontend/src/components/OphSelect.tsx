@@ -1,5 +1,6 @@
 'use client';
 
+import { Clear } from '@mui/icons-material';
 import {
   Select,
   MenuItem,
@@ -7,9 +8,8 @@ import {
   Box,
   type SelectChangeEvent,
 } from '@mui/material';
-import { Clear } from '@mui/icons-material';
-import * as React from 'react';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import * as React from 'react';
 
 export type OphSelectChangeEvent<T> =
   | { target: { value: T } }

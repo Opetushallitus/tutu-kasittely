@@ -1,6 +1,6 @@
-import React from 'react';
 import { styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import React from 'react';
 
 type StyledIconButtonProps = React.ComponentProps<'button'> & {
   children: React.ReactNode;

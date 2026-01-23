@@ -1,10 +1,10 @@
 'use client';
 
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import Link from 'next/link';
-import { ophColors } from '@opetushallitus/oph-design-system';
-import { styled } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import { styled } from '@mui/material';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import Link from 'next/link';
 
 const StyledHomeIcon = styled(HomeOutlinedIcon)({
   color: ophColors.blue2,

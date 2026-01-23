@@ -2,25 +2,26 @@
 
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import useToaster from '@/src/hooks/useToaster';
 import React, { useEffect } from 'react';
-import { handleFetchError } from '@/src/lib/utils';
+
+import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
+import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
+import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { Muistio } from '@/src/components/Muistio';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 import {
   asiointiKieli,
   paatosJaAsiointikieli,
   paatosKieli,
 } from '@/src/constants/hakemuspalveluSisalto';
+import { useHakemus } from '@/src/context/HakemusContext';
+import useToaster from '@/src/hooks/useToaster';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
-import { Muistio } from '@/src/components/Muistio';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
-import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
-import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
+import { handleFetchError } from '@/src/lib/utils';
 
 export default function PerustietoPage() {
   const theme = useTheme();

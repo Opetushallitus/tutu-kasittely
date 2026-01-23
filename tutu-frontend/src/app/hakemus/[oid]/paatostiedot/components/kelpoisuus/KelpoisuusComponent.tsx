@@ -1,4 +1,27 @@
+import { DeleteOutline } from '@mui/icons-material';
+import { Stack, useTheme } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import {
+  OphButton,
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import React, { useMemo } from 'react';
+
+import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
+import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
+import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
+import {
+  findOptionByValue,
+  getKelpoisuusMuuAmmattiDropdownOption,
+  getKelpoisuusMuuAmmattiDropdownValue,
+  getPaatosTietoDropdownOptions,
+} from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { ophColors } from '@/src/lib/theme';
 import {
   KelpoisuudenLisavaatimukset,
   Kelpoisuus,
@@ -6,28 +29,6 @@ import {
   PaatosTietoOption,
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
-import { Stack, useTheme } from '@mui/material';
-import {
-  OphButton,
-  OphInputFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
-import React, { useMemo } from 'react';
-import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { DeleteOutline } from '@mui/icons-material';
-import { ophColors } from '@/src/lib/theme';
-import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
-import {
-  findOptionByValue,
-  getKelpoisuusMuuAmmattiDropdownOption,
-  getKelpoisuusMuuAmmattiDropdownValue,
-  getPaatosTietoDropdownOptions,
-} from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
-import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
-import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
-import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
-import { Theme } from '@mui/material/styles';
-import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
 
 type kelpoisuusComponentProps = {
   t: TFunction;

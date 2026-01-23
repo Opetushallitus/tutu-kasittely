@@ -57,6 +57,7 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "^15.5.9",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-playwright": "^2.5.0",
     "eslint-plugin-prettier": "^5.5.5",
     "http-proxy-middleware": "^3.0.3",

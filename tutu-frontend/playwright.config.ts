@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+
 import nextConfig from './next.config.mjs';
 
 export default defineConfig({

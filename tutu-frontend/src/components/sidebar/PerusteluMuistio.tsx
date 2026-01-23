@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
+import CopyAllIcon from '@mui/icons-material/CopyAll';
+import PreviewIcon from '@mui/icons-material/Preview';
+import { Divider, Stack, styled, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {
@@ -6,16 +9,15 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { Divider, Stack, styled, useTheme } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { FullSpinner } from '../FullSpinner';
-import { getPerusteluMuistio } from '@/src/hooks/usePerustelu';
+import { useState, useEffect } from 'react';
+
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
-import PreviewIcon from '@mui/icons-material/Preview';
-import CopyAllIcon from '@mui/icons-material/CopyAll';
-import CloseIcon from '@mui/icons-material/Close';
 import { useHakemus } from '@/src/context/HakemusContext';
+import { getPerusteluMuistio } from '@/src/hooks/usePerustelu';
 import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
+import { FullSpinner } from '../FullSpinner';
 
 const PreviewIconBlue = styled(PreviewIcon)({
   color: ophColors.blue2,

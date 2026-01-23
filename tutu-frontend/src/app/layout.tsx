@@ -1,22 +1,24 @@
-import type { Metadata } from 'next';
-import Script from 'next/script';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
+import Script from 'next/script';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ReactNode } from 'react';
+
+import { ConfirmationModalProvider } from '@/src/components/ConfirmationModal';
+import { AuthorizedUserProvider } from '@/src/components/providers/AuthorizedUserProvider';
+import { ConfigurationProvider } from '@/src/components/providers/ConfigurationProvider';
 import {
   LocalizationProvider,
   MyTolgeeProvider,
 } from '@/src/components/providers/LocalizationProvider';
-import { ophColors, THEME_OVERRIDES } from '@/src/lib/theme';
 import { LocalizedThemeProvider } from '@/src/components/providers/LocalizedThemeProvider';
 import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClientProvider';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { ReactNode } from 'react';
-import { AuthorizedUserProvider } from '@/src/components/providers/AuthorizedUserProvider';
 import { Toaster } from '@/src/components/Toaster';
-import { ConfigurationProvider } from '@/src/components/providers/ConfigurationProvider';
-import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
 import { isTesting } from '@/src/lib/configuration/configuration';
-import { ConfirmationModalProvider } from '@/src/components/ConfirmationModal';
+import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
+import { ophColors, THEME_OVERRIDES } from '@/src/lib/theme';
+
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Tutkintojen tunnustaminen',

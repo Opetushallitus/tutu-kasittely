@@ -1,8 +1,8 @@
 'use client';
 
+import { Close } from '@mui/icons-material';
 import { Popover, IconButton, Box } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { Close } from '@mui/icons-material';
 import React from 'react';
 
 export type HakijanIlmoittamaPopoverProps = {

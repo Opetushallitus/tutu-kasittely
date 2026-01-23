@@ -1,3 +1,8 @@
+import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
+import {
+  Language,
+  TranslatedName,
+} from '@/src/lib/localization/localizationTypes';
 import {
   AsiakirjaMetadata,
   SisaltoItem,
@@ -5,11 +10,6 @@ import {
   SisaltoValue,
   TarkistuksenTila,
 } from '@/src/lib/types/hakemus';
-import {
-  Language,
-  TranslatedName,
-} from '@/src/lib/localization/localizationTypes';
-import { HakemuspalveluSisaltoId } from '@/src/constants/hakemuspalveluSisalto';
 
 export const sisaltoItemMatches = (
   item: SisaltoItem,

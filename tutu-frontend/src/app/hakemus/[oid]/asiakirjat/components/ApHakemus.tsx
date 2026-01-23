@@ -1,6 +1,5 @@
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,

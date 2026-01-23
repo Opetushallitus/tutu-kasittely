@@ -1,7 +1,7 @@
 'use client';
 
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { DeleteOutline } from '@mui/icons-material';
+import { Divider, Stack, Box } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
@@ -9,12 +9,14 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Divider, Stack, Box } from '@mui/material';
-import { DeleteOutline } from '@mui/icons-material';
+
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { OphSelectOption } from '@/src/components/OphSelect';
-import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakemus } from '@/src/context/HakemusContext';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+
+import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
 const primaryTutkintotodistusOtsikko = {

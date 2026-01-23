@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { mockAll, mockPaatos } from '@/playwright/mocks';
+
 import {
   expectDataFromDropdownSelection,
   expectRequestData,
 } from '@/playwright/helpers/testUtils';
+import { mockAll, mockPaatos } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });

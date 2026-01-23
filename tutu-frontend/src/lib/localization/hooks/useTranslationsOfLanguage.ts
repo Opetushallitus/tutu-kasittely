@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
 import { useTolgee } from '@tolgee/react';
+import { useState, useCallback } from 'react';
 
 export function useTranslationsOfLanguage(language: string) {
   const tolgee = useTolgee();

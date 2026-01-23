@@ -1,5 +1,6 @@
 'use client';
 
+import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphCheckbox,
@@ -8,28 +9,28 @@ import {
   OphButton,
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import { handleFetchError } from '@/src/lib/utils';
-import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
-import useToaster from '@/src/hooks/useToaster';
-import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
-import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
-import { Add } from '@mui/icons-material';
-import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
-import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
+
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
-import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
+import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 import {
   PreviewComponent,
   PreviewContent,
 } from '@/src/app/hakemus/[oid]/paatostiedot/components/PreviewComponent';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
+import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
+import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
+import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { handleFetchError } from '@/src/lib/utils';
 
 const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,

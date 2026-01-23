@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphButton,
@@ -8,16 +8,17 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
-import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
-import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { Add } from '@mui/icons-material';
-import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { useEditableState } from '@/src/hooks/useEditableState';
 import { omit } from 'remeda';
+
+import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
+import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
+import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,

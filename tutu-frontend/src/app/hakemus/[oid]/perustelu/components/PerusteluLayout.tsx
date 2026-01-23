@@ -1,27 +1,26 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
-
 import { Divider, Stack, useTheme } from '@mui/material';
-import {
-  TFunction,
-  useTranslations,
-} from '@/src/lib/localization/hooks/useTranslations';
-import { handleFetchError } from '@/src/lib/utils';
-import useToaster from '@/src/hooks/useToaster';
-import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
-import { usePathname } from 'next/navigation';
-
 import {
   OphTypography,
   OphButton,
   ophColors,
 } from '@opetushallitus/oph-design-system';
+import { usePathname } from 'next/navigation';
+import { ReactNode, useEffect } from 'react';
+
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
+import { EditableState } from '@/src/hooks/useEditableState';
+import useToaster from '@/src/hooks/useToaster';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
+import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
-import { EditableState } from '@/src/hooks/useEditableState';
+import { handleFetchError } from '@/src/lib/utils';
 
 const TAB_BUTTON_HEIGHT = '48px';
 

@@ -1,18 +1,19 @@
 'use client';
 
-import { omit } from 'remeda';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, styled, Tab, Tabs, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import Link, { LinkProps } from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { useRef, useEffect } from 'react';
+import { omit } from 'remeda';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   DEFAULT_BOX_BORDER,
   SMALL_FONT,
   THIN_BOX_BORDER,
 } from '@/src/lib/theme';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import React, { useRef, useEffect } from 'react';
-import Link, { LinkProps } from 'next/link';
-import { usePathname } from 'next/navigation';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 const InnerBoxWrapper = styled(Box)(() => ({

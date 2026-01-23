@@ -1,7 +1,7 @@
-import React from 'react';
-import { OphTypography } from '@opetushallitus/oph-design-system';
-import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 import { Stack } from '@mui/material';
+import { OphTypography } from '@opetushallitus/oph-design-system';
+import React from 'react';
+
 import {
   eupatevyys,
   HakemuspalveluSisaltoId,
@@ -13,6 +13,7 @@ import {
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
 import { Language } from '@/src/lib/localization/localizationTypes';
+import { SisaltoItem, SisaltoValue } from '@/src/lib/types/hakemus';
 
 const TOP_LEVEL_ITEMS_ONLY_CHILDEN_SHOWN = [perustiedot];
 

@@ -1,8 +1,9 @@
+import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
+
 import {
   OphSelectMultiple,
   type OphSelectMultipleProps,
 } from '@/src/components/OphSelectMultiple';
-import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 export interface OphFormFieldWrapperCommonProps {
   /**

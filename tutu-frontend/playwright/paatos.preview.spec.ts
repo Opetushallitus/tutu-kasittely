@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { mockAll } from '@/playwright/mocks';
+
 import { getPaatosWithPaatosTiedot } from '@/playwright/fixtures/paatos1';
+import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });

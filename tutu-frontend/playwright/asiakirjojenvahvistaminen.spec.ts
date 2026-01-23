@@ -1,11 +1,12 @@
 import { expect, Page, Route, test } from '@playwright/test';
+import * as dateFns from 'date-fns';
+
+import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
   mockBasicForHakemus,
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
-import { getHakemus } from '@/playwright/fixtures/hakemus1';
-import * as dateFns from 'date-fns';
 
 test.beforeEach(mockBasicForHakemus);
 

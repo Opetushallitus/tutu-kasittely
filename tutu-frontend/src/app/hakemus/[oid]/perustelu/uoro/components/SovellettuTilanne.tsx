@@ -1,21 +1,22 @@
 'use client';
 
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Stack } from '@mui/material';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { sovellettuTilanneBooleanFields } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import React from 'react';
+
+import { sovellettuTilanneBooleanFields } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import {
   SovellettuTilanneOpetettavatAineetOptions,
   sovellettuTilanneOpetettavatAineetVieraatKieletOptions,
 } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/SovellettuTilanneOptions';
-import { Stack } from '@mui/material';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OphRadioOption } from '@/src/lib/types/common';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 
 export type SovellettuTilanneProps = {
   uoRoSisalto?: UoRoSisalto;

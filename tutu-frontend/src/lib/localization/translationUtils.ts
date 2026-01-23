@@ -1,5 +1,6 @@
-import { Language, TranslatedName } from './localizationTypes';
 import { isObject } from '@/src/lib/common';
+
+import { Language, TranslatedName } from './localizationTypes';
 
 export function translateName(
   translated: TranslatedName,

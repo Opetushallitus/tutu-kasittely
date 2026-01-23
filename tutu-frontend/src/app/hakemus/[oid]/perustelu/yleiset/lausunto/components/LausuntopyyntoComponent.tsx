@@ -1,6 +1,5 @@
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { DeleteOutline } from '@mui/icons-material';
 import { Stack } from '@mui/material';
-import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 import { Theme } from '@mui/material/styles';
 import {
   OphButton,
@@ -8,13 +7,15 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
-import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
+import React from 'react';
+
+import { CalendarComponent } from '@/src/components/calendar-component';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { DeleteOutline } from '@mui/icons-material';
 import { OphSelectOption } from '@/src/components/OphSelect';
+import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
 export type LausuntopyyntoProps = {
   lausuntopyynto: Lausuntopyynto;

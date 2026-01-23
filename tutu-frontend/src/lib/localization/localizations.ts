@@ -1,7 +1,7 @@
 'use client';
 
-import { TolgeeBase } from './tolgeeConfig';
 import { Language } from './localizationTypes';
+import { TolgeeBase } from './tolgeeConfig';
 
 const initLocalization = () => {
   return TolgeeBase().init();

@@ -1,10 +1,11 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockAll, mockPaatos } from '@/playwright/mocks';
+
 import {
   expectDataFromDropdownSelection,
   expectRequestData,
   selectOption,
 } from '@/playwright/helpers/testUtils';
+import { mockAll, mockPaatos } from '@/playwright/mocks';
 import {
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,

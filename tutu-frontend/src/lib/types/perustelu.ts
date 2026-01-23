@@ -1,6 +1,6 @@
-import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
-import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 import { APSisalto } from '@/src/lib/types/APSisalto';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 
 export type Perustelu = {
   id: string;

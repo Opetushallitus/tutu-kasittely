@@ -1,29 +1,30 @@
-import {
-  AmmattikokemusJaElinikainenOppiminen,
-  KelpoisuudenLisavaatimukset,
-  KorvaavaToimenpide,
-  MyonteisenPaatoksenLisavaatimusUpdateCallback,
-} from '@/src/lib/types/paatos';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Theme } from '@mui/material/styles';
 import { Stack } from '@mui/material';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { olennaisiaErojaOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React, { useMemo } from 'react';
+
+import { AmmattikokemusJaElinikainenOppiminenComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/AmmattikokemusJaElinikainenOppiminenComponent';
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
+import { olennaisiaErojaOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import {
   emptyErotKoulutuksessa,
   initOrUpdateMyonteinenKelpoisuusPaatos,
   koulutusEroModel,
   yleinenKoulutusEroTranslation,
 } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
-import { AmmattikokemusJaElinikainenOppiminenComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/AmmattikokemusJaElinikainenOppiminenComponent';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { NamedBoolean } from '@/src/lib/types/common';
+import {
+  AmmattikokemusJaElinikainenOppiminen,
+  KelpoisuudenLisavaatimukset,
+  KorvaavaToimenpide,
+  MyonteisenPaatoksenLisavaatimusUpdateCallback,
+} from '@/src/lib/types/paatos';
 
 export type MyonteinenKelpoisuusPaatosProps = {
   lisavaatimukset?: KelpoisuudenLisavaatimukset | null;

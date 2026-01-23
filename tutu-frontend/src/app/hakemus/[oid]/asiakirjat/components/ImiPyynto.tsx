@@ -1,20 +1,21 @@
 'use client';
 
-import {
-  AsiakirjaTietoUpdateCallback,
-  ImiPyynto,
-} from '@/src/lib/types/hakemus';
 import { Stack } from '@mui/material';
 import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
+import React from 'react';
+
 import { CalendarComponent } from '@/src/components/calendar-component';
-import { OphRadioOption } from '@/src/lib/types/common';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { OphRadioOption } from '@/src/lib/types/common';
+import {
+  AsiakirjaTietoUpdateCallback,
+  ImiPyynto,
+} from '@/src/lib/types/hakemus';
 
 interface ImiPyyntoProps {
   imiPyynto: ImiPyynto;

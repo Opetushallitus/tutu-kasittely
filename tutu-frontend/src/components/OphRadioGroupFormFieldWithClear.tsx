@@ -1,13 +1,14 @@
 'use client';
 
-import React, { ChangeEvent } from 'react';
 import { Stack } from '@mui/material';
 import {
   OphRadioGroupFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { IconButton } from '@/src/components/IconButton';
+import React, { ChangeEvent } from 'react';
+
 import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
+import { IconButton } from '@/src/components/IconButton';
 import { OphRadioOption } from '@/src/lib/types/common';
 
 type RadioGroupFormFieldChangeEventHandler = {

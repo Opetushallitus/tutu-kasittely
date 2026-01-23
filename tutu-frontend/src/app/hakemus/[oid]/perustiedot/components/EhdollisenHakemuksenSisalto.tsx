@@ -1,10 +1,11 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { TranslatedHakemuskoskee } from '@/src/app/hakemus/[oid]/perustiedot/components/TranslatedHakemuskoskee';
-import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
-import { perustietoOsiot } from '@/src/constants/hakemuspalveluSisalto';
 import React from 'react';
-import { Hakemus } from '@/src/lib/types/hakemus';
+
+import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
+import { TranslatedHakemuskoskee } from '@/src/app/hakemus/[oid]/perustiedot/components/TranslatedHakemuskoskee';
+import { perustietoOsiot } from '@/src/constants/hakemuspalveluSisalto';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 export type EhdollisenHakemuksenSisaltoProps = {
   hakemus: Hakemus;

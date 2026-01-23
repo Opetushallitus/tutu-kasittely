@@ -7,11 +7,16 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
+import React, { useEffect } from 'react';
+import * as R from 'remeda';
+import { match, P } from 'ts-pattern';
+
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjamalliLahde,
   AsiakirjamallitTutkinnoista,
@@ -19,10 +24,6 @@ import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
-import * as R from 'remeda';
-import React, { useEffect } from 'react';
-import { match, P } from 'ts-pattern';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 type LahdeOption = {
   id: AsiakirjamalliLahde;

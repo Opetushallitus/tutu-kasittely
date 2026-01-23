@@ -1,8 +1,9 @@
 'use client';
 
-import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 import { Box } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
+
+import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 
 export const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: ophColors.white,

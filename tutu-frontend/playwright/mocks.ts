@@ -1,15 +1,18 @@
-import { Route, Page } from '@playwright/test';
 import { readFile } from 'fs/promises';
 import path from 'path';
+
+import { Route, Page } from '@playwright/test';
 import { sortBy } from 'remeda';
+
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
-import { _sisalto } from './fixtures/hakemus1/_sisalto';
-import { Language } from '@/src/lib/localization/localizationTypes';
-import { getPaatos } from '@/playwright/fixtures/paatos1';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
-import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
+import { getPaatos } from '@/playwright/fixtures/paatos1';
+import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
+import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+
+import { _sisalto } from './fixtures/hakemus1/_sisalto';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([

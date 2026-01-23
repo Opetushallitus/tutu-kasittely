@@ -1,6 +1,6 @@
-import { Hakemus, SisaltoItem } from '@/src/lib/types/hakemus';
 import { _hakemus } from '@/playwright/fixtures/hakemus2/_hakemus';
 import { _sisalto } from '@/playwright/fixtures/hakemus2/_sisalto';
+import { Hakemus, SisaltoItem } from '@/src/lib/types/hakemus';
 
 export const getLopullinenHakemus = () => {
   const hakemus: Hakemus = { ..._hakemus };

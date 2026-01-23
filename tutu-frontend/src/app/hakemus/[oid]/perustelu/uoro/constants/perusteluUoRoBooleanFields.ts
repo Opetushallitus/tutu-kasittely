@@ -1,4 +1,3 @@
-import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 import {
   sovellettuErityisOpetusOptions,
   sovellettuLuokanOpettajaOptions,
@@ -9,6 +8,7 @@ import {
   sovellettuVarhaiskasvatusOptions,
 } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/SovellettuTilanneOptions';
 import { OphRadioOption } from '@/src/lib/types/common';
+import { UoRoSisalto } from '@/src/lib/types/perusteluUoRo';
 
 export const opettajatBooleanFields: {
   key: keyof UoRoSisalto;

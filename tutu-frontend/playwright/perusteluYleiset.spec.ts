@@ -1,4 +1,9 @@
 import { expect, Page, test } from '@playwright/test';
+
+import {
+  clickSaveAndWaitForPUT,
+  waitForSaveComplete,
+} from '@/playwright/helpers/saveHelpers';
 import {
   mockUser,
   mockBasicForHakemus,
@@ -6,10 +11,6 @@ import {
   mockPerustelu,
   mockTutkinnot,
 } from '@/playwright/mocks';
-import {
-  clickSaveAndWaitForPUT,
-  waitForSaveComplete,
-} from '@/playwright/helpers/saveHelpers';
 import { Perustelu } from '@/src/lib/types/perustelu';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 

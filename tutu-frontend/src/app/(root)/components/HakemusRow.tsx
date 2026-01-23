@@ -1,22 +1,23 @@
-import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
-import { Stack, styled, TableCell, TableRow } from '@mui/material';
-import Link from 'next/link';
-import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import * as dateFns from 'date-fns';
-import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
-import { ophColors } from '@/src/lib/theme';
 import { EditOutlined } from '@mui/icons-material';
-import { useCallback, useMemo, useState } from 'react';
+import { Stack, styled, TableCell, TableRow } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { doApiPatch } from '@/src/lib/tutu-backend/api';
-import useToaster from '@/src/hooks/useToaster';
-import { handleFetchError } from '@/src/lib/utils';
+import * as dateFns from 'date-fns';
+import Link from 'next/link';
+import { useCallback, useMemo, useState } from 'react';
+
 import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import useToaster from '@/src/hooks/useToaster';
+import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { ophColors } from '@/src/lib/theme';
+import { doApiPatch } from '@/src/lib/tutu-backend/api';
+import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
+import { handleFetchError } from '@/src/lib/utils';
 
 const StyledTableCell = styled(TableCell)({
   borderBottom: 'none',

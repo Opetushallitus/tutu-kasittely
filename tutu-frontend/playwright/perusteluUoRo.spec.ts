@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { mockAll } from '@/playwright/mocks';
-import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
+
 import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
+import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
+import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(mockAll);
 
