@@ -31,7 +31,7 @@ test.beforeEach(async ({ page }) => {
     }
   });
   await page.route(
-    `**/paatos/1.2.246.562.10.00000000001/paatosteksti`,
+    `**/paatos/1.2.246.562.10.00000000001/paatosteksti/generate`,
     async (route) => {
       await route.fulfill({
         status: 200,

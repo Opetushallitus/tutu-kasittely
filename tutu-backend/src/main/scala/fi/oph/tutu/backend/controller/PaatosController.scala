@@ -53,7 +53,7 @@ class PaatosController(
     Try {
       paatosService.haePaatos(HakemusOid(hakemusOid))
     } match {
-      case Success(result) => {
+      case Success(result) =>
         result match {
           case None =>
             LOG.info(s"Päätöstä ei löytynyt")
@@ -62,7 +62,6 @@ class PaatosController(
             auditLog.logRead("päätös", hakemusOid, ReadPaatos, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatos))
         }
-      }
       case Failure(exception) =>
         LOG.error(s"Päätöksen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
@@ -137,21 +136,70 @@ class PaatosController(
   }
 
   @GetMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti"),
+    path = Array("paatos/{hakemusOid}/paatosteksti/generate"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
-  def haePaatosTeksti(
+  def generatePaatosteksti(
     @PathVariable hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      paatosService.haePaatosTeksti(HakemusOid(hakemusOid))
+      paatosService.generatePaatosTeksti(HakemusOid(hakemusOid))
     } match {
       case Success(paatosTeksti) =>
         auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
         ResponseEntity.status(HttpStatus.OK).body(paatosTeksti)
       case Failure(exception) =>
         LOG.error(s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
+    produces = Array(MediaType.TEXT_HTML_VALUE)
+  )
+  def haePaatosteksti(
+    @PathVariable hakemusOid: String,
+    @PathVariable paatostekstiId: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      paatosService.haePaatosteksti(paatostekstiId)
+    } match {
+      case Success(paatosTeksti) =>
+        auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PostMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/"),
+    produces = Array(MediaType.TEXT_HTML_VALUE)
+  )
+  def tallennaPaatosteksti(
+    @PathVariable hakemusOid: String,
+    @PathVariable paatostekstiId: String,
+    @RequestBody paatosBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      paatosService.haePaatosteksti(paatostekstiId)
+    } match {
+      case Success(paatosTeksti) =>
+        auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          exception
+        )
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
