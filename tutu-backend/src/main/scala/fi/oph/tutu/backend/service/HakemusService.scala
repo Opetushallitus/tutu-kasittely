@@ -511,7 +511,8 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenAsiatunnus =
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
-            hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri
+            hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
+          esittelijanHuomioita = hakemusUpdateRequest.esittelijanHuomioita
         )
 
         hakemusRepository.paivitaHakemus(
