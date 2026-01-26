@@ -2,6 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 import nextConfig from './next.config.mjs';
 
+process.env.TEST = 'true';
+process.env.APP_URL = `https://${process.env.DOCKER ? 'host.docker.internal' : '127.0.0.1'}:33123`;
+// Allow self-signed certificates in Node.js
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 export default defineConfig({
   testDir: './playwright',
   globalSetup: './playwright/playwright.setup.ts',

@@ -10,8 +10,10 @@ import {
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
+import { initTolgeeForTests, t } from '@/src/lib/localization/localizations';
 
 test.beforeEach(async ({ page }) => {
+  await initTolgeeForTests();
   await mockAll({ page });
   await mockPaatos(page);
   await page.goto(
