@@ -13,29 +13,26 @@ const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
 const NAMESPACE = 'tutu-kasittely';
 
 export function TolgeeBase() {
-  return (
-    Tolgee()
-      .use(FormatIcu())
-      .use(
-        BackendFetch({
-          prefix: isTesting
-            ? `/lokalisointi/tolgee` // Devi proxyn kautta
-            : getConfiguration().LOKALISOINTI_URL,
-          next: {
-            revalidate: REVALIDATE_TIME_SECONDS,
-          },
-        }),
-      )
-      .use(isTesting ? undefined : DevTools())
-      //.use(DevTools())
-      .updateDefaults({
-        availableLanguages: ['fi', 'sv', 'en'],
-        defaultLanguage: 'fi',
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
-        apiKey,
-        apiUrl,
-        projectId: 11100,
-      })
-  );
+  return Tolgee()
+    .use(FormatIcu())
+    .use(
+      BackendFetch({
+        prefix: isTesting
+          ? '/lokalisointi/tolgee' // Devi proxyn kautta
+          : getConfiguration().LOKALISOINTI_URL,
+        next: {
+          revalidate: REVALIDATE_TIME_SECONDS,
+        },
+      }),
+    )
+    .use(isTesting ? undefined : DevTools())
+    .updateDefaults({
+      availableLanguages: ['fi', 'sv', 'en'],
+      defaultLanguage: 'fi',
+      defaultNs: NAMESPACE,
+      ns: [NAMESPACE],
+      apiKey,
+      apiUrl,
+      projectId: 11100,
+    });
 }

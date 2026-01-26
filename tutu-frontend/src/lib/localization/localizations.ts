@@ -5,15 +5,19 @@ import { TolgeeInstance } from '@tolgee/react';
 import { Language } from './localizationTypes';
 import { TolgeeBase } from './tolgeeConfig';
 
-let _tolgee: TolgeeInstance | undefined;
+declare global {
+  interface Window {
+    _tolgee: TolgeeInstance;
+  }
+}
 
 // Lazy to avoid initialization before configuration is set
 export function getTolgee(): TolgeeInstance {
-  if (!_tolgee) {
-    _tolgee = TolgeeBase().init();
+  if (!window._tolgee) {
+    window._tolgee = TolgeeBase().init();
   }
 
-  return _tolgee!;
+  return window._tolgee;
 }
 
 export function changeLanguage(language: Language) {

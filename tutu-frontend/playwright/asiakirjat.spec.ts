@@ -8,6 +8,7 @@ import {
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
 
 import { getHakemus } from './fixtures/hakemus1/index';
+import { translate } from './helpers/translate';
 
 export const mockHakemus = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
@@ -31,6 +32,27 @@ test.describe('Tavalliset hakemukset', () => {
   test('Asiakirjat näkyvät taulukossa', async ({ page }) => {
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+    );
+
+    const tarkastamattaText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.not-checked',
+    );
+    const tarkistettuText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.checked',
+    );
+    const liitePuuttuuText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing',
+    );
+    const puutteellinenLiiteText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment',
+    );
+    const myohassaText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.overdue',
     );
 
     const asiakirjaId1 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25fx';
@@ -62,7 +84,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).toBeAttached();
     const row1_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId1} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkastamatta');
+    ).toContainText(tarkastamattaText);
 
     const row2_otsake_check = expect(
       page.locator(`${asiakirjaId2} .asiakirja-row__otsake`),
@@ -78,7 +100,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).not.toBeAttached();
     const row2_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId2} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkistettu');
+    ).toContainText(tarkistettuText);
 
     const row3_otsake_check = expect(
       page.locator(`${asiakirjaId3} .asiakirja-row__otsake`),
@@ -94,7 +116,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).not.toBeAttached();
     const row3_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId3} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Liite puuttuu');
+    ).toContainText(liitePuuttuuText);
 
     const row4_otsake_check = expect(
       page.locator(`${asiakirjaId4} .asiakirja-row__otsake`),
@@ -110,7 +132,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).toBeAttached();
     const row4_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId4} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkastamatta');
+    ).toContainText(tarkastamattaText);
 
     const row5_otsake_check = expect(
       page.locator(`${asiakirjaId5} .asiakirja-row__otsake`),
@@ -126,7 +148,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).not.toBeAttached();
     const row5_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId5} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Puutteellinen liite');
+    ).toContainText(puutteellinenLiiteText);
 
     const row6_otsake_check = expect(
       page.locator(`${asiakirjaId6} .asiakirja-row__otsake`),
@@ -142,7 +164,7 @@ test.describe('Tavalliset hakemukset', () => {
     ).not.toBeAttached();
     const row6_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId6} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Myöhässä');
+    ).toContainText(myohassaText);
 
     await Promise.all([
       row1_otsake_check,
@@ -213,6 +235,27 @@ test.describe('Lopullinen päätös hakemukset', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
     );
 
+    const tarkastamattaText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.not-checked',
+    );
+    const tarkistettuText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.checked',
+    );
+    const liitePuuttuuText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing',
+    );
+    const puutteellinenLiiteText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment',
+    );
+    const myohassaText = await translate(
+      page,
+      'hakemus.asiakirjat.tarkistuksenTila.overdue',
+    );
+
     const asiakirjaId1 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25fx';
     const asiakirjaId2 = '#asiakirja__c95d7c76-5a4c-4ce5-a173-5c848664e6ed';
     const asiakirjaId3 = '#asiakirja__7046e83e-b780-42c4-bbd5-a55b798050dd';
@@ -242,7 +285,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).toBeAttached();
     const row1_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId1} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkastamatta');
+    ).toContainText(tarkastamattaText);
 
     const row2_otsake_check = expect(
       page.locator(`${asiakirjaId2} .asiakirja-row__otsake`),
@@ -258,7 +301,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).not.toBeAttached();
     const row2_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId2} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkistettu');
+    ).toContainText(tarkistettuText);
 
     const row3_otsake_check = expect(
       page.locator(`${asiakirjaId3} .asiakirja-row__otsake`),
@@ -274,7 +317,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).not.toBeAttached();
     const row3_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId3} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Liite puuttuu');
+    ).toContainText(liitePuuttuuText);
     const row4_otsake_check = expect(
       page.locator(`${asiakirjaId4} .asiakirja-row__otsake`),
     ).toContainText('Tutkinto 1: Muu liite');
@@ -289,7 +332,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).toBeAttached();
     const row4_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId4} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkastamatta');
+    ).toContainText(tarkastamattaText);
 
     const row5_otsake_check = expect(
       page.locator(`${asiakirjaId5} .asiakirja-row__otsake`),
@@ -305,7 +348,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).not.toBeAttached();
     const row5_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId5} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Puutteellinen liite');
+    ).toContainText(puutteellinenLiiteText);
 
     const row6_otsake_check = expect(
       page.locator(`${asiakirjaId6} .asiakirja-row__otsake`),
@@ -321,7 +364,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).not.toBeAttached();
     const row6_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId6} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Myöhässä');
+    ).toContainText(myohassaText);
 
     await Promise.all([
       row1_otsake_check,

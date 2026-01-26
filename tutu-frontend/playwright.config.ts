@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 import nextConfig from './next.config.mjs';
 
-process.env.TEST = 'true';
+process.env.TEST = 'true'; // For test-runner isTesting
 
 export default defineConfig({
   testDir: './playwright',

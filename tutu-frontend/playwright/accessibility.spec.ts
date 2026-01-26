@@ -4,6 +4,8 @@ import { Page, expect, test } from '@playwright/test';
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { mockAll } from '@/playwright/mocks';
 
+import { translate } from './helpers/translate';
+
 const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScanResults.violations).toEqual([]);
@@ -13,35 +15,40 @@ test.beforeEach(mockAll);
 
 test('Saavutettavuus listanäkymä ok', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('h1')).toHaveText('Tutkintojen tunnustaminen');
+  const otsikko = await translate(page, 'hakemuslista.otsikko');
+  await expect(page.locator('h1')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustiedot ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/perustiedot');
-  await expect(page.locator('h2')).toHaveText('Hakemuksen ja hakijan tiedot');
+  const otsikko = await translate(page, 'hakemus.perustiedot.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus asiakirjat ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/asiakirjat');
-  await expect(page.locator('h2')).toHaveText('Asiakirjat');
+  const otsikko = await translate(page, 'hakemus.asiakirjat.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus tutkinnot ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/tutkinnot');
-  await expect(page.locator('h2')).toHaveText('Tutkinnot');
+  const otsikko = await translate(page, 'hakemus.tutkinnot.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut yleiset ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/yleiset/perustelut');
-  await expect(page.locator('h2')).toHaveText('Yleiset perustelut');
+  const otsikko = await translate(page, 'hakemus.perustelu.yleiset.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
@@ -62,36 +69,42 @@ test('Saavutettavuus perustelut yleiset lausuntotiedot ok', async ({
     }
   });
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/yleiset/lausunto');
-  await expect(page.locator('h2')).toHaveText('Lausuntopyynnöt');
+  const otsikko = await translate(
+    page,
+    'hakemus.perustelu.lausuntotiedot.lausuntopyynnot',
+  );
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut uoro ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/uoro');
-  await expect(page.locator('h2')).toHaveText(
-    'Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut',
-  );
+  const otsikko = await translate(page, 'hakemus.perustelu.uoro.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut ap ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/ap');
-  await expect(page.locator('h2')).toHaveText('AP-päätöksen perustelut');
+  const otsikko = await translate(page, 'hakemus.perustelu.ap.otsikko');
+  await expect(page.locator('h2')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus päätös ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/paatostiedot');
-  await expect(page.locator('h1')).toHaveText('Hakemus');
+  const otsikko = await translate(page, 'hakemus.paatos.otsikko');
+  await expect(page.locator('h1')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus valitustiedot ok', async ({ page }) => {
   test.skip();
   await page.goto('/tutu-frontend/hakemus/oid/valitustiedot');
-  await expect(page.locator('h1')).toHaveText('Hakemus');
+  const otsikko = await translate(page, 'hakemus.valitustiedot.otsikko');
+  await expect(page.locator('h1')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });

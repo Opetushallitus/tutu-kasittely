@@ -8,6 +8,7 @@ import {
   mockUser,
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
+import { translate } from './helpers/translate';
 
 const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
@@ -87,13 +88,19 @@ test.describe('Asiakirjapyynnöt', () => {
 
     const pyydaSelect = page.getByTestId('pyyda-asiakirja-select').first();
     await expect(pyydaSelect).toBeVisible();
-    await expect(pyydaSelect).toHaveText('Valitse...');
+
+    const valitseText = await translate(page, 'yleiset.valitse');
+    await expect(pyydaSelect).toHaveText(valitseText);
     await pyydaSelect.click();
 
     const menuItems = page.locator('[role="option"]');
     await menuItems.last().click();
 
-    await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
+    const nimenmuutosText = await translate(
+      page,
+      'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.nimenmuutos',
+    );
+    await expect(pyydaSelect).toHaveText(nimenmuutosText);
 
     const saveButton = page.getByTestId('save-ribbon-button');
     await expect(saveButton).toBeVisible();
@@ -131,7 +138,8 @@ test.describe('Asiakirjapyynnöt', () => {
     await addButton.click();
 
     let selects = page.getByTestId('pyyda-asiakirja-select');
-    await expect(selects.nth(0)).toHaveText('Valitse...');
+    const valitseText = await translate(page, 'yleiset.valitse');
+    await expect(selects.nth(0)).toHaveText(valitseText);
     await selects.nth(0).click();
 
     await page

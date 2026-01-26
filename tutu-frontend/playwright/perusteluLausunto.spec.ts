@@ -10,6 +10,8 @@ import {
 import { mockAll } from '@/playwright/mocks';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 
+import { translate } from './helpers/translate';
+
 const matchingDate = () => {
   const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
   return dateFns.format(testDate, DATE_TIME_STANDARD_PLACEHOLDER);
@@ -27,8 +29,24 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',
   );
+  const lausuntopyynnot = await translate(
+    page,
+    'hakemus.perustelu.lausuntotiedot.lausuntopyynnot',
+  );
+  const lausuntopyynto1 = await translate(
+    page,
+    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
+    '',
+    { numero: 1 },
+  );
+  const lausuntopyynto2 = await translate(
+    page,
+    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
+    '',
+    { numero: 2 },
+  );
   await expect(page.getByTestId('perustelu-layout-otsikko')).toHaveText(
-    'Lausuntopyynnöt',
+    lausuntopyynnot,
   );
 
   await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toBeVisible();
@@ -45,7 +63,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   );
 
   await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toHaveText(
-    'Lausuntopyyntö 1',
+    lausuntopyynto1,
   );
   const lausunnonAntaja1 = page.getByTestId('lausunnon-antaja-1');
   const lahetetty1 = page.getByTestId('lausuntoPyyntoLahetetty-calendar-1');
@@ -57,7 +75,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await expect(vastattu1.locator('input')).toHaveValue('30.09.2025');
 
   await expect(page.getByTestId('lausuntopyynto-otsikko-2')).toHaveText(
-    'Lausuntopyyntö 2',
+    lausuntopyynto2,
   );
   const lausunnonAntaja2 = page.getByTestId('lausunnon-antaja-2');
   await expect(lausunnonAntaja2).toBeVisible({ timeout: 15000 });
@@ -158,8 +176,14 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toBeVisible();
 
   await page.getByTestId('lisaa-lausuntopyynto-button').click();
+  const lausuntopyynto3 = await translate(
+    page,
+    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
+    '',
+    { numero: 3 },
+  );
   await expect(page.getByTestId('lausuntopyynto-otsikko-3')).toHaveText(
-    'Lausuntopyyntö 3',
+    lausuntopyynto3,
   );
 
   const lausunnonAntaja3 = page.getByTestId('lausunnon-antaja-3');

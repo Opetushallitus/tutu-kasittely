@@ -10,6 +10,7 @@ import {
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
+import { translate } from './helpers/translate';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
@@ -29,7 +30,17 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   const kelpoisuusSelect = page.getByTestId('kelpoisuus-select');
   const opetettavaAineSelect = page.getByTestId('opetettavaAine-select');
   const muuAmmattiInput = page.getByTestId('muuAmmattikuvaus-input');
-  await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText('Päätös');
+  const paatosText = await translate(
+    page,
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
+  const kelpoisuusText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
+  );
+  await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText(
+    paatosText,
+  );
 
   await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
 
@@ -37,7 +48,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   await expect(opetettavaAineSelect).not.toBeVisible();
 
   await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
-  await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
+  await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
   await expect(kelpoisuusSelect).toBeVisible();
   await expect(opetettavaAineSelect).not.toBeVisible();
 
@@ -201,7 +212,11 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
   page,
 }) => {
   await makeInitialKelpoisuusSelections(page);
-  await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
+  const kelpoisuusText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
+  );
+  await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
 
   const lisaaKelpoisuusButton = page.getByTestId('lisaa-kelpoisuus-button');
   await expect(lisaaKelpoisuusButton).toBeVisible();

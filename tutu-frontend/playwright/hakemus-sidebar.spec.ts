@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { mockAll } from '@/playwright/mocks';
+import { translate } from './helpers/translate';
 
 test.beforeEach(mockAll);
 
@@ -29,13 +30,20 @@ test('HakemusKoskee näyttää oikean labelin ja AP-hakemus-badgen', async ({
     'tutu-frontend/hakemus/1.2.246.562.11.00000000004/perustiedot',
   );
 
+  const kelpoisuusAmmattiin = await translate(
+    page,
+    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin',
+  );
+
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
-  await expect(hakemusKoskee).toHaveText('Kelpoisuus ammattiin');
+  await expect(hakemusKoskee).toHaveText(kelpoisuusAmmattiin);
+
+  const apHakemusText = await translate(page, 'hakemus.apHakemus');
 
   const apHakemusBadge = page.getByTestId('hakemus-sidebar-ap-hakemus-badge');
 
   await expect(apHakemusBadge).toBeVisible();
-  await expect(apHakemusBadge).toHaveText('AP-hakemus');
+  await expect(apHakemusBadge).toHaveText(apHakemusText);
 });
 
 test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async ({
@@ -45,8 +53,13 @@ test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async 
     'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
   );
 
+  const kelpoisuusAmmattiin = await translate(
+    page,
+    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin',
+  );
+
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
-  await expect(hakemusKoskee).toHaveText('Kelpoisuus ammattiin');
+  await expect(hakemusKoskee).toHaveText(kelpoisuusAmmattiin);
 
   const apHakemusBadge = page.getByTestId('hakemus-sidebar-ap-hakemus-badge');
 
