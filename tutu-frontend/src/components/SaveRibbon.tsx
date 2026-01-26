@@ -32,7 +32,7 @@ export const SaveRibbon = ({
   const { t } = useTranslations();
 
   const StyledInfoOutlinedIcon = styled(InfoOutlinedIcon)({
-    color: ophColors.blue2,
+    color: ophColors.black,
   });
 
   if (!hasChanges) return null;
