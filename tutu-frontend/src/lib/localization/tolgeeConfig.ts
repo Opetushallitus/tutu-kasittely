@@ -19,7 +19,7 @@ export function TolgeeBase() {
       .use(
         BackendFetch({
           prefix: isTesting
-            ? `${process.env.APP_URL}/lokalisointi/tolgee` // Devi proxyn kautta
+            ? `/lokalisointi/tolgee` // Devi proxyn kautta
             : getConfiguration().LOKALISOINTI_URL,
           next: {
             revalidate: REVALIDATE_TIME_SECONDS,

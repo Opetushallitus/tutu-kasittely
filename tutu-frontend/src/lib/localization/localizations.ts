@@ -16,17 +16,6 @@ export function getTolgee(): TolgeeInstance {
   return _tolgee!;
 }
 
-// For test purposes
-// For test purposes - ensure translations are loaded
-export async function initTolgeeForTests(): Promise<void> {
-  if (!_tolgee) {
-    await getTolgee().run();
-  }
-}
-
-export const t = ((...args: Parameters<TolgeeInstance['t']>) =>
-  getTolgee().t(...args)) as TolgeeInstance['t'];
-
 export function changeLanguage(language: Language) {
   document.documentElement.lang = language;
   getTolgee().changeLanguage(language);
