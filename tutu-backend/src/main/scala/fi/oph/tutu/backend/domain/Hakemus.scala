@@ -92,14 +92,13 @@ case class DbHakemus(
     example = "Esittelijän huomioita",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  esittelijanHuomioita: Option[String]
-  muokkaaja: Option[String],
+  esittelijanHuomioita: Option[String],
   @(Schema @field)(
-    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 36
+    example = "1.2.246.562.11.00000000000000006666",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 40
   )
-  yhteistutkinto: Boolean
+  muokkaaja: Option[String]
 )
 
 case class Hakemus(
