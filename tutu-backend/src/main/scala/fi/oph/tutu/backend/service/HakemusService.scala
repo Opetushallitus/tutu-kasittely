@@ -265,10 +265,7 @@ class HakemusService(
           dbHakemus.id,
           ataruHakemus.hakemuksenTila()
         )
-        val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        val tutuHakemus   = Hakemus(
-        val dbTutkinnot = hakemusRepository.haeTutkinnotHakemusIdilla(dbHakemus.id)
-        val henkilo     = dbHakemus.muokkaaja match {
+        val henkilo = dbHakemus.muokkaaja match {
           case None            => (null, null)
           case Some(muokkaaja) =>
             onrService.haeHenkilo(dbHakemus.muokkaaja.get) match {
@@ -276,8 +273,8 @@ class HakemusService(
               case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
             }
         }
-
-        val tutuHakemus = Hakemus(
+        val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val tutuHakemus   = Hakemus(
           hakemusOid = dbHakemus.hakemusOid.toString,
           lomakeOid = lomake.key,
           lomakeId = lomake.id,

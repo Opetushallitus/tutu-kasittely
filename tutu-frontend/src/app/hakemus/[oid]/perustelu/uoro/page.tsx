@@ -25,11 +25,8 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const {
-    hakemusState: { editedData: hakemus },
-    isLoading,
-    error,
-  } = useHakemus();
+  const { hakemusState, isLoading, error } = useHakemus();
+  const hakemus = hakemusState.editedData;
   const {
     perustelu,
     tallennaPerustelu,
