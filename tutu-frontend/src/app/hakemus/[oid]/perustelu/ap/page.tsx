@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Box, FormControl, useTheme } from '@mui/material';
 import {
   OphCheckbox,
@@ -20,11 +21,12 @@ import { APSisalto } from '@/src/lib/types/APSisalto';
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
+  const { hakemusState, isLoading, error } = useHakemus();
   const {
-    hakemusState: { editedData: hakemus },
-    isLoading,
-    error,
-  } = useHakemus();
+    editedData: hakemus,
+    save: saveHakemus,
+    hasChanges: hakemusHasChanges,
+  } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
     perustelu,
@@ -54,6 +56,13 @@ export default function ApPage() {
     const next = { ...currentAPSisalto, [key]: value };
     updateLocal({ apSisalto: next });
   };
+
+  const handleSave = () => {
+    save();
+    saveHakemus();
+  };
+
+  useUnsavedChanges(hasChanges || hakemusHasChanges);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -345,9 +354,12 @@ export default function ApPage() {
         ></OphInputFormField>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={save}
+        onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={hasChanges}
+        hasChanges={hasChanges || hakemusHasChanges}
+        lastSaved={hakemus?.muokattu}
+        modifierFirstName={hakemus?.muokkaajaKutsumanimi}
+        modifierLastName={hakemus?.muokkaajaSukunimi}
       />
     </>
   );

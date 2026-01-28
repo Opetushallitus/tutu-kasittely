@@ -102,6 +102,7 @@
       "muutoshistoria": {
         "otsikko": "Hakemuksen muutoshistoria",
         "muokattu": "Muokattu",
+        "muokattuViimeksi": "Muokattu viimeksi:",
         "muokkaaja": "Muokkaaja",
         "esittelija": "esittelijä",
         "hakija": "hakija"

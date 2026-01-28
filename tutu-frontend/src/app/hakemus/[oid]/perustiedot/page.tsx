@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
@@ -34,6 +35,8 @@ export default function PerustietoPage() {
     error,
   } = useHakemus();
 
+  useUnsavedChanges(hasChanges);
+
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
   }, [error, addToast, t]);
@@ -55,6 +58,8 @@ export default function PerustietoPage() {
     [paatosJaAsiointikieli, asiointiKieli],
     hakemus.lomakkeenKieli as keyof TranslatedName,
   );
+
+  console.log('Hakemus: ', hakemus);
 
   return (
     <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
@@ -89,6 +94,9 @@ export default function PerustietoPage() {
         onSave={save}
         isSaving={isSaving ?? false}
         hasChanges={hasChanges}
+        lastSaved={hakemus.muokattu}
+        modifierFirstName={hakemus.muokkaajaKutsumanimi}
+        modifierLastName={hakemus.muokkaajaSukunimi}
       />
     </Stack>
   );

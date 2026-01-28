@@ -1,6 +1,7 @@
 'use client';
 
 import { Add } from '@mui/icons-material';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphButton,
@@ -107,6 +108,8 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
+  useUnsavedChanges(hasChanges);
+
   return (
     <PerusteluLayout
       showTabs={true}
@@ -181,6 +184,9 @@ export default function Lausuntotiedot() {
           onSave={save}
           isSaving={perusteluIsSaving || false}
           hasChanges={hasChanges}
+          lastSaved={hakemus?.muokattu}
+          modifierFirstName={hakemus?.muokkaajaKutsumanimi}
+          modifierLastName={hakemus?.muokkaajaSukunimi}
         />
       </Stack>
     </PerusteluLayout>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
@@ -81,6 +82,8 @@ const YleisetPerustelut = ({
     hakemusState.save();
   };
 
+  useUnsavedChanges(hasChanges);
+
   return (
     <>
       <VirallinenTutkinnonMyontaja
@@ -130,6 +133,9 @@ const YleisetPerustelut = ({
         onSave={handleSave}
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
+        lastSaved={hakemusState?.editedData?.muokattu}
+        modifierFirstName={hakemusState?.editedData?.muokkaajaKutsumanimi}
+        modifierLastName={hakemusState?.editedData?.muokkaajaSukunimi}
       />
     </>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Stack } from '@mui/material';
 import {
   OphCheckbox,
@@ -24,11 +25,8 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const {
-    hakemusState: { editedData: hakemus },
-    isLoading,
-    error,
-  } = useHakemus();
+  const { hakemusState, isLoading, error } = useHakemus();
+  const hakemus = hakemusState.editedData;
   const {
     perustelu,
     tallennaPerustelu,
@@ -66,6 +64,14 @@ export default function UoroPage() {
   };
 
   const uoRoSisalto = perusteluState.editedData?.uoRoSisalto;
+
+  const handleSave = () => {
+    perusteluState.save();
+    hakemusState.save();
+  };
+
+  useUnsavedChanges(perusteluState.hasChanges || hakemusState.hasChanges);
+
   return (
     <>
       <PerusteluLayout
@@ -184,9 +190,12 @@ export default function UoroPage() {
         </Stack>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={perusteluState.save}
+        onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={perusteluState.hasChanges}
+        hasChanges={perusteluState.hasChanges || hakemusState.hasChanges}
+        lastSaved={hakemus?.muokattu}
+        modifierFirstName={hakemus?.muokkaajaKutsumanimi}
+        modifierLastName={hakemus?.muokkaajaSukunimi}
       />
     </>
   );

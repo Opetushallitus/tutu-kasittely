@@ -1,5 +1,6 @@
 'use client';
 
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
@@ -205,6 +206,7 @@ const AsiakirjaPagePure = ({
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
+  useUnsavedChanges(hasChanges);
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -343,7 +345,14 @@ const AsiakirjaPagePure = ({
           </>
         )}
       </Stack>
-      <SaveRibbon onSave={onSave} isSaving={isSaving} hasChanges={hasChanges} />
+      <SaveRibbon
+        onSave={onSave}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+        lastSaved={hakemus.muokattu}
+        modifierFirstName={hakemus.muokkaajaKutsumanimi}
+        modifierLastName={hakemus.muokkaajaSukunimi}
+      />
     </>
   );
 };
