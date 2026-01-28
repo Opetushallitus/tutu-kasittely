@@ -94,7 +94,7 @@ case class DbHakemus(
   )
   esittelijanHuomioita: Option[String],
   @(Schema @field)(
-    example = "1.2.246.562.11.00000000000000006666",
+    example = "1.2.246.562.24.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
   )
