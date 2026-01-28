@@ -112,16 +112,16 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   const radio = page.getByTestId('valmistumisenVahvistus-radio-group');
   const lisatieto = page.getByTestId('valmistumisenVahvistus-lisatieto-input');
   await expect(checkbox).toBeVisible();
-  await expect(lahetetty).not.toBeVisible();
-  await expect(vastattu).not.toBeVisible();
-  await expect(radio).not.toBeVisible();
-  await expect(lisatieto).not.toBeVisible();
+  await expect(lahetetty).toBeHidden();
+  await expect(vastattu).toBeHidden();
+  await expect(radio).toBeHidden();
+  await expect(lisatieto).toBeHidden();
 
   await checkbox.check();
   await expect(lahetetty).toBeVisible();
   await expect(vastattu).toBeVisible();
   await expect(radio).toBeVisible();
-  await expect(lisatieto).not.toBeVisible();
+  await expect(lisatieto).toBeHidden();
 
   const lahetettyInput = lahetetty.locator('input');
   await lahetetty.click();
@@ -160,7 +160,7 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(saveButton).toBeVisible();
   await saveButton.click();
 
-  await expect(saveButton).not.toBeVisible();
+  await expect(saveButton).toBeHidden();
 
   await expect(lahetettyInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);
   await expect(vastattuInput).toHaveValue(/^26\.\d{2}\.\d{4}$/);

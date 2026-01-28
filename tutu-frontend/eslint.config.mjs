@@ -7,6 +7,7 @@ import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import importPlugin from 'eslint-plugin-import';
+import playwright from 'eslint-plugin-playwright';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +58,18 @@ export default defineConfig([
         },
       ],
       'import/no-duplicates': 'error',
+    },
+  },
+  {
+    files: ['playwright/**/*.spec.ts'],
+    extends: [playwright.configs['flat/recommended']],
+    rules: {
+      'playwright/expect-expect': [
+        'warn',
+        {
+          assertFunctionPatterns: ['^expect.*'],
+        },
+      ],
     },
   },
   globalIgnores([

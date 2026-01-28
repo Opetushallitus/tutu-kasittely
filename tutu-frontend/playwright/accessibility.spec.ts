@@ -1,3 +1,4 @@
+/* eslint-disable playwright/no-skipped-test */
 import AxeBuilder from '@axe-core/playwright';
 import { Page, expect, test } from '@playwright/test';
 

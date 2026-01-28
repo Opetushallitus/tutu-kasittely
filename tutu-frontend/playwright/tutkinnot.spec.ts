@@ -112,7 +112,7 @@ test('Tutkintojen lisäys- ja poistopainikkeet näkyvät oikein', async ({
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
   await expect(page.getByTestId('lisaa-tutkinto-button')).toBeVisible();
-  await expect(page.getByTestId('poista-tutkinto-button-1')).not.toBeVisible();
+  await expect(page.getByTestId('poista-tutkinto-button-1')).toBeHidden();
   await expect(page.getByTestId('poista-tutkinto-button-2')).toBeVisible();
 });
 
@@ -221,7 +221,7 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await expect(page.locator('.MuiPopover-paper')).toBeVisible();
   await expect(page.locator('.MuiPopover-paper')).toContainText('Tut1');
   await page.locator('.MuiPopover-paper').getByRole('button').click();
-  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
 
   const oppilaitosLink = page.getByTestId(
     'tutkinto-oppilaitos-hakijan-ilmoittama-link-1',
@@ -231,7 +231,7 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await expect(page.locator('.MuiPopover-paper')).toBeVisible();
   await expect(page.locator('.MuiPopover-paper')).toContainText('Tut 1');
   await page.locator('.MuiPopover-paper').getByRole('button').click();
-  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
 
   const maaLink = page.getByTestId('tutkinto-maa-hakijan-ilmoittama-link-1');
   await expect(maaLink).toBeVisible();
@@ -239,5 +239,5 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await expect(page.locator('.MuiPopover-paper')).toBeVisible();
   await expect(page.locator('.MuiPopover-paper')).toContainText('Barbados');
   await page.locator('.MuiPopover-paper').getByRole('button').click();
-  await expect(page.locator('.MuiPopover-paper')).not.toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
 });

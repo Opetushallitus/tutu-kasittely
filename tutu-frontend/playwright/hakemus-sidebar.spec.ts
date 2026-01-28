@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { mockAll } from '@/playwright/mocks';
+
 import { translate } from './helpers/translate';
 
 test.beforeEach(mockAll);
@@ -63,5 +64,5 @@ test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async 
 
   const apHakemusBadge = page.getByTestId('hakemus-sidebar-ap-hakemus-badge');
 
-  await expect(apHakemusBadge).not.toBeVisible();
+  await expect(apHakemusBadge).toBeHidden();
 });

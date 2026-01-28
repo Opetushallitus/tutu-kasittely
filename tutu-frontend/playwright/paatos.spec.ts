@@ -34,7 +34,7 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(
     page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
-  ).not.toBeVisible();
+  ).toBeHidden();
 
   await expectRequestData(page, '/paatos/', seutCheckbox.click(), {
     seutArviointi: true,

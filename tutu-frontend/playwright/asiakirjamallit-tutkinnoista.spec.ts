@@ -70,13 +70,13 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
 
   await expect(
     page.getByTestId('asiakirjamalli-vastaavuus-UK_enic-clear-button'),
-  ).not.toBeVisible();
+  ).toBeHidden();
   await expect(
     page.getByTestId('asiakirjamalli-vastaavuus-naric_portal-clear-button'),
-  ).not.toBeVisible();
+  ).toBeHidden();
   await expect(
     page.getByTestId('asiakirjamalli-vastaavuus-muu-clear-button'),
-  ).not.toBeVisible();
+  ).toBeHidden();
 });
 
 test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({

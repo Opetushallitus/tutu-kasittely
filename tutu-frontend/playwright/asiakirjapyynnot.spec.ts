@@ -8,6 +8,7 @@ import {
   mockUser,
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
+
 import { translate } from './helpers/translate';
 
 const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
@@ -23,6 +24,7 @@ const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
 
 test.describe('Asiakirjapyynnöt', () => {
   test.beforeEach(mockBasicForHakemus);
+
   test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
     let callCount = 0;
 
@@ -106,7 +108,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await expect(saveButton).toBeVisible();
     await saveButton.click();
 
-    await expect(saveButton).not.toBeVisible();
+    await expect(saveButton).toBeHidden();
 
     await page.getByTestId('poista-asiakirja-button-0').click();
 
@@ -115,7 +117,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await page.getByTestId('pyyda-asiakirja-button').click();
     await page.getByTestId('poista-asiakirja-button-undefined').click();
 
-    await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
+    await expect(page.getByTestId('pyyda-asiakirja-select')).toBeHidden();
 
     await expect(saveButton).toBeVisible();
     await saveButton.click();
