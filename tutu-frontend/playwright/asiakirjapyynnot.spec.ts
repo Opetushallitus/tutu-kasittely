@@ -9,6 +9,8 @@ import {
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
 
+import { translate } from './helpers/translate';
+
 const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const hakemus = getHakemus(hakemusKoskee);
@@ -22,6 +24,7 @@ const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
 
 test.describe('Asiakirjapyynnöt', () => {
   test.beforeEach(mockBasicForHakemus);
+
   test('Asiakirjapyyntöjen lisäys ja poisto', async ({ page }) => {
     let callCount = 0;
 
@@ -87,19 +90,25 @@ test.describe('Asiakirjapyynnöt', () => {
 
     const pyydaSelect = page.getByTestId('pyyda-asiakirja-select').first();
     await expect(pyydaSelect).toBeVisible();
-    await expect(pyydaSelect).toHaveText('Valitse...');
+
+    const valitseText = await translate(page, 'yleiset.valitse');
+    await expect(pyydaSelect).toHaveText(valitseText);
     await pyydaSelect.click();
 
     const menuItems = page.locator('[role="option"]');
     await menuItems.last().click();
 
-    await expect(pyydaSelect).toHaveText('Nimenmuutoksen todistava asiakirja');
+    const nimenmuutosText = await translate(
+      page,
+      'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.nimenmuutos',
+    );
+    await expect(pyydaSelect).toHaveText(nimenmuutosText);
 
     const saveButton = page.getByTestId('save-ribbon-button');
     await expect(saveButton).toBeVisible();
     await saveButton.click();
 
-    await expect(saveButton).not.toBeVisible();
+    await expect(saveButton).toBeHidden();
 
     await page.getByTestId('poista-asiakirja-button-0').click();
 
@@ -108,7 +117,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await page.getByTestId('pyyda-asiakirja-button').click();
     await page.getByTestId('poista-asiakirja-button-undefined').click();
 
-    await expect(page.getByTestId('pyyda-asiakirja-select')).not.toBeVisible();
+    await expect(page.getByTestId('pyyda-asiakirja-select')).toBeHidden();
 
     await expect(saveButton).toBeVisible();
     await saveButton.click();
@@ -131,7 +140,8 @@ test.describe('Asiakirjapyynnöt', () => {
     await addButton.click();
 
     let selects = page.getByTestId('pyyda-asiakirja-select');
-    await expect(selects.nth(0)).toHaveText('Valitse...');
+    const valitseText = await translate(page, 'yleiset.valitse');
+    await expect(selects.nth(0)).toHaveText(valitseText);
     await selects.nth(0).click();
 
     await page

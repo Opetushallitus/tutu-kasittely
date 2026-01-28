@@ -58,8 +58,8 @@ test('Hakemuslistan sivutuspainikkeet päivittävät hakuehdot', async ({
   ).toBeVisible();
   await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
 
-  const nextButton = await page.getByTestId('fm-next-page');
-  const prevButton = await page.getByTestId('fm-prev-page');
+  const nextButton = page.getByTestId('fm-next-page');
+  const prevButton = page.getByTestId('fm-prev-page');
 
   // Check that next button works
   const [nextPageRequest] = await Promise.all([

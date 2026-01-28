@@ -4,6 +4,8 @@ import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
 import { clickSaveAndVerifyPayload } from '@/playwright/helpers/saveHelpers';
 import { mockAll } from '@/playwright/mocks';
 
+import { translate } from './helpers/translate';
+
 test.beforeEach(mockAll);
 
 test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
@@ -15,7 +17,13 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
   await expect(page.getByTestId('perustelu-layout-otsikko')).toHaveText(
     'Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut',
   );
-  await expect(page.getByText('Erot koulutuksen sisällössä')).toBeVisible();
+
+  const erotKoulutuksessaText = await translate(
+    page,
+    'hakemus.perustelu.uoro.erotKoulutuksenSisallossa',
+  );
+
+  await expect(page.getByText(erotKoulutuksessaText)).toBeVisible();
 
   const checkboxes = page.locator('[data-testid^="checkbox-"]');
   await expect
@@ -68,7 +76,13 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
-  await expect(page.getByText('Sovellettu tilanne')).toBeVisible();
+
+  const sovellettuTilanneText = await translate(
+    page,
+    'hakemus.perustelu.uoro.sovellettuTilanne.otsikko',
+  );
+
+  await expect(page.getByText(sovellettuTilanneText)).toBeVisible();
 
   const sovellettuLuokanopettaja = page.getByTestId(
     'checkbox-sovellettuLuokanopettaja',

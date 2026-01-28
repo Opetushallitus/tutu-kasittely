@@ -21,6 +21,19 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+### Translations (Tolgee)
+
+You need to request access to [Tolgee](https://app.tolgee.io/) for access to translations, after which you can put following to `.env.development.local`
+
+```text
+NEXT_PUBLIC_TOLGEE_API_KEY=<key>
+NEXT_PUBLIC_TOLGEE_API_URL=https://app.tolgee.io
+```
+
+Tolgee also has a [browser plugin](https://tolgee.io/apps-integrations/tools) which allows you to edit translations directly on the page by pressing Alt/Option and hovering over text.
+
+See [further instructions](https://virkailija.untuvaopintopolku.fi/lokalisointi/secured/index.html) on access and copying master translations to other environments.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

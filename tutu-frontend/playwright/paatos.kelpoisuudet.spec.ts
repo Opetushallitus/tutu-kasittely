@@ -11,6 +11,8 @@ import {
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
 
+import { translate } from './helpers/translate';
+
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
   await mockPaatos(page);
@@ -29,17 +31,27 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   const kelpoisuusSelect = page.getByTestId('kelpoisuus-select');
   const opetettavaAineSelect = page.getByTestId('opetettavaAine-select');
   const muuAmmattiInput = page.getByTestId('muuAmmattikuvaus-input');
-  await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText('Päätös');
+  const paatosText = await translate(
+    page,
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
+  const kelpoisuusText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
+  );
+  await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText(
+    paatosText,
+  );
 
   await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
 
-  await expect(kelpoisuusSelect).not.toBeVisible();
-  await expect(opetettavaAineSelect).not.toBeVisible();
+  await expect(kelpoisuusSelect).toBeHidden();
+  await expect(opetettavaAineSelect).toBeHidden();
 
   await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
-  await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
+  await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
   await expect(kelpoisuusSelect).toBeVisible();
-  await expect(opetettavaAineSelect).not.toBeVisible();
+  await expect(opetettavaAineSelect).toBeHidden();
 
   await expectDataFromDropdownSelection(
     page,
@@ -65,7 +77,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   await selectOption(page, sovellettuLakiSelect, 'Päätös AP/SEUT');
   await selectOption(page, kelpoisuusSelect, 'Aineenopettaja lukiossa');
   await expect(opetettavaAineSelect).toBeVisible();
-  await expect(muuAmmattiInput).not.toBeVisible();
+  await expect(muuAmmattiInput).toBeHidden();
 
   await expectDataFromDropdownSelection(
     page,
@@ -156,7 +168,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   );
 
   await selectOption(page, kelpoisuusSelect, 'Muu ammatti');
-  await expect(opetettavaAineSelect).not.toBeVisible();
+  await expect(opetettavaAineSelect).toBeHidden();
   await expect(muuAmmattiInput).toBeVisible();
 
   await expectRequestData(
@@ -201,7 +213,11 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
   page,
 }) => {
   await makeInitialKelpoisuusSelections(page);
-  await expect(page.locator('h3').last()).toHaveText('Kelpoisuus 1');
+  const kelpoisuusText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
+  );
+  await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
 
   const lisaaKelpoisuusButton = page.getByTestId('lisaa-kelpoisuus-button');
   await expect(lisaaKelpoisuusButton).toBeVisible();
@@ -332,21 +348,21 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     'ammattikokemusElinikainenOppiminen-korvaavuus-radio-group',
   );
   await expect(myonteinenPaatosRadiogroup).toBeVisible();
-  await expect(olennaisiaErojaRadiogroup).not.toBeVisible();
-  await expect(erotKoulutuksessaButton1).not.toBeVisible();
-  await expect(erotKoulutuksessaButton2).not.toBeVisible();
-  await expect(erotKoulutuksessaButton3).not.toBeVisible();
-  await expect(erotKoulutuksessaButton4).not.toBeVisible();
-  await expect(muuEroButton).not.toBeVisible();
-  await expect(muuEroInput).not.toBeVisible();
-  await expect(kelpoisuuskoeButton).not.toBeVisible();
-  await expect(sopeutumisaikaButton).not.toBeVisible();
-  await expect(aihealue1Button).not.toBeVisible();
-  await expect(sopeutumisaikaInput).not.toBeVisible();
-  await expect(ammattikokemusButton).not.toBeVisible();
-  await expect(elinikainenOppiminenButton).not.toBeVisible();
-  await expect(kokemusOppiminenLisatietoInput).not.toBeVisible();
-  await expect(korvaavuusRadiogroup).not.toBeVisible();
+  await expect(olennaisiaErojaRadiogroup).toBeHidden();
+  await expect(erotKoulutuksessaButton1).toBeHidden();
+  await expect(erotKoulutuksessaButton2).toBeHidden();
+  await expect(erotKoulutuksessaButton3).toBeHidden();
+  await expect(erotKoulutuksessaButton4).toBeHidden();
+  await expect(muuEroButton).toBeHidden();
+  await expect(muuEroInput).toBeHidden();
+  await expect(kelpoisuuskoeButton).toBeHidden();
+  await expect(sopeutumisaikaButton).toBeHidden();
+  await expect(aihealue1Button).toBeHidden();
+  await expect(sopeutumisaikaInput).toBeHidden();
+  await expect(ammattikokemusButton).toBeHidden();
+  await expect(elinikainenOppiminenButton).toBeHidden();
+  await expect(kokemusOppiminenLisatietoInput).toBeHidden();
+  await expect(korvaavuusRadiogroup).toBeHidden();
 
   await expectRequestData(
     page,
@@ -450,8 +466,8 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
 
   await kelpoisuuskoeButton.click();
   await sopeutumisaikaButton.click();
-  await expect(aihealue1Button).not.toBeVisible();
-  await expect(sopeutumisaikaInput).not.toBeVisible();
+  await expect(aihealue1Button).toBeHidden();
+  await expect(sopeutumisaikaInput).toBeHidden();
   await dualButton.click();
   await expect(aihealue1ButtonDual).toBeVisible();
   await expect(sopeutumisaikaInputDual).toBeVisible();
@@ -521,14 +537,14 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
-  await expect(kokemusJaOppiminenKelpoisuuskoeButton).not.toBeVisible();
-  await expect(kokemusJaOppiminenSopeutumisaikaButton).not.toBeVisible();
-  await expect(kokemusJaOppiminenDualButton).not.toBeVisible();
+  await expect(kokemusJaOppiminenKelpoisuuskoeButton).toBeHidden();
+  await expect(kokemusJaOppiminenSopeutumisaikaButton).toBeHidden();
+  await expect(kokemusJaOppiminenDualButton).toBeHidden();
 
   await ammattikokemusButton.click();
   await elinikainenOppiminenButton.click();
-  await expect(kokemusOppiminenLisatietoInput).not.toBeVisible();
-  await expect(korvaavuusRadiogroup).not.toBeVisible();
+  await expect(kokemusOppiminenLisatietoInput).toBeHidden();
+  await expect(korvaavuusRadiogroup).toBeHidden();
 
   await expectRequestData(
     page,
@@ -607,9 +623,9 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
   await expect(olennaisiaErojaRadiogroup).toBeVisible();
-  await expect(epavirallinenKorkeakouluButton).not.toBeVisible();
-  await expect(muuPerusteluButton).not.toBeVisible();
-  await expect(muuPerusteluInput).not.toBeVisible();
+  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+  await expect(muuPerusteluButton).toBeHidden();
+  await expect(muuPerusteluInput).toBeHidden();
 
   await expectRequestData(
     page,
@@ -619,7 +635,7 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
       .click(),
     backendRequestKielteinenPaatos(),
   );
-  await expect(olennaisiaErojaRadiogroup).not.toBeVisible();
+  await expect(olennaisiaErojaRadiogroup).toBeHidden();
   await expect(epavirallinenKorkeakouluButton).toBeVisible();
   await expect(muuPerusteluButton).toBeVisible();
 
@@ -652,7 +668,7 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
       ],
     },
   );
-  await expect(olennaisiaErojaRadiogroup).not.toBeVisible();
-  await expect(epavirallinenKorkeakouluButton).not.toBeVisible();
-  await expect(muuPerusteluButton).not.toBeVisible();
+  await expect(olennaisiaErojaRadiogroup).toBeHidden();
+  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+  await expect(muuPerusteluButton).toBeHidden();
 });

@@ -86,7 +86,7 @@ test('Näytä AlertBox, kun jotkin maakoodit ovat määrittämättä, ja Success
   await expect(page.getByTestId('success-box')).toHaveCount(0);
 
   await page.getByTestId('toggle-edit').click();
-  const firstSelect = await page.getByTestId('esittelija-maaselection-E1');
+  const firstSelect = page.getByTestId('esittelija-maaselection-E1');
   await expect(firstSelect).toBeVisible();
   await firstSelect.click();
   await page.getByRole('option', { name: 'Ruotsi' }).click();
@@ -118,7 +118,7 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
 
   await page.getByTestId('toggle-edit').click();
 
-  const firstSelect = await page.getByTestId('esittelija-maaselection-E1');
+  const firstSelect = page.getByTestId('esittelija-maaselection-E1');
   await expect(firstSelect).toBeVisible();
   await firstSelect.click();
   await page.getByRole('option', { name: 'Ruotsi' }).click();
@@ -137,7 +137,7 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   await expect(cancelIcon).toBeVisible();
   await expect(cancelIcon).toBeEnabled();
 
-  await cancelIcon.click({ force: true });
+  await cancelIcon.click();
 
   // Poista määritys poistamalla maavalinta → muuttuu määrittämättömäksi → Alertbox näytetään jälleen.
   await page.unroute('**/tutu-backend/api/maakoodi*');
@@ -166,7 +166,7 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   await expect(page.getByTestId('esittelija-maaselection-E2')).toBeVisible();
 
   // Määritä maavalinta uudelleen käyttämällä toista esittelijä-valintaa (toista valintakenttää).
-  const secondSelect = await page.getByTestId('esittelija-maaselection-E2');
+  const secondSelect = page.getByTestId('esittelija-maaselection-E2');
   await expect(secondSelect).toBeVisible();
   await secondSelect.click();
   await page.getByRole('option', { name: 'Ruotsi' }).click();
@@ -204,9 +204,7 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
   await page.getByRole('option', { name: 'Ruotsi' }).click();
 
   // Aluksi maakoodilla ei ole esittelijää - ei pitäisi näyttää esittelijän nimeä
-  await expect(
-    page.getByTestId('selected-maakoodi-esittelija'),
-  ).not.toBeVisible();
+  await expect(page.getByTestId('selected-maakoodi-esittelija')).toBeHidden();
 
   // Siirry muokkaustilaan ja aseta esittelijä
   await page.getByTestId('toggle-edit').click();
@@ -224,7 +222,7 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
   const chip = page.getByTestId('maakoodi-chip-maatjavaltiot2_002');
   await expect(chip).toBeVisible();
   const cancelIcon = chip.locator('svg[data-testid="CancelIcon"]');
-  await cancelIcon.click({ force: true });
+  await cancelIcon.click();
 
   // Päivitä API-tila vastaamaan esittelijän poistoa
   await page.unroute('**/tutu-backend/api/maakoodi*');
@@ -250,7 +248,5 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
   await page.getByRole('option', { name: 'Ruotsi' }).click();
 
   // Tarkista että esittelijän nimi ei ole enää näkyvissä
-  await expect(
-    page.getByTestId('selected-maakoodi-esittelija'),
-  ).not.toBeVisible();
+  await expect(page.getByTestId('selected-maakoodi-esittelija')).toBeHidden();
 });

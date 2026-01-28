@@ -50,7 +50,6 @@ const nextConfig = {
     APP_URL: process.env.APP_URL,
     TUTU_BACKEND: process.env.TUTU_BACKEND,
     TEST: process.env.TEST,
-    LOCAL_TRANSLATIONS: process.env.LOCAL_TRANSLATIONS,
   },
   output: isStandalone ? 'standalone' : undefined,
   images: {

@@ -5,7 +5,10 @@ import { useEffect } from 'react';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
-import { changeLanguage, tolgee } from '@/src/lib/localization/localizations';
+import {
+  changeLanguage,
+  getTolgee,
+} from '@/src/lib/localization/localizations';
 import { Language } from '@/src/lib/localization/localizationTypes';
 
 const LocalizationContent = ({
@@ -26,7 +29,7 @@ const LocalizationContent = ({
 
 export function MyTolgeeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <TolgeeProvider tolgee={tolgee} fallback={<FullSpinner></FullSpinner>}>
+    <TolgeeProvider tolgee={getTolgee()} fallback={<FullSpinner></FullSpinner>}>
       {children}
     </TolgeeProvider>
   );

@@ -57,6 +57,6 @@ test('Päätöstekstin esikatselu avautuu oikein, näyttää tekstin ja sulkeutu
   );
   await expect(page.getByTestId('close-preview-button')).toBeVisible();
   await page.getByTestId('close-preview-button').click();
-  await expect(previewComponent).not.toBeVisible();
+  await expect(previewComponent).toBeHidden();
   await expect(page.getByTestId('hakemus-sidebar')).toBeVisible();
 });

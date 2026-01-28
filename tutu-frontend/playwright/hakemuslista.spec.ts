@@ -166,7 +166,7 @@ test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
 
   await page.goto('/');
 
-  await expect(page.getByTestId('hakemus-list')).not.toBeVisible();
+  await expect(page.getByTestId('hakemus-list')).toBeHidden();
 
   // tarkistetaan että virheviesti näkyy
   await expect(page.getByTestId('toast-message')).toBeVisible();
@@ -182,7 +182,7 @@ test('Asiatunnuksen validointi toimii', async ({ page }) => {
   const asiatunnusInput = asiatunnus.locator('input');
   const asiatunnusSubmit = asiatunnus.locator('button');
 
-  await expect(asiatunnusInput).not.toBeVisible();
+  await expect(asiatunnusInput).toBeHidden();
   await asiatunnus.getByTestId('EditOutlinedIcon').click();
   await expect(asiatunnusInput).toBeVisible();
 

@@ -165,6 +165,6 @@ test('IMI-Pyynnön kentät eivät ole näkyvissä Tutkinnon tason rinnastaminen 
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
   );
 
-  await expect(page.getByTestId('imiPyynto-otsikko')).not.toBeVisible();
-  await expect(page.getByTestId('imiPyynto-radio-group')).not.toBeVisible();
+  await expect(page.getByTestId('imiPyynto-otsikko')).toBeHidden();
+  await expect(page.getByTestId('imiPyynto-radio-group')).toBeHidden();
 });
