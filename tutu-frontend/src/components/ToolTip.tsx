@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { ophColors } from '@opetushallitus/oph-design-system';
 
 export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip

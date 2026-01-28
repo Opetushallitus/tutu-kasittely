@@ -1,18 +1,20 @@
 'use client';
 
-import { Select, Box, Chip, MenuItem } from '@mui/material';
-
-import * as React from 'react';
 import { Close } from '@mui/icons-material';
+import { Select, Box, Chip, MenuItem } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import * as React from 'react';
+
 import {
   ClearSelect,
   OphSelectOption,
   OphSelectProps,
 } from '@/src/components/OphSelect';
 
-export interface OphSelectMultipleProps<T>
-  extends Omit<OphSelectProps<Array<T>>, 'options'> {
+export interface OphSelectMultipleProps<T> extends Omit<
+  OphSelectProps<Array<T>>,
+  'options'
+> {
   /**
    * Selectable options for the select component.
    */

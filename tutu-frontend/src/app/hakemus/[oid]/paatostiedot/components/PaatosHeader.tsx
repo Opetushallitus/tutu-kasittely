@@ -1,15 +1,16 @@
 'use client';
 
+import { Preview } from '@mui/icons-material';
 import { Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { CalendarComponent } from '@/src/components/calendar-component';
 import * as dateFns from 'date-fns';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import React from 'react';
-import { Paatos } from '@/src/lib/types/paatos';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Preview } from '@mui/icons-material';
+
+import { CalendarComponent } from '@/src/components/calendar-component';
+import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Paatos } from '@/src/lib/types/paatos';
 
 interface PaatosHeaderProps {
   paatos: Paatos;

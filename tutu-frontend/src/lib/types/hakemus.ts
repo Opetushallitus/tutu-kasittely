@@ -1,8 +1,8 @@
-import { Hakija } from '@/src/lib/types/hakija';
 import {
   Language,
   TranslatedName,
 } from '@/src/lib/localization/localizationTypes';
+import { Hakija } from '@/src/lib/types/hakija';
 
 export type MuutosHistoriaItem = {
   role: 'Esittelija' | 'Hakija' | 'Irrelevant';

@@ -1,10 +1,11 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { useEffect, useMemo, useState } from 'react';
 import { isDeepEqual } from 'remeda';
+
+import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { updateTutkintoJarjestys } from '@/src/lib/utils';
 
 const getTutkinnot = async (hakemusOid?: string): Promise<Tutkinto[]> => {

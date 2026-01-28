@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-
 import { Stack, useTheme } from '@mui/material';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+import { useEffect, useState } from 'react';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
 

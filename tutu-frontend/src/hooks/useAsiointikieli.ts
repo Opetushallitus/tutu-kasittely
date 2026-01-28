@@ -1,5 +1,5 @@
-import { LanguageCode } from '@/src/lib/types/common';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { LanguageCode } from '@/src/lib/types/common';
 
 export const useAsiointiKieli = () => {
   const user = useAuthorizedUser();

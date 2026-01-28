@@ -1,8 +1,9 @@
 'use client';
 
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
-import { FetchError, PermissionError } from '@/src/lib/common';
 import { redirect } from 'next/navigation';
+
+import { FetchError, PermissionError } from '@/src/lib/common';
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 
 let _csrfToken: string;
 const isServer = typeof window === 'undefined';

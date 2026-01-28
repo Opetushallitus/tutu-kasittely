@@ -1,7 +1,8 @@
-import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
-import { Esittelija } from '@/src/lib/types/esittelija';
 import * as R from 'remeda';
+
+import { doApiFetch } from '@/src/lib/tutu-backend/api';
+import { Esittelija } from '@/src/lib/types/esittelija';
 
 export const getEsittelijat = async (): Promise<Esittelija[]> => {
   return await doApiFetch('esittelijat', undefined, 'no-store');

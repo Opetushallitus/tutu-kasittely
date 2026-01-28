@@ -1,11 +1,11 @@
 'use client';
-import React, { useContext, createContext, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import React, { useContext, createContext, ReactNode } from 'react';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useFetchUser } from '@/src/hooks/useFetchUser';
-import { User } from '@/src/lib/types/user';
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
+import { User } from '@/src/lib/types/user';
 
 const AuthorizedUserContext = createContext<User | null>(null);
 

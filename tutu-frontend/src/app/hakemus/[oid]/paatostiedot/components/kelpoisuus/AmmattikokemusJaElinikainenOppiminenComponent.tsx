@@ -1,23 +1,24 @@
-import {
-  AmmattikokemusJaElinikainenOppiminen,
-  AmmattikokemusJaElinikainenOppiminenKorvaavuus,
-  KorvaavaToimenpide,
-} from '@/src/lib/types/paatos';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Theme } from '@mui/material/styles';
 import { Stack } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
+import React from 'react';
+
+import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
 import {
   ammattikokemusElinikainenOppiminenKorvaavuusOptions,
   ammattikokemusJaElinikainenOppiminenOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
-import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
-import React from 'react';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  AmmattikokemusJaElinikainenOppiminen,
+  AmmattikokemusJaElinikainenOppiminenKorvaavuus,
+  KorvaavaToimenpide,
+} from '@/src/lib/types/paatos';
 
 export type AmmattikokemusJaElinikainenOppiminenProps = {
   data: AmmattikokemusJaElinikainenOppiminen;

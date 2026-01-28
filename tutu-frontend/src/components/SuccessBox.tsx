@@ -1,6 +1,6 @@
+import { CheckCircle } from '@mui/icons-material';
 import { Box, styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { CheckCircle } from '@mui/icons-material';
 
 const InfoIconBlue = styled(CheckCircle)({
   color: ophColors.green2,

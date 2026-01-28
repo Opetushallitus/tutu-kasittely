@@ -1,19 +1,20 @@
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  CalendarTodayOutlined,
+  KeyboardArrowRight,
+  KeyboardArrowLeft,
+} from '@mui/icons-material';
 import { Box, InputAdornment } from '@mui/material';
 import {
   ophColors,
   OphInput,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
+import { forwardRef, ReactNode, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { forwardRef, ReactNode, useRef } from 'react';
-import {
-  CalendarTodayOutlined,
-  KeyboardArrowRight,
-  KeyboardArrowLeft,
-} from '@mui/icons-material';
 import { capitalize } from 'remeda';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
 
 const CALENDAR_CLASSNAME = 'oph-calendar';

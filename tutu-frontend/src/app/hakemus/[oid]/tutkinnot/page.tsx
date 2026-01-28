@@ -1,26 +1,27 @@
 'use client';
 
-import { Divider, Stack, useTheme } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import useToaster from '@/src/hooks/useToaster';
-import { useHakemus } from '@/src/context/HakemusContext';
-import React, { useEffect, useState } from 'react';
-import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
-import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
-import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
-import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { Add } from '@mui/icons-material';
-import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import { Divider, Stack, useTheme } from '@mui/material';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import React, { useEffect, useState } from 'react';
+
+import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
+import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
+import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 import {
   paatosJaAsiointikieli,
   paatosKieli,
 } from '@/src/constants/hakemuspalveluSisalto';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
+import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
 
 export default function TutkintoPage() {
   const theme = useTheme();

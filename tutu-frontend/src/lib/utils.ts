@@ -1,7 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
+
+import { Toast } from '@/src/hooks/useToaster';
 import { FetchError } from '@/src/lib/common';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Toast } from '@/src/hooks/useToaster';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 export const hasTutuRole = (userRoles?: Array<string>) => {

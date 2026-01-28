@@ -1,9 +1,10 @@
+import { ListSubheader, MenuItem, Select } from '@mui/material';
 import {
   OphFormFieldWrapper,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { ListSubheader, MenuItem, Select } from '@mui/material';
 import React from 'react';
+
 import { PaatosTietoDropdownOption } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 
 const renderOptionsRecursively = (

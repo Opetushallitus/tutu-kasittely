@@ -1,11 +1,12 @@
 import { expect, Page, Route, test } from '@playwright/test';
+
+import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
   mockBasicForHakemus,
   mockHakemus,
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
-import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
 
 const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {

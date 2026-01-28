@@ -2,17 +2,18 @@
 
 import { Grid2 as Grid, useTheme } from '@mui/material';
 import { OphInputFormField } from '@opetushallitus/oph-design-system';
+import { useQueryClient } from '@tanstack/react-query';
+import { redirect, useSearchParams } from 'next/navigation';
 import { parseAsString, useQueryState } from 'nuqs';
+import { useEffect } from 'react';
+
+import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
+import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   handleFetchError,
   setFilemakerQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
-import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
-import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
-import { redirect, useSearchParams } from 'next/navigation';
 
 export default function FilemakerFilters() {
   const theme = useTheme();

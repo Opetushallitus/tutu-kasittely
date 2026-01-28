@@ -1,7 +1,8 @@
 'use client';
 
-import { OphButton } from '@opetushallitus/oph-design-system';
 import { Box } from '@mui/material';
+import { OphButton } from '@opetushallitus/oph-design-system';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 interface SaveRibbonProps {

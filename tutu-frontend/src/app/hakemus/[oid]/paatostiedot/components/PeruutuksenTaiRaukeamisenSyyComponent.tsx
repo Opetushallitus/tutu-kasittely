@@ -1,8 +1,9 @@
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Theme } from '@mui/material/styles';
-import { PeruutuksenTaiRaukeamisenSyy } from '@/src/lib/types/paatos';
-import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { PeruutuksenTaiRaukeamisenSyy } from '@/src/lib/types/paatos';
 
 export const PeruutuksenTaiRaukeamisenSyyComponent = ({
   syy,

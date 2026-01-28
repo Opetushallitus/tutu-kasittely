@@ -1,9 +1,10 @@
 'use client';
 
-import { Language, TranslatedName } from '../localizationTypes';
-import { useCallback } from 'react';
-import { translateName } from '../translationUtils';
 import { TFnType, useTolgee, useTranslate } from '@tolgee/react';
+import { useCallback } from 'react';
+
+import { Language, TranslatedName } from '../localizationTypes';
+import { translateName } from '../translationUtils';
 
 export type TFunction = TFnType;
 

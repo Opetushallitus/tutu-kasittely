@@ -1,25 +1,26 @@
 'use client';
 
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Stack } from '@mui/material';
-import { Muistio } from '@/src/components/Muistio';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useEditableState } from '@/src/hooks/useEditableState';
-import React from 'react';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
+import React from 'react';
+
+import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
+import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
 import {
   opettajatBooleanFields,
   otmBooleanFields,
   vkBooleanFields,
 } from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
-import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
+import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useEditableState } from '@/src/hooks/useEditableState';
+import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
   const { t } = useTranslations();

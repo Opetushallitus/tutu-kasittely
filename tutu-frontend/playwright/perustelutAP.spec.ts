@@ -1,6 +1,7 @@
 import { expect, Route, test } from '@playwright/test';
-import { mockAll } from '@/playwright/mocks';
+
 import { apSisalto } from '@/playwright/fixtures/perustelu1/_perusteluApSisalto';
+import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });

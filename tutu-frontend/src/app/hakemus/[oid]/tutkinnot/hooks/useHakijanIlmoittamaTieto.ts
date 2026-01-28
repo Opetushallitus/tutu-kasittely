@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { SisaltoItem } from '@/src/lib/types/hakemus';
-import { Language } from '@/src/lib/localization/localizationTypes';
+
 import {
   HakemuspalveluSisaltoId,
   muuTutkintoTietoKey,
@@ -12,6 +11,8 @@ import {
   ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
+import { Language } from '@/src/lib/localization/localizationTypes';
+import { SisaltoItem } from '@/src/lib/types/hakemus';
 
 type HakijanIlmoittamaTieto = {
   nimi?: string;

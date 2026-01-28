@@ -1,8 +1,9 @@
-import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
-import { Hakemus } from '@/src/lib/types/hakemus';
 import * as dateFns from 'date-fns';
+
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Hakemus } from '@/src/lib/types/hakemus';
+import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 
 export function useKasittelyvaiheTranslation(
   hakemus: Hakemus | HakemusListItem | undefined,

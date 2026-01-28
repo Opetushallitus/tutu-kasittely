@@ -1,10 +1,10 @@
 'use client';
 
-import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+
+import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
+import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { HomeIcon } from '@/src/components/HomeLink';
-import { HomeStyledChevron } from '@/src/components/HomeLink';
 
 export default function HeaderPage() {
   const { t } = useTranslations();

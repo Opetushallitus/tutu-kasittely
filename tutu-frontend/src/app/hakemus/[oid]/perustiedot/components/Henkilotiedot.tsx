@@ -1,17 +1,18 @@
 import { Stack, useTheme } from '@mui/material';
+import { Theme } from '@mui/material/styles';
+import { Grid } from '@mui/system';
 import { OphInput, OphTypography } from '@opetushallitus/oph-design-system';
+import { ReactNode } from 'react';
+import * as R from 'remeda';
+import { match, P } from 'ts-pattern';
+
+import { InfoBox } from '@/src/components/InfoBox';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { InfoBox } from '@/src/components/InfoBox';
-import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
-import { Grid } from '@mui/system';
-import * as R from 'remeda';
-import { match, P } from 'ts-pattern';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
-import { Theme } from '@mui/material/styles';
-import { ReactNode } from 'react';
+import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
 
 const HenkilotietoGrid = ({
   theme,

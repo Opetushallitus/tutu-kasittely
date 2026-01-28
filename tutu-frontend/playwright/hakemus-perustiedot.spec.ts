@@ -1,4 +1,10 @@
 import { expect, test } from '@playwright/test';
+
+import { getHakemus } from '@/playwright/fixtures/hakemus1';
+import {
+  expectDataFromDropdownSelection,
+  expectRequestData,
+} from '@/playwright/helpers/testUtils';
 import {
   mockUser,
   mockBasicForHakemus,
@@ -6,12 +12,8 @@ import {
   mockLopullisenPaatoksenHakemus,
   mockKoodistot,
 } from '@/playwright/mocks';
-import { getHakemus } from '@/playwright/fixtures/hakemus1';
+
 import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
-import {
-  expectDataFromDropdownSelection,
-  expectRequestData,
-} from '@/playwright/helpers/testUtils';
 
 test.beforeEach(mockBasicForHakemus);
 

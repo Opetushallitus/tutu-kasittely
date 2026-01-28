@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+
 import { mockAll } from '@/playwright/mocks';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 

@@ -1,10 +1,11 @@
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import { useEffect, useState } from 'react';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
-import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useEffect, useState } from 'react';
 
 export const SuostumusVahvistamiselle = ({
   asiakirjaTieto,

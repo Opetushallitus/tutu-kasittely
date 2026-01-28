@@ -1,16 +1,18 @@
 'use client';
 
 import { Divider, SelectChangeEvent, Stack, useTheme } from '@mui/material';
-import { useHakemus } from '@/src/context/HakemusContext';
 import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
-import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
 import { PeruutettuBadge } from './Badges';
 
 export const HakemusHeader = () => {

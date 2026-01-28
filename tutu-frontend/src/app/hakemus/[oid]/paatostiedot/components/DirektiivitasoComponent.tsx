@@ -1,8 +1,9 @@
-import { Direktiivitaso } from '@/src/lib/types/paatos';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OphSelectFormField } from '@opetushallitus/oph-design-system';
-import { direktiivitasoOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import React from 'react';
+
+import { direktiivitasoOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Direktiivitaso } from '@/src/lib/types/paatos';
 
 export type DirektiivitasoProps = {
   t: TFunction;

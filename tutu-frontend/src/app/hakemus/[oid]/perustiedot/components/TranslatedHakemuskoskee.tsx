@@ -1,8 +1,9 @@
 import { Box } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
-import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
+
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
 

@@ -1,10 +1,11 @@
 'use client';
 
 import { Stack } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { usePathname } from 'next/navigation';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 
 const TAB_BUTTON_HEIGHT = '48px';
 

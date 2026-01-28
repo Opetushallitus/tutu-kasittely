@@ -1,15 +1,16 @@
-import React from 'react';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Stack, useTheme } from '@mui/material';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import React from 'react';
+
+import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   MyonteisenPaatoksenLisavaatimusUpdateCallback,
   MyonteisenPaatoksenLisavaatimukset,
   MyonteinenTaiKielteinenPaatos,
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
-import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
 
 export type MyonteinenTaiKielteinenPaatosProps<
   T extends {

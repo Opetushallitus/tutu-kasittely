@@ -1,6 +1,6 @@
+import { ReportProblem } from '@mui/icons-material';
 import { Box, Stack, styled } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import { ReportProblem } from '@mui/icons-material';
 
 const InfoIconBlue = styled(ReportProblem)({
   color: ophColors.yellow1,

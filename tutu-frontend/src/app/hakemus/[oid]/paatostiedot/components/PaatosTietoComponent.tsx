@@ -1,5 +1,22 @@
 'use client';
 
+import { Stack } from '@mui/material';
+import {
+  OphCheckbox,
+  OphSelectFormField,
+} from '@opetushallitus/oph-design-system';
+import React, { useEffect, useState } from 'react';
+
+import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
+import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
+import {
+  paatostyyppiOptions,
+  sovellettuLakiOptions,
+  tutkinnonTasoOptions,
+  tutkintoOptions,
+} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   PaatosTieto,
   PaatosTietoOptionGroup,
@@ -7,23 +24,7 @@ import {
   SovellettuLaki,
   TutkintoTaso,
 } from '@/src/lib/types/paatos';
-import React, { useEffect, useState } from 'react';
-import {
-  OphCheckbox,
-  OphSelectFormField,
-} from '@opetushallitus/oph-design-system';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  paatostyyppiOptions,
-  sovellettuLakiOptions,
-  tutkinnonTasoOptions,
-  tutkintoOptions,
-} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
-import { Stack } from '@mui/material';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
-import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
-import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
-import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 
 interface PaatosTietoProps {
   t: TFunction;

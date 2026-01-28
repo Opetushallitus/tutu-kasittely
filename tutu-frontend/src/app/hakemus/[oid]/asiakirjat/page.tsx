@@ -1,38 +1,28 @@
 'use client';
 
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useHakemus } from '@/src/context/HakemusContext';
-import { useLiitteet } from '@/src/hooks/useLiitteet';
+import React, { useEffect } from 'react';
+
+import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
+import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
+import { ApHakemus } from '@/src/app/hakemus/[oid]/asiakirjat/components/ApHakemus';
+import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
 import {
   AsiakirjaTaulukko,
   AsiakirjaTaulukkoData,
 } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaTaulukko';
-import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
-import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
-import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/components/KaikkiSelvityksetSaatu';
-import { ApHakemus } from '@/src/app/hakemus/[oid]/asiakirjat/components/ApHakemus';
-import { Muistio } from '@/src/components/Muistio';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import { StyledLink } from '@/src/components/StyledLink';
-import { CenteredRow } from '@/src/components/CenteredRow';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { handleFetchError } from '@/src/lib/utils';
-import useToaster from '@/src/hooks/useToaster';
-import React, { useEffect } from 'react';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
-import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
-import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
-import {
-  AsiakirjaMetadata,
-  AsiakirjaTieto,
-  AsiakirjaTietoUpdateCallback,
-  Hakemus,
-  HakemusKoskee,
-  SisaltoValue,
-} from '@/src/lib/types/hakemus';
 import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
+import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/components/KaikkiSelvityksetSaatu';
+import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
+import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
+import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
+import { CenteredRow } from '@/src/components/CenteredRow';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { Muistio } from '@/src/components/Muistio';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { StyledLink } from '@/src/components/StyledLink';
 import {
   alemmatTutkinnot,
   henkilotietojenLiitteet,
@@ -42,6 +32,11 @@ import {
   tutkintoTaiKoulutus,
   ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { EditableState } from '@/src/hooks/useEditableState';
+import { useLiitteet } from '@/src/hooks/useLiitteet';
+import useToaster from '@/src/hooks/useToaster';
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -49,10 +44,16 @@ import {
   haeAsiakirjat,
   sisaltoItemMatchesToAny,
 } from '@/src/lib/hakemuspalveluUtils';
-import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
-import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { EditableState } from '@/src/hooks/useEditableState';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  AsiakirjaMetadata,
+  AsiakirjaTieto,
+  AsiakirjaTietoUpdateCallback,
+  Hakemus,
+  HakemusKoskee,
+  SisaltoValue,
+} from '@/src/lib/types/hakemus';
+import { handleFetchError } from '@/src/lib/utils';
 
 const sisallonSuoratYlatasonOsiot = [henkilotietojenLiitteet];
 const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;

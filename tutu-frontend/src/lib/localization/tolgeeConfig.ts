@@ -1,7 +1,9 @@
-import { isTesting, localTranslations } from '../configuration/configuration';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
-import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
+import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
+
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+
+import { isTesting, localTranslations } from '../configuration/configuration';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 

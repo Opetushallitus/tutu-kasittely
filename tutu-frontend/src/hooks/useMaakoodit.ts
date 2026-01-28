@@ -1,5 +1,6 @@
-import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
 
 export const getMaakoodit = async (): Promise<Maakoodi[]> => {

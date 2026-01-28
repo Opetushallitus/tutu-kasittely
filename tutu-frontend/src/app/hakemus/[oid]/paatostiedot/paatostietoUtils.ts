@@ -1,12 +1,4 @@
 import {
-  ErotKoulutuksessa,
-  KelpoisuudenLisavaatimukset,
-  KorvaavaToimenpide,
-  PaatosTietoOption,
-} from '@/src/lib/types/paatos';
-import { Language } from '@/src/lib/localization/localizationTypes';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
   emptyAmmattikokemusJaElinikainenOppiminen,
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
@@ -14,7 +6,15 @@ import {
   oletusKoulutusErot,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Language } from '@/src/lib/localization/localizationTypes';
 import { NamedBoolean } from '@/src/lib/types/common';
+import {
+  ErotKoulutuksessa,
+  KelpoisuudenLisavaatimukset,
+  KorvaavaToimenpide,
+  PaatosTietoOption,
+} from '@/src/lib/types/paatos';
 
 export type PaatosTietoDropdownOption = {
   label: string;

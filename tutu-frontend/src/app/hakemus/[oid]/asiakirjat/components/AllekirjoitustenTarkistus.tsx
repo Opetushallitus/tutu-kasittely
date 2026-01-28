@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react';
-
 import {
   OphCheckbox,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
+import { useEffect, useState } from 'react';
+
 import {
   useTranslations,
   TFunction,
 } from '@/src/lib/localization/hooks/useTranslations';
-
-import { isDefined } from '@/src/lib/utils';
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
 } from '@/src/lib/types/hakemus';
+import { isDefined } from '@/src/lib/utils';
 
 interface StatelessAllekirjoitustenTarkistusProps {
   lisatieto: string | null | undefined;

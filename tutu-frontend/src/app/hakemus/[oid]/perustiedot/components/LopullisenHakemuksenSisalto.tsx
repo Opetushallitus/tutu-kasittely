@@ -1,20 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { Divider, Stack } from '@mui/material';
-import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
-import { lopullinenPaatosSuoritukset } from '@/src/constants/hakemuspalveluSisalto';
-import { Hakemus } from '@/src/lib/types/hakemus';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
-import {
-  buildLopullinenPaatosSuoritusItems,
-  sisaltoItemMatches,
-} from '@/src/lib/hakemuspalveluUtils';
 import { Theme } from '@mui/material/styles';
 import {
   OphInputFormField,
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
+import React, { useEffect, useMemo, useState } from 'react';
+
+import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
+import { lopullinenPaatosSuoritukset } from '@/src/constants/hakemuspalveluSisalto';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
+import {
+  buildLopullinenPaatosSuoritusItems,
+  sisaltoItemMatches,
+} from '@/src/lib/hakemuspalveluUtils';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
+import { Hakemus } from '@/src/lib/types/hakemus';
 
 export type LopullisenHakemuksenSisaltoProps = {
   hakemus: Hakemus;

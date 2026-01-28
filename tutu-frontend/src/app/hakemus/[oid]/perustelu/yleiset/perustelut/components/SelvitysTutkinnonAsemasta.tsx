@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { OphInputFormField } from '@opetushallitus/oph-design-system';
-import { Perustelu } from '@/src/lib/types/perustelu';
+import { useState } from 'react';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Perustelu } from '@/src/lib/types/perustelu';
 
 interface Props {
   perustelu: Perustelu | undefined;

@@ -1,6 +1,3 @@
-import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { MuutosHistoriaItem } from '@/src/lib/types/hakemus';
 import {
   Stack,
   styled,
@@ -12,15 +9,19 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import * as R from 'remeda';
-import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { setLocalStorageAndLaunchHakemusQuery } from '@/src/lib/utils';
-import { useState } from 'react';
-import { HAKEMUS_MUUTOSHISTORIA_SORT_KEY } from '@/src/context/HakemusContext';
-import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import * as R from 'remeda';
 import { match } from 'ts-pattern';
+
+import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
+import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
+import { HAKEMUS_MUUTOSHISTORIA_SORT_KEY } from '@/src/context/HakemusContext';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { MuutosHistoriaItem } from '@/src/lib/types/hakemus';
+import { setLocalStorageAndLaunchHakemusQuery } from '@/src/lib/utils';
 
 const FIELD_KEYS_ARRAY = [
   'hakemus.perustiedot.muutoshistoria.muokattu',

@@ -1,8 +1,9 @@
-import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { useQuery } from '@tanstack/react-query';
-import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
+
 import { OphSelectOption } from '@/src/components/OphSelect';
+import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { doApiFetch } from '@/src/lib/tutu-backend/api';
 
 type KoodistoItem = {
   koodiUri: string;

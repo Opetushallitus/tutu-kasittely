@@ -1,12 +1,13 @@
 'use client';
 
+import { createContext, useEffect, useState, type ReactNode } from 'react';
+import { isNullish } from 'remeda';
+
 import {
   getConfiguration,
   setConfiguration,
 } from '@/src/lib/configuration/clientConfiguration';
 import { type Configuration } from '@/src/lib/configuration/configuration';
-import { createContext, useEffect, useState, type ReactNode } from 'react';
-import { isNullish } from 'remeda';
 
 export const ConfigurationContext = createContext<{
   configuration: null | Configuration;

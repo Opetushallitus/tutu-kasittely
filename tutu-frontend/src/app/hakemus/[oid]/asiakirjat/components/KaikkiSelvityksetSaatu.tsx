@@ -1,15 +1,14 @@
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import * as dateFns from 'date-fns';
 import { useEffect, useState } from 'react';
 
-import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import { CalendarComponent } from '@/src/components/calendar-component';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
 import {
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   HakemusKoskee,
 } from '@/src/lib/types/hakemus';
-import { CalendarComponent } from '@/src/components/calendar-component';
-import * as dateFns from 'date-fns';
 
 type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;

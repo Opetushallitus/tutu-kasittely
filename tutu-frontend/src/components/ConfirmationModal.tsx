@@ -1,5 +1,6 @@
 'use client';
-import * as React from 'react';
+import CloseIcon from '@mui/icons-material/Close';
+import { Stack, styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {
@@ -7,10 +8,10 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { Stack, styled } from '@mui/material';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import CloseIcon from '@mui/icons-material/Close';
+import * as React from 'react';
+
 import { IconButton } from '@/src/components/IconButton';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const style = {
   position: 'absolute',

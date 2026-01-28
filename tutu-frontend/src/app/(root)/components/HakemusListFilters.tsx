@@ -10,31 +10,32 @@ import {
   OphFormFieldWrapper,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
+import { useQueryClient } from '@tanstack/react-query';
+import { redirect, useSearchParams } from 'next/navigation';
 import {
   parseAsArrayOf,
   parseAsString,
   parseAsStringLiteral,
   useQueryState,
 } from 'nuqs';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { useEffect } from 'react';
 import * as R from 'remeda';
+
 import {
   kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
-import { redirect, useSearchParams } from 'next/navigation';
+import { OphSelectOption } from '@/src/components/OphSelect';
+import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
+import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import { useHakemukset } from '@/src/hooks/useHakemukset';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   handleFetchError,
   setQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
-import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
-import { useEsittelijat } from '@/src/hooks/useEsittelijat';
-import useToaster from '@/src/hooks/useToaster';
-import { useEffect } from 'react';
-import { useHakemukset } from '@/src/hooks/useHakemukset';
-import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
-import { OphSelectOption } from '@/src/components/OphSelect';
 
 export default function HakemusListFilters() {
   const theme = useTheme();

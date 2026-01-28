@@ -1,13 +1,14 @@
 'use client';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Stack } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Stack } from '@mui/material';
+
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   MyonteisenPaatoksenLisavaatimukset,
   MyonteisenPaatoksenLisavaatimusUpdateCallback,
 } from '@/src/lib/types/paatos';
-import { Theme } from '@mui/material/styles';
 
 interface MyonteinenPaatosProps {
   t: TFunction;

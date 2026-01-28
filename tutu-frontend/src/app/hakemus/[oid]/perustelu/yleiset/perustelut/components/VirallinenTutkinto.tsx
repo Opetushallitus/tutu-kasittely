@@ -1,6 +1,6 @@
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
-import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 
 interface Props {
   perustelu: Perustelu | undefined;

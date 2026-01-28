@@ -1,5 +1,5 @@
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const TableSortLabel = (props: {
   fieldKey: string;

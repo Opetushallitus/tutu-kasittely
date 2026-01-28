@@ -1,12 +1,13 @@
-import { KielteisenPaatoksenPerustelut } from '@/src/lib/types/paatos';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { Stack, useTheme } from '@mui/material';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { Stack, useTheme } from '@mui/material';
+
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { KielteisenPaatoksenPerustelut } from '@/src/lib/types/paatos';
 
 interface KielteisenPaatoksenPerusteluComponentProps {
   perustelut?: KielteisenPaatoksenPerustelut;

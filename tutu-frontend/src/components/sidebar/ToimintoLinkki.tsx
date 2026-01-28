@@ -1,7 +1,7 @@
 import { Box, styled } from '@mui/material';
-import { OphButton } from '@opetushallitus/oph-design-system';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
+
 import { CenteredRow } from '@/src/components/CenteredRow';
-import { ophColors } from '@opetushallitus/oph-design-system';
 
 const LinkBox = styled(Box)({
   border: `2px solid ${ophColors.blue2}`,

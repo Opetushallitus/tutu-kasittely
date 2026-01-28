@@ -1,8 +1,10 @@
-import next from 'next';
-import { parse } from 'url';
-import { createServer } from 'https';
 import fs from 'fs';
+import { createServer } from 'https';
+import { parse } from 'url';
+
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import next from 'next';
+
 import nextConfig from './next.config.mjs';
 
 const basePath = nextConfig.basePath;

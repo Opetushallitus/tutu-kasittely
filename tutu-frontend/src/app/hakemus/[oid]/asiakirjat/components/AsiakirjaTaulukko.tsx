@@ -1,3 +1,7 @@
+import AlarmIcon from '@mui/icons-material/Alarm';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ErrorIcon from '@mui/icons-material/Error';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {
   Stack,
   Table,
@@ -7,10 +11,15 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import ErrorIcon from '@mui/icons-material/Error';
-import AlarmIcon from '@mui/icons-material/Alarm';
+import { OphTypography } from '@opetushallitus/oph-design-system';
+import * as dateFns from 'date-fns';
+import * as R from 'remeda';
+
+import { UusiBadge } from '@/src/components/Badges';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { ophColors } from '@/src/lib/theme';
 import {
   AsiakirjaMetadata,
@@ -18,14 +27,6 @@ import {
   SisaltoValue,
   TarkistuksenTila,
 } from '@/src/lib/types/hakemus';
-import {
-  TFunction,
-  useTranslations,
-} from '@/src/lib/localization/hooks/useTranslations';
-import * as R from 'remeda';
-import { OphTypography } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
-import { UusiBadge } from '@/src/components/Badges';
 
 export type AsiakirjaTaulukkoData = {
   key: string;

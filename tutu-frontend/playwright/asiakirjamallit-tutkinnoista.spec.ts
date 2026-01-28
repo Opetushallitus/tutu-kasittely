@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
+
+import { clickSaveAndWaitForPUT } from '@/playwright/helpers/saveHelpers';
 import {
   mockBasicForHakemus,
   mockHakemus,
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
-import { clickSaveAndWaitForPUT } from '@/playwright/helpers/saveHelpers';
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([

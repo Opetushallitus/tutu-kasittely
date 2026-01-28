@@ -1,14 +1,15 @@
 'use client';
 
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { PaatosTieto, PaatosTietoOptionGroup } from '@/src/lib/types/paatos';
+import { DeleteOutline } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { DeleteOutline } from '@mui/icons-material';
-import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import React from 'react';
-import { Tutkinto } from '@/src/lib/types/tutkinto';
+
+import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { PaatosTieto, PaatosTietoOptionGroup } from '@/src/lib/types/paatos';
+import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 interface PaatosTietoListProps {
   t: TFunction;

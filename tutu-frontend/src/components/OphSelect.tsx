@@ -1,5 +1,6 @@
 'use client';
 
+import { Clear } from '@mui/icons-material';
 import {
   Select,
   MenuItem,
@@ -7,9 +8,8 @@ import {
   Box,
   type SelectChangeEvent,
 } from '@mui/material';
-import { Clear } from '@mui/icons-material';
-import * as React from 'react';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import * as React from 'react';
 
 export type OphSelectChangeEvent<T> =
   | { target: { value: T } }
@@ -20,18 +20,17 @@ export interface OphSelectOption<T> {
   value: T;
 }
 
-export interface OphSelectProps<T>
-  extends Omit<
-    SelectProps<T>,
-    | 'children'
-    | 'label'
-    | 'variant'
-    | 'components'
-    | 'componentsProps'
-    | 'disableUnderline'
-    | 'value'
-    | 'onChange'
-  > {
+export interface OphSelectProps<T> extends Omit<
+  SelectProps<T>,
+  | 'children'
+  | 'label'
+  | 'variant'
+  | 'components'
+  | 'componentsProps'
+  | 'disableUnderline'
+  | 'value'
+  | 'onChange'
+> {
   value?: T;
   /**
    * Selectable options for the select component.

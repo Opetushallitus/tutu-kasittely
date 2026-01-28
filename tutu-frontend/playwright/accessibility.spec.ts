@@ -1,7 +1,8 @@
-import { Page, expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { mockAll } from '@/playwright/mocks';
+import { Page, expect, test } from '@playwright/test';
+
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
+import { mockAll } from '@/playwright/mocks';
 
 const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();

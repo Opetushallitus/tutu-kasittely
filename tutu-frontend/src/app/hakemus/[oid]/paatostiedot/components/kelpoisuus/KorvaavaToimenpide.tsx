@@ -1,17 +1,18 @@
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Theme } from '@mui/material/styles';
-import {
-  KelpoisuuskoeSisalto,
-  KorvaavaToimenpide,
-} from '@/src/lib/types/paatos';
 import { Stack } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
+
 import { kelpoisuuskoeFields } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  KelpoisuuskoeSisalto,
+  KorvaavaToimenpide,
+} from '@/src/lib/types/paatos';
 
 const IndentedStack: React.FC<{
   theme: Theme;

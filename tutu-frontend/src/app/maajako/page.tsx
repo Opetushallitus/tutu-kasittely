@@ -1,27 +1,26 @@
 'use client';
 
+import { Box, Chip, Divider, Stack, useTheme } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import {
   OphButton,
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect, useState } from 'react';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
-import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import React, { useEffect, useState } from 'react';
 
-import useToaster from '@/src/hooks/useToaster';
-import { handleFetchError } from '@/src/lib/utils';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import { Box, Chip, Divider, Stack, useTheme } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
-import { SuccessBox } from '@/src/components/SuccessBox';
 import { AlertBox } from '@/src/components/AlertBox';
-import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
-import React from 'react';
+import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { EsittelijaSection } from '@/src/components/EsittelijaSection';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
+import { SuccessBox } from '@/src/components/SuccessBox';
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
+import { handleFetchError } from '@/src/lib/utils';
 
 const sortMaakoodit = (maakoodit: Maakoodi[] | undefined) =>
   maakoodit?.slice().sort((a, b) => a.fi.localeCompare(b.fi)) || [];

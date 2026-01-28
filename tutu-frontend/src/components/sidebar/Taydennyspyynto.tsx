@@ -4,6 +4,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
+
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export const Taydennyspyynto = () => {
