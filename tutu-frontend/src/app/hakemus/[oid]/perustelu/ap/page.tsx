@@ -22,7 +22,11 @@ export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
   const { hakemusState, isLoading, error } = useHakemus();
-  const { editedData: hakemus } = hakemusState;
+  const {
+    editedData: hakemus,
+    save: saveHakemus,
+    hasChanges: hakemusHasChanges,
+  } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
     perustelu,
@@ -53,7 +57,12 @@ export default function ApPage() {
     updateLocal({ apSisalto: next });
   };
 
-  useUnsavedChanges(hasChanges || hakemusState.hasChanges);
+  const handleSave = () => {
+    save();
+    saveHakemus();
+  };
+
+  useUnsavedChanges(hasChanges || hakemusHasChanges);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -345,9 +354,9 @@ export default function ApPage() {
         ></OphInputFormField>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={save}
+        onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={hasChanges}
+        hasChanges={hasChanges || hakemusHasChanges}
         lastSaved={hakemus?.muokattu}
         modifierFirstName={hakemus?.muokkaajaKutsumanimi}
         modifierLastName={hakemus?.muokkaajaSukunimi}
