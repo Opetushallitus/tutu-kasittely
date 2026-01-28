@@ -65,6 +65,11 @@ export default function UoroPage() {
 
   const uoRoSisalto = perusteluState.editedData?.uoRoSisalto;
 
+  const handleSave = () => {
+    perusteluState.save();
+    hakemusState.save();
+  };
+
   useUnsavedChanges(perusteluState.hasChanges || hakemusState.hasChanges);
 
   return (
@@ -185,9 +190,9 @@ export default function UoroPage() {
         </Stack>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={perusteluState.save}
+        onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={perusteluState.hasChanges}
+        hasChanges={perusteluState.hasChanges || hakemusState.hasChanges}
         lastSaved={hakemus?.muokattu}
         modifierFirstName={hakemus?.muokkaajaKutsumanimi}
         modifierLastName={hakemus?.muokkaajaSukunimi}
