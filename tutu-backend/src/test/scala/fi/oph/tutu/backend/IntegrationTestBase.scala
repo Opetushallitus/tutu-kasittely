@@ -18,7 +18,6 @@ import fi.oph.tutu.backend.repository.{
   TutkintoRepository
 }
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
-
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{BeforeAll, TestInstance}
