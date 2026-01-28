@@ -265,11 +265,11 @@ class HakemusService(
           dbHakemus.id,
           ataruHakemus.hakemuksenTila()
         )
-        val henkilo = dbHakemus.muokkaaja match {
-          case None            => (null, null)
+        val henkilo: (String, String) = dbHakemus.muokkaaja match {
+          case None            => ("", "")
           case Some(muokkaaja) =>
             onrService.haeHenkilo(dbHakemus.muokkaaja.get) match {
-              case Left(error)    => (null, null)
+              case Left(error)    => ("", "")
               case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
             }
         }
