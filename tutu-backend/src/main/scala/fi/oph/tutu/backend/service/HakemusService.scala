@@ -292,8 +292,8 @@ class HakemusService(
           kasittelyVaihe =
             dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
           muokattu = dbHakemus.muokattu,
-          muokkaajaKutsumanimi = henkilo(0),
-          muokkaajaSukunimi = henkilo(1),
+          muokkaajaKutsumanimi = henkilo match { case (kutsumanimi, _) => kutsumanimi },
+          muokkaajaSukunimi = henkilo match { case (_, sukunimi) => sukunimi },
           muutosHistoria = Seq(),
           taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
             case None            => None
