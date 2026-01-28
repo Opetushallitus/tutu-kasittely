@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
@@ -18,6 +17,7 @@ import {
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
@@ -58,8 +58,6 @@ export default function PerustietoPage() {
     [paatosJaAsiointikieli, asiointiKieli],
     hakemus.lomakkeenKieli as keyof TranslatedName,
   );
-
-  console.log('Hakemus: ', hakemus);
 
   return (
     <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
