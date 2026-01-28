@@ -66,7 +66,7 @@ test.describe('Tavalliset hakemukset', () => {
     const hakemuksenLuontiaika = '14.05.2025 10:59';
     const myohempiLiittenLisaysaika = '16.05.2025 10:59';
 
-    await expect(asiakirjarivit).toHaveCount(6);
+    await expect(asiakirjarivit).toHaveCount(7);
 
     const row1_otsake_check = expect(
       page.locator(`${asiakirjaId1} .asiakirja-row__otsake`),
@@ -262,12 +262,13 @@ test.describe('Lopullinen päätös hakemukset', () => {
     const asiakirjaId4 = '#asiakirja__582be518-e3ea-4692-8a2c-8370b40213e5';
     const asiakirjaId5 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25f';
     const asiakirjaId6 = '#asiakirja__0443f1ca-6fd0-4919-812f-eaed4ae87933';
+    const asiakirjaId7 = '#asiakirja__8003048a-92a2-4d3a-95a9-dae81e4533d8';
 
     const asiakirjarivit = page.locator('.asiakirja-row');
     const hakemuksenLuontiaika = '14.05.2025 10:59';
     const myohempiLiittenLisaysaika = '16.05.2025 10:59';
 
-    await expect(asiakirjarivit).toHaveCount(6);
+    await expect(asiakirjarivit).toHaveCount(7);
 
     const row1_otsake_check = expect(
       page.locator(`${asiakirjaId1} .asiakirja-row__otsake`),
@@ -366,6 +367,24 @@ test.describe('Lopullinen päätös hakemukset', () => {
       page.locator(`${asiakirjaId6} .asiakirja-row__tarkistuksen-tila`),
     ).toContainText(myohassaText);
 
+    const row7_otsake_check = expect(
+      page.locator(`${asiakirjaId7} .asiakirja-row__otsake`),
+    ).toContainText(
+      'Sopeutumisaika, kelpoisuuskoe tai täydentävät opinnot: Työnantajan antama todistus sopeutumisajan suorittamisesta',
+    );
+    const row7_tiedostonimi_check = expect(
+      page.locator(`${asiakirjaId7} .asiakirja-row__tiedostonimi`),
+    ).toContainText('sopeutumisaika-todistus.pdf');
+    const row7_saapumisaika_check = expect(
+      page.locator(`${asiakirjaId7} .asiakirja-row__saapumisaika`),
+    ).toContainText(hakemuksenLuontiaika);
+    const row7_uusiliite_check = expect(
+      page.locator(`${asiakirjaId7} .asiakirja-row__uusi-liite`),
+    ).toBeAttached();
+    const row7_tarkistuksentila_check = expect(
+      page.locator(`${asiakirjaId7} .asiakirja-row__tarkistuksen-tila`),
+    ).toContainText('Tarkastamatta');
+
     await Promise.all([
       row1_otsake_check,
       row1_tiedostonimi_check,
@@ -396,11 +415,18 @@ test.describe('Lopullinen päätös hakemukset', () => {
       row5_saapumisaika_check,
       row5_uusiliite_check,
       row5_tarkistuksentila_check,
+
       row6_otsake_check,
       row6_tiedostonimi_check,
       row6_saapumisaika_check,
       row6_uusiliite_check,
       row6_tarkistuksentila_check,
+
+      row7_otsake_check,
+      row7_tiedostonimi_check,
+      row7_saapumisaika_check,
+      row7_uusiliite_check,
+      row7_tarkistuksentila_check,
     ]);
   });
 

@@ -881,4 +881,59 @@ export const _sisalto: Array<SisaltoItem> = [
     },
     children: [],
   },
+  {
+    key: 'adfb7a3d-d05c-477b-8d00-820ef2ed7328',
+    fieldType: 'fieldset',
+    value: [],
+    label: {
+      fi: 'Sopeutumisaika, kelpoisuuskoe tai täydentävät opinnot',
+      sv: 'Anpassningsperiod, lämplighetsprov eller kompletterande studier',
+      en: 'Adaptation period, aptitude test or complementary studies',
+    },
+    children: [
+      {
+        label: {
+          fi: 'Minkä tai mitkä seuraavista olet suorittanut?',
+          sv: 'Vilken eller vilka av de följande har du kompletterat?',
+          en: 'Which of the following have you completed?',
+        },
+        key: '42d23ef4-7e1e-4de6-8d4d-a35d5ef0d786',
+        value: [
+          {
+            label: {
+              fi: 'Sopeutumisajan',
+              sv: 'Anpassningsperiod',
+              en: 'Adaptation period',
+            },
+            value: '3',
+            followups: [
+              {
+                label: {
+                  fi: 'Työnantajan antama todistus sopeutumisajan suorittamisesta',
+                  sv: 'Intyg över anpassningsperioden',
+                  en: 'The certificate(s) issued by the employer for completion of the adaptation period',
+                },
+                key: 'ce0fe7fe-b694-40e0-a461-9bd18d502f46',
+                fieldType: 'attachment',
+                children: [],
+                value: [
+                  {
+                    followups: [],
+                    value: '',
+                    label: {
+                      fi: '8003048a-92a2-4d3a-95a9-dae81e4533d8',
+                      sv: '8003048a-92a2-4d3a-95a9-dae81e4533d8',
+                      en: '8003048a-92a2-4d3a-95a9-dae81e4533d8',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        fieldType: 'multipleChoice',
+        children: [],
+      },
+    ],
+  },
 ];

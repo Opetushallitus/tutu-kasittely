@@ -34,6 +34,6 @@ class HakemuspalveluServiceTest extends UnitTestBase {
     val muutosHistoria = hakemuspalveluService.resolveLiitteidenMuutoshistoria(loadJson("muutosHistoria.json"))
     assertEquals(8, muutosHistoria.size)
     fileIdsWithTimestamp1.foreach(id => assertEquals("2025-06-17T13:02:20.473", muutosHistoria(id)))
-    fileIdsWithTimestamp2.foreach(id => assertEquals("2025-06-17T18:19:44.230", muutosHistoria(id)))
+    fileIdsWithTimestamp2.foreach(id => assertEquals("2025-10-16T09:33:02.234580", muutosHistoria(id)))
   }
 }

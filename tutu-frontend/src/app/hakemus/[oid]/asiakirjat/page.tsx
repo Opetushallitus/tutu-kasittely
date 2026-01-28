@@ -28,6 +28,7 @@ import {
   henkilotietojenLiitteet,
   muutTutkinnot,
   oikeellisuusJaAitous,
+  lopullinenPaatosSuoritukset,
   todistusAitoustarkistusLupa,
   tutkintoTaiKoulutus,
   ylinTutkinto,
@@ -55,7 +56,10 @@ import {
 } from '@/src/lib/types/hakemus';
 import { handleFetchError } from '@/src/lib/utils';
 
-const sisallonSuoratYlatasonOsiot = [henkilotietojenLiitteet];
+const sisallonSuoratYlatasonOsiot = [
+  henkilotietojenLiitteet,
+  lopullinenPaatosSuoritukset,
+];
 const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
 const tutkintojenAliOsiot = [ylinTutkinto, alemmatTutkinnot, muutTutkinnot];
 

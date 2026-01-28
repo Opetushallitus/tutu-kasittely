@@ -43,4 +43,10 @@ export const _liitteidenTilat: Array<TarkistuksenTila> = [
     hakukohde: 'form',
     updateTime: '2025-05-15T10:59:04.597123',
   },
+  {
+    attachment: 'ce0fe7fe-b694-40e0-a461-9bd18d502f46',
+    state: 'not-checked',
+    hakukohde: 'form',
+    updateTime: '2025-05-15T10:59:04.597123',
+  },
 ];

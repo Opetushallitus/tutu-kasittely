@@ -12,7 +12,7 @@ import fi.oph.tutu.backend.repository.{
   TutkintoRepository,
   TutuDatabase
 }
-import fi.oph.tutu.backend.utils.Constants.*
+import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, FINLAND_TZ, TUTU_SERVICE}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import fi.oph.tutu.backend.utils.Utility.{stringToIntSeq, stringToSeq, toLocalDateTime}
 import org.json4s.*
@@ -170,10 +170,7 @@ class HakemusService(
     dbTutkinnot: Seq[Tutkinto]
   ): Seq[Tutkinto] = {
     val ataruTutkinnot       = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
-    val ataruHakemusModified = ZonedDateTime
-      .parse(ataruHakemus.modified, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
-      .toLocalDateTime
+    val ataruHakemusModified = toLocalDateTime(ataruHakemus.modified)
 
     ataruTutkinnot.foreach { ataruTutkinto =>
       dbTutkinnot.find(dbTutkinto => dbTutkinto.jarjestys == ataruTutkinto.jarjestys) match {
