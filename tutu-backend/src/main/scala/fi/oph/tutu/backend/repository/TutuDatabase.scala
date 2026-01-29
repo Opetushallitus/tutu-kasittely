@@ -93,7 +93,7 @@ class TutuDatabase(
   }
 
   def runSimple[R](operations: DBIO[R]): Unit = {
-    val result = Await.result(
+    Await.result(
       db.run(operations),
       timeout
     )

@@ -332,6 +332,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <args>
+                        <arg>-Wunused:imports</arg>
+                        <arg>-Wunused:privates</arg>
+                        <arg>-Wunused:locals</arg>
+                    </args>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
