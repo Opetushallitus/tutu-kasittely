@@ -37,6 +37,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import {
   checkLiitteenTila,
@@ -209,6 +210,7 @@ const AsiakirjaPagePure = ({
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
+  useUnsavedChanges(hasChanges);
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -347,7 +349,13 @@ const AsiakirjaPagePure = ({
           </>
         )}
       </Stack>
-      <SaveRibbon onSave={onSave} isSaving={isSaving} hasChanges={hasChanges} />
+      <SaveRibbon
+        onSave={onSave}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+        lastSaved={hakemus.muokattu}
+        modifier={hakemus.muokkaaja}
+      />
     </>
   );
 };

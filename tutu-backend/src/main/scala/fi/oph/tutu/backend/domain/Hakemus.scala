@@ -92,7 +92,13 @@ case class DbHakemus(
     example = "Esittelijän huomioita",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  esittelijanHuomioita: Option[String]
+  esittelijanHuomioita: Option[String],
+  @(Schema @field)(
+    example = "1.2.246.562.24.00000000000000006666",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 40
+  )
+  muokkaaja: Option[String]
 )
 
 case class Hakemus(
@@ -112,6 +118,7 @@ case class Hakemus(
   ataruHakemuksenTila: AtaruHakemuksenTila,
   kasittelyVaihe: KasittelyVaihe,
   muokattu: Option[LocalDateTime] = None,
+  muokkaaja: String,
   muutosHistoria: Seq[MuutosHistoriaItem] = Seq.empty,
   taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   ataruHakemustaMuokattu: Option[LocalDateTime] = None,
