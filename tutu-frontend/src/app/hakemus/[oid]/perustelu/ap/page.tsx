@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Box, FormControl, useTheme } from '@mui/material';
 import {
   OphCheckbox,
@@ -15,6 +14,7 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
 
@@ -42,7 +42,7 @@ export default function ApPage() {
     editedData: editedPerustelu,
     hasChanges,
     updateLocal,
-    save,
+    save: savePerustelu,
   } = perusteluState;
   // Update local state only
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
@@ -58,7 +58,7 @@ export default function ApPage() {
   };
 
   const handleSave = () => {
-    save();
+    savePerustelu();
     saveHakemus();
   };
 
