@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service.generator.perustelumuistio
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService}
 import fi.oph.tutu.backend.service.generator.{formatDate, toKyllaEi}
-import fi.oph.tutu.backend.utils.{haeKysymyksenTiedot, Constants}
+import fi.oph.tutu.backend.utils.{Constants, haeKysymyksenTiedot}
 
 def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)

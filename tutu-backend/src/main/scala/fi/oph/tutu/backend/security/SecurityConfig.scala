@@ -294,16 +294,16 @@ class SecurityConfig {
     sessionMappingStorage: SessionMappingStorage
   ): SingleSignOutFilter = {
     SingleSignOutFilter.setSessionMappingStorage(sessionMappingStorage)
-    val singleSignOutFilter: SingleSignOutFilter = new SingleSignOutFilter();
-    singleSignOutFilter.setIgnoreInitConfiguration(true);
+    val singleSignOutFilter: SingleSignOutFilter = new SingleSignOutFilter()
+    singleSignOutFilter.setIgnoreInitConfiguration(true)
     singleSignOutFilter
   }
 
   @Bean
   def cookieSerializer(): CookieSerializer = {
-    val serializer = new DefaultCookieSerializer();
+    val serializer = new DefaultCookieSerializer()
     serializer.setUseSecureCookie(true)
-    serializer.setCookieName("JSESSIONID");
-    serializer;
+    serializer.setCookieName("JSESSIONID")
+    serializer
   }
 }

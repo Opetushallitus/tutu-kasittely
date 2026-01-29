@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.domain
 
 enum PaatosTyyppi:
-  case Taso, Kelpoisuus, TiettyTutkintoTaiOpinnot, RiittavatOpinnot;
+  case Taso, Kelpoisuus, TiettyTutkintoTaiOpinnot, RiittavatOpinnot
 
 object PaatosTyyppi:
   def fromString(value: String): PaatosTyyppi = value match

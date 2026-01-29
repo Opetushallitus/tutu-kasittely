@@ -51,6 +51,14 @@ export const _liitteet: Array<LiiteItem> = [
     'download-url': 'https://jotain.jossain.org',
   },
   {
+    key: '8003048a-92a2-4d3a-95a9-dae81e4533d8',
+    size: 10,
+    uploaded: '2025-05-19T06:36:10.123Z',
+    filename: 'sopeutumisaika-todistus.pdf',
+    'content-type': 'application/pdf',
+    'download-url': 'https://jotain.jossain.org',
+  },
+  {
     key: 'f0974a8c-ff0e-4702-b62c-58f69047e25g',
     size: 10,
     uploaded: '2025-05-19T06:30:56.244Z',

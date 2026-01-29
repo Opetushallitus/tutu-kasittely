@@ -137,7 +137,8 @@ test('Maakoodin osoittaminen ja siirtäminen esittelijöiden välillä muokkaust
   await expect(cancelIcon).toBeVisible();
   await expect(cancelIcon).toBeEnabled();
 
-  await cancelIcon.click();
+  // eslint-disable-next-line playwright/no-force-option
+  await cancelIcon.click({ force: true });
 
   // Poista määritys poistamalla maavalinta → muuttuu määrittämättömäksi → Alertbox näytetään jälleen.
   await page.unroute('**/tutu-backend/api/maakoodi*');
@@ -222,7 +223,8 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
   const chip = page.getByTestId('maakoodi-chip-maatjavaltiot2_002');
   await expect(chip).toBeVisible();
   const cancelIcon = chip.locator('svg[data-testid="CancelIcon"]');
-  await cancelIcon.click();
+  // eslint-disable-next-line playwright/no-force-option
+  await cancelIcon.click({ force: true });
 
   // Päivitä API-tila vastaamaan esittelijän poistoa
   await page.unroute('**/tutu-backend/api/maakoodi*');

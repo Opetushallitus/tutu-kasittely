@@ -3,8 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
-  DATE_TIME_FORMAT,
-  DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW,
   FINLAND_TZ,
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
@@ -13,11 +11,11 @@ import fi.oph.tutu.backend.utils.Constants.{
 import org.springframework.stereotype.{Component, Service}
 
 import java.time.{LocalDateTime, ZonedDateTime}
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary
 import scala.util.boundary.break
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 def ataruAnswerToBoolean(value: String): Option[Boolean] = {
   if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "1") {
@@ -228,7 +226,6 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def parseLiitteidenTilat(ataruHakemus: AtaruHakemus, ataruLomake: AtaruLomake): Seq[AttachmentReview] = {
-    val dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW)
     val allAttachmentKeys = getAttachementKeys(ataruLomake.content)
     // TODO Ylemmän ehdon voi poistaa kunhan ataru ja tutu ovat ajantasalla
     val tilat =
@@ -240,12 +237,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
             r.attachment,
             r.state,
             r.hakukohde,
-            Some(
-              ZonedDateTime
-                .parse(r.updateTime, dateTimeFormatter)
-                .withZoneSameInstant(FINLAND_TZ)
-                .toLocalDateTime
-            )
+            Some(toLocalDateTime(r.updateTime))
           )
         )
     allAttachmentKeys.map(key => {

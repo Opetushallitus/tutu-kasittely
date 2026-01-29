@@ -11,7 +11,7 @@ case class MuutosHistoriaItem(
 val UPDATED_BY_APPLICANT  = "updated-by-applicant"
 val UPDATED_BY_VIRKAILIJA = "updated-by-virkailija"
 
-enum MuutosHistoriaRoleType   { case Hakija, Esittelija, Irrelevant };
+enum MuutosHistoriaRoleType   { case Hakija, Esittelija, Irrelevant }
 object MuutosHistoriaRoleType {
   def fromString(roleString: String): MuutosHistoriaRoleType = {
     roleString match {

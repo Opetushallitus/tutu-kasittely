@@ -18,7 +18,6 @@ import fi.oph.tutu.backend.repository.{
   TutkintoRepository
 }
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
-import fi.oph.tutu.backend.utils.Constants.DATE_TIME_FORMAT
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{BeforeAll, TestInstance}
@@ -36,7 +35,7 @@ import org.testcontainers.containers.wait.strategy.Wait
 import java.io.FileNotFoundException
 import java.sql.DriverManager
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime}
+import java.time.{Duration, LocalDateTime, ZonedDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 
@@ -205,7 +204,7 @@ class IntegrationTestBase {
           "88d627a1-47d9-4bb2-aad2-16384a900352",
           "checked",
           "form",
-          Some(LocalDateTime.parse("2025-12-17T09:30:00.000Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
+          Some(LocalDateTime.parse("2025-12-17T09:30:00.000"))
         ),
         AttachmentReview("063912dd-2e57-4e69-a42c-35ff73d8953d", "not-checked", "form", None)
       )

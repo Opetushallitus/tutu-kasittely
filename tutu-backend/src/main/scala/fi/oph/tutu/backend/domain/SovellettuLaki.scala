@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.domain
 
 enum SovellettuLaki:
-  case uo, ap, ap_seut, ro;
+  case uo, ap, ap_seut, ro
 
 object SovellettuLaki:
   def fromString(value: String): SovellettuLaki = value match

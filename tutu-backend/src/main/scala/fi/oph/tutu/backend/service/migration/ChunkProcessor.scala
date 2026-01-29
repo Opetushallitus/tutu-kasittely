@@ -9,7 +9,7 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
-import scala.util.{boundary, Failure, Success, Try}
+import scala.util.{Failure, Success, Try, boundary}
 
 /**
  * Palojen käsittelijä, joka muuntaa XML-palat JSON:ksi ja tallentaa ne tietokantaan.

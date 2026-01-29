@@ -16,7 +16,7 @@ import fi.oph.tutu.backend.fixture.{
 }
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT, TUTU_SERVICE}
+import fi.oph.tutu.backend.utils.Constants.TUTU_SERVICE
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
@@ -39,8 +39,9 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.ZonedDateTime
 import java.util.UUID
+import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
@@ -268,8 +269,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests()
 
     val kirjauspvm = ZonedDateTime
-      .parse("2025-05-14T10:59:47.597Z", DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
-      .withZoneSameInstant(ZoneId.of("Europe/Helsinki"))
+      .parse("2025-05-14T10:59:47.597Z")
+      .withZoneSameInstant(FINLAND_TZ)
       .toLocalDateTime
     val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
 

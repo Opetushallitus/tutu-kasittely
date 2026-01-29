@@ -2,7 +2,8 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT, FINLAND_TZ}
+import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
@@ -14,9 +15,6 @@ import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
-
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
 
 case class HakemuspalveluServiceException(cause: Throwable = null) extends RuntimeException(cause)
 
@@ -142,16 +140,12 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   }
 
   def resolveLiitteidenMuutoshistoria(jsonString: String): Map[String, String] = {
-    val dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
-    val mappings          = parse(jsonString) match {
+    val mappings = parse(jsonString) match {
       case JArray(rawItems) =>
         rawItems.flatMap(item => {
           val fields    = item.asInstanceOf[JObject].values
           val time      = (item \ "time").extract[String]
-          val localTime = ZonedDateTime
-            .parse(time, dateTimeFormatter)
-            .withZoneSameInstant(FINLAND_TZ)
-            .toLocalDateTime
+          val localTime = toLocalDateTime(time)
 
           val keysOfModifiedFields = fields.keys.toSeq.diff(COMMON_MUUTOSHISTORIA_FIELDS)
           keysOfModifiedFields.flatMap(key =>
