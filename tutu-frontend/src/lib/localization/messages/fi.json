@@ -1,0 +1,634 @@
+{
+  "valinnat": {
+    "hakemusKoskeeValinta": {
+      "tutkinnonTasonRinnastaminen": "Tutkinnon tason rinnastaminen",
+      "kelpoisuusAmmattiin": "Kelpoisuus ammattiin",
+      "kelpoisuusAmmattiinAPHakemus": "Kelpoisuus ammattiin (AP-hakemus)",
+      "tutkintoSuoritusRinnastaminen": "Tiettyyn tutkintoon tai opintosuoritukseen rinnastaminen",
+      "riittavatOpinnot": "Päätös riittävistä opinnoista",
+      "lopullinenPaatos": "Lopullinen päätös"
+    }
+  },
+  "hakemuslista": {
+    "otsikko": "Tutkintojen tunnustaminen",
+    "hakemukset": "Hakemukset",
+    "hakemus": "Hakemus",
+    "esittelija": "Esittelijä",
+    "hakija": "Hakijan nimi",
+    "asiatunnus": "Asiatunnus",
+    "hakemusKoskee": "Hakemus koskee",
+    "kasittelyvaihe": "Käsittelyvaihe",
+    "kasittelytila": "Käsittelytila",
+    "nayta": "Näytä",
+    "haeHakemuksia": "Hae hakemuksia",
+    "omat": "Minulle osoitetut",
+    "kaikki": "Kaikki",
+    "kokonaisaika": "Kokonaisaika",
+    "hakijanaika": "Hakijan aika",
+    "kokonaisaikaKk": "{aika, number} kk",
+    "hakemusta": "hakemusta",
+    "saapumisPvm": "Hakemus saapunut",
+    "tyyppi": {
+      "tabs": "Hakemuslistan tyyppi",
+      "hakemukset": "Hakemukset",
+      "filemakerHakemukset": "Filemakerin hakemukset"
+    },
+    "seuraava": "Seuraava",
+    "edellinen": "Edellinen"
+  },
+  "hakemus": {
+    "apHakemus": "AP-hakemus",
+    "ataruhakemuksentila": {
+      "kasittelematta": "Käsittelemättä",
+      "kasittelyssa": "Käsittelyssä",
+      "kutsuttuhaastatteluun": "Kutsuttu haastatteluun",
+      "kutsuttuvalintaKokeeseen": "Kutsuttu valintakokeeseen",
+      "arvioinnissa": "Arvioinnissa",
+      "valintaesitys": "Valintaesitys",
+      "kasitelty": "Käsitelty",
+      "taydennyspyynto": "Täydennyspyyntö",
+      "kasittelymaksamatta": "Käsittely maksamatta",
+      "kasittelymaksettu": "Käsittely maksettu",
+      "paatosmaksuavoin": "Päätösmaksu avoin",
+      "paatosmaksamatta": "Päätösmaksu maksamatta",
+      "paatosmaksettu": "Päätösmaksu maksettu",
+      "laskutuksessa": "Laskutuksessa",
+      "peruutettu": "Peruutettu"
+    },
+    "kasittelyvaihe": {
+      "alkukasittelykesken": "Alkukäsittely kesken",
+      "odottaataydennysta": "Odottaa täydennystä",
+      "odottaataydennystamennessa": "Odottaa täydennystä {date} mennessä",
+      "odottaaimivastausta": "Odottaa IMI-vastausta",
+      "odottaavahvistusta": "Odottaa vahvistusta",
+      "odottaalausuntoa": "Odottaa lausuntoa",
+      "valmiskasiteltavaksi": "Valmis käsiteltäväksi",
+      "hakemustataydennetty": "Hakemusta täydennetty",
+      "hakemustataydennettytalloin": "Hakemusta täydennetty {date}",
+      "hyvaksynnassatailoppukasittelyssa": "Hyväksynnässä tai loppukäsittelyssä",
+      "hyvaksyttyeilahetetty": "Hyväksytty, ei lähetetty",
+      "loppukasittelyvalmis": "Loppukäsittely valmis"
+    },
+    "otsikko": "Hakemus",
+    "sivupalkki": {
+      "kasittelyvaihe": "Käsittelyvaihe",
+      "hakemuspalvelunvaihe": "Hakemuspalvelun vaihe",
+      "muokkaa": "Muokkaa hakemusta",
+      "paatos": {
+        "otsikko": "Päätös {numero, number}",
+        "otsikkoAikaisempi": "Aikaisempi päätös",
+        "seliteAikaisempi": "Hakijalla on ehdollinen päätös samasta kokonaisuudesta:"
+      },
+      "taydennysPyynto": {
+        "otsikko": "Täydennyspyyntö",
+        "lahetetty": "Täydennyspyyntö lähetetty",
+        "maaraaika": "Täydennyksen määräaika"
+      },
+      "kirjoitaViesti": "Kirjoita viesti",
+      "perustelumuistio": "Perustelumuistio",
+      "kirjoitaPaatos": "Kirjoita päätös",
+      "avaaHakemus": "Avaa hakemus"
+    },
+    "perustelumuistio": {
+      "otsikko": "Perustelumuistio",
+      "kopioi": "Kopioi",
+      "kopioituToast": "Perustelumuistio kopioitu leikepöydälle"
+    },
+    "perustiedot": {
+      "otsikko": "Hakemuksen ja hakijan tiedot",
+      "hakemusKoskee": "Hakemus koskee",
+      "mitaHakee": "Mitä hakee",
+      "esittelijanHuomioita": "Esittelijan huomioita (ei näy muistiossa)",
+      "muutoshistoria": {
+        "otsikko": "Hakemuksen muutoshistoria",
+        "muokattu": "Muokattu",
+        "muokkaaja": "Muokkaaja",
+        "esittelija": "esittelijä",
+        "hakija": "hakija"
+      },
+      "henkilotiedot": {
+        "otsikko": "Henkilötiedot",
+        "huomautus": "Hakijan henkilötiedot on haettu väestötietojärjestelmistä.",
+        "etunimet": "Etunimet",
+        "kutsumanimi": "Kutsumanimi",
+        "sukunimi": "Sukunimi",
+        "kansalaisuus": "Kansalaisuus",
+        "hetu": "Henkilötunnus",
+        "syntymaaika": "Syntymäaika",
+        "matkapuhelin": "Matkapuhelin",
+        "asuinmaa": "Asuinmaa",
+        "katuosoite": "Katuosoite",
+        "postinumero": "Postinumero",
+        "postitoimipaikka": "Postitoimipaikka",
+        "kotikunta": "Kotikunta",
+        "sahkopostiosoite": "Sähköpostiosoite",
+        "kielet": "Päätös- ja asiointikieli",
+        "paatoskieli": "Päätöskieli",
+        "asiointikieli": "Asiointikieli"
+      },
+      "lopullinenPaatos": {
+        "vastaavaEhdollinenPaatos": "Opetushallituksen ehdollinen päätös",
+        "suoritusmaa": "Tutkinnon suoritusmaa",
+        "suoritusotsikko": "Mitä on suorittanut"
+      }
+    },
+    "asiakirjat": {
+      "otsikko": "Asiakirjat",
+      "avaaHakemuspalvelussa": "Avaa hakemus hakemuspalvelussa",
+      "asiakirja": "Asiakirja",
+      "saapunut": "Saapunut",
+      "uusi": "Uusi",
+      "tarkistuksenTila": {
+        "otsikko": "Tarkastuksen tila",
+        "not-checked": "Tarkastamatta",
+        "attachment-missing": "Liite puuttuu",
+        "checked": "Tarkistettu",
+        "incomplete-attachment": "Puutteellinen liite",
+        "overdue": "Myöhässä"
+      },
+      "asiakirjapyynnot": {
+        "pyyda": "Pyydä asiakirjaa",
+        "otsikko": {
+          "lista": "Asiakirjojen tarkistuslista",
+          "pyydettavatasiakirjat": "Pyydettävät asiakirjat",
+          "tutkinnottaikoulutukset": "Tutkinnot tai koulutukset",
+          "kelpoisuusammattiin": "Kelpoisuus ammattiin",
+          "henkilotiedot": "Henkilötiedot",
+          "sopeutumisaikataikelpoisuuskoetaitaydentavatopinnot": "Sopeutumisaika, kelpoisuuskoe tai täydentävät opinnot"
+        },
+        "asiakirjat": {
+          "tutkintotodistustenjaljennokset": "Tutkintotodistusten jäljennökset",
+          "liitteidenjaljennokset": "Liitteiden jäljennökset (opintosuoritusote)",
+          "tutkintotodistustenkaannokset": "Tutkintotodistusten käännökset",
+          "liitteidenkaannokset": "Liitteiden käännökset",
+          "alkuperaisettutkintotodistukset": "Alkuperäiset tutkintotodistukset",
+          "alkuperaisetliitteet": "Alkuperäiset liitteet",
+          "vaitoskirja": "Väitöskirja",
+          "tyotodistukset": "Työtodistukset tai todistukset elinikäisestä oppimisesta",
+          "ammattipatevyys": "Ammattipätevyyden todistavan asiakirjan jäljennös",
+          "kansalaisuus": "Kansalaisuuden todistava asiakirja",
+          "nimenmuutos": "Nimenmuutoksen todistava asiakirja",
+          "sopeutumisaika": "Todistus sopeutumisajan suorittamisesta",
+          "kelpoisuuskoe": "Todistus kelpoisuuskokeen suorittamisesta",
+          "taydentavatopinnot": "Todistus täydentävien opintojen suorittamisesta"
+        }
+      },
+      "imiPyynnot": {
+        "otsikko": "IMI-pyynnöt",
+        "imiPyyntoQuestion": "Tarvitaanko IMI-pyyntö",
+        "imiPyyntoNumero": "IMI-pyynnön numero",
+        "imiPyyntoLahetetty": "IMI-pyyntö lähetetty",
+        "imiPyyntoVastattu": "IMI-pyyntöön vastattu"
+      },
+      "asiakirjojenTarkistukset": "Asiakirjojen tarkistukset",
+      "kaikkiSelvityksetSaatu": "Kaikki tarvittavat selvitykset saatu",
+      "viimeinenAsiakirjaHakijalta": "Viimeinen asiakirja hakijalta",
+      "asiakirjojenVahvistaminen": "Asiakirjojen vahvistaminen",
+      "suostumusVahvistamiselleSaatu": "Suostumuslomake saatu asiakirjojen vahvistamiselle",
+      "allekirjoituksetTarkistettu": "Allekirjoitukset tarkistettu",
+      "allekirjoituksetTarkistettuLisatietoja": "Lisätietoja",
+      "alkuperaisetAsiakirjatSaatuNahtavaksi": "Alkuperäiset asiakirjat saatu nähtäväksi",
+      "alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot": "Huomioita alkuperäisistä asiakirjoista",
+      "apHakemus": "AP hakemus",
+      "mallejaTutkinnoista": {
+        "otsikko": "Asiakirjamalleja vastaavista tutkinnoista",
+        "lahde": "Lähde",
+        "vastaavuus": "Vastaavuus",
+        "kuvaus": "Kuvaa lyhyesti, vastaako löytämäsi asiakirjamalli hakemuksen asiakirjaa",
+        "ece": "ECE",
+        "ukEnic": "UK Enic",
+        "naricPortal": "Naric portal (UHR)",
+        "nuffic": "Nuffic",
+        "aacrao": "Aacrao",
+        "muu": "Muut lähteet",
+        "muuSelite": "Luettele myös muut lähteet ja verkko-osoitteet ja mahdollinen vastaus esim. Naric-toimistosta"
+      },
+      "muistio": {
+        "sisainenOtsake": "Esittelijän huomioita asiakirjoista (ei näy muistiossa)",
+        "sisainenOhjeteksti": "Numerotarkistukset, turvamerkinnät ym asiakirjoihin liittyvät muistiinpanot ja lisätiedot.",
+        "muistioOtsake": "Huomiot asiakirjoista muistioon"
+      },
+      "valmistumisenVahvistus": {
+        "otsikko": "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta",
+        "lahetetty": "Milloin vahvistuspyyntö lähetetty?",
+        "vastaanotettu": "Milloin vahvistus saatu?",
+        "vastaus": "Vastaus",
+        "myonteinen": "Myönteinen",
+        "kielteinen": "Kielteinen",
+        "eiVastausta": "Vahvistusta ei saatu",
+        "myonteinenLisatieto": "Mistä myönteinen vahvistus on saatu?",
+        "kielteinenLisatieto": "Mistä kielteinen vahvistus on saatu? Kielteisen vahvistuksen teksti",
+        "eiVastaustaLisatieto": "Kuvaus tilanteesta"
+      }
+    },
+    "tutkinnot": {
+      "otsikko": "Tutkinnot",
+      "yhteistutkinto": "Yhteistutkinto",
+      "lisaaTutkinto": "Lisää tutkinto",
+      "poistaTutkinto": "Poista tutkinto",
+      "modal": {
+        "otsikko": "Vahvista tutkinnon poisto",
+        "teksti": "Olet poistamassa tutkintoa. Vahvista tutkinnon poistaminen."
+      },
+      "hakijanIlmoittamaTieto": {
+        "linkki": "Näytä hakijan ilmoittama tieto"
+      },
+      "tutkinto": {
+        "tutkintoOtsikko": "Tutkinto",
+        "tutkintoOtsikkoMUU": "Muut tutkinnot ja opinnot",
+        "tutkintoTodistusOtsikko": "Tutkintotodistusotsikko",
+        "tutkinnonNimi": "Tutkinnon nimi",
+        "tutkinnonPaaaineTaiErikoisala": "Tutkinnon pääaine tai erikoisala",
+        "oppilaitos": "Korkeakoulun tai oppilaitoksen nimi",
+        "tutkinnonMaa": "Korkeakoulun tai oppilaitoksen sijaintimaa",
+        "opintojenAloitusVuosi": "Opintojen alkamisvuosi",
+        "opintojenPaattymisVuosi": "Opintojen päättymisvuosi",
+        "todistuksenPvm": "Todistuksen pvm",
+        "tutkinnonKoulutusala": "Tutkinnon koulutusala",
+        "muuTutkintoHuomio": "Huomiot muista tutkinnoista päätökseen",
+        "muuTutkintoHuomioSelite": "Tiedot tutkinnoista tai opintosuorituksista: tutkinnon tai opintosuorituksen nimi, korkeakoulun tai oppilaitoksen nimi, sijaintimaa sekä todistuksen päivämäärä"
+      }
+    },
+    "perustelu": {
+      "yleiset": {
+        "otsikko": "Yleiset perustelut",
+        "tab": {
+          "perustelut": "Yleiset perustelut",
+          "lausunto": "Lausuntotiedot",
+          "ap": "AP-päätöksen perustelut"
+        },
+        "muistio": {
+          "sisainenOtsake": "Tarkempia selvityksiä (ei näy muistiossa)"
+        },
+        "perustelut": {
+          "lahde": {
+            "otsikko": "Lähde",
+            "lahtomaanKansallinenLahde": "Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)",
+            "lahtomaanVirallinenVastaus": "Lähtömaan viranomaisen vastaus",
+            "kansainvalinenHakuteosTaiVerkkosivusto": "Kansainvälinen hakuteos tai verkkosivusto"
+          },
+          "virallinenTutkinnonMyontaja": "Virallinen tutkinnon myöntäjä ",
+          "virallinenTutkinto": "Virallinen tutkinto",
+          "selvitysTutkinnonMyontajastaJaVirallisuudesta": "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta",
+          "ylimmanTutkinnonAsema": {
+            "otsikko": "Ylimmän tutkinnon asema lähtömaan järjestelmässä",
+            "alempi_korkeakouluaste": "Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto",
+            "ylempi_korkeakouluaste": "Toisen vaiheen korkeakoulututkinto",
+            "alempi_ja_ylempi_korkeakouluaste": "Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot",
+            "tutkijakoulutusaste": "Tieteellinen jatkotutkinto",
+            "ei_korkeakouluaste": "Alle korkeakoulututkintotasoinen koulutus"
+          },
+          "selvitysTutkinnonAsemasta": "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä",
+          "muuPerustelu": "Ratkaisun tai päätöksen muut perustelut"
+        },
+        "tutkinnot": {
+          "tutkintoOtsake": "Tutkinto {jarjestys}",
+          "ohjeellinenLaajuus": "Ohjeellinen laajuus",
+          "suoritusvuodet": "Suoritusvuodet",
+          "opinnaytetyo": "Sisältyikö tutkintoon opinnäytetyö?",
+          "harjoittelu": "Sisältyikö tutkintoon harjoittelu?",
+          "lisatietoja": "Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"
+        },
+        "muutPerustelut": {
+          "otsikko": "Jatko-opintokelpoisuus ja muut perustelut",
+          "jatkoOpintoKelpoisuus": {
+            "otsikko": "Jatko-opintokelpoisuus",
+            "toisen_vaiheen_korkeakouluopintoihin": "Toisen vaiheen korkeakouluopintoihin",
+            "tieteellisiin_jatko-opintoihin": "Tieteellisiin jatko-opintoihin",
+            "muu": "Muu",
+            "lisatieto": "Täsmennä"
+          },
+          "aikaisemmatPaatokset": {
+            "otsikko": "Aikaisemmat päätökset",
+            "kylla": "Opetushallitus on tehnyt vastaavia päätöksiä",
+            "ei": "Ei aikaisempia päätöksiä"
+          }
+        }
+      },
+      "uoro": {
+        "otsikko": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
+        "koulutuksenSisalto": "Koulutuksen sisältö",
+        "koulutuksenSisaltoSelite": "Mihin ammattiin koulutus on valmistanut ja mahdollisia lisäselvityksiä koulutuksen sisällöstä",
+        "erotKoulutuksenSisallossa": "Erot koulutuksen sisällössä",
+        "muuEro": "Muu ero",
+        "muuTilanne": "Muu tilanne",
+        "muuTutkinto": "Muu tutkinto tai opintosuoritus, täsmennä",
+        "opettajat": {
+          "otsikko": "Opettajat",
+          "monialaisetOpinnotSisalto": "Ero monialaisten opintojen sisällössä",
+          "monialaisetOpinnotLaajuus": "Ero monialaisten opintojen laajuudessa",
+          "pedagogisetOpinnotSisalto": "Ero pedagogisten opintojen sisällössä",
+          "pedagogisetOpinnotLaajuus": "Ero pedagogisten opintojen laajuudessa",
+          "kasvatustieteellisetOpinnotSisalto": "Ero kasvatustieteellisten opintojen sisällössä (LO)",
+          "kasvatustieteellisetOpinnotVaativuus": "Ero kasvatustieteellisten opintojen vaativuudessa (LO)",
+          "kasvatustieteellisetOpinnotLaajuus": "Ero kasvatustieteellisten opintojen laajuudessa (LO)",
+          "opetettavatAineetOpinnotSisalto": "Ero opetettavan aineen opintojen sisällössä",
+          "opetettavatAineetOpinnotVaativuus": "Ero opetettavan aineen opintojen vaativuudessa",
+          "opetettavatAineetOpinnotLaajuus": "Ero opetettavan aineen opintojen laajuudessa",
+          "erityisopettajanOpinnotSisalto": "Ero erityisopettajan opintojen sisällössä",
+          "erityisopettajanOpinnotLaajuus": "Ero erityisopettajan opintojen laajuudessa"
+        },
+        "opettajatVk": {
+          "otsikko": "Varhaiskasvatuksen opettajat / esiopetusta antavat opettajat",
+          "kasvatustieteellisetOpinnotSisalto": "Ero kasvatustieteellisten opintojen sisällössä",
+          "kasvatustieteellisetOpinnotLaajuus": "Ero kasvatustieteellisten opintojen laajuudessa",
+          "varhaiskasvatusEsiopetusOpinnotSisalto": "Ero varhaiskasvatuksen ja esiopetuksen opintojen sisällössä",
+          "varhaiskasvatusEsiopetusOpinnotLaajuus": "Ero varhaiskasvatuksen ja esiopetuksen opintojen laajuudessa"
+        },
+        "otm": {
+          "otsikko": "Oikeustieteen maisterin tutkinto",
+          "opinnotSisalto": "Ero oikeustieteellisten opintojen sisällössä",
+          "opinnotVaativuus": "Ero oikeustieteellisten opintojen vaativuudessa",
+          "opinnotLaajuus": "Ero oikeustieteellisten opintojen laajuudessa"
+        },
+        "sovellettuTilanne": {
+          "otsikko": "Sovellettu tilanne",
+          "opettajanPedagogisetOpinnot": "Opettajan pedagogiset opinnot",
+          "opetettavanAineenOpinnot": "Opetettavan aineen opinnot",
+          "monialaisetOpinnot": "Monialaiset opinnot",
+          "erityisopetus": "Erityisopetus",
+          "varhaiskasvatus": "Varhaiskasvatus",
+          "rinnastaminenKasvatustieteelliseenTutkintoon": "Rinnastaminen kasvatustieteelliseen tutkintoon",
+          "riittavatOpinnot": "Riittävät opinnot",
+          "rinnastaminenOtmTutkintoon": "Rinnastaminen oikeustieteen maisterin tutkintoon",
+          "luokanopettaja": "Luokanopettaja",
+          "vieraatKielet": "Vieraat kielet",
+          "aineet": {
+            "liikunta": "Liikunta",
+            "musiikki": "Musiikki",
+            "kuvataide": "Kuvataide",
+            "kemia": "Kemia",
+            "matematiikka": "Matematiikka",
+            "fysiikka": "Fysiikka",
+            "biologia": "Biologia",
+            "maantiede": "Maantiede",
+            "historia": "Historia",
+            "yhteiskuntaoppi": "Yhteiskuntaoppi"
+          }
+        }
+      },
+      "ap": {
+        "otsikko": "AP-päätöksen perustelut"
+      },
+      "lausuntotiedot": {
+        "lausuntopyynnot": "Lausuntopyynnöt",
+        "lausuntopyynto": "Lausuntopyyntö {numero, number}",
+        "lausunnonAntaja": "Lausunnon antaja",
+        "muuLausunnonAntajaValinta": "Muu lausunnon antaja",
+        "muuLausunnonAntaja": "Täsmennä",
+        "pyyntoLahetetty": "Lähetetty",
+        "pyyntoSaapunut": "Saapunut",
+        "lisaaLausuntopyynto": "Lisää lausuntopyyntö",
+        "poistaLausuntopyynto": "Poista lausuntopyyntö",
+        "modal": {
+          "otsikko": "Vahvista lausuntopyynnön poisto",
+          "teksti": "Olet poistamassa lausuntopyyntöä. Vahvista lausuntopyynnön poistaminen."
+        },
+        "pyyntojenLisatiedot": "Lisätiedot lausuntopyynnoistä",
+        "lausunto": "Lausunto",
+        "sisalto": "Lausunnon sisältö"
+      }
+    },
+    "paatos": {
+      "otsikko": "Päätöstiedot",
+      "esikatselu": "Esikatsele päätöstekstiä",
+      "paatosteksti": "Päätösteksti",
+      "hyvaksymispaiva": "Hyväksymispäivä",
+      "lahetyspaiva": "Lähetyspäivä",
+      "ratkaisuJaPaatos": "Ratkaisu ja päätös",
+      "seut": "SEUT-arviointi tehty",
+      "myonteinenTaiKielteinenPaatos": "Päätös on",
+      "myonteinen": "Myönteinen",
+      "kielteinen": "Kielteinen",
+      "modal": {
+        "otsikko": "Vahvista päätöksen poisto",
+        "teksti": "Olet poistamassa päätöstä. Vahvista poistaminen.",
+        "poistaPaatos": "Poista päätös"
+      },
+      "ratkaisutyyppi": {
+        "otsikko": "Ratkaisutyyppi",
+        "paatos": "Päätös",
+        "peruutusTaiRaukeaminen": "Peruutus tai raukeaminen",
+        "oikaisu": "Oikaisu",
+        "jatetaanTutkimatta": "Jätetään tutkimatta",
+        "siirto": "Siirto"
+      },
+      "myonteinenPaatos": {
+        "otsikko": "Myönteinen päätös",
+        "taydentavatOpinnot": "Täydentävät opinnot",
+        "kelpoisuuskoe": "Kelpoisuuskoe",
+        "sopeutumisaika": "Sopeutumisaika",
+        "kelpoisuuskoeJaSopeutumisaika": "Kelpoisuuskoe ja sopeutumisaika"
+      },
+      "kielteisenPaatoksenPerustelut": {
+        "otsikko": "Kielteisen päätöksen perustelut",
+        "epavirallinenKorkeakoulu": "Epävirallinen korkeakoulu",
+        "epavirallinenTutkinto": "Epävirallinen tutkinto",
+        "eiVastaaSuomessaSuoritettavaaTutkintoa": "Ei vastaa Suomessa suoritettavaa tutkintoa",
+        "muuPerustelu": "Muu perustelu"
+      },
+      "paatostyyppi": {
+        "paatos": "Päätös",
+        "otsikko": "Päätöstyyppi",
+        "options": {
+          "taso": "1 Taso",
+          "kelpoisuus": "2 Kelpoisuus",
+          "tiettyTutkintoTaiOpinnot": "3 Tietty tutkinto tai opinnot",
+          "riittavatOpinnot": "4 Riittävät opinnot"
+        },
+        "lisaaPaatos": "Lisää päätös",
+        "poistaPaatos": "Poista päätös",
+        "taso": {},
+        "kelpoisuus": {
+          "otsikko": "Kelpoisuus",
+          "muuAmmatti": "Muu ammatti",
+          "muuAmmattiKuvaus": "Yksilöi ammatti ja kuvaa olennainen ero",
+          "opetettavaAine": "Opetettava aine",
+          "direktiivitaso": "Direktiivitaso",
+          "direktiivitasoLisatieto": "Lisätietoa direktiivitasosta",
+          "kansallisestiVaadittavaDirektiivitaso": "Kansallisesti vaadittava direktiivitaso",
+          "lisaa": "Lisää kelpoisuus",
+          "poista": "Poista kelpoisuus",
+          "modal": {
+            "otsikko": "Vahvista kelpoisuuden poisto",
+            "teksti": "Olet poistamassa kelpoisuutta. Vahvista poistaminen.",
+            "poistaKelpoisuus": "Poista kelpoisuus"
+          },
+          "additionalKelpoisuudet": {
+            "muuAmmatti": "Muu ammatti"
+          },
+          "paatos": {
+            "olennaisiaEroja": "Onko olennaisia eroja?",
+            "lahtokohtainenKorvaavaToimenpide": "Lähtökohtainen korvaava toimenpide",
+            "toimenpideLisatieto": "Jos valittu useampi vaihtoehto, ne ovat keskenään vaihtoehtoiset. Jos valittu vain yksi, lisävaatimus on vaihtoehdoton.",
+            "erotKoulutuksessa": {
+              "otsikko": "Erot koulutuksessa",
+              "otsikkoTiettyKelpoisuus": "Erot koulutuksessa: {kelpoisuus}",
+              "muuEro": "Muu",
+              "muuEroKuvaus": "Muu ero",
+              "aineenopetus": {
+                "lyhytNimi": "aineenopetus",
+                "ero1": "Ero opetettavan aineen opinnoissa",
+                "ero2": "Ero pedagogisissa opinnoissa",
+                "ero3": "Syventävien opintojen puuttuminen"
+              },
+              "yleiset": {
+                "eriIkaryhma": "Eri ikäryhmä"
+              },
+              "oletus": {
+                "ero1": "Ero 1",
+                "ero2": "Ero 2",
+                "ero3": "Ero 3",
+                "ero4": "Ero 4",
+                "ero5": "Ero 5"
+              }
+            },
+            "kelpoisuusKoe": {
+              "otsikko": "Kelpoisuuskoe sisältö",
+              "aihealue1": "Aihealue 1",
+              "aihealue2": "Aihealue 2",
+              "aihealue3": "Aihealue 3"
+            },
+            "sopeutumisaika": "Sopeutumisajan kesto (kk)",
+            "ammattikokemusElinikainenOppiminen": {
+              "otsikko": "Onko ammattikokemusta tai elinikäistä oppimista",
+              "ammattikokemus": "Ammattikokemus",
+              "elinikainenOppiminen": "Elinikäinen oppiminen",
+              "ohje": "Täsmennä",
+              "korvaavuus": {
+                "otsikko": "Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?",
+                "taysi": "Täysin",
+                "osittainen": "Osittain",
+                "ei": "Ei, käytetään lähtökohtaista korvaavaa toimenpidettä",
+                "korvaavaToimenpide": "Korvaava toimenpide päätökseen"
+              },
+              "kuvaus": "Kuvaus"
+            }
+          }
+        },
+        "tiettyTutkintoTaiOpinnot": {
+          "otsikko": "Tutkinto tai opinnot ",
+          "lisaa": "Lisää tutkinto tai opinnot",
+          "poista": "Poista tutkinto tai opinnot",
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettava tutkinto tai opinnot",
+          "modal": {
+            "otsikko": "Vahvista tutkinnon tai opintojen poisto",
+            "teksti": "Olet poistamassa tutkintoa tai opintoja. Vahvista poistaminen.",
+            "poistaTutkintoTaiOpinnot": "Poista tutkinto tai opinnot"
+          }
+        },
+        "riittavatOpinnot": {
+          "otsikko": "Opinnot ",
+          "lisaa": "Lisää opinnot",
+          "poista": "Poista opinnot",
+          "rinnastettavaTutkintoTaiOpinnot": "Rinnastettavat opinnot",
+          "modal": {
+            "otsikko": "Vahvista opintojen poisto",
+            "teksti": "Olet poistamassa opintoja. Vahvista poistaminen.",
+            "poistaTutkintoTaiOpinnot": "Poista opinnot"
+          },
+          "opetuskieli": "Opetuskieli"
+        }
+      },
+      "sovellettuLaki": {
+        "otsikko": "Sovellettu laki",
+        "uo": "Päätös UO",
+        "ap": "Päätös AP",
+        "ap_seut": "Päätös AP/SEUT",
+        "ro": "Päätös RO"
+      },
+      "tutkinto": {
+        "nimi": "Tutkinnon nimi, jota päätös koskee",
+        "lisaaTutkintoPaatosTekstiin": "Lisää tutkinnon nimi päätöstekstiin",
+        "muuTutkinto": "Muu tutkinto",
+        "tutkinnonTaso": "Tutkinnon taso",
+        "alempiKorkeakoulu": "Alempi korkeakoulututkinto",
+        "ylempiKorkeakoulu": "Ylempi korkeakoulututkinto"
+      },
+      "peruutuksenTaiRaukeamisenSyy": {
+        "otsikko": "Täsmennykset peruutuksen tai raukeamisen syystä",
+        "eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada": "ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",
+        "muutenTyytymatonRatkaisuun": "on muuten tyytymätön ratkaisuun",
+        "eiApMukainenTutkintoTaiHaettuaPatevyytta": "ei AP-mukainen tutkinto tai haettua ammattipätevyyttä",
+        "eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa": "ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
+        "epavirallinenKorkeakouluTaiTutkinto": "epävirallinen korkeakoulu tai tutkinto",
+        "eiEdellytyksiaRoEikaTasopaatokselle": "ei edellytyksiä RO- eikä tasopäätökselle",
+        "eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin": "ei edellytyksiä rinnastaa tiettyihin korkeakouluopintoihin",
+        "hakijallaJoPaatosSamastaKoulutusKokonaisuudesta": "hakijalla on jo päätös samasta koulutuskokonaisuudesta",
+        "muuSyy": "muu syy, esim. aikataulu"
+      },
+      "direktiivitaso": {
+        "a_1384_2015_patevyystaso_1": "a - 1384/2015 pätevyystaso 1",
+        "b_1384_2015_patevyystaso_2": "b - 1384/2015 pätevyystaso 2",
+        "c_1384_2015_patevyystaso_3": "c - 1384/2015 pätevyystaso 3",
+        "d_1384_2015_patevyystaso_4": "d - 1384/2015 pätevyystaso 4",
+        "e_1384_2015_patevyystaso_5": "e - 1384/2015 pätevyystaso 5"
+      }
+    }
+  },
+  "hakemusotsikko": {
+    "hetuPuuttuu": "Henkilötunnus puuttuu",
+    "asiatunnusPuuttuu": "Asiatunnus puuttuu",
+    "kirjausPvm": "Kirjauspäivämäärä:",
+    "paatosPvm": "Lopullinen päätös:",
+    "esittelija": "Esittelijä:",
+    "lopullinenPaatosPvm": "Lopullinen päätös:"
+  },
+  "hakemusTabs": {
+    "navigaatio": "Hakemuksen näkymävalitsin",
+    "perustiedot": "Hakijan ja hakemuksen tiedot",
+    "asiakirjat": "Asiakirjat",
+    "paatostiedot": "Päätöstiedot",
+    "perustelu": {
+      "ylataso": "Perustelu",
+      "yleiset": "Yleiset perustelut / Lausuntotiedot",
+      "uoro": "Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut",
+      "ap": "AP-päätöksen perustelut"
+    },
+    "tutkinnot": "Tutkinnot",
+    "valitustiedot": "Valitustiedot"
+  },
+  "maajako": {
+    "otsikko": "Esittelijöiden maajako",
+    "kenellevalittu": "Tarkista kenelle maa on valittu",
+    "maajako": "Maajako",
+    "kuvaus": "Hallinnoi maajakoa, jonka perusteella hakemukset ohjautuvat oikealle esittelijälle. Kukin maa voi olla valittuna vain yhdelle esittelijälle. Hakemukset ohjautuvat sen perusteella, minkä maan hakija on ilmoittanut hakemuslomakkeella tutkinnon suoritusmaaksi kohdassa Tutkinto 1.",
+    "suoritusmaa": "Tutkinnon suoritusmaa",
+    "kaikkiValittu": "Kaikki suoritusmaat on valittu jollekin esittelijälle",
+    "tutkinnonsuoritusmaat": "Tutkinnon suoritusmaat",
+    "varoitus": "Tutkinnon suoritusmaat, joita ei ole valittu kellekään",
+    "muokkaamaajakoa": "Muokkaa maajakoa",
+    "poistumuokkaustilasta": "Poistu muokkaustilasta"
+  },
+  "puuttuu": "Puuttuu",
+  "virhe": {
+    "eiTutuOikeuksia": "Sinulla ei ole oikeuksia TUTU -hakemuksiin.",
+    "esittelijoidenLataus": "Esittelijöiden lataamisessa tapahtui virhe.",
+    "hakemuslistanLataus": "Hakemuslistan lataamisessa tapahtui virhe.",
+    "hakemuksenLataus": "Hakemuksen lataamisessa tapahtui virhe.",
+    "hakemuspalvelu": "Hakemuspalvelu palautti virheen.",
+    "oppijanumerorekisteri": "Oppijanumerorekisteri palautti virheen.",
+    "kayttooikeuspalvelu": "Käyttöoikeuspalvelu palautti virheen.",
+    "maakoodi": "Virhe maakoodien lataamisessa",
+    "maatjavaltiotLataus": "Maakoodien koodistosynkronisointi epäonnistui",
+    "liitteidenLataus": "Liitteiden lataamisessa tapahtui virhe.",
+    "paatoksenLataus": "Päätöstietojen lataamisessa tapahtui virhe.",
+    "paivitaAsiatunnus": "Asiatunnuksen päivittämisessä tapahtui virhe.",
+    "tuntematon": "Tapahtui tuntematon virhe"
+  },
+  "yleiset": {
+    "poista": "Poista",
+    "kylla": "Kyllä",
+    "ei": "Ei",
+    "paivamaaraFormaatti": "pp.kk.vvvv",
+    "peruuta": "Peruuta",
+    "valitse": "Valitse...",
+    "tasmenna": "Täsmennä",
+    "sulje": "Sulje",
+    "tallenna": "Tallenna",
+    "tallennetaan": "Tallennetaan..."
+  },
+  "yleinen": {
+    "ladataan": "Ladataan"
+  }
+}
