@@ -265,12 +265,12 @@ class HakemusService(
           dbHakemus.id,
           ataruHakemus.hakemuksenTila()
         )
-        val henkilo: (String, String) = dbHakemus.muokkaaja match {
-          case None            => ("", "")
+        val henkilo: String = dbHakemus.muokkaaja match {
+          case None            => ""
           case Some(muokkaaja) =>
-            onrService.haeHenkilo(dbHakemus.muokkaaja.get) match {
-              case Left(error)    => ("", "")
-              case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
+            onrService.haeHenkilo(muokkaaja) match {
+              case Left(_)        => ""
+              case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
             }
         }
         val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
@@ -297,8 +297,7 @@ class HakemusService(
           kasittelyVaihe =
             dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
           muokattu = dbHakemus.muokattu,
-          muokkaajaKutsumanimi = henkilo match { case (kutsumanimi, _) => kutsumanimi },
-          muokkaajaSukunimi = henkilo match { case (_, sukunimi) => sukunimi },
+          muokkaaja = henkilo,
           muutosHistoria = Seq(),
           taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
             case None            => None
