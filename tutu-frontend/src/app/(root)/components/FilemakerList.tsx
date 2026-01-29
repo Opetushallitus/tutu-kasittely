@@ -2,8 +2,6 @@
 
 'use client';
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import {
   Box,
   styled,
@@ -14,20 +12,22 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useQueryClient } from '@tanstack/react-query';
-import Link from 'next/link';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
-
-import { FullSpinner } from '@/src/components/FullSpinner';
-import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
-import useToaster from '@/src/hooks/useToaster';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   handleFetchError,
   setFilemakerQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import useToaster from '@/src/hooks/useToaster';
+import { useEffect } from 'react';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
+import Link from 'next/link';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { parseAsInteger, useQueryState } from 'nuqs';
+import { useQueryClient } from '@tanstack/react-query';
+import { getters } from '@/src/lib/utils/filemakerDataUtils';
 
 const FIELD_KEYS = {
   hakija: 'hakija',
@@ -118,12 +118,12 @@ const HakemusRow = ({ hakemus }: { hakemus: any }) => {
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {hakemus['Koko nimi']}
+          {getters.kokonimi(hakemus)}
         </Link>
       </StyledTableCell>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {hakemus.Asiatunnus}
+          {getters.asiatunnus(hakemus)}
         </Link>
       </StyledTableCell>
     </TableRow>

@@ -94,7 +94,9 @@ class VanhaTutuController(
         vanhaTutuService.haeVanhaTutuById(uuid) match {
           case Success(Some(data)) =>
             auditLog.logRead("vanha-tutu", s"vanha-tutu/$id", AuditOperation.ReadVanhaTutu, request)
-            ResponseEntity.status(HttpStatus.OK).body(data)
+            ResponseEntity
+              .status(HttpStatus.OK)
+              .body(mapper.writeValueAsString(data))
           case Success(None) =>
             LOG.warn(s"Vanha tutu -tietuetta ei löytynyt id:llä: $id")
             val errorBody = mapper.writeValueAsString(Map("error" -> "Tietuetta ei löytynyt"))
@@ -139,7 +141,7 @@ class VanhaTutuController(
         val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum)
         val arrayNode    = mapper.createArrayNode()
         hakemusLista.foreach { item =>
-          arrayNode.add(mapper.readTree(item))
+          arrayNode.add(item)
         }
         val json = mapper.writeValueAsString(arrayNode)
 
