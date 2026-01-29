@@ -93,8 +93,7 @@ export default function PerustietoPage() {
         isSaving={isSaving ?? false}
         hasChanges={hasChanges}
         lastSaved={hakemus.muokattu}
-        modifierFirstName={hakemus.muokkaajaKutsumanimi}
-        modifierLastName={hakemus.muokkaajaSukunimi}
+        modifier={hakemus.muokkaaja}
       />
     </Stack>
   );

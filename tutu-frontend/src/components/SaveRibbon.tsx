@@ -1,24 +1,24 @@
 'use client';
 
-import { Box, Grid2, IconButton } from '@mui/material';
-import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
-import { styled } from '@/src/lib/theme';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Box, Grid2, IconButton } from '@mui/material';
 import {
   OphButton,
   OphTypography,
   ophColors,
 } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import * as dateFns from 'date-fns';
+
+import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { styled } from '@/src/lib/theme';
 
 interface SaveRibbonProps {
   onSave: () => void;
   isSaving: boolean;
   hasChanges: boolean;
   lastSaved?: string;
-  modifierFirstName?: string;
-  modifierLastName?: string;
+  modifier?: string;
 }
 
 export const SaveRibbon = ({
@@ -26,8 +26,7 @@ export const SaveRibbon = ({
   isSaving,
   hasChanges,
   lastSaved,
-  modifierFirstName,
-  modifierLastName,
+  modifier,
 }: SaveRibbonProps) => {
   const { t } = useTranslations();
 
@@ -69,8 +68,7 @@ export const SaveRibbon = ({
               ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
               : ''}
             {'  '}
-            {modifierFirstName ? modifierFirstName : ''}{' '}
-            {modifierLastName ? modifierLastName : ''}
+            {modifier ? modifier : ' '}
           </OphTypography>
         </Grid2>
         <Grid2 size={4} paddingTop={0.5}>

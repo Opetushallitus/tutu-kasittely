@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
@@ -37,6 +36,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import {
   checkLiitteenTila,
@@ -350,8 +350,7 @@ const AsiakirjaPagePure = ({
         isSaving={isSaving}
         hasChanges={hasChanges}
         lastSaved={hakemus.muokattu}
-        modifierFirstName={hakemus.muokkaajaKutsumanimi}
-        modifierLastName={hakemus.muokkaajaSukunimi}
+        modifier={hakemus.muokkaaja}
       />
     </>
   );

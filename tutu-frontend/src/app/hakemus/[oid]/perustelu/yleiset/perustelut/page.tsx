@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
@@ -19,6 +18,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
@@ -134,8 +134,7 @@ const YleisetPerustelut = ({
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
         lastSaved={hakemusState?.editedData?.muokattu}
-        modifierFirstName={hakemusState?.editedData?.muokkaajaKutsumanimi}
-        modifierLastName={hakemusState?.editedData?.muokkaajaSukunimi}
+        modifier={hakemusState?.editedData?.muokkaaja}
       />
     </>
   );

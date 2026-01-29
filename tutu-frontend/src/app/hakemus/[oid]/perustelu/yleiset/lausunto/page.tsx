@@ -1,7 +1,6 @@
 'use client';
 
 import { Add } from '@mui/icons-material';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphButton,
@@ -18,6 +17,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
@@ -185,8 +185,7 @@ export default function Lausuntotiedot() {
           isSaving={perusteluIsSaving || false}
           hasChanges={hasChanges}
           lastSaved={hakemus?.muokattu}
-          modifierFirstName={hakemus?.muokkaajaKutsumanimi}
-          modifierLastName={hakemus?.muokkaajaSukunimi}
+          modifier={hakemus?.muokkaaja}
         />
       </Stack>
     </PerusteluLayout>
