@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
@@ -27,6 +26,7 @@ import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
 import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
@@ -285,8 +285,7 @@ const Paatostiedot = ({
             isSaving={updateOngoing}
             hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
             lastSaved={hakemus.muokattu}
-            modifierFirstName={hakemus.muokkaajaKutsumanimi}
-            modifierLastName={hakemus.muokkaajaSukunimi}
+            modifier={hakemus.muokkaaja}
           />
         </Stack>
         {showPaatosTekstiPreview && (

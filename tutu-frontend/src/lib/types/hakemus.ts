@@ -34,8 +34,7 @@ export type Hakemus = {
   ataruHakemuksenTila: string;
   kasittelyVaihe: string;
   muokattu: string;
-  muokkaajaKutsumanimi: string;
-  muokkaajaSukunimi: string;
+  muokkaaja: string;
   muutosHistoria: MuutosHistoriaItem[];
   taydennyspyyntoLahetetty?: string;
   ataruHakemustaMuokattu?: string;

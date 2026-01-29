@@ -358,8 +358,7 @@ export default function ApPage() {
         isSaving={perusteluIsSaving || false}
         hasChanges={hasPerusteluChanges || hasHakemusChanges}
         lastSaved={hakemus?.muokattu}
-        modifierFirstName={hakemus?.muokkaajaKutsumanimi}
-        modifierLastName={hakemus?.muokkaajaSukunimi}
+        modifier={hakemus?.muokkaaja}
       />
     </>
   );

@@ -1,6 +1,5 @@
 'use client';
 
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { Add } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
@@ -19,6 +18,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -182,8 +182,7 @@ export default function TutkintoPage() {
         isSaving={isHakemusSaving || isSaving}
         hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
         lastSaved={hakemusState.editedData.muokattu}
-        modifierFirstName={hakemusState.editedData.muokkaajaKutsumanimi}
-        modifierLastName={hakemusState.editedData.muokkaajaSukunimi}
+        modifier={hakemusState.editedData.muokkaaja}
       />
     </>
   );
