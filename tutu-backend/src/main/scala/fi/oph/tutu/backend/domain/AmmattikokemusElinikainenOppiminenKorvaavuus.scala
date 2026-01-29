@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.domain
 
 enum AmmattikokemusElinikainenOppiminenKorvaavuus:
-  case Taysi, Osittainen, Ei;
+  case Taysi, Osittainen, Ei
 
 object AmmattikokemusElinikainenOppiminenKorvaavuus:
   def fromString(value: String): AmmattikokemusElinikainenOppiminenKorvaavuus = value match

@@ -11,7 +11,7 @@ object Constants {
 
   val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
 
-  val FINLAND_TZ: ZoneId = ZoneId.of("Europe/Helsinki");
+  val FINLAND_TZ: ZoneId = ZoneId.of("Europe/Helsinki")
 
   val ATARU_PAATOS_KIELI: AtaruKysymysId =
     AtaruKysymysId("82c7260d-ebf0-4521-8f18-ad37e5490670", "paatos-kieli")

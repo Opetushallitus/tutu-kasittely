@@ -27,7 +27,7 @@ class TutuDatabase(
   @Value("${spring.profiles.active:}") activeProfiles: String
 ) {
 
-  val LOG = LoggerFactory.getLogger(classOf[TutuDatabase]);
+  val LOG = LoggerFactory.getLogger(classOf[TutuDatabase])
 
   private def hikariConfig: HikariConfig = {
     val config = new HikariConfig()
