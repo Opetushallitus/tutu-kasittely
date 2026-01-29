@@ -25,7 +25,7 @@ export default function ApPage() {
   const {
     editedData: hakemus,
     save: saveHakemus,
-    hasChanges: hakemusHasChanges,
+    hasChanges: hasHakemusChanges,
   } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
@@ -40,7 +40,7 @@ export default function ApPage() {
 
   const {
     editedData: editedPerustelu,
-    hasChanges,
+    hasChanges: hasPerusteluChanges,
     updateLocal,
     save: savePerustelu,
   } = perusteluState;
@@ -62,7 +62,7 @@ export default function ApPage() {
     saveHakemus();
   };
 
-  useUnsavedChanges(hasChanges || hakemusHasChanges);
+  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -356,7 +356,7 @@ export default function ApPage() {
       <SaveRibbon
         onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={hasChanges || hakemusHasChanges}
+        hasChanges={hasPerusteluChanges || hasHakemusChanges}
         lastSaved={hakemus?.muokattu}
         modifierFirstName={hakemus?.muokkaajaKutsumanimi}
         modifierLastName={hakemus?.muokkaajaSukunimi}
