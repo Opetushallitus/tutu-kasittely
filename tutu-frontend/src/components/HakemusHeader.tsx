@@ -94,6 +94,7 @@ export const HakemusHeader = () => {
               onChange={(event: SelectChangeEvent) =>
                 updateHakemusLocal({ esittelijaOid: event.target.value })
               }
+              inputProps={{ 'aria-label': t('hakemusotsikko.esittelija') }}
             />
           </OphTypography>
         </Stack>

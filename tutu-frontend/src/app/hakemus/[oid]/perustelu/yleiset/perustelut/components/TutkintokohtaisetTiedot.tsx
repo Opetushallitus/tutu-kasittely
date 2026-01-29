@@ -75,6 +75,7 @@ const Opinnaytetyo = ({ tutkinto, updateTutkinto }: FieldProps) => {
     <OphRadioGroupWithClear
       label={t('hakemus.perustelu.yleiset.tutkinnot.opinnaytetyo')}
       labelId="opinnaytetyo-radio-group-label"
+      labelVariant="label"
       data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--opinnaytetyo`}
       options={[
         { value: 'true', label: t('yleiset.kylla') },
@@ -96,6 +97,7 @@ const Harjoittelu = ({ tutkinto, updateTutkinto }: FieldProps) => {
     <OphRadioGroupWithClear
       label={t('hakemus.perustelu.yleiset.tutkinnot.harjoittelu')}
       labelId="harjoittelu-radio-group-label"
+      labelVariant="label"
       data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--harjoittelu`}
       options={[
         { value: 'true', label: t('yleiset.kylla') },
@@ -164,7 +166,7 @@ export const TutkintokohtaisetTiedot = ({
       <React.Fragment
         key={`yleiset-perustelut__tutkinto--${tutkinto.jarjestys}`}
       >
-        <OphTypography variant="h4">
+        <OphTypography variant="h3">
           {t('hakemus.perustelu.yleiset.tutkinnot.tutkintoOtsake', {
             jarjestys: tutkinto.jarjestys,
           })}

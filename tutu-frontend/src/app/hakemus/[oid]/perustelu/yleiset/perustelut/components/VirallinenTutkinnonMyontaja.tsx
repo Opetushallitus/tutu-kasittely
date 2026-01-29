@@ -29,6 +29,7 @@ export const VirallinenTutkinnonMyontaja = ({
         'hakemus.perustelu.yleiset.perustelut.virallinenTutkinnonMyontaja',
       )}
       labelId="virallinen-tutkinnon-myontaja-radio-group-label"
+      labelVariant="label"
       data-testid="virallinen-tutkinnon-myontaja-radio-group"
       options={[
         { value: 'true', label: t('yleiset.kylla') },

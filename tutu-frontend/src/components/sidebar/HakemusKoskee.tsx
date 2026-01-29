@@ -34,7 +34,7 @@ export const HakemusKoskee = () => {
 
   return (
     <Stack direction="column" gap={theme.spacing(0.25)}>
-      <OphTypography variant={'h5'}>
+      <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
       <OphTypography

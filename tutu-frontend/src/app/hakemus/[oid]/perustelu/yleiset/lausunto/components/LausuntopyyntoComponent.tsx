@@ -70,7 +70,7 @@ export const LausuntopyyntoComponent = ({
     <Stack gap={theme.spacing(3)}>
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
-          variant={'h4'}
+          variant={'h3'}
           data-testid={`lausuntopyynto-otsikko-${lausuntopyynto.jarjestys}`}
         >
           {t('hakemus.perustelu.lausuntotiedot.lausuntopyynto', '', {
@@ -113,6 +113,9 @@ export const LausuntopyyntoComponent = ({
         }}
         disabled={isKoodistoLoading}
         data-testid={`lausunnon-antaja-${lausuntopyynto.jarjestys}`}
+        inputProps={{
+          'aria-label': t('hakemus.perustelu.lausuntotiedot.lausunnonAntaja'),
+        }}
       />
       {isMuuSelected && (
         <OphInputFormField

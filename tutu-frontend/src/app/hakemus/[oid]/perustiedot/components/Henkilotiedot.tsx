@@ -115,7 +115,12 @@ export const Henkilotiedot = ({
           {t('hakemus.perustiedot.henkilotiedot.sahkopostiosoite')}
         </OphTypography>
         <OphInput
-          inputProps={{ 'data-testid': 'sahkopostiosoite' }}
+          inputProps={{
+            'data-testid': 'sahkopostiosoite',
+            'aria-label': t(
+              'hakemus.perustiedot.henkilotiedot.sahkopostiosoite',
+            ),
+          }}
           readOnly={true}
           value={hakija.sahkopostiosoite || ''}
         ></OphInput>

@@ -87,6 +87,9 @@ export const LopullisenHakemuksenSisalto = ({
               event.target.value,
           })
         }
+        inputProps={{
+          'aria-label': t('hakemus.perustiedot.lopullinenPaatos.suoritusmaa'),
+        }}
         data-testid={'suoritusmaa-select'}
       />
       <Divider orientation={'horizontal'} />

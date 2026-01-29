@@ -124,7 +124,7 @@ export default function TutkintoPage() {
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
-        <OphTypography variant={'h2'}>
+        <OphTypography variant={'h2'} data-testid="tutkinnot-otsikko">
           {t('hakemus.tutkinnot.otsikko')}
         </OphTypography>
         <Yhteistutkinto

@@ -89,7 +89,7 @@ export default function UoroPage() {
           <OphTypography variant={'h3'}>
             {t('hakemus.perustelu.uoro.erotKoulutuksenSisallossa')}
           </OphTypography>
-          <OphTypography variant={'h4'}>
+          <OphTypography variant={'label'}>
             {t('hakemus.perustelu.uoro.opettajat.otsikko')}
           </OphTypography>
           {opettajatBooleanFields.map(({ key, labelKey }) => (
@@ -114,7 +114,7 @@ export default function UoroPage() {
               }
             />
           )}
-          <OphTypography variant={'h4'}>
+          <OphTypography variant={'label'}>
             {t('hakemus.perustelu.uoro.opettajatVk.otsikko')}
           </OphTypography>
           {vkBooleanFields.map(({ key, labelKey }) => (
@@ -141,7 +141,7 @@ export default function UoroPage() {
               }
             />
           )}
-          <OphTypography variant={'h4'}>
+          <OphTypography variant={'label'}>
             {t('hakemus.perustelu.uoro.otm.otsikko')}
           </OphTypography>
           {otmBooleanFields.map(({ key, labelKey }) => (
@@ -173,7 +173,7 @@ export default function UoroPage() {
               updatePerusteluUoRo('muuTutkinto', value);
             }}
           />
-          <OphTypography variant={'h4'}>
+          <OphTypography variant={'h3'}>
             {t('hakemus.perustelu.uoro.sovellettuTilanne.otsikko')}
           </OphTypography>
           <SovellettuTilanne

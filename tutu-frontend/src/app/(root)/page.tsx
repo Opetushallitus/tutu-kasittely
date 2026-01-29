@@ -35,7 +35,11 @@ export default function ListViewPage() {
   return (
     <PageLayout
       header={
-        <OphTypography variant={'h2'} component={'h1'}>
+        <OphTypography
+          variant={'h2'}
+          component={'h1'}
+          data-testid="hakemuslista-otsikko"
+        >
           {t('hakemuslista.otsikko')}
         </OphTypography>
       }

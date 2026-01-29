@@ -37,8 +37,8 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
 
   return (
     <KasittelyvaiheStack gap={theme.spacing(2)}>
-      <Stack direction="column" gap={theme.spacing(1)}>
-        <OphTypography variant={'h4'}>
+      <Stack direction="column" gap={theme.spacing(0.25)}>
+        <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
           {t('hakemus.sivupalkki.kasittelyvaihe')}
         </OphTypography>
         {showExtended ? (
@@ -52,19 +52,19 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
           ></OphSelectFormField>
         ) : (
           <OphTypography
-            variant={'label'}
+            variant={'body1'}
             data-testid={'hakemus-sidebar-kasittelyvaihe'}
           >
             {kasittelyVaiheTranslation}
           </OphTypography>
         )}
       </Stack>
-      <Stack direction="column" gap={theme.spacing(1)}>
-        <OphTypography variant={'h4'}>
+      <Stack direction="column" gap={theme.spacing(0.25)}>
+        <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
           {t('hakemus.sivupalkki.hakemuspalvelunvaihe')}
         </OphTypography>
         <OphTypography
-          variant={'label'}
+          variant={'body1'}
           data-testid={'hakemus-sidebar-ataruhakemus-tila'}
         >
           {t(

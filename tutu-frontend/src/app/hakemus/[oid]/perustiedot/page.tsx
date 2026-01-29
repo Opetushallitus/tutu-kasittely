@@ -58,7 +58,7 @@ export default function PerustietoPage() {
 
   return (
     <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
-      <OphTypography variant={'h2'}>
+      <OphTypography variant={'h2'} data-testid="perustiedot-otsikko">
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>
       {hakemus.hakemusKoskee === HakemusKoskee.LOPULLINEN_PAATOS ? (

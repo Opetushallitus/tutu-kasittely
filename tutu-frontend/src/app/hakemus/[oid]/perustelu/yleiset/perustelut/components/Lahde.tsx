@@ -52,7 +52,7 @@ export const Lahde = ({
 
   return (
     <Stack direction="column" gap={theme.spacing(1)}>
-      <OphTypography variant="h4">
+      <OphTypography variant="label">
         {t('hakemus.perustelu.yleiset.perustelut.lahde.otsikko')}
       </OphTypography>
       <OphCheckbox

@@ -24,6 +24,7 @@ export const AikaisemmatPaatokset = ({ perustelu, updatePerustelu }: Props) => {
         'hakemus.perustelu.yleiset.muutPerustelut.aikaisemmatPaatokset.otsikko',
       )}
       labelId="aikaisemmat-paatokset-radio-group-label"
+      labelVariant="label"
       data-testid="aiemmat-paatokset-radio-group"
       options={[
         {

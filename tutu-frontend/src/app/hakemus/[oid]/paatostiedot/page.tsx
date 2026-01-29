@@ -236,6 +236,9 @@ const Paatostiedot = ({
               })
             }
             data-testid={'paatos-ratkaisutyyppi'}
+            inputProps={{
+              'aria-label': t('hakemus.paatos.ratkaisutyyppi.otsikko'),
+            }}
           />
           {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
             <PeruutuksenTaiRaukeamisenSyyComponent
