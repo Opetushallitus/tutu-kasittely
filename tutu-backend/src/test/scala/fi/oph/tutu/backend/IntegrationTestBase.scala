@@ -35,7 +35,7 @@ import org.testcontainers.containers.wait.strategy.Wait
 import java.io.FileNotFoundException
 import java.sql.DriverManager
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime}
+import java.time.{Duration, LocalDateTime, ZonedDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 
@@ -204,7 +204,7 @@ class IntegrationTestBase {
           "88d627a1-47d9-4bb2-aad2-16384a900352",
           "checked",
           "form",
-          Some(LocalDateTime.parse("2025-12-17T09:30:00.000Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+          Some(LocalDateTime.parse("2025-12-17T09:30:00.000"))
         ),
         AttachmentReview("063912dd-2e57-4e69-a42c-35ff73d8953d", "not-checked", "form", None)
       )

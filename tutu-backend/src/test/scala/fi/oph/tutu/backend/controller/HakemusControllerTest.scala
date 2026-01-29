@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.ZonedDateTime
 import java.util.UUID
 import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 
@@ -269,7 +269,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests()
 
     val kirjauspvm = ZonedDateTime
-      .parse("2025-05-14T10:59:47.597Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+      .parse("2025-05-14T10:59:47.597Z")
       .withZoneSameInstant(FINLAND_TZ)
       .toLocalDateTime
     val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))

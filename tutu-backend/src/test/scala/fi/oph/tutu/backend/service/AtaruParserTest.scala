@@ -711,8 +711,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         Some(
           ZonedDateTime
             .parse(
-              "2025-12-17T11:06:38.273123+00:00",
-              DateTimeFormatter.ISO_OFFSET_DATE_TIME
+              "2025-12-17T11:06:38.273123+00:00"
             )
             .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
@@ -728,8 +727,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         Some(
           ZonedDateTime
             .parse(
-              "2025-12-17T11:06:38.273123+00:00",
-              DateTimeFormatter.ISO_OFFSET_DATE_TIME
+              "2025-12-17T11:06:38.273123+00:00"
             )
             .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime

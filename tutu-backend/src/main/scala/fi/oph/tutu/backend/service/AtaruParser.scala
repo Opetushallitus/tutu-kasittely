@@ -11,7 +11,6 @@ import fi.oph.tutu.backend.utils.Constants.{
 import org.springframework.stereotype.{Component, Service}
 
 import java.time.{LocalDateTime, ZonedDateTime}
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary

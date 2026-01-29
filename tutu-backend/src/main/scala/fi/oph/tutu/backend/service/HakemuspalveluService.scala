@@ -16,9 +16,6 @@ import org.springframework.cache.annotation.{CacheEvict, CachePut, Cacheable}
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
-
 case class HakemuspalveluServiceException(cause: Throwable = null) extends RuntimeException(cause)
 
 @Component
