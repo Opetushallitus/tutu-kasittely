@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.repository.migration
 
+import fi.oph.tutu.backend.domain.DBFilemakerEntry
 import fi.oph.tutu.backend.repository.{BaseResultHandlers, TutuDatabase}
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.PostgresProfile.api._
@@ -18,9 +19,9 @@ class VanhaTutuRepository extends BaseResultHandlers {
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[VanhaTutuRepository])
 
-  implicit val getVanhaTutuResult: GetResult[Seq[String]] =
+  implicit val getFilemakerEntryResult: GetResult[DBFilemakerEntry] =
     GetResult(r =>
-      Seq(
+      DBFilemakerEntry(
         r.nextString(),
         r.nextString()
       )
@@ -45,13 +46,13 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def get(id: UUID): Option[Seq[String]] = {
+  def get(id: UUID): Option[DBFilemakerEntry] = {
     try {
       val query = sql"""
         SELECT id, data_json::text
         FROM vanha_tutu
         WHERE id::text = ${id.toString}
-      """.as[Seq[String]].headOption
+      """.as[DBFilemakerEntry].headOption
 
       db.run(query, "vanha-tutu-get")
     } catch {
@@ -64,7 +65,7 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def list(pageNum: Int): Seq[Seq[String]] = {
+  def list(pageNum: Int): Seq[DBFilemakerEntry] = {
     val PAGE_SIZE = 20
     val offset    = (pageNum - 1) * PAGE_SIZE // pageNum alkaa 1:stä
     try {
@@ -74,7 +75,7 @@ class VanhaTutuRepository extends BaseResultHandlers {
         ORDER BY data_json->>'Hakemus kirjattu' DESC
         OFFSET ${offset}
         LIMIT ${PAGE_SIZE}
-      """.as[Seq[String]]
+      """.as[DBFilemakerEntry]
 
       db.run(query, "vanha-tutu-list")
     } catch {
