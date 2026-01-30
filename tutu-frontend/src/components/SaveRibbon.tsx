@@ -1,38 +1,22 @@
 'use client';
 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Grid2, IconButton } from '@mui/material';
-import {
-  OphButton,
-  OphTypography,
-  ophColors,
-} from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
+import { Box } from '@mui/material';
+import { OphButton } from '@opetushallitus/oph-design-system';
 
-import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { styled } from '@/src/lib/theme';
 
 interface SaveRibbonProps {
   onSave: () => void;
   isSaving: boolean;
   hasChanges: boolean;
-  lastSaved?: string;
-  modifier?: string;
 }
 
 export const SaveRibbon = ({
   onSave,
   isSaving,
   hasChanges,
-  lastSaved,
-  modifier,
 }: SaveRibbonProps) => {
   const { t } = useTranslations();
-
-  const StyledInfoOutlinedIcon = styled(InfoOutlinedIcon)({
-    color: ophColors.black,
-  });
 
   if (!hasChanges) return null;
 
@@ -53,36 +37,15 @@ export const SaveRibbon = ({
         boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
       }}
     >
-      <Grid2 container wrap="nowrap">
-        <Grid2 size={1}>
-          <IconButton>
-            <StyledInfoOutlinedIcon />
-          </IconButton>
-        </Grid2>
-        <Grid2 size={8} paddingTop={0.5}>
-          <OphTypography variant="body1">
-            {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
-          </OphTypography>
-          <OphTypography variant="body1">
-            {lastSaved
-              ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
-              : ''}
-            {'  '}
-            {modifier ? modifier : ' '}
-          </OphTypography>
-        </Grid2>
-        <Grid2 size={4} paddingTop={0.5}>
-          <OphButton
-            variant="contained"
-            onClick={onSave}
-            disabled={isSaving}
-            sx={{ minWidth: 200 }}
-            data-testid="save-ribbon-button"
-          >
-            {isSaving ? t('yleiset.tallennetaan') : t('yleiset.tallenna')}
-          </OphButton>
-        </Grid2>
-      </Grid2>
+      <OphButton
+        variant="contained"
+        onClick={onSave}
+        disabled={isSaving}
+        sx={{ minWidth: 200 }}
+        data-testid="save-ribbon-button"
+      >
+        {isSaving ? t('yleiset.tallennetaan') : t('yleiset.tallenna')}
+      </OphButton>
     </Box>
   );
 };
