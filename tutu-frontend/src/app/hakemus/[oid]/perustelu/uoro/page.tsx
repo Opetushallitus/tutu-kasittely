@@ -20,18 +20,15 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error } = useHakemus();
   const {
-    editedData: hakemus,
-    hasChanges: hasHakemusChanges,
-    save: saveHakemus,
-  } = hakemusState;
-
+    hakemusState: { editedData: hakemus },
+    isLoading,
+    error,
+  } = useHakemus();
   const {
     perustelu,
     tallennaPerustelu,
@@ -41,9 +38,6 @@ export default function UoroPage() {
 
   // Use editable state hook for automatic change tracking and save handling
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
-
-  const { hasChanges: hasPerusteluChanges, save: savePerustelu } =
-    perusteluState;
 
   // Update local state with custom logic for nested uoRoSisalto
   const updatePerusteluUoRo = (
@@ -72,14 +66,6 @@ export default function UoroPage() {
   };
 
   const uoRoSisalto = perusteluState.editedData?.uoRoSisalto;
-
-  const handleSave = () => {
-    savePerustelu();
-    saveHakemus();
-  };
-
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges);
-
   return (
     <>
       <PerusteluLayout
@@ -198,11 +184,9 @@ export default function UoroPage() {
         </Stack>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={handleSave}
+        onSave={perusteluState.save}
         isSaving={perusteluIsSaving || false}
-        hasChanges={hasPerusteluChanges || hasHakemusChanges}
-        lastSaved={hakemus?.muokattu}
-        modifier={hakemus?.muokkaaja}
+        hasChanges={perusteluState.hasChanges}
       />
     </>
   );

@@ -17,7 +17,6 @@ import {
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
@@ -34,8 +33,6 @@ export default function PerustietoPage() {
     hakemusState: { editedData: hakemus, hasChanges, save, updateLocal },
     error,
   } = useHakemus();
-
-  useUnsavedChanges(hasChanges);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
@@ -92,8 +89,6 @@ export default function PerustietoPage() {
         onSave={save}
         isSaving={isSaving ?? false}
         hasChanges={hasChanges}
-        lastSaved={hakemus.muokattu}
-        modifier={hakemus.muokkaaja}
       />
     </Stack>
   );

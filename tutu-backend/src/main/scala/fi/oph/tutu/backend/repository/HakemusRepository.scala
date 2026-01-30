@@ -40,8 +40,7 @@ class HakemusRepository extends BaseResultHandlers {
         yhteistutkinto = r.nextBoolean(),
         lopullinenPaatosVastaavaEhdollinenAsiatunnus = r.nextStringOption(),
         lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = r.nextStringOption(),
-        esittelijanHuomioita = r.nextStringOption(),
-        muokkaaja = r.nextStringOption()
+        esittelijanHuomioita = r.nextStringOption()
       )
     )
 
@@ -203,8 +202,7 @@ class HakemusRepository extends BaseResultHandlers {
               h.yhteistutkinto,
               h.lopullinen_paatos_ehdollisen_asiatunnus,
               h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri,
-              h.esittelijan_huomioita,
-              h.muokkaaja
+              h.esittelijan_huomioita
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id

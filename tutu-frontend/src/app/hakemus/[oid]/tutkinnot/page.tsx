@@ -18,7 +18,6 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -42,8 +41,6 @@ export default function TutkintoPage() {
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
   >();
-
-  useUnsavedChanges(hakemusState.hasChanges);
 
   useEffect(() => {
     if (!hakemusState.editedData) return;
@@ -181,8 +178,6 @@ export default function TutkintoPage() {
         }}
         isSaving={isHakemusSaving || isSaving}
         hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
-        lastSaved={hakemusState.editedData.muokattu}
-        modifier={hakemusState.editedData.muokkaaja}
       />
     </>
   );
