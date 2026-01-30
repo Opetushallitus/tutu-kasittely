@@ -1,6 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import {
   Box,
   Divider,
@@ -13,19 +12,21 @@ import {
   useTheme,
 } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { useFilemakerHakemus } from '@/src/hooks/useFilemakerHakemus';
-import { FullSpinner } from '@/src/components/FullSpinner';
-import useToaster from '@/src/hooks/useToaster';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { handleFetchError } from '@/src/lib/utils';
-import FilemakerHeader from './components/FilemakerHeader';
-import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { DEFAULT_BOX_BORDER, THIN_BOX_BORDER } from '@/src/lib/theme';
-import { HeaderWrapper, PageContent } from '@/src/components/PageLayout';
-import { PageHeaderRow } from '@/src/components/PageHeaderRow';
-import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
 
+import { BoxWrapper } from '@/src/components/BoxWrapper';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
+import { PageHeaderRow } from '@/src/components/PageHeaderRow';
+import { HeaderWrapper, PageContent } from '@/src/components/PageLayout';
+import { useFilemakerHakemus } from '@/src/hooks/useFilemakerHakemus';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { DEFAULT_BOX_BORDER, THIN_BOX_BORDER } from '@/src/lib/theme';
+import { handleFetchError } from '@/src/lib/utils';
+
+import FilemakerHeader from './components/FilemakerHeader';
 import { getters } from '../../../lib/utils/filemakerDataUtils';
 
 const InnerBoxWrapper = styled(Box)(() => ({

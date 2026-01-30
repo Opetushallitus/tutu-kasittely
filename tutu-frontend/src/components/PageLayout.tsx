@@ -2,8 +2,9 @@
 
 import { Box, Stack, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { DEFAULT_BOX_BORDER, MAX_WIDTH, styled } from '@/src/lib/theme';
 import { ReactNode } from 'react';
+
+import { DEFAULT_BOX_BORDER, MAX_WIDTH, styled } from '@/src/lib/theme';
 
 export const HeaderWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: ophColors.white,

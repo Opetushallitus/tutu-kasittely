@@ -1,9 +1,11 @@
 'use client';
 
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Divider } from '@mui/material';
 import { Stack, useTheme } from '@mui/system';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
 import {
   getters,
   FilemakerHakemus,
