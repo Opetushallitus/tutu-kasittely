@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.repository.migration
 
+import fi.oph.tutu.backend.domain.DBFilemakerEntry
 import fi.oph.tutu.backend.repository.{BaseResultHandlers, TutuDatabase}
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.PostgresProfile.api._
@@ -16,10 +17,15 @@ class VanhaTutuRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final private val DB_TIMEOUT = 30.seconds
-  val LOG: Logger              = LoggerFactory.getLogger(classOf[VanhaTutuRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[VanhaTutuRepository])
 
-  implicit val getVanhaTutuResult: GetResult[String] = GetResult(r => r.nextString())
+  implicit val getFilemakerEntryResult: GetResult[DBFilemakerEntry] =
+    GetResult(r =>
+      DBFilemakerEntry(
+        r.nextString(),
+        r.nextString()
+      )
+    )
 
   def create(dataJson: String): UUID = {
     try {
@@ -40,13 +46,13 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def get(id: UUID): Option[String] = {
+  def get(id: UUID): Option[DBFilemakerEntry] = {
     try {
       val query = sql"""
-        SELECT data_json::text
+        SELECT id, data_json::text
         FROM vanha_tutu
         WHERE id::text = ${id.toString}
-      """.as[String].headOption
+      """.as[DBFilemakerEntry].headOption
 
       db.run(query, "vanha-tutu-get")
     } catch {
@@ -59,17 +65,17 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def list(pageNum: Int): Seq[String] = {
+  def list(pageNum: Int): Seq[DBFilemakerEntry] = {
     val PAGE_SIZE = 20
     val offset    = (pageNum - 1) * PAGE_SIZE // pageNum alkaa 1:stä
     try {
       val query = sql"""
-        SELECT data_json::text
+        SELECT id, data_json::text
         FROM vanha_tutu
-        ORDER BY data_json->>'luontipvm' DESC
+        ORDER BY data_json->>'Hakemus kirjattu' DESC
         OFFSET ${offset}
         LIMIT ${PAGE_SIZE}
-      """.as[String]
+      """.as[DBFilemakerEntry]
 
       db.run(query, "vanha-tutu-list")
     } catch {

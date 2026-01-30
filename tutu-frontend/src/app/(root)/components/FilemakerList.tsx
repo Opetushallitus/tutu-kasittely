@@ -28,6 +28,7 @@ import {
   handleFetchError,
   setFilemakerQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
+import { getters } from '@/src/lib/utils/filemakerDataUtils';
 
 const FIELD_KEYS = {
   hakija: 'hakija',
@@ -118,12 +119,12 @@ const HakemusRow = ({ hakemus }: { hakemus: any }) => {
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {hakemus['Koko nimi']}
+          {getters.kokonimi(hakemus)}
         </Link>
       </StyledTableCell>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {hakemus.Asiatunnus}
+          {getters.asiatunnus(hakemus)}
         </Link>
       </StyledTableCell>
     </TableRow>

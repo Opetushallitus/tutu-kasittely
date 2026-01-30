@@ -6,7 +6,7 @@ import { ReactNode } from 'react';
 
 import { DEFAULT_BOX_BORDER, MAX_WIDTH, styled } from '@/src/lib/theme';
 
-const HeaderWrapper = styled(Box)(({ theme }) => ({
+export const HeaderWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: ophColors.white,
   width: '100%',
   borderBottom: DEFAULT_BOX_BORDER,
