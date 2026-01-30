@@ -36,6 +36,7 @@ const InnerBoxWrapper = styled(Box)(() => ({
 
 const Content = styled('pre')({
   fontFamily: "'Open Sans','Open Sans Fallback'",
+  textWrap: 'auto',
 });
 
 const TabLink = (props: LinkProps & { selected?: boolean }) => {
@@ -96,7 +97,7 @@ export default function FilemakerHakemus() {
   const [tab, _setTab] = useState<string>('perustelumuistio');
 
   const setTab = (newTab?: string) => {
-    if (newTab !== null) {
+    if (newTab) {
       _setTab(newTab!);
     }
   };
@@ -132,7 +133,6 @@ export default function FilemakerHakemus() {
             <Tabs
               value={tab}
               onChange={(_, value) => {
-                console.log(value);
                 setTab(value);
               }}
               orientation="vertical"
@@ -150,10 +150,14 @@ export default function FilemakerHakemus() {
             >
               <LinkedTab
                 value={'perustelumuistio'}
-                selected={true}
+                selected={tab === 'perustelumuistio'}
                 setTab={setTab}
               />
-              <LinkedTab value={'paatos'} selected={false} setTab={setTab} />
+              <LinkedTab
+                value={'paatos'}
+                selected={tab === 'paatos'}
+                setTab={setTab}
+              />
             </Tabs>
           </InnerBoxWrapper>
           <Stack

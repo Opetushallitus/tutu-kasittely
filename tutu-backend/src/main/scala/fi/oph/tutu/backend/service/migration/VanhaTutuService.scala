@@ -28,10 +28,10 @@ class VanhaTutuService(
       vanhaTutuRepository
         .get(id)
         .map(rivi => {
-          val id        = rivi(0)
-          val data_json = rivi(1)
+          val id       = rivi(0)
+          val dataJson = rivi(1)
 
-          val json = mapper.readTree(data_json).asInstanceOf[ObjectNode]
+          val json = mapper.readTree(dataJson).asInstanceOf[ObjectNode]
           json.put("id", id)
           json
         })
@@ -45,10 +45,10 @@ class VanhaTutuService(
     vanhaTutuRepository
       .list(pageNum)
       .map(rivi => {
-        val id        = rivi(0)
-        val data_json = rivi(1)
+        val id       = rivi(0)
+        val dataJson = rivi(1)
 
-        val json = mapper.readTree(data_json).asInstanceOf[ObjectNode]
+        val json = mapper.readTree(dataJson).asInstanceOf[ObjectNode]
         json.put("id", id)
         json
       })

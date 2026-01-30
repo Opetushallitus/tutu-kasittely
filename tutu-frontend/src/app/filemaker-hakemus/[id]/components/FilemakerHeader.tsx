@@ -40,11 +40,6 @@ const FilemakerHeader = ({ hakemus }: { hakemus: FilemakerHakemus }) => {
           {`${t('filemaker.esittelypvm')}: ${getters.esittelypvm(hakemus)}`}
         </OphTypography>
       </Stack>
-      <Stack
-        direction="column"
-        width="100%"
-        spacing={theme.spacing(2, 3)}
-      ></Stack>
     </Stack>
   );
 };

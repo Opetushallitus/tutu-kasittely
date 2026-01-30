@@ -2,7 +2,7 @@ export type FilemakerHakemus = {
   Etunimet: string | undefined;
   Sukunimi: string | undefined;
   Henkilötunnus: string | undefined;
-  Etunimi: string | undefined;
+  Asiatunnus: string | undefined;
   Mita_haet: string | undefined;
   'Hakemus kirjattu': string | undefined;
   spss_esittelypvm: string | undefined;
@@ -19,7 +19,7 @@ getters.sukunimi = (data: FilemakerHakemus) => data?.['Sukunimi'];
 getters.kokonimi = (data: FilemakerHakemus) =>
   `${getters.sukunimi(data)}, ${getters.etunimi(data)}`.trim();
 getters.hetu = (data: FilemakerHakemus) => data?.['Henkilötunnus'];
-getters.asiatunnus = (data: FilemakerHakemus) => data?.['Etunimi'];
+getters.asiatunnus = (data: FilemakerHakemus) => data?.['Asiatunnus'];
 getters.hakemusKoskee = (data: FilemakerHakemus) => data?.['Mita_haet'];
 getters.kirjauspvm = (data: FilemakerHakemus) => data?.['Hakemus kirjattu'];
 getters.esittelypvm = (data: FilemakerHakemus) => data?.['spss_esittelypvm'];

@@ -16,8 +16,7 @@ class VanhaTutuRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final private val DB_TIMEOUT = 30.seconds
-  val LOG: Logger              = LoggerFactory.getLogger(classOf[VanhaTutuRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[VanhaTutuRepository])
 
   implicit val getVanhaTutuResult: GetResult[Seq[String]] =
     GetResult(r =>
