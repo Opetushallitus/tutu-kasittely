@@ -20,6 +20,15 @@ test('Saavutettavuus listanäkymä ok', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
+// eslint-disable-next-line playwright/no-skipped-test
+test.skip('Saavutettavuus filemaker listanäkymä ok', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
+
+  await expectPageAccessibilityOk(page);
+});
+
 test('Saavutettavuus perustiedot ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/perustiedot');
   const otsikko = await translate(page, 'hakemus.perustiedot.otsikko');
