@@ -21,7 +21,6 @@ export const Muistio = ({
 }: MuistioProps) => {
   return (
     <Stack direction="column">
-      {label && <OphTypography variant="label">{label}</OphTypography>}
       {helperText && (
         <OphTypography variant="body1">{helperText}</OphTypography>
       )}
