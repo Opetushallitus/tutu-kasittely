@@ -11,4 +11,5 @@ object Utility {
     .parse(dateTime)
     .withZoneSameInstant(FINLAND_TZ)
     .toLocalDateTime
+  def currentLocalDateTime(): LocalDateTime = ZonedDateTime.now(FINLAND_TZ).toLocalDateTime
 }

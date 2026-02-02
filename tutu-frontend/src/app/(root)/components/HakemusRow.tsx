@@ -84,9 +84,6 @@ export default function HakemusRow({
   const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
     useKasittelyvaiheTranslation(hakemus);
 
-  // TODO: Lisää oikea ataruHakemuksenTila
-  const isPeruutettu = false;
-
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
@@ -144,8 +141,9 @@ export default function HakemusRow({
           }}
         >
           {kasittelyVaiheTranslation}
-          {isPeruutettu && (
+          {hakemus.peruutettu && (
             <PeruutettuBadge
+              data-testid="peruutettu-badge"
               label={t('hakemus.ataruhakemuksentila.peruutettu')}
             />
           )}

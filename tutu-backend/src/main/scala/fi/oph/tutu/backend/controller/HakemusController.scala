@@ -217,10 +217,12 @@ class HakemusController(
       )
     } else {
       Try {
-        hakemusService.paivitaKasittelyVaihe(HakemusOid(hakemusOid), tilaEnum)
+        hakemusService.paivitaKasittelyVaiheAtarusta(HakemusOid(hakemusOid), tilaEnum, Option(timestamp))
       } match {
         case Success(_) =>
-          LOG.info(s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, aikaleima $timestamp")
+          LOG.info(
+            s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, täydennyspyyntö-aikaleima $timestamp"
+          )
           ResponseEntity.status(HttpStatus.OK).body("")
         case Failure(exception) =>
           LOG.error(s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: $hakemusOid, tila $tila", exception)

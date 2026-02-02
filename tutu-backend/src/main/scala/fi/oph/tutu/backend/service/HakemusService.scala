@@ -1,8 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyyntoVastattu
-import fi.oph.tutu.backend.domain.KasittelyVaihe.OdottaaTaydennysta
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
 import fi.oph.tutu.backend.repository.{
   AsiakirjaRepository,
   EsittelijaRepository,
@@ -12,9 +11,9 @@ import fi.oph.tutu.backend.repository.{
   TutkintoRepository,
   TutuDatabase
 }
-import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, FINLAND_TZ, TUTU_SERVICE}
+import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import fi.oph.tutu.backend.utils.Utility.{stringToIntSeq, stringToSeq, toLocalDateTime}
+import fi.oph.tutu.backend.utils.Utility.{currentLocalDateTime, stringToIntSeq, stringToSeq, toLocalDateTime}
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
@@ -22,8 +21,9 @@ import org.springframework.stereotype.{Component, Service}
 import slick.dbio.DBIO
 
 import java.util.UUID
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 @Component
 @Service
@@ -204,15 +204,10 @@ class HakemusService(
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
-      case Left(error: Throwable) =>
-        error match {
-          case e: NotFoundException =>
-            return None
-          case _ =>
-            throw error
-        }
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
+    val ataruHakemus = Try(haeAtaruHakemus(hakemusOid)).toEither match {
+      case Right(ataruHakemus)            => ataruHakemus
+      case Left(error: NotFoundException) => return None
+      case Left(error)                    => throw error
     }
 
     val lomake = hakemuspalveluService.haeLomake(ataruHakemus.form_id) match {
@@ -255,11 +250,6 @@ class HakemusService(
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
-          dbHakemus.asiakirjaId,
-          dbHakemus.id,
-          ataruHakemus.hakemuksenTila()
-        )
         val henkilo: String = dbHakemus.muokkaaja match {
           case None            => ""
           case Some(muokkaaja) =>
@@ -268,8 +258,7 @@ class HakemusService(
               case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
             }
         }
-        val hakemusKoskee = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        val tutuHakemus   = Hakemus(
+        val tutuHakemus = Hakemus(
           hakemusOid = dbHakemus.hakemusOid.toString,
           lomakeOid = lomake.key,
           lomakeId = lomake.id,
@@ -314,7 +303,11 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenAsiatunnus = dbHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
-          esittelijanHuomioita = dbHakemus.esittelijanHuomioita
+          esittelijanHuomioita = dbHakemus.esittelijanHuomioita,
+          peruutettu = dbHakemus.peruutettu,
+          peruutusPvm = dbHakemus.peruutusPvm,
+          peruutusLisatieto = dbHakemus.peruutusLisatieto,
+          viimeisinTaydennyspyyntoPvm = dbHakemus.viimeisinTaydennyspyyntoPvm
         )
         paivitaTutkinnotAtaruHakemukselta(
           ataruHakemus,
@@ -403,8 +396,9 @@ class HakemusService(
                   case None            => None
                   case Some(timestamp) => Some(toLocalDateTime(timestamp))
                 },
-                ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
-                apHakemus = hakemus.apHakemus
+                ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated)),
+                apHakemus = hakemus.apHakemus,
+                peruutettu = hakemus.peruutettu
               )
             )
         }
@@ -499,9 +493,8 @@ class HakemusService(
 
         // Laske lopullinen kasittelyVaihe päivitettyjen tietojen perusteella
         val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
-          finalAsiakirjaId,
-          dbHakemus.id,
-          ataruHakemuksenTila(hakemusOid)
+          dbHakemus.copy(asiakirjaId = finalAsiakirjaId),
+          haeAtaruHakemus(hakemusOid)
         )
 
         // Täysi päivitys - kaikki kentät korvataan
@@ -516,8 +509,14 @@ class HakemusService(
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
-          esittelijanHuomioita = hakemusUpdateRequest.esittelijanHuomioita
+          esittelijanHuomioita = hakemusUpdateRequest.esittelijanHuomioita,
+          peruutettu = hakemusUpdateRequest.peruutettu,
+          peruutusPvm = hakemusUpdateRequest.peruutusPvm,
+          peruutusLisatieto = hakemusUpdateRequest.peruutusLisatieto
         )
+
+        if (!dbHakemus.peruutettu && hakemusUpdateRequest.peruutettu)
+          paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, userOid.toString)
 
         hakemusRepository.paivitaHakemus(
           hakemusOid,
@@ -531,30 +530,28 @@ class HakemusService(
     hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
   }
 
-  private def ataruHakemuksenTila(hakemusOid: HakemusOid) = {
-    val ataruHakemus = hakemuspalveluService.haeHakemus(hakemusOid) match {
-      case Left(error: Throwable) =>
-        throw error
-      case Right(response: String) => parse(response).extract[AtaruHakemus]
-    }
-    ataruHakemus.hakemuksenTila()
-  }
-
-  def paivitaKasittelyVaihe(
+  def paivitaKasittelyVaiheSisaisesti(
     hakemusOid: HakemusOid,
     dbHakemus: DbHakemus,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja, ataruHakemuksenTila(hakemusOid))
+    paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja, haeAtaruHakemus(hakemusOid))
   }
 
-  def paivitaKasittelyVaihe(
+  def paivitaKasittelyVaiheAtarusta(
     hakemusOid: HakemusOid,
-    tilaFromAtaru: AtaruHakemuksenTila
+    ataruHakemuksenTila: AtaruHakemuksenTila,
+    infoRequestTimestamp: Option[String]
   ): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        paivitaKasittelyVaihe(hakemusOid, dbHakemus, ATARU_SERVICE, tilaFromAtaru)
+        val dbHakemusWithInfoRequestTimestamp = (ataruHakemuksenTila, infoRequestTimestamp) match {
+          case (TaydennysPyynto, Some(timestamp)) =>
+            dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(toLocalDateTime(timestamp)))
+          case (TaydennysPyynto, _) => dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(currentLocalDateTime()))
+          case _                    => dbHakemus
+        }
+        paivitaKasittelyVaihe(hakemusOid, dbHakemusWithInfoRequestTimestamp, ATARU_SERVICE, haeAtaruHakemus(hakemusOid))
       case _ =>
         LOG.warn(s"Vastaanotettiin tilapäivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
@@ -564,12 +561,11 @@ class HakemusService(
     hakemusOid: HakemusOid,
     dbHakemus: DbHakemus,
     luojaTaiMuokkaaja: String,
-    tilaFromAtaru: AtaruHakemuksenTila
+    ataruHakemus: AtaruHakemus
   ): Unit = {
     val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
-      dbHakemus.asiakirjaId,
-      dbHakemus.id,
-      tilaFromAtaru
+      dbHakemus,
+      ataruHakemus
     )
 
     if (kasittelyVaihe != dbHakemus.kasittelyVaihe) {
@@ -587,39 +583,43 @@ class HakemusService(
   def paivitaTiedotAtarusta(hakemusOid: HakemusOid): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val ataruHakemus   = haeAtaruHakemus(hakemusOid)
-        val hakemusKoskee  = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        val kasittelyVaihe =
-          if (
-            dbHakemus.kasittelyVaihe == OdottaaTaydennysta && ataruHakemus.`information-request-timestamp`.isDefined
-          ) {
-            val hakemustaMuokattu    = toLocalDateTime(ataruHakemus.modified)
-            val infoRequestTimestamp = toLocalDateTime(ataruHakemus.`information-request-timestamp`.get)
-            if (hakemustaMuokattu.isAfter(infoRequestTimestamp)) {
-              kasittelyVaiheService.resolveKasittelyVaihe(
-                dbHakemus.asiakirjaId,
-                dbHakemus.id,
-                TaydennysPyyntoVastattu
-              )
-            } else {
-              dbHakemus.kasittelyVaihe
-            }
-          } else {
-            dbHakemus.kasittelyVaihe
-          }
-        val muutokset = new StringBuilder
+        val ataruHakemus      = haeAtaruHakemus(hakemusOid)
+        val hakemusKoskee     = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val hakemusPeruutettu = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
+        val asetaPeruutetuksi = !dbHakemus.peruutettu && hakemusPeruutettu
+        val kasittelyVaihe    =
+          kasittelyVaiheService.resolveKasittelyVaihe(
+            dbHakemus,
+            ataruHakemus
+          )
+        val muutokset = ListBuffer[String]()
         if (kasittelyVaihe != dbHakemus.kasittelyVaihe)
-          muutokset ++= s"${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe"
-        if (hakemusKoskee != dbHakemus.hakemusKoskee) {
-          if (muutokset.nonEmpty) muutokset ++= ", "
-          muutokset ++= s"hakemusKoskee: ${dbHakemus.hakemusKoskee} -> $hakemusKoskee"
-        }
+          muutokset += s"${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe"
+        if (hakemusKoskee != dbHakemus.hakemusKoskee)
+          muutokset += s"hakemusKoskee: ${dbHakemus.hakemusKoskee} -> $hakemusKoskee"
+        val peruutusPvm =
+          if (asetaPeruutetuksi)
+            Some(toLocalDateTime(ataruHakemus.latestVersionCreated))
+          else dbHakemus.peruutusPvm
+        if (asetaPeruutetuksi)
+          muutokset += s"hakemus peruutettu $peruutusPvm"
         if (muutokset.nonEmpty) {
-          LOG.info(s"Päivitetään hakemus ${hakemusOid.s} ${muutokset.toString()}")
-          hakemusRepository.suoritaPaivitaVaiheJaHakemusKoskee(hakemusOid, kasittelyVaihe, hakemusKoskee, ATARU_SERVICE)
+          LOG.info(s"Päivitetään hakemus ${hakemusOid.s} ${muutokset.mkString(", ")}")
+          hakemusRepository.paivitaHakemus(
+            hakemusOid,
+            dbHakemus.copy(
+              kasittelyVaihe = kasittelyVaihe,
+              hakemusKoskee = hakemusKoskee,
+              peruutettu = asetaPeruutetuksi || dbHakemus.peruutettu,
+              peruutusPvm = peruutusPvm
+            ),
+            ATARU_SERVICE
+          )
+          if (asetaPeruutetuksi)
+            paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, ATARU_SERVICE)
         }
       case _ =>
-        LOG.warn(s"Vastaanotettiin tilapäivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
+        LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
   }
 }

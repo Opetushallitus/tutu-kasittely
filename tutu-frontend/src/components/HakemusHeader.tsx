@@ -25,9 +25,6 @@ export const HakemusHeader = () => {
   const { translation: kasittelyVaiheTranslation } =
     useKasittelyvaiheTranslation(hakemus);
 
-  // TODO: Lisää oikea ataruHakemuksenTila
-  const isPeruutettu = hakemus?.ataruHakemuksenTila == 'Peruutettu';
-
   return (
     hakemus && (
       <Stack
@@ -54,6 +51,7 @@ export const HakemusHeader = () => {
               : t('puuttuu')}
           </OphTypography>
           <OphTypography
+            noWrap={true}
             data-testid="hakemusotsikko-kasittelyvaihe"
             sx={{
               display: 'flex',
@@ -61,7 +59,7 @@ export const HakemusHeader = () => {
             }}
           >
             {kasittelyVaiheTranslation}
-            {isPeruutettu && (
+            {hakemus?.peruutettu && (
               <PeruutettuBadge
                 label={t('hakemus.ataruhakemuksentila.peruutettu')}
               />

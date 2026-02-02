@@ -38,5 +38,8 @@ export const buildHakemusUpdateRequest = (
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri:
     hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri || null,
   esittelijanHuomioita: hakemus.esittelijanHuomioita ?? null,
+  peruutettu: hakemus.peruutettu,
+  peruutusPvm: hakemus.peruutusPvm || null,
+  peruutusLisatieto: hakemus.peruutusLisatieto || null,
   ...overrides,
 });

@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
 import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
 import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
+import { Peruutus } from '@/src/app/hakemus/[oid]/perustiedot/components/Peruutus';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
@@ -81,13 +82,23 @@ export default function PerustietoPage() {
           updateLocal({ esittelijanHuomioita: value });
         }}
       />
-      <Stack gap={theme.spacing(3)} width={'60%'}>
+      <Stack
+        gap={theme.spacing(3)}
+        width={'60%'}
+        sx={{ marginBottom: theme.spacing(3) }}
+      >
         <Henkilotiedot
           hakija={hakemus.hakija}
           paatosKieli={paatosKieliVal ?? ''}
           asiointiKieli={asiointiKieliVal ?? ''}
         />
       </Stack>
+      <Peruutus
+        hakemus={hakemus}
+        updateHakemus={updateLocal}
+        t={t}
+        theme={theme}
+      />
       <SaveRibbon
         onSave={save}
         isSaving={isSaving ?? false}

@@ -45,6 +45,9 @@ export type Hakemus = {
   lopullinenPaatosVastaavaEhdollinenAsiatunnus?: string;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
   esittelijanHuomioita?: string;
+  peruutettu: boolean;
+  peruutusPvm?: string;
+  peruutusLisatieto?: string;
 };
 
 /**
@@ -65,6 +68,9 @@ export type HakemusUpdateRequest = {
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: string | null;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: string | null;
   esittelijanHuomioita: string | null;
+  peruutettu: boolean;
+  peruutusPvm: string | null;
+  peruutusLisatieto: string | null;
 };
 
 export type AsiakirjaTietoUpdateCallback = (

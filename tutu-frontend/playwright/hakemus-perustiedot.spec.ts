@@ -149,3 +149,41 @@ test('Lopullisen päätöksen hakemuksen perustiedot näkyvät oikein, ja muutok
     },
   );
 });
+
+test('Hakemuksen peruutustiedot näkyvät oikein, ja muutoksista lähetetään PUT -kutsut backendille', async ({
+  page,
+}) => {
+  await mockUser(page);
+  await mockKoodistot(page);
+  await mockLopullisenPaatoksenHakemus(page);
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000002/perustiedot',
+  );
+
+  const peruutusCheckbox = page.getByTestId('peruutus-checkbox');
+  const peruutuspPvm = page.getByTestId('peruutus-calendar').locator('input');
+  const peruutusLisatieto = page.getByTestId('peruutus-lisatieto');
+
+  await expect(peruutusCheckbox).toBeVisible();
+  await expect(peruutuspPvm).toBeVisible();
+  await expect(peruutusLisatieto).toBeHidden();
+
+  await expectRequestData(page, '/hakemus/', peruutusCheckbox.click(), {
+    peruutettu: true,
+  });
+  await expect(peruutusLisatieto).toBeVisible();
+
+  await peruutuspPvm.click();
+  await page.locator('.react-datepicker__day--026').click();
+  await page.locator('body').click({ position: { x: 1, y: 1 } });
+  await expect(peruutuspPvm).toHaveValue(/^26\.\d{2}\.\d{4}$/);
+
+  await expectRequestData(
+    page,
+    '/hakemus/',
+    peruutusLisatieto.fill('Lisää tietoa'),
+    {
+      peruutusLisatieto: 'Lisää tietoa',
+    },
+  );
+});

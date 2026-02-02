@@ -523,4 +523,21 @@ class PaatosRepository extends BaseResultHandlers {
           WHERE id = ${id.toString}::uuid
         """
 
+  def asetaPaatosPeruutetuksi(hakemusId: UUID, muokkaaja: String) =
+    try {
+      db.run(
+        sql"""UPDATE paatos SET ratkaisutyyppi = 
+             ${Ratkaisutyyppi.PeruutusTaiRaukeaminen.toString}::ratkaisutyyppi,
+             muokkaaja = $muokkaaja 
+             WHERE hakemus_id = ${hakemusId.toString}::uuid""".asUpdate,
+        "aseta_paatos_peruutetuksi"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Päätöksen asettaminen peruutetuksi epäonnistui: $e")
+        throw new RuntimeException(
+          s"Päätöksen asettaminen peruutetuksi epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
 }

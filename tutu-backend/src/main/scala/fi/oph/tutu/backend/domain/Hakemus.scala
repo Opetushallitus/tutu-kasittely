@@ -98,7 +98,29 @@ case class DbHakemus(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
   )
-  muokkaaja: Option[String]
+  muokkaaja: Option[String],
+  @(Schema @field)(
+    example = "false",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  peruutettu: Boolean,
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  peruutusPvm: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "Peruutettu sähköpostitse",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  peruutusLisatieto: Option[String],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -126,7 +148,11 @@ case class Hakemus(
   asiakirja: Option[Asiakirja] = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None,
-  esittelijanHuomioita: Option[String]
+  esittelijanHuomioita: Option[String],
+  peruutettu: Boolean = false,
+  peruutusPvm: Option[LocalDateTime] = None,
+  peruutusLisatieto: Option[String] = None,
+  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime] = None
 )
 
 /**
@@ -146,7 +172,10 @@ case class HakemusUpdateRequest(
   asiakirja: Asiakirja,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
-  esittelijanHuomioita: Option[String]
+  esittelijanHuomioita: Option[String],
+  peruutettu: Boolean,
+  peruutusPvm: Option[LocalDateTime],
+  peruutusLisatieto: Option[String]
 )
 
 case class AsiatunnusUpdateRequest(

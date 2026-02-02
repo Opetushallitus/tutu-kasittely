@@ -39,7 +39,7 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
 import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 
@@ -260,10 +260,10 @@ class HakemusControllerTest extends IntegrationTestBase {
     val virkailijaOid = UserOid("1.2.246.562.24.00000000000000006666")
     val hakemusOid    = HakemusOid("1.2.246.562.11.00000000000000006667")
     val asiakirjaId   = addAsiakirjaStuffToHakemus(virkailijaOid)
-    val dbAsiakirja   = hakemusRepository.haeHakemus(hakemusOid).get
+    val dbHakemus     = hakemusRepository.haeHakemus(hakemusOid).get
     hakemusRepository.paivitaHakemus(
       hakemusOid,
-      dbAsiakirja.copy(asiakirjaId = Some(asiakirjaId)),
+      dbHakemus.copy(asiakirjaId = Some(asiakirjaId)),
       virkailijaOid.toString
     )
     initAtaruHakemusRequests()
@@ -492,8 +492,19 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+    val dbHakemus  = hakemusRepository.haeHakemus(hakemusOid).get
+    hakemusRepository.paivitaHakemus(
+      hakemusOid,
+      dbHakemus.copy(
+        kasittelyVaihe = KasittelyVaihe.OdottaaTaydennysta,
+        viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-01T18:30:45.597"))
+      ),
+      "1.2.246.562.24.00000000000000006666"
+    )
+
     initAtaruHakemusRequests("ataruHakemus6667_modified.json")
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(2)
+    when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(true)
 
     val result = mockMvc
       .perform(
@@ -501,8 +512,12 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
 
-    val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid)
-    assertEquals(2, paivitettyHakemus.get.hakemusKoskee)
+    val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid).get
+    assertEquals(2, paivitettyHakemus.hakemusKoskee)
+    assertEquals(KasittelyVaihe.HakemustaTaydennetty, paivitettyHakemus.kasittelyVaihe)
+    assertTrue(paivitettyHakemus.peruutettu)
+    assertEquals(LocalDateTime.parse("2026-01-30T12:59:47.597"), paivitettyHakemus.peruutusPvm.get)
+    assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(dbHakemus.id).get.ratkaisutyyppi.get)
   }
 
   @Test
@@ -515,7 +530,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
-    initAtaruHakemusRequests()
+    initAtaruHakemusRequests("ataruHakemus6666.json")
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
 
     val result = mockMvc

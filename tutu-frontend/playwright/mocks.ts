@@ -218,6 +218,7 @@ export const mockHakemus = async (
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
         yhteistutkinto: false,
+        peruutettu: false,
         asiakirja: {
           allekirjoituksetTarkistettu: false,
           allekirjoituksetTarkistettuLisatiedot: null,

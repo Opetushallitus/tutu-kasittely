@@ -30,7 +30,8 @@
     "asiatunnus": "OPH-123-2025",
     "kasittelyVaihe": "AlkukasittelyKesken",
     "taydennyspyyntoLahetetty": null,
-    "apHakemus": null
+    "apHakemus": null,
+    "peruutettu": true
   },
   {
     "hakija": "Seppuku Seppo",
