@@ -2,10 +2,7 @@ name: TUTU-käsittely frontend build workflow
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "tutu-frontend/**"
-      - "!**.md"
+  pull_request:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -19,7 +16,24 @@ permissions:
   packages: read
 
 jobs:
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'tutu-frontend/**'
+              - '.github/workflows/build-frontend.yml'
+          list-files: 'json'
+
   lint-frontend:
+    needs: filter
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +45,8 @@ jobs:
           pnpm prettier
 
   playwright:
+    needs: filter
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:

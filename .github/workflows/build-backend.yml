@@ -2,10 +2,7 @@ name: TUTU-käsittely backend build workflow
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'tutu-backend/**'
-      - '!**.md'
+  pull_request:
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
@@ -19,7 +16,24 @@ permissions:
   packages: read
 
 jobs:
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'tutu-backend/**/!(*.md)'
+              - '.github/workflows/build-backend.yml'
+          list-files: 'json'
+
   test-backend:
+    needs: filter
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.backend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
