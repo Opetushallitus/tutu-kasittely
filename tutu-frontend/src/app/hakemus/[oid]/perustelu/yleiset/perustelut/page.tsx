@@ -18,6 +18,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
@@ -81,6 +82,8 @@ const YleisetPerustelut = ({
     hakemusState.save();
   };
 
+  useUnsavedChanges(hasChanges);
+
   return (
     <>
       <VirallinenTutkinnonMyontaja
@@ -130,6 +133,8 @@ const YleisetPerustelut = ({
         onSave={handleSave}
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
+        lastSaved={hakemusState?.editedData?.muokattu}
+        modifier={hakemusState?.editedData?.muokkaaja}
       />
     </>
   );

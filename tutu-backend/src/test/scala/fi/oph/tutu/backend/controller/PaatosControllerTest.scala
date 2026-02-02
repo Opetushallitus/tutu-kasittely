@@ -417,6 +417,23 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   }
 
   @BeforeEach
+  def setupTest(): Unit = {
+    when(onrService.haeHenkilo("test user"))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = "test user",
+            kutsumanimi = "Esko",
+            sukunimi = "Esittelijä",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010170-789X"),
+            false
+          )
+        )
+      )
+  }
+
+  @BeforeEach
   def initMocks(): Unit = {
     when(
       userService.getEnrichedUserDetails(any)

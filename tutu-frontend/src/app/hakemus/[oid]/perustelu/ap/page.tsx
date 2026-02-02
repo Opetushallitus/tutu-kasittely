@@ -14,17 +14,19 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
+  const { hakemusState, isLoading, error } = useHakemus();
   const {
-    hakemusState: { editedData: hakemus },
-    isLoading,
-    error,
-  } = useHakemus();
+    editedData: hakemus,
+    save: saveHakemus,
+    hasChanges: hasHakemusChanges,
+  } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
     perustelu,
@@ -38,9 +40,9 @@ export default function ApPage() {
 
   const {
     editedData: editedPerustelu,
-    hasChanges,
+    hasChanges: hasPerusteluChanges,
     updateLocal,
-    save,
+    save: savePerustelu,
   } = perusteluState;
   // Update local state only
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
@@ -54,6 +56,13 @@ export default function ApPage() {
     const next = { ...currentAPSisalto, [key]: value };
     updateLocal({ apSisalto: next });
   };
+
+  const handleSave = () => {
+    savePerustelu();
+    saveHakemus();
+  };
+
+  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -345,9 +354,11 @@ export default function ApPage() {
         ></OphInputFormField>
       </PerusteluLayout>
       <SaveRibbon
-        onSave={save}
+        onSave={handleSave}
         isSaving={perusteluIsSaving || false}
-        hasChanges={hasChanges}
+        hasChanges={hasPerusteluChanges || hasHakemusChanges}
+        lastSaved={hakemus?.muokattu}
+        modifier={hakemus?.muokkaaja}
       />
     </>
   );

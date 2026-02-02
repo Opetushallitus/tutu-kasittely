@@ -115,6 +115,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ataruHakemuksenTila = AtaruHakemuksenTila.Kasittelyssa,
       kasittelyVaihe = KasittelyVaihe.AlkukasittelyKesken,
       muokattu = None,
+      muokkaaja = "",
       muutosHistoria = Seq.empty,
       taydennyspyyntoLahetetty = None,
       yhteistutkinto = true,

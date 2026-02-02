@@ -17,6 +17,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
@@ -107,6 +108,8 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
   };
 
+  useUnsavedChanges(hasChanges);
+
   return (
     <PerusteluLayout
       showTabs={true}
@@ -181,6 +184,8 @@ export default function Lausuntotiedot() {
           onSave={save}
           isSaving={perusteluIsSaving || false}
           hasChanges={hasChanges}
+          lastSaved={hakemus?.muokattu}
+          modifier={hakemus?.muokkaaja}
         />
       </Stack>
     </PerusteluLayout>
