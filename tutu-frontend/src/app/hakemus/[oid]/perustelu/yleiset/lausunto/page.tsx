@@ -60,18 +60,23 @@ export default function Lausuntotiedot() {
   // Separate state for indexed lausuntopyynnot (UI-specific)
   const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
     Lausuntopyynto[]
-  >([]);
+  >([emptyLausuntopyynto(1)]);
 
   // Sync indexed lausuntopyynnot from editedPerustelu
   useEffect(() => {
     if (!editedPerustelu) return;
 
-    const indexedLausuntopyynnot = editedPerustelu.lausuntopyynnot.map(
-      (pyynto, index) => ({
-        ...pyynto,
-        jarjestys: index + 1,
-      }),
-    );
+    const serverList = editedPerustelu.lausuntopyynnot;
+
+    if (serverList.length === 0) {
+      setLausuntopyynnot([emptyLausuntopyynto(1)]);
+      return;
+    }
+
+    const indexedLausuntopyynnot = serverList.map((pyynto, index) => ({
+      ...pyynto,
+      jarjestys: index + 1,
+    }));
     setLausuntopyynnot(indexedLausuntopyynnot);
   }, [editedPerustelu, editedPerustelu?.lausuntopyynnot]);
 
@@ -100,6 +105,13 @@ export default function Lausuntotiedot() {
         ...pyynto,
         jarjestys: index + 1,
       }));
+
+    if (updatedLausuntopyynnot.length === 0) {
+      setLausuntopyynnot([emptyLausuntopyynto(1)]);
+      updateImmediately({ lausuntopyynnot: [] });
+      return;
+    }
+
     setLausuntopyynnot(updatedLausuntopyynnot);
     // Strip jarjestys field before saving to editedPerustelu
     const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
