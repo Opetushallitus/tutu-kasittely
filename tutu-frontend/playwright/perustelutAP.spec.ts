@@ -28,7 +28,7 @@ test.beforeEach(async ({ page }) => {
     },
   );
   await page.goto('/tutu-frontend/hakemus/ap-perustelu-oid/perustelu/ap/');
-  await expect(page.getByTestId('perustelu-layout-otsikko')).toHaveText(
+  await expect(page.getByTestId('perustelu-otsikko')).toHaveText(
     'AP-päätöksen perustelut',
   );
 });

@@ -6,6 +6,8 @@ import { styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import Link from 'next/link';
 
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
 const StyledHomeIcon = styled(HomeOutlinedIcon)({
   color: ophColors.blue2,
   justifyContent: 'center',
@@ -26,8 +28,9 @@ const StyledLink = styled(Link)({
 });
 
 export const HomeIcon = ({ href }: { href: string }) => {
+  const { t } = useTranslations();
   return (
-    <StyledLink href={href}>
+    <StyledLink href={href} aria-label={t('yleinen.palaa-etusivulle')}>
       <StyledHomeIcon />
     </StyledLink>
   );

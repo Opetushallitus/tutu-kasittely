@@ -127,7 +127,7 @@ export const PerusteluLayout = ({
       gap={theme.spacing(3)}
       sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
     >
-      <OphTypography variant={'h2'} data-testid="perustelu-layout-otsikko">
+      <OphTypography variant={'h2'} data-testid="perustelu-otsikko">
         {t(title)}
       </OphTypography>
 

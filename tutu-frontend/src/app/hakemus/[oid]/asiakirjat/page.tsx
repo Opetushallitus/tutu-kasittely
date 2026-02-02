@@ -248,7 +248,7 @@ const AsiakirjaPagePure = ({
         }}
       >
         <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <OphTypography variant={'h2'}>
+          <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
             {t('hakemus.asiakirjat.otsikko')}
           </OphTypography>
           <ExternalLink

@@ -106,6 +106,7 @@ export const PaatosTietoComponent = ({
           handlePaatosTyyppiChange(event.target.value as Paatostyyppi)
         }
         data-testid={'paatos-paatostyyppi-dropdown'}
+        inputProps={{ 'aria-label': t('hakemus.paatos.paatostyyppi.otsikko') }}
       />
       <OphSelectFormField
         placeholder={t('yleiset.valitse')}
@@ -117,6 +118,9 @@ export const PaatosTietoComponent = ({
         value={currentPaatosTieto.sovellettuLaki || ''}
         onChange={(event) => handleSovellettuLakiChange(event.target.value)}
         data-testid={'paatos-sovellettulaki-dropdown'}
+        inputProps={{
+          'aria-label': t('hakemus.paatos.sovellettuLaki.otsikko'),
+        }}
       />
       {currentPaatosTieto.sovellettuLaki &&
         (currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' ||

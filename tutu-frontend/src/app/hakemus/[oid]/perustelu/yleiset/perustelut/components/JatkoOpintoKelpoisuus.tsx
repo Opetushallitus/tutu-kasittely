@@ -47,6 +47,7 @@ export const JatkoOpintoKelpoisuus = ({
           'hakemus.perustelu.yleiset.muutPerustelut.jatkoOpintoKelpoisuus.otsikko',
         )}
         labelId="jatko-opinto-kelpoisuus-radio-group-label"
+        labelVariant="label"
         data-testid="jatko-opintokelpoisuus-radio-group"
         options={kelpoisuudet.map((kelpoisuus) => ({
           value: kelpoisuus,

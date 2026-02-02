@@ -22,6 +22,7 @@ export const VirallinenTutkinto = ({ perustelu, updatePerustelu }: Props) => {
     <OphRadioGroupWithClear
       label={t('hakemus.perustelu.yleiset.perustelut.virallinenTutkinto')}
       labelId="virallinen-tutkinto-radio-group-label"
+      labelVariant="label"
       data-testid="virallinen-tutkinto-radio-group"
       options={[
         { value: 'true', label: t('yleiset.kylla') },

@@ -139,6 +139,9 @@ export const TutkintoComponent = ({
           })
         }
         data-testid={`tutkinto-todistusotsikko-${tutkinto.jarjestys}`}
+        inputProps={{
+          'aria-label': t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko'),
+        }}
       />
       <Stack direction="column" gap={0.5}>
         <OphInputFormField
@@ -234,6 +237,9 @@ export const TutkintoComponent = ({
             })
           }
           data-testid={`tutkinto-maa-${tutkinto.jarjestys}`}
+          inputProps={{
+            'aria-label': t('hakemus.tutkinnot.tutkinto.tutkinnonMaa'),
+          }}
         />
         <Box>
           <OphButton
@@ -311,6 +317,9 @@ export const TutkintoComponent = ({
           }
           value={tutkinto.koulutusalaKoodiUri ?? ''}
           data-testid={`tutkinto-koulutusala-${tutkinto.jarjestys}`}
+          inputProps={{
+            'aria-label': t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala'),
+          }}
         />
       )}
       <HakijanIlmoittamaPopover

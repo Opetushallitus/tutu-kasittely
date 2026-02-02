@@ -18,7 +18,7 @@ const gotoUoro = async (page: Page) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
-  await expect(page.getByTestId('perustelu-layout-otsikko')).toBeVisible();
+  await expect(page.getByTestId('perustelu-otsikko')).toBeVisible();
 };
 
 test('SovellettuTilanne: opettajan pedagogiset opinnot', async ({ page }) => {

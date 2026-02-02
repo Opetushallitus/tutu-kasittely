@@ -45,7 +45,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
     '',
     { numero: 2 },
   );
-  await expect(page.getByTestId('perustelu-layout-otsikko')).toHaveText(
+  await expect(page.getByTestId('perustelu-otsikko')).toHaveText(
     lausuntopyynnot,
   );
 

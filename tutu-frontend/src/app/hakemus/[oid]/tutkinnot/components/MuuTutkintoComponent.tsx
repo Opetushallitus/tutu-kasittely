@@ -55,7 +55,11 @@ export const MuuTutkintoComponent = ({
 
   return (
     <Stack direction="column" gap={2}>
-      <OphTypography variant={'h3'} data-testid={'tutkinto-otsikko-MUU'}>
+      <OphTypography
+        variant={'h3'}
+        data-testid={'tutkinto-otsikko-MUU'}
+        id={'tutkinto-otsikko-MUU'}
+      >
         {t('hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU')}
       </OphTypography>
       <OphTypography variant={'label'}>
@@ -73,6 +77,7 @@ export const MuuTutkintoComponent = ({
             })
           }
           data-testid={'tutkinto-tieto-MUU'}
+          inputProps={{ 'aria-labelledby': 'tutkinto-otsikko-MUU' }}
         />
         <Box>
           <OphButton

@@ -68,7 +68,7 @@ const TableHeader = () => {
           />
         </TableCell>
         <TableCell>
-          <OphTypography variant={'body1'}>
+          <OphTypography id="asiakirjamallit-kuvaus-header" variant={'body1'}>
             {t('hakemus.asiakirjat.mallejaTutkinnoista.kuvaus')}
           </OphTypography>
         </TableCell>
@@ -134,6 +134,7 @@ const KuvausInput = ({
         minRows={minRows}
         value={kuvaus}
         onChange={(event) => setKuvaus(event.target.value)}
+        inputProps={{ 'aria-labelledby': 'asiakirjamallit-kuvaus-header' }}
       />
     </TableCell>
   );

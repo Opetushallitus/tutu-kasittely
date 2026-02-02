@@ -19,7 +19,7 @@ const AikaisempiPaatos = ({
 }) => {
   return (
     <Stack direction="column" gap={gap}>
-      <OphTypography variant={'h5'}>
+      <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
         {t('hakemus.sivupalkki.paatos.otsikkoAikaisempi')}
       </OphTypography>
       <OphTypography variant={'body1'}>
@@ -36,7 +36,7 @@ export const Paatos = () => {
 
   return (
     <>
-      <OphTypography variant={'h5'}>
+      <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
         {t('hakemus.sivupalkki.paatos.otsikko', '', {
           numero: 1,
         })}

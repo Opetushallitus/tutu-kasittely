@@ -26,6 +26,7 @@ export const Muistio = ({
         <OphTypography variant="body1">{helperText}</OphTypography>
       )}
       <OphInputFormField
+        label={label}
         multiline={true}
         onChange={(event) => updateMuistio(event?.target.value)}
         value={sisalto ?? ''}

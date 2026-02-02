@@ -22,6 +22,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockUser(page),
     mockHakemus(page),
     mockPerustelu(page),
+    mockPaatos(page),
     mockLiitteet(page),
     mockKoodistot(page),
     mockTutkinnot(page),

@@ -35,6 +35,7 @@ export const YlimmanTutkinnonAsema = ({
         'hakemus.perustelu.yleiset.perustelut.ylimmanTutkinnonAsema.otsikko',
       )}
       labelId="ylimman-tutkinnon-asema-radio-group-label"
+      labelVariant="label"
       data-testid="tutkinnon-asema-radio-group"
       options={tutkinnonAsemat.map((asema) => ({
         value: asema,

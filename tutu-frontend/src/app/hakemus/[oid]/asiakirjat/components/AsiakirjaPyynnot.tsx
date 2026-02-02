@@ -232,7 +232,11 @@ export const AsiakirjaPyynnot = ({
             'hakemus.asiakirjat.asiakirjapyynnot.otsikko.pyydettavatasiakirjat',
           )}
         </OphTypography>
-        <IconButton>
+        <IconButton
+          aria-label={`${t(
+            'hakemus.asiakirjat.asiakirjapyynnot.otsikko.pyydettavatasiakirjat',
+          )} lisätiedot`}
+        >
           <StyledTooltip
             title={asiakirjatTooltip}
             onClick={handleTooltipOpen}
