@@ -1,8 +1,5 @@
 import { Stack } from '@mui/material';
-import {
-  OphInputFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphInputFormField } from '@opetushallitus/oph-design-system';
 
 interface MuistioProps {
   label?: string;
@@ -21,12 +18,9 @@ export const Muistio = ({
 }: MuistioProps) => {
   return (
     <Stack direction="column">
-      {label && <OphTypography variant="label">{label}</OphTypography>}
-      {helperText && (
-        <OphTypography variant="body1">{helperText}</OphTypography>
-      )}
       <OphInputFormField
         label={label}
+        helperText={helperText}
         multiline={true}
         onChange={(event) => updateMuistio(event?.target.value)}
         value={sisalto ?? ''}
