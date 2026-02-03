@@ -103,6 +103,13 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadg
   await expect(page.getByTestId('ap-hakemus-badge')).toBeVisible();
 });
 
+test('Peruutettu-badge näkyy', async ({ page }) => {
+  await mockSuccessfullLists({ page });
+  await page.goto('/tutu-frontend');
+
+  await expect(page.getByTestId('peruutettu-badge')).toBeVisible();
+});
+
 test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', async ({
   page,
 }) => {

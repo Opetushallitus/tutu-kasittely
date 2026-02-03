@@ -4,6 +4,7 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
   FINLAND_TZ,
+  HAKEMUKSEN_PERUUTUS_VAHVISTETTU,
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
@@ -359,6 +360,13 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         )
     }
     tutkinnot.toSeq
+  }
+
+  def onkoHakemusPeruutettu(hakemus: AtaruHakemus): Boolean = {
+    val answers = hakemus.content.answers
+    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
+      .map(_.toInt)
+      .contains(HAKEMUKSEN_PERUUTUS_VAHVISTETTU)
   }
 }
 

@@ -11,6 +11,8 @@ object Constants {
 
   val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
 
+  val HAKEMUKSEN_PERUUTUS_VAHVISTETTU = 0
+
   val FINLAND_TZ: ZoneId = ZoneId.of("Europe/Helsinki")
 
   val ATARU_PAATOS_KIELI: AtaruKysymysId =
@@ -69,6 +71,9 @@ object Constants {
 
   val ATARU_HAKEMUS_KOSKEE: AtaruKysymysId =
     AtaruKysymysId("97840c6c-3642-48d0-9f47-adf9ee1793cc", "tutu-apply-reason")
+
+  val ATARU_HAKEMUS_PERUTTU: AtaruKysymysId =
+    AtaruKysymysId("9193dbe1-5cad-44c2-a00d-3669f4dac963", "tutu-application-cancelled")
 
   val ATARU_LOPULLINEN_PAATOS_SUORITUSMAA: AtaruKysymysId =
     AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "lopullinen-paatos-suoritusmaa")

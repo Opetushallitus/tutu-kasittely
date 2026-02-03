@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.domain
 
-import org.json4s.*
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.json4s.native.JsonMethods.*
 
 import java.time.LocalDateTime
@@ -17,7 +17,8 @@ case class AtaruHakemus(
   key: String,
   form_id: Long,
   content: Content,
-  created: String,
+  @JsonProperty("created")
+  latestVersionCreated: String,
   state: String,
   modified: String,
   submitted: String,

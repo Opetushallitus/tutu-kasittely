@@ -16,4 +16,5 @@ export type HakemusListItem = {
   taydennyspyyntoLahetetty?: string;
   ataruHakemustaMuokattu?: string;
   apHakemus?: boolean;
+  onkoPeruutettu?: boolean;
 };

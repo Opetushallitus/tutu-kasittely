@@ -41,7 +41,11 @@ class HakemusRepository extends BaseResultHandlers {
         lopullinenPaatosVastaavaEhdollinenAsiatunnus = r.nextStringOption(),
         lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = r.nextStringOption(),
         esittelijanHuomioita = r.nextStringOption(),
-        muokkaaja = r.nextStringOption()
+        muokkaaja = r.nextStringOption(),
+        onkoPeruutettu = r.nextBoolean(),
+        peruutusPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        peruutusLisatieto = r.nextStringOption(),
+        viimeisinTaydennyspyyntoPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -61,7 +65,8 @@ class HakemusRepository extends BaseResultHandlers {
         null,
         null,
         Option(r.nextBoolean()),
-        Option(r.nextString())
+        Option(r.nextString()),
+        Option(r.nextBoolean())
       )
     )
 
@@ -158,7 +163,7 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta, h.onko_peruutettu
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -204,7 +209,11 @@ class HakemusRepository extends BaseResultHandlers {
               h.lopullinen_paatos_ehdollisen_asiatunnus,
               h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri,
               h.esittelijan_huomioita,
-              h.muokkaaja
+              h.muokkaaja,
+              h.onko_peruutettu,
+              h.peruutus_paiva,
+              h.peruutus_lisatieto,
+              h.viimeisin_taydennyspyynto_paiva
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -324,7 +333,11 @@ class HakemusRepository extends BaseResultHandlers {
       hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
     val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
       hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
-    val esittelijanHuomioita = hakemus.esittelijanHuomioita
+    val esittelijanHuomioita        = hakemus.esittelijanHuomioita
+    val peruutettu                  = hakemus.onkoPeruutettu
+    val peruutusPvm                 = hakemus.peruutusPvm.map(java.sql.Timestamp.valueOf).orNull
+    val peruutusLisatieto           = hakemus.peruutusLisatieto
+    val viimeisinTaydennyspyyntoPvm = hakemus.viimeisinTaydennyspyyntoPvm.map(java.sql.Timestamp.valueOf).orNull
 
     try
       db.run(
@@ -340,7 +353,11 @@ class HakemusRepository extends BaseResultHandlers {
           kasittely_vaihe = $kasittelyVaihe,
           lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
           lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull,
-          esittelijan_huomioita = $esittelijanHuomioita
+          esittelijan_huomioita = $esittelijanHuomioita,
+          onko_peruutettu = $peruutettu,
+          peruutus_paiva = $peruutusPvm,
+          peruutus_lisatieto = $peruutusLisatieto,
+          viimeisin_taydennyspyynto_paiva = $viimeisinTaydennyspyyntoPvm
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
@@ -372,37 +389,6 @@ class HakemusRepository extends BaseResultHandlers {
       case Failure(e)        =>
         LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
         throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
-    }
-  }
-
-  private def paivitaVaiheJaHakemusKoskee(
-    hakemusOid: HakemusOid,
-    kasittelyVaihe: KasittelyVaihe,
-    hakemusKoskee: Int,
-    muokkaaja: String
-  ): DBIO[Int] =
-    sqlu"""
-        UPDATE hakemus
-        SET kasittely_vaihe = ${kasittelyVaihe.toString}, hakemus_koskee = $hakemusKoskee, muokkaaja = $muokkaaja
-        WHERE hakemus_oid = ${hakemusOid.toString}
-      """
-
-  def suoritaPaivitaVaiheJaHakemusKoskee(
-    hakemusOid: HakemusOid,
-    kasittelyVaihe: KasittelyVaihe,
-    hakemusKoskee: Int,
-    muokkaaja: String
-  ): Int = {
-    Try {
-      db.run(
-        paivitaVaiheJaHakemusKoskee(hakemusOid, kasittelyVaihe, hakemusKoskee, muokkaaja),
-        "PaivitaVaiheJaHakemusKoskee"
-      )
-    } match {
-      case Success(modified) => modified
-      case Failure(e)        =>
-        LOG.error(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage}", e)
-        throw new RuntimeException(s"Virhe hakemus koskee-tiedon päivittämisessä: ${e.getMessage} ${e.getMessage}", e)
     }
   }
 

@@ -183,7 +183,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           )
         )
       ),
-      created = "",
+      latestVersionCreated = "",
       state = "",
       modified = "",
       submitted = "",

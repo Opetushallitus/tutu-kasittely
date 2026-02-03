@@ -2,12 +2,18 @@ package fi.oph.tutu.backend.utils
 
 import fi.oph.tutu.backend.domain.*
 import org.json4s.*
+import org.json4s.FieldSerializer.{renameFrom, renameTo}
 
 import java.time.LocalDate
 
 trait TutuJsonFormats {
-  implicit val formats: Formats =
-    DefaultFormats + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
+  implicit val formats: Formats = {
+    DefaultFormats + FieldSerializer[AtaruHakemus](
+      renameTo("latestVersionCreated", "created"),
+      renameFrom("created", "latestVersionCreated")
+    ) + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
+
+  }
 }
 
 object AnswerValueSerializer

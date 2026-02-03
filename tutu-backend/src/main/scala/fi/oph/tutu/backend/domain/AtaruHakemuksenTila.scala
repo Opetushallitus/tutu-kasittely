@@ -1,10 +1,9 @@
 package fi.oph.tutu.backend.domain
 
-// TaydennysPyyntoVastattu tilaa ei varsinaisesti löydy Atarusta, ko. tila päätellään TUTUssa sisäisesti
 enum AtaruHakemuksenTila:
   case Kasittelematta, Kasittelyssa, KutsuttuHaastatteluun, KutsuttuValintaKokeeseen, Arvioinnissa, Valintaesitys,
     Kasitelty,
-    TaydennysPyynto, TaydennysPyyntoVastattu, KasittelyMaksamatta, KasittelyMaksettu, PaatosMaksuAvoin,
+    TaydennysPyynto, KasittelyMaksamatta, KasittelyMaksettu, PaatosMaksuAvoin,
     PaatosMaksamatta,
     PaatosMaksettu, Laskutuksessa, Tuntematon
 

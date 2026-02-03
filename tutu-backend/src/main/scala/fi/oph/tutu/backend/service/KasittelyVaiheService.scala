@@ -1,20 +1,13 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.{TaydennysPyynto, TaydennysPyyntoVastattu}
-import fi.oph.tutu.backend.domain.KasittelyVaihe.{
-  AlkukasittelyKesken,
-  HakemustaTaydennetty,
-  OdottaaIMIVastausta,
-  OdottaaLausuntoa,
-  OdottaaTaydennysta,
-  OdottaaVahvistusta,
-  ValmisKasiteltavaksi
-}
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
+import fi.oph.tutu.backend.domain.KasittelyVaihe.AlkukasittelyKesken
 import fi.oph.tutu.backend.repository.AsiakirjaRepository
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
 
-import java.util.UUID
+import java.time.LocalDateTime
 
 /**
  * Palvelu hakemuksen käsittelyvaiheen ratkaisemiseen.
@@ -49,22 +42,19 @@ class KasittelyVaiheService(
    * yhdellä kyselyllä sen sijaan että haettaisiin kaikki asiakirja- ja
    * perustelutiedot useilla erillisillä kyselyillä.
    *
-   * @param asiakirjaId
-   * Hakemuksen asiakirja ID
-   * @param hakemusId
-   * Hakemuksen ID
+   * @param dbHakemus
+   * hakemuksen tiedot
    * @param ataruHakemuksenTila
-   * Vastaavan ataru-hakemuksen tila
+   * Vastaava ataru-hakemus
    * @return
    * Ratkaistu käsittelyvaihe
    */
   def resolveKasittelyVaihe(
-    asiakirjaId: Option[UUID],
-    hakemusId: UUID,
-    ataruHakemuksenTila: AtaruHakemuksenTila
+    dbHakemus: DbHakemus,
+    ataruHakemus: AtaruHakemus
   ): KasittelyVaihe = {
-    asiakirjaRepository.haeKasittelyVaiheTiedot(asiakirjaId, hakemusId) match {
-      case Some(tiedot) => resolve(tiedot, ataruHakemuksenTila)
+    asiakirjaRepository.haeKasittelyVaiheTiedot(dbHakemus.asiakirjaId, dbHakemus.id) match {
+      case Some(tiedot) => resolve(tiedot, ataruHakemus, dbHakemus.viimeisinTaydennyspyyntoPvm)
       case None         => AlkukasittelyKesken
     }
   }
@@ -76,20 +66,29 @@ class KasittelyVaiheService(
    * 1. Jos päätös tehty (päivämäärät asetettu) -> LoppukasittelyValmis tai HyvaksyttyEiLahetetty
    * 2. Jos jokin toimenpide kesken -> palauta kyseinen tila (OdottaaVahvistusta/Lausuntoa/IMIVastausta)
    * 3. Jos selvitykset saatu ja kaikki toimenpiteet valmiit -> ValmisKasiteltavaksi
-   * 4. Jos kaikkia selvityksiä ei vielä saatu, mutta täydennyspyyntöön vastattu -> HakemustaTaydennetty
+   * 4. Jos kaikkia selvityksiä ei vielä saatu, mutta hakemusta on editoitu sen saapumisen jälkeen
+   *    (esim. vastattu täydennyspyyntöön) -> HakemustaTaydennetty
    * 5. Muuten -> AlkukasittelyKesken
    *
    * @param tiedot Käsittelyvaiheen ratkaisemiseen tarvittavat minimaaliset tiedot
    * @return Ratkaistu käsittelyvaihe
    */
-  private def resolve(tiedot: KasittelyVaiheTiedot, ataruHakemuksenTila: AtaruHakemuksenTila): KasittelyVaihe =
+  private def resolve(
+    tiedot: KasittelyVaiheTiedot,
+    ataruHakemus: AtaruHakemus,
+    viimeisinTaydennyspyyntoPvm: Option[LocalDateTime]
+  ): KasittelyVaihe = {
+    val submitted = toLocalDateTime(ataruHakemus.submitted)
+    val modified  = toLocalDateTime(ataruHakemus.latestVersionCreated)
     (
-      ataruHakemuksenTila == TaydennysPyynto,
+      ataruHakemus
+        .hakemuksenTila() == TaydennysPyynto && viimeisinTaydennyspyyntoPvm.isDefined && viimeisinTaydennyspyyntoPvm.get
+        .isAfter(modified),
       tiedot.vahvistusPyyntoLahetetty.isDefined && tiedot.vahvistusSaatu.isEmpty,
       tiedot.lausuntoKesken,
       tiedot.imiPyyntoLahetetty.isDefined && tiedot.imiPyyntoVastattu.isEmpty,
       tiedot.selvityksetSaatu,
-      ataruHakemuksenTila == TaydennysPyyntoVastattu,
+      modified.isAfter(submitted),
       tiedot.paatosLahetyspaiva.isDefined,
       tiedot.paatosHyvaksymispaiva.isDefined
     ) match
@@ -105,9 +104,11 @@ class KasittelyVaiheService(
 
       // Jos selvitykset saatu ja ei toimenpiteitä kesken -> valmis käsiteltäväksi
       case (false, false, false, false, true, _, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
-      // Jos kaikkia selvityksiä ei vielä saatu, mutta täydennyspyyntöön vastattu -> hakemusta täydennetty
+      // Jos kaikkia selvityksiä ei vielä saatu, mutta hakemusta on editoitu sen saapumisen jälkeen
+      // (esim. vastattu täydennyspyyntöön) -> HakemustaTaydennetty
       case (false, false, false, false, false, true, _, _) => KasittelyVaihe.HakemustaTaydennetty
       // Oletusarvo: alkukäsittely kesken
       // (mahdollistaa tilan regression kun toimenpiteitä poistetaan)
       case _ => AlkukasittelyKesken
+  }
 }

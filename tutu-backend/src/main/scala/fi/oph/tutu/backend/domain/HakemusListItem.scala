@@ -17,5 +17,6 @@ case class HakemusListItem(
   taydennyspyyntoLahetetty: Option[LocalDateTime],
   ataruHakemustaMuokattu: Option[LocalDateTime] = None,
   apHakemus: Option[Boolean] = None,
-  viimeinenAsiakirjaHakijalta: Option[String]
+  viimeinenAsiakirjaHakijalta: Option[String],
+  onkoPeruutettu: Option[Boolean] = None
 )

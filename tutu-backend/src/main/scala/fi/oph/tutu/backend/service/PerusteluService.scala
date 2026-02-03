@@ -89,7 +89,7 @@ class PerusteluService(
 
         // Päivitä kasittelyVaihe kun perustelu muuttuu
         try {
-          hakemusService.paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja)
+          hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, dbHakemus, luojaTaiMuokkaaja)
         } catch {
           case e: Exception =>
             LOG.error(s"Käsittelyvaiheen päivitys epäonnistui: ${e.getMessage}", e)

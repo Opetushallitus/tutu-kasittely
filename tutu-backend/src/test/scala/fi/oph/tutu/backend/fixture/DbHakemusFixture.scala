@@ -18,5 +18,9 @@ val dbHakemusFixture = DbHakemus(
   asiakirjaId = None,
   lopullinenPaatosVastaavaEhdollinenAsiatunnus = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = None,
-  esittelijanHuomioita = None
+  esittelijanHuomioita = None,
+  onkoPeruutettu = false,
+  peruutusPvm = None,
+  peruutusLisatieto = None,
+  viimeisinTaydennyspyyntoPvm = None
 )
