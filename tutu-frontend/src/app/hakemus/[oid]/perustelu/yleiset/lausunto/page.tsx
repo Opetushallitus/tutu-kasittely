@@ -7,8 +7,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
-import { omit } from 'remeda';
+import React from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
@@ -57,45 +56,21 @@ export default function Lausuntotiedot() {
     updateImmediately,
     save,
   } = perusteluState;
-  // Separate state for indexed lausuntopyynnot (UI-specific)
-  const [lausuntopyynnot, setLausuntopyynnot] = React.useState<
-    Lausuntopyynto[]
-  >([emptyLausuntopyynto(1)]);
 
-  // Sync indexed lausuntopyynnot from editedPerustelu
-  useEffect(() => {
-    if (!editedPerustelu) return;
-
-    const serverList = editedPerustelu.lausuntopyynnot;
-
-    if (serverList.length === 0) {
-      setLausuntopyynnot([emptyLausuntopyynto(1)]);
-      return;
-    }
-
-    const indexedLausuntopyynnot = serverList.map((pyynto, index) => ({
-      ...pyynto,
-      jarjestys: index + 1,
-    }));
-    setLausuntopyynnot(indexedLausuntopyynnot);
-  }, [editedPerustelu, editedPerustelu?.lausuntopyynnot]);
+  const serverLausuntopyynnot = editedPerustelu?.lausuntopyynnot ?? [];
+  const lausuntopyynnot =
+    serverLausuntopyynnot.length === 0
+      ? [emptyLausuntopyynto(1)]
+      : serverLausuntopyynnot;
 
   const addLausuntopyynto = () => {
-    const newJarjestys =
-      lausuntopyynnot.length > 0
-        ? lausuntopyynnot.reduce(
-            (max, p) => Math.max(max, p.jarjestys || 0),
-            0,
-          ) + 1
-        : 1;
-    const newLausuntopyynto: Lausuntopyynto = emptyLausuntopyynto(newJarjestys);
-    const updatedLausuntopyynnot = [...lausuntopyynnot, newLausuntopyynto];
-    setLausuntopyynnot(updatedLausuntopyynnot);
-    // Strip jarjestys field before saving to editedPerustelu
-    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
-      omit(p, ['jarjestys']),
-    );
-    updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
+    const newJarjestys = lausuntopyynnot.at(-1)?.jarjestys ?? 0;
+    const updatedLausuntopyynnot = [
+      ...lausuntopyynnot,
+      emptyLausuntopyynto(newJarjestys + 1),
+    ];
+
+    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
   const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
@@ -106,18 +81,7 @@ export default function Lausuntotiedot() {
         jarjestys: index + 1,
       }));
 
-    if (updatedLausuntopyynnot.length === 0) {
-      setLausuntopyynnot([emptyLausuntopyynto(1)]);
-      updateImmediately({ lausuntopyynnot: [] });
-      return;
-    }
-
-    setLausuntopyynnot(updatedLausuntopyynnot);
-    // Strip jarjestys field before saving to editedPerustelu
-    const lausuntopyynnotWithoutJarjestys = updatedLausuntopyynnot.map((p) =>
-      omit(p, ['jarjestys']),
-    );
-    updateImmediately({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
+    updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
   useUnsavedChanges(hasChanges);
@@ -136,26 +100,21 @@ export default function Lausuntotiedot() {
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
       >
-        {lausuntopyynnot.map((lausuntopyynto, index) => (
+        {lausuntopyynnot.map((lausuntopyynto) => (
           <LausuntopyyntoComponent
             lausuntopyynto={lausuntopyynto}
             updateLausuntopyyntoAction={(pyynto: Lausuntopyynto) => {
               const updatedLausuntopyynnot = lausuntopyynnot.map((p) =>
                 p.jarjestys === pyynto.jarjestys ? pyynto : p,
               );
-              setLausuntopyynnot(updatedLausuntopyynnot);
-              // Strip jarjestys field before saving to editedPerustelu
-              // jarjestys is only used for UI, not persisted to server
-              const lausuntopyynnotWithoutJarjestys =
-                updatedLausuntopyynnot.map((p) => omit(p, ['jarjestys']));
-              updateLocal({ lausuntopyynnot: lausuntopyynnotWithoutJarjestys });
+              updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
             }}
             deleteLausuntopyyntoAction={deleteLausuntopyynto}
             korkeakouluOptions={korkeakouluOptions}
             isKoodistoLoading={isKoodistoLoading}
             t={t}
             theme={theme}
-            key={index}
+            key={lausuntopyynto.jarjestys}
           />
         ))}
         {lausuntopyynnot.length > 0 && <Divider orientation={'horizontal'} />}

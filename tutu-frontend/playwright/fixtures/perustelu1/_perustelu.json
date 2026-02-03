@@ -15,12 +15,14 @@
   "lausunnonSisalto": "Lausunto on myönteinen. Tutkinto on rinnastettavissa suomalaiseen ylempään korkeakoulututkintoon.",
   "lausuntopyynnot": [
     {
+      "jarjestys": 1,
       "lausunnonAntajaKoodiUri": "oppilaitosnumero_01901",
       "lausunnonAntajaMuu": null,
       "lahetetty": "2025-09-01T00:00:00",
       "saapunut": "2025-09-30T00:00:00"
     },
     {
+      "jarjestys": 2,
       "lausunnonAntajaKoodiUri": "oppilaitosnumero_10076",
       "lausunnonAntajaMuu": null,
       "lahetetty": "2025-11-01T00:00:00",

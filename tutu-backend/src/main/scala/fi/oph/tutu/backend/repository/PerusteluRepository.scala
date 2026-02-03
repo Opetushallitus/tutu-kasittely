@@ -59,6 +59,7 @@ class PerusteluRepository extends BaseResultHandlers {
       Lausuntopyynto(
         Option(UUID.fromString(r.nextString())),
         Option(UUID.fromString(r.nextString())),
+        Option(r.nextInt()),
         r.nextStringOption(),
         r.nextStringOption(),
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
@@ -279,6 +280,7 @@ class PerusteluRepository extends BaseResultHandlers {
             SELECT
               lp.id,
               lp.perustelu_id,
+              lp.jarjestys,
               lp.lausunnon_antaja_koodiuri,
               lp.lausunnon_antaja_muu,
               lp.lahetetty,
@@ -287,6 +289,7 @@ class PerusteluRepository extends BaseResultHandlers {
               lausuntopyynto lp
             WHERE
               lp.perustelu_id =  ${perusteluId.toString}::uuid
+            ORDER BY lp.jarjestys ASC
           """.as[Lausuntopyynto],
         "hae_lausuntopyynnot"
       )
@@ -314,9 +317,9 @@ class PerusteluRepository extends BaseResultHandlers {
     modifyData: LausuntopyyntoModifyData,
     luojaTaiMuokkaaja: String
   ): Unit = {
-    val actions = modifyData.uudet.map(lp => lisaaLausuntopyynto(perusteluId, lp, luojaTaiMuokkaaja)) ++
-      modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja)) ++
-      modifyData.poistetut.map(poistaLausuntopyynto)
+    val actions = modifyData.poistetut.map(poistaLausuntopyynto) ++
+      modifyData.uudet.map(lp => lisaaLausuntopyynto(perusteluId, lp, luojaTaiMuokkaaja)) ++
+      modifyData.muutetut.map(lp => paivitaLausuntoPyynto(lp, luojaTaiMuokkaaja))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_lausuntopyyntojen_modifiointi") match {
       case Success(_) => ()
@@ -332,9 +335,10 @@ class PerusteluRepository extends BaseResultHandlers {
     luoja: String
   ): DBIO[Int] =
     sqlu"""
-      INSERT INTO lausuntopyynto (perustelu_id, lausunnon_antaja_koodiuri, lausunnon_antaja_muu, lahetetty, saapunut, luoja)
+      INSERT INTO lausuntopyynto (perustelu_id, jarjestys, lausunnon_antaja_koodiuri, lausunnon_antaja_muu, lahetetty, saapunut, luoja)
       VALUES (
         ${perusteluId.toString}::uuid,
+        ${lausuntopyynto.jarjestys.getOrElse(1)},
         ${lausuntopyynto.lausunnonAntajaKoodiUri.orNull},
         ${lausuntopyynto.lausunnonAntajaMuu.orNull},
         ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
@@ -349,6 +353,7 @@ class PerusteluRepository extends BaseResultHandlers {
     sqlu"""
       UPDATE lausuntopyynto
       SET
+        jarjestys = ${lausuntopyynto.jarjestys.getOrElse(1)},
         lausunnon_antaja_koodiuri = ${lausuntopyynto.lausunnonAntajaKoodiUri.orNull},
         lausunnon_antaja_muu = ${lausuntopyynto.lausunnonAntajaMuu.orNull},
         lahetetty = ${lausuntopyynto.lahetetty.map(java.sql.Timestamp.valueOf).orNull},

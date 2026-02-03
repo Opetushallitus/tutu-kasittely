@@ -41,6 +41,7 @@ export const _hakemus: Hakemus = {
   ataruHakemuksenTila: 'kasittelymaksamatta',
   kasittelyVaihe: 'HakemustaTaydennetty',
   muokattu: '2025-06-28T10:59:04.597',
+  muokkaaja: 'Muokkaaja Matti',
   asiakirja: {
     pyydettavatAsiakirjat: [],
     allekirjoituksetTarkistettu: false,
@@ -70,4 +71,5 @@ export const _hakemus: Hakemus = {
   sisalto: [],
   liitteidenTilat: [],
   yhteistutkinto: false,
+  onkoPeruutettu: false,
 };

@@ -172,24 +172,28 @@ class PerusteluControllerTest extends IntegrationTestBase {
       lausunnonSisalto = Some(randomString),
       lausuntopyynnot = Seq(
         Lausuntopyynto(
+          jarjestys = Some(1),
           lausunnonAntajaKoodiUri = Some("oppilaitosnumero_01901"),
           lausunnonAntajaMuu = None,
           lahetetty = Option(LocalDateTime.now()),
           saapunut = Option(LocalDateTime.now())
         ),
         Lausuntopyynto(
+          jarjestys = Some(2),
           lausunnonAntajaKoodiUri = Some("oppilaitosnumero_10076"),
           lausunnonAntajaMuu = None,
           lahetetty = None,
           saapunut = None
         ),
         Lausuntopyynto(
+          jarjestys = Some(3),
           lausunnonAntajaKoodiUri = None,
           lausunnonAntajaMuu = Some("Muu yliopisto"),
           lahetetty = Option(LocalDateTime.now()),
           saapunut = None
         ),
         Lausuntopyynto(
+          jarjestys = Some(4),
           lausunnonAntajaKoodiUri = Some("oppilaitosnumero_02535"),
           lausunnonAntajaMuu = None,
           lahetetty = None,
@@ -620,7 +624,11 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perusteluId     = perusteluRepository.haePerustelu(hakemusId3.get).get.id
     val perustelu       = makePerusteluWithLausuntotieto().copy(id = perusteluId, hakemusId = Some(hakemusId3.get))
     var lausuntopyynnot = perusteluRepository.haeLausuntopyynnot(perusteluId.get)
-    lausuntopyynnot = lausuntopyynnot.take(3)
+    val lausuntupyynto1 = lausuntopyynnot.head.copy(
+      lausunnonAntajaMuu = Some("Muokattu yliopisto"),
+      lahetetty = Some(LocalDateTime.now().minusDays(1))
+    )
+    lausuntopyynnot = lausuntupyynto1 +: lausuntopyynnot.tail.take(1)
     val perusteluJSON = perustelu2Json(
       perustelu.copy(id = perusteluId, lausuntopyynnot = lausuntopyynnot),
       "luotu",
@@ -648,6 +656,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.muokattu").isString)
       .andExpect(jsonPath("$.muokkaaja").isString)
       .andExpect(jsonPath("$.uoRoSisalto").isMap)
+      .andExpect(jsonPath("$.lausuntopyynnot[0].id").value(lausuntopyynnot(0).id.get.toString()))
+      .andExpect(jsonPath("$.lausuntopyynnot[1].id").value(lausuntopyynnot(1).id.get.toString()))
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
