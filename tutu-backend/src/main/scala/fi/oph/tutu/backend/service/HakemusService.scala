@@ -583,15 +583,11 @@ class HakemusService(
   def paivitaTiedotAtarusta(hakemusOid: HakemusOid): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val ataruHakemus                        = haeAtaruHakemus(hakemusOid)
-        val hakemusKoskee                       = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        val hakemusPeruutettu                   = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
-        val asetaPeruutetuksi                   = !dbHakemus.onkoPeruutettu && hakemusPeruutettu
-        val (tulevaPeruutettuTila, peruutusPvm) = (dbHakemus.onkoPeruutettu, hakemusPeruutettu) match {
-          case (false, true) => (true, Some(toLocalDateTime(ataruHakemus.latestVersionCreated)))
-          case (true, false) => (false, None)
-        }
-        val kasittelyVaihe =
+        val ataruHakemus      = haeAtaruHakemus(hakemusOid)
+        val hakemusKoskee     = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val hakemusPeruutettu = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
+        val asetaPeruutetuksi = !dbHakemus.onkoPeruutettu && hakemusPeruutettu
+        val kasittelyVaihe    =
           kasittelyVaiheService.resolveKasittelyVaihe(
             dbHakemus,
             ataruHakemus
