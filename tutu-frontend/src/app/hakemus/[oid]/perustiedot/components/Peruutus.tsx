@@ -27,7 +27,9 @@ export const Peruutus = ({
     : null;
   const updatePeruutusPvm = (date: Date | null) => {
     updateHakemus({
-      peruutusPvm: date ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm") : '',
+      peruutusPvm: date
+        ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm")
+        : undefined,
     });
   };
 
@@ -39,9 +41,9 @@ export const Peruutus = ({
       <OphCheckbox
         data-testid="peruutus-checkbox"
         label={t('hakemus.perustiedot.peruutus.peruutettu')}
-        checked={hakemus.peruutettu}
+        checked={hakemus.onkoPeruutettu}
         onChange={() => {
-          updateHakemus({ peruutettu: !hakemus.peruutettu });
+          updateHakemus({ onkoPeruutettu: !hakemus.onkoPeruutettu });
         }}
       />
       <CalendarComponent
@@ -50,7 +52,7 @@ export const Peruutus = ({
         label={t('hakemus.perustiedot.peruutus.paivamaara')}
         dataTestId="peruutus-calendar"
       />
-      {hakemus.peruutettu && (
+      {hakemus.onkoPeruutettu && (
         <Muistio
           label={t('hakemus.perustiedot.peruutus.lisatieto')}
           helperText={t('hakemus.perustiedot.peruutus.lisatietoTarkenne')}

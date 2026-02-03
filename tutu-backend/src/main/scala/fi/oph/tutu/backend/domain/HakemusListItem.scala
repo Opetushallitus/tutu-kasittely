@@ -18,5 +18,5 @@ case class HakemusListItem(
   ataruHakemustaMuokattu: Option[LocalDateTime] = None,
   apHakemus: Option[Boolean] = None,
   viimeinenAsiakirjaHakijalta: Option[String],
-  peruutettu: Option[Boolean] = None
+  onkoPeruutettu: Option[Boolean] = None
 )

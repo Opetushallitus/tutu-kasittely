@@ -304,7 +304,7 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
           esittelijanHuomioita = dbHakemus.esittelijanHuomioita,
-          peruutettu = dbHakemus.peruutettu,
+          onkoPeruutettu = dbHakemus.onkoPeruutettu,
           peruutusPvm = dbHakemus.peruutusPvm,
           peruutusLisatieto = dbHakemus.peruutusLisatieto,
           viimeisinTaydennyspyyntoPvm = dbHakemus.viimeisinTaydennyspyyntoPvm
@@ -398,7 +398,7 @@ class HakemusService(
                 },
                 ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated)),
                 apHakemus = hakemus.apHakemus,
-                peruutettu = hakemus.peruutettu
+                onkoPeruutettu = hakemus.onkoPeruutettu
               )
             )
         }
@@ -510,12 +510,12 @@ class HakemusService(
           lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
           esittelijanHuomioita = hakemusUpdateRequest.esittelijanHuomioita,
-          peruutettu = hakemusUpdateRequest.peruutettu,
+          onkoPeruutettu = hakemusUpdateRequest.onkoPeruutettu,
           peruutusPvm = hakemusUpdateRequest.peruutusPvm,
           peruutusLisatieto = hakemusUpdateRequest.peruutusLisatieto
         )
 
-        if (!dbHakemus.peruutettu && hakemusUpdateRequest.peruutettu)
+        if (!dbHakemus.onkoPeruutettu && hakemusUpdateRequest.onkoPeruutettu)
           paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, userOid.toString)
 
         hakemusRepository.paivitaHakemus(
@@ -583,11 +583,15 @@ class HakemusService(
   def paivitaTiedotAtarusta(hakemusOid: HakemusOid): Unit = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val ataruHakemus      = haeAtaruHakemus(hakemusOid)
-        val hakemusKoskee     = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
-        val hakemusPeruutettu = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
-        val asetaPeruutetuksi = !dbHakemus.peruutettu && hakemusPeruutettu
-        val kasittelyVaihe    =
+        val ataruHakemus                        = haeAtaruHakemus(hakemusOid)
+        val hakemusKoskee                       = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
+        val hakemusPeruutettu                   = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
+        val asetaPeruutetuksi                   = !dbHakemus.onkoPeruutettu && hakemusPeruutettu
+        val (tulevaPeruutettuTila, peruutusPvm) = (dbHakemus.onkoPeruutettu, hakemusPeruutettu) match {
+          case (false, true) => (true, Some(toLocalDateTime(ataruHakemus.latestVersionCreated)))
+          case (true, false) => (false, None)
+        }
+        val kasittelyVaihe =
           kasittelyVaiheService.resolveKasittelyVaihe(
             dbHakemus,
             ataruHakemus
@@ -610,7 +614,7 @@ class HakemusService(
             dbHakemus.copy(
               kasittelyVaihe = kasittelyVaihe,
               hakemusKoskee = hakemusKoskee,
-              peruutettu = asetaPeruutetuksi || dbHakemus.peruutettu,
+              onkoPeruutettu = asetaPeruutetuksi || dbHakemus.onkoPeruutettu,
               peruutusPvm = peruutusPvm
             ),
             ATARU_SERVICE

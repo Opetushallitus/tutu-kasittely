@@ -59,7 +59,7 @@ export const HakemusHeader = () => {
             }}
           >
             {kasittelyVaiheTranslation}
-            {hakemus?.peruutettu && (
+            {hakemus?.onkoPeruutettu && (
               <PeruutettuBadge
                 label={t('hakemus.ataruhakemuksentila.peruutettu')}
               />

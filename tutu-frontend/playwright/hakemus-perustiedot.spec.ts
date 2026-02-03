@@ -169,7 +169,7 @@ test('Hakemuksen peruutustiedot näkyvät oikein, ja muutoksista lähetetään P
   await expect(peruutusLisatieto).toBeHidden();
 
   await expectRequestData(page, '/hakemus/', peruutusCheckbox.click(), {
-    peruutettu: true,
+    onkoPeruutettu: true,
   });
   await expect(peruutusLisatieto).toBeVisible();
 

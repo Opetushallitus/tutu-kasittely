@@ -103,7 +103,7 @@ case class DbHakemus(
     example = "false",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  peruutettu: Boolean,
+  onkoPeruutettu: Boolean,
   @(Schema @field)(
     example = "2025-06-14T10:59:47.597",
     requiredMode = RequiredMode.NOT_REQUIRED,
@@ -149,7 +149,7 @@ case class Hakemus(
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String] = None,
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String] = None,
   esittelijanHuomioita: Option[String],
-  peruutettu: Boolean = false,
+  onkoPeruutettu: Boolean = false,
   peruutusPvm: Option[LocalDateTime] = None,
   peruutusLisatieto: Option[String] = None,
   viimeisinTaydennyspyyntoPvm: Option[LocalDateTime] = None
@@ -173,7 +173,7 @@ case class HakemusUpdateRequest(
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
   esittelijanHuomioita: Option[String],
-  peruutettu: Boolean,
+  onkoPeruutettu: Boolean,
   peruutusPvm: Option[LocalDateTime],
   peruutusLisatieto: Option[String]
 )

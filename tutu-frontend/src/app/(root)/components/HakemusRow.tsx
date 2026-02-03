@@ -141,7 +141,7 @@ export default function HakemusRow({
           }}
         >
           {kasittelyVaiheTranslation}
-          {hakemus.peruutettu && (
+          {hakemus.onkoPeruutettu && (
             <PeruutettuBadge
               data-testid="peruutettu-badge"
               label={t('hakemus.ataruhakemuksentila.peruutettu')}

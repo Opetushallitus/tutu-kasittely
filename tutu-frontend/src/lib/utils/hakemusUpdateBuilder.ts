@@ -38,7 +38,7 @@ export const buildHakemusUpdateRequest = (
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri:
     hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri || null,
   esittelijanHuomioita: hakemus.esittelijanHuomioita ?? null,
-  peruutettu: hakemus.peruutettu,
+  onkoPeruutettu: hakemus.onkoPeruutettu,
   peruutusPvm: hakemus.peruutusPvm || null,
   peruutusLisatieto: hakemus.peruutusLisatieto || null,
   ...overrides,

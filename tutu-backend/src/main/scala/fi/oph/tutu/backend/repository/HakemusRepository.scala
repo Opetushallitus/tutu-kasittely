@@ -42,7 +42,7 @@ class HakemusRepository extends BaseResultHandlers {
         lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = r.nextStringOption(),
         esittelijanHuomioita = r.nextStringOption(),
         muokkaaja = r.nextStringOption(),
-        peruutettu = r.nextBoolean(),
+        onkoPeruutettu = r.nextBoolean(),
         peruutusPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         peruutusLisatieto = r.nextStringOption(),
         viimeisinTaydennyspyyntoPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
@@ -163,7 +163,7 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta, h.peruutettu
+              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta, h.onko_peruutettu
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -210,7 +210,7 @@ class HakemusRepository extends BaseResultHandlers {
               h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri,
               h.esittelijan_huomioita,
               h.muokkaaja,
-              h.peruutettu,
+              h.onko_peruutettu,
               h.peruutus_paiva,
               h.peruutus_lisatieto,
               h.viimeisin_taydennyspyynto_paiva
@@ -334,7 +334,7 @@ class HakemusRepository extends BaseResultHandlers {
     val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
       hakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
     val esittelijanHuomioita        = hakemus.esittelijanHuomioita
-    val peruutettu                  = hakemus.peruutettu
+    val peruutettu                  = hakemus.onkoPeruutettu
     val peruutusPvm                 = hakemus.peruutusPvm.map(java.sql.Timestamp.valueOf).orNull
     val peruutusLisatieto           = hakemus.peruutusLisatieto
     val viimeisinTaydennyspyyntoPvm = hakemus.viimeisinTaydennyspyyntoPvm.map(java.sql.Timestamp.valueOf).orNull
@@ -354,7 +354,7 @@ class HakemusRepository extends BaseResultHandlers {
           lopullinen_paatos_ehdollisen_asiatunnus = $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
           lopullinen_paatos_tutkinnon_suoritus_maakoodiuri = $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull,
           esittelijan_huomioita = $esittelijanHuomioita,
-          peruutettu = $peruutettu,
+          onko_peruutettu = $peruutettu,
           peruutus_paiva = $peruutusPvm,
           peruutus_lisatieto = $peruutusLisatieto,
           viimeisin_taydennyspyynto_paiva = $viimeisinTaydennyspyyntoPvm

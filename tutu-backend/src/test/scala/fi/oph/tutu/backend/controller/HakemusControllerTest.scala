@@ -515,7 +515,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid).get
     assertEquals(2, paivitettyHakemus.hakemusKoskee)
     assertEquals(KasittelyVaihe.HakemustaTaydennetty, paivitettyHakemus.kasittelyVaihe)
-    assertTrue(paivitettyHakemus.peruutettu)
+    assertTrue(paivitettyHakemus.onkoPeruutettu)
     assertEquals(LocalDateTime.parse("2026-01-30T12:59:47.597"), paivitettyHakemus.peruutusPvm.get)
     assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(dbHakemus.id).get.ratkaisutyyppi.get)
   }
