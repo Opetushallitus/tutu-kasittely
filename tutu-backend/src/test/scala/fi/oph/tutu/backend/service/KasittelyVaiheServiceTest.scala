@@ -1,17 +1,13 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.{KasittelyMaksettu, TaydennysPyynto}
 import fi.oph.tutu.backend.fixture.{ataruHakemusFixture, dbHakemusFixture}
 import fi.oph.tutu.backend.repository.AsiakirjaRepository
-import fi.oph.tutu.backend.utils.Constants.{DATE_TIME_FORMAT_ATARU_ATTACHMENT_REVIEW, FINLAND_TZ}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 
-import java.time.{LocalDateTime, ZonedDateTime}
-import java.time.format.DateTimeFormatter
+import java.time.LocalDateTime
 import java.util.UUID
 
 class KasittelyVaiheServiceTest {
