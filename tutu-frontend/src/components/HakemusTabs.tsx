@@ -41,7 +41,7 @@ const TAB_ROUTES = {
   tutkinnot: 'tutkinnot',
   paatostiedot: 'paatostiedot',
   valitustiedot: 'valitustiedot',
-  'perustelu.yleiset': 'perustelu/yleiset',
+  'perustelu.yleiset': 'perustelu/yleiset/perustelut',
   'perustelu.uoro': 'perustelu/uoro',
   'perustelu.ap': 'perustelu/ap',
 } as const;
@@ -172,12 +172,16 @@ export const HakemusTabs = ({
     isEhdollinen && { value: 'tutkinnot' },
     isEhdollinen && {
       value: 'perustelu.ylataso',
-      targetPage: 'perustelu.yleiset',
+      targetPage: 'perustelu/yleiset/perustelut',
       expandable: true,
       expanded: showSubTabs,
     },
     isEhdollinen &&
-      showSubTabs && { value: 'perustelu.yleiset', isSubTab: true },
+      showSubTabs && {
+        value: 'perustelu.yleiset',
+        targetPage: 'perustelu/yleiset/perustelut',
+        isSubTab: true,
+      },
     isEhdollinen && showSubTabs && { value: 'perustelu.uoro', isSubTab: true },
     isEhdollinen && showSubTabs && { value: 'perustelu.ap', isSubTab: true },
     { value: 'paatostiedot' },
