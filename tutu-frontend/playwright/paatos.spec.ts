@@ -594,3 +594,63 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
   await page.locator('body').click({ position: { x: 1, y: 1 } });
   await expect(lahetyspaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 });
+
+test('Päätösten uudelleenjärjestäminen toimii', async ({ page }) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  const paatosText = await translate(
+    page,
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
+  const tasoText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.options.taso',
+  );
+  const kelpoisuusText = await translate(
+    page,
+    'hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+
+  await expect(ratkaisutyyppiInput).toHaveText(paatosText);
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await expectDataFromDropdownSelection(
+    page,
+    paatostyyppiInput.first(),
+    tasoText,
+    '/paatos/',
+    { paatosTiedot: [{ paatosTyyppi: 'Taso' }] },
+  );
+
+  await page.getByTestId('lisaa-paatos-button').click();
+  const secondDropdown = page
+    .getByTestId('paatos-paatostyyppi-dropdown')
+    .nth(1);
+  await expectDataFromDropdownSelection(
+    page,
+    secondDropdown,
+    kelpoisuusText,
+    '/paatos/',
+    {
+      paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
+    },
+  );
+
+  // Laske ensimmäistä päätöstä
+  await page.getByTestId('laske-paatos').nth(0).click();
+  await expect(
+    page.getByTestId('paatos-paatostyyppi-dropdown').nth(0),
+  ).toHaveText(kelpoisuusText);
+  await expect(
+    page.getByTestId('paatos-paatostyyppi-dropdown').nth(1),
+  ).toHaveText(tasoText);
+
+  // Nosta toista päätöstä
+  await page.getByTestId('nosta-paatos').nth(1).click();
+  await expect(
+    page.getByTestId('paatos-paatostyyppi-dropdown').nth(0),
+  ).toHaveText(tasoText);
+  await expect(
+    page.getByTestId('paatos-paatostyyppi-dropdown').nth(1),
+  ).toHaveText(kelpoisuusText);
+});

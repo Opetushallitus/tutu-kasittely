@@ -1,12 +1,17 @@
 'use client';
 
-import { DeleteOutline } from '@mui/icons-material';
+import { DeleteOutline, ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphButton,
+  ophColors,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { IconButton } from '@/src/components/IconButton';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { PaatosTieto, PaatosTietoOptionGroup } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -21,6 +26,11 @@ interface PaatosTietoListProps {
     immediateSave?: boolean,
   ) => void;
   deletePaatosTieto: (id: string | undefined) => void;
+  reorderPaatosTieto: (
+    fromIndex: number,
+    toIndex: number,
+    immediateSave?: boolean,
+  ) => void;
   tutkinnot: Tutkinto[];
 }
 
@@ -30,6 +40,7 @@ export const PaatosTietoList = ({
   paatosTietoOptions,
   updatePaatosTietoAction,
   deletePaatosTieto,
+  reorderPaatosTieto,
   tutkinnot,
 }: PaatosTietoListProps) => {
   const theme = useTheme();
@@ -43,9 +54,40 @@ export const PaatosTietoList = ({
         gap={theme.spacing(2)}
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
-        <OphTypography variant={'h3'}>
-          {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
-        </OphTypography>
+        <Stack direction={'row'} sx={{ alignItems: 'center' }}>
+          <Stack direction={'column'}>
+            <IconButton
+              data-testid={`nosta-paatos`}
+              aria-label={t('hakemus.paatos.jarjestys.ylos')}
+              disabled={index === 0}
+              onClick={() => reorderPaatosTieto(index, index - 1)}
+            >
+              <ArrowDropUp
+                sx={{
+                  color: index === 0 ? ophColors.grey400 : ophColors.grey900,
+                }}
+              />
+            </IconButton>
+            <IconButton
+              data-testid={`laske-paatos`}
+              aria-label={t('hakemus.paatos.jarjestys.alas')}
+              disabled={index >= paatosTiedot.length - 1}
+              onClick={() => reorderPaatosTieto(index, index + 1)}
+            >
+              <ArrowDropDown
+                sx={{
+                  color:
+                    index >= paatosTiedot.length - 1
+                      ? ophColors.grey400
+                      : ophColors.grey900,
+                }}
+              />
+            </IconButton>
+          </Stack>
+          <OphTypography variant={'h3'}>
+            {t('hakemus.paatos.paatostyyppi.paatos')} {index + 1}
+          </OphTypography>
+        </Stack>
         {index > 0 && (
           <OphButton
             sx={{

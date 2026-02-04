@@ -181,6 +181,27 @@ const Paatostiedot = ({
     updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
   };
 
+  const reorderPaatosTieto = (
+    fromIndex: number,
+    toIndex: number,
+    immediateSave: boolean = false,
+  ) => {
+    const newPaatosTiedot = [...currentPaatosTiedot];
+    if (toIndex < 0 || toIndex >= newPaatosTiedot.length) {
+      // Invalid params
+      return;
+    }
+
+    const itemAtSource = newPaatosTiedot[fromIndex];
+    const itemAtTarget = newPaatosTiedot[toIndex];
+
+    newPaatosTiedot[fromIndex] = itemAtTarget;
+    newPaatosTiedot[toIndex] = itemAtSource;
+
+    setCurrentPaatosTiedot(newPaatosTiedot);
+    updatePaatosField({ paatosTiedot: newPaatosTiedot }, immediateSave);
+  };
+
   const content = isPaatosTekstiLoading ? (
     <FullSpinner />
   ) : (
@@ -261,6 +282,7 @@ const Paatostiedot = ({
                 paatosTietoOptions={paatos.paatosTietoOptions}
                 updatePaatosTietoAction={updatePaatosTieto}
                 deletePaatosTieto={deletePaatosTieto}
+                reorderPaatosTieto={reorderPaatosTieto}
                 tutkinnot={tutkinnot}
               />
               <OphButton

@@ -20,8 +20,7 @@ test('Saavutettavuus listanäkymä ok', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
-// eslint-disable-next-line playwright/no-skipped-test
-test.skip('Saavutettavuus filemaker listanäkymä ok', async ({ page }) => {
+test('Saavutettavuus filemaker listanäkymä ok', async ({ page }) => {
   await page.goto('/');
 
   await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
