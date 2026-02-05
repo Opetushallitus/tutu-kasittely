@@ -43,8 +43,8 @@ jobs:
         run: ./mvnw test
 
   build-backend:
-    if: github.actor != 'dependabot[bot]'
-    needs: [test-backend]
+    if: github.actor != 'dependabot[bot]' && (github.event_name == 'workflow_dispatch' || needs.filter.outputs.backend == 'true')
+    needs: [filter, test-backend]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
