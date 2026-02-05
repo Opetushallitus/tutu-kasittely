@@ -44,6 +44,7 @@ const TAB_ROUTES = {
   'perustelu.yleiset': 'perustelu/yleiset/perustelut',
   'perustelu.uoro': 'perustelu/uoro',
   'perustelu.ap': 'perustelu/ap',
+  yhteinenkasittely: 'yhteinenkasittely',
 } as const;
 
 const useActiveTabFromPath = () => {
@@ -186,6 +187,7 @@ export const HakemusTabs = ({
     isEhdollinen && showSubTabs && { value: 'perustelu.ap', isSubTab: true },
     { value: 'paatostiedot' },
     { value: 'valitustiedot' },
+    { value: 'yhteinenkasittely' },
   ]
     .filter(Boolean)
     .map((prop) => ({ ...prop, hakemusOid: hakemusOid })) as TabLinkProps[];

@@ -106,6 +106,18 @@ test('Saavutettavuus päätös ok', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
+test('Saavutettavuus yhteinen käsittely ok', async ({ page }) => {
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
+  );
+  const otsikko = await translate(page, 'hakemus.yhteinenkasittely.otsikko');
+  await expect(page.getByTestId('yhteinenkasittely-otsikko')).toHaveText(
+    otsikko,
+  );
+
+  await expectPageAccessibilityOk(page);
+});
+
 test('Saavutettavuus valitustiedot ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/valitustiedot');
   const otsikko = await translate(page, 'hakemus.valitustiedot.otsikko');
