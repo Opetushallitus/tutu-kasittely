@@ -221,6 +221,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         Lausuntopyynto(
           id = None,
           perusteluId = None,
+          jarjestys = Some(1),
           lausunnonAntajaKoodiUri = Some("testi-korkeakoulu"),
           lausunnonAntajaMuu = None,
           lahetetty = Some(
@@ -233,6 +234,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         Lausuntopyynto(
           id = None,
           perusteluId = None,
+          jarjestys = Some(2),
           lausunnonAntajaKoodiUri = Some("muu"),
           lausunnonAntajaMuu = Some("HOKS tuutori"),
           lahetetty = Some(

@@ -125,9 +125,9 @@ class TutkintoRepository extends BaseResultHandlers {
     modifyData: TutkintoModifyData,
     luojaTaiMuokkaaja: UserOid
   ): Unit = {
-    val actions = modifyData.uudet.map(t => lisaaTutkinto(t, luojaTaiMuokkaaja.toString)) ++
-      modifyData.poistetut.map(poistaTutkinto) ++
-      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaaja.toString))
+    val actions = modifyData.poistetut.map(poistaTutkinto) ++
+      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaaja.toString)) ++
+      modifyData.uudet.map(t => lisaaTutkinto(t, luojaTaiMuokkaaja.toString))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
       case Success(_) => ()

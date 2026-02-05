@@ -96,6 +96,7 @@ case class SovellettuTilanne(
 case class Lausuntopyynto(
   id: Option[UUID] = None,
   perusteluId: Option[UUID] = None,
+  jarjestys: Option[Int] = None,
   lausunnonAntajaKoodiUri: Option[String] = None,
   lausunnonAntajaMuu: Option[String] = None,
   lahetetty: Option[LocalDateTime] = None,

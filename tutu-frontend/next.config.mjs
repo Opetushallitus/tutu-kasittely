@@ -27,9 +27,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   allowedDevOrigins: ['host.docker.internal', '127.0.0.1'],
-  typescript: {
-    ignoreBuildErrors: Boolean(process.env.CI),
-  },
   async headers() {
     return [
       {
