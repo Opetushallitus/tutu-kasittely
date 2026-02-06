@@ -1,22 +1,26 @@
 'use client';
 
-import { Box } from '@mui/material';
-import { OphTypography, OphButton } from '@opetushallitus/oph-design-system';
+import InfoIcon from '@mui/icons-material/Info';
+import { Box, styled, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+  OphTypography,
+  OphButton,
+  ophColors,
+} from '@opetushallitus/oph-design-system';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { HakemusList } from '@/src/app/(root)/components/HakemusList';
-import HakemusListFilters from '@/src/app/(root)/components/HakemusListFilters';
-import { Tabs } from '@/src/app/(root)/components/Tabs';
+import HakemusListPage from '@/src/app/(root)/components/HakemusListPage';
+import JointProcessingPage from '@/src/app/(root)/components/JointProcessingPage';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageLayout } from '@/src/components/PageLayout';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { User } from '@/src/lib/types/user';
 import { hasTutuRole } from '@/src/lib/utils';
 
-import FilemakerFilters from './components/FilemakerFilters';
-import { FilemakerList } from './components/FilemakerList';
+const StyledInfoIcon = styled(InfoIcon)({
+  color: ophColors.red1,
+});
 
 export default function ListViewPage() {
   const { t } = useTranslations();
@@ -24,12 +28,20 @@ export default function ListViewPage() {
   const userRoles = user?.authorities;
   const hasTutuUserRights = hasTutuRole(userRoles);
 
-  const [tab, setTab] = useState<string>('hakemukset');
+  const [page, setPage] = useState<string>('hakemukset');
 
-  const handleTabChange = (newTab: string) => () => {
-    if (newTab !== tab) {
-      setTab(newTab);
-    }
+  const TitleYhteinen = ({ unreadAnswers }: { unreadAnswers?: boolean }) => {
+    return (
+      <>
+        <OphTypography
+          variant={'body1'}
+          color={page === 'hakemukset' ? 'blue' : 'white'}
+        >
+          {t('sivuValinta.yhteinenKasittely')}
+        </OphTypography>
+        {unreadAnswers && <StyledInfoIcon />}
+      </>
+    );
   };
 
   return (
@@ -54,34 +66,30 @@ export default function ListViewPage() {
                 alignItems: 'center',
               }}
             >
-              <OphTypography variant={'h2'}>
-                {t('hakemuslista.hakemukset')}
-              </OphTypography>
+              <ToggleButtonGroup>
+                <ToggleButton
+                  selected={page === 'hakemukset'}
+                  value={'hakemukset'}
+                  onClick={() => setPage('hakemukset')}
+                >
+                  {t('sivuValinta.hakemukset')}
+                </ToggleButton>
+                <ToggleButton
+                  selected={page !== 'hakemukset'}
+                  value={'yhteinenKasittely'}
+                  onClick={() => setPage('yhteinenKasittely')}
+                >
+                  <TitleYhteinen unreadAnswers={false} />
+                </ToggleButton>
+              </ToggleButtonGroup>
               <Link href="/maajako" style={{ textDecoration: 'none' }}>
                 <OphButton variant="text">{t('maajako.otsikko')}</OphButton>
               </Link>
             </Box>
-          </BoxWrapper>
-          <BoxWrapper>
-            <Tabs
-              tPrefix="hakemuslista.tyyppi"
-              buttons={[
-                {
-                  onClick: handleTabChange('hakemukset'),
-                  tabName: 'hakemukset',
-                  active: tab === 'hakemukset',
-                },
-                {
-                  onClick: handleTabChange('filemakerHakemukset'),
-                  tabName: 'filemakerHakemukset',
-                  active: tab === 'filemakerHakemukset',
-                },
-              ]}
-            />
-            {tab === 'filemakerHakemukset' ? (
-              <FilemakerHakemukset />
+            {page === 'hakemukset' ? (
+              <HakemusListPage user={user} />
             ) : (
-              <UudetHakemukset user={user} />
+              <JointProcessingPage user={user} />
             )}
           </BoxWrapper>
         </>
@@ -93,17 +101,3 @@ export default function ListViewPage() {
     </PageLayout>
   );
 }
-
-const UudetHakemukset = ({ user }: { user: User | null }) => (
-  <>
-    <HakemusListFilters />
-    <HakemusList user={user}></HakemusList>
-  </>
-);
-
-const FilemakerHakemukset = () => (
-  <>
-    <FilemakerFilters />
-    <FilemakerList />
-  </>
-);
