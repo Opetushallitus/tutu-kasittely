@@ -37,6 +37,7 @@ interface TabButtonProps {
   linkPath?: string;
   onClick?: VoidFunction;
   active?: boolean;
+  value?: number;
 }
 
 const TabButton = ({
@@ -45,6 +46,7 @@ const TabButton = ({
   tabName,
   tPrefix,
   active,
+  value,
   ...rest
 }: TabButtonProps) => {
   const { t } = useTranslations();
@@ -61,7 +63,7 @@ const TabButton = ({
 
   return (
     <StyledButton {...clickHandlers} {...rest}>
-      {t(`${tPrefix}.${tabName}`)}
+      {t(`${tPrefix}.${tabName}`, { value: value })}
     </StyledButton>
   );
 };
@@ -71,6 +73,7 @@ interface ButtonParams {
   linkPath?: string;
   onClick?: VoidFunction;
   active?: boolean;
+  value?: number;
 }
 
 interface TabsParams {
