@@ -3,6 +3,9 @@ name: TUTU-käsittely frontend build workflow
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches:
+    - main
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
