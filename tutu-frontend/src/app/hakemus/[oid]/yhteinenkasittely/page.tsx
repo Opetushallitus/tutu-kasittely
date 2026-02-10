@@ -2,16 +2,52 @@
 
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Box, Button, Stack, IconButton, useTheme } from '@mui/material';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
+import { Box, Button, Stack, IconButton, useTheme, Theme } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React, { useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 
 import { Kysymys } from './components/KysymysDetails';
 import { KysymysList } from './components/KysymysList';
+
+const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Box
+        data-testid="yhteinenkasittely-tyhja-icon"
+        sx={{
+          height: '2.5vw',
+          width: '2.5vw',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: ophColors.grey50,
+          borderRadius: '50%',
+          marginY: theme.spacing(4),
+        }}
+      >
+        <FolderOutlinedIcon sx={{ color: ophColors.grey700 }} />
+      </Box>
+      <OphTypography variant="body1">
+        {t('hakemus.yhteinenkasittely.eiLuotu')}
+      </OphTypography>
+    </Box>
+  );
+};
 
 export default function YhteinenKasittelyPage() {
   const { t } = useTranslations();
@@ -81,59 +117,69 @@ export default function YhteinenKasittelyPage() {
             {t('hakemus.yhteinenkasittely.uusiYhteinenKasittely')}
           </Button>
 
-          <Box
-            sx={{
-              display: 'flex',
-              borderBottom: DEFAULT_BOX_BORDER,
-            }}
-          >
-            <OphTypography
-              variant="body1"
-              sx={{ flex: 3, fontWeight: 600, paddingLeft: theme.spacing(1.5) }}
-            >
-              {t('hakemus.yhteinenkasittely.kysymys')}
-            </OphTypography>
-            <Stack
-              direction="row"
-              sx={{
-                flex: 1,
-                alignItems: 'center',
-                gap: theme.spacing(0.5),
-              }}
-            >
-              <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-                {t('hakemus.yhteinenkasittely.kysymysLahetetty')}{' '}
-              </OphTypography>
-              <IconButton
-                size="small"
-                aria-label="sort"
-                onClick={() => {
-                  setSortKey(sortKey === 'desc' ? 'asc' : 'desc');
+          {kysymykset.length === 0 ? (
+            <EmptyList t={t} theme={theme} />
+          ) : (
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  borderBottom: DEFAULT_BOX_BORDER,
                 }}
               >
-                {sortKey === 'asc' ? (
-                  <ExpandMoreIcon
-                    fontSize="small"
-                    sx={{ color: ophColors.black }}
-                  />
-                ) : (
-                  <ExpandLessIcon
-                    fontSize="small"
-                    sx={{ color: ophColors.black }}
-                  />
-                )}
-              </IconButton>
-            </Stack>
-          </Box>
+                <OphTypography
+                  variant="body1"
+                  sx={{
+                    flex: 3,
+                    fontWeight: 600,
+                    paddingLeft: theme.spacing(1.5),
+                  }}
+                >
+                  {t('hakemus.yhteinenkasittely.kysymys')}
+                </OphTypography>
+                <Stack
+                  direction="row"
+                  sx={{
+                    flex: 1,
+                    alignItems: 'center',
+                    gap: theme.spacing(0.5),
+                  }}
+                >
+                  <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+                    {t('hakemus.yhteinenkasittely.kysymysLahetetty')}{' '}
+                  </OphTypography>
+                  <IconButton
+                    size="small"
+                    aria-label="sort"
+                    onClick={() => {
+                      setSortKey(sortKey === 'desc' ? 'asc' : 'desc');
+                    }}
+                  >
+                    {sortKey === 'asc' ? (
+                      <ExpandMoreIcon
+                        fontSize="small"
+                        sx={{ color: ophColors.black }}
+                      />
+                    ) : (
+                      <ExpandLessIcon
+                        fontSize="small"
+                        sx={{ color: ophColors.black }}
+                      />
+                    )}
+                  </IconButton>
+                </Stack>
+              </Box>
 
-          <Box>
-            <KysymysList
-              kysymykset={kysymykset}
-              answers={answers}
-              handleChange={handleChange}
-              handleSend={handleSend}
-            />
-          </Box>
+              <Box>
+                <KysymysList
+                  kysymykset={kysymykset}
+                  answers={answers}
+                  handleChange={handleChange}
+                  handleSend={handleSend}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Stack>
     </Box>

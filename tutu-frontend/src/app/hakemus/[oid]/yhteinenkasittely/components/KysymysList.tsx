@@ -1,5 +1,5 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionSummary } from '@mui/material';
+import { Accordion, AccordionSummary, Box } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
 import React from 'react';
@@ -37,7 +37,7 @@ export const KysymysList: React.FC<KysymysListProps> = ({
               width: '100%',
             }}
           >
-            <div style={{ flex: 3, overflow: 'hidden' }}>
+            <Box style={{ flex: 3, overflow: 'hidden' }}>
               <OphTypography
                 variant="body1"
                 sx={{
@@ -51,12 +51,12 @@ export const KysymysList: React.FC<KysymysListProps> = ({
               >
                 {kysymys.question}
               </OphTypography>
-            </div>
-            <div style={{ flex: 1 }}>
+            </Box>
+            <Box style={{ flex: 1 }}>
               <OphTypography variant="body2">
                 {dateFns.format(new Date(kysymys.timestamp), 'd.M.yyyy')}
               </OphTypography>
-            </div>
+            </Box>
           </AccordionSummary>
           <KysymysDetails
             kysymys={kysymys}
