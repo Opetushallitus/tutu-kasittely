@@ -139,7 +139,7 @@ export const LausuntopyyntoComponent = ({
             })
           }
           selectedValue={lahetetty}
-          maxDate={saapunut}
+          maxDate={saapunut ?? new Date()}
           label={t('hakemus.perustelu.lausuntotiedot.pyyntoLahetetty')}
           dataTestId={`lausuntoPyyntoLahetetty-calendar-${lausuntopyynto.jarjestys}`}
         />
@@ -153,6 +153,7 @@ export const LausuntopyyntoComponent = ({
           }
           selectedValue={saapunut}
           minDate={lahetetty}
+          maxDate={new Date()}
           label={t('hakemus.perustelu.lausuntotiedot.pyyntoSaapunut')}
           dataTestId={`lausuntoPyyntoVastattu-calendar-${lausuntopyynto.jarjestys}`}
         />
