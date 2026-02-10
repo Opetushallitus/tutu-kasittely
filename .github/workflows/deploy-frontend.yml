@@ -16,6 +16,11 @@ on:
 
 run-name: Deploy TUTU-frontend revision ${{ inputs.revision }} to ${{ inputs.environment }}
 
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ github.token }}
+  HUSKY: 0
+
 permissions:
   id-token: write
   contents: read
