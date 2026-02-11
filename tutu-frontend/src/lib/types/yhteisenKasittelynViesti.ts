@@ -9,4 +9,5 @@ export type YhteisenKasittelynViesti = {
   hakijanNimi: string;
   viesti: string;
   vastaus?: string;
+  luettu?: string;
 };
