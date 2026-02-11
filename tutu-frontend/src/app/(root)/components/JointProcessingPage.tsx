@@ -7,7 +7,7 @@ import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 
-const mockReceived: YhteisenKasittelynViesti[] = [
+const mockViestit: YhteisenKasittelynViesti[] = [
   {
     hakemusOid: '123192',
     asiatunnus: 'OPH-666-1234',
@@ -18,7 +18,18 @@ const mockReceived: YhteisenKasittelynViesti[] = [
     vastaanottaja: 'Kalle Kaniini',
     hakijanNimi: 'Hessu Hirvi',
     viesti: 'Lore ipsum',
-    vastaus: undefined,
+  },
+  {
+    hakemusOid: '123193',
+    asiatunnus: 'OPH-666-1235',
+    lahetysPvm: '2.2.2026',
+    lahettajaOid: '123123',
+    lahettaja: 'Ossi Orava',
+    vastaanottajaOid: '321312',
+    vastaanottaja: 'Kalle Kaniini',
+    hakijanNimi: 'Hessu Hirvi',
+    viesti: 'Lore ipsum',
+    luettu: '3.2.2026',
   },
   {
     hakemusOid: '123191',
@@ -33,6 +44,14 @@ const mockReceived: YhteisenKasittelynViesti[] = [
     vastaus: 'dolor sit',
   },
 ];
+
+const countNotResponded = (messages: YhteisenKasittelynViesti[]) =>
+  messages.filter((message) => message.vastaus === undefined).length;
+
+const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
+  messages.filter((message) => message.luettu === undefined && message.vastaus)
+    .length;
+
 export default function JointProcessingPage({ user }: { user: User | null }) {
   const [tab, setTab] = useState<string>('saapuneet');
 
@@ -41,6 +60,9 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
       setTab(newTab);
     }
   };
+
+  const receivedMessages = mockViestit;
+  const sentMesssages = mockViestit;
 
   return (
     <BoxWrapper>
@@ -51,20 +73,20 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
             onClick: handleTabChange('saapuneet'),
             tabName: 'saapuneet',
             active: tab === 'saapuneet',
-            value: 3,
+            value: countNotResponded(receivedMessages),
           },
           {
             onClick: handleTabChange('lahetetyt'),
             tabName: 'lahetetyt',
             active: tab === 'lahetetyt',
-            value: 2,
+            value: countNotRead(sentMesssages),
           },
         ]}
       />
       {tab === 'lahetetyt' ? (
-        <SentMessages messageList={mockReceived} user={user} />
+        <SentMessages messageList={mockViestit} user={user} />
       ) : (
-        <ReceivedMessages messageList={mockReceived} user={user} />
+        <ReceivedMessages messageList={mockViestit} user={user} />
       )}
     </BoxWrapper>
   );
