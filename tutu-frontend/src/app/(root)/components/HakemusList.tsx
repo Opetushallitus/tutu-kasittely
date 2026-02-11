@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import * as R from 'remeda';
 
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
+import StyledTableBody from '@/src/app/(root)/components/StyledTableBody';
 import { naytaQueryStates } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { StyledTableBody } from '@/src/components/StyledTableBody';
