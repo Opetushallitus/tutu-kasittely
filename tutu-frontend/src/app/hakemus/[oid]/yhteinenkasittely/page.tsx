@@ -3,15 +3,7 @@
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
-import {
-  Box,
-  Button,
-  Stack,
-  IconButton,
-  useTheme,
-  Theme,
-  ButtonBase,
-} from '@mui/material';
+import { Box, Button, Stack, useTheme, Theme } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
@@ -26,9 +18,10 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
-import { KysymysList } from './components/KysymysList';
+import { KasittelyList } from './components/KasittelyList';
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -74,8 +67,10 @@ export default function YhteinenKasittelyPage() {
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
   const {
-    data: kysymykset,
-    isLoading: kasittelyIsLoading,
+    kasittelyt,
+    isKasittelytLoading,
+    luoUusiKasittely,
+    vastaaKasittelyyn,
     error: kasittelyError,
   } = useYhteinenKasittely(hakemusOid, sortKey);
 
@@ -92,7 +87,7 @@ export default function YhteinenKasittelyPage() {
     return null;
   }
 
-  if (kasittelyIsLoading) {
+  if (isKasittelytLoading) {
     return <FullSpinner />;
   }
 
@@ -108,9 +103,26 @@ export default function YhteinenKasittelyPage() {
     setAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSend = (id: string) => {
-    // TODO: Implement sending
-    console.log('Send answer', id, answers[id], { sortKey });
+  const handleCreateNewKasittely = async () => {
+    try {
+      const kasittely: YhteinenKasittely = {};
+      luoUusiKasittely(kasittely);
+    } catch (error) {
+      handleFetchError(addToast, error, 'virhe.yhteisenkasittelynUusi', t);
+    }
+  };
+
+  const handleSendAnswer = async (id: string) => {
+    try {
+      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '' });
+      addToast({
+        key: 'hakemus.yhteinenkasittely.vastattu.toaster',
+        message: t('hakemus.yhteinenkasittely.vastattuToast'),
+        type: 'success',
+      });
+    } catch (error) {
+      handleFetchError(addToast, error, 'virhe.yhteisenkasittelynLaheta', t);
+    }
   };
 
   return (
@@ -124,12 +136,13 @@ export default function YhteinenKasittelyPage() {
             variant="contained"
             color="primary"
             sx={{ marginBottom: theme.spacing(3), marginTop: theme.spacing(3) }}
+            onClick={handleCreateNewKasittely}
             data-testid="uusi-yhteinen-kasittely-btn"
           >
             {t('hakemus.yhteinenkasittely.uusiYhteinenKasittely')}
           </Button>
 
-          {kysymykset.length === 0 ? (
+          {!kasittelyt?.length ? (
             <EmptyList t={t} theme={theme} />
           ) : (
             <Box>
@@ -150,20 +163,12 @@ export default function YhteinenKasittelyPage() {
                 >
                   {t('hakemus.yhteinenkasittely.kysymys')}
                 </OphTypography>
-                <Stack
-                  direction="row"
-                  sx={{
-                    flex: 1,
-                    alignItems: 'center',
-                    gap: theme.spacing(0.5),
-                  }}
-                >
-                  <ButtonBase onClick={handleSort}>
-                    <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-                      {t('hakemus.yhteinenkasittely.kysymysLahetetty')}{' '}
-                    </OphTypography>
-                    <IconButton size="small" aria-label="sort">
-                      {sortKey === 'asc' ? (
+                <Stack direction="row" sx={{ flex: 1 }}>
+                  <Button
+                    onClick={handleSort}
+                    aria-label={t('hakemus.yhteinenkasittely.kysymysLahetetty')}
+                    endIcon={
+                      sortKey === 'asc' ? (
                         <ExpandMoreIcon
                           fontSize="small"
                           sx={{ color: ophColors.black }}
@@ -173,18 +178,23 @@ export default function YhteinenKasittelyPage() {
                           fontSize="small"
                           sx={{ color: ophColors.black }}
                         />
-                      )}
-                    </IconButton>
-                  </ButtonBase>
+                      )
+                    }
+                    sx={{ paddingLeft: 0 }}
+                  >
+                    <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+                      {t('hakemus.yhteinenkasittely.kysymysLahetetty')}
+                    </OphTypography>
+                  </Button>
                 </Stack>
               </Box>
 
               <Box>
-                <KysymysList
-                  kysymykset={kysymykset}
+                <KasittelyList
+                  kasittelyt={kasittelyt}
                   answers={answers}
                   handleChange={handleChange}
-                  handleSend={handleSend}
+                  handleSend={handleSendAnswer}
                 />
               </Box>
             </Box>

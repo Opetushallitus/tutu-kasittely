@@ -153,7 +153,7 @@ export const HakemusTabs = ({
     setSelectedTabName(activeTab);
   }, [activeTab]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     const newTabName =
       newValue === 'perustelu.ylataso' ? 'perustelu.yleiset' : newValue;
     setSelectedTabName(newTabName);

@@ -7,24 +7,17 @@ import React from 'react';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
-export type Kysymys = {
-  id: string;
-  sender: string;
-  question: string;
-  timestamp: string;
-  relatedQuestions?: Kysymys[];
-};
-
-interface KysymysDetailsProps {
-  kysymys: Kysymys;
+interface KasittelyDetailsProps {
+  kasittely: YhteinenKasittely;
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
 }
 
-export const KysymysDetails: React.FC<KysymysDetailsProps> = ({
-  kysymys,
+export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
+  kasittely,
   answers,
   handleChange,
   handleSend,
@@ -41,35 +34,36 @@ export const KysymysDetails: React.FC<KysymysDetailsProps> = ({
         <OphTypography
           variant="body1"
           sx={{ marginBottom: theme.spacing(4) }}
-          data-testid={`kysymys-details-${kysymys.id}`}
+          data-testid={`kysymys-details-${kasittely.id}`}
         >
-          {kysymys.question}
+          {kasittely.kysymys}
         </OphTypography>
         <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
           {t('hakemus.yhteinenkasittely.tyopari')}
         </OphTypography>
         <OphTypography variant="body1" sx={{ marginBottom: theme.spacing(4) }}>
-          {kysymys.sender}
+          {kasittely.vastaanottaja}
         </OphTypography>
         <OphInputFormField
           label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
           fullWidth
           multiline
           minRows={4}
-          value={answers[kysymys.id] || ''}
-          onChange={(e) => handleChange(kysymys.id, e.target.value)}
+          value={kasittely.vastaus ?? answers[kasittely.id!] ?? ''}
+          disabled={Boolean(kasittely.vastaus)}
+          onChange={(e) => handleChange(kasittely.id!, e.target.value)}
           sx={{ width: '90%' }}
         />
         <Box sx={{ marginTop: theme.spacing(4) }}>
-          <Button variant="contained" onClick={() => handleSend(kysymys.id)}>
+          <Button variant="contained" onClick={() => handleSend(kasittely.id!)}>
             {t('hakemus.yhteinenkasittely.lahetaVastaus')}
           </Button>
         </Box>
       </Box>
 
-      {kysymys.relatedQuestions?.map((relatedQuestion) => (
+      {kasittely.jatkoKasittelyt?.map((jatkoKasittely) => (
         <Box
-          key={relatedQuestion.id}
+          key={jatkoKasittely.id}
           sx={{
             borderTop: DEFAULT_BOX_BORDER,
             marginTop: theme.spacing(4),
@@ -84,7 +78,7 @@ export const KysymysDetails: React.FC<KysymysDetailsProps> = ({
             variant="body1"
             sx={{ marginBottom: theme.spacing(4) }}
           >
-            {relatedQuestion.question}
+            {jatkoKasittely.kysymys}
           </OphTypography>
           <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
             {t('hakemus.yhteinenkasittely.tyopari')}
@@ -93,21 +87,22 @@ export const KysymysDetails: React.FC<KysymysDetailsProps> = ({
             variant="body1"
             sx={{ marginBottom: theme.spacing(4) }}
           >
-            {relatedQuestion.sender}
+            {jatkoKasittely.vastaanottaja}
           </OphTypography>
           <OphInputFormField
             label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
             fullWidth
             multiline
             minRows={4}
-            value={answers[relatedQuestion.id] || ''}
-            onChange={(e) => handleChange(relatedQuestion.id, e.target.value)}
+            value={jatkoKasittely.vastaus ?? answers[jatkoKasittely.id!] ?? ''}
+            disabled={Boolean(jatkoKasittely.vastaus)}
+            onChange={(e) => handleChange(jatkoKasittely.id!, e.target.value)}
             sx={{ width: '90%' }}
           />
           <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"
-              onClick={() => handleSend(relatedQuestion.id)}
+              onClick={() => handleSend(jatkoKasittely.id!)}
             >
               {t('hakemus.yhteinenkasittely.lahetaVastaus')}
             </Button>

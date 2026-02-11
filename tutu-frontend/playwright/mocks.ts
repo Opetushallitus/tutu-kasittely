@@ -27,6 +27,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockKoodistot(page),
     mockTutkinnot(page),
     mockFilemakerList(page),
+    mockYhteinenKasittely(page),
   ]);
 };
 
@@ -134,50 +135,6 @@ export const mockHakemus = async (
   page: Page,
   lomakkeenKieli: Language = 'fi',
 ) => {
-  // Mock yhteinenkasittely endpoint returning questions used in tests
-  await page.route(
-    '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
-    async (route: Route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: 'q1',
-            sender: 'Testi esittelijä',
-            question: 'Voisitko tarkistaa liitteen A tiedot?',
-            timestamp: '2026-02-04T09:12:00Z',
-          },
-          {
-            id: 'q2',
-            sender: 'Kalle Päätalo',
-            question: 'Onko tämä päätös valmis allekirjoitettavaksi?',
-            timestamp: '2026-02-03T14:30:00Z',
-          },
-          {
-            id: 'q3',
-            sender: 'Otto Kehittäjä',
-            question: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
-            timestamp: '2026-02-01T08:05:00Z',
-            relatedQuestions: [
-              {
-                id: 'q4',
-                sender: 'Toinen Tyyppi',
-                question: 'Tarvitaanko lisätietoja ???',
-                timestamp: '2026-02-01T08:05:00Z',
-              },
-              {
-                id: 'q5',
-                sender: 'Vastaaja Esittelijä',
-                question: 'Tarvitaanko lisätietoja ???',
-                timestamp: '2026-02-01T08:05:00Z',
-              },
-            ],
-          },
-        ]),
-      });
-    },
-  );
   await page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];
@@ -513,6 +470,52 @@ export const mockTutkinnot = async (page: Page) => {
           ),
         });
       }
+    },
+  );
+};
+
+export const mockYhteinenKasittely = async (page: Page) => {
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 'q1',
+            vastaanottaja: 'Testi esittelijä',
+            kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
+            luotu: '2026-02-04T09:12:00Z',
+          },
+          {
+            id: 'q2',
+            vastaanottaja: 'Kalle Päätalo',
+            kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
+            luotu: '2026-02-03T14:30:00Z',
+          },
+          {
+            id: 'q3',
+            vastaanottaja: 'Otto Kehittäjä',
+            kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
+            luotu: '2026-02-01T08:05:00Z',
+            jatkoKasittelyt: [
+              {
+                id: 'q4',
+                vastaanottaja: 'Toinen Tyyppi',
+                kysymys: 'Tarvitaanko lisätietoja ???',
+                luotu: '2026-02-01T08:05:00Z',
+              },
+              {
+                id: 'q5',
+                vastaanottaja: 'Vastaaja Esittelijä',
+                kysymys: 'Tarvitaanko lisätietoja ???',
+                luotu: '2026-02-01T08:05:00Z',
+              },
+            ],
+          },
+        ]),
+      });
     },
   );
 };

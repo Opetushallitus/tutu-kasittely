@@ -4,25 +4,27 @@ import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
 import React from 'react';
 
-import { KysymysDetails, Kysymys } from './KysymysDetails';
+import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
-interface KysymysListProps {
-  kysymykset: Kysymys[];
+import { KasittelyDetails } from './KasittelyDetails';
+
+interface KasittelyListProps {
+  kasittelyt: YhteinenKasittely[];
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
 }
 
-export const KysymysList: React.FC<KysymysListProps> = ({
-  kysymykset,
+export const KasittelyList: React.FC<KasittelyListProps> = ({
+  kasittelyt,
   answers,
   handleChange,
   handleSend,
 }) => {
   return (
     <>
-      {kysymykset.map((kysymys) => (
-        <Accordion key={kysymys.id}>
+      {kasittelyt.map((kasittely) => (
+        <Accordion key={kasittely.id}>
           <AccordionSummary
             expandIcon={
               <ExpandMoreIcon
@@ -47,19 +49,19 @@ export const KysymysList: React.FC<KysymysListProps> = ({
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
                 }}
-                data-testid={`kysymys-${kysymys.id}`}
+                data-testid={`kysymys-${kasittely.id}`}
               >
-                {kysymys.question}
+                {kasittely.kysymys}
               </OphTypography>
             </Box>
             <Box style={{ flex: 1 }}>
               <OphTypography variant="body2">
-                {dateFns.format(new Date(kysymys.timestamp), 'd.M.yyyy')}
+                {dateFns.format(new Date(kasittely.luotu!), 'd.M.yyyy')}
               </OphTypography>
             </Box>
           </AccordionSummary>
-          <KysymysDetails
-            kysymys={kysymys}
+          <KasittelyDetails
+            kasittely={kasittely}
             answers={answers}
             handleChange={handleChange}
             handleSend={handleSend}
