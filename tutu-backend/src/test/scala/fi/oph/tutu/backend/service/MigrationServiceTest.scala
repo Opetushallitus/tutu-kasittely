@@ -1,16 +1,14 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.config.migration.ChunkingConfig
-import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
-import fi.oph.tutu.backend.repository.migration.{VanhaTutuMigrationRepository, VanhaTutuRepository}
-import fi.oph.tutu.backend.utils.migration.{XmlChunk, XmlChunker}
-import fi.oph.tutu.backend.service.migration.ChunkProcessor
-import fi.oph.tutu.backend.service.migration.MigrationService
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.config.migration.ChunkingConfig
+import fi.oph.tutu.backend.repository.migration.{VanhaTutuMigrationRepository, VanhaTutuRepository}
+import fi.oph.tutu.backend.service.migration.{ChunkProcessor, MigrationService}
+import fi.oph.tutu.backend.utils.migration.XmlChunker
 import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectEntity
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.{BeforeEach, DisplayName, Test}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -20,8 +18,7 @@ import org.mockito.{Mock, MockitoAnnotations}
 import java.io.{ByteArrayInputStream, FileInputStream}
 import java.time.Instant
 import java.util.{Collections, UUID}
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 class MigrationServiceTest extends UnitTestBase {
   @Mock
@@ -230,7 +227,7 @@ class MigrationServiceTest extends UnitTestBase {
       val stats = Map("totalChunks" -> 10, "processedChunks" -> 5, "unprocessedChunks" -> 5)
       when(chunkProcessor.getProcessingStats()).thenReturn(Success(stats))
 
-      val result = migrationService.getMigrationStats()
+      val result = migrationService.getMigrationStats
 
       assertTrue(result.isSuccess)
       assertTrue(result.get == stats)

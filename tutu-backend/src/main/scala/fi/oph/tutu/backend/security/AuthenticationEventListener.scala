@@ -22,7 +22,7 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
       .build()
     val request = getCurrentHttpRequest
     audit.log(getUser(request), Login, target, Changes.EMPTY)
-    val username = event.getAuthentication.getName
+    event.getAuthentication.getName
   }
 
   private def getCurrentHttpRequest: HttpServletRequest = {

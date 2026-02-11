@@ -1,18 +1,17 @@
 package fi.oph.tutu.backend.service.migration
 
+import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.config.migration.ChunkingConfig
 import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
 import fi.oph.tutu.backend.repository.migration.{VanhaTutuMigrationRepository, VanhaTutuRepository}
-import fi.oph.tutu.backend.UnitTestBase
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.junit.jupiter.api.Assertions._
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Mock, MockitoAnnotations}
 
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.util.{Failure, Success, Try}
 
 class ChunkProcessorTest extends UnitTestBase {
   @Mock

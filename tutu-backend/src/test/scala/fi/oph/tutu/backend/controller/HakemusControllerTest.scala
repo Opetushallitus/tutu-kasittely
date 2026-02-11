@@ -2,13 +2,6 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.KasittelyVaihe.{
-  AlkukasittelyKesken,
-  HyvaksyttyEiLahetetty,
-  OdottaaTaydennysta,
-  OdottaaVahvistusta,
-  ValmisKasiteltavaksi
-}
 import fi.oph.tutu.backend.fixture.{
   createTutkinnotFixtureAfterMuuttuneetTutkinnot,
   createTutkinnotFixtureBeforeMuuttuneetTutkinnot,
@@ -16,7 +9,7 @@ import fi.oph.tutu.backend.fixture.{
 }
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.TUTU_SERVICE
+import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
@@ -39,9 +32,8 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.UUID
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"

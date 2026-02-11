@@ -12,8 +12,7 @@ import org.junit.jupiter.api.{BeforeEach, DisplayName, Nested, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 
-import java.time.{LocalDateTime, ZonedDateTime}
-import java.time.format.DateTimeFormatter
+import java.time.ZonedDateTime
 import java.util.UUID
 
 class AtaruParserTest extends UnitTestBase with TutuJsonFormats {

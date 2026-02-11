@@ -1,10 +1,10 @@
 package fi.oph.tutu.backend.utils.migration
 
 import fi.oph.tutu.backend.config.migration.ChunkingConfig
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.{DisplayName, Test, TestInstance}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
-import scala.util.{Failure, Success}
-import java.io.{ByteArrayInputStream, StringReader}
+
+import java.io.ByteArrayInputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class XmlChunkerTest {

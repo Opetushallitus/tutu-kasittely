@@ -1,11 +1,11 @@
 package fi.oph.tutu.backend.utils.migration
 
-import scala.util.{Failure, Success, Try}
-import scala.xml.{Elem, NodeSeq, XML}
-import org.json4s._
+import org.json4s.*
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.write
-import org.json4s.DefaultFormats
+
+import scala.util.Try
+import scala.xml.{NodeSeq, XML}
 
 /**
  * XML:n muuntaminen JSON:ksi FileMaker XML-muodosta.

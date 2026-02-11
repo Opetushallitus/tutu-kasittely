@@ -3,20 +3,19 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
-  FINLAND_TZ,
   HAKEMUKSEN_PERUUTUS_VAHVISTETTU,
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.{LocalDateTime, ZonedDateTime}
+import java.time.LocalDateTime
 import java.util.UUID
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary
 import scala.util.boundary.break
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 def ataruAnswerToBoolean(value: String): Option[Boolean] = {
   if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "1") {
@@ -309,7 +308,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       )
     }
 
-    val tutkinto = if (isTutkinto3Defined) {
+    if (isTutkinto3Defined) {
       tutkinnot +=
         Tutkinto(
           id = None,
@@ -341,7 +340,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         )
     }
 
-    val muuTutkinto = if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers).isDefined) {
+    if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers).isDefined) {
       tutkinnot +=
         Tutkinto(
           id = None,

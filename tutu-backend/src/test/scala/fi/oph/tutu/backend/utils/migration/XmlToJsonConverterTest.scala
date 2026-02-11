@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.utils.migration
 
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import scala.util.{Failure, Success}
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class XmlToJsonConverterTest {

@@ -1,18 +1,15 @@
 package fi.oph.tutu.backend.service.migration
 
 import fi.oph.tutu.backend.config.migration.ChunkingConfig
-import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
 import fi.oph.tutu.backend.repository.migration.{VanhaTutuMigrationRepository, VanhaTutuRepository}
 import fi.oph.tutu.backend.utils.ErrorHandling
 import fi.oph.tutu.backend.utils.migration.{XmlChunk, XmlChunker}
 import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu
+import org.json4s.DefaultFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
-import scala.io.Source
+
 import scala.util.{Failure, Success, Try}
-import java.nio.charset.StandardCharsets
-import org.json4s.DefaultFormats
-import org.json4s.jackson.Serialization
 
 /**
  * Migraatiopalvelu, joka käsittelee suuria XML-tiedostoja FileMakerista uuteen järjestelmään.
@@ -84,7 +81,6 @@ class MigrationService(
       vanhaTutuMigrationRepository.updateTotalChunksForAllChunks(chunkCount)
 
       // Process XML chunks
-      val batchSize = chunkingConfig.getChunkSize
       val maxChunks = chunkingConfig.getMaxChunks
       chunkProcessor.processMigrationChunksIndividually(maxChunks = maxChunks) match {
         case Success(totalCreated) =>
@@ -160,7 +156,7 @@ class MigrationService(
     }
   }
 
-  private def storeChunk(chunk: XmlChunk): Unit = {
+  def storeChunk(chunk: XmlChunk): Unit = {
     vanhaTutuMigrationRepository.createChunk(
       chunk.chunkIndex,
       chunk.totalChunks,
@@ -184,7 +180,7 @@ class MigrationService(
     }
   }
 
-  def getMigrationStats(): Try[Map[String, Any]] = Try {
+  def getMigrationStats: Try[Map[String, Any]] = Try {
     chunkProcessor.getProcessingStats().get
   }
 

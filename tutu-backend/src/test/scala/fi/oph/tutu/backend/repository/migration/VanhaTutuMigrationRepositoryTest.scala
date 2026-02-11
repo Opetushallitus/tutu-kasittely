@@ -1,17 +1,16 @@
 package fi.oph.tutu.backend.repository.migration
 
 import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
-import fi.oph.tutu.backend.repository.migration.VanhaTutuMigrationRepository
-import org.junit.jupiter.api.{BeforeEach, Test}
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mock
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.util.{Failure, Success, Try}
+import scala.util.Success
 
 @ExtendWith(Array(classOf[MockitoExtension]))
 class VanhaTutuMigrationRepositoryTest {

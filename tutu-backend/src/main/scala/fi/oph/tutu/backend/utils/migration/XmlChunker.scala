@@ -4,8 +4,9 @@ import fi.oph.tutu.backend.config.migration.ChunkingConfig
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+
+import java.io.InputStream
 import scala.util.Try
-import java.io.{ByteArrayInputStream, InputStream}
 
 case class XmlChunk(
   chunkIndex: Int,

@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.utils
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.ErrorMessage
 import fi.oph.tutu.backend.service.{HakemuspalveluServiceException, KayttooikeusServiceException, OnrServiceException}
-import org.springframework.http.{HttpHeaders, HttpStatus, MediaType, ResponseEntity}
+import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 
 class ErrorMessageMapper(val objectMapper: ObjectMapper) {
   def mapErrorMessage(error: Throwable, status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR): ResponseEntity[Any] = {

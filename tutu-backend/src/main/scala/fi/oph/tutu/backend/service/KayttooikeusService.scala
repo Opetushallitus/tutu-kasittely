@@ -149,7 +149,7 @@ class KayttooikeusService(
     }
 
     // Poistetaan duplikaatit ennen tietokannan synkronointia
-    val uniikit          = esittelija_oidit.toSet.toSeq
+    val uniikit          = esittelija_oidit.distinct
     val duplikaattiMaara = esittelija_oidit.size - uniikit.size
     if (duplikaattiMaara > 0) {
       LOG.info(s"Poistettiin $duplikaattiMaara duplikaatti-OID:ia esittelijälistasta")
@@ -185,7 +185,7 @@ class KayttooikeusService(
     LOG.info("Emptying esittelijat cache")
 
   @CachePut(Array("esittelijat"))
-  private def updateCached(kayttooikeusRyhmaId: String, value: Seq[UserOid]): Unit = {
+  def updateCached(kayttooikeusRyhmaId: String, value: Seq[UserOid]): Unit = {
     val esittelijatCache = cacheManager.getCache("esittelijat")
     esittelijatCache.put(kayttooikeusRyhmaId, value)
   }

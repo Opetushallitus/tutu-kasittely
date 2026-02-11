@@ -1,14 +1,13 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.SortDef.Undefined
-import fi.oph.tutu.backend.domain.{DbHakemus, HakemusOid, SortDef, Viesti, ViestiListItem}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, TutuDatabase, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
-import scala.math.Ordering.comparatorToOrdering
 
 @Component
 @Service

@@ -2,9 +2,8 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.utils.TutuJsonFormats
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
@@ -177,7 +176,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
     LOG.info("Emptying koodisto-cache")
 
   @CachePut(Array("lomake"))
-  private def updateCached(lomake: AtaruLomake): Unit = {
+  def updateCached(lomake: AtaruLomake): Unit = {
     val lomakeCache = cacheManager.getCache("lomake")
     lomakeCache.put(lomake.id, lomake)
   }

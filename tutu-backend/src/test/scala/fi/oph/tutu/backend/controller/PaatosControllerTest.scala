@@ -683,18 +683,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(10)
   def haePaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200(): Unit = {
-    val paatosId   = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaKelpoisuudet.get).get.id
-    val paatosJSON =
-      paatos2Json(
-        paatosWithPaatosTiedotJaKelpoisuudet.copy(id = paatosId, luoja = Some("test user")),
-        "luoja",
-        "luotu",
-        "muokattu",
-        "muokkaaja",
-        "paatosId",
-        "paatosTietoOptions"
-      )
-    var result = mvc
+    val paatosId = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaKelpoisuudet.get).get.id
+    mvc
       .perform(
         get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
       )

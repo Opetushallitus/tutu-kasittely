@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.domain
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 case class HakemusListItem(
   hakija: String,

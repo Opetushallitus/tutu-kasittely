@@ -30,13 +30,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
-import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.postgresql.PostgreSQLContainer
 
 import java.io.FileNotFoundException
 import java.sql.DriverManager
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime, ZonedDateTime}
+import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 

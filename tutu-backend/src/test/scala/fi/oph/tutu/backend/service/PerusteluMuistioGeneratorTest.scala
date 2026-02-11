@@ -2,18 +2,17 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.generator.perustelumuistio.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.{BeforeEach, Test}
 import fi.oph.tutu.backend.fixture.*
+import fi.oph.tutu.backend.service.generator.perustelumuistio.*
 import fi.oph.tutu.backend.utils.Constants
-
-import java.util.UUID
-import java.time.format.DateTimeFormatter
-import java.time.LocalDateTime
+import org.junit.jupiter.api.{BeforeEach, Test}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
-import org.mockito.ArgumentMatchers.any
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
