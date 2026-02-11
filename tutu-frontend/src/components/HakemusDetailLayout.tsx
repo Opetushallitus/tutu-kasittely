@@ -58,7 +58,7 @@ export const HakemusDetailLayout = ({
             sx={{ paddingTop: 2 }}
           >
             {children}
-            {!showPaatosTekstiPreview && <SideBar />}
+            {!showPaatosTekstiPreview && <SideBar hakemusOid={hakemusOid} />}
           </Stack>
         </BoxWrapper>
       </Stack>

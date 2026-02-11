@@ -43,7 +43,11 @@ const SidebarInfoStack = styled(Stack)(({ theme }) => ({
   padding: theme.spacing(1, 1),
 }));
 
-export const SideBar = () => {
+export type SideBarProps = {
+  hakemusOid: string;
+};
+
+export const SideBar = ({ hakemusOid }: SideBarProps) => {
   const theme = useTheme();
   const { t } = useTranslations();
   const pathName = usePathname();
@@ -72,7 +76,7 @@ export const SideBar = () => {
         </SidebarInfoStack>
       )}
       <ToimintoLinkki
-        href="/"
+        href={`/hakemus/${hakemusOid}/editori/viesti`}
         gap={theme.spacing(1)}
         icon={<MailOutlineIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaViesti')}
