@@ -1,20 +1,13 @@
 'use client';
 
-import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { Table, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 import * as R from 'remeda';
 
 import HakemusRow from '@/src/app/(root)/components/HakemusRow';
+import StyledTableBody from '@/src/app/(root)/components/StyledTableBody';
 import { naytaQueryStates } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
@@ -38,26 +31,6 @@ const FIELD_KEYS = {
   kokonaisaika: 'kokonaisaika',
   hakijanaika: 'hakijanaika',
 };
-
-const StyledTableBody = styled(TableBody)({
-  '& .MuiTableRow-root': {
-    '&:nth-of-type(even)': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.grey50,
-      },
-    },
-    '&:nth-of-type(odd)': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.white,
-      },
-    },
-    '&:hover': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.lightBlue2,
-      },
-    },
-  },
-});
 
 interface HakemusListProps {
   user: User | null;

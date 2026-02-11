@@ -4,7 +4,7 @@ import { parseAsString, useQueryState } from 'nuqs';
 import * as R from 'remeda';
 
 import MessageRow from '@/src/app/(root)/components/JointProcessing/MessageRow';
-import { StyledTableBody } from '@/src/app/(root)/components/StyledTableBody';
+import StyledTableBody from '@/src/app/(root)/components/StyledTableBody';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';

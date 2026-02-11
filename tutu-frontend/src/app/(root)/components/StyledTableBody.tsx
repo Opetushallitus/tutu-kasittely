@@ -1,7 +1,7 @@
 import { styled, TableBody } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 
-export const StyledTableBody = styled(TableBody)({
+export default styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
       '.MuiTableCell-root': {
