@@ -108,6 +108,7 @@ export function HakemusList({ user }: HakemusListProps) {
             {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
               nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
                 <TableSortLabel
+                  mainKey="hakemuslista"
                   key={fieldKey}
                   fieldKey={fieldKey}
                   sortDef={sortDef}
