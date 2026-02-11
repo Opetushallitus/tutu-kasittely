@@ -84,9 +84,9 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
         ]}
       />
       {tab === 'lahetetyt' ? (
-        <SentMessages messageList={mockViestit} user={user} />
+        <SentMessages messageList={sentMesssages} user={user} />
       ) : (
-        <ReceivedMessages messageList={mockViestit} user={user} />
+        <ReceivedMessages messageList={receivedMessages} user={user} />
       )}
     </BoxWrapper>
   );
