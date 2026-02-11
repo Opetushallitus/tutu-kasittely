@@ -134,6 +134,50 @@ export const mockHakemus = async (
   page: Page,
   lomakkeenKieli: Language = 'fi',
 ) => {
+  // Mock yhteinenkasittely endpoint returning questions used in tests
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 'q1',
+            sender: 'Testi esittelijä',
+            question: 'Voisitko tarkistaa liitteen A tiedot?',
+            timestamp: '2026-02-04T09:12:00Z',
+          },
+          {
+            id: 'q2',
+            sender: 'Kalle Päätalo',
+            question: 'Onko tämä päätös valmis allekirjoitettavaksi?',
+            timestamp: '2026-02-03T14:30:00Z',
+          },
+          {
+            id: 'q3',
+            sender: 'Otto Kehittäjä',
+            question: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
+            timestamp: '2026-02-01T08:05:00Z',
+            relatedQuestions: [
+              {
+                id: 'q4',
+                sender: 'Toinen Tyyppi',
+                question: 'Tarvitaanko lisätietoja ???',
+                timestamp: '2026-02-01T08:05:00Z',
+              },
+              {
+                id: 'q5',
+                sender: 'Vastaaja Esittelijä',
+                question: 'Tarvitaanko lisätietoja ???',
+                timestamp: '2026-02-01T08:05:00Z',
+              },
+            ],
+          },
+        ]),
+      });
+    },
+  );
   await page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const url = route.request().url();
     const params = url.split('/').pop()?.split('?') || [];

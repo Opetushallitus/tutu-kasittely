@@ -3,18 +3,31 @@
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
-import { Box, Button, Stack, IconButton, useTheme, Theme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Stack,
+  IconButton,
+  useTheme,
+  Theme,
+  ButtonBase,
+} from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
-import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
+import { FullSpinner } from '@/src/components/FullSpinner';
+import useToaster from '@/src/hooks/useToaster';
+import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { handleFetchError } from '@/src/lib/utils';
 
-import { Kysymys } from './components/KysymysDetails';
 import { KysymysList } from './components/KysymysList';
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
@@ -52,45 +65,44 @@ const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
 export default function YhteinenKasittelyPage() {
   const { t } = useTranslations();
   const theme = useTheme();
+  const { oid: hakemusOid } = useParams<{ oid: string }>();
 
-  // TODO: Fetch real data from backend
-  const kysymykset: Kysymys[] = [
-    {
-      id: 'q1',
-      sender: 'Testi esittelijä',
-      question: 'Voisitko tarkistaa liitteen A tiedot?',
-      timestamp: '2026-02-04T09:12:00Z',
-    },
-    {
-      id: 'q2',
-      sender: 'Kalle Päätalo',
-      question: 'Onko tämä päätös valmis allekirjoitettavaksi?',
-      timestamp: '2026-02-03T14:30:00Z',
-    },
-    {
-      id: 'q3',
-      sender: 'Otto Kehittäjä',
-      question: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
-      timestamp: '2026-02-01T08:05:00Z',
-      relatedQuestions: [
-        {
-          id: 'q4',
-          sender: 'Toinen Tyyppi',
-          question: 'Tarvitaanko lisätietoja ???',
-          timestamp: '2026-02-01T08:05:00Z',
-        },
-        {
-          id: 'q5',
-          sender: 'Vastaaja Esittelijä',
-          question: 'Tarvitaanko lisätietoja ???',
-          timestamp: '2026-02-01T08:05:00Z',
-        },
-      ],
-    },
-  ];
+  const queryClient = useQueryClient();
+  const { addToast } = useToaster();
 
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [sortKey, setSortKey] = useState<SortOrder>('desc'); // TODO: handle sorting change
+  const [sortKey, setSortKey] = useState<SortOrder>('desc');
+
+  const {
+    data: kysymykset,
+    isLoading: kasittelyIsLoading,
+    error: kasittelyError,
+  } = useYhteinenKasittely(hakemusOid, sortKey);
+
+  useEffect(() => {
+    handleFetchError(
+      addToast,
+      kasittelyError,
+      'virhe.yhteisenkasittelynLataus',
+      t,
+    );
+  }, [kasittelyError, addToast, t]);
+
+  if (kasittelyError) {
+    return null;
+  }
+
+  if (kasittelyIsLoading) {
+    return <FullSpinner />;
+  }
+
+  const handleSort = () => {
+    const newSort = sortKey === 'desc' ? 'asc' : 'desc';
+    setSortKey(newSort as SortOrder);
+    queryClient.invalidateQueries({
+      queryKey: ['getYhteinenKasittely'],
+    });
+  };
 
   const handleChange = (id: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -133,6 +145,7 @@ export default function YhteinenKasittelyPage() {
                     flex: 3,
                     fontWeight: 600,
                     paddingLeft: theme.spacing(1.5),
+                    userSelect: 'none',
                   }}
                 >
                   {t('hakemus.yhteinenkasittely.kysymys')}
@@ -145,28 +158,24 @@ export default function YhteinenKasittelyPage() {
                     gap: theme.spacing(0.5),
                   }}
                 >
-                  <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-                    {t('hakemus.yhteinenkasittely.kysymysLahetetty')}{' '}
-                  </OphTypography>
-                  <IconButton
-                    size="small"
-                    aria-label="sort"
-                    onClick={() => {
-                      setSortKey(sortKey === 'desc' ? 'asc' : 'desc');
-                    }}
-                  >
-                    {sortKey === 'asc' ? (
-                      <ExpandMoreIcon
-                        fontSize="small"
-                        sx={{ color: ophColors.black }}
-                      />
-                    ) : (
-                      <ExpandLessIcon
-                        fontSize="small"
-                        sx={{ color: ophColors.black }}
-                      />
-                    )}
-                  </IconButton>
+                  <ButtonBase onClick={handleSort}>
+                    <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+                      {t('hakemus.yhteinenkasittely.kysymysLahetetty')}{' '}
+                    </OphTypography>
+                    <IconButton size="small" aria-label="sort">
+                      {sortKey === 'asc' ? (
+                        <ExpandMoreIcon
+                          fontSize="small"
+                          sx={{ color: ophColors.black }}
+                        />
+                      ) : (
+                        <ExpandLessIcon
+                          fontSize="small"
+                          sx={{ color: ophColors.black }}
+                        />
+                      )}
+                    </IconButton>
+                  </ButtonBase>
                 </Stack>
               </Box>
 
