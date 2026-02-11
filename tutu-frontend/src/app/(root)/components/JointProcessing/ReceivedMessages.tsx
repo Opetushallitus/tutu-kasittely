@@ -1,42 +1,15 @@
-import {
-  styled,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { Table, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 import * as R from 'remeda';
 
 import MessageRow from '@/src/app/(root)/components/JointProcessing/MessageRow';
+import { StyledTableBody } from '@/src/app/(root)/components/StyledTableBody';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
 
 import TableSortLabel from '../TableSortLabel';
-
-const StyledTableBody = styled(TableBody)({
-  '& .MuiTableRow-root': {
-    '&:nth-of-type(even)': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.grey50,
-      },
-    },
-    '&:nth-of-type(odd)': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.white,
-      },
-    },
-    '&:hover': {
-      '.MuiTableCell-root': {
-        backgroundColor: ophColors.lightBlue2,
-      },
-    },
-  },
-});
 
 const FIELD_KEYS = {
   lahetetty: 'lahetetty',
