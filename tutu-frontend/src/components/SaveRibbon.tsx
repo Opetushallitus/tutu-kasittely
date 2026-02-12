@@ -1,13 +1,14 @@
 'use client';
 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Grid2, IconButton } from '@mui/material';
+import { Box, Grid2, IconButton, useTheme } from '@mui/material';
 import {
   OphButton,
   OphTypography,
   ophColors,
 } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
+import React, { useEffect, useRef } from 'react';
 
 import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -29,15 +30,41 @@ export const SaveRibbon = ({
   modifier,
 }: SaveRibbonProps) => {
   const { t } = useTranslations();
+  const ribbonRef = useRef<HTMLDivElement | null>(null);
+  const theme = useTheme();
 
   const StyledInfoOutlinedIcon = styled(InfoOutlinedIcon)({
     color: ophColors.black,
   });
 
+  // Lisää paddingia ettei sisältö jää ribbonin alle.
+  useEffect(() => {
+    if (!ribbonRef.current) return;
+
+    const el = ribbonRef.current as HTMLDivElement;
+    const prev = document.body.style.paddingBottom;
+
+    const apply = () => {
+      const height = el.offsetHeight;
+      document.body.style.paddingBottom = `${height}px`;
+    };
+
+    if (hasChanges) {
+      apply();
+      window.addEventListener('resize', apply);
+    }
+
+    return () => {
+      document.body.style.paddingBottom = prev || '';
+      window.removeEventListener('resize', apply);
+    };
+  }, [hasChanges]);
+
   if (!hasChanges) return null;
 
   return (
     <Box
+      ref={ribbonRef}
       sx={{
         position: 'fixed',
         bottom: 0,
@@ -53,7 +80,7 @@ export const SaveRibbon = ({
         boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
       }}
     >
-      <Grid2 container wrap="nowrap">
+      <Grid2 container wrap="nowrap" gap={theme.spacing(1)}>
         <Grid2 size={1}>
           <IconButton>
             <StyledInfoOutlinedIcon />

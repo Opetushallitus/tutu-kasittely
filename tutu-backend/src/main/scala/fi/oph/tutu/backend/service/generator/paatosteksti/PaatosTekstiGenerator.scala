@@ -60,11 +60,11 @@ private def parseHallintoOikeusName(hallintoOikeus: String): String = {
 
 private def getTasoPaatosValitusoikeusText(lang: String, hallintoOikeus: String): String = lang match {
   case "finnish" =>
-    s"""<h4>Valitusoikeus</h4><p>Tähän päätökseen saa hakea muutosta valittamalla<br><span style="padding-left: 20px;">${parseHallintoOikeusName(
+    s"""<h4>Valitusoikeus</h4><p>Tähän päätökseen saa hakea muutosta valittamalla ${parseHallintoOikeusName(
         hallintoOikeus
-      )}.</span><br>Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä. </p>""".stripMargin
+      )}.<br>Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä. </p>""".stripMargin
   case _ =>
-    s"""<h4>Besvärsrätt</h4><p>Ändring i detta beslut får sökas genom besvär hos<br><span style="padding-left: 20px;">$hallintoOikeus.<br>Besvärstiden och förfarandet framgår av bifogade besvärsanvisning.</span></p>""".stripMargin
+    s"""<h4>Besvärsrätt</h4><p>Ändring i detta beslut får sökas genom besvär hos $hallintoOikeus.<br>Besvärstiden och förfarandet framgår av bifogade besvärsanvisning.</p>""".stripMargin
 }
 
 private def getTasoPaatosMaksunOikaisuText(lang: String): String = lang match {
