@@ -1,50 +1,53 @@
-[
-  {
-    "id": "1",
-    "Etunimet": "Jaakko",
-    "Sukunimi": "Juntunen",
-    "Henkilötunnus": "112233-4445",
-    "Asiatunnus": "OPH.paras.asia.1",
-    "Mita_haet": "Tutkinnon rinnastaminen",
-    "Hakemus kirjattu": "06.10.2025",
-    "spss_esittelypvm": "12.12.2025",
-    "ashateksti_paatos": "Mieleni minun tekevi,\naivoni ajattelevi\nlähteäni laulamahan,\nsaa'ani sanelemahan,\nsukuvirttä suoltamahan,\nlajivirttä laulamahan.\nSanat suussani sulavat,\npuhe'et putoelevat,\nkielelleni kerkiävät,\nhampahilleni hajoovat.\nVeli kulta, veikkoseni,\nkaunis kasvinkumppalini!\nLähe nyt kanssa laulamahan,\nsaa kera sanelemahan\nyhtehen yhyttyämme,\nkahta'alta käytyämme!\nHarvoin yhtehen yhymme,\nsaamme toinen toisihimme\nnäillä raukoilla rajoilla,\npoloisilla Pohjan mailla.\n",
-    "muistio_koonti_uusi_kaikki": "Lyökämme käsi kätehen,\nsormet sormien lomahan,\nlauloaksemme hyviä,\nparahia pannaksemme,\nkuulla noien kultaisien,\ntietä mielitehtoisien,\nnuorisossa nousevassa,\nkansassa kasuavassa:\nnoita saamia sanoja,\nvirsiä virittämiä\nvyöltä vanhan Väinämöisen,\nalta ahjon Ilmarisen,\npäästä kalvan Kaukomielen,\nJoukahaisen jousen tiestä,\nPohjan peltojen periltä,\nKalevalan kankahilta.\n"
-  },
-  {
-    "id": "2",
-    "Etunimet": "Miia",
-    "Sukunimi": "Mäkinen",
-    "Henkilötunnus": "667788-9990",
-    "Asiatunnus": "OPH.paras.asia.2",
-    "Mita_haet": "Tutkinnon tunnustaminen",
-    "Hakemus kirjattu": "01.05.2025",
-    "spss_esittelypvm": "03.05.2025",
-    "ashateksti_paatos": "Niit' ennen isoni lauloi\nkirvesvartta vuollessansa;\nniitä äitini opetti\nväätessänsä värttinätä,\nminun lasna lattialla\neessä polven pyöriessä,\nmaitopartana pahaisna,\npiimäsuuna pikkaraisna.\nSampo ei puuttunut sanoja\neikä Louhi luottehia:\nvanheni sanoihin sampo,\nkatoi Louhi luottehisin,\nvirsihin Vipunen kuoli,\nLemminkäinen leikkilöihin.\nViel' on muitaki sanoja,\nongelmoita oppimia:\ntieohesta tempomia,\nkanervoista katkomia,\nrisukoista riipomia,\nvesoista vetelemiä,\npäästä heinän hieromia,\nraitiolta ratkomia,\npaimenessa käyessäni,\nlasna karjanlaitumilla,\nmetisillä mättähillä,\nkultaisilla kunnahilla,\nmustan Muurikin jälessä,\nKimmon kirjavan keralla.\nVilu mulle virttä virkkoi,\nsae saatteli runoja.\n",
-    "muistio_koonti_uusi_kaikki": "Virttä toista tuulet toivat,\nmeren aaltoset ajoivat.\nLinnut liitteli sanoja,\npuien latvat lausehia.\nNe minä kerälle käärin,\nsovittelin sommelolle.\nKerän pistin kelkkahani,\nsommelon rekoseheni;\nve'in kelkalla kotihin,\nrekosella riihen luoksi;\npanin aitan parven päähän\nvaskisehen vakkasehen.\nViikon on virteni vilussa,\nkauan kaihossa sijaisnut.\nVeänkö vilusta virret,\nlapan laulut pakkasesta,\ntuon tupahan vakkaseni,\nrasian rahin nenähän,\nalle kuulun kurkihirren,\nalle kaunihin katoksen,\naukaisen sanaisen arkun,\nvirsilippahan viritän,\nkerittelen pään kerältä,\nsuorin solmun sommelolta?\nNiin laulan hyvänki virren,\nkaunihinki kalkuttelen\nruoalta rukihiselta,\noluelta ohraiselta.\nKun ei tuotane olutta,\ntarittane taarivettä,\nlaulan suulta laihemmalta,\nvetoselta vierettelen\ntämän iltamme iloksi,\npäivän kuulun kunniaksi,\nvaiko huomenen huviksi,\nuuen aamun alkeheksi.\n\n"
-  },
-  {
-    "id": "3",
-    "Etunimet": "Ville",
-    "Sukunimi": "Virtanen",
-    "Henkilötunnus": "001122-3334",
-    "Asiatunnus": "OPH.paras.asia.3",
-    "Mita_haet": "Tutkinnon valmistaminen",
-    "Hakemus kirjattu": "03.03.2024",
-    "spss_esittelypvm": "04.04.2024",
-    "ashateksti_paatos": "Noin kuulin saneltavaksi,\ntiesin virttä tehtäväksi:\nyksin meillä yöt tulevat,\nyksin päivät valkeavat;\nyksin syntyi Väinämöinen,\nilmestyi ikirunoja\nkapehesta kantajasta,\nIlmattaresta emosta.\nOlipa impi, ilman tyttö,\nkave luonnotar korea.\nPiti viikoista pyhyyttä,\niän kaiken impeyttä\nilman pitkillä pihoilla,\ntasaisilla tanterilla.\nIkävystyi aikojansa,\nouostui elämätänsä,\naina yksin ollessansa,\nimpenä eläessänsä\nilman pitkillä pihoilla,\navaroilla autioilla.\nJop' on astuiksen alemma,\nlaskeusi lainehille,\nmeren selvälle selälle,\nulapalle aukealle.\nTuli suuri tuulen puuska,\niästä vihainen ilma;\nmeren kuohuille kohotti,\nlainehille laikahutti.\nTuuli neittä tuuitteli,\naalto impeä ajeli\nympäri selän sinisen,\nlakkipäien lainehien:\ntuuli tuuli kohtuiseksi,\nmeri paksuksi panevi.\n",
-    "muistio_koonti_uusi_kaikki": "Kantoi kohtua kovoa,\nvatsantäyttä vaikeata\nvuotta seitsemän satoa,\nyheksän yrön ikeä;\neikä synny syntyminen,\nluovu luomatoin sikiö.\nVieri impi veen emona.\nUipi iät, uipi lännet,\nuipi luotehet, etelät,\nuipi kaikki ilman rannat\ntuskissa tulisen synnyn,\nvatsanvaivoissa kovissa;\neikä synny syntyminen,\nluovu luomatoin sikiö.\nItkeä hyryttelevi;\nsanan virkkoi, noin nimesi:\n\"Voi poloinen, päiviäni,\nlapsi kurja, kulkuani!\nJo olen joutunut johonki:\niäkseni ilman alle,\ntuulen tuuiteltavaksi,\naaltojen ajeltavaksi\nnäillä väljillä vesillä,\nlake'illa lainehilla!\n\"Parempi olisi ollut\nilman impenä eleä,\nkuin on nyt tätä nykyä\nvierähellä veen emona:\nvilu tääll' on ollakseni,\nvaiva värjätelläkseni,\naalloissa asuakseni,\nveessä vierielläkseni.\n\"Oi Ukko, ylijumala,\nilman kaiken kannattaja!\nTule tänne tarvittaissa,\nkäy tänne kutsuttaessa!\n"
-  },
-  {
-    "id": "4",
-    "Etunimet": "Kaisa",
-    "Sukunimi": "Keränen",
-    "Henkilötunnus": "556677-8889",
-    "Asiatunnus": "OPH.paras.asia.4",
-    "Mita_haet": "Tutkinnon oikaiseminen",
-    "Hakemus kirjattu": "01.01.2025",
-    "spss_esittelypvm": "05.02.2025",
-    "ashateksti_paatos": "Päästä piika pintehestä,\nvaimo vatsanvääntehestä!\nKäy pian, välehen jou'u,\nvälehemmin tarvitahan!\"\nKului aikoa vähäisen,\npirahteli pikkaraisen.\nTuli sotka, suora lintu;\nlenteä lekuttelevi\netsien pesän sijoa,\nasuinmaata arvaellen.\nLenti iät, lenti lännet,\nlenti luotehet, etelät.\nEi löyä tiloa tuota,\npaikkoa pahintakana,\nkuhun laatisi pesänsä,\nottaisi olosijansa.\nLiitelevi, laatelevi;\narvelee, ajattelevi:\n\"Teenkö tuulehen tupani,\naalloillen asuinsijani?\nTuuli kaatavi tupasen,\naalto vie asuinsijani.\"\nNiin silloin ve'en emonen,\nveen emonen, ilman impi,\nnosti polvea merestä,\nlapaluuta lainehesta\nsotkalle pesän sijaksi,\nasuinmaaksi armahaksi.\nTuo sotka, sorea lintu,\nliiteleikse, laateleikse.\nKeksi polven veen emosen\nsinerväisellä selällä;\nluuli heinämättähäksi,\ntuoreheksi turpeheksi.\nLentelevi, liitelevi,\npäähän polven laskeuvi.\nSiihen laativi pesänsä,\nmuni kultaiset munansa:\nkuusi kultaista munoa,\nrautamunan seitsemännen.\n",
-    "muistio_koonti_uusi_kaikki": "Alkoi hautoa munia,\npäätä polven lämmitellä.\nHautoi päivän, hautoi toisen,\nhautoi kohta kolmannenki.\nJopa tuosta veen emonen,\nveen emonen, ilman impi,\ntuntevi tulistuvaksi,\nhipiänsä hiiltyväksi;\nluuli polvensa palavan,\nkaikki suonensa sulavan.\nVavahutti polveansa,\njärkytti jäseniänsä:\nmunat vierähti vetehen,\nmeren aaltohon ajaikse;\nkarskahti munat muruiksi,\nkatkieli kappaleiksi.\nEi munat mutahan joua,\nsiepalehet veen sekahan.\nMuuttuivat murut hyviksi,\nkappalehet kaunoisiksi:\nmunasen alainen puoli\nalaiseksi maaemäksi,\nmunasen yläinen puoli\nyläiseksi taivahaksi;\nyläpuoli ruskeaista\npäivöseksi paistamahan,\nyläpuoli valkeaista,\nse kuuksi kumottamahan;\nmi munassa kirjavaista,\nne tähiksi taivahalle,\nmi munassa mustukaista,\nnepä ilman pilvilöiksi.\nAjat eellehen menevät,\nvuoet tuota tuonnemmaksi\nuuen päivän paistaessa,\nuuen kuun kumottaessa.\n"
-  }
-]
+{
+  "count": 4,
+  "items": [
+    {
+      "id": "1",
+      "Etunimet": "Jaakko",
+      "Sukunimi": "Juntunen",
+      "Henkilötunnus": "112233-4445",
+      "Asiatunnus": "OPH.paras.asia.1",
+      "Mita_haet": "Tutkinnon rinnastaminen",
+      "Hakemus kirjattu": "06.10.2025",
+      "spss_esittelypvm": "12.12.2025",
+      "ashateksti_paatos": "Mieleni minun tekevi,\naivoni ajattelevi\nlähteäni laulamahan,\nsaa'ani sanelemahan,\nsukuvirttä suoltamahan,\nlajivirttä laulamahan.\nSanat suussani sulavat,\npuhe'et putoelevat,\nkielelleni kerkiävät,\nhampahilleni hajoovat.\nVeli kulta, veikkoseni,\nkaunis kasvinkumppalini!\nLähe nyt kanssa laulamahan,\nsaa kera sanelemahan\nyhtehen yhyttyämme,\nkahta'alta käytyämme!\nHarvoin yhtehen yhymme,\nsaamme toinen toisihimme\nnäillä raukoilla rajoilla,\npoloisilla Pohjan mailla.\n",
+      "muistio_koonti_uusi_kaikki": "Lyökämme käsi kätehen,\nsormet sormien lomahan,\nlauloaksemme hyviä,\nparahia pannaksemme,\nkuulla noien kultaisien,\ntietä mielitehtoisien,\nnuorisossa nousevassa,\nkansassa kasuavassa:\nnoita saamia sanoja,\nvirsiä virittämiä\nvyöltä vanhan Väinämöisen,\nalta ahjon Ilmarisen,\npäästä kalvan Kaukomielen,\nJoukahaisen jousen tiestä,\nPohjan peltojen periltä,\nKalevalan kankahilta.\n"
+    },
+    {
+      "id": "2",
+      "Etunimet": "Miia",
+      "Sukunimi": "Mäkinen",
+      "Henkilötunnus": "667788-9990",
+      "Asiatunnus": "OPH.paras.asia.2",
+      "Mita_haet": "Tutkinnon tunnustaminen",
+      "Hakemus kirjattu": "01.05.2025",
+      "spss_esittelypvm": "03.05.2025",
+      "ashateksti_paatos": "Niit' ennen isoni lauloi\nkirvesvartta vuollessansa;\nniitä äitini opetti\nväätessänsä värttinätä,\nminun lasna lattialla\neessä polven pyöriessä,\nmaitopartana pahaisna,\npiimäsuuna pikkaraisna.\nSampo ei puuttunut sanoja\neikä Louhi luottehia:\nvanheni sanoihin sampo,\nkatoi Louhi luottehisin,\nvirsihin Vipunen kuoli,\nLemminkäinen leikkilöihin.\nViel' on muitaki sanoja,\nongelmoita oppimia:\ntieohesta tempomia,\nkanervoista katkomia,\nrisukoista riipomia,\nvesoista vetelemiä,\npäästä heinän hieromia,\nraitiolta ratkomia,\npaimenessa käyessäni,\nlasna karjanlaitumilla,\nmetisillä mättähillä,\nkultaisilla kunnahilla,\nmustan Muurikin jälessä,\nKimmon kirjavan keralla.\nVilu mulle virttä virkkoi,\nsae saatteli runoja.\n",
+      "muistio_koonti_uusi_kaikki": "Virttä toista tuulet toivat,\nmeren aaltoset ajoivat.\nLinnut liitteli sanoja,\npuien latvat lausehia.\nNe minä kerälle käärin,\nsovittelin sommelolle.\nKerän pistin kelkkahani,\nsommelon rekoseheni;\nve'in kelkalla kotihin,\nrekosella riihen luoksi;\npanin aitan parven päähän\nvaskisehen vakkasehen.\nViikon on virteni vilussa,\nkauan kaihossa sijaisnut.\nVeänkö vilusta virret,\nlapan laulut pakkasesta,\ntuon tupahan vakkaseni,\nrasian rahin nenähän,\nalle kuulun kurkihirren,\nalle kaunihin katoksen,\naukaisen sanaisen arkun,\nvirsilippahan viritän,\nkerittelen pään kerältä,\nsuorin solmun sommelolta?\nNiin laulan hyvänki virren,\nkaunihinki kalkuttelen\nruoalta rukihiselta,\noluelta ohraiselta.\nKun ei tuotane olutta,\ntarittane taarivettä,\nlaulan suulta laihemmalta,\nvetoselta vierettelen\ntämän iltamme iloksi,\npäivän kuulun kunniaksi,\nvaiko huomenen huviksi,\nuuen aamun alkeheksi.\n\n"
+    },
+    {
+      "id": "3",
+      "Etunimet": "Ville",
+      "Sukunimi": "Virtanen",
+      "Henkilötunnus": "001122-3334",
+      "Asiatunnus": "OPH.paras.asia.3",
+      "Mita_haet": "Tutkinnon valmistaminen",
+      "Hakemus kirjattu": "03.03.2024",
+      "spss_esittelypvm": "04.04.2024",
+      "ashateksti_paatos": "Noin kuulin saneltavaksi,\ntiesin virttä tehtäväksi:\nyksin meillä yöt tulevat,\nyksin päivät valkeavat;\nyksin syntyi Väinämöinen,\nilmestyi ikirunoja\nkapehesta kantajasta,\nIlmattaresta emosta.\nOlipa impi, ilman tyttö,\nkave luonnotar korea.\nPiti viikoista pyhyyttä,\niän kaiken impeyttä\nilman pitkillä pihoilla,\ntasaisilla tanterilla.\nIkävystyi aikojansa,\nouostui elämätänsä,\naina yksin ollessansa,\nimpenä eläessänsä\nilman pitkillä pihoilla,\navaroilla autioilla.\nJop' on astuiksen alemma,\nlaskeusi lainehille,\nmeren selvälle selälle,\nulapalle aukealle.\nTuli suuri tuulen puuska,\niästä vihainen ilma;\nmeren kuohuille kohotti,\nlainehille laikahutti.\nTuuli neittä tuuitteli,\naalto impeä ajeli\nympäri selän sinisen,\nlakkipäien lainehien:\ntuuli tuuli kohtuiseksi,\nmeri paksuksi panevi.\n",
+      "muistio_koonti_uusi_kaikki": "Kantoi kohtua kovoa,\nvatsantäyttä vaikeata\nvuotta seitsemän satoa,\nyheksän yrön ikeä;\neikä synny syntyminen,\nluovu luomatoin sikiö.\nVieri impi veen emona.\nUipi iät, uipi lännet,\nuipi luotehet, etelät,\nuipi kaikki ilman rannat\ntuskissa tulisen synnyn,\nvatsanvaivoissa kovissa;\neikä synny syntyminen,\nluovu luomatoin sikiö.\nItkeä hyryttelevi;\nsanan virkkoi, noin nimesi:\n\"Voi poloinen, päiviäni,\nlapsi kurja, kulkuani!\nJo olen joutunut johonki:\niäkseni ilman alle,\ntuulen tuuiteltavaksi,\naaltojen ajeltavaksi\nnäillä väljillä vesillä,\nlake'illa lainehilla!\n\"Parempi olisi ollut\nilman impenä eleä,\nkuin on nyt tätä nykyä\nvierähellä veen emona:\nvilu tääll' on ollakseni,\nvaiva värjätelläkseni,\naalloissa asuakseni,\nveessä vierielläkseni.\n\"Oi Ukko, ylijumala,\nilman kaiken kannattaja!\nTule tänne tarvittaissa,\nkäy tänne kutsuttaessa!\n"
+    },
+    {
+      "id": "4",
+      "Etunimet": "Kaisa",
+      "Sukunimi": "Keränen",
+      "Henkilötunnus": "556677-8889",
+      "Asiatunnus": "OPH.paras.asia.4",
+      "Mita_haet": "Tutkinnon oikaiseminen",
+      "Hakemus kirjattu": "01.01.2025",
+      "spss_esittelypvm": "05.02.2025",
+      "ashateksti_paatos": "Päästä piika pintehestä,\nvaimo vatsanvääntehestä!\nKäy pian, välehen jou'u,\nvälehemmin tarvitahan!\"\nKului aikoa vähäisen,\npirahteli pikkaraisen.\nTuli sotka, suora lintu;\nlenteä lekuttelevi\netsien pesän sijoa,\nasuinmaata arvaellen.\nLenti iät, lenti lännet,\nlenti luotehet, etelät.\nEi löyä tiloa tuota,\npaikkoa pahintakana,\nkuhun laatisi pesänsä,\nottaisi olosijansa.\nLiitelevi, laatelevi;\narvelee, ajattelevi:\n\"Teenkö tuulehen tupani,\naalloillen asuinsijani?\nTuuli kaatavi tupasen,\naalto vie asuinsijani.\"\nNiin silloin ve'en emonen,\nveen emonen, ilman impi,\nnosti polvea merestä,\nlapaluuta lainehesta\nsotkalle pesän sijaksi,\nasuinmaaksi armahaksi.\nTuo sotka, sorea lintu,\nliiteleikse, laateleikse.\nKeksi polven veen emosen\nsinerväisellä selällä;\nluuli heinämättähäksi,\ntuoreheksi turpeheksi.\nLentelevi, liitelevi,\npäähän polven laskeuvi.\nSiihen laativi pesänsä,\nmuni kultaiset munansa:\nkuusi kultaista munoa,\nrautamunan seitsemännen.\n",
+      "muistio_koonti_uusi_kaikki": "Alkoi hautoa munia,\npäätä polven lämmitellä.\nHautoi päivän, hautoi toisen,\nhautoi kohta kolmannenki.\nJopa tuosta veen emonen,\nveen emonen, ilman impi,\ntuntevi tulistuvaksi,\nhipiänsä hiiltyväksi;\nluuli polvensa palavan,\nkaikki suonensa sulavan.\nVavahutti polveansa,\njärkytti jäseniänsä:\nmunat vierähti vetehen,\nmeren aaltohon ajaikse;\nkarskahti munat muruiksi,\nkatkieli kappaleiksi.\nEi munat mutahan joua,\nsiepalehet veen sekahan.\nMuuttuivat murut hyviksi,\nkappalehet kaunoisiksi:\nmunasen alainen puoli\nalaiseksi maaemäksi,\nmunasen yläinen puoli\nyläiseksi taivahaksi;\nyläpuoli ruskeaista\npäivöseksi paistamahan,\nyläpuoli valkeaista,\nse kuuksi kumottamahan;\nmi munassa kirjavaista,\nne tähiksi taivahalle,\nmi munassa mustukaista,\nnepä ilman pilvilöiksi.\nAjat eellehen menevät,\nvuoet tuota tuonnemmaksi\nuuen päivän paistaessa,\nuuen kuun kumottaessa.\n"
+    }
+  ]
+}

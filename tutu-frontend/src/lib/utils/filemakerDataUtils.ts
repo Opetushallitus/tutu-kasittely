@@ -1,4 +1,5 @@
 export type FilemakerHakemus = {
+  id: string | undefined;
   Etunimet: string | undefined;
   Sukunimi: string | undefined;
   Henkilötunnus: string | undefined;

@@ -116,7 +116,8 @@ class VanhaTutuController(
 
   /**
    * Listaa vanhoja TUTU-hakemuksia
-   * @param page sivu - request param fm-page
+   * @param page sivu     - request param fm-page
+   * @param size sivukoko - request param fm-pagesize
    */
   @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
@@ -128,24 +129,30 @@ class VanhaTutuController(
   )
   def listaaVanhojaHakemuksia(
     @RequestParam("fm-page", required = false) page: String,
+    @RequestParam("fm-pagesize", required = false) size: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      page match {
-        case null  => 1
-        case value => page.toInt
-      }
-    } match {
-      case Success(rawPageNum) => {
-        val pageNum      = rawPageNum.max(1) // Sivut alkaen numerosta 1
-        val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum)
-        val arrayNode    = mapper.createArrayNode()
-        hakemusLista.foreach { item =>
-          arrayNode.add(item)
-        }
-        val json = mapper.writeValueAsString(arrayNode)
+      val pageNum  = Try(page.toInt).getOrElse(1).max(1)            // Sivut alkaen numerosta 1 (default 1)
+      val pageSize = Try(size.toInt).getOrElse(20).min(100).max(20) // Sivutus välillä 20 - 100 (default 20)
 
-        ResponseEntity.status(HttpStatus.OK).body(json)
+      val hakemusCount = vanhaTutuService.listaaHakemuksiaCount()
+      val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum, pageSize)
+
+      val items = mapper.createArrayNode()
+      hakemusLista.foreach { item =>
+        items.add(item)
+      }
+
+      val jsonRoot = mapper.createObjectNode()
+
+      jsonRoot.put("count", hakemusCount)
+      jsonRoot.put("items", items)
+
+      mapper.writeValueAsString(jsonRoot)
+    } match {
+      case Success(jsonString) => {
+        ResponseEntity.status(HttpStatus.OK).body(jsonString)
       }
       case Failure(exception) => {
         LOG.error(s"Virhe haettaessa vanhojen hakemusten listaa", exception)

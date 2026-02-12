@@ -38,9 +38,9 @@ class VanhaTutuService(
     }
   }
 
-  def listaaHakemuksia(pageNum: Int): Seq[ObjectNode] = {
+  def listaaHakemuksia(pageNum: Int, pageSize: Int): Seq[ObjectNode] = {
     vanhaTutuRepository
-      .list(pageNum)
+      .list(pageNum, pageSize)
       .map(rivi => {
         val id       = rivi.id
         val dataJson = rivi.dataJson
@@ -49,5 +49,10 @@ class VanhaTutuService(
         json.put("id", id)
         json
       })
+  }
+
+  def listaaHakemuksiaCount(): Int = {
+    vanhaTutuRepository
+      .countList()
   }
 }
