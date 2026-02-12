@@ -586,7 +586,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         "muokkaaja",
         "paatosTietoOptions"
       )
-    val result = mvc
+    mvc
       .perform(
         put(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
           .`with`(csrf())
@@ -610,19 +610,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(8)
   def haePaatosPalauttaaPaatosTiedonJaRinnastettavienTutkintojenTaiOpintoKanssa200(): Unit = {
-    val paatosId   = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).get.id
-    val paatosJSON =
-      paatos2Json(
-        paatosWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.copy(id = paatosId, luoja = Some("test user")),
-        "id",
-        "luoja",
-        "luotu",
-        "muokattu",
-        "muokkaaja",
-        "paatosId",
-        "paatosTietoOptions"
-      )
-    var result = mvc
+    paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).get.id
+    mvc
       .perform(
         get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
       )
@@ -683,7 +672,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(10)
   def haePaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200(): Unit = {
-    val paatosId = paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaKelpoisuudet.get).get.id
     mvc
       .perform(
         get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
@@ -864,7 +852,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           )
         )
       )
-    val result = mvc
+    mvc
       .perform(
         get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
       )

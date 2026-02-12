@@ -29,6 +29,11 @@ CREATE TABLE IF NOT EXISTS viesti
 
 CREATE INDEX IF NOT EXISTS idx_viesti_hakemus ON viesti (hakemus_id);
 
+CREATE OR REPLACE TRIGGER trg_viesti_update_muokattu_timestamp
+BEFORE UPDATE ON viesti
+FOR EACH ROW
+EXECUTE FUNCTION update_muokattu_timestamp();
+
 COMMENT ON TABLE viesti IS 'Viestit, kuten täydennyspyynnöt ja ennakkotiedot';
 COMMENT ON COLUMN viesti.id IS 'Taulun rivin id';        
 COMMENT ON COLUMN viesti.hakemus_id IS 'Hakemustaulun hakemuksen id';        

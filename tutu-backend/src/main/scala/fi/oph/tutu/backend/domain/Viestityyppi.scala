@@ -4,9 +4,10 @@ enum Viestityyppi:
   case taydennyspyynto, ennakkotieto, muu
 
 object Viestityyppi:
-  def fromString(value: String): Viestityyppi = value match {
-    case "taydennyspyynto" => taydennyspyynto
-    case "ennakkotieto"    => ennakkotieto
-    case "muu"             => muu
-    case _                 => null
+  def optionFromString(value: String): Option[Viestityyppi] = value match {
+    case "taydennyspyynto"                => Some(taydennyspyynto)
+    case "ennakkotieto"                   => Some(ennakkotieto)
+    case "muu"                            => Some(muu)
+    case s if Option(s).forall(_.isBlank) => None
+    case _                                => throw new IllegalArgumentException(s"Tuntematon viestityyppi: $value")
   }

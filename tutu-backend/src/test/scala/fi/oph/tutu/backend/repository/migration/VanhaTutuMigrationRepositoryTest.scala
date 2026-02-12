@@ -107,9 +107,6 @@ class VanhaTutuMigrationRepositoryTest {
     assertTrue(chunk1Result.isSuccess, "First chunk creation should succeed")
     assertTrue(chunk2Result.isSuccess, "Second chunk creation should succeed")
 
-    val returnedChunk1Id = chunk1Result.get
-    val returnedChunk2Id = chunk2Result.get
-
     val chunk1 = vanhaTutuMigrationRepository.getUnprocessedChunk()
     val chunk2 = vanhaTutuMigrationRepository.getUnprocessedChunk()
     val chunk3 = vanhaTutuMigrationRepository.getUnprocessedChunk()

@@ -4,10 +4,11 @@ enum Ratkaisutyyppi:
   case Paatos, PeruutusTaiRaukeaminen, Oikaisu, JatetaanTutkimatta, Siirto
 
 object Ratkaisutyyppi:
-  def fromString(value: String): Ratkaisutyyppi = value match
-    case "Paatos"                 => Paatos
-    case "PeruutusTaiRaukeaminen" => PeruutusTaiRaukeaminen
-    case "Oikaisu"                => Oikaisu
-    case "JatetaanTutkimatta"     => JatetaanTutkimatta
-    case "Siirto"                 => Siirto
-    case _                        => null
+  def optionFromString(value: String): Option[Ratkaisutyyppi] = value match
+    case "Paatos"                         => Some(Paatos)
+    case "PeruutusTaiRaukeaminen"         => Some(PeruutusTaiRaukeaminen)
+    case "Oikaisu"                        => Some(Oikaisu)
+    case "JatetaanTutkimatta"             => Some(JatetaanTutkimatta)
+    case "Siirto"                         => Some(Siirto)
+    case s if Option(s).forall(_.isBlank) => None
+    case _                                => throw new IllegalArgumentException(s"Tuntematon ratkaisutyyppi: $value")

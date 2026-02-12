@@ -156,7 +156,7 @@ class MigrationService(
     }
   }
 
-  def storeChunk(chunk: XmlChunk): Unit = {
+  private def storeChunk(chunk: XmlChunk): Unit = {
     vanhaTutuMigrationRepository.createChunk(
       chunk.chunkIndex,
       chunk.totalChunks,

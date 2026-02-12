@@ -4,11 +4,12 @@ enum Kieli:
   case fi, sv, en
 
 object Kieli:
-  def fromString(value: String): Kieli = value match {
-    case "fi" => fi
-    case "sv" => sv
-    case "en" => en
-    case _    => null
+  def optionFromString(value: String): Option[Kieli] = value match {
+    case "fi"                             => Some(fi)
+    case "sv"                             => Some(sv)
+    case "en"                             => Some(en)
+    case s if Option(s).forall(_.isBlank) => None
+    case _                                => throw new IllegalArgumentException(s"Tuntematon kieli: $value")
   }
 
 type Kielistetty = Map[Kieli, String]

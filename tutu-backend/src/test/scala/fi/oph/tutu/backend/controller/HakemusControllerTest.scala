@@ -117,12 +117,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
   }
 
-  private def tallennaHakemus(hakemusOid: String, hakemusKoskee: Int): Unit = {
-    hakemusService.tallennaAtaruHakemus(
-      UusiAtaruHakemus(HakemusOid(hakemusOid), hakemusKoskee)
-    )
-  }
-
   @Test
   @WithMockUser(
     value = HakemusControllerTestConstants.ESITTELIJA_OID,
@@ -335,7 +329,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 } ]
                               }"""
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006667")
       )
@@ -379,7 +373,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "taydennyspyyntoLahetetty": null
                               } ]"""
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemuslista?nayta=omat&hakemuskoskee=4")
       )
@@ -498,7 +492,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(2)
     when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(true)
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
       )
@@ -525,7 +519,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests("ataruHakemus6666.json")
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
       )
@@ -544,7 +538,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
       )
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
       )
@@ -581,7 +575,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid, 0))
-    val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
     val tutkinnotBefore = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
@@ -695,7 +688,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid, 0))
-    val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
     val tutkinnotBefore = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 

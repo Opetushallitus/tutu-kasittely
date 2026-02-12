@@ -16,16 +16,15 @@ class ViestiRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[ViestiRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiRepository])
 
   implicit val getViestiResult: GetResult[Viesti] =
     GetResult(r =>
       Viesti(
         id = Some(r.nextObject().asInstanceOf[UUID]),
         hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
-        kieli = Option(Kieli.fromString(r.nextString())),
-        viestityyppi = Option(Viestityyppi.fromString(r.nextString())),
+        kieli = Kieli.optionFromString(r.nextString()),
+        viestityyppi = Viestityyppi.optionFromString(r.nextString()),
         otsikko = Option(r.nextString()),
         viesti = Option(r.nextString()),
         vahvistettu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -40,7 +39,7 @@ class ViestiRepository extends BaseResultHandlers {
     GetResult(r =>
       ViestiListItem(
         id = r.nextObject().asInstanceOf[UUID],
-        viestityyppi = Viestityyppi.fromString(r.nextString()),
+        viestityyppi = Viestityyppi.optionFromString(r.nextString()).orNull,
         otsikko = r.nextString(),
         vahvistettu = r.nextTimestamp().toLocalDateTime,
         vahvistaja = r.nextString()

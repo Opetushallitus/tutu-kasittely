@@ -114,7 +114,7 @@ class ViestiController(
       case Success(value) =>
         value match {
           case None =>
-            LOG.warn(s"Viestiä ei löytynyt id:illä': $id")
+            LOG.warn(s"Viestiä ei löytynyt id:illä: $id")
             errorMessageMapper.mapPlainErrorMessage(
               "Viestiä ei löytynyt",
               HttpStatus.NOT_FOUND
@@ -163,13 +163,12 @@ class ViestiController(
       )
     )
   )
-
   def tallenna(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody paatosBytes: Array[Byte],
+    @RequestBody viestiBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] =
-    tallennaViesti(hakemusOid, paatosBytes, request)
+    tallennaViesti(hakemusOid, viestiBytes, request)
 
   private def tallennaViesti(
     hakemusOid: String,
@@ -206,7 +205,7 @@ class ViestiController(
               auditLog.getUser(request),
               Map("hakemusOid" -> hakemusOid),
               CreateViesti,
-              newViesti.toString
+              mapper.writeValueAsString(newViesti)
             )
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(newViesti))
           case _ =>
@@ -250,13 +249,12 @@ class ViestiController(
       )
     )
   )
-
   def vahvistaViesti(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody paatosBytes: Array[Byte],
+    @RequestBody viestiBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] =
-    tallennaViesti(hakemusOid, paatosBytes, request, true)
+    tallennaViesti(hakemusOid, viestiBytes, request, true)
 
   @DeleteMapping(path = Array("viesti/{id}"))
   @Operation(

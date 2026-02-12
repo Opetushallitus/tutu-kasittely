@@ -210,12 +210,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @MockitoBean
   private var userService: UserService = _
 
-  @Autowired
-  private var perusteluService: PerusteluService = _
-
-  @MockitoBean
-  private var koodistoService: KoodistoService = _
-
   @MockitoBean
   private var auditLog: AuditLog = _
 

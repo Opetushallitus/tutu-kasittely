@@ -82,25 +82,6 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
     }
   }
 
-  private def setupTestData(): Unit = {
-    val testData1 = Map(
-      "name"        -> "John Doe",
-      "age"         -> 30,
-      "city"        -> "Helsinki",
-      "migrationId" -> "test-migration-1"
-    )
-
-    val testData2 = Map(
-      "name"        -> "Jane Smith",
-      "age"         -> 25,
-      "city"        -> "Turku",
-      "migrationId" -> "test-migration-2"
-    )
-
-    vanhaTutuRepository.create(mapper.writeValueAsString(testData1))
-    vanhaTutuRepository.create(mapper.writeValueAsString(testData2))
-  }
-
   @Test
   @DisplayName("Aloittaa migraation onnistuneesti")
   @WithMockUser(username = "testuser", roles = Array("USER"))

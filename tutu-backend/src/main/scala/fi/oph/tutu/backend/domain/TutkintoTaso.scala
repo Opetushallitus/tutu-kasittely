@@ -4,7 +4,8 @@ enum TutkintoTaso:
   case AlempiKorkeakoulu, YlempiKorkeakoulu
 
 object TutkintoTaso:
-  def fromString(value: String): TutkintoTaso = value match
-    case "AlempiKorkeakoulu" => AlempiKorkeakoulu
-    case "YlempiKorkeakoulu" => YlempiKorkeakoulu
-    case _                   => null
+  def optionFromString(value: String): Option[TutkintoTaso] = value match
+    case "AlempiKorkeakoulu"              => Some(AlempiKorkeakoulu)
+    case "YlempiKorkeakoulu"              => Some(YlempiKorkeakoulu)
+    case s if Option(s).forall(_.isBlank) => None
+    case _                                => throw new IllegalArgumentException(s"Tuntematon tutkintotaso: $value")

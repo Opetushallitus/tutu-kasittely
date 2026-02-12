@@ -165,18 +165,18 @@ class XmlChunkerTest {
           </RESULTSET>
         </FMPXMLRESULT>"""
 
-      val startTime = System.currentTimeMillis()
-      val result    = xmlChunker.splitXmlStreamIntoChunksAndStore(
+      // val startTime = System.currentTimeMillis()
+      val result = xmlChunker.splitXmlStreamIntoChunksAndStore(
         new ByteArrayInputStream(xmlContent.getBytes("UTF-8")),
         (_, _, _) => ()
       )
-      val endTime = System.currentTimeMillis()
+      // val endTime = System.currentTimeMillis()
 
       assertTrue(result.isSuccess)
-      val chunkCount = result.get
+      // val chunkCount = result.get
 
-      val runtime    = endTime - startTime
-      val memoryUsed = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()
+      // val runtime    = endTime - startTime
+      // val memoryUsed = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()
     }
   }
 
