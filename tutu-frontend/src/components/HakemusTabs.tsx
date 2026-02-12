@@ -145,6 +145,7 @@ export const HakemusTabs = ({
   hakemusOid: string;
   hakemusKoskee: HakemusKoskee;
 }) => {
+  const theme = useTheme();
   const { t } = useTranslations();
   const activeTab = useActiveTabFromPath();
   const [selectedTabName, setSelectedTabName] = React.useState(activeTab);
@@ -183,7 +184,12 @@ export const HakemusTabs = ({
         targetPage: 'perustelu/yleiset/perustelut',
         isSubTab: true,
       },
-    isEhdollinen && showSubTabs && { value: 'perustelu.uoro', isSubTab: true },
+    isEhdollinen &&
+      showSubTabs && {
+        value: 'perustelu.uoro',
+        isSubTab: true,
+        wrapText: true,
+      },
     isEhdollinen && showSubTabs && { value: 'perustelu.ap', isSubTab: true },
     { value: 'paatostiedot' },
     { value: 'valitustiedot' },
@@ -193,7 +199,13 @@ export const HakemusTabs = ({
     .map((prop) => ({ ...prop, hakemusOid: hakemusOid })) as TabLinkProps[];
 
   return (
-    <InnerBoxWrapper>
+    <InnerBoxWrapper
+      sx={{
+        position: 'sticky',
+        top: theme.spacing(2),
+        alignSelf: 'flex-start',
+      }}
+    >
       <Tabs
         value={selectedTabName}
         onChange={handleChange}

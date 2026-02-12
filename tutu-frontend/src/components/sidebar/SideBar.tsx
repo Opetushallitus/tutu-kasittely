@@ -53,7 +53,13 @@ export const SideBar = () => {
       data-testid={'hakemus-sidebar'}
       direction="column"
       gap={theme.spacing(1)}
-      sx={{ maxWidth: '20%' }}
+      sx={{
+        maxWidth: '20%',
+        position: 'sticky',
+        top: theme.spacing(2),
+        alignSelf: 'flex-start',
+        flexShrink: 0,
+      }}
     >
       <KasittelyVaihe showExtended={showExtendedKasittelyvaihe(pathName)} />
       <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
