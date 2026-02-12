@@ -15,7 +15,8 @@ import fi.oph.tutu.backend.repository.{
   MaakoodiRepository,
   PaatosRepository,
   PerusteluRepository,
-  TutkintoRepository
+  TutkintoRepository,
+  ViestiRepository
 }
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
 import org.flywaydb.core.Flyway
@@ -29,13 +30,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
-import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.postgresql.PostgreSQLContainer
 
 import java.io.FileNotFoundException
 import java.sql.DriverManager
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime, ZonedDateTime}
+import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 
@@ -98,6 +99,9 @@ class IntegrationTestBase {
 
   @Autowired
   var tutkintoRepository: TutkintoRepository = _
+
+  @Autowired
+  var viestiRepository: ViestiRepository = _
 
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 

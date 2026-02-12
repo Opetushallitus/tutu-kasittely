@@ -1,16 +1,14 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{HallintoOikeus, Kieli, Kielistetty, MaakuntaHallintoOikeus}
+import fi.oph.tutu.backend.domain.{HallintoOikeus, MaakuntaHallintoOikeus}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
-import java.sql.Timestamp
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
-import scala.util.{Failure, Success}
 
 @Component
 @Repository

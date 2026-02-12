@@ -5,13 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.repository.migration.VanhaTutuRepository
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import org.json4s.*
-import org.json4s.jackson.JsonMethods.*
-import org.json4s.jackson.Serialization
-import org.json4s.native.JsonMethods.parse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
-import scala.util.{Failure, Success, Try}
+
+import scala.util.{Failure, Try}
 
 @Component
 @Service

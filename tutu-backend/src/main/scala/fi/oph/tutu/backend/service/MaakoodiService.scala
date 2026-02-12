@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Kieli, Kielistetty, KoodistoItem, Maakoodi}
+import fi.oph.tutu.backend.domain.{Kielistetty, KoodistoItem, Maakoodi}
 import fi.oph.tutu.backend.repository.MaakoodiRepository
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}

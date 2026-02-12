@@ -82,7 +82,7 @@ class OnrService(httpService: HttpService) {
     LOG.info("Emptying asiointikieli cache")
 
   @CachePut(Array("asiointikieli"))
-  private def updateCached(personOid: String, value: String): Unit = {
+  def updateCached(personOid: String, value: String): Unit = {
     val asiointikieliCache = cacheManager.getCache("asiointikieli")
     asiointikieliCache.put(personOid, value)
   }
@@ -93,7 +93,7 @@ class OnrService(httpService: HttpService) {
     LOG.info("Emptying henkilo cache")
 
   @CachePut(Array("henkilo"))
-  private def updateCached(personOid: String, value: OnrUser): Unit = {
+  def updateCached(personOid: String, value: OnrUser): Unit = {
     val henkiloCache = cacheManager.getCache("henkilo")
     henkiloCache.put(personOid, value)
   }

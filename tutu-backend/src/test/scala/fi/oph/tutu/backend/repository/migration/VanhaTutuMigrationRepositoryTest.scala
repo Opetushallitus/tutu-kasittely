@@ -1,17 +1,16 @@
 package fi.oph.tutu.backend.repository.migration
 
 import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
-import fi.oph.tutu.backend.repository.migration.VanhaTutuMigrationRepository
-import org.junit.jupiter.api.{BeforeEach, Test}
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mock
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.util.{Failure, Success, Try}
+import scala.util.Success
 
 @ExtendWith(Array(classOf[MockitoExtension]))
 class VanhaTutuMigrationRepositoryTest {
@@ -107,9 +106,6 @@ class VanhaTutuMigrationRepositoryTest {
 
     assertTrue(chunk1Result.isSuccess, "First chunk creation should succeed")
     assertTrue(chunk2Result.isSuccess, "Second chunk creation should succeed")
-
-    val returnedChunk1Id = chunk1Result.get
-    val returnedChunk2Id = chunk2Result.get
 
     val chunk1 = vanhaTutuMigrationRepository.getUnprocessedChunk()
     val chunk2 = vanhaTutuMigrationRepository.getUnprocessedChunk()

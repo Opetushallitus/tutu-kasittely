@@ -5,15 +5,13 @@ import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.{HallintoOikeus, Kieli}
 import fi.oph.tutu.backend.service.HallintoOikeusService
 import fi.oph.tutu.backend.utils.AuditLog
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.http.HttpStatus
 
 import java.util.UUID
-import scala.util.{Left, Right}
 
 class HallintoOikeusControllerTest extends UnitTestBase {
   @Mock

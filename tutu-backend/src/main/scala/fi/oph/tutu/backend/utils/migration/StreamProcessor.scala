@@ -11,7 +11,6 @@ import java.io.InputStream
  * Matalan tason XML-virtakäsittelijä. Käyttää StAX-pohjaista toteutusta.
  */
 private[utils] object StreamProcessor {
-  private val LOG: Logger     = LoggerFactory.getLogger(getClass)
   private val xmlInputFactory = XMLInputFactory.newInstance()
   xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, true)
 

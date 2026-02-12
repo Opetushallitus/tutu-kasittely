@@ -89,7 +89,7 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
     LOG.info("Emptying koodisto-cache and koodistoRelaatiot-cache")
 
   @CachePut(Array("koodisto"))
-  private def updateCached(koodisto: String, value: String): Unit = {
+  def updateCached(koodisto: String, value: String): Unit = {
     val koodistoCache = cacheManager.getCache("koodisto")
     koodistoCache.put(koodisto, value)
   }

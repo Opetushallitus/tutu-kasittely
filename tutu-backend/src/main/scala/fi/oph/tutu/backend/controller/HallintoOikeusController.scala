@@ -5,14 +5,13 @@ import fi.oph.tutu.backend.domain.HallintoOikeus
 import fi.oph.tutu.backend.exception.{HallintoOikeusNotFoundException, HallintoOikeusServiceException}
 import fi.oph.tutu.backend.service.HallintoOikeusService
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.{Operation, Parameter}
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.{ApiResponse, ApiResponses}
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{GetMapping, PathVariable, RequestMapping, RequestParam, RestController}
+import org.springframework.web.bind.annotation.{GetMapping, PathVariable, RequestMapping, RestController}
 
 import scala.util.{Failure, Success, Try}
 

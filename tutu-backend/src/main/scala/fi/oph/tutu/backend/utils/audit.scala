@@ -153,6 +153,9 @@ object AuditOperation {
     val name = "PERUSTELUN_LUONTI"
   }
 
+  case object CreateViesti extends AuditOperation {
+    val name = "VIESTIN_LUONTI"
+  }
   // Päivitys operaatiot
 
   case object UpdateHakemus extends AuditOperation {
@@ -161,6 +164,10 @@ object AuditOperation {
 
   case object UpdateMaakoodi extends AuditOperation {
     val name = "MAAKOODI_PAIVITYS"
+  }
+
+  case object UpdateViesti extends AuditOperation {
+    val name = "VIESTIN_PAIVITYS"
   }
 
   // Luku operaatiot
@@ -235,6 +242,18 @@ object AuditOperation {
 
   case object TallennaTutkinnot extends AuditOperation {
     val name = "TUTKINTOJEN_TALLENNUS"
+  }
+
+  case object ReadViestit extends AuditOperation {
+    val name = "VIESTIEN_LUKU"
+  }
+
+  case object ReadViesti extends AuditOperation {
+    val name = "VIESTIN_LUKU"
+  }
+
+  case object DeleteViesti extends AuditOperation {
+    val name = "VIESTIN_POISTO"
   }
 }
 

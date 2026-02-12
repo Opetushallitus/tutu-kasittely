@@ -7,10 +7,9 @@ import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.migration.VanhaTutuRepository
 import fi.oph.tutu.backend.service.UserService
-import fi.oph.tutu.backend.service.migration.VanhaTutuService
 import fi.oph.tutu.backend.service.migration.MigrationService
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
-import fi.vm.sade.auditlog.{Changes, User as AuditUser}
+import fi.vm.sade.auditlog.User as AuditUser
 import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.{WithAnonymousUser, WithMockUser}
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
@@ -31,8 +29,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
-import java.net.InetAddress
-import java.util.UUID
 import scala.util.{Failure, Success}
 
 @AutoConfigureMockMvc
@@ -84,25 +80,6 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
     } catch {
       case _: Exception =>
     }
-  }
-
-  private def setupTestData(): Unit = {
-    val testData1 = Map(
-      "name"        -> "John Doe",
-      "age"         -> 30,
-      "city"        -> "Helsinki",
-      "migrationId" -> "test-migration-1"
-    )
-
-    val testData2 = Map(
-      "name"        -> "Jane Smith",
-      "age"         -> 25,
-      "city"        -> "Turku",
-      "migrationId" -> "test-migration-2"
-    )
-
-    vanhaTutuRepository.create(mapper.writeValueAsString(testData1))
-    vanhaTutuRepository.create(mapper.writeValueAsString(testData2))
   }
 
   @Test

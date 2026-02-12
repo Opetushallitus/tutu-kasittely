@@ -3,12 +3,11 @@ package fi.oph.tutu.backend.repository.migration
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.repository.migration.VanhaTutuRepository
-import org.junit.jupiter.api.{BeforeEach, Test}
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mock
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 
 import java.util.UUID

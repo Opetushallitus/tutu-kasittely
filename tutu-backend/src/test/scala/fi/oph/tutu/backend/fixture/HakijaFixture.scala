@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.fixture
 
-import fi.oph.tutu.backend.domain.{Hakija, Kieli, UserOid}
+import fi.oph.tutu.backend.domain.{Hakija, Kieli}
 
 val suomi = Map(
   Kieli.valueOf("fi") -> "Suomi",

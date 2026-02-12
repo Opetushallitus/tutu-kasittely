@@ -2,13 +2,6 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.KasittelyVaihe.{
-  AlkukasittelyKesken,
-  HyvaksyttyEiLahetetty,
-  OdottaaTaydennysta,
-  OdottaaVahvistusta,
-  ValmisKasiteltavaksi
-}
 import fi.oph.tutu.backend.fixture.{
   createTutkinnotFixtureAfterMuuttuneetTutkinnot,
   createTutkinnotFixtureBeforeMuuttuneetTutkinnot,
@@ -16,7 +9,7 @@ import fi.oph.tutu.backend.fixture.{
 }
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.TUTU_SERVICE
+import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
@@ -39,9 +32,8 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.UUID
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
@@ -123,12 +115,6 @@ class HakemusControllerTest extends IntegrationTestBase {
           )
         )
       )
-  }
-
-  private def tallennaHakemus(hakemusOid: String, hakemusKoskee: Int): Unit = {
-    hakemusService.tallennaAtaruHakemus(
-      UusiAtaruHakemus(HakemusOid(hakemusOid), hakemusKoskee)
-    )
   }
 
   @Test
@@ -343,7 +329,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 } ]
                               }"""
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemus/1.2.246.562.11.00000000000000006667")
       )
@@ -387,7 +373,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "taydennyspyyntoLahetetty": null
                               } ]"""
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemuslista?nayta=omat&hakemuskoskee=4")
       )
@@ -506,7 +492,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(2)
     when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(true)
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
       )
@@ -533,7 +519,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests("ataruHakemus6666.json")
     when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
       )
@@ -552,7 +538,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
       )
 
-    val result = mockMvc
+    mockMvc
       .perform(
         get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
       )
@@ -589,7 +575,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid, 0))
-    val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
     val tutkinnotBefore = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
@@ -703,7 +688,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruLomake.json")))
 
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid, 0))
-    val hakemus = hakemusRepository.haeHakemus(hakemusOid).get
 
     val tutkinnotBefore = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 

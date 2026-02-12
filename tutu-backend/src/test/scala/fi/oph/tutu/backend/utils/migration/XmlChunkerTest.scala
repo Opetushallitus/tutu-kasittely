@@ -1,10 +1,10 @@
 package fi.oph.tutu.backend.utils.migration
 
 import fi.oph.tutu.backend.config.migration.ChunkingConfig
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.{DisplayName, Test, TestInstance}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
-import scala.util.{Failure, Success}
-import java.io.{ByteArrayInputStream, StringReader}
+
+import java.io.ByteArrayInputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class XmlChunkerTest {
@@ -165,18 +165,18 @@ class XmlChunkerTest {
           </RESULTSET>
         </FMPXMLRESULT>"""
 
-      val startTime = System.currentTimeMillis()
-      val result    = xmlChunker.splitXmlStreamIntoChunksAndStore(
+      // val startTime = System.currentTimeMillis()
+      val result = xmlChunker.splitXmlStreamIntoChunksAndStore(
         new ByteArrayInputStream(xmlContent.getBytes("UTF-8")),
         (_, _, _) => ()
       )
-      val endTime = System.currentTimeMillis()
+      // val endTime = System.currentTimeMillis()
 
       assertTrue(result.isSuccess)
-      val chunkCount = result.get
+      // val chunkCount = result.get
 
-      val runtime    = endTime - startTime
-      val memoryUsed = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()
+      // val runtime    = endTime - startTime
+      // val memoryUsed = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()
     }
   }
 

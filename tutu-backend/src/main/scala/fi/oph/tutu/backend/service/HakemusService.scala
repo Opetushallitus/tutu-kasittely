@@ -365,7 +365,7 @@ class HakemusService(
         val esittelija = hakemus.esittelijaOid match {
           case None                => (null, null)
           case Some(esittelijaOid) =>
-            onrService.haeHenkilo(hakemus.esittelijaOid.get) match {
+            onrService.haeHenkilo(esittelijaOid) match {
               case Left(error)    => (null, null)
               case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
             }

@@ -4,10 +4,9 @@ import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.{HallintoOikeus, Kieli, MaakuntaHallintoOikeus}
 import fi.oph.tutu.backend.exception.{HallintoOikeusNotFoundException, HallintoOikeusServiceException}
 import fi.oph.tutu.backend.repository.HallintoOikeusRepository
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 
 import java.util.UUID

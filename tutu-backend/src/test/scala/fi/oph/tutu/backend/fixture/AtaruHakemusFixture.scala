@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.fixture
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import fi.oph.tutu.backend.domain.{AtaruHakemus, AttachmentReview, AttachmentReviewRaw, Content, HakukohdeReview}
+import fi.oph.tutu.backend.domain.{AtaruHakemus, Content}
 
 val ataruHakemusFixture = AtaruHakemus(
   haku = None,

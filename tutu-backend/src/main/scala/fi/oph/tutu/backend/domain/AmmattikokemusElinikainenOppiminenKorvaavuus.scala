@@ -8,4 +8,4 @@ object AmmattikokemusElinikainenOppiminenKorvaavuus:
     case "Taysi"      => Taysi
     case "Osittainen" => Osittainen
     case "Ei"         => Ei
-    case _            => null
+    case _ => throw new IllegalArgumentException(s"Tuntematon AmmattikokemusElinikainenOppiminenKorvaavuus: $value")

@@ -2,15 +2,14 @@ package fi.oph.tutu.backend.repository.migration
 
 import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
 import fi.oph.tutu.backend.repository.{BaseResultHandlers, TutuDatabase}
-import org.springframework.stereotype.{Component, Repository}
-import slick.jdbc.PostgresProfile.api._
-import slick.jdbc.GetResult
-import scala.concurrent.duration.DurationInt
-import org.springframework.beans.factory.annotation.Autowired
 import org.slf4j.{Logger, LoggerFactory}
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.{Component, Repository}
+import slick.jdbc.GetResult
+import slick.jdbc.PostgresProfile.api.*
 
-import java.time.LocalDateTime
 import java.util.UUID
+import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Try}
 
 /**

@@ -1,8 +1,8 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
 import org.mockito.{Mock, MockitoAnnotations}
 
 class HakemuspalveluServiceTest extends UnitTestBase {

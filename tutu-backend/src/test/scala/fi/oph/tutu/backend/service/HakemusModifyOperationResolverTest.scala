@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.Tutkinto
-import fi.oph.tutu.backend.service.HakemusModifyOperationResolver
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
