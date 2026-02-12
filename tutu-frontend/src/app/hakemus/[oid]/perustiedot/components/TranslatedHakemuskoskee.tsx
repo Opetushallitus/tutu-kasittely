@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useTranslationsOfLanguage } from '@/src/lib/localization/hooks/useTranslationsOfLanguage';
 import { Language } from '@/src/lib/localization/localizationTypes';
-import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
+import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 export const TranslatedHakemuskoskee = ({
   hakemusKoskee,

@@ -7,7 +7,7 @@ import {
   mockLiitteet,
   mockUser,
 } from '@/playwright/mocks';
-import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
+import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 import { translate } from './helpers/translate';
 

@@ -27,6 +27,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockKoodistot(page),
     mockTutkinnot(page),
     mockFilemakerList(page),
+    mockYhteinenKasittely(page),
   ]);
 };
 
@@ -469,6 +470,52 @@ export const mockTutkinnot = async (page: Page) => {
           ),
         });
       }
+    },
+  );
+};
+
+export const mockYhteinenKasittely = async (page: Page) => {
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 'q1',
+            vastaanottaja: 'Testi esittelijä',
+            kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
+            luotu: '2026-02-04T09:12:00Z',
+          },
+          {
+            id: 'q2',
+            vastaanottaja: 'Kalle Päätalo',
+            kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
+            luotu: '2026-02-03T14:30:00Z',
+          },
+          {
+            id: 'q3',
+            vastaanottaja: 'Otto Kehittäjä',
+            kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
+            luotu: '2026-02-01T08:05:00Z',
+            jatkoKasittelyt: [
+              {
+                id: 'q4',
+                vastaanottaja: 'Toinen Tyyppi',
+                kysymys: 'Tarvitaanko lisätietoja ???',
+                luotu: '2026-02-01T08:05:00Z',
+              },
+              {
+                id: 'q5',
+                vastaanottaja: 'Vastaaja Esittelijä',
+                kysymys: 'Tarvitaanko lisätietoja ???',
+                luotu: '2026-02-01T08:05:00Z',
+              },
+            ],
+          },
+        ]),
+      });
     },
   );
 };

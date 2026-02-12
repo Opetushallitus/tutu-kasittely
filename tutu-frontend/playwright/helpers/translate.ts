@@ -35,5 +35,6 @@ export async function translate(
     throw new Error(`Translation for key "${args[0]}" not found.`);
   }
 
-  return result;
+  // Should be disabled in testing but some markers still are returned despite trying 'noWrap'
+  return result.replace(/[\u200C\u200D]/g, '');
 }

@@ -44,6 +44,7 @@ const TAB_ROUTES = {
   'perustelu.yleiset': 'perustelu/yleiset/perustelut',
   'perustelu.uoro': 'perustelu/uoro',
   'perustelu.ap': 'perustelu/ap',
+  yhteinenkasittely: 'yhteinenkasittely',
 } as const;
 
 const useActiveTabFromPath = () => {
@@ -152,7 +153,7 @@ export const HakemusTabs = ({
     setSelectedTabName(activeTab);
   }, [activeTab]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     const newTabName =
       newValue === 'perustelu.ylataso' ? 'perustelu.yleiset' : newValue;
     setSelectedTabName(newTabName);
@@ -186,6 +187,7 @@ export const HakemusTabs = ({
     isEhdollinen && showSubTabs && { value: 'perustelu.ap', isSubTab: true },
     { value: 'paatostiedot' },
     { value: 'valitustiedot' },
+    { value: 'yhteinenkasittely' },
   ]
     .filter(Boolean)
     .map((prop) => ({ ...prop, hakemusOid: hakemusOid })) as TabLinkProps[];

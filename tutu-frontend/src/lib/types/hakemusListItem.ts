@@ -1,4 +1,4 @@
-import { HakemusKoskee } from './hakemus.js';
+import { HakemusKoskee } from './hakemus';
 
 export type HakemusListItem = {
   asiatunnus: string;
