@@ -132,16 +132,18 @@ const StyledTableCell = styled(TableCell)({
 });
 
 const HakemusRow = ({ hakemus }: { hakemus: any }) => {
+  const kokonimi = getters.kokonimi(hakemus);
+  const asiatunnus = getters.asiatunnus(hakemus);
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {getters.kokonimi(hakemus)}
+          {kokonimi ? kokonimi : '-'}
         </Link>
       </StyledTableCell>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {getters.asiatunnus(hakemus)}
+          {asiatunnus ? asiatunnus : '-'}
         </Link>
       </StyledTableCell>
     </TableRow>
@@ -239,10 +241,13 @@ const getPageButtons = (
 
   return pageNumbersWithGaps.map((pagenum, index) => {
     if (Number.isFinite(pagenum)) {
+      const testId =
+        page === pagenum ? { 'data-testid': 'fm-page-view' } : undefined;
       return (
         <PageButton
           key={`fm-pagination-link--${pagenum}-${index}`}
           variant={page === pagenum ? 'contained' : 'text'}
+          {...testId}
           onClick={
             page === pagenum ? undefined : () => selectPage(pagenum as number)
           }

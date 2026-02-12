@@ -4,6 +4,7 @@ import { Grid2 as Grid, useTheme } from '@mui/material';
 import {
   OphInputFormField,
   OphSelect,
+  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { redirect, useSearchParams } from 'next/navigation';
@@ -86,11 +87,15 @@ export default function FilemakerFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        <Grid size={'auto'}>
+        <Grid size={'auto'} container alignItems="center">
           {hakemukset?.count ?? 0} {t('hakemuslista.hakemusta')}
         </Grid>
-        <Grid size={'auto'}>
+        <Grid size={'auto'} direction="row" container alignItems="center">
+          <OphTypography id="fm-page-size-label">
+            {t('filemaker.pageSize.label')}
+          </OphTypography>
           <OphSelect
+            labelId="fm-page-size-label"
             onChange={(event) => setPageSize(event.target.value)}
             value={`${pageSize ?? 20}`}
             options={[
