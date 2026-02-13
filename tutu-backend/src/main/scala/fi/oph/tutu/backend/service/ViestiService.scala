@@ -15,7 +15,7 @@ class ViestiService(
   viestiRepository: ViestiRepository,
   hakemusRepository: HakemusRepository,
   onrService: OnrService,
-  db: TutuDatabase
+  hakemusService: HakemusService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
@@ -63,10 +63,12 @@ class ViestiService(
         viestiRepository.haeVahvistamatonViesti(dbHakemus.id) match {
           case Some(viesti) => Some(viesti)
           case None         =>
+            val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
-              s"Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti"
+              s"""Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
+                  kieli: ${ataruHakemus.lang}"""
             )
-            Some(Viesti(hakemusId = Some(dbHakemus.id)))
+            Some(Viesti(hakemusId = Some(dbHakemus.id), kieli = Kieli.optionFromString(ataruHakemus.lang)))
         }
       case _ =>
         None

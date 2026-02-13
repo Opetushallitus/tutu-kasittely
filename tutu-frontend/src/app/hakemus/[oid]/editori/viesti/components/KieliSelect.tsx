@@ -1,3 +1,4 @@
+import { SelectChangeEvent } from '@mui/material/Select';
 import { Theme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import {
@@ -15,11 +16,13 @@ const getKieliOptions = (t: TFunction) => [
 ];
 
 export const KieliSelect = ({
-  hakemuksenKieli,
+  oletusKieli,
+  updateKieli,
   t,
   theme,
 }: {
-  hakemuksenKieli: Language;
+  oletusKieli: Language;
+  updateKieli: (kieli: Language) => void;
   t: TFunction;
   theme: Theme;
 }) => {
@@ -39,17 +42,15 @@ export const KieliSelect = ({
         <OphSelectFormField
           options={kieliOptions}
           value={
-            kieliOptions.some((opt) => opt.value === hakemuksenKieli)
-              ? hakemuksenKieli
+            kieliOptions.some((opt) => opt.value === oletusKieli)
+              ? oletusKieli
               : 'fi'
           }
           sx={{ width: '50%', paddingLeft: theme.spacing(2) }}
           data-testid={'viesti-kieli-select'}
-          onChange={
-            (/*event: SelectChangeEvent*/) => {
-              //updateHakemusLocal({ esittelijaOid: event.target.value })
-            }
-          }
+          onChange={(event: SelectChangeEvent) => {
+            updateKieli(event.target.value as Language);
+          }}
           inputProps={{ 'aria-label': t('hakemus.viesti.kieli') }}
         />
       </OphTypography>
