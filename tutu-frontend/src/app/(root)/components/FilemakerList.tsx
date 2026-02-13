@@ -55,6 +55,11 @@ const StyledTableBody = styled(TableBody)({
   },
 });
 
+const PageButton = styled(OphButton)({
+  minWidth: 0,
+  padding: '2px 10px',
+});
+
 export function FilemakerList() {
   const { addToast } = useToaster();
   const { t } = useTranslations();
@@ -70,21 +75,27 @@ export function FilemakerList() {
     parseAsInteger.withDefault(1),
   );
 
+  const [pageSize] = useQueryState(
+    'fm-pagesize',
+    parseAsInteger.withDefault(20),
+  );
+
+  const pageCount = data ? Math.ceil(data.count / pageSize) : 1;
+
+  const selectPage = (page: number) => {
+    setFilemakerQueryStateAndLocalStorage(queryClient, setPage, page);
+  };
   const nextPage = () => {
-    setFilemakerQueryStateAndLocalStorage(queryClient, setPage, page + 1);
+    selectPage(Math.min(page + 1, pageCount));
   };
   const prevPage = () => {
-    setFilemakerQueryStateAndLocalStorage(
-      queryClient,
-      setPage,
-      Math.max(page - 1, 1),
-    );
+    selectPage(Math.max(page - 1, 1));
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;
 
   const hakemusRows = data
-    ? data.map((hakemus) => {
+    ? data?.items.map((hakemus) => {
         return <HakemusRow hakemus={hakemus} key={hakemus.id} />;
       })
     : [];
@@ -105,7 +116,13 @@ export function FilemakerList() {
           </StyledTableBody>
         </Table>
       </TableContainer>
-      <Pagination page={page} nextPage={nextPage} prevPage={prevPage} />
+      <Pagination
+        page={page}
+        pageCount={pageCount}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        selectPage={selectPage}
+      />
     </>
   );
 }
@@ -115,16 +132,18 @@ const StyledTableCell = styled(TableCell)({
 });
 
 const HakemusRow = ({ hakemus }: { hakemus: any }) => {
+  const kokonimi = getters.kokonimi(hakemus);
+  const asiatunnus = getters.asiatunnus(hakemus);
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {getters.kokonimi(hakemus)}
+          {kokonimi ? kokonimi : '-'}
         </Link>
       </StyledTableCell>
       <StyledTableCell>
         <Link href={`/filemaker-hakemus/${hakemus.id}`}>
-          {getters.asiatunnus(hakemus)}
+          {asiatunnus ? asiatunnus : '-'}
         </Link>
       </StyledTableCell>
     </TableRow>
@@ -169,24 +188,109 @@ const PrevIcon = styled(ChevronLeftIcon)({
 
 const Pagination = ({
   page,
+  pageCount,
   nextPage,
   prevPage,
+  selectPage,
 }: {
   page: number;
+  pageCount: number;
   nextPage: VoidFunction;
   prevPage: VoidFunction;
+  selectPage: (page: number) => void;
 }) => {
   const { t } = useTranslations();
-  const disabled = page === 1 ? { disabled: true } : {};
+  const prevDisabled = page === 1 ? { disabled: true } : {};
+  const nextDisabled = page >= pageCount ? { disabled: true } : {};
   return (
     <PaginationRow>
-      <OphButton data-testid="fm-prev-page" {...disabled} onClick={prevPage}>
+      <OphButton
+        data-testid="fm-prev-page"
+        {...prevDisabled}
+        onClick={prevPage}
+      >
         <PrevIcon /> {t('hakemuslista.edellinen')}
       </OphButton>
-      <span data-testid="fm-page-view">{page}</span>
-      <OphButton data-testid="fm-next-page" onClick={nextPage}>
+      <>{getPageButtons(page, pageCount, selectPage)}</>
+      <OphButton
+        data-testid="fm-next-page"
+        {...nextDisabled}
+        onClick={nextPage}
+      >
         {t('hakemuslista.seuraava')} <NextIcon />
       </OphButton>
     </PaginationRow>
   );
+};
+
+const getPageButtons = (
+  page: number,
+  pageCount: number,
+  selectPage: (page: number) => void,
+) => {
+  const pageNumbers = getPageNumbers(page, pageCount);
+
+  const pageNumbersWithGaps: (number | string)[] = pageNumbers.flatMap(
+    (pagenum, index, arr) => {
+      if (index > 0 && arr[index] - arr[index - 1] > 1) {
+        return ['...', pagenum];
+      }
+      return pagenum;
+    },
+  );
+
+  return pageNumbersWithGaps.map((pagenum, index) => {
+    if (Number.isFinite(pagenum)) {
+      const testId =
+        page === pagenum ? { 'data-testid': 'fm-page-view' } : undefined;
+      return (
+        <PageButton
+          key={`fm-pagination-link--${pagenum}-${index}`}
+          variant={page === pagenum ? 'contained' : 'text'}
+          {...testId}
+          onClick={
+            page === pagenum ? undefined : () => selectPage(pagenum as number)
+          }
+        >
+          {pagenum}
+        </PageButton>
+      );
+    }
+    return '...';
+  });
+};
+
+const getPageNumbers = (page: number, pageCount: number) => {
+  const firstPage = 1;
+  const lastPage = pageCount;
+
+  const nearbyPages = [page - 2, page - 1, page, page + 1, page + 2];
+  const adjustedNearbyPages = adjustUp(
+    firstPage,
+    adjustDown(lastPage, nearbyPages),
+  );
+  const prunedNearbyPages = adjustedNearbyPages
+    .filter((val) => val > firstPage)
+    .filter((val) => val < lastPage);
+
+  const uniquePageNumbers = new Set([
+    firstPage,
+    ...prunedNearbyPages,
+    lastPage,
+  ]);
+
+  return [...uniquePageNumbers];
+};
+
+const adjustUp = (firstPage: number, nearbyPages: number[]) => {
+  const adjustAmount = Math.max(firstPage - nearbyPages[0], 0);
+  return nearbyPages.map((val) => val + adjustAmount);
+};
+
+const adjustDown = (lastPage: number, nearbyPages: number[]) => {
+  const adjustAmount = Math.max(
+    nearbyPages[nearbyPages.length - 1] - lastPage,
+    0,
+  );
+  return nearbyPages.map((val) => val - adjustAmount);
 };

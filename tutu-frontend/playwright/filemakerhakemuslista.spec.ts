@@ -28,7 +28,7 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await expect(page.getByTestId('hakemus-list')).toBeVisible();
   const hakemusRow = page.getByTestId('hakemus-row');
 
-  expect(await hakemusRow.count()).toBe(4);
+  expect(await hakemusRow.count()).toBe(20);
 });
 
 test('Hakemuslistan filtteri ja sivutus saa oikeat arvot query-parametreista', async ({

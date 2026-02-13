@@ -1,10 +1,14 @@
 'use client';
 
 import { Grid2 as Grid, useTheme } from '@mui/material';
-import { OphInputFormField } from '@opetushallitus/oph-design-system';
+import {
+  OphInputFormField,
+  OphSelect,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { redirect, useSearchParams } from 'next/navigation';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
@@ -30,6 +34,22 @@ export default function FilemakerFilters() {
     'fm-haku',
     parseAsString.withDefault(''),
   );
+
+  const [pageSize, _setPageSize] = useQueryState(
+    'fm-pagesize',
+    parseAsInteger.withDefault(20),
+  );
+
+  const setPageSize = (val: string) => {
+    const newValue = Number(val);
+    if (Number.isFinite(newValue)) {
+      setFilemakerQueryStateAndLocalStorage(
+        queryClient,
+        _setPageSize,
+        newValue,
+      );
+    }
+  };
 
   const searchParams = useSearchParams();
 
@@ -67,11 +87,24 @@ export default function FilemakerFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        {hakemukset && (
-          <Grid size={'auto'}>
-            {hakemukset?.length} {t('hakemuslista.hakemusta')}
-          </Grid>
-        )}
+        <Grid size={'auto'} container alignItems="center">
+          {hakemukset?.count ?? 0} {t('hakemuslista.hakemusta')}
+        </Grid>
+        <Grid size={'auto'} direction="row" container alignItems="center">
+          <OphTypography id="fm-page-size-label">
+            {t('filemaker.pageSize.label')}
+          </OphTypography>
+          <OphSelect
+            labelId="fm-page-size-label"
+            onChange={(event) => setPageSize(event.target.value)}
+            value={`${pageSize ?? 20}`}
+            options={[
+              { label: '20', value: '20' },
+              { label: '50', value: '50' },
+              { label: '100', value: '100' },
+            ]}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );

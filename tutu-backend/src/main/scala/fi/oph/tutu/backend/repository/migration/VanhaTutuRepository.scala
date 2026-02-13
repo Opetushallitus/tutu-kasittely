@@ -64,19 +64,36 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def list(pageNum: Int): Seq[DBFilemakerEntry] = {
-    val PAGE_SIZE = 20
-    val offset    = (pageNum - 1) * PAGE_SIZE // pageNum alkaa 1:stä
+  def list(pageNum: Int, pageSize: Int): Seq[DBFilemakerEntry] = {
+    val offset = (pageNum - 1) * pageSize // pageNum alkaa 1:stä
     try {
       val query = sql"""
         SELECT id, data_json::text
         FROM vanha_tutu
         ORDER BY data_json->>'Hakemus kirjattu' DESC
         OFFSET ${offset}
-        LIMIT ${PAGE_SIZE}
+        LIMIT ${pageSize}
       """.as[DBFilemakerEntry]
 
       db.run(query, "vanha-tutu-list")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Vanha tutu listaus epäonnistui: ${e}")
+        throw new RuntimeException(
+          s"Vanha tutu listaus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  def countList(): Int = {
+    try {
+      val query = sql"""
+        SELECT count(*)
+        FROM vanha_tutu
+      """.as[Int].head
+
+      db.run(query, "vanha-tutu-count-list")
     } catch {
       case e: Exception =>
         LOG.error(s"Vanha tutu listaus epäonnistui: ${e}")
