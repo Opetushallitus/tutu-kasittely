@@ -149,9 +149,7 @@ class PaatosController(
     } match {
       case Success(paatosTeksti) =>
         auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
-        val response = mapper.writeValueAsString(paatosTeksti)
-        ResponseEntity.status(HttpStatus.OK).body(response)
+        ResponseEntity.status(HttpStatus.OK).body(paatosTeksti)
       case Failure(exception) =>
         LOG.error(s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid", exception)
         errorMessageMapper.mapErrorMessage(exception)

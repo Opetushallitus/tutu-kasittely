@@ -105,6 +105,11 @@ const responseToData = async (res: Response) => {
     return {};
   }
   try {
+    const ct = res.headers.get('content-type') ?? '';
+    if (ct.startsWith('text/')) {
+      return await res.text();
+    }
+
     return await res.json();
   } catch (e) {
     console.error('Parsing fetch response body as JSON failed!');
