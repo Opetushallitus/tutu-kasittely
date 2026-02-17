@@ -72,9 +72,9 @@ class VanhaTutuRepository extends BaseResultHandlers {
         SELECT id, data_json::text
         FROM vanha_tutu
         WHERE
-          data_json->>'ashateksti_paatos' LIKE ${qs}
+          data_json->>'ashateksti_paatos' ILIKE ${qs}
         OR
-          data_json->>'muistio_koonti_uusi_kaikki' LIKE ${qs}
+          data_json->>'muistio_koonti_uusi_kaikki' ILIKE ${qs}
         ORDER BY data_json->>'Hakemus kirjattu' DESC
         OFFSET ${offset}
         LIMIT ${pageSize}
@@ -98,9 +98,9 @@ class VanhaTutuRepository extends BaseResultHandlers {
         SELECT count(*) over () as count
         FROM vanha_tutu
         WHERE
-          data_json->>'ashateksti_paatos' LIKE ${qs}
+          data_json->>'ashateksti_paatos' ILIKE ${qs}
         OR
-          data_json->>'muistio_koonti_uusi_kaikki' LIKE ${qs}
+          data_json->>'muistio_koonti_uusi_kaikki' ILIKE ${qs}
       """.as[Int].head
 
       db.run(query, "vanha-tutu-count-list")
