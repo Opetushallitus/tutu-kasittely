@@ -64,12 +64,17 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def list(pageNum: Int, pageSize: Int): Seq[DBFilemakerEntry] = {
+  def list(queryString: String, pageNum: Int, pageSize: Int): Seq[DBFilemakerEntry] = {
     val offset = (pageNum - 1) * pageSize // pageNum alkaa 1:stä
+    val qs     = s"%${queryString}%"
     try {
       val query = sql"""
         SELECT id, data_json::text
         FROM vanha_tutu
+        WHERE
+          data_json->>'ashateksti_paatos' LIKE ${qs}
+        OR
+          data_json->>'muistio_koonti_uusi_kaikki' LIKE ${qs}
         ORDER BY data_json->>'Hakemus kirjattu' DESC
         OFFSET ${offset}
         LIMIT ${pageSize}
@@ -86,16 +91,22 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
-  def countList(): Int = {
+  def countList(queryString: String): Int = {
+    val qs = s"%${queryString}%"
     try {
       val query = sql"""
-        SELECT count(*)
+        SELECT count(*) over () as count
         FROM vanha_tutu
+        WHERE
+          data_json->>'ashateksti_paatos' LIKE ${qs}
+        OR
+          data_json->>'muistio_koonti_uusi_kaikki' LIKE ${qs}
       """.as[Int].head
 
       db.run(query, "vanha-tutu-count-list")
     } catch {
-      case e: Exception =>
+      case e: NoSuchElementException => 0
+      case e: Exception              =>
         LOG.error(s"Vanha tutu listaus epäonnistui: ${e}")
         throw new RuntimeException(
           s"Vanha tutu listaus epäonnistui: ${e.getMessage}",

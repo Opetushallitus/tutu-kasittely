@@ -116,8 +116,9 @@ class VanhaTutuController(
 
   /**
    * Listaa vanhoja TUTU-hakemuksia
-   * @param page sivu     - request param fm-page
-   * @param size sivukoko - request param fm-pagesize
+   * @param query hakusana - request param fm-haku
+   * @param page sivu      - request param fm-page
+   * @param size sivukoko  - request param fm-pagesize
    */
   @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
@@ -128,16 +129,18 @@ class VanhaTutuController(
     )
   )
   def listaaVanhojaHakemuksia(
+    @RequestParam("fm-haku", required = false) query: String,
     @RequestParam("fm-page", required = false) page: String,
     @RequestParam("fm-pagesize", required = false) size: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val pageNum  = Try(page.toInt).getOrElse(1).max(1)            // Sivut alkaen numerosta 1 (default 1)
-      val pageSize = Try(size.toInt).getOrElse(20).min(100).max(20) // Sivutus välillä 20 - 100 (default 20)
+      val pageNum     = Try(page.toInt).getOrElse(1).max(1)            // Sivut alkaen numerosta 1 (default 1)
+      val pageSize    = Try(size.toInt).getOrElse(20).min(100).max(20) // Sivutus välillä 20 - 100 (default 20)
+      val queryString = Option(query).getOrElse("")
 
-      val hakemusCount = vanhaTutuService.listaaHakemuksiaCount()
-      val hakemusLista = vanhaTutuService.listaaHakemuksia(pageNum, pageSize)
+      val hakemusLista = vanhaTutuService.listaaHakemuksia(queryString, pageNum, pageSize)
+      val hakemusCount = vanhaTutuService.listaaHakemuksiaCount(queryString)
 
       val items = mapper.createArrayNode()
       hakemusLista.foreach { item =>
