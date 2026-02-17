@@ -13,7 +13,14 @@ private def getCommonPaatosHeader(
   val hakijaNimi        = s"${hakemus.hakija.sukunimi} ${hakemus.hakija.etunimet}"
   val hakijaSyntymaaika = hakemus.hakija.syntymaaika
 
-  val tutkinto         = getTutkinto(tutkinnot, paatos.paatosTiedot.head)
+  // Raukeamisessa tutkintoa ei lisätä paatosTietoihin
+  val tutkinto =
+    if (paatos.ratkaisutyyppi == Ratkaisutyyppi.PeruutusTaiRaukeaminen)
+      tutkinnot.headOption
+    else
+      paatos.paatosTiedot.headOption
+        .flatMap(paatosTieto => getTutkinto(tutkinnot, paatosTieto))
+
   val tutkintoOtsikko  = tutkinto.flatMap(_.todistusOtsikko).getOrElse("")
   val tutkintoNimi     = tutkinto.flatMap(_.nimi).getOrElse("")
   val tutkinnonPaaAine = tutkinto.flatMap(_.paaaaineTaiErikoisala).getOrElse("")
@@ -103,11 +110,16 @@ private def getCommonPaatosValitusoikeusText(lang: String, hallintoOikeus: Strin
     s"""<h4>Besvärsrätt</h4><p>Ändring i detta beslut får sökas genom besvär hos $hallintoOikeus. Besvärstiden och förfarandet framgår av bifogade besvärsanvisning.</p>"""
 }
 
-private def getCommonMaksunOikaisuText(lang: String): String = lang match {
+private def getCommonMaksunOikaisuText(lang: String, isPeruutus: Boolean = false): String = lang match {
   case "finnish" =>
-    s"""<h4>Maksun oikaisu</h4><p>Päätöksestä perityt maksut perustuvat opetus- ja kulttuuriministeriön asetukseen Opetushallituksen ja sen erillisyksiköiden suoritteiden maksullisuudesta (1508/2025, 1 ja 2 §). Maksuihin voi vaatia oikaisua Opetushallitukselta. Liitteenä olevasta oikaisuvaatimusosoituksesta ilmenee oikaisuvaatimuksen määräaika ja se, miten oikaisua vaadittaessa on meneteltävä.</p><p>Käsittelymaksu 100 euroa</p><p>Päätösmaksu 395 euroa</p>"""
+    s"""<h4>Maksun oikaisu</h4><p>Päätöksestä perityt maksut perustuvat opetus- ja kulttuuriministeriön asetukseen Opetushallituksen ja sen erillisyksiköiden suoritteiden maksullisuudesta (1508/2025, 1 ja 2 §). Maksuihin voi vaatia oikaisua Opetushallitukselta. Liitteenä olevasta oikaisuvaatimusosoituksesta ilmenee oikaisuvaatimuksen määräaika ja se, miten oikaisua vaadittaessa on meneteltävä.</p><p>Käsittelymaksu 100 euroa</p>${
+        if (!isPeruutus) "<p>Päätösmaksu 395 euroa</p>" else ""
+      }"""
   case _ =>
-    s"""<h4>Omprövning som berör avgifterna</h4><p>Avgifterna för beslutet baserar sig på undervisnings- och kulturministeriets förordning om Utbildningsstyrelsens och dess fristående enheters avgiftsbelagda prestationer (1508/2025, 1 och 2 §). Omprövning som berör avgifterna kan begäras av Utbildningsstyrelsen. Av bifogade anvisning för begäran om omprövning framgår tiden för begäran om omprövning och ansökningsförfarandet.</p><p>Behandlingsavgift 100 euroa</p><p>Beslutsavgift 395 euroa</p>"""
+    s"""<h4>Omprövning som berör avgifterna</h4><p>Avgifterna för beslutet baserar sig på undervisnings- och kulturministeriets förordning om Utbildningsstyrelsens och dess fristående enheters avgiftsbelagda prestationer (1508/2025, 1 och 2 §). Omprövning som berör avgifterna kan begäras av Utbildningsstyrelsen. Av bifogade anvisning för begäran om omprövning framgår tiden för begäran om omprövning och ansökningsförfarandet.</p><p>Behandlingsavgift 100 euro</p>${
+        if (!isPeruutus) "<p>Beslutsavgift 395 euro</p>" else ""
+      }"""
+
 }
 
 private def getSelectTutkintoTasoText(lang: String): String = lang match {
@@ -166,6 +178,16 @@ private def generateTasoPaatosTeksti(
   })
 }
 
+private def generatePeruutusTeksti(lang: String, hakemus: Hakemus): String = {
+  val peruutusPvm = hakemus.peruutusPvm.getOrElse(if (lang == "finnish") "[pp.kk.vvvv]" else "[dd.mm.åååå]")
+  lang match {
+    case "finnish" =>
+      s"""<h4>Päätös</h4><p>Hakija on peruuttanut hakemuksensa $peruutusPvm. Hakemuksen käsittely raukeaa.</p>"""
+    case _ =>
+      s"""<h4>Beslut</h4><p>Den sökande har dragit tillbaka sin ansökan $peruutusPvm. Behandlingen av ansökan förfaller.</p>"""
+  }
+}
+
 private def getTODOText(lang: String): String = lang match {
   case "finnish" =>
     s"""<p>Tällä hetkellä esikatselua ei ole saatavilla.</p>""".stripMargin
@@ -198,6 +220,10 @@ def generatePaatosTeksti(
         })
         ++ getCommonPaatosValitusoikeusText(paatosKieli, hallintoOikeudenNimi.get)
         ++ getCommonMaksunOikaisuText(paatosKieli)
+    case Some(Ratkaisutyyppi.PeruutusTaiRaukeaminen) =>
+      getCommonPaatosHeader(hakemus, tutkinnot, paatos, paatosKieli, maakoodiService)
+        ++ generatePeruutusTeksti(paatosKieli, hakemus)
+        ++ getCommonMaksunOikaisuText(paatosKieli, isPeruutus = true)
     case _ => getTODOText(paatosKieli)
   }
 }

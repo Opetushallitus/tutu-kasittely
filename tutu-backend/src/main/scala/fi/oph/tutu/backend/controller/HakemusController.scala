@@ -393,7 +393,10 @@ class HakemusController(
         errorMessageMapper.mapErrorMessage(e)
     }
 
-  @GetMapping(path = Array("liite/metadata/{hakemusOid}"))
+  @GetMapping(
+    path = Array("liite/metadata/{hakemusOid}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
   def haeLiitteidenTiedot(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestParam("avaimet") avaimet: String,

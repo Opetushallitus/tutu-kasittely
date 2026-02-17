@@ -10,7 +10,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.{assertLinesMatch, assertTrue}
+import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -1091,7 +1091,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         "Paatos-TiettyTutkintoTaiOpinnot"
       ),
       (hakemusOidWithRiittavatOpinnot, "paatosteksti_paatos_common.html", "Paatos-RiittavatOpinnot"),
-      (hakemusOidWithPeruutus, "paatosteksti_todo.html", "PeruutusTaiRaukeaminen"),
+      (hakemusOidWithPeruutus, "paatosteksti_peruutus.html", "PeruutusTaiRaukeaminen"),
       (hakemusOidWithOikaisu, "paatosteksti_todo.html", "Oikaisu"),
       (hakemusOidWithJatetaanTutkimatta, "paatosteksti_todo.html", "JatetaanTutkimatta"),
       (hakemusOidWithSiirto, "paatosteksti_todo.html", "Siirto")
