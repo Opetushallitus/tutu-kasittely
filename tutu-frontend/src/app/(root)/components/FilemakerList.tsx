@@ -262,7 +262,7 @@ const getPageButtons = (
 
 const getPageNumbers = (page: number, pageCount: number) => {
   const firstPage = 1;
-  const lastPage = pageCount;
+  const lastPage = Math.max(pageCount, 1);
 
   const nearbyPages = [page - 2, page - 1, page, page + 1, page + 2];
   const adjustedNearbyPages = adjustUp(

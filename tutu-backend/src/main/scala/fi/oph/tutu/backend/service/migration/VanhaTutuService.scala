@@ -38,9 +38,9 @@ class VanhaTutuService(
     }
   }
 
-  def listaaHakemuksia(pageNum: Int, pageSize: Int): Seq[ObjectNode] = {
+  def listaaHakemuksia(queryString: String, pageNum: Int, pageSize: Int): Seq[ObjectNode] = {
     vanhaTutuRepository
-      .list(pageNum, pageSize)
+      .list(queryString, pageNum, pageSize)
       .map(rivi => {
         val id       = rivi.id
         val dataJson = rivi.dataJson
@@ -51,8 +51,8 @@ class VanhaTutuService(
       })
   }
 
-  def listaaHakemuksiaCount(): Int = {
+  def listaaHakemuksiaCount(queryString: String): Int = {
     vanhaTutuRepository
-      .countList()
+      .countList(queryString)
   }
 }
