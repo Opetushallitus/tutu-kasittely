@@ -5,11 +5,12 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_1384_2015_patevyystaso_2}
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HallintoOikeusService, KoodistoService, OnrService, UserService}
+import fi.oph.tutu.backend.service.{HallintoOikeusService, KoodistoService, MaakoodiService, OnrService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.{get,
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, jsonPath, status}
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+import scala.jdk.CollectionConverters._
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -53,6 +55,9 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   private var hallintoOikeusService: HallintoOikeusService = _
 
   @MockitoBean
+  private var maakoodiService: MaakoodiService = _
+
+  @MockitoBean
   private var auditLog: AuditLog = _
 
   val lomakeId: Long         = 1527182
@@ -66,10 +71,34 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   val hakemusOidWithKielteisetPaatosTiedot: HakemusOid = HakemusOid(
     "1.2.246.562.11.00000000000000006669"
   )
+  val hakemusOidWithTaso: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006670"
+  )
+  val hakemusOidWithRiittavatOpinnot: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006671"
+  )
+  val hakemusOidWithPeruutus: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006672"
+  )
+  val hakemusOidWithOikaisu: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006673"
+  )
+  val hakemusOidWithJatetaanTutkimatta: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006674"
+  )
+  val hakemusOidWithSiirto: HakemusOid = HakemusOid(
+    "1.2.246.562.11.00000000000000006675"
+  )
   var hakemusId: Option[UUID]                                                    = None
   var hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot: Option[UUID] = None
   var hakemusIdWithPaatosTiedotJaKelpoisuudet: Option[UUID]                      = None
   var hakemusIdWithKielteisetPaatosTiedot: Option[UUID]                          = None
+  var hakemusIdWithTaso: Option[UUID]                                            = None
+  var hakemusIdWithRiittavatOpinnot: Option[UUID]                                = None
+  var hakemusIdWithPeruutus: Option[UUID]                                        = None
+  var hakemusIdWithOikaisu: Option[UUID]                                         = None
+  var hakemusIdWithJatetaanTutkimatta: Option[UUID]                              = None
+  var hakemusIdWithSiirto: Option[UUID]                                          = None
   var paatosId: Option[UUID]                                                     = None
   var paatosId2: Option[UUID]                                                    = None
   var paatosTietoId: Option[UUID]                                                = None
@@ -227,6 +256,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(
           id = givenPaatosTietoId,
+          paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
           rinnastettavatTutkinnotTaiOpinnot = addTutkinnot,
           kelpoisuudet = Seq(
             Kelpoisuus(
@@ -287,6 +317,26 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           )
         )
       ),
+      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
+      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
+    )
+  }
+
+  private def makePaatosWithRatkaisutyyppi(
+    givenHakemusId: Option[UUID],
+    givenPaatosId: Option[UUID],
+    ratkaisutyyppi: Ratkaisutyyppi
+  ): Paatos = {
+    Paatos(
+      id = givenPaatosId,
+      hakemusId = givenHakemusId,
+      ratkaisutyyppi = Some(ratkaisutyyppi),
+      seutArviointi = pickBoolean,
+      peruutuksenTaiRaukeamisenSyy =
+        if (ratkaisutyyppi == Ratkaisutyyppi.PeruutusTaiRaukeaminen)
+          Some(PeruutuksenTaiRaukeamisenSyy(muuSyy = Some(true)))
+        else None,
+      paatosTiedot = Seq.empty,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
       lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
@@ -358,6 +408,78 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     hakemusIdWithKielteisetPaatosTiedot = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOidWithKielteisetPaatosTiedot,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithTaso = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithTaso,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithRiittavatOpinnot = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithRiittavatOpinnot,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithPeruutus = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithPeruutus,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithOikaisu = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithOikaisu,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithJatetaanTutkimatta = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithJatetaanTutkimatta,
+        1,
+        lomakeId,
+        None,
+        asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+        None,
+        None,
+        "testi"
+      )
+    )
+    hakemusIdWithSiirto = Some(
+      hakemusRepository.tallennaHakemus(
+        hakemusOidWithSiirto,
         1,
         lomakeId,
         None,
@@ -445,6 +567,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     )
     initAtaruHakemusRequests()
   }
+
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(1)
@@ -799,7 +922,101 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(14)
-  def haePaatosTekstiPalauttaaPaatosTekstinKanssa200(): Unit = {
+  def haePaatosTekstiPalauttaaPaatosTekstinEriPaatoksille(): Unit = {
+    val tasoId = Some(
+      paatosRepository
+        .tallennaPaatos(
+          hakemusIdWithTaso.get,
+          makePaatos(hakemusIdWithTaso).copy(ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)),
+          "test user"
+        )
+        .id
+        .get
+    )
+
+    // Teksti palauttaa fixturen tutkinnon kuitenkin
+    val tutkinto = Tutkinto(
+      id = None,
+      hakemusId = hakemusIdWithTaso.get,
+      jarjestys = "1",
+      todistusOtsikko = Some("Todistusotsikko"),
+      nimi = Some("Tutkintonimi"),
+      paaaaineTaiErikoisala = Some("Pääaine"),
+      oppilaitos = Some("Oppilaitos"),
+      maakoodiUri = None
+    )
+
+    tutkintoRepository.suoritaLisaaTutkinto(tutkinto, "test user")
+    val savedTutkinnot  = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOidWithTaso)
+    val savedTutkintoId = savedTutkinnot.head.id
+
+    paatosRepository.tallennaPaatosTieto(
+      tasoId.get,
+      PaatosTieto(
+        id = None,
+        paatosId = tasoId,
+        paatosTyyppi = Some(PaatosTyyppi.Taso),
+        sovellettuLaki = Some(SovellettuLaki.ap_seut),
+        tutkintoId = savedTutkintoId,
+        lisaaTutkintoPaatostekstiin = None,
+        myonteinenPaatos = Some(true),
+        kielteisenPaatoksenPerustelut = None,
+        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
+      ),
+      "test user"
+    )
+
+    val riittavatOpinnotId = Some(
+      paatosRepository
+        .tallennaPaatos(
+          hakemusIdWithRiittavatOpinnot.get,
+          makePaatos(hakemusIdWithRiittavatOpinnot).copy(ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)),
+          "test user"
+        )
+        .id
+        .get
+    )
+    paatosRepository.tallennaPaatosTieto(
+      riittavatOpinnotId.get,
+      PaatosTieto(
+        id = None,
+        paatosId = riittavatOpinnotId,
+        paatosTyyppi = Some(PaatosTyyppi.RiittavatOpinnot),
+        sovellettuLaki = Some(SovellettuLaki.ap_seut),
+        tutkintoId = savedTutkintoId,
+        lisaaTutkintoPaatostekstiin = None,
+        myonteinenPaatos = Some(true),
+        kielteisenPaatoksenPerustelut = None,
+        tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
+      ),
+      "test user"
+    )
+
+    paatosRepository.tallennaPaatos(
+      hakemusIdWithPeruutus.get,
+      makePaatosWithRatkaisutyyppi(hakemusIdWithPeruutus, None, Ratkaisutyyppi.PeruutusTaiRaukeaminen),
+      "test user"
+    )
+
+    paatosRepository.tallennaPaatos(
+      hakemusIdWithOikaisu.get,
+      makePaatosWithRatkaisutyyppi(hakemusIdWithOikaisu, None, Ratkaisutyyppi.Oikaisu),
+      "test user"
+    )
+
+    paatosRepository.tallennaPaatos(
+      hakemusIdWithJatetaanTutkimatta.get,
+      makePaatosWithRatkaisutyyppi(hakemusIdWithJatetaanTutkimatta, None, Ratkaisutyyppi.JatetaanTutkimatta),
+      "test user"
+    )
+
+    paatosRepository.tallennaPaatos(
+      hakemusIdWithSiirto.get,
+      makePaatosWithRatkaisutyyppi(hakemusIdWithSiirto, None, Ratkaisutyyppi.Siirto),
+      "test user"
+    )
+
+    // Common mocks for generation
     when(onrService.haeHenkilo("1.2.246.562.24.00000000001"))
       .thenReturn(
         Right(
@@ -818,12 +1035,24 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     when(hakemuspalveluService.haeJaParsiHakemus(any[HakemusOid]))
       .thenReturn(Right(JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]))
     when(koodistoService.getKoodistoRelaatiot(any[String])).thenReturn(Right("""[
-    {
-      "koodiUri": "maakunta_01",
-      "koodiArvo": "01",
-      "tila": "HYVAKSYTTY"
-    }
-  ]"""))
+        {
+          "koodiUri": "maakunta_01",
+          "koodiArvo": "01",
+          "tila": "HYVAKSYTTY"
+        }
+      ]"""))
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
+        )
+      )
+    )
     when(hallintoOikeusService.haeHallintoOikeusByKunta(any[String]))
       .thenReturn(
         HallintoOikeus(
@@ -852,13 +1081,48 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           )
         )
       )
-    mvc
-      .perform(
-        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
-      )
-      .andExpect(status().isOk)
-      .andExpect(content().contentType("text/html;charset=UTF-8"))
-      .andExpect(content().string("\"<p>Tällä hetkellä esikatselu on saatavilla vain tasopäätökselle.</p>\""))
-    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosPreview), any())
+    val cases = Seq(
+      // Neljä Ratkaisutyyppi.Paatosta ensin, joilla yhteinen alku- ja lopputiedot
+      (hakemusOidWithTaso, "paatosteksti_paatos_taso.html", "Paatos-Taso"),
+      (hakemusOidWithPaatosTiedotJaKelpoisuudet, "paatosteksti_paatos_common.html", "Paatos-Kelpoisuus"),
+      (
+        hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot,
+        "paatosteksti_paatos_common.html",
+        "Paatos-TiettyTutkintoTaiOpinnot"
+      ),
+      (hakemusOidWithRiittavatOpinnot, "paatosteksti_paatos_common.html", "Paatos-RiittavatOpinnot"),
+      (hakemusOidWithPeruutus, "paatosteksti_peruutus.html", "PeruutusTaiRaukeaminen"),
+      (hakemusOidWithOikaisu, "paatosteksti_todo.html", "Oikaisu"),
+      (hakemusOidWithJatetaanTutkimatta, "paatosteksti_todo.html", "JatetaanTutkimatta"),
+      (hakemusOidWithSiirto, "paatosteksti_todo.html", "Siirto")
+    )
+
+    cases.foreach { case (hid, fixtureName, testName) =>
+      val expectedRaw = scala.io.Source.fromResource(fixtureName).mkString
+
+      val result = mvc
+        .perform(get(s"/api/paatos/${hid}/paatosteksti"))
+        .andExpect(status().isOk)
+        .andExpect(content().contentType("text/html;charset=UTF-8"))
+        .andReturn()
+
+      val body = result.getResponse.getContentAsString.mkString
+      System.out.println(s"$testName Body:\n${body}\n")
+
+      def prettify(html: String): List[String] = {
+        val newlined = html
+          .replaceAll("(<br>|</p>|</h[1-6]>)", "$1\n")
+
+        newlined.split("\\n").toList
+      }
+
+      val actual   = prettify(body)
+      val expected = expectedRaw.split("\\n").toList
+
+      assertLinesMatch(expected.asJava, actual.asJava)
+
+      verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosPreview), any())
+      reset(auditLog)
+    }
   }
 }

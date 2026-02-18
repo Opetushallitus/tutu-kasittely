@@ -26,7 +26,10 @@ class MaakoodiController(
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
-  @GetMapping(path = Array("maakoodi"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
+  @GetMapping(
+    path = Array("maakoodi"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
   @Operation(
     summary = "Listaa maakoodit ja esittelijöiden maajaon",
     responses = Array(

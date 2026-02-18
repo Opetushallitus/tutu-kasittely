@@ -14,19 +14,19 @@ val kajaani = Map(
 )
 
 val hakijaFixture = Hakija(
-  "1.2.246.562.198.94192383589",
-  "Testi Kolmas",
-  "Tatu",
-  "Hakija",
-  Seq(suomi),
-  Some("180462-9981"),
-  "18.04.1962",
-  Some("+3584411222333"),
-  suomi,
-  "Sillitie 1",
-  "00800",
-  "HELSINKI",
-  kajaani,
-  Some("patu.kuusinen@riibasu.fi"),
-  false
+  henkiloOid = "1.2.246.562.198.94192383589",
+  etunimet = "Testi Kolmas",
+  kutsumanimi = "Tatu",
+  sukunimi = "Hakija",
+  kansalaisuus = Seq(suomi),
+  hetu = Some("180462-9981"),
+  syntymaaika = "18.04.1962",
+  matkapuhelin = Some("+3584411222333"),
+  asuinmaa = suomi,
+  katuosoite = "Sillitie 1",
+  postinumero = "00800",
+  postitoimipaikka = "HELSINKI",
+  kotikunta = kajaani,
+  sahkopostiosoite = Some("patu.kuusinen@riibasu.fi"),
+  yksiloityVTJ = false
 )

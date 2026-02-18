@@ -18,7 +18,8 @@ class PaatosService(
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   hallintoOikeusService: HallintoOikeusService,
-  ataruLomakeParser: AtaruLomakeParser
+  ataruLomakeParser: AtaruLomakeParser,
+  maakoodiService: MaakoodiService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
@@ -142,7 +143,7 @@ class PaatosService(
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
-    generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus)
+    generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus, maakoodiService)
   }
 
 }
