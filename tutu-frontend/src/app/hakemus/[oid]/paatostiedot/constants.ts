@@ -171,6 +171,9 @@ export type KoulutusEroModel = {
 };
 
 export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
+  //////////////////
+  // Opetusala
+
   {
     id: 'aineenopetus',
     kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja perusopetuksessa',
@@ -178,6 +181,185 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
       'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetus.lyhytNimi',
     kelpoisuusKohtainenEroLkm: 3,
     yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'aineenopetusLukio',
+    kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja lukiossa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetusLukio.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 3,
+    yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'esiopettaja',
+    kelpoisuusKey: 'Opetusalan ammatit_Esiopetusta antava opettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.esiopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 1,
+    yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'luokanopettaja',
+    kelpoisuusKey: 'Opetusalan ammatit_Luokanopettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.luokanopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'ap-ip_ohjaaja',
+    kelpoisuusKey: 'Opetusalan ammatit_Aamu- ja iltapäivätoiminnan ohjaaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ap-ip_ohjaaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisluokanopettaja',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisluokanopettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisluokanopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisopettajaPerusopetuksessa',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisopettaja perusopetuksessa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaPerusopetuksessa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisopettajaLukiossa',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisopettaja lukiossa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaLukiossa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisopettajaMuu',
+    kelpoisuusKey: 'Opetusalan ammatit_Muu erityisopettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaMuu.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'oppilaanohjaajaPerusopetuksessa',
+    kelpoisuusKey: 'Opetusalan ammatit_Oppilaanohjaaja perusopetuksessa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.oppilaanohjaajaPerusopetuksessa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'opintoohjaajaLukiossa',
+    kelpoisuusKey: 'Opetusalan ammatit_Opinto-ohjaaja lukiossa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.opintoohjaajaLukiossa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'ammattikoulunOpettajaAmmattiosat',
+    kelpoisuusKey:
+      'Opetusalan ammatit_Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ammattikoulunOpettajaAmmattiosat.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'ammattikoulunOpettajaYhteiset',
+    kelpoisuusKey:
+      'Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ammattikoulunOpettajaYhteiset.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'vapaanSivistystyonOpettaja',
+    kelpoisuusKey: 'Opetusalan ammatit_Vapaan sivistystyön opettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.vapaanSivistystyonOpettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'kuraattori',
+    kelpoisuusKey: 'Opetusalan ammatit_Kuraattori',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.kuraattori.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+
+  //////////////////
+  // Varhaiskasvatus
+
+  {
+    id: 'varhaiskasvatuksenOpettaja',
+    kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen opettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenOpettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 2,
+    yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenSosionomi',
+    kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen sosionomi',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenSosionomi.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenLastenhoitaja',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen lastenhoitaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenLastenhoitaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 2,
+    yleisetErot: ['eriIkaryhma'],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenErityisopettaja',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen erityisopettaja',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenErityisopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenMuu',
+    kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenMuu.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
     sisaltaaMuuEro: true,
   },
 ];
