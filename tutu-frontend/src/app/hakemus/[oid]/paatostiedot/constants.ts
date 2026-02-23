@@ -72,6 +72,21 @@ export const sovellettuLakiOptions = (
           label: t('hakemus.paatos.sovellettuLaki.ro'),
         },
       ];
+    case 'LopullinenPaatos':
+      return [
+        {
+          value: 'ap',
+          label: t('hakemus.paatos.sovellettuLaki.ap'),
+        },
+        {
+          value: 'ap_seut',
+          label: t('hakemus.paatos.sovellettuLaki.ap_seut'),
+        },
+        {
+          value: 'uo',
+          label: t('hakemus.paatos.sovellettuLaki.uo'),
+        },
+      ];
     default:
       return [];
   }

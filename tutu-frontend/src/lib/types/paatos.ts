@@ -12,7 +12,8 @@ export type Paatostyyppi =
   | 'Taso'
   | 'Kelpoisuus'
   | 'TiettyTutkintoTaiOpinnot'
-  | 'RiittavatOpinnot';
+  | 'RiittavatOpinnot'
+  | 'LopullinenPaatos';
 
 export type SovellettuLaki = 'uo' | 'ap' | 'ap_seut' | 'ro';
 

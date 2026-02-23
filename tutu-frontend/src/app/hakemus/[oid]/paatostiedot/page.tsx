@@ -278,6 +278,7 @@ const Paatostiedot = ({
             <>
               <PaatosTietoList
                 t={t}
+                hakemusKoskee={hakemus.hakemusKoskee}
                 paatosTiedot={currentPaatosTiedot}
                 paatosTietoOptions={paatos.paatosTietoOptions}
                 updatePaatosTietoAction={updatePaatosTieto}
