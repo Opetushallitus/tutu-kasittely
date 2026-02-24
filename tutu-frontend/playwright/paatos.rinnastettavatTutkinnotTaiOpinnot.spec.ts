@@ -19,7 +19,7 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -77,7 +77,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();

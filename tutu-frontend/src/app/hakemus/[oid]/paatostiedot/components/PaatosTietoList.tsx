@@ -9,15 +9,18 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { LopullinenPaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/LopullinenPaatosTietoComponent';
 import { PaatosTietoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoComponent';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { IconButton } from '@/src/components/IconButton';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { HakemusKoskee } from '@/src/lib/types/hakemus';
 import { PaatosTieto, PaatosTietoOptionGroup } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 interface PaatosTietoListProps {
   t: TFunction;
+  hakemusKoskee: HakemusKoskee;
   paatosTiedot: PaatosTieto[];
   paatosTietoOptions: PaatosTietoOptionGroup;
   updatePaatosTietoAction: (
@@ -36,6 +39,7 @@ interface PaatosTietoListProps {
 
 export const PaatosTietoList = ({
   t,
+  hakemusKoskee,
   paatosTiedot,
   paatosTietoOptions,
   updatePaatosTietoAction,
@@ -45,6 +49,7 @@ export const PaatosTietoList = ({
 }: PaatosTietoListProps) => {
   const theme = useTheme();
   const { showConfirmation } = useGlobalConfirmationModal();
+  const isLopullinenPaatos = hakemusKoskee === HakemusKoskee.LOPULLINEN_PAATOS;
 
   return paatosTiedot.map((paatosTieto, index) => (
     <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
@@ -109,16 +114,27 @@ export const PaatosTietoList = ({
           </OphButton>
         )}
       </Stack>
-      <PaatosTietoComponent
-        key={index}
-        t={t}
-        paatosTieto={paatosTieto}
-        paatosTietoOptions={paatosTietoOptions}
-        updatePaatosTietoAction={(updated, immediateSave?: boolean) =>
-          updatePaatosTietoAction(updated, index, immediateSave)
-        }
-        tutkinnot={tutkinnot}
-      />
+      {isLopullinenPaatos ? (
+        <LopullinenPaatosTietoComponent
+          key={index}
+          t={t}
+          paatosTieto={paatosTieto}
+          updatePaatosTietoAction={(updated, immediateSave?: boolean) =>
+            updatePaatosTietoAction(updated, index, immediateSave)
+          }
+        />
+      ) : (
+        <PaatosTietoComponent
+          key={index}
+          t={t}
+          paatosTieto={paatosTieto}
+          paatosTietoOptions={paatosTietoOptions}
+          updatePaatosTietoAction={(updated, immediateSave?: boolean) =>
+            updatePaatosTietoAction(updated, index, immediateSave)
+          }
+          tutkinnot={tutkinnot}
+        />
+      )}
       <Divider />
     </Stack>
   ));
