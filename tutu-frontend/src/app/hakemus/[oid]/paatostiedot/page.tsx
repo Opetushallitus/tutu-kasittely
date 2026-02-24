@@ -58,6 +58,7 @@ export default function PaatostiedotPage() {
     updatePaatos,
     updateOngoing,
     updateSuccess: paatosUpdateSuccess,
+    updateError: paatosUpdateError,
   } = usePaatos(hakemusState.editedData?.hakemusOid);
 
   const paatosState = useEditableState(paatos, updatePaatos);
@@ -68,6 +69,28 @@ export default function PaatostiedotPage() {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
   }, [addToast, hakemusError, paatosError, t]);
+
+  useEffect(() => {
+    if (paatosUpdateError) {
+      addToast({
+        key: 'virhe.tallennus',
+        type: 'error',
+        message: t('virhe.tallennus'),
+        timeMs: 4000,
+      });
+    }
+  }, [paatosUpdateError, addToast, t]);
+
+  useEffect(() => {
+    if (paatosUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 4000,
+      });
+    }
+  }, [paatosUpdateSuccess, addToast, t]);
 
   if (hakemusError || paatosError) {
     return null;
