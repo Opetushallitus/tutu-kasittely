@@ -7,7 +7,7 @@ case class Viesti(
   id: Option[UUID] = None,
   hakemusId: Option[UUID] = None,
   kieli: Option[Kieli] = None,
-  viestityyppi: Option[Viestityyppi] = None,
+  tyyppi: Option[Viestityyppi] = None,
   otsikko: Option[String] = None,
   viesti: Option[String] = None,
   vahvistettu: Option[LocalDateTime] = None,
@@ -19,7 +19,7 @@ case class Viesti(
 
 case class ViestiListItem(
   id: UUID,
-  viestityyppi: Viestityyppi,
+  tyyppi: Viestityyppi,
   otsikko: String,
   vahvistettu: LocalDateTime,
   vahvistaja: String

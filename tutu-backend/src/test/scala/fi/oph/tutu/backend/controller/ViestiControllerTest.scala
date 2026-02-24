@@ -225,7 +225,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       hakemusId.get,
       Viesti(
         kieli = Some(Kieli.fi),
-        viestityyppi = Some(ennakkotieto),
+        tyyppi = Some(ennakkotieto),
         otsikko = Some("Toinen"),
         viesti = Some("Toinen viesti"),
         vahvistettu = Some(LocalDateTime.now()),
@@ -237,7 +237,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       hakemusId.get,
       Viesti(
         kieli = Some(Kieli.sv),
-        viestityyppi = Some(ennakkotieto),
+        tyyppi = Some(ennakkotieto),
         otsikko = Some("Kolmas"),
         viesti = Some("Kolmas viesti"),
         vahvistettu = Some(LocalDateTime.now()),

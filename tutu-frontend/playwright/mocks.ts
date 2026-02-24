@@ -343,7 +343,9 @@ export const mockKoodistot = async (page: Page) => {
   );
 };
 
-const unwrapData = (data: Record<string, unknown>): Record<string, unknown> => {
+export const unwrapData = (
+  data: Record<string, unknown>,
+): Record<string, unknown> => {
   const unwrapped: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(data)) {
     if (

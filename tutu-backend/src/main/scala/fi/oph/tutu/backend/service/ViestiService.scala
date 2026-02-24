@@ -46,7 +46,7 @@ class ViestiService(
               case "vahvistettu" => viestiLista.sortBy(_.vahvistettu)
               case "otsikko"     => viestiLista.sortBy(_.otsikko)
               case "vahvistaja"  => viestiLista.sortBy(_.vahvistaja)
-              case _             => viestiLista.sortBy(_.viestityyppi.toString)
+              case _             => viestiLista.sortBy(_.tyyppi.toString)
             }
             sortDef match {
               case SortDef.Asc  => sorted

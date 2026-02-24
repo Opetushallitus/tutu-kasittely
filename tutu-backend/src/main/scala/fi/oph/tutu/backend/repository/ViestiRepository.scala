@@ -24,7 +24,7 @@ class ViestiRepository extends BaseResultHandlers {
         id = Some(r.nextObject().asInstanceOf[UUID]),
         hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
         kieli = Kieli.optionFromString(r.nextString()),
-        viestityyppi = Viestityyppi.optionFromString(r.nextString()),
+        tyyppi = Viestityyppi.optionFromString(r.nextString()),
         otsikko = Option(r.nextString()),
         viesti = Option(r.nextString()),
         vahvistettu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -39,7 +39,7 @@ class ViestiRepository extends BaseResultHandlers {
     GetResult(r =>
       ViestiListItem(
         id = r.nextObject().asInstanceOf[UUID],
-        viestityyppi = Viestityyppi.optionFromString(r.nextString()).orNull,
+        tyyppi = Viestityyppi.optionFromString(r.nextString()).orNull,
         otsikko = r.nextString(),
         vahvistettu = r.nextTimestamp().toLocalDateTime,
         vahvistaja = r.nextString()
@@ -115,7 +115,7 @@ class ViestiRepository extends BaseResultHandlers {
             INSERT INTO viesti (hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luoja)
             VALUES (${hakemusId.toString}::uuid,
             ${viesti.kieli.map(_.toString).orNull}::kieli,
-            ${viesti.viestityyppi.map(_.toString).orNull}::viestityyppi,
+            ${viesti.tyyppi.map(_.toString).orNull}::viestityyppi,
             ${viesti.otsikko.orNull},
             ${viesti.viesti.orNull},
             ${viesti.vahvistettu.map(java.sql.Timestamp.valueOf).orNull},
@@ -142,7 +142,7 @@ class ViestiRepository extends BaseResultHandlers {
           UPDATE viesti
           SET
               kieli = ${viesti.kieli.map(_.toString).orNull}::kieli,
-              tyyppi = ${viesti.viestityyppi.map(_.toString).orNull}::viestityyppi,
+              tyyppi = ${viesti.tyyppi.map(_.toString).orNull}::viestityyppi,
               otsikko = ${viesti.otsikko.orNull},
               viesti = ${viesti.viesti.orNull},
               vahvistettu = ${viesti.vahvistettu.map(java.sql.Timestamp.valueOf).orNull},

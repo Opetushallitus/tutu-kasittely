@@ -5,7 +5,7 @@ export type Viestityyppi = 'taydennyspyynto' | 'ennakkotieto' | 'muu';
 export type Viesti = {
   id?: string;
   kieli: Language;
-  viestityyppi: Viestityyppi;
+  tyyppi?: Viestityyppi;
   otsikko?: string;
   viesti?: string;
   vahvistettu?: string;

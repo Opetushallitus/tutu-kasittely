@@ -2,10 +2,20 @@
 
 import { useTheme } from '@mui/material';
 import { Stack } from '@mui/system';
-import { OphTypography } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
+import {
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import { LexicalEditor } from 'lexical';
+import React, { RefObject, useEffect, useRef } from 'react';
 
+import { Editor } from '@/src/app/hakemus/[oid]/editori/components/Editor';
+import {
+  exportHtml,
+  importHtml,
+} from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 import { KieliSelect } from '@/src/app/hakemus/[oid]/editori/viesti/components/KieliSelect';
+import { ViestityyppiComponent } from '@/src/app/hakemus/[oid]/editori/viesti/components/Viestityyppi';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -14,8 +24,22 @@ import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useViesti } from '@/src/hooks/useViesti';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { Viesti } from '@/src/lib/types/viesti';
+import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
 import { handleFetchError } from '@/src/lib/utils';
+
+const Editori = ({
+  editorRef,
+  viesti,
+}: {
+  editorRef: RefObject<LexicalEditor | null>;
+  viesti: string;
+}) => {
+  useEffect(() => {
+    importHtml(editorRef.current, viesti);
+  }, [editorRef, viesti]);
+
+  return <Editor editorRef={editorRef}></Editor>;
+};
 
 export default function ViestiPage() {
   const { t } = useTranslations();
@@ -51,6 +75,8 @@ export default function ViestiPage() {
     handleFetchError(addToast, viestiError, 'virhe.viestinLataus', t);
   }, [hakemusError, viestiError, addToast, t]);
 
+  const editorRef = useRef<LexicalEditor | null>(null);
+
   if (hakemusError || viestiError) {
     return null;
   }
@@ -60,7 +86,11 @@ export default function ViestiPage() {
   }
 
   const updateViestiField = (updatedViesti: Partial<Viesti>) => {
-    const newViesti = { ...viesti, ...updatedViesti };
+    const newViesti = {
+      ...currentViesti,
+      ...updatedViesti,
+      viesti: exportHtml(editorRef.current),
+    };
     viestiState.updateLocal(newViesti);
   };
 
@@ -73,7 +103,7 @@ export default function ViestiPage() {
       }}
     >
       <OphTypography variant={'h2'}>
-        {t('hakemus.viesti.otsikko')}
+        {t('hakemus.viesti.sivunOtsikko')}
       </OphTypography>
       <KieliSelect
         oletusKieli={currentViesti.kieli || 'fi'}
@@ -81,6 +111,24 @@ export default function ViestiPage() {
         t={t}
         theme={theme}
       />
+      <ViestityyppiComponent
+        viestityyppi={currentViesti.tyyppi}
+        updateViestityyppi={(tyyppi: Viestityyppi) =>
+          updateViestiField({ tyyppi: tyyppi })
+        }
+        t={t}
+      />
+      <OphInputFormField
+        label={t('hakemus.viesti.otsikko')}
+        value={currentViesti.otsikko || ''}
+        onChange={(event) =>
+          updateViestiField({
+            otsikko: event.target.value,
+          })
+        }
+        data-testid={'viesti-otsikko-input'}
+      />
+      <Editori editorRef={editorRef} viesti={currentViesti.viesti || ''} />
       <SaveRibbon
         onSave={() => {
           viestiState.save();
