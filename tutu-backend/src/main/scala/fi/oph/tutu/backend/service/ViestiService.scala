@@ -1,8 +1,8 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.SortDef.Undefined
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{HakemusRepository, TutuDatabase, ViestiRepository}
+import fi.oph.tutu.backend.domain.SortDef.Undefined
+import fi.oph.tutu.backend.repository.{HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}

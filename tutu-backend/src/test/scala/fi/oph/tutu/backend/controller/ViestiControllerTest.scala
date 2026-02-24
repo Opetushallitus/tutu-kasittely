@@ -114,6 +114,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(2)
   def haeViestinTyoversioPalauttaaUudenViestinElleiLoydyKannasta(): Unit = {
+    initAtaruHakemusRequests()
     mvc
       .perform(
         get(s"/api/viesti/tyoversio/$hakemusOid")

@@ -7,7 +7,6 @@ import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.GetResult
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import slick.jdbc.PostgresProfile.api.*
 
 @Component
