@@ -22,6 +22,7 @@ export type EditableState<T> = {
   updateLocal: (newData: Partial<T>) => void;
   updateImmediately: (newData: Partial<T>) => void;
   save: () => void;
+  discard: () => void;
 };
 
 export const useEditableState = <T>(
@@ -66,11 +67,17 @@ export const useEditableState = <T>(
     }
   };
 
+  // Discard local edits and revert to server data
+  const discard = () => {
+    setEditedData(serverData);
+  };
+
   return {
     editedData,
     hasChanges,
     updateLocal,
     updateImmediately,
     save,
+    discard,
   };
 };

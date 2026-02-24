@@ -87,32 +87,35 @@ export const SaveRibbon = ({
           minHeight: 56,
         }}
       >
-        <Stack
-          direction="row"
-          alignItems="flex-start"
-          gap={theme.spacing(0.5)}
-          sx={{
-            // Aloita 25%, piilota kun leveys <= 1000px;
-            ml: 'max(0px, min(25%, calc(50% - 500px)))',
-            '@media (max-width:1000px)': {
-              display: 'none',
-            },
-          }}
-        >
-          <StyledInfoOutlinedIcon />
-          <Box>
-            <OphTypography variant="body1">
-              {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
-            </OphTypography>
-            <OphTypography variant="body1">
-              {lastSaved
-                ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
-                : ''}
-              {'  '}
-              {modifier ? modifier : ' '}
-            </OphTypography>
-          </Box>
-        </Stack>
+        {Boolean(lastSaved || modifier) && (
+          <Stack
+            data-testid="save-ribbon-last-saved"
+            direction="row"
+            alignItems="flex-start"
+            gap={theme.spacing(0.5)}
+            sx={{
+              // Aloita 25%, piilota kun leveys <= 1000px;
+              ml: 'max(0px, min(25%, calc(50% - 500px)))',
+              '@media (max-width:1000px)': {
+                display: 'none',
+              },
+            }}
+          >
+            <StyledInfoOutlinedIcon />
+            <Box>
+              <OphTypography variant="body1">
+                {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
+              </OphTypography>
+              <OphTypography variant="body1">
+                {lastSaved
+                  ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
+                  : ''}
+                {'  '}
+                {modifier ? modifier : ' '}
+              </OphTypography>
+            </Box>
+          </Stack>
+        )}
         <Box
           sx={{
             position: 'absolute',

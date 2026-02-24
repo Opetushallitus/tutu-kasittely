@@ -132,6 +132,7 @@ const AsiakirjaHookLayer = ({
     save: saveHakemus,
     hasChanges: hakemusHasChanges,
     updateLocal: updateLocalHakemus,
+    discard: discardHakemus,
   } = hakemusState;
 
   /* -------------------------- */
@@ -166,6 +167,8 @@ const AsiakirjaHookLayer = ({
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteidenLataus', t);
   }, [asiakirjaError, addToast, t]);
 
+  useUnsavedChanges(hakemusHasChanges, discardHakemus);
+
   if (asiakirjaError) {
     return null;
   }
@@ -178,15 +181,21 @@ const AsiakirjaHookLayer = ({
   };
 
   return (
-    <AsiakirjaPagePure
-      hakemus={hakemus!}
-      asiakirjaTietoUpdateAction={asiakirjaTietoUpdateAction}
-      asiakirjat={asiakirjat}
-      asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
-      isSaving={isSaving}
-      hasChanges={hakemusHasChanges}
-      onSave={saveHakemus}
-    />
+    <>
+      <AsiakirjaPagePure
+        hakemus={hakemus}
+        asiakirjaTietoUpdateAction={asiakirjaTietoUpdateAction}
+        asiakirjat={asiakirjat}
+        asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
+      />
+      <SaveRibbon
+        onSave={saveHakemus}
+        isSaving={isSaving}
+        hasChanges={hakemusHasChanges}
+        lastSaved={hakemus.muokattu}
+        modifier={hakemus.muokkaaja}
+      />
+    </>
   );
 };
 
@@ -195,22 +204,15 @@ const AsiakirjaPagePure = ({
   asiakirjaTietoUpdateAction,
   asiakirjat = [],
   asiakirjaMetadata = [],
-  isSaving,
-  hasChanges,
-  onSave,
 }: {
   hakemus: Hakemus;
   asiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
   asiakirjat: SisaltoValue[];
   asiakirjaMetadata: AsiakirjaMetadata[];
-  isSaving: boolean;
-  hasChanges: boolean;
-  onSave: () => void;
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
-  useUnsavedChanges(hasChanges);
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -241,121 +243,112 @@ const AsiakirjaPagePure = ({
   const asiakirja = hakemus.asiakirja;
 
   return (
-    <>
-      <Stack
-        gap={theme.spacing(3)}
-        sx={{
-          flexGrow: 1,
-          marginRight: theme.spacing(3),
-        }}
-      >
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
-            {t('hakemus.asiakirjat.otsikko')}
-          </OphTypography>
-          <ExternalLink
-            gap={theme.spacing(1)}
-            label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
-            href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
-          />
-        </Stack>
-        <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
-        <AsiakirjaPyynnot
-          asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
-          updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-          hakemusKoskee={hakemus.hakemusKoskee}
-        ></AsiakirjaPyynnot>
-        <Divider orientation={'horizontal'} />
-        <OphTypography variant={'h3'}>
-          {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
+    <Stack
+      gap={theme.spacing(3)}
+      sx={{
+        flexGrow: 1,
+        marginRight: theme.spacing(3),
+      }}
+    >
+      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+        <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
+          {t('hakemus.asiakirjat.otsikko')}
         </OphTypography>
-        <KaikkiSelvityksetSaatu
-          asiakirjaTieto={asiakirja}
-          hakemusKoskee={hakemus.hakemusKoskee}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-          kirjausPvm={hakemus.kirjausPvm}
+        <ExternalLink
+          gap={theme.spacing(1)}
+          label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
+          href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
         />
-        <ApHakemus
-          asiakirjaTieto={asiakirja}
-          hakemusKoskee={hakemus.hakemusKoskee}
-          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        />
-        <Muistio
-          label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
-          helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
-          sisalto={asiakirja.esittelijanHuomioita}
-          updateMuistio={(value: string) => {
-            asiakirjaTietoUpdateAction({ esittelijanHuomioita: value });
-          }}
-          testId={'muistio-asiakirjat-sisainen'}
-        />
-        {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
-          <Muistio
-            label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
-            sisalto={asiakirja.huomiotMuistioon}
-            updateMuistio={(value: string) => {
-              asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
-            }}
-          />
-        )}
-
-        {hakemus.hakemusKoskee === HakemusKoskee.KELPOISUUS_AMMATTIIN && (
-          <ImiPyyntoComponent
-            imiPyynto={asiakirja.imiPyynto}
-            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-          ></ImiPyyntoComponent>
-        )}
-        <Divider orientation={'horizontal'} />
-
-        {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
-          <>
-            <OphTypography variant={'h3'}>
-              {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
-            </OphTypography>
-            <Stack>
-              <OphTypography
-                variant={'label'}
-                data-testid="todistus-tarkistus-lupa-label"
-              >
-                {todistusTarkistusLupaLabel}
-              </OphTypography>
-              <OphTypography
-                variant={'body1'}
-                data-testid="todistus-tarkistus-lupa-value"
-              >
-                {todistusAitoustarkistusLupaValue}
-              </OphTypography>
-            </Stack>
-            <SuostumusVahvistamiselle
-              asiakirjaTieto={asiakirja}
-              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-            />
-            <ValmistumisenVahvistusComponent
-              asiakirjaTieto={asiakirja}
-              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-            />
-            <AllekirjoitustenTarkistus
-              asiakirjaTieto={asiakirja}
-              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-            />
-            <AlkuperaisetAsiakirjat
-              asiakirja={asiakirja}
-              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-            />
-            <AsiakirjaMallejaVastaavistaTutkinnoista
-              asiakirjaTieto={asiakirja}
-              updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-            />
-          </>
-        )}
       </Stack>
-      <SaveRibbon
-        onSave={onSave}
-        isSaving={isSaving}
-        hasChanges={hasChanges}
-        lastSaved={hakemus.muokattu}
-        modifier={hakemus.muokkaaja}
+      <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
+      <AsiakirjaPyynnot
+        asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
+        updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        hakemusKoskee={hakemus.hakemusKoskee}
+      ></AsiakirjaPyynnot>
+      <Divider orientation={'horizontal'} />
+      <OphTypography variant={'h3'}>
+        {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
+      </OphTypography>
+      <KaikkiSelvityksetSaatu
+        asiakirjaTieto={asiakirja}
+        hakemusKoskee={hakemus.hakemusKoskee}
+        updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+        kirjausPvm={hakemus.kirjausPvm}
       />
-    </>
+      <ApHakemus
+        asiakirjaTieto={asiakirja}
+        hakemusKoskee={hakemus.hakemusKoskee}
+        updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+      />
+      <Muistio
+        label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
+        helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
+        sisalto={asiakirja.esittelijanHuomioita}
+        updateMuistio={(value: string) => {
+          asiakirjaTietoUpdateAction({ esittelijanHuomioita: value });
+        }}
+        testId={'muistio-asiakirjat-sisainen'}
+      />
+      {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
+        <Muistio
+          label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
+          sisalto={asiakirja.huomiotMuistioon}
+          updateMuistio={(value: string) => {
+            asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
+          }}
+        />
+      )}
+
+      {hakemus.hakemusKoskee === HakemusKoskee.KELPOISUUS_AMMATTIIN && (
+        <ImiPyyntoComponent
+          imiPyynto={asiakirja.imiPyynto}
+          updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+        ></ImiPyyntoComponent>
+      )}
+      <Divider orientation={'horizontal'} />
+
+      {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
+        <>
+          <OphTypography variant={'h3'}>
+            {t('hakemus.asiakirjat.asiakirjojenVahvistaminen')}
+          </OphTypography>
+          <Stack>
+            <OphTypography
+              variant={'label'}
+              data-testid="todistus-tarkistus-lupa-label"
+            >
+              {todistusTarkistusLupaLabel}
+            </OphTypography>
+            <OphTypography
+              variant={'body1'}
+              data-testid="todistus-tarkistus-lupa-value"
+            >
+              {todistusAitoustarkistusLupaValue}
+            </OphTypography>
+          </Stack>
+          <SuostumusVahvistamiselle
+            asiakirjaTieto={asiakirja}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+          />
+          <ValmistumisenVahvistusComponent
+            asiakirjaTieto={asiakirja}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+          />
+          <AllekirjoitustenTarkistus
+            asiakirjaTieto={asiakirja}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+          />
+          <AlkuperaisetAsiakirjat
+            asiakirja={asiakirja}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+          />
+          <AsiakirjaMallejaVastaavistaTutkinnoista
+            asiakirjaTieto={asiakirja}
+            updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
+          />
+        </>
+      )}
+    </Stack>
   );
 };

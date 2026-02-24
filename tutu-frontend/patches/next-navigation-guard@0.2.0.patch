@@ -1,0 +1,88 @@
+diff --git a/dist/hooks/useInterceptLinkClicks.js b/dist/hooks/useInterceptLinkClicks.js
+index b4e5fd5326e3d01d3eceaef729c10a6120ad3a5d..ebb3f6008dbb435269a76cefc032b4b68e31d716 100644
+--- a/dist/hooks/useInterceptLinkClicks.js
++++ b/dist/hooks/useInterceptLinkClicks.js
+@@ -4,6 +4,7 @@ exports.useInterceptLinkClicks = useInterceptLinkClicks;
+ const useIsomorphicLayoutEffect_1 = require("./useIsomorphicLayoutEffect");
+ const react_1 = require("react");
+ const debug_1 = require("../utils/debug");
++const basePath_1 = require("../utils/basePath");
+ // Try to import AppRouterContext, but don't fail if it doesn't exist
+ let AppRouterContext;
+ try {
+@@ -124,11 +125,12 @@ function useInterceptLinkClicks({ guardMapRef, }) {
+                 // Navigate programmatically since we prevented the default
+                 const router = (_a = window.next) === null || _a === void 0 ? void 0 : _a.router;
+                 if (router) {
++                    const asPath = (0, basePath_1.stripBasePath)(href);
+                     if (navigateType === 'replace') {
+-                        router.replace(href);
++                        router.replace(asPath);
+                     }
+                     else {
+-                        router.push(href);
++                        router.push(asPath);
+                     }
+                 }
+                 else {
+@@ -169,6 +171,7 @@ function useInterceptLinkClicks({ guardMapRef, }) {
+             (0, debug_1.debug)('Cleaning up link click interceptor');
+             document.removeEventListener('click', handleLinkClick, true);
+             observer.disconnect();
++            isSetup.current = false; // Reset so React Strict Mode's second effect invocation re-attaches the listener
+         };
+     }, [guardMapRef]);
+ }
+diff --git a/dist/utils/basePath.js b/dist/utils/basePath.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..8334677e2f73616b958253c6fb5a7ab441cd10b5
+--- /dev/null
++++ b/dist/utils/basePath.js
+@@ -0,0 +1,37 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.stripBasePath = stripBasePath;
++const link_1 = require("next/link");
++const react_1 = require("react");
++const react_dom_1 = require("react-dom");
++const client_1 = require("react-dom/client");
++let _basePath = null;
++/**
++ * Next AppRouter doesn't expose basePath programatically.
++ * One hacky way that we can determine it, however, is to render a <Link />
++ * and examine the resulting href.
++ */
++function getBasePath() {
++    var _a;
++    if (_basePath !== null)
++        return _basePath;
++    const React = react_1.default || react_1;
++    const Link = link_1.default || link_1;
++    const link = React.createElement(Link, { href: "/" });
++    const el = document.createElement("div");
++    const root = (0, client_1.createRoot)(el);
++    (0, react_dom_1.flushSync)(() => root.render(link));
++    const anchor = el.querySelector("a");
++    _basePath = (_a = anchor === null || anchor === void 0 ? void 0 : anchor.getAttribute("href")) !== null && _a !== void 0 ? _a : "";
++    return _basePath;
++}
++/**
++ * Strips the NextJS basePath from a route.
++ * @param href A route path (i.e. should not include a hostname or "https://")
++ */
++function stripBasePath(href) {
++    const basePath = getBasePath();
++    if (!basePath || basePath === "/")
++        return href;
++    return href.replace(basePath, "") || "/";
++}
+diff --git a/dist/hooks/useInterceptPopState.js b/dist/hooks/useInterceptPopState.js
+--- a/dist/hooks/useInterceptPopState.js
++++ b/dist/hooks/useInterceptPopState.js
+@@ -13,5 +13,6 @@ function useInterceptPopState({ guardMapRef, }) {
+ function useInterceptPopState({ guardMapRef, }) {
++    if (typeof window !== 'undefined' && window.navigation) return;
+     const pagesRouter = (0, react_1.useContext)(router_context_shared_runtime_1.RouterContext);
+     (0, useIsomorphicLayoutEffect_1.useIsomorphicLayoutEffect)(() => {
+         // NOTE: Called before Next.js router setup which is useEffect().
+         // https://github.com/vercel/next.js/blob/50b9966ba9377fd07a27e3f80aecd131fa346482/packages/next/src/client/components/app-router.tsx#L518

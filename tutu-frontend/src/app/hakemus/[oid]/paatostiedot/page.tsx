@@ -87,7 +87,7 @@ export default function PaatostiedotPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 4000,
+        timeMs: 2500,
       });
     }
   }, [paatosUpdateSuccess, addToast, t]);
@@ -135,7 +135,14 @@ const Paatostiedot = ({
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
-  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges);
+  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges, () => {
+    if (hakemusState.hasChanges) {
+      hakemusState.discard();
+    }
+    if (paatosState.hasChanges) {
+      paatosState.discard();
+    }
+  });
 
   useEffect(() => {
     if (showPaatosTekstiPreview) {

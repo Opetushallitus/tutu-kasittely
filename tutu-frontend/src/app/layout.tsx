@@ -1,6 +1,7 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import Script from 'next/script';
+import { NavigationGuardProvider } from 'next-navigation-guard';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactNode } from 'react';
 
@@ -13,6 +14,7 @@ import {
 } from '@/src/components/providers/LocalizationProvider';
 import { LocalizedThemeProvider } from '@/src/components/providers/LocalizedThemeProvider';
 import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClientProvider';
+import { UnsavedGuardProvider } from '@/src/components/providers/UnsavedGuardProvider';
 import { Toaster } from '@/src/components/Toaster';
 import { isTesting } from '@/src/lib/configuration/configuration';
 import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
@@ -53,7 +55,10 @@ export default async function RootLayout({
                           <LocalizedThemeProvider>
                             <ConfirmationModalProvider>
                               <Toaster />
-                              {children}
+                              <NavigationGuardProvider>
+                                <UnsavedGuardProvider />
+                                {children}
+                              </NavigationGuardProvider>
                             </ConfirmationModalProvider>
                           </LocalizedThemeProvider>
                         </LocalizationProvider>
