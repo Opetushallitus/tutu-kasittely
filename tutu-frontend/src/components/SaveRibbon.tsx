@@ -82,9 +82,7 @@ export const SaveRibbon = ({
     >
       <Box
         sx={{
-          position: 'relative',
           display: 'flex',
-          alignItems: 'center',
           width: '100%',
           minHeight: 56,
         }}
@@ -93,7 +91,13 @@ export const SaveRibbon = ({
           direction="row"
           alignItems="flex-start"
           gap={theme.spacing(0.5)}
-          sx={{ ml: '25%' }}
+          sx={{
+            // Aloita 25%, piilota kun leveys <= 1000px;
+            ml: 'max(0px, min(25%, calc(50% - 500px)))',
+            '@media (max-width:1000px)': {
+              display: 'none',
+            },
+          }}
         >
           <StyledInfoOutlinedIcon />
           <Box>
