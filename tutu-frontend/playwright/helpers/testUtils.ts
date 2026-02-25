@@ -22,7 +22,6 @@ export const expectRequestData = async (
 
   await waitForSaveComplete(page);
 
-  console.log('!!!!!!!!!!!!!!!!!!!!!', request.postDataJSON());
   return expect(request.postDataJSON()).toMatchObject(data);
 };
 

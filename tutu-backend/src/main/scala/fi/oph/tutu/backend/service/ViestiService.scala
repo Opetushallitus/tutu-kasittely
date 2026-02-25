@@ -1,8 +1,8 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.SortDef.Undefined
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{HakemusRepository, TutuDatabase, ViestiRepository}
+import fi.oph.tutu.backend.domain.SortDef.Undefined
+import fi.oph.tutu.backend.repository.{HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
@@ -15,7 +15,7 @@ class ViestiService(
   viestiRepository: ViestiRepository,
   hakemusRepository: HakemusRepository,
   onrService: OnrService,
-  db: TutuDatabase
+  hakemusService: HakemusService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
@@ -46,7 +46,7 @@ class ViestiService(
               case "vahvistettu" => viestiLista.sortBy(_.vahvistettu)
               case "otsikko"     => viestiLista.sortBy(_.otsikko)
               case "vahvistaja"  => viestiLista.sortBy(_.vahvistaja)
-              case _             => viestiLista.sortBy(_.viestityyppi.toString)
+              case _             => viestiLista.sortBy(_.tyyppi.toString)
             }
             sortDef match {
               case SortDef.Asc  => sorted
@@ -63,10 +63,12 @@ class ViestiService(
         viestiRepository.haeVahvistamatonViesti(dbHakemus.id) match {
           case Some(viesti) => Some(viesti)
           case None         =>
+            val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
-              s"Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti"
+              s"""Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
+                  kieli: ${ataruHakemus.lang}"""
             )
-            Some(Viesti(hakemusId = Some(dbHakemus.id)))
+            Some(Viesti(hakemusId = Some(dbHakemus.id), kieli = Kieli.optionFromString(ataruHakemus.lang)))
         }
       case _ =>
         None

@@ -80,6 +80,7 @@ export function Editor({
           <RichTextPlugin
             contentEditable={
               <ContentEditable
+                data-testid={'editor-content-editable'}
                 style={{
                   padding: theme.spacing(1),
                   outline: 'none',

@@ -128,7 +128,7 @@ class HakemusService(
   def onkoHakemusJoOlemassa(hakemusOid: HakemusOid): Boolean =
     hakemusRepository.onkoHakemusOlemassa(hakemusOid)
 
-  private def haeAtaruHakemus(hakemusOid: HakemusOid): AtaruHakemus = {
+  def haeAtaruHakemus(hakemusOid: HakemusOid): AtaruHakemus = {
     hakemuspalveluService.haeHakemus(hakemusOid) match {
       case Left(error: Throwable) =>
         throw error

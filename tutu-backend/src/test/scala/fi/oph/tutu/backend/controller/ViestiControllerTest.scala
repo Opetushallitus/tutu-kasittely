@@ -114,6 +114,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(2)
   def haeViestinTyoversioPalauttaaUudenViestinElleiLoydyKannasta(): Unit = {
+    initAtaruHakemusRequests()
     mvc
       .perform(
         get(s"/api/viesti/tyoversio/$hakemusOid")
@@ -225,7 +226,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       hakemusId.get,
       Viesti(
         kieli = Some(Kieli.fi),
-        viestityyppi = Some(ennakkotieto),
+        tyyppi = Some(ennakkotieto),
         otsikko = Some("Toinen"),
         viesti = Some("Toinen viesti"),
         vahvistettu = Some(LocalDateTime.now()),
@@ -237,7 +238,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       hakemusId.get,
       Viesti(
         kieli = Some(Kieli.sv),
-        viestityyppi = Some(ennakkotieto),
+        tyyppi = Some(ennakkotieto),
         otsikko = Some("Kolmas"),
         viesti = Some("Kolmas viesti"),
         vahvistettu = Some(LocalDateTime.now()),
