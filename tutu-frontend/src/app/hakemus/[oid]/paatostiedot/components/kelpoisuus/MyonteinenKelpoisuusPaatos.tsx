@@ -132,7 +132,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
                 label={
                   yleinenKoulutusEroTranslation(ero.name, t) ||
                   t(
-                    `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.${eroModel.id}.${ero.name}`,
+                    `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ap.erotKoulutuksessa.${eroModel.id}.${ero.name}`,
                   )
                 }
                 checked={ero.value}
