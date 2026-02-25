@@ -25,7 +25,9 @@ export const ViestityyppiComponent = ({
 }) => {
   return (
     <Stack>
-      <OphTypography variant={'h5'}>{t('hakemus.viesti.tyyppi')}</OphTypography>
+      <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+        {t('hakemus.viesti.tyyppi')}
+      </OphTypography>
       <OphRadioGroup
         labelId={'viesti-tyyppi-radio-group-label'}
         data-testid={'viesti-tyyppi-radio-group'}
