@@ -584,6 +584,7 @@ class HakemusService(
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
         val ataruHakemus      = haeAtaruHakemus(hakemusOid)
+        val formId            = ataruHakemus.form_id
         val hakemusKoskee     = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
         val hakemusPeruutettu = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
         val asetaPeruutetuksi = !dbHakemus.onkoPeruutettu && hakemusPeruutettu
@@ -593,6 +594,8 @@ class HakemusService(
             ataruHakemus
           )
         val muutokset = ListBuffer[String]()
+        if (formId != dbHakemus.formId)
+          muutokset += s"form_id: ${dbHakemus.formId} -> $formId"
         if (kasittelyVaihe != dbHakemus.kasittelyVaihe)
           muutokset += s"${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe"
         if (hakemusKoskee != dbHakemus.hakemusKoskee)
@@ -611,7 +614,8 @@ class HakemusService(
               kasittelyVaihe = kasittelyVaihe,
               hakemusKoskee = hakemusKoskee,
               onkoPeruutettu = asetaPeruutetuksi || dbHakemus.onkoPeruutettu,
-              peruutusPvm = peruutusPvm
+              peruutusPvm = peruutusPvm,
+              formId = formId
             ),
             ATARU_SERVICE
           )

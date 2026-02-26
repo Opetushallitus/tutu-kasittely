@@ -338,6 +338,7 @@ class HakemusRepository extends BaseResultHandlers {
     val peruutusPvm                 = hakemus.peruutusPvm.map(java.sql.Timestamp.valueOf).orNull
     val peruutusLisatieto           = hakemus.peruutusLisatieto
     val viimeisinTaydennyspyyntoPvm = hakemus.viimeisinTaydennyspyyntoPvm.map(java.sql.Timestamp.valueOf).orNull
+    val formId                      = hakemus.formId
 
     try
       db.run(
@@ -357,7 +358,8 @@ class HakemusRepository extends BaseResultHandlers {
           onko_peruutettu = $peruutettu,
           peruutus_paiva = $peruutusPvm,
           peruutus_lisatieto = $peruutusLisatieto,
-          viimeisin_taydennyspyynto_paiva = $viimeisinTaydennyspyyntoPvm
+          viimeisin_taydennyspyynto_paiva = $viimeisinTaydennyspyyntoPvm,
+          form_id = $formId
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid
