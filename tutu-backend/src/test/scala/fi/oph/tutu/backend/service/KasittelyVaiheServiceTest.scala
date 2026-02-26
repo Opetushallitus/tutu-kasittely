@@ -41,7 +41,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -66,7 +67,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -88,7 +90,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = true,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -110,7 +113,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -132,7 +136,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -156,7 +161,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -177,7 +183,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -199,7 +206,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -221,7 +229,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -243,7 +252,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = Some(now.plusWeeks(1)),
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -265,7 +275,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = true,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -289,7 +300,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = true,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -311,7 +323,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = true,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -333,7 +346,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -355,7 +369,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -377,7 +392,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -399,7 +415,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -421,7 +438,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = Some(now.plusWeeks(1)),
       lausuntoKesken = false,
       paatosHyvaksymispaiva = None,
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -468,7 +486,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = Some(now),
-      paatosLahetyspaiva = None
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -490,7 +509,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = Some(now),
-      paatosLahetyspaiva = Some(now.plusDays(1))
+      paatosLahetyspaiva = Some(now.plusDays(1)),
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -512,7 +532,8 @@ class KasittelyVaiheServiceTest {
       imiPyyntoVastattu = None,
       lausuntoKesken = false,
       paatosHyvaksymispaiva = Some(now),
-      paatosLahetyspaiva = Some(now.plusDays(1))
+      paatosLahetyspaiva = Some(now.plusDays(1)),
+      paatostekstiVahvistettu = None
     )
 
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))

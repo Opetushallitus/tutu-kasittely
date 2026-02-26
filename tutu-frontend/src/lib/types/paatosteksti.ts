@@ -1,6 +1,10 @@
 export type Paatosteksti = {
-  id: string;
-  vahvistaja: string;
-  vahvistettu: string;
-  html: string;
+  id?: string;
+  hakemusId: string;
+  vahvistettu?: string;
+  sisalto: string;
+  luotu: string;
+  muokattu?: string;
+  luoja: string;
+  muokkaaja?: string;
 };

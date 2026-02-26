@@ -9,6 +9,8 @@ import org.json4s.jvalue2extractable
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
+import java.util.UUID
+
 @Component
 @Service
 class PaatosService(
@@ -147,16 +149,35 @@ class PaatosService(
   }
 
   def haePaatosteksti(
-    paatostekstiId: String
-  ): String = {
-    "<p>Tallennettu teksti<p>"
+    hakemusOid: HakemusOid
+  ): (Paatosteksti, Boolean) = {
+    paatosRepository.haePaatosteksti(hakemusOid) match {
+      case Some(paatosteksti) =>
+        (paatosteksti, false)
+      case None =>
+        hakemusRepository.haeHakemus(hakemusOid) match {
+          case Some(hakemus) =>
+            (paatosRepository.tallennaUusiPaatosteksti(hakemus.id, generatePaatosTeksti(hakemusOid)), true)
+          case None =>
+            throw NotFoundException(s"Hakemus $hakemusOid not found")
+        }
+    }
   }
 
   def tallennaPaatosteksti(
-    paatostekstiId: String,
-    paatosteksti: String
-  ): String = {
-    "<p>Tallennettu teksti<p>"
+    hakemusOid: HakemusOid,
+    paatostekstiId: UUID,
+    paatosteksti: Paatosteksti,
+    luojaTaiMuokkaaja: String
+  ): (Paatosteksti, Paatosteksti) = {
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid)
+    val uusiPaatosteksti       = if (paatosteksti.vahvistettu.isDefined) {
+      val res = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+      hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
+      res
+    } else {
+      paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+    }
+    (vanhaPaatosteksti, uusiPaatosteksti)
   }
-
 }

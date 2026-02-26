@@ -27,6 +27,7 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
@@ -67,8 +68,10 @@ const EditorInnerContainer = styled('div')({
 
 export function Editor({
   editorRef,
+  updateHasChanges,
 }: {
   editorRef: RefObject<LexicalEditor | null>;
+  updateHasChanges: (editor: LexicalEditor) => void;
 }) {
   const theme = useTheme();
 
@@ -107,6 +110,11 @@ export function Editor({
           HIGHLIGHT,
           LINK,
         ]}
+      />
+      <OnChangePlugin
+        onChange={(_state, editor) => {
+          updateHasChanges(editor);
+        }}
       />
     </LexicalComposer>
   );

@@ -1,9 +1,16 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
+import fi.oph.tutu.backend.domain.{HakemusOid, Paatos, Paatosteksti}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, ReadPaatosPreview, UpdatePaatos}
+import fi.oph.tutu.backend.utils.AuditOperation.{
+  CreatePaatosteksti,
+  ReadPaatos,
+  ReadPaatosPreview,
+  ReadPaatosteksti,
+  UpdatePaatos,
+  UpdatePaatosteksti
+}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -11,6 +18,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.*
 
+import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -156,31 +164,39 @@ class PaatosController(
   }
 
   @GetMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
+    path = Array("paatos/{hakemusOid}/paatosteksti/"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
   def haePaatosteksti(
     @PathVariable hakemusOid: String,
-    @PathVariable paatostekstiId: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      paatosService.haePaatosteksti(paatostekstiId)
+      paatosService.haePaatosteksti(HakemusOid(hakemusOid))
     } match {
-      case Success(paatosTeksti) =>
-        auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
+      case Success((paatosteksti, created)) =>
+        if (created) {
+          auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
+        } else {
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("hakemusOid" -> hakemusOid),
+            CreatePaatosteksti,
+            paatosteksti
+          )
+        }
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosteksti))
       case Failure(exception) =>
         LOG.error(
-          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid",
           exception
         )
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
 
-  @PostMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti/"),
+  @PutMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
   def tallennaPaatosteksti(
@@ -189,12 +205,27 @@ class PaatosController(
     @RequestBody paatosBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
+    val user         = userService.getEnrichedUserDetails(true)
+    val paatosteksti = mapper.readValue(paatosBytes, classOf[Paatosteksti])
     Try {
-      paatosService.haePaatosteksti(paatostekstiId)
+      paatosService.tallennaPaatosteksti(
+        HakemusOid(hakemusOid),
+        UUID.fromString(paatostekstiId),
+        paatosteksti,
+        user.userOid
+      )
     } match {
-      case Success(paatosTeksti) =>
-        auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosTeksti))
+      case Success((vanha, uusi)) =>
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdatePaatosteksti,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(vanha)),
+            Some(mapper.writeValueAsString(uusi))
+          )
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
       case Failure(exception) =>
         LOG.error(
           s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",

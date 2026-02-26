@@ -297,5 +297,5 @@ const Editori = ({
     importHtml(editorRef.current, viesti);
   }, [editorRef, viesti]);
 
-  return <Editor editorRef={editorRef}></Editor>;
+  return <Editor editorRef={editorRef} updateHasChanges={() => {}}></Editor>;
 };
