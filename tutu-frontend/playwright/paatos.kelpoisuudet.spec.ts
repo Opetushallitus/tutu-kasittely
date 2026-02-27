@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 
 import {
   expectDataFromDropdownSelection,
+  expectHiddenOrDetached,
   expectRequestData,
   selectOption,
 } from '@/playwright/helpers/testUtils';
@@ -284,6 +285,8 @@ const backendRequestMyonteinenPaatos = (
 test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PUT -kutsut lähetetään backendille', async ({
   page,
 }) => {
+  test.slow();
+
   await makeInitialKelpoisuusSelections(page);
   const myonteinenPaatosRadiogroup = page.getByTestId(
     'myonteinenPaatos-radio-group',
@@ -542,9 +545,9 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       'ammattikokemusElinikainenOppiminen-korvaavuus-radio-group-clear-button',
     ),
   ).toBeHidden();
-  await expect(kokemusJaOppiminenKelpoisuuskoeButton).toBeHidden();
-  await expect(kokemusJaOppiminenSopeutumisaikaButton).toBeHidden();
-  await expect(kokemusJaOppiminenDualButton).toBeHidden();
+  await expectHiddenOrDetached(kokemusJaOppiminenKelpoisuuskoeButton);
+  await expectHiddenOrDetached(kokemusJaOppiminenSopeutumisaikaButton);
+  await expectHiddenOrDetached(kokemusJaOppiminenDualButton);
 
   await ammattikokemusButton.click();
   await elinikainenOppiminenButton.click();

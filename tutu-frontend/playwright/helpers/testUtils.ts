@@ -2,6 +2,31 @@ import { expect, Locator, Page } from '@playwright/test';
 
 import { waitForSaveComplete } from '@/playwright/helpers/saveHelpers';
 
+// Webkit ongelmiin hyödylliset helperit
+export const expectHiddenOrDetached = async (locator: Locator) => {
+  await expect
+    .poll(async () => {
+      const count = await locator.count();
+      if (count === 0) {
+        return true;
+      }
+      return !(await locator.first().isVisible());
+    })
+    .toBe(true);
+};
+
+export const expectVisibleAndAttached = async (locator: Locator) => {
+  await expect
+    .poll(async () => {
+      const count = await locator.count();
+      if (count === 0) {
+        return false;
+      }
+      return await locator.first().isVisible();
+    })
+    .toBe(true);
+};
+
 export const expectRequestData = async (
   page: Page,
   expectedUrl: string,
@@ -11,7 +36,7 @@ export const expectRequestData = async (
   await action;
 
   const saveButton = page.getByTestId('save-ribbon-button');
-  await expect(saveButton).toBeVisible();
+  await expectVisibleAndAttached(saveButton);
 
   const [request] = await Promise.all([
     page.waitForRequest(
