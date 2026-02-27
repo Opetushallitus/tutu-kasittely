@@ -34,6 +34,7 @@ export type Toast = {
   messageParams?: Record<string, string | number>;
   ref?: CallbackActorLogic<AnyEventObject>;
   manualCloseOnly?: boolean;
+  timeMs?: number;
 };
 
 const toasterMachine = setup({
@@ -55,13 +56,21 @@ const toasterMachine = setup({
                 if (event.toast.manualCloseOnly) {
                   return;
                 }
-                let id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
+                let id = setToastTimer(
+                  key,
+                  event.toast.timeMs ?? DEFAULT_TOAST_DURATION,
+                  sendBack,
+                );
 
                 receive(({ type }) => {
                   if (type === ToastEvents.ENTER) {
                     clearTimeout(id);
                   } else if (type === ToastEvents.LEAVE) {
-                    id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
+                    id = setToastTimer(
+                      key,
+                      event.timeMs ?? DEFAULT_TOAST_DURATION,
+                      sendBack,
+                    );
                   }
                 });
 

@@ -107,6 +107,7 @@ export const PerusteluMuistioModal = ({
       key: 'hakemus.perustelumuistio.kopioi.toaster',
       message: t('hakemus.perustelumuistio.kopioituToast'),
       type: 'success',
+      timeMs: 2500,
     });
   };
 

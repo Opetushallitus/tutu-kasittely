@@ -1,53 +1,64 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useNavigationGuard } from 'next-navigation-guard';
 import { useEffect } from 'react';
 
-export function useUnsavedChanges(isDirty: boolean) {
-  const router = useRouter();
+import { showUnsavedDialog } from '../components/providers/UnsavedGuardProvider';
 
-  // Estä refresh / tabin sulkeminen
+const navigationApi =
+  typeof window !== 'undefined' ? window.navigation : undefined;
+
+export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
+  // Navigation API: intercept back/forward (traverse) natively.
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!isDirty) return;
+    if (!enabled || !navigationApi) {
+      return;
+    }
+
+    let resuming = false;
+
+    const handleNavigate = (e: NavigateEvent) => {
+      if (e.navigationType !== 'traverse' || !e.cancelable) return;
+
+      if (resuming) {
+        resuming = false;
+        return;
+      }
+
       e.preventDefault();
-      e.returnValue = '';
+
+      const destinationKey = e.destination.key;
+      showUnsavedDialog((accepted) => {
+        if (accepted) {
+          onDiscard?.();
+          if (destinationKey != null) {
+            // Set flag for re-triggered event
+            resuming = true;
+            navigationApi.traverseTo(destinationKey);
+          }
+        }
+      });
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
+    navigationApi.addEventListener('navigate', handleNavigate);
+    return () => navigationApi.removeEventListener('navigate', handleNavigate);
+  }, [enabled, onDiscard]);
 
-  // Estä back / forward
+  // Handles nextjs links and others that don't trigger the native navigation API.
+  const guard = useNavigationGuard({
+    enabled: () => enabled,
+  });
+
   useEffect(() => {
-    if (!isDirty) return;
-
-    const handlePopState = () => {
-      const confirmLeave = confirm(
-        'Sinulla on tallentamatonta dataa. Haluatko varmasti poistua?',
-      );
-
-      if (!confirmLeave) {
-        history.pushState(null, '', location.href);
-      }
-    };
-
-    history.pushState(null, '', location.href);
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [isDirty]);
-
-  return {
-    push: (href: string) => {
-      if (
-        !isDirty ||
-        confirm('Sinulla on tallentamatonta dataa. Haluatko varmasti poistua?')
-      ) {
-        router.push(href);
-      }
-    },
-  };
+    if (guard.active) {
+      showUnsavedDialog((accepted) => {
+        if (accepted) {
+          onDiscard?.();
+          guard.accept();
+        } else {
+          guard.reject();
+        }
+      });
+    }
+  }, [guard, enabled, onDiscard]);
 }

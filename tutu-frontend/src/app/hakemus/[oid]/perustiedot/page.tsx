@@ -32,11 +32,17 @@ export default function PerustietoPage() {
   const {
     isLoading,
     isSaving,
-    hakemusState: { editedData: hakemus, hasChanges, save, updateLocal },
+    hakemusState: {
+      editedData: hakemus,
+      hasChanges,
+      save,
+      updateLocal,
+      discard: discardHakemus,
+    },
     error,
   } = useHakemus();
 
-  useUnsavedChanges(hasChanges);
+  useUnsavedChanges(hasChanges, discardHakemus);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);

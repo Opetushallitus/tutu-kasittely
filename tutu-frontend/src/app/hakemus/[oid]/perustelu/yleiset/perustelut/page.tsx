@@ -25,7 +25,7 @@ import { Perustelu } from '@/src/lib/types/perustelu';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error, isSaving } = useHakemus();
+  const { hakemusState, isLoading, error } = useHakemus();
 
   const {
     perustelu,
@@ -46,43 +46,46 @@ export default function YleisetPage() {
       hakemusError={error}
     >
       <YleisetPerustelut
-        hakemusState={hakemusState}
+        hakemus={hakemusState.editedData}
         perusteluState={perusteluState}
-        isSaving={perusteluIsSaving || isSaving}
+        isSaving={perusteluIsSaving}
       />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
-  hakemusState: EditableState<Hakemus>;
+  hakemus?: Hakemus;
   perusteluState: EditableState<Perustelu>;
   isSaving: boolean;
 }
 
 const YleisetPerustelut = ({
-  hakemusState,
+  hakemus,
   perusteluState,
   isSaving,
 }: YleisetPerustelutProps) => {
   const { t } = useTranslations();
 
   const { tutkintoState, isSaving: isTutkintoSaving } = useTutkinnot(
-    hakemusState.editedData?.hakemusOid,
+    hakemus?.hakemusOid,
   );
-  // Combined change tracking and save handler
-  const hasChanges =
-    perusteluState.hasChanges ||
-    hakemusState.hasChanges ||
-    tutkintoState.hasChanges;
+
+  const hasChanges = perusteluState.hasChanges || tutkintoState.hasChanges;
 
   const handleSave = () => {
     perusteluState.save();
     tutkintoState.save();
-    hakemusState.save();
   };
 
-  useUnsavedChanges(hasChanges);
+  useUnsavedChanges(hasChanges, () => {
+    if (perusteluState.hasChanges) {
+      perusteluState.discard();
+    }
+    if (tutkintoState.hasChanges) {
+      tutkintoState.discard();
+    }
+  });
 
   return (
     <>
@@ -133,8 +136,8 @@ const YleisetPerustelut = ({
         onSave={handleSave}
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
-        lastSaved={hakemusState?.editedData?.muokattu}
-        modifier={hakemusState?.editedData?.muokkaaja}
+        lastSaved={perusteluState.editedData?.muokattu} // Tutkintojakin voi muokata
+        modifier={perusteluState.editedData?.muokkaaja}
       />
     </>
   );

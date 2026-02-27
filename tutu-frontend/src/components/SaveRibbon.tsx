@@ -1,7 +1,7 @@
 'use client';
 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Grid2, IconButton, useTheme } from '@mui/material';
+import { Box, Stack, useTheme } from '@mui/material';
 import {
   OphButton,
   OphTypography,
@@ -76,29 +76,53 @@ export const SaveRibbon = ({
         padding: 2,
         display: 'flex',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 99999,
         boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
       }}
     >
-      <Grid2 container wrap="nowrap" gap={theme.spacing(1)}>
-        <Grid2 size={1}>
-          <IconButton>
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          minHeight: 56,
+        }}
+      >
+        {Boolean(lastSaved || modifier) && (
+          <Stack
+            data-testid="save-ribbon-last-saved"
+            direction="row"
+            alignItems="flex-start"
+            gap={theme.spacing(0.5)}
+            sx={{
+              // Aloita 25%, piilota kun leveys <= 1000px;
+              ml: 'max(0px, min(25%, calc(50% - 500px)))',
+              '@media (max-width:1000px)': {
+                display: 'none',
+              },
+            }}
+          >
             <StyledInfoOutlinedIcon />
-          </IconButton>
-        </Grid2>
-        <Grid2 size={8} paddingTop={0.5}>
-          <OphTypography variant="body1">
-            {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
-          </OphTypography>
-          <OphTypography variant="body1">
-            {lastSaved
-              ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
-              : ''}
-            {'  '}
-            {modifier ? modifier : ' '}
-          </OphTypography>
-        </Grid2>
-        <Grid2 size={4} paddingTop={0.5}>
+            <Box>
+              <OphTypography variant="body1">
+                {t('hakemus.perustiedot.muutoshistoria.muokattuViimeksi')}
+              </OphTypography>
+              <OphTypography variant="body1">
+                {lastSaved
+                  ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
+                  : ''}
+                {'  '}
+                {modifier ? modifier : ' '}
+              </OphTypography>
+            </Box>
+          </Stack>
+        )}
+        <Box
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
+        >
           <OphButton
             variant="contained"
             onClick={onSave}
@@ -108,8 +132,8 @@ export const SaveRibbon = ({
           >
             {isSaving ? t('yleiset.tallennetaan') : t('yleiset.tallenna')}
           </OphButton>
-        </Grid2>
-      </Grid2>
+        </Box>
+      </Box>
     </Box>
   );
 };

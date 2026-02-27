@@ -49,6 +49,10 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
     );
   };
 
+  const discard = () => {
+    setLocalTutkinnot(query.data);
+  };
+
   useEffect(() => {
     updateLocal(query.data);
   }, [query.data]);
@@ -135,6 +139,7 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
       hasChanges,
       save,
       editedData: localTutkinnot,
+      discard,
     },
     poistaTutkinto,
     isPerusteluLoading: query.isLoading,

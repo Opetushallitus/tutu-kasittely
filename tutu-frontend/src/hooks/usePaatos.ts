@@ -36,7 +36,12 @@ export const usePaatos = (hakemusOid: string | undefined) => {
     throwOnError: false,
   });
 
-  const { mutate, isPending, isSuccess } = useMutation({
+  const {
+    mutate,
+    isPending: isUpdateOngoing,
+    isSuccess: isUpdateSuccess,
+    error: updateError,
+  } = useMutation({
     mutationFn: (paatos: Paatos) => putPaatos(hakemusOid!, paatos),
     onSuccess: async (response) => {
       const paivitettyPaatos = await response.json();
@@ -58,7 +63,8 @@ export const usePaatos = (hakemusOid: string | undefined) => {
     updatePaatos,
     paatos: query.data,
     isPaatosLoading: query.isLoading,
-    updateOngoing: isPending,
-    updateSuccess: isSuccess,
+    isUpdateOngoing,
+    isUpdateSuccess,
+    updateError,
   };
 };

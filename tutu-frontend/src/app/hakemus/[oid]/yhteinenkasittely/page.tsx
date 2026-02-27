@@ -119,6 +119,7 @@ export default function YhteinenKasittelyPage() {
         key: 'hakemus.yhteinenkasittely.vastattu.toaster',
         message: t('hakemus.yhteinenkasittely.vastattuToast'),
         type: 'success',
+        timeMs: 2500,
       });
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynLaheta', t);

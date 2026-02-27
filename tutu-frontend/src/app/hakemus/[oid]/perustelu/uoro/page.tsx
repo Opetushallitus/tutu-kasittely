@@ -30,6 +30,7 @@ export default function UoroPage() {
     editedData: hakemus,
     hasChanges: hasHakemusChanges,
     save: saveHakemus,
+    discard: discardHakemus,
   } = hakemusState;
 
   const {
@@ -42,8 +43,11 @@ export default function UoroPage() {
   // Use editable state hook for automatic change tracking and save handling
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
 
-  const { hasChanges: hasPerusteluChanges, save: savePerustelu } =
-    perusteluState;
+  const {
+    hasChanges: hasPerusteluChanges,
+    save: savePerustelu,
+    discard: discardPerustelu,
+  } = perusteluState;
 
   // Update local state with custom logic for nested uoRoSisalto
   const updatePerusteluUoRo = (
@@ -78,7 +82,14 @@ export default function UoroPage() {
     saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges);
+  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
+    if (hasHakemusChanges) {
+      discardHakemus();
+    }
+    if (hasPerusteluChanges) {
+      discardPerustelu();
+    }
+  });
 
   return (
     <>

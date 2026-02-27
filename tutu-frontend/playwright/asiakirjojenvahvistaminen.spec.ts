@@ -124,6 +124,9 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await expect(lisatieto).toBeHidden();
 
   const lahetettyInput = lahetetty.locator('input');
+  await lahetetty.evaluate((element) =>
+    element.scrollIntoView({ block: 'start', inline: 'nearest' }),
+  );
   await lahetetty.click();
   await page
     .locator(

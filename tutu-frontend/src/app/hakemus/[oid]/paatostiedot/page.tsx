@@ -56,8 +56,9 @@ export default function PaatostiedotPage() {
     paatos,
     error: paatosError,
     updatePaatos,
-    updateOngoing,
-    updateSuccess: paatosUpdateSuccess,
+    isUpdateOngoing: isPaatosUpdateOngoing,
+    isUpdateSuccess: isPaatosUpdateSuccess,
+    updateError: paatosUpdateError,
   } = usePaatos(hakemusState.editedData?.hakemusOid);
 
   const paatosState = useEditableState(paatos, updatePaatos);
@@ -67,7 +68,20 @@ export default function PaatostiedotPage() {
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
-  }, [addToast, hakemusError, paatosError, t]);
+    handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
+    handleFetchError(addToast, paatosUpdateError, 'virhe.tallennus', t, 4000);
+  }, [addToast, hakemusError, paatosError, paatosUpdateError, t]);
+
+  useEffect(() => {
+    if (isPaatosUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isPaatosUpdateSuccess, addToast, t]);
 
   if (hakemusError || paatosError) {
     return null;
@@ -80,9 +94,9 @@ export default function PaatostiedotPage() {
   return (
     <Paatostiedot
       paatosState={paatosState}
-      updateOngoing={isSaving || updateOngoing}
+      updateOngoing={isSaving || isPaatosUpdateOngoing}
       hakemusState={hakemusState}
-      updateSuccess={paatosUpdateSuccess}
+      updateSuccess={isPaatosUpdateSuccess}
       tutkinnot={tutkintoState.editedData ?? []}
     />
   );
@@ -112,7 +126,14 @@ const Paatostiedot = ({
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
-  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges);
+  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges, () => {
+    if (hakemusState.hasChanges) {
+      hakemusState.discard();
+    }
+    if (paatosState.hasChanges) {
+      paatosState.discard();
+    }
+  });
 
   useEffect(() => {
     if (showPaatosTekstiPreview) {

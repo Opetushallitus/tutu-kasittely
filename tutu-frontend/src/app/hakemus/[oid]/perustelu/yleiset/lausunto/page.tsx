@@ -34,7 +34,7 @@ export default function Lausuntotiedot() {
 
   const {
     isLoading,
-    hakemusState: { editedData: hakemus },
+    hakemusState: { editedData: hakemus, discard: discardHakemus },
     error,
   } = useHakemus();
   const {
@@ -84,7 +84,7 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
-  useUnsavedChanges(hasChanges);
+  useUnsavedChanges(hasChanges, discardHakemus);
 
   return (
     <PerusteluLayout

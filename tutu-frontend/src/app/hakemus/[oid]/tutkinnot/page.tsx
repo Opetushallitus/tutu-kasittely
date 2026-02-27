@@ -43,7 +43,14 @@ export default function TutkintoPage() {
     string | undefined
   >();
 
-  useUnsavedChanges(hakemusState.hasChanges);
+  useUnsavedChanges(hakemusState.hasChanges || tutkintoState.hasChanges, () => {
+    if (hakemusState.hasChanges) {
+      hakemusState.discard();
+    }
+    if (tutkintoState.hasChanges) {
+      tutkintoState.discard();
+    }
+  });
 
   useEffect(() => {
     if (!hakemusState.editedData) return;

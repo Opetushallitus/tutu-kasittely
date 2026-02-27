@@ -26,6 +26,7 @@ export default function ApPage() {
     editedData: hakemus,
     save: saveHakemus,
     hasChanges: hasHakemusChanges,
+    discard: discardHakemus,
   } = hakemusState;
   const hakija = hakemus?.hakija;
   const {
@@ -43,6 +44,7 @@ export default function ApPage() {
     hasChanges: hasPerusteluChanges,
     updateLocal,
     save: savePerustelu,
+    discard: discardPerustelu,
   } = perusteluState;
   // Update local state only
   const updateCheckbox = (key: keyof APSisalto, checked: boolean) => {
@@ -62,7 +64,14 @@ export default function ApPage() {
     saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges);
+  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
+    if (hasHakemusChanges) {
+      discardHakemus();
+    }
+    if (hasPerusteluChanges) {
+      discardPerustelu();
+    }
+  });
 
   const apSisalto = editedPerustelu?.apSisalto;
 
