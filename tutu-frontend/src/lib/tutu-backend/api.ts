@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { FetchError, PermissionError } from '@/src/lib/common';
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { requestAuthRedirectConfirm } from '@/src/lib/navigation/authRedirect';
+import { storePostLoginRedirectUrl } from '@/src/lib/navigation/postLoginRedirect';
 
 let _csrfToken: string;
 const isServer = typeof window === 'undefined';
@@ -12,11 +14,43 @@ const getTutuBackendApiUrl = () => getConfiguration().TUTU_BACKEND_API_URL;
 
 const getLoginUrl = () => `${getTutuBackendApiUrl()}/login`;
 
+const isUnauthenticated = (response: Response) => {
+  return response?.status === 401;
+};
+
+const isCasLoginRedirect = (response: Response) => {
+  try {
+    const responseUrl = new URL(response.url);
+    return response.redirected && responseUrl.pathname.startsWith('/cas/login');
+  } catch {
+    return false;
+  }
+};
+
+const isAuthFailureResponse = (response: Response) => {
+  return isUnauthenticated(response) || isCasLoginRedirect(response);
+};
+
+const redirectToLogin = async () => {
+  if (isServer) {
+    redirect(getLoginUrl());
+  } else {
+    const shouldRedirect = await requestAuthRedirectConfirm();
+    if (!shouldRedirect) {
+      return;
+    }
+
+    storePostLoginRedirectUrl();
+    location.assign(getLoginUrl());
+  }
+};
+
 async function csrfToken() {
   if (!_csrfToken) {
     const response = await fetch(`${getTutuBackendApiUrl()}/csrf`, {
       credentials: 'include',
     });
+
     const data = await response.json();
     _csrfToken = data.token;
   }
@@ -25,7 +59,7 @@ async function csrfToken() {
 }
 
 type Options = {
-  headers?: object;
+  headers?: Record<string, string>;
   queryParams?: string | null;
 };
 
@@ -36,26 +70,46 @@ export async function apiFetch(
     body?: string;
     headers?: { 'Content-Type'?: string };
   },
-  cache?: string,
+  cache?: RequestCache,
+  retryWithFreshCsrf = true,
 ) {
   try {
+    const method = options?.method ?? 'GET';
+    const requiresCsrf = !['GET'].includes(method);
+
     const queryParams = options?.queryParams ? options.queryParams : '';
     const response = await fetch(
       `${getTutuBackendApiUrl()}/${resource}${queryParams}`,
       {
         ...options,
-        method: options?.method ?? 'GET',
+        method,
         credentials: 'include',
+        cache: cache,
         headers: {
           ...options?.headers,
-          'X-CSRF-TOKEN': await csrfToken(),
-          cache: cache ?? 'force-cache',
+          ...(requiresCsrf
+            ? {
+                'X-CSRF-TOKEN': await csrfToken(),
+              }
+            : undefined),
           'Content-Type':
             options?.headers?.['Content-Type'] ?? 'application/json',
         },
         body: options?.body,
       },
     );
+
+    if (isAuthFailureResponse(response)) {
+      _csrfToken = '';
+      await redirectToLogin();
+    }
+
+    // Retry on a csrf mismatch. Likely succeeds or causes proper redirect on auth failure
+    if (response.status === 403 && retryWithFreshCsrf) {
+      _csrfToken = '';
+      return apiFetch(resource, options, cache, false);
+    }
+
     if (response.status >= 400) {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -79,22 +133,6 @@ export async function apiFetch(
     return Promise.reject(e);
   }
 }
-
-const isUnauthenticated = (response: Response) => {
-  return response?.status === 401;
-};
-
-const isRedirected = (response: Response) => {
-  return response.redirected;
-};
-
-const redirectToLogin = () => {
-  if (isServer) {
-    redirect(getLoginUrl());
-  } else {
-    location.assign(getLoginUrl());
-  }
-};
 
 const noContent = (response: Response) => {
   return response.status === 204;
@@ -120,22 +158,16 @@ const responseToData = async (res: Response) => {
 export const doApiFetch = async (
   resource: string,
   options?: Options,
-  cache?: string,
+  cache?: RequestCache,
 ) => {
   try {
     const response = await apiFetch(resource, options, cache);
-    const responseUrl = new URL(response.url);
-    if (
-      isRedirected(response) &&
-      responseUrl.pathname.startsWith('/cas/login')
-    ) {
-      redirectToLogin();
-    }
     return responseToData(response);
   } catch (error: unknown) {
     if (error instanceof FetchError) {
-      if (isUnauthenticated(error.response)) {
-        redirectToLogin();
+      if (isAuthFailureResponse(error.response)) {
+        // Fetchissä (ei unsaved-confirmaatiota) odotetaan redirectia esim. 'session'
+        await new Promise(() => {});
       }
       if (error.response.status === 403) {
         return Promise.reject(new PermissionError());
@@ -149,7 +181,7 @@ export async function doApiPost(
   resource: string,
   body: object,
   options?: Options,
-  cache?: string,
+  cache?: RequestCache,
 ) {
   return apiFetch(
     resource,
@@ -170,7 +202,7 @@ export async function doApiPut(
   resource: string,
   body: object,
   options?: Options,
-  cache?: string,
+  cache?: RequestCache,
 ) {
   return apiFetch(
     resource,
@@ -191,7 +223,7 @@ export async function doApiPatch(
   resource: string,
   body: object,
   options?: Options,
-  cache?: string,
+  cache?: RequestCache,
 ) {
   return apiFetch(
     resource,

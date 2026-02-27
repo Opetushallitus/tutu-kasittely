@@ -72,6 +72,7 @@ export default function YhteinenKasittelyPage() {
     luoUusiKasittely,
     vastaaKasittelyyn,
     error: kasittelyError,
+    updateError,
   } = useYhteinenKasittely(hakemusOid, sortKey);
 
   useEffect(() => {
@@ -81,7 +82,8 @@ export default function YhteinenKasittelyPage() {
       'virhe.yhteisenkasittelynLataus',
       t,
     );
-  }, [kasittelyError, addToast, t]);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [kasittelyError, updateError, addToast, t]);
 
   if (kasittelyError) {
     return null;

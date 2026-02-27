@@ -13,6 +13,7 @@ type HakemusContextValue = {
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
+  updateError: Error | null;
   isSaving: boolean;
 };
 
@@ -46,7 +47,7 @@ export const HakemusProvider = ({
     data: hakemus,
     isLoading,
     error,
-    isError: queryIsError,
+    isError: isQueryError,
   } = useQuery({
     queryKey: ['getHakemus', hakemusOid],
     queryFn: () => getHakemus(hakemusOid),
@@ -57,7 +58,8 @@ export const HakemusProvider = ({
   const {
     mutate: tallennaHakemus,
     isPending: isSaving,
-    isError: mutationIsError,
+    isError: isUpdateError,
+    error: updateError,
   } = useMutation({
     mutationFn: (hakemusUpdate: HakemusUpdateRequest) =>
       doApiPut(`hakemus/${hakemus?.hakemusOid}`, hakemusUpdate),
@@ -80,8 +82,9 @@ export const HakemusProvider = ({
       value={{
         hakemusState,
         isLoading,
-        isError: queryIsError || mutationIsError,
+        isError: isQueryError || isUpdateError,
         error,
+        updateError,
         isSaving,
       }}
     >

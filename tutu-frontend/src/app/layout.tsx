@@ -14,7 +14,6 @@ import {
 } from '@/src/components/providers/LocalizationProvider';
 import { LocalizedThemeProvider } from '@/src/components/providers/LocalizedThemeProvider';
 import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClientProvider';
-import { UnsavedGuardProvider } from '@/src/components/providers/UnsavedGuardProvider';
 import { Toaster } from '@/src/components/Toaster';
 import { isTesting } from '@/src/lib/configuration/configuration';
 import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
@@ -56,7 +55,6 @@ export default async function RootLayout({
                             <ConfirmationModalProvider>
                               <Toaster />
                               <NavigationGuardProvider>
-                                <UnsavedGuardProvider />
                                 {children}
                               </NavigationGuardProvider>
                             </ConfirmationModalProvider>

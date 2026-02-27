@@ -1,6 +1,7 @@
 'use client';
 
 import { OphTypography } from '@opetushallitus/oph-design-system';
+import { useEffect } from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
@@ -17,23 +18,33 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useToaster } from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
+import { handleFetchError } from '@/src/lib/utils';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error } = useHakemus();
+  const { addToast } = useToaster();
+  const { hakemusState, isLoading, error: hakemusError } = useHakemus();
 
   const {
     perustelu,
     tallennaPerustelu,
     isPerusteluLoading,
     perusteluIsSaving,
+    updateError,
   } = usePerustelu(hakemusState.editedData?.hakemusOid);
+
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
+  useEffect(() => {
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [hakemusError, updateError, addToast, t]);
 
   return (
     <PerusteluLayout
@@ -43,7 +54,7 @@ export default function YleisetPage() {
       hakemus={hakemusState.editedData}
       perusteluState={perusteluState}
       isLoading={isLoading || isPerusteluLoading}
-      hakemusError={error}
+      hakemusError={hakemusError}
     >
       <YleisetPerustelut
         hakemus={hakemusState.editedData}

@@ -7,7 +7,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
@@ -16,9 +16,11 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useToaster } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
+import { handleFetchError } from '@/src/lib/utils';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -30,19 +32,23 @@ const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
 
 export default function Lausuntotiedot() {
   const { t } = useTranslations();
+  const { addToast } = useToaster();
   const theme = useTheme();
 
   const {
     isLoading,
     hakemusState: { editedData: hakemus, discard: discardHakemus },
-    error,
+    error: hakemusError,
   } = useHakemus();
+
   const {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
     perusteluIsSaving,
+    updateError,
   } = usePerustelu(hakemus?.hakemusOid);
+
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =
     useKoodistoOptions();
 
@@ -84,6 +90,11 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
+  useEffect(() => {
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [hakemusError, updateError, addToast, t]);
+
   useUnsavedChanges(hasChanges, discardHakemus);
 
   return (
@@ -94,7 +105,7 @@ export default function Lausuntotiedot() {
       hakemus={hakemus}
       perusteluState={perusteluState}
       isLoading={isLoading || isPerusteluLoading}
-      hakemusError={error}
+      hakemusError={hakemusError}
     >
       <Stack
         gap={theme.spacing(3)}

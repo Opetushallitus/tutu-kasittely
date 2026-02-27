@@ -36,9 +36,9 @@ test('Muutos yleiset-sivulla: tallennuspalkki ilmestyy', async () => {
 
 test('Navigointi välilehdelle tallentamattomilla muutoksilla: vahvistusdialogi -> hyväksy -> siirrytään tutkinnoille', async () => {
   await page.getByRole('tab', { name: 'Tutkinnot' }).click();
-  await expect(page.getByTestId('unsaved-dialog')).toBeVisible();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  await page.getByTestId('unsaved-dialog-continue-button').click();
+  await page.getByTestId('modal-confirm-button').click();
   await page.waitForURL(TUTKINNOT_URL);
 });
 
@@ -57,10 +57,10 @@ test('Takaisin-nappi tallentamattomilla muutoksilla: vahvistusdialogi -> peruuta
   );
 
   await page.evaluate(() => history.back());
-  await expect(page.getByTestId('unsaved-dialog')).toBeVisible();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  await page.getByTestId('unsaved-dialog-cancel-button').click();
-  await expect(page.getByTestId('unsaved-dialog')).toBeHidden();
+  await page.getByTestId('modal-peruuta-button').click();
+  await expect(page.getByTestId('modal-component')).toBeHidden();
   await expect(page).toHaveURL(TUTKINNOT_URL);
 });
 
@@ -75,8 +75,8 @@ test('Takaisin-nappi uudelleen: vahvistusdialogi -> jatka -> palataan yleiset-si
 
   // Painetaan takaisin uudelleen → vahvistusdialogi aukeaa → jatketaan tallentamatta
   await page.evaluate(() => history.back());
-  await expect(page.getByTestId('unsaved-dialog')).toBeVisible();
-  await page.getByTestId('unsaved-dialog-continue-button').click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+  await page.getByTestId('modal-confirm-button').click();
 
   await page.waitForURL(YLEISET_URL);
 

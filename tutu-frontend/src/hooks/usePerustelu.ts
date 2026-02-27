@@ -58,5 +58,6 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
     perustelu: query.data,
     isPerusteluLoading: query.isLoading,
     perusteluIsSaving: mutationTallenna.isPending,
+    updateError: mutationTallenna.error,
   };
 };

@@ -50,6 +50,7 @@ export default function PaatostiedotPage() {
     error: hakemusError,
     isSaving,
   } = useHakemus();
+
   const { tutkintoState } = useTutkinnot(hakemusState.editedData?.hakemusOid);
   const {
     isPaatosLoading,

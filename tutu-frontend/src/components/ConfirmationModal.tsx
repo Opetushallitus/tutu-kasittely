@@ -8,7 +8,7 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as React from 'react';
+import React from 'react';
 
 import { IconButton } from '@/src/components/IconButton';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -22,7 +22,7 @@ const style = {
   bgcolor: ophColors.white,
   border: `00px solid ${ophColors.white}`,
   boxShadow: 24,
-  p: 4,
+  p: 3,
 };
 
 const StyledIconButton = styled(IconButton)(() => ({
@@ -96,14 +96,27 @@ export const ConfirmationModal = ({
     <Modal
       open={open}
       onClose={handleCloseAction}
+      aria-labelledby="modal-component-header"
       data-testid="modal-component"
+      sx={{
+        zIndex: 100000, // SaveRibbon + 1
+      }}
+      slotProps={{
+        backdrop: { sx: { backgroundColor: 'rgba(0,0,0,0.8)' } },
+      }}
     >
       <Box sx={style}>
         <StyledIconButton aria-label="close" onClick={handleCloseAction}>
           <CloseIcon />
         </StyledIconButton>
-        <Stack direction="column" gap={2}>
-          <OphTypography variant="h2">{header}</OphTypography>
+        <Stack direction="column" gap={6}>
+          <OphTypography
+            id="modal-component-header"
+            variant="body1"
+            sx={{ fontWeight: 600, fontSize: '34px', marginTop: 2 }}
+          >
+            {header}
+          </OphTypography>
           <OphTypography variant={'body1'}>{content}</OphTypography>
           <Stack direction="row" gap={2} justifyContent="flex-end">
             <OphButton

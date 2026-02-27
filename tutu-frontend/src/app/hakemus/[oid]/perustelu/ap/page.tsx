@@ -7,6 +7,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
+import { useEffect } from 'react';
 import * as R from 'remeda';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
@@ -14,26 +15,32 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useToaster } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
+import { handleFetchError } from '@/src/lib/utils';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
-  const { hakemusState, isLoading, error } = useHakemus();
+  const { addToast } = useToaster();
+
+  const { hakemusState, isLoading, error: hakemusError } = useHakemus();
   const {
     editedData: hakemus,
     save: saveHakemus,
     hasChanges: hasHakemusChanges,
     discard: discardHakemus,
   } = hakemusState;
+
   const hakija = hakemus?.hakija;
   const {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
     perusteluIsSaving,
+    updateError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
@@ -73,6 +80,11 @@ export default function ApPage() {
     }
   });
 
+  useEffect(() => {
+    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [hakemusError, updateError, addToast, t]);
+
   const apSisalto = editedPerustelu?.apSisalto;
 
   return (
@@ -84,7 +96,7 @@ export default function ApPage() {
         hakemus={hakemus}
         perusteluState={perusteluState}
         isLoading={isLoading || isPerusteluLoading}
-        hakemusError={error}
+        hakemusError={hakemusError}
       >
         <OphFormFieldWrapper
           label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}
