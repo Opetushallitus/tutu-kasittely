@@ -46,6 +46,7 @@ export const handleFetchError = (
   error: unknown,
   baseKey: string,
   t: TFunction,
+  timeMs?: number,
 ) => {
   if (error) {
     if (error instanceof FetchError) {
@@ -53,6 +54,7 @@ export const handleFetchError = (
         key: baseKey,
         type: 'error',
         message: LocalizeFetchError(error, baseKey, t),
+        timeMs,
       });
     } else {
       addToast({
@@ -60,6 +62,7 @@ export const handleFetchError = (
         type: 'error',
         message:
           error instanceof Error ? Error.toString() : t('virhe.tuntematon'),
+        timeMs,
       });
     }
   }

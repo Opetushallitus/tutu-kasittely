@@ -537,6 +537,11 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
+  await expect(
+    page.getByTestId(
+      'ammattikokemusElinikainenOppiminen-korvaavuus-radio-group-clear-button',
+    ),
+  ).toBeHidden();
   await expect(kokemusJaOppiminenKelpoisuuskoeButton).toBeHidden();
   await expect(kokemusJaOppiminenSopeutumisaikaButton).toBeHidden();
   await expect(kokemusJaOppiminenDualButton).toBeHidden();

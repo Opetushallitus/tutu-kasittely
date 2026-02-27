@@ -56,8 +56,8 @@ export default function PaatostiedotPage() {
     paatos,
     error: paatosError,
     updatePaatos,
-    updateOngoing,
-    updateSuccess: paatosUpdateSuccess,
+    isUpdateOngoing: isPaatosUpdateOngoing,
+    isUpdateSuccess: isPaatosUpdateSuccess,
     updateError: paatosUpdateError,
   } = usePaatos(hakemusState.editedData?.hakemusOid);
 
@@ -68,21 +68,12 @@ export default function PaatostiedotPage() {
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
-  }, [addToast, hakemusError, paatosError, t]);
+    handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
+    handleFetchError(addToast, paatosUpdateError, 'virhe.tallennus', t, 4000);
+  }, [addToast, hakemusError, paatosError, paatosUpdateError, t]);
 
   useEffect(() => {
-    if (paatosUpdateError) {
-      addToast({
-        key: 'virhe.tallennus',
-        type: 'error',
-        message: t('virhe.tallennus'),
-        timeMs: 4000,
-      });
-    }
-  }, [paatosUpdateError, addToast, t]);
-
-  useEffect(() => {
-    if (paatosUpdateSuccess) {
+    if (isPaatosUpdateSuccess) {
       addToast({
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
@@ -90,7 +81,7 @@ export default function PaatostiedotPage() {
         timeMs: 2500,
       });
     }
-  }, [paatosUpdateSuccess, addToast, t]);
+  }, [isPaatosUpdateSuccess, addToast, t]);
 
   if (hakemusError || paatosError) {
     return null;
@@ -103,9 +94,9 @@ export default function PaatostiedotPage() {
   return (
     <Paatostiedot
       paatosState={paatosState}
-      updateOngoing={isSaving || updateOngoing}
+      updateOngoing={isSaving || isPaatosUpdateOngoing}
       hakemusState={hakemusState}
-      updateSuccess={paatosUpdateSuccess}
+      updateSuccess={isPaatosUpdateSuccess}
       tutkinnot={tutkintoState.editedData ?? []}
     />
   );

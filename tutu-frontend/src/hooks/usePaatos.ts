@@ -38,9 +38,9 @@ export const usePaatos = (hakemusOid: string | undefined) => {
 
   const {
     mutate,
-    isPending,
-    isSuccess,
-    isError: mutationIsError,
+    isPending: isUpdateOngoing,
+    isSuccess: isUpdateSuccess,
+    error: updateError,
   } = useMutation({
     mutationFn: (paatos: Paatos) => putPaatos(hakemusOid!, paatos),
     onSuccess: async (response) => {
@@ -63,8 +63,8 @@ export const usePaatos = (hakemusOid: string | undefined) => {
     updatePaatos,
     paatos: query.data,
     isPaatosLoading: query.isLoading,
-    updateOngoing: isPending,
-    updateSuccess: isSuccess,
-    updateError: mutationIsError,
+    isUpdateOngoing,
+    isUpdateSuccess,
+    updateError,
   };
 };
