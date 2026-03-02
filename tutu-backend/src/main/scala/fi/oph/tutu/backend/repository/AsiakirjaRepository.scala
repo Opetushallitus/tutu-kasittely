@@ -131,7 +131,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
                 pt.vahvistettu
               FROM asiakirja a
               LEFT JOIN paatos p ON p.hakemus_id = ${hakemusId.toString}::uuid
-              LEFT JOIN paatosteksti pt ON pt.hakemus_iid = ${hakemusId.toString}::uuid
+              LEFT JOIN paatosteksti pt ON pt.hakemus_id = ${hakemusId.toString}::uuid
               WHERE a.id = ${id.toString}::uuid
             """.as[KasittelyVaiheTiedot].headOption,
             "hae_kasittely_vaihe_tiedot"

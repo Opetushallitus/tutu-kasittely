@@ -21,7 +21,8 @@ class PaatosService(
   hakemuspalveluService: HakemuspalveluService,
   hallintoOikeusService: HallintoOikeusService,
   ataruLomakeParser: AtaruLomakeParser,
-  maakoodiService: MaakoodiService
+  maakoodiService: MaakoodiService,
+  onrService: OnrService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
@@ -153,7 +154,8 @@ class PaatosService(
   ): (Paatosteksti, Boolean) = {
     paatosRepository.haePaatosteksti(hakemusOid) match {
       case Some(paatosteksti) =>
-        (paatosteksti, false)
+        val muokkaajaNimi: String = onrService.haeNimi(paatosteksti.muokkaaja)
+        (paatosteksti.copy(muokkaaja = Some(muokkaajaNimi)), false)
       case None =>
         hakemusRepository.haeHakemus(hakemusOid) match {
           case Some(hakemus) =>
@@ -171,13 +173,21 @@ class PaatosService(
     luojaTaiMuokkaaja: String
   ): (Paatosteksti, Paatosteksti) = {
     val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid)
-    val uusiPaatosteksti       = if (paatosteksti.vahvistettu.isDefined) {
-      val res = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
-      hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
-      res
-    } else {
-      paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
-    }
-    (vanhaPaatosteksti, uusiPaatosteksti)
+    val uusiPaatosteksti       = paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+    val muokkaajaNimi: String  = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
+    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
+  }
+
+  def vahvistaPaatosteksti(
+    hakemusOid: HakemusOid,
+    paatostekstiId: UUID,
+    paatosteksti: Paatosteksti,
+    luojaTaiMuokkaaja: String
+  ): (Paatosteksti, Paatosteksti) = {
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid)
+    val uusiPaatosteksti       = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+    hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
+    val muokkaajaNimi: String = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
+    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
   }
 }

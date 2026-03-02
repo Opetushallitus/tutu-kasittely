@@ -1,16 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import useToaster from '@/src/hooks/useToaster';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Paatosteksti } from '@/src/lib/types/paatosteksti';
 
-const getPaatosteksti = (hakemusOid: string): Promise<Paatosteksti> => {
+const getPaatosteksti = async (hakemusOid: string): Promise<Paatosteksti> => {
   const url = `paatos/${hakemusOid}/paatosteksti/`;
 
-  return doApiFetch(url);
+  return await doApiFetch(url);
 };
 
-const putPaatosteksti = (hakemusOid: string, paatosteksti: Paatosteksti) => {
-  const url = `paatos/${hakemusOid}/paatosteksti/${paatosteksti.id}`;
+const putPaatosteksti = (
+  hakemusOid: string,
+  paatosteksti: Paatosteksti,
+  vahvista?: boolean,
+) => {
+  const url = `paatos/${hakemusOid}/paatosteksti/${paatosteksti.id}${vahvista ? `/vahvista` : ''}`;
 
   return doApiPut(url, paatosteksti);
 };
@@ -19,36 +24,59 @@ export const usePaatosteksti = (hakemusOid: string) => {
   const queryClient = useQueryClient();
   const queryKey = ['paatosteksti', hakemusOid];
 
-  const { data, isLoading, error } = useQuery({
+  const { addToast } = useToaster();
+
+  const query = useQuery({
     queryKey: queryKey,
     queryFn: () => getPaatosteksti(hakemusOid),
     enabled: !!hakemusOid,
     throwOnError: false,
   });
 
-  const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (paatosteksti: Paatosteksti) =>
-      putPaatosteksti(hakemusOid!, paatosteksti),
-    onSuccess: async (response) => {
+  const {
+    mutate,
+    isPending,
+    isSuccess,
+    error: updateError,
+  } = useMutation({
+    mutationFn: ({
+      paatosteksti,
+      vahvista,
+    }: {
+      paatosteksti: Paatosteksti;
+      vahvista?: boolean;
+    }) => putPaatosteksti(hakemusOid!, paatosteksti, vahvista),
+    onSuccess: async (response, { vahvista }) => {
       const paivitettyPaatosteksti = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatosteksti);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
       await queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
       });
+      addToast({
+        type: 'success',
+        key: vahvista
+          ? 'success.paatostekstiVahvista'
+          : 'success.paatostekstiTallennus',
+        message: vahvista
+          ? 'hakemus.editori.paatos.paatostekstiVahvista.success'
+          : 'hakemus.editori.paatos.paatostekstiTallennus.success',
+        timeMs: 3000,
+      });
     },
   });
 
-  const savePaatosteksti = (paatosteksti: Paatosteksti) => {
-    mutate(paatosteksti);
+  const savePaatosteksti = (paatosteksti: Paatosteksti, vahvista?: boolean) => {
+    mutate({ paatosteksti, vahvista });
   };
 
   return {
-    paatosteksti: data as Paatosteksti,
+    ...query,
+    paatosteksti: query.data,
     savePaatosteksti,
-    isLoading: isLoading,
+    isLoading: query.isLoading,
     updateOngoing: isPending,
     updateSuccess: isSuccess,
-    error,
+    updateError: updateError,
   };
 };

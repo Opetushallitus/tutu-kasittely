@@ -630,7 +630,15 @@ class PaatosRepository extends BaseResultHandlers {
           sisalto = ${paatosteksti.sisalto},
           muokkaaja = $muokkaaja
         WHERE id = ${paatostekstiId.toString}::uuid
-        RETURNING *""".as[Paatosteksti].head
+        RETURNING
+          id,
+          hakemus_id,
+          sisalto,
+          vahvistettu,
+          luotu,
+          luoja,
+          muokkaaja,
+          muokattu""".as[Paatosteksti].head
 
   def tallennaPaatosteksti(
     paatostekstiId: UUID,

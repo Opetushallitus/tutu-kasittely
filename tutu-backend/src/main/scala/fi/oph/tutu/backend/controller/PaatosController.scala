@@ -147,6 +147,19 @@ class PaatosController(
     path = Array("paatos/{hakemusOid}/paatosteksti/generate"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
+  @Operation(
+    summary = "Generoi päätöstekstipohjan",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
   def generatePaatosteksti(
     @PathVariable hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
@@ -165,7 +178,20 @@ class PaatosController(
 
   @GetMapping(
     path = Array("paatos/{hakemusOid}/paatosteksti/"),
-    produces = Array(MediaType.TEXT_HTML_VALUE)
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hakee päätöstekstin tai palauttaa ja tallentaa tietokantaan generoidun päätöstekstipohjan",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def haePaatosteksti(
     @PathVariable hakemusOid: String,
@@ -197,7 +223,21 @@ class PaatosController(
 
   @PutMapping(
     path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
-    produces = Array(MediaType.TEXT_HTML_VALUE)
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää päätöstekstin",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def tallennaPaatosteksti(
     @PathVariable hakemusOid: String,
@@ -228,7 +268,61 @@ class PaatosController(
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
       case Failure(exception) =>
         LOG.error(
-          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PutMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}/vahvista"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää päätöstekstin ja merkitsee sen vahvistetuksi",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def vahvistaPaatosteksti(
+    @PathVariable hakemusOid: String,
+    @PathVariable paatostekstiId: String,
+    @RequestBody paatosBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    val user         = userService.getEnrichedUserDetails(true)
+    val paatosteksti = mapper.readValue(paatosBytes, classOf[Paatosteksti])
+    Try {
+      paatosService.vahvistaPaatosteksti(
+        HakemusOid(hakemusOid),
+        UUID.fromString(paatostekstiId),
+        paatosteksti,
+        user.userOid
+      )
+    } match {
+      case Success((vanha, uusi)) =>
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdatePaatosteksti,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(vanha)),
+            Some(mapper.writeValueAsString(uusi))
+          )
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
           exception
         )
         errorMessageMapper.mapErrorMessage(exception)
