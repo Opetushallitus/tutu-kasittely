@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.service.generator.paatosteksti
 
 import fi.oph.tutu.backend.service.MaakoodiService
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.service.generator.formatDate
 
 private def getCommonPaatosHeader(
   hakemus: Hakemus,
@@ -179,7 +180,10 @@ private def generateTasoPaatosTeksti(
 }
 
 private def generatePeruutusTeksti(lang: String, hakemus: Hakemus): String = {
-  val peruutusPvm = hakemus.peruutusPvm.getOrElse(if (lang == "finnish") "[pp.kk.vvvv]" else "[dd.mm.åååå]")
+  val peruutusPvm = hakemus.peruutusPvm match {
+    case Some(date) => formatDate(date)
+    case _          => if (lang == "finnish") "[pp.kk.vvvv]" else "[dd.mm.åååå]"
+  }
   lang match {
     case "finnish" =>
       s"""<h4>Päätös</h4><p>Hakija on peruuttanut hakemuksensa $peruutusPvm. Hakemuksen käsittely raukeaa.</p>"""
