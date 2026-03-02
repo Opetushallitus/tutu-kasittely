@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 
-import { Toast } from '@/src/hooks/useToaster';
+import { AddToastCallback } from '@/src/hooks/useToaster';
 import { FetchError } from '@/src/lib/common';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -42,7 +42,7 @@ export const setLocalStorageAndLaunchHakemusQuery = async (
 };
 
 export const handleFetchError = (
-  addToast: (toast: Toast) => void,
+  addToast: AddToastCallback,
   error: unknown,
   baseKey: string,
   t: TFunction,
@@ -53,7 +53,7 @@ export const handleFetchError = (
       addToast({
         key: baseKey,
         type: 'error',
-        message: LocalizeFetchError(error, baseKey, t),
+        message: localizeFetchError(error, baseKey, t),
         timeMs,
       });
     } else {
@@ -68,7 +68,7 @@ export const handleFetchError = (
   }
 };
 
-export const LocalizeFetchError = (
+export const localizeFetchError = (
   error: FetchError,
   baseKey: string,
   t: TFunction,
@@ -78,6 +78,20 @@ export const LocalizeFetchError = (
   return originTranslated !== ''
     ? `${t(baseKey)} ${originTranslated}`
     : t(baseKey);
+};
+
+export const handleSuccessMessage = (
+  isSuccess: boolean,
+  addToast: AddToastCallback,
+  translationKey: string,
+  t: TFunction,
+) => {
+  if (isSuccess)
+    addToast({
+      key: translationKey,
+      type: 'success',
+      message: t(translationKey),
+    });
 };
 
 export const isDefined = (val: unknown) => val !== undefined && val !== null;
@@ -96,4 +110,21 @@ export const updateTutkintoJarjestys = (
   } else {
     return tutkinto;
   }
+};
+
+type NullableKeys<T> = {
+  [K in keyof T]: null extends T[K] ? K : never;
+}[keyof T];
+
+export const nullifyStringFieldsIfEmpty = <T>(
+  obj: T,
+  fields: Array<NullableKeys<T>>,
+): T => {
+  const result: T = { ...obj };
+  fields.forEach((field) => {
+    if (typeof result[field] === 'string' && result[field] === '') {
+      (result[field] as string | null) = null;
+    }
+  });
+  return result;
 };

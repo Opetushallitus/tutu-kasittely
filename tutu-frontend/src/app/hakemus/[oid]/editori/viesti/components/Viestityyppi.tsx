@@ -19,7 +19,7 @@ export const ViestityyppiComponent = ({
   updateViestityyppi,
   t,
 }: {
-  viestityyppi?: Viestityyppi;
+  viestityyppi?: Viestityyppi | null;
   updateViestityyppi: (viestityyppi: Viestityyppi) => void;
   t: TFunction;
 }) => {

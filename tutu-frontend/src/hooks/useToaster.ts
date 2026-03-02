@@ -131,10 +131,12 @@ const toasterMachine = setup({
 
 const toasterActor = createActor(toasterMachine).start();
 
+export type AddToastCallback = (toast: Toast) => void;
+
 export const useToaster = () => {
   const toasts = useSelector(toasterActor, ({ context }) => context.toasts);
 
-  const addToast = useCallback(
+  const addToast: AddToastCallback = useCallback(
     (toast: Toast) =>
       toasterActor.send({ type: ToastEvents.ADD, toast: toast }),
     [],
