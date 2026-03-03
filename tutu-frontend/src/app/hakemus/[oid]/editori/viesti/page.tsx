@@ -133,6 +133,7 @@ const handleCopy = (
     key: 'hakemus.viesti.kopioi.toaster',
     message: t('hakemus.viesti.kopioituToast'),
     type: 'success',
+    timeMs: 2500,
   });
 };
 
