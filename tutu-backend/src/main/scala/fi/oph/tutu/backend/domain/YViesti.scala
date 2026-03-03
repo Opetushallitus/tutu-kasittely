@@ -69,10 +69,10 @@ case class YkViesti(
 )
 
 case class YkViestiListItem(
-  id: String,
-  hakemusOid: Option[String] = None,
-  lahettaja_oid: Option[String] = None,
-  vastaanottaja_oid: Option[String] = None,
+  id: UUID,
+  hakemusId: UUID,
+  lahettajaOid: Option[String] = None,
+  vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None
 )
