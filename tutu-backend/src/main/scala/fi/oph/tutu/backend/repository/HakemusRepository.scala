@@ -458,4 +458,25 @@ class HakemusRepository extends BaseResultHandlers {
           e
         )
     }
+
+  def haeYkViestiLista(userOid: String): Seq[YkViestiListItem] =
+    try {
+      db.run(
+        sql"""
+          SELECT
+            v.id, v.hakemus_id, v.lahettaja_oid, v.vastaanottaja_oid, v.luotu, v.luettu
+          FROM
+            yk_viesti v
+          WHERE
+            v.lahettaja_oid IN (#userOid)
+          """.as[YkViestiListItem],
+        "hae_ykviestit"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Yhteisen käsitetelyn viestien listaus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
 }

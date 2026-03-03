@@ -577,4 +577,11 @@ class HakemusService(
         LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
   }
+
+  def haeYkViestiLista(
+    userOid: String,
+    sort: String
+  ): Seq[YkViestiListItem] = {
+    val viestiLista = hakemusRepository.haeYkViestiLista(userOid)
+  }
 }
