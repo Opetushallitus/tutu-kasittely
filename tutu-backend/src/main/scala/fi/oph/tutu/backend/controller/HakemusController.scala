@@ -517,14 +517,14 @@ class HakemusController(
       hakemusService.haeYkViestiLista(
         userOid,
         ""
-      ) match {
-        case Success(ykviestit) =>
-          val response = mapper.writeValueAsString(ykviestit)
-          ResponseEntity.status(HttpStatus.OK).body(response)
-        case Failure(exception) =>
-          LOG.error("Yhteisen käsittelyn listan haku epäonnistui", exception)
-          errorMessageMapper.mapErrorMessage(exception)
-      }
+      )
+    } match {
+      case Success(ykviestit) =>
+        val response = mapper.writeValueAsString(ykviestit)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn listan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 }
