@@ -6,7 +6,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
@@ -20,29 +19,22 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useToaster } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { handleFetchError } from '@/src/lib/utils';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
   const { hakemusState, isLoading, error: hakemusError } = useHakemus();
-  const {
-    editedData: hakemus,
-    hasChanges: hasHakemusChanges,
-    save: saveHakemus,
-    discard: discardHakemus,
-  } = hakemusState;
+  const { editedData: hakemus } = hakemusState;
 
   const {
     perustelu,
     tallennaPerustelu,
     isPerusteluLoading,
-    perusteluIsSaving,
-    updateError,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editable state hook for automatic change tracking and save handling
@@ -84,22 +76,9 @@ export default function UoroPage() {
 
   const handleSave = () => {
     savePerustelu();
-    saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
-    if (hasHakemusChanges) {
-      discardHakemus();
-    }
-    if (hasPerusteluChanges) {
-      discardPerustelu();
-    }
-  });
-
-  useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
-  }, [hakemusError, updateError, addToast, t]);
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   return (
     <>
@@ -111,6 +90,8 @@ export default function UoroPage() {
         perusteluState={perusteluState}
         isLoading={isLoading || isPerusteluLoading}
         hakemusError={hakemusError}
+        perusteluError={perusteluError}
+        updatePerusteluError={updatePerusteluError}
       >
         <Stack direction="column" spacing={2}>
           <Muistio
@@ -220,8 +201,8 @@ export default function UoroPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={handleSave}
-        isSaving={perusteluIsSaving || false}
-        hasChanges={hasPerusteluChanges || hasHakemusChanges}
+        isSaving={isPerusteluSaving}
+        hasChanges={hasPerusteluChanges}
         lastSaved={hakemus?.muokattu}
         modifier={hakemus?.muokkaaja}
       />

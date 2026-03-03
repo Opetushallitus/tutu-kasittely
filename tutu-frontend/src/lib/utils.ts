@@ -61,7 +61,7 @@ export const handleFetchError = (
         key: baseKey,
         type: 'error',
         message:
-          error instanceof Error ? Error.toString() : t('virhe.tuntematon'),
+          error instanceof Error ? error.toString() : t('virhe.tuntematon'),
         timeMs,
       });
     }

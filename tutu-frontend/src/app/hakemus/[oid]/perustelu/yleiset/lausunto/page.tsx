@@ -7,7 +7,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
@@ -16,11 +15,9 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useToaster } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
-import { handleFetchError } from '@/src/lib/utils';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,
@@ -32,12 +29,11 @@ const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
 
 export default function Lausuntotiedot() {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
   const theme = useTheme();
 
   const {
     isLoading,
-    hakemusState: { editedData: hakemus, discard: discardHakemus },
+    hakemusState: { editedData: hakemus },
     error: hakemusError,
   } = useHakemus();
 
@@ -45,8 +41,9 @@ export default function Lausuntotiedot() {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
-    perusteluIsSaving,
-    updateError,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =
@@ -57,10 +54,11 @@ export default function Lausuntotiedot() {
 
   const {
     editedData: editedPerustelu,
-    hasChanges,
+    hasChanges: hasPerusteluChanges,
     updateLocal,
     updateImmediately,
     save,
+    discard: discardPerustelu,
   } = perusteluState;
 
   const serverLausuntopyynnot = editedPerustelu?.lausuntopyynnot ?? [];
@@ -90,12 +88,7 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
-  useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
-  }, [hakemusError, updateError, addToast, t]);
-
-  useUnsavedChanges(hasChanges, discardHakemus);
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   return (
     <PerusteluLayout
@@ -106,6 +99,8 @@ export default function Lausuntotiedot() {
       perusteluState={perusteluState}
       isLoading={isLoading || isPerusteluLoading}
       hakemusError={hakemusError}
+      perusteluError={perusteluError}
+      updatePerusteluError={updatePerusteluError}
     >
       <Stack
         gap={theme.spacing(3)}
@@ -164,8 +159,8 @@ export default function Lausuntotiedot() {
         />
         <SaveRibbon
           onSave={save}
-          isSaving={perusteluIsSaving || false}
-          hasChanges={hasChanges}
+          isSaving={isPerusteluSaving}
+          hasChanges={hasPerusteluChanges}
           lastSaved={hakemus?.muokattu}
           modifier={hakemus?.muokkaaja}
         />

@@ -7,7 +7,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { useEffect } from 'react';
 import * as R from 'remeda';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
@@ -15,32 +14,25 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useToaster } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
-import { handleFetchError } from '@/src/lib/utils';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
-  const { addToast } = useToaster();
 
   const { hakemusState, isLoading, error: hakemusError } = useHakemus();
-  const {
-    editedData: hakemus,
-    save: saveHakemus,
-    hasChanges: hasHakemusChanges,
-    discard: discardHakemus,
-  } = hakemusState;
+  const { editedData: hakemus } = hakemusState;
 
   const hakija = hakemus?.hakija;
   const {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
-    perusteluIsSaving,
-    updateError,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
@@ -68,22 +60,9 @@ export default function ApPage() {
 
   const handleSave = () => {
     savePerustelu();
-    saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
-    if (hasHakemusChanges) {
-      discardHakemus();
-    }
-    if (hasPerusteluChanges) {
-      discardPerustelu();
-    }
-  });
-
-  useEffect(() => {
-    handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
-  }, [hakemusError, updateError, addToast, t]);
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -97,6 +76,8 @@ export default function ApPage() {
         perusteluState={perusteluState}
         isLoading={isLoading || isPerusteluLoading}
         hakemusError={hakemusError}
+        perusteluError={perusteluError}
+        updatePerusteluError={updatePerusteluError}
       >
         <OphFormFieldWrapper
           label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}
@@ -376,8 +357,8 @@ export default function ApPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={handleSave}
-        isSaving={perusteluIsSaving || false}
-        hasChanges={hasPerusteluChanges || hasHakemusChanges}
+        isSaving={isPerusteluSaving}
+        hasChanges={hasPerusteluChanges}
         lastSaved={hakemus?.muokattu}
         modifier={hakemus?.muokkaaja}
       />

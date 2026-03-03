@@ -95,6 +95,8 @@ interface PerusteluYleisetLayoutProps {
   perusteluState: EditableState<Perustelu>;
   isLoading: boolean;
   hakemusError: Error | null;
+  perusteluError: Error | null;
+  updatePerusteluError: Error | null;
   children: ReactNode;
 }
 
@@ -106,6 +108,8 @@ export const PerusteluLayout = ({
   perusteluState,
   isLoading,
   hakemusError,
+  perusteluError,
+  updatePerusteluError,
   children,
 }: PerusteluYleisetLayoutProps) => {
   const theme = useTheme();
@@ -113,7 +117,9 @@ export const PerusteluLayout = ({
 
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-  }, [hakemusError, addToast, t]);
+    handleFetchError(addToast, perusteluError, 'virhe.perustelunLataus', t);
+    handleFetchError(addToast, updatePerusteluError, 'virhe.tallennus', t);
+  }, [hakemusError, perusteluError, updatePerusteluError, addToast, t]);
 
   if (hakemusError) {
     return null;
