@@ -78,9 +78,9 @@ class HakemusRepository extends BaseResultHandlers {
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
    *
    * @param hakemusOid
-   *   hakemuspalvelun hakemuksen oid
+   * hakemuspalvelun hakemuksen oid
    * @return
-   *   DBIO action joka palauttaa tallennetun hakemuksen id:n
+   * DBIO action joka palauttaa tallennetun hakemuksen id:n
    */
   def tallennaHakemusAction(
     hakemusOid: HakemusOid,
@@ -127,9 +127,9 @@ class HakemusRepository extends BaseResultHandlers {
    * Tallentaa uuden hakemuksen
    *
    * @param hakemusOid
-   *   hakemuspalvelun hakemuksen oid
+   * hakemuspalvelun hakemuksen oid
    * @return
-   *   tallennetun hakemuksen id
+   * tallennetun hakemuksen id
    */
   def tallennaHakemus(
     hakemusOid: HakemusOid,
@@ -167,13 +167,12 @@ class HakemusRepository extends BaseResultHandlers {
   /**
    * Palauttaa listan hakemuksista hakemusOid-listan pohjalta
    * - Palautettavien kenttien listaa täydennettävä sitä mukaa
-   *   kun domain-luokka kasvaa
+   * kun domain-luokka kasvaa
    *
    * @param hakemusOidit
-   *   hakemuspalvelun hakemusten oidit
-   *
+   * hakemuspalvelun hakemusten oidit
    * @return
-   *   HakemusOid-listan mukaiset hakemukset tietoineen
+   * HakemusOid-listan mukaiset hakemukset tietoineen
    */
   def haeHakemusLista(hakemusOidit: Seq[HakemusOid]): Seq[HakemusListItem] = {
     try {
@@ -448,6 +447,27 @@ class HakemusRepository extends BaseResultHandlers {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksen olemassaolon tarkistus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+
+  def haeYkViestiLista(userOid: String): Seq[YkViestiListItem] =
+    try {
+      db.run(
+        sql"""
+          SELECT
+            v.id, v.hakemus_id, v.lahettaja_oid, v.vastaanottaja_oid, v.luotu, v.luettu
+          FROM
+            yk_viesti v
+          WHERE
+            v.lahettaja_oid IN (#userOid)
+          """.as[YkViestiListItem],
+        "hae_ykviestit"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Yhteisen käsitetelyn viestien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }
