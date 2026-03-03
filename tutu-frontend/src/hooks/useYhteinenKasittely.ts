@@ -76,5 +76,6 @@ export const useYhteinenKasittely = (
     luoUusiKasittely: (k: YhteinenKasittely) => createMutation.mutate(k),
     vastaaKasittelyyn: (p: { id: string; vastaus?: string }) =>
       answerMutation.mutate(p),
+    updateError: createMutation.error || answerMutation.error,
   };
 };

@@ -7,7 +7,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
@@ -34,15 +33,19 @@ export default function Lausuntotiedot() {
 
   const {
     isLoading,
-    hakemusState: { editedData: hakemus, discard: discardHakemus },
-    error,
+    hakemusState: { editedData: hakemus },
+    error: hakemusError,
   } = useHakemus();
+
   const {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
-    perusteluIsSaving,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
+
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =
     useKoodistoOptions();
 
@@ -51,10 +54,11 @@ export default function Lausuntotiedot() {
 
   const {
     editedData: editedPerustelu,
-    hasChanges,
+    hasChanges: hasPerusteluChanges,
     updateLocal,
     updateImmediately,
     save,
+    discard: discardPerustelu,
   } = perusteluState;
 
   const serverLausuntopyynnot = editedPerustelu?.lausuntopyynnot ?? [];
@@ -84,7 +88,7 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
-  useUnsavedChanges(hasChanges, discardHakemus);
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   return (
     <PerusteluLayout
@@ -94,7 +98,9 @@ export default function Lausuntotiedot() {
       hakemus={hakemus}
       perusteluState={perusteluState}
       isLoading={isLoading || isPerusteluLoading}
-      hakemusError={error}
+      hakemusError={hakemusError}
+      perusteluError={perusteluError}
+      updatePerusteluError={updatePerusteluError}
     >
       <Stack
         gap={theme.spacing(3)}
@@ -153,8 +159,8 @@ export default function Lausuntotiedot() {
         />
         <SaveRibbon
           onSave={save}
-          isSaving={perusteluIsSaving || false}
-          hasChanges={hasChanges}
+          isSaving={isPerusteluSaving}
+          hasChanges={hasPerusteluChanges}
           lastSaved={hakemus?.muokattu}
           modifier={hakemus?.muokkaaja}
         />

@@ -21,19 +21,18 @@ import { APSisalto } from '@/src/lib/types/APSisalto';
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
   const theme = useTheme();
-  const { hakemusState, isLoading, error } = useHakemus();
-  const {
-    editedData: hakemus,
-    save: saveHakemus,
-    hasChanges: hasHakemusChanges,
-    discard: discardHakemus,
-  } = hakemusState;
+
+  const { hakemusState, isLoading, error: hakemusError } = useHakemus();
+  const { editedData: hakemus } = hakemusState;
+
   const hakija = hakemus?.hakija;
   const {
     perustelu,
     isPerusteluLoading,
     tallennaPerustelu,
-    perusteluIsSaving,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
@@ -61,17 +60,9 @@ export default function ApPage() {
 
   const handleSave = () => {
     savePerustelu();
-    saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
-    if (hasHakemusChanges) {
-      discardHakemus();
-    }
-    if (hasPerusteluChanges) {
-      discardPerustelu();
-    }
-  });
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   const apSisalto = editedPerustelu?.apSisalto;
 
@@ -84,7 +75,9 @@ export default function ApPage() {
         hakemus={hakemus}
         perusteluState={perusteluState}
         isLoading={isLoading || isPerusteluLoading}
-        hakemusError={error}
+        hakemusError={hakemusError}
+        perusteluError={perusteluError}
+        updatePerusteluError={updatePerusteluError}
       >
         <OphFormFieldWrapper
           label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}
@@ -364,8 +357,8 @@ export default function ApPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={handleSave}
-        isSaving={perusteluIsSaving || false}
-        hasChanges={hasPerusteluChanges || hasHakemusChanges}
+        isSaving={isPerusteluSaving}
+        hasChanges={hasPerusteluChanges}
         lastSaved={hakemus?.muokattu}
         modifier={hakemus?.muokkaaja}
       />

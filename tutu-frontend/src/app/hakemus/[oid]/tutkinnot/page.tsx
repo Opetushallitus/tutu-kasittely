@@ -34,10 +34,19 @@ export default function TutkintoPage() {
     error: hakemusError,
     isSaving: isHakemusSaving,
   } = useHakemus();
-  const { isLoading, isSaving, error, tutkintoState, poistaTutkinto } =
-    useTutkinnot(hakemusState.editedData?.hakemusOid);
+
+  const {
+    isLoading,
+    isSaving,
+    error,
+    updateError,
+    tutkintoState,
+    poistaTutkinto,
+  } = useTutkinnot(hakemusState.editedData?.hakemusOid);
+
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
     useKoodistoOptions();
+
   const editedTutkinnot = tutkintoState.editedData ?? [];
   const [hakemuksenPaatosKieli, setHakemuksenPaatosKieli] = useState<
     string | undefined
@@ -65,7 +74,8 @@ export default function TutkintoPage() {
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, error, 'virhe.tutkintojenLataus', t);
-  }, [error, hakemusError, addToast, t]);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [error, hakemusError, updateError, addToast, t]);
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(

@@ -94,13 +94,15 @@ export default function AsiakirjaPage() {
     hakemusState,
     error: hakemusError,
     isSaving,
+    updateError,
   } = useHakemus();
 
   /* ----------------------------------------- */
   /* Käsitellään virheet ja puutteellinen data */
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-  }, [hakemusError, addToast, t]);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [hakemusError, updateError, addToast, t]);
 
   if (hakemusError) {
     return null;

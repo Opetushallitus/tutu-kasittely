@@ -6,7 +6,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
@@ -25,19 +24,17 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error } = useHakemus();
-  const {
-    editedData: hakemus,
-    hasChanges: hasHakemusChanges,
-    save: saveHakemus,
-    discard: discardHakemus,
-  } = hakemusState;
+
+  const { hakemusState, isLoading, error: hakemusError } = useHakemus();
+  const { editedData: hakemus } = hakemusState;
 
   const {
     perustelu,
     tallennaPerustelu,
     isPerusteluLoading,
-    perusteluIsSaving,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editable state hook for automatic change tracking and save handling
@@ -79,17 +76,9 @@ export default function UoroPage() {
 
   const handleSave = () => {
     savePerustelu();
-    saveHakemus();
   };
 
-  useUnsavedChanges(hasPerusteluChanges || hasHakemusChanges, () => {
-    if (hasHakemusChanges) {
-      discardHakemus();
-    }
-    if (hasPerusteluChanges) {
-      discardPerustelu();
-    }
-  });
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
 
   return (
     <>
@@ -100,7 +89,9 @@ export default function UoroPage() {
         hakemus={hakemus}
         perusteluState={perusteluState}
         isLoading={isLoading || isPerusteluLoading}
-        hakemusError={error}
+        hakemusError={hakemusError}
+        perusteluError={perusteluError}
+        updatePerusteluError={updatePerusteluError}
       >
         <Stack direction="column" spacing={2}>
           <Muistio
@@ -210,8 +201,8 @@ export default function UoroPage() {
       </PerusteluLayout>
       <SaveRibbon
         onSave={handleSave}
-        isSaving={perusteluIsSaving || false}
-        hasChanges={hasPerusteluChanges || hasHakemusChanges}
+        isSaving={isPerusteluSaving}
+        hasChanges={hasPerusteluChanges}
         lastSaved={hakemus?.muokattu}
         modifier={hakemus?.muokkaaja}
       />

@@ -144,5 +144,6 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
     poistaTutkinto,
     isPerusteluLoading: query.isLoading,
     isSaving: mutationTallenna.isPending || isDeleting,
+    updateError: mutationTallenna.error,
   };
 };

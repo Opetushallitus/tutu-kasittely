@@ -1,15 +1,29 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import React, { useContext, createContext, ReactNode } from 'react';
+import React, { useContext, createContext, ReactNode, useState } from 'react';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useFetchUser } from '@/src/hooks/useFetchUser';
+import { consumePostLoginRedirectUrl } from '@/src/lib/navigation/postLoginRedirect';
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { User } from '@/src/lib/types/user';
 
 const AuthorizedUserContext = createContext<User | null>(null);
 
 export function AuthorizedUserProvider({ children }: { children: ReactNode }) {
+  const [redirecting] = useState(() => {
+    const returnUrl = consumePostLoginRedirectUrl();
+    if (
+      returnUrl &&
+      returnUrl !==
+        `${window.location.pathname}${window.location.search}${window.location.hash}`
+    ) {
+      window.location.replace(returnUrl);
+      return true;
+    }
+    return false;
+  });
+
   const user = useFetchUser();
 
   const { isLoading } = useQuery({
@@ -25,7 +39,7 @@ export function AuthorizedUserProvider({ children }: { children: ReactNode }) {
     retry: false,
   });
 
-  if (isLoading) {
+  if (redirecting || isLoading) {
     return <FullSpinner />;
   }
 

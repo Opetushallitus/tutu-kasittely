@@ -29,6 +29,7 @@ export default function PerustietoPage() {
   const theme = useTheme();
   const { t } = useTranslations();
   const { addToast } = useToaster();
+
   const {
     isLoading,
     isSaving,
@@ -40,13 +41,15 @@ export default function PerustietoPage() {
       discard: discardHakemus,
     },
     error,
+    updateError,
   } = useHakemus();
 
   useUnsavedChanges(hasChanges, discardHakemus);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
-  }, [error, addToast, t]);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t);
+  }, [error, updateError, addToast, t]);
 
   if (error) {
     return <></>;

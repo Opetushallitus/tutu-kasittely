@@ -5,7 +5,7 @@ import {
   mockBasicForHakemus,
   mockLiitteet,
 } from '@/playwright/mocks';
-import { HakemusKoskee } from '@/src/lib/types/hakemus.js';
+import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 import { getHakemus } from './fixtures/hakemus1/index';
 import { translate } from './helpers/translate';
