@@ -585,7 +585,6 @@ class HakemusService(
   def haeYkViestiLista(
     userOid: String,
     sort: String
-  ): Seq[YkViestiListItem] = {
-    val viestiLista = hakemusRepository.haeYkViestiLista(userOid)
-  }
+  ): Seq[YkViestiListItem] =
+    hakemusRepository.haeYkViestiLista(userOid)
 }
