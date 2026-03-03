@@ -18,7 +18,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     todistuksenPaivamaara = Some("1.2.2000"),
     koulutusalaKoodiUri = None,
     paaaaineTaiErikoisala = Some("Paalikön erikoisala"),
-    todistusOtsikko = Some("examensbevis"),
+    todistusOtsikko = Some("tutkintotodistus"),
     ohjeellinenLaajuus = None
   ),
   Tutkinto(
@@ -47,10 +47,10 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     paattymisVuosi = Some(2011),
     maakoodiUri = Some("maatjavaltiot2_762"),
     muuTutkintoTieto = None,
-    todistuksenPaivamaara = None,
+    todistuksenPaivamaara = Some("7.12.2001"),
     koulutusalaKoodiUri = None,
     paaaaineTaiErikoisala = None,
-    todistusOtsikko = None,
+    todistusOtsikko = Some("muutodistusVirheellinen"),
     ohjeellinenLaajuus = None
   ),
   Tutkinto(

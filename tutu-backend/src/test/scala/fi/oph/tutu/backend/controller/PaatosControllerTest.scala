@@ -949,7 +949,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       id = None,
       hakemusId = hakemusIdWithTaso.get,
       jarjestys = "1",
-      todistusOtsikko = Some("Todistusotsikko"),
+      todistusOtsikko = Some("tutkintotodistus"),
       nimi = Some("Tutkintonimi"),
       paaaaineTaiErikoisala = Some("Pääaine"),
       oppilaitos = Some("Oppilaitos"),

@@ -19,6 +19,8 @@ import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
 import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
+// Remember to update these in PaatosTekstiGenerator
+
 const primaryTutkintotodistusOtsikko = {
   fi: [
     { value: 'tutkintotodistus', label: 'Tutkintotodistus' },
