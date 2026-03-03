@@ -69,7 +69,7 @@ export class AuroraDatabaseStack extends Stack {
         caCertificate: CaCertificate.RDS_CA_RSA4096_G1
       }),
       readers:
-        props.environment === 'prod'
+        props.environment === 'prod' || props.environment === 'qa'
           ? [
               ClusterInstance.serverlessV2('reader', {
                 enablePerformanceInsights: props.performanceInsights,
