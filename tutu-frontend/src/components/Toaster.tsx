@@ -40,6 +40,8 @@ const InfoToast = ({
         onMouseLeave={() => toastLeave(toast.key)}
         onBlur={() => toastLeave(toast.key)}
         sx={{ pointerEvents: 'all', marginBottom: 2, whiteSpace: 'pre' }}
+        data-testid="toast-alert"
+        data-severity={toastType}
       >
         <Typography sx={{ color: ophColors.white }} data-testid="toast-message">
           {t({

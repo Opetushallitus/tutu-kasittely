@@ -92,16 +92,13 @@ export default function ViestiPage() {
       'hakemus.viesti.paivitetty',
       t,
     );
-  }, [addToast, t, viestiUpdateSuccess]);
-
-  useEffect(() => {
     handleSuccessMessage(
       vahvistusSuccess,
       addToast,
       'hakemus.viesti.vahvistettu',
       t,
     );
-  }, [addToast, t, vahvistusSuccess]);
+  }, [addToast, t, viestiUpdateSuccess, vahvistusSuccess]);
 
   if (hakemusError || viestiLoadingError) {
     return null;
@@ -162,7 +159,7 @@ const ViestiPageComponent = ({
   const isViestiEmpty =
     !currentViesti.tyyppi && !currentViesti.otsikko && !currentViesti.viesti;
 
-  const updateViestipartially = (
+  const updateViestiPartially = (
     updatedViesti: Partial<Viesti>,
     immediateSave?: boolean,
   ) => {
@@ -189,19 +186,19 @@ const ViestiPageComponent = ({
         marginRight: theme.spacing(3),
       }}
     >
-      <OphTypography variant={'h2'}>
+      <OphTypography variant={'h2'} data-testid={'viesti-otsikko'}>
         {t('hakemus.viesti.sivunOtsikko')}
       </OphTypography>
       <KieliSelect
         oletusKieli={currentViesti.kieli || 'fi'}
-        updateKieli={(kieli) => updateViestipartially({ kieli: kieli })}
+        updateKieli={(kieli) => updateViestiPartially({ kieli: kieli })}
         t={t}
         theme={theme}
       />
       <ViestityyppiComponent
         viestityyppi={currentViesti.tyyppi}
         updateViestityyppi={(tyyppi: Viestityyppi) =>
-          updateViestipartially({ tyyppi: tyyppi })
+          updateViestiPartially({ tyyppi: tyyppi })
         }
         t={t}
       />
@@ -209,7 +206,7 @@ const ViestiPageComponent = ({
         label={t('hakemus.viesti.otsikko')}
         value={currentViesti.otsikko || ''}
         onChange={(event) =>
-          updateViestipartially({
+          updateViestiPartially({
             otsikko: event.target.value,
           })
         }
@@ -230,10 +227,10 @@ const ViestiPageComponent = ({
               header: t(`hakemus.viesti.tyhjenna.modal.otsikko`),
               content: t(`hakemus.viesti.tyhjenna.modal.teksti`),
               confirmButtonText: t(
-                `hakemus.viesti.tyhjenna.modal.tyhennaKentat`,
+                `hakemus.viesti.tyhjenna.modal.tyhjennaKentat`,
               ),
               handleConfirmAction: () =>
-                updateViestipartially(
+                updateViestiPartially(
                   { tyyppi: null, otsikko: null, viesti: null },
                   true,
                 ),

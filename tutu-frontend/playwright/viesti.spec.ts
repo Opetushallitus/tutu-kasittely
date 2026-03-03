@@ -188,7 +188,11 @@ test('Viestin vahvistamisesta lähetetään PUT -kutsu backendille ja viestin ke
     page.getByTestId('modal-confirm-button').click(),
   ]);
 
-  await expect(page.getByTestId('toast-message')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'success',
+  );
   await expectViestiFormToBeEmpty(page);
 });
 
@@ -222,5 +226,58 @@ test('Kenttien tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
     page.getByTestId('viesti-otsikko-input').getByRole('textbox'),
   ).toBeEmpty();
   await expect(page.getByTestId('editor-content-editable')).toBeEmpty();
-  await expect(page.getByTestId('toast-message')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'success',
+  );
+});
+
+test('Viestin latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  page.route('**/tutu-backend/api/viesti/tyoversio/*', async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        message: 'latausvirhe',
+      }),
+    });
+  });
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'error',
+  );
+  await expect(page.getByTestId('viesti-otsikko')).toBeHidden();
+  await expect(page.getByTestId('viesti-kieli-select')).toBeHidden();
+});
+
+test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, tyoversio);
+  page.route('**/tutu-backend/api/viesti/1.2.246.562.11.**', async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        message: 'tallennusvirhe',
+      }),
+    });
+  });
+  await page
+    .getByTestId('viesti-otsikko-input')
+    .getByRole('textbox')
+    .fill('Tämä on otsikko');
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
+
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'error',
+  );
 });

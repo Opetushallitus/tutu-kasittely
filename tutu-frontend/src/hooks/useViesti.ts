@@ -49,6 +49,7 @@ export const useViesti = (hakemusOid: string | undefined) => {
     isPending: updateOngoing,
     isSuccess: viestiUpdateSuccess,
     error: viestiUpdateError,
+    reset: viestiUpdateReset,
   } = useMutation({
     mutationFn: (viesti: Viesti) =>
       putViesti(hakemusOid!, { viesti, vahvista: false }),
@@ -63,6 +64,7 @@ export const useViesti = (hakemusOid: string | undefined) => {
     isPending: vahvistusOngoing,
     isSuccess: vahvistusSuccess,
     error: vahvistusError,
+    reset: viestiVahvistusReset,
   } = useMutation({
     mutationFn: (viesti: Viesti) =>
       putViesti(hakemusOid!, { viesti, vahvista: true }),
@@ -71,11 +73,18 @@ export const useViesti = (hakemusOid: string | undefined) => {
     },
   });
 
+  const resetMutationStatuses = () => {
+    viestiUpdateReset();
+    viestiVahvistusReset();
+  };
+
   const updateViesti: ViestiUpdateCallback = (viesti: Viesti) => {
+    resetMutationStatuses();
     updateViestiMutation(viesti);
   };
 
   const vahvistaViesti: ViestiUpdateCallback = (viesti: Viesti) => {
+    resetMutationStatuses();
     vahvistaViestiMutation(viesti);
   };
 

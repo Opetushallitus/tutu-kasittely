@@ -91,6 +91,7 @@ export const handleSuccessMessage = (
       key: translationKey,
       type: 'success',
       message: t(translationKey),
+      timeMs: 2500,
     });
 };
 
