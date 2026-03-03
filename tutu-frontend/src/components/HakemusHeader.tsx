@@ -50,21 +50,23 @@ export const HakemusHeader = () => {
                 )
               : t('puuttuu')}
           </OphTypography>
-          <OphTypography
-            noWrap={true}
-            data-testid="hakemusotsikko-kasittelyvaihe"
-            sx={{
-              display: 'flex',
-              gap: '13px',
-            }}
-          >
-            {kasittelyVaiheTranslation}
+          <Stack direction="row" alignItems="center" gap={theme.spacing(1)}>
+            <OphTypography
+              noWrap={true}
+              data-testid="hakemusotsikko-kasittelyvaihe"
+              sx={{
+                display: 'flex',
+                gap: '13px',
+              }}
+            >
+              {kasittelyVaiheTranslation}
+            </OphTypography>
             {hakemus?.onkoPeruutettu && (
               <PeruutettuBadge
                 label={t('hakemus.ataruhakemuksentila.peruutettu')}
               />
             )}
-          </OphTypography>
+          </Stack>
         </Stack>
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
           <OphTypography

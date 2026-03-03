@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Viesti } from '@/src/lib/types/viesti';
 
-export const getViestiTyoversio = async (
+const getViestiTyoversio = async (
   hakemusOid: string | undefined,
 ): Promise<Viesti> => {
   return await doApiFetch(
@@ -15,12 +15,14 @@ export const getViestiTyoversio = async (
   );
 };
 
-export type UpdateViestiParams = {
+type UpdateViestiParams = {
   viesti: Viesti;
   vahvista: boolean;
 };
 
-export const putViesti = (
+export type ViestiUpdateCallback = (viesti: Viesti) => void;
+
+const putViesti = (
   hakemusOid: string,
   { viesti, vahvista }: UpdateViestiParams,
 ) => {
@@ -42,24 +44,61 @@ export const useViesti = (hakemusOid: string | undefined) => {
     throwOnError: false,
   });
 
-  const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (params: UpdateViestiParams) => putViesti(hakemusOid!, params),
+  const {
+    mutate: updateViestiMutation,
+    isPending: updateOngoing,
+    isSuccess: viestiUpdateSuccess,
+    error: viestiUpdateError,
+    reset: viestiUpdateReset,
+  } = useMutation({
+    mutationFn: (viesti: Viesti) =>
+      putViesti(hakemusOid!, { viesti, vahvista: false }),
     onSuccess: async (response) => {
       const paivitettyViesti = await response.json();
       queryClient.setQueryData(queryKey, paivitettyViesti);
     },
   });
 
-  const updateViesti = (viesti: Viesti, vahvista: boolean) => {
-    mutate({ viesti, vahvista });
+  const {
+    mutate: vahvistaViestiMutation,
+    isPending: vahvistusOngoing,
+    isSuccess: vahvistusSuccess,
+    error: vahvistusError,
+    reset: viestiVahvistusReset,
+  } = useMutation({
+    mutationFn: (viesti: Viesti) =>
+      putViesti(hakemusOid!, { viesti, vahvista: true }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
+  const resetMutationStatuses = () => {
+    viestiUpdateReset();
+    viestiVahvistusReset();
+  };
+
+  const updateViesti: ViestiUpdateCallback = (viesti: Viesti) => {
+    resetMutationStatuses();
+    updateViestiMutation(viesti);
+  };
+
+  const vahvistaViesti: ViestiUpdateCallback = (viesti: Viesti) => {
+    resetMutationStatuses();
+    vahvistaViestiMutation(viesti);
   };
 
   return {
     ...query,
     updateViesti: updateViesti,
+    vahvistaViesti: vahvistaViesti,
     viesti: query.data,
     isViestiLoading: query.isLoading,
-    updateOngoing: isPending,
-    updateSuccess: isSuccess,
+    viestiLoadingError: query.error,
+    updateOrVahvistusOngoing: updateOngoing || vahvistusOngoing,
+    viestiUpdateSuccess,
+    viestiUpdateError,
+    vahvistusSuccess,
+    vahvistusError,
   };
 };

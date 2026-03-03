@@ -141,13 +141,13 @@ export default function HakemusRow({
           }}
         >
           {kasittelyVaiheTranslation}
-          {hakemus.onkoPeruutettu && (
-            <PeruutettuBadge
-              data-testid="peruutettu-badge"
-              label={t('hakemus.ataruhakemuksentila.peruutettu')}
-            />
-          )}
         </OphTypography>
+        {hakemus.onkoPeruutettu && (
+          <PeruutettuBadge
+            data-testid="peruutettu-badge"
+            label={t('hakemus.ataruhakemuksentila.peruutettu')}
+          />
+        )}
       </StyledTableCell>
       <StyledTableCell>
         {t(hakemusKoskee)}{' '}
