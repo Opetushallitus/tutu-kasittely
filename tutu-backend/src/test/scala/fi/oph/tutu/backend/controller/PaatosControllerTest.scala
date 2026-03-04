@@ -453,6 +453,16 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         "testi"
       )
     )
+    val dbHakemus = hakemusRepository.haeHakemus(hakemusOidWithPeruutus).get
+    hakemusRepository.paivitaHakemus(
+      hakemusOidWithPeruutus,
+      dbHakemus.copy(
+        onkoPeruutettu = true,
+        peruutusPvm = Some(LocalDateTime.parse("2026-03-13T00:00:00"))
+      ),
+      "test user"
+    )
+
     hakemusIdWithOikaisu = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOidWithOikaisu,
@@ -939,7 +949,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       id = None,
       hakemusId = hakemusIdWithTaso.get,
       jarjestys = "1",
-      todistusOtsikko = Some("Todistusotsikko"),
+      todistusOtsikko = Some("tutkintotodistus"),
       nimi = Some("Tutkintonimi"),
       paaaaineTaiErikoisala = Some("Pääaine"),
       oppilaitos = Some("Oppilaitos"),

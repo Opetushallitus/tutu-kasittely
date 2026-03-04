@@ -173,7 +173,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   @CacheEvict(value = Array("lomake"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
   def emptyLomakeCache(): Unit =
-    LOG.info("Emptying koodisto-cache")
+    LOG.info("Emptying lomake-cache")
 
   @CachePut(Array("lomake"))
   def updateCached(lomake: AtaruLomake): Unit = {

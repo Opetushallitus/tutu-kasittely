@@ -2,6 +2,23 @@ package fi.oph.tutu.backend.service.generator.paatosteksti
 
 import fi.oph.tutu.backend.service.MaakoodiService
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.service.generator.formatDate
+
+// See TutkintoComponent.tsx
+val tutkintoOtsikkoLabelMap: Map[String, String] = Map(
+  "tutkintotodistus"             -> "Tutkintotodistus",
+  "tutkintotodistukset"          -> "Tutkintotodistukset",
+  "todistus"                     -> "Todistus",
+  "todistukset"                  -> "Todistukset",
+  "examensbevis"                 -> "Examensbevis",
+  "bevis"                        -> "Bevis",
+  "muutodistus"                  -> "Muu todistus",
+  "muuttodistukset"              -> "Muut todistukset",
+  "edeltaneetkorkeakouluopinnot" -> "Edeltäneet korkeakouluopinnot",
+  "ovrigbevis"                   -> "Övrig bevis",
+  "ovrigabevis"                  -> "Övriga bevis",
+  "foregaendehogskolestudier"    -> "Föregående högskolestudier"
+)
 
 private def getCommonPaatosHeader(
   hakemus: Hakemus,
@@ -13,37 +30,63 @@ private def getCommonPaatosHeader(
   val hakijaNimi        = s"${hakemus.hakija.sukunimi} ${hakemus.hakija.etunimet}"
   val hakijaSyntymaaika = hakemus.hakija.syntymaaika
 
-  // Raukeamisessa tutkintoa ei lisätä paatosTietoihin
-  val tutkinto =
-    if (paatos.ratkaisutyyppi == Ratkaisutyyppi.PeruutusTaiRaukeaminen)
-      tutkinnot.headOption
-    else
-      paatos.paatosTiedot.headOption
-        .flatMap(paatosTieto => getTutkinto(tutkinnot, paatosTieto))
-
-  val tutkintoOtsikko  = tutkinto.flatMap(_.todistusOtsikko).getOrElse("")
-  val tutkintoNimi     = tutkinto.flatMap(_.nimi).getOrElse("")
-  val tutkinnonPaaAine = tutkinto.flatMap(_.paaaaineTaiErikoisala).getOrElse("")
-  val korkeakoulu      = tutkinto.flatMap(_.oppilaitos).getOrElse("")
-  val maakoodi         = tutkinto.flatMap(_.maakoodiUri).getOrElse("")
-  val sijaintimaa      = maakoodiService.getMaakoodiByUri(maakoodi) match {
-    case Some(maakoodi) => if (paatosKieli == "finnish") maakoodi.fi else maakoodi.sv
-    case None           => ""
+  val isPeruutus = paatos.ratkaisutyyppi match {
+    case Some(Ratkaisutyyppi.PeruutusTaiRaukeaminen) => true
+    case _                                           => false
   }
 
-  val tutkintoParts =
-    Seq(tutkintoOtsikko, tutkintoNimi, tutkinnonPaaAine, korkeakoulu, sijaintimaa)
-      .map(_.trim)
-      .filter(_.nonEmpty)
-      .mkString("<br>")
+  val tutkintoBlocks: String =
+    if (isPeruutus) ""
+    else {
+      tutkinnot
+        .map { tutkinto =>
+          val tutkintoOtsikko =
+            tutkinto.todistusOtsikko
+              .map(o => tutkintoOtsikkoLabelMap.getOrElse(o, o))
+              .getOrElse("")
 
-  val todistuksenPaivamaara = tutkinto.flatMap(_.todistuksenPaivamaara).getOrElse("")
+          val tutkintoNimi     = tutkinto.nimi.getOrElse("")
+          val tutkinnonPaaAine = tutkinto.paaaaineTaiErikoisala.getOrElse("")
+          val korkeakoulu      = tutkinto.oppilaitos.getOrElse("")
+          val maakoodiUri      = tutkinto.maakoodiUri
+
+          val sijaintimaa = maakoodiUri
+            .flatMap(maakoodiUri =>
+              maakoodiService
+                .getMaakoodiByUri(maakoodiUri)
+                .flatMap(m => Some(if (paatosKieli == "finnish") m.fi else m.sv))
+            )
+            .getOrElse("")
+
+          val tutkintoParts =
+            Seq(tutkintoNimi, tutkinnonPaaAine, korkeakoulu, sijaintimaa)
+              .map(_.trim)
+              .filter(_.nonEmpty)
+              .mkString("<br>")
+
+          val todistuksenPaivamaara = tutkinto.todistuksenPaivamaara.getOrElse("")
+          val tutkintoOtsikkoLabel  = tutkintoOtsikkoLabelMap.getOrElse(
+            tutkintoOtsikko,
+            tutkintoOtsikko
+          )
+
+          if (tutkintoParts.nonEmpty) { // Filtteröi esim. Muut tutkinnot pois
+            if (paatosKieli == "finnish")
+              s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>Todistuksen päivämäärä: $todistuksenPaivamaara</p>"""
+            else
+              s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>Datum för bevis: $todistuksenPaivamaara</p>"""
+          } else {
+            ""
+          }
+        }
+        .mkString("")
+    }
 
   paatosKieli match {
     case "finnish" =>
-      s"""<p>Hakija:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p><p>Tutkintotodistus:</p><p>${tutkintoParts}<br>Todistuksen päivämäärä: $todistuksenPaivamaara</p>"""
+      s"""<p>Hakija:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
     case _ =>
-      s"""<p>Sökande:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p><p>Examensbevis:</p><p>${tutkintoParts}<br>Datum för bevis: $todistuksenPaivamaara</p>"""
+      s"""<p>Sökande:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
   }
 }
 
@@ -179,7 +222,10 @@ private def generateTasoPaatosTeksti(
 }
 
 private def generatePeruutusTeksti(lang: String, hakemus: Hakemus): String = {
-  val peruutusPvm = hakemus.peruutusPvm.getOrElse(if (lang == "finnish") "[pp.kk.vvvv]" else "[dd.mm.åååå]")
+  val peruutusPvm = hakemus.peruutusPvm match {
+    case Some(date) => formatDate(date)
+    case _          => if (lang == "finnish") "[pp.kk.vvvv]" else "[dd.mm.åååå]"
+  }
   lang match {
     case "finnish" =>
       s"""<h4>Päätös</h4><p>Hakija on peruuttanut hakemuksensa $peruutusPvm. Hakemuksen käsittely raukeaa.</p>"""

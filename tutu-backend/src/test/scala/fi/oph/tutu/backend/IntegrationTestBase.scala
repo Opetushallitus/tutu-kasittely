@@ -41,7 +41,7 @@ import java.util.{Random, UUID}
 import scala.io.Source
 
 object IntegrationTestBase extends Object {
-  private val postgresContainer = new PostgreSQLContainer("postgres:15")
+  private val postgresContainer = new PostgreSQLContainer("postgres:16.8")
     .withDatabaseName("tutu")
     .withUsername("app")
     .withPassword("app")

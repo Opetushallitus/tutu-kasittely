@@ -1,7 +1,7 @@
 services:
   tutu-postgres:
     container_name: "tutu-postgres"
-    image: "postgres:15.12"
+    image: "postgres:16.8"
     ports:
       - "127.0.0.1:5433:5432"
     environment:
