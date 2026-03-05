@@ -11,3 +11,10 @@ export type Viesti = {
   vahvistettu?: string;
   vahvistaja?: string;
 };
+
+export type VahvistettuViestiListItem = {
+  id: string;
+  tyyppi: Viestityyppi;
+  otsikko: string;
+  vahvistettu: string;
+};

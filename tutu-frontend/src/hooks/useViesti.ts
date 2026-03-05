@@ -32,7 +32,7 @@ const putViesti = (
   return doApiPut(url, viesti);
 };
 
-export const useViesti = (hakemusOid: string | undefined) => {
+export const useViesti = (hakemusOid?: string) => {
   const queryKey = ['viesti', hakemusOid];
 
   const queryClient = useQueryClient();

@@ -18,6 +18,7 @@ import {
   importHtml,
 } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 import { KieliSelect } from '@/src/app/hakemus/[oid]/editori/viesti/components/KieliSelect';
+import { VahvistettuList } from '@/src/app/hakemus/[oid]/editori/viesti/components/VahvistettuList';
 import { ViestityyppiComponent } from '@/src/app/hakemus/[oid]/editori/viesti/components/Viestityyppi';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -271,6 +272,7 @@ const ViestiPageComponent = ({
           </OphButton>
         </Stack>
       </Stack>
+      <VahvistettuList t={t} theme={theme} hakemusOid={hakemus.hakemusOid} />
       <SaveRibbon
         onSave={() => {
           viestiState.save();

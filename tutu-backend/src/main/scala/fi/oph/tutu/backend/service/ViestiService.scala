@@ -19,11 +19,11 @@ class ViestiService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
-  def haeViestiLista(hakemusOid: HakemusOid, sort: String): Seq[ViestiListItem] = {
-    val viestiLista = hakemusRepository.haeHakemus(hakemusOid) match {
+  def haeViestiLista(hakemusOid: HakemusOid, sortParams: Option[ListSortParam]): Seq[ViestiListItem] = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
         viestiRepository
-          .haeViestiLista(dbHakemus.id)
+          .haeViestiLista(dbHakemus.id, sortParams)
           .map(viesti => {
             val vahvistaja = onrService.haeHenkilo(viesti.vahvistaja) match {
               case Left(error)    => ""
@@ -32,28 +32,6 @@ class ViestiService(
             viesti.copy(vahvistaja = vahvistaja)
           })
       case _ => List()
-    }
-    sort match {
-      case null => viestiLista
-      case _    =>
-        val sortSplit = sort.split(":")
-        val sortParam = sortSplit.headOption.getOrElse("undefined")
-        val sortDef   = SortDef.fromString(sortSplit.lastOption.getOrElse("undefined"))
-        sortDef match {
-          case Undefined => viestiLista
-          case _         =>
-            val sorted = sortParam match {
-              case "vahvistettu" => viestiLista.sortBy(_.vahvistettu)
-              case "otsikko"     => viestiLista.sortBy(_.otsikko)
-              case "vahvistaja"  => viestiLista.sortBy(_.vahvistaja)
-              case _             => viestiLista.sortBy(_.tyyppi.toString)
-            }
-            sortDef match {
-              case SortDef.Asc  => sorted
-              case SortDef.Desc => sorted.reverse
-              case _            => viestiLista
-            }
-        }
     }
   }
 

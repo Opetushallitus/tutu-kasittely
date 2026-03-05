@@ -1,5 +1,5 @@
 import { EditOutlined } from '@mui/icons-material';
-import { Stack, styled, TableCell, TableRow } from '@mui/material';
+import { Stack, TableRow } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 
 import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
+import { StyledTableCell } from '@/src/components/StyledTableCell';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
@@ -18,10 +19,6 @@ import { ophColors } from '@/src/lib/theme';
 import { doApiPatch } from '@/src/lib/tutu-backend/api';
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { handleFetchError } from '@/src/lib/utils';
-
-const StyledTableCell = styled(TableCell)({
-  borderBottom: 'none',
-});
 
 export const muotoileKokonaisaikaPure = (nyt: Date, luotu: Date) => {
   const kuukausiYlitetty = luotu.getDate() > nyt.getDate();
