@@ -468,7 +468,14 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
           SELECT
-            v.id, v.hakemus_id, v.lahettaja_oid, v.vastaanottaja_oid, v.luotu, v.luettu, v.viesti, v.vastaus
+            v.id,
+            v.hakemus_id,
+            v.lahettaja_oid,
+            v.vastaanottaja_oid,
+            v.luotu,
+            v.luettu,
+            v.viesti,
+            v.vastaus
           FROM
             yk_viesti v
           WHERE
