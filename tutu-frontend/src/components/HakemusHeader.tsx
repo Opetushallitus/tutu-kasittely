@@ -43,9 +43,9 @@ export const HakemusHeader = () => {
         <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
           <OphTypography data-testid="hakemusotsikko-kirjauspvm">
             {t('hakemusotsikko.kirjausPvm')}{' '}
-            {hakemus.kirjausPvm
+            {hakemus.saapumisPvm
               ? dateFns.format(
-                  Date.parse(hakemus?.kirjausPvm),
+                  Date.parse(hakemus?.saapumisPvm),
                   DATE_PLACEHOLDER,
                 )
               : t('puuttuu')}

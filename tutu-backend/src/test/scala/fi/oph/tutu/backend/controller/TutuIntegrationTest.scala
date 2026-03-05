@@ -6,7 +6,7 @@ import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue, fail}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -217,6 +218,20 @@ class TutuIntegrationTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
 
+    val insertedHakemus = hakemusRepository
+      .haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"))
+      .getOrElse(fail("Hakemusta ei löytynyt"))
+
+    // tallennaHakemusAction fields
+    assertEquals(esittelija.get.esittelijaOid, insertedHakemus.esittelijaOid.get)
+    assertEquals(1527182L, insertedHakemus.formId)
+    assertEquals(1, insertedHakemus.hakemusKoskee)
+    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.saapumisPvm.get)
+    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.ataruHakemusMuokattu.get)
+    assertEquals(Some("Testi Toka"), insertedHakemus.hakijaEtunimet)
+    assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
+    assertEquals(Some(toLocalDateTime("2025-07-21T11:06:38.273Z")), insertedHakemus.viimeisinTaydennyspyyntoPvm)
+
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
 
@@ -253,10 +268,73 @@ class TutuIntegrationTest extends IntegrationTestBase {
       .andExpect(status().isOk)
 
     val insertedHakemus = hakemusRepository
-      .haeHakemusLista(Seq(HakemusOid("1.2.246.562.11.00000000000000006665")))
-      .headOption
+      .haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"))
       .getOrElse(fail("Hakemusta ei löytynyt"))
-    assert(insertedHakemus.esittelijaOid.get == esittelija.get.esittelijaOid.toString)
+
+    // tallennaHakemusAction fields
+    assertEquals(esittelija.get.esittelijaOid, insertedHakemus.esittelijaOid.get)
+    assertEquals(1527182L, insertedHakemus.formId)
+    assertEquals(0, insertedHakemus.hakemusKoskee)
+    assertEquals(toLocalDateTime("2025-05-14T11:06:38.273Z"), insertedHakemus.saapumisPvm.get)
+    assertEquals(toLocalDateTime("2025-05-14T11:06:38.273Z"), insertedHakemus.ataruHakemusMuokattu.get)
+    assertEquals(Some("Testi"), insertedHakemus.hakijaEtunimet)
+    assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
+    assertEquals(Some(toLocalDateTime("2025-07-14T11:06:38.273Z")), insertedHakemus.viimeisinTaydennyspyyntoPvm)
+
+    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
+  }
+
+  @Test
+  @Order(3)
+  @WithMockUser(
+    value = esittelijaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+  )
+  def luoLopullinenPaatosHakemusReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6668.json")))
+    when(ataruHakemusParser.parseLopullinenPaatosSuoritusmaaMaakoodiUri(any()))
+      .thenReturn(Some("maatjavaltiot2_834"))
+    when(ataruHakemusParser.parseLopullinenPaatosVastaavaEhdollinen(any()))
+      .thenReturn(Some("ASIATUNNUS-001"))
+
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006668",
+          "hakemusKoskee": 5
+          }"""
+
+    mockMvc
+      .perform(
+        post("/api/ataru-hakemus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isOk)
+
+    val insertedHakemus = hakemusRepository
+      .haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"))
+      .getOrElse(fail("Lopullisen paatoksen hakemusta ei löytynyt"))
+
+    // tallennaHakemusAction fields
+    assertEquals(esittelija.get.esittelijaOid, insertedHakemus.esittelijaOid.get)
+    assertEquals(1527182L, insertedHakemus.formId)
+    assertEquals(5, insertedHakemus.hakemusKoskee)
+    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.saapumisPvm.get)
+    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.ataruHakemusMuokattu.get)
+    assertEquals(Some("Testi Neljäs"), insertedHakemus.hakijaEtunimet)
+    assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
+    assertEquals(None, insertedHakemus.viimeisinTaydennyspyyntoPvm)
+    assertEquals(Some("ASIATUNNUS-001"), insertedHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
+    assertEquals(Some("maatjavaltiot2_834"), insertedHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri)
+
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
 }

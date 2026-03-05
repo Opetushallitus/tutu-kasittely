@@ -15,8 +15,8 @@ test('Hakemusotsikko näyttää hakemuksen tiedot', async ({ page }) => {
   const asiatunnus = page.getByTestId('hakemusotsikko-asiatunnus');
   await expect(asiatunnus).toHaveText('OPH-111-2025');
 
-  const kirjausPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
-  await expect(kirjausPvm).toContainText('14.05.2025');
+  const saapumisPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
+  await expect(saapumisPvm).toContainText('14.05.2025');
 
   const esittelyPvm = page.getByTestId('hakemusotsikko-kasittelyvaihe');
   await expect(esittelyPvm).toContainText('Hakemusta täydennetty 28.07.2025');
@@ -49,8 +49,8 @@ test('Hakemusotsikko näyttää peruutetun hakemuksen tiedot', async ({
   const hakija = page.getByTestId('hakemusotsikko-hakija');
   await expect(hakija).toHaveText('Heittotähti, Heikki Hemuli');
 
-  const kirjausPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
-  await expect(kirjausPvm).toContainText('14.05.2025');
+  const saapumisPvm = page.getByTestId('hakemusotsikko-kirjauspvm');
+  await expect(saapumisPvm).toContainText('14.05.2025');
 
   const esittelyPvm = page.getByTestId('hakemusotsikko-kasittelyvaihe');
   await expect(esittelyPvm).toContainText('Hakemusta täydennetty 28.07.2025');

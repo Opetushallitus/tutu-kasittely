@@ -34,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.UUID
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
@@ -79,6 +80,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     mockMvc = intermediate.build()
 
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
+    esittelijaRepository.paivitaEsittelijaNimi(esittelijaOidString, "Esko", "Esittelijä")
     maakoodi = maakoodiRepository.upsertMaakoodi(
       "maatjavaltiot2_752",
       "Ruotsi",
@@ -181,12 +183,20 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
 
-    when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
-      .thenReturn(Right(loadJson("ataruHakemukset.json")))
-    val expectedResult = s"""[{
+    // Ylikirjoita eri hakijat
+    when(hakemuspalveluService.haeHakemus(eqTo(HakemusOid("1.2.246.562.11.00000000000000006665"))))
+      .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+    when(hakemuspalveluService.haeHakemus(eqTo(HakemusOid("1.2.246.562.11.00000000000000006666"))))
+      .thenReturn(Right(loadJson("ataruHakemus6666.json")))
+    when(hakemuspalveluService.haeHakemus(eqTo(HakemusOid("1.2.246.562.11.00000000000000006668"))))
+      .thenReturn(Right(loadJson("ataruHakemus6668.json")))
+
+    val saapumisPvmStr     = toLocalDateTime("2025-05-14T10:59:47.597Z").toString
+    val saapumisPvmStr6665 = toLocalDateTime("2025-05-14T11:06:38.273Z").toString
+    val expectedResult     = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
-                                "aika" : "2025-05-14T10:59:47.597Z",
+                                "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 0,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
@@ -196,7 +206,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Hakija",
-                                "aika" : "2025-05-14T11:06:38.273Z",
+                                "saapumisPvm" : "$saapumisPvmStr6665",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
@@ -206,7 +216,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Toka Hakija",
-                                "aika" : "2025-05-14T10:59:47.597Z",
+                                "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
@@ -216,7 +226,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                               }, {
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
-                                "aika" : "2025-05-14T10:59:47.597Z",
+                                "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
                                 "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
@@ -254,11 +264,11 @@ class HakemusControllerTest extends IntegrationTestBase {
     )
     initAtaruHakemusRequests()
 
-    val kirjauspvm = ZonedDateTime
+    val saapumisPvm = ZonedDateTime
       .parse("2025-05-14T10:59:47.597Z")
       .withZoneSameInstant(FINLAND_TZ)
       .toLocalDateTime
-    val kirjausPvmStr = kirjauspvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+    val saapumisPvmStr = saapumisPvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
 
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
@@ -287,7 +297,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 },
                                 "asiatunnus": null,
                                 "yhteistutkinto": false,
-                                "kirjausPvm": "$kirjausPvmStr",
+                                "saapumisPvm": "$saapumisPvmStr",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
                                 "esittelijaOid": 1.2.246.562.24.00000000000000006666,
@@ -348,8 +358,6 @@ class HakemusControllerTest extends IntegrationTestBase {
       .thenReturn(
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
       )
-    when(hakemuspalveluService.haeHakemukset(any[Seq[HakemusOid]]))
-      .thenReturn(Right(loadJson("ataruHakemukset.json")))
     val hakemus     = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")).get
     val asiakirjaId = hakemus.asiakirjaId.get
     val asiakirja   = asiakirjaRepository.haeAsiakirjaTiedot(asiakirjaId).get
@@ -359,10 +367,11 @@ class HakemusControllerTest extends IntegrationTestBase {
       UserOid(esittelijaOidString)
     )
 
+    val saapumisPvmStr = toLocalDateTime("2025-05-14T10:59:47.597Z").toString()
     val expectedResult = s"""[{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
-                                "aika" : "2025-05-14T10:59:47.597Z",
+                                "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
                                 "apHakemus": true,
@@ -478,7 +487,8 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
-    val dbHakemus  = hakemusRepository.haeHakemus(hakemusOid).get
+
+    val dbHakemus = hakemusRepository.haeHakemus(hakemusOid).get
     hakemusRepository.paivitaHakemus(
       hakemusOid,
       dbHakemus.copy(
@@ -502,8 +512,15 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals(2, paivitettyHakemus.hakemusKoskee)
     assertEquals(KasittelyVaihe.HakemustaTaydennetty, paivitettyHakemus.kasittelyVaihe)
     assertTrue(paivitettyHakemus.onkoPeruutettu)
-    assertEquals(LocalDateTime.parse("2026-01-30T12:59:47.597"), paivitettyHakemus.peruutusPvm.get)
+    assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.peruutusPvm.get)
     assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(dbHakemus.id).get.ratkaisutyyppi.get)
+
+    // Kentät siirretty hakemukseen: tarkistetaan oikeat tyypit ja arvot
+    assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.ataruHakemusMuokattu.get)
+    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), paivitettyHakemus.saapumisPvm.get)
+    assertEquals("Testi Kolmas", paivitettyHakemus.hakijaEtunimet.get)
+    assertEquals("Hakija", paivitettyHakemus.hakijaSukunimi.get)
+    assertEquals(toLocalDateTime("2026-01-03T19:30:45.597Z"), paivitettyHakemus.viimeisinTaydennyspyyntoPvm.get)
   }
 
   @Test

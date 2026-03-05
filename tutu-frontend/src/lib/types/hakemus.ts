@@ -27,7 +27,7 @@ export type Hakemus = {
   hakemusKoskee: HakemusKoskee;
   readonly hakija: Hakija;
   asiatunnus: string;
-  kirjausPvm: string;
+  saapumisPvm: string;
   esittelyPvm: string;
   paatosPvm: string;
   esittelijaOid: string;
@@ -40,14 +40,15 @@ export type Hakemus = {
   ataruHakemustaMuokattu?: string;
   sisalto: SisaltoItem[];
   liitteidenTilat: TarkistuksenTila[];
-  asiakirja: AsiakirjaTieto;
   yhteistutkinto: boolean;
+  asiakirja: AsiakirjaTieto;
   lopullinenPaatosVastaavaEhdollinenAsiatunnus?: string;
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
   esittelijanHuomioita?: string;
   onkoPeruutettu: boolean;
   peruutusPvm?: string;
   peruutusLisatieto?: string;
+  viimeisinTaydennyspyyntoPvm?: string;
 };
 
 /**
@@ -58,7 +59,6 @@ export type Hakemus = {
 export type HakemusUpdateRequest = {
   hakemusKoskee: HakemusKoskee;
   asiatunnus: string | null;
-  kirjausPvm: string | null;
   esittelyPvm: string | null;
   paatosPvm: string | null;
   esittelijaOid: string | null;

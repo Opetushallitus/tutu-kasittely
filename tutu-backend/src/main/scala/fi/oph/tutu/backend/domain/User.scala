@@ -1,14 +1,12 @@
 package fi.oph.tutu.backend.domain
 
-import scala.beans.BeanProperty
-
 case class User(
-  @BeanProperty userOid: String,
-  @BeanProperty authorities: List[String],
-  @BeanProperty asiointikieli: Option[String] = None
+  userOid: String,
+  authorities: List[String],
+  asiointikieli: Option[String] = None
 )
 
-case class UserResponse(@BeanProperty user: User)
+case class UserResponse(user: User)
 
 case class KansalaisuusKoodi(kansalaisuusKoodi: String)
 

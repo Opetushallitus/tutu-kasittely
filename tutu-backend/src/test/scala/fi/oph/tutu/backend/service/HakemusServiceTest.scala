@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
 import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
@@ -91,7 +92,11 @@ class HakemusServiceTest extends UnitTestBase {
         onkoPeruutettu = false,
         peruutusPvm = None,
         peruutusLisatieto = None,
-        viimeisinTaydennyspyyntoPvm = None
+        viimeisinTaydennyspyyntoPvm = None,
+        saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+        ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+        hakijaEtunimet = Some("Jorma Eero"),
+        hakijaSukunimi = Some("")
       )
     }
 
@@ -102,10 +107,10 @@ class HakemusServiceTest extends UnitTestBase {
         key = "",
         form_id = form_id,
         content = Content(answers = Seq()),
-        latestVersionCreated = "",
+        latestVersionCreated = "2025-05-14T10:59:47.597Z",
         state = "",
-        modified = "",
-        submitted = "",
+        modified = "2025-05-14T10:59:47.597Z",
+        submitted = "2025-05-14T10:59:47.597Z",
         lang = "",
         sukunimi = "",
         `application-review-notes` = None,

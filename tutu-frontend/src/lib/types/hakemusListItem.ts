@@ -4,7 +4,7 @@ export type HakemusListItem = {
   asiatunnus: string;
   hakija: string;
   vaihe: string;
-  aika: string;
+  saapumisPvm: string;
   viimeinenAsiakirjaHakijalta?: string;
   hakemusOid: string;
   hakemusKoskee: HakemusKoskee;

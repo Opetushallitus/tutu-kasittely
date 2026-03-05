@@ -577,6 +577,7 @@ def haePaatosTyyppi(paatosTiedot: PaatosTieto): Option[String] = {
       case PaatosTyyppi.Kelpoisuus               => "Kelpoisuus"
       case PaatosTyyppi.TiettyTutkintoTaiOpinnot => "Tietty tutkinto tai opinnot"
       case PaatosTyyppi.RiittavatOpinnot         => "Riittävät opinnot"
+      case PaatosTyyppi.LopullinenPaatos         => "Lopullinen päätös"
     }
     .map((muotoiltu: String) => s"Päätöstyyppi: $muotoiltu")
 }

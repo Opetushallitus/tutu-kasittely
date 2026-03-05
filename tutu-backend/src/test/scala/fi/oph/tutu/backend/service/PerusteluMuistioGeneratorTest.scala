@@ -107,7 +107,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       liitteidenTilat = Seq.empty,
       hakemusKoskee = 1,
       asiatunnus = None,
-      kirjausPvm = None,
+      saapumisPvm = None,
       esittelyPvm = None,
       paatosPvm = None,
       esittelijaOid = None,

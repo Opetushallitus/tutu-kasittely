@@ -34,7 +34,7 @@ export const _hakemus: Hakemus = {
     yksiloityVTJ: false,
   },
   asiatunnus: 'OPH-11-2025',
-  kirjausPvm: '2025-05-14T10:59:04.597',
+  saapumisPvm: '2025-05-14T10:59:04.597',
   esittelyPvm: '2025-05-28T10:59:07.597',
   paatosPvm: '2025-05-28T10:59:04.597',
   esittelijaOid: '1.2.246.562.4.999999999999',
