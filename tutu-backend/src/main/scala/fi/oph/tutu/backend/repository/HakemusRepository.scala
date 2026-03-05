@@ -502,7 +502,7 @@ class HakemusRepository extends BaseResultHandlers {
           FROM
             yk_viesti v
           WHERE
-            v.lahettaja_oid IN (#userOid)
+            v.lahettaja_oid = $userOid
           """.as[YkViestiListItem],
         "hae_ykviestit"
       )
