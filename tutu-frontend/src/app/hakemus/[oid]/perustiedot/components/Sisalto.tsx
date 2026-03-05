@@ -62,7 +62,7 @@ const renderItem = (
         ? []
         : renderedValues.map((val) => {
             return (
-              <Stack key={`${val.value}--item`}>
+              <React.Fragment key={`${val.value}--item`}>
                 {val.valueLabel !== '' ? (
                   <OphTypography
                     key={`${val.value}--value`}
@@ -83,7 +83,7 @@ const renderItem = (
                     )}
                   </Stack>
                 )}
-              </Stack>
+              </React.Fragment>
             );
           });
     const renderedChildren =
@@ -98,8 +98,10 @@ const renderItem = (
     return renderedValueElements.length > 0 || renderedChildren ? (
       <Stack key={`${item.key}`}>
         {renderedLabel}
-        {renderedValueElements}
-        {renderedChildren}
+        <Stack gap={2}>
+          {renderedValueElements}
+          {renderedChildren}
+        </Stack>
       </Stack>
     ) : null;
   }
