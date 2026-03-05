@@ -503,4 +503,28 @@ class HakemusController(
         errorMessageMapper.mapErrorMessage(e)
     }
   }
+  @GetMapping(
+    path = Array("ykviestilista"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeYkViestiLista(
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user    = userService.getEnrichedUserDetails(true)
+      val userOid = user.userOid
+
+      hakemusService.haeYkViestiLista(
+        userOid,
+        ""
+      )
+    } match {
+      case Success(ykviestit) =>
+        val response = mapper.writeValueAsString(ykviestit)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn listan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
 }
