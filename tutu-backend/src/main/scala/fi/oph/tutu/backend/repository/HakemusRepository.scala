@@ -79,10 +79,13 @@ class HakemusRepository extends BaseResultHandlers {
       YkViestiListItem(
         id = r.nextObject().asInstanceOf[UUID],
         hakemusId = r.nextObject().asInstanceOf[UUID],
+        asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
-        luettu = r.nextTimestampOption().map(_.toLocalDateTime)
+        luettu = r.nextTimestampOption().map(_.toLocalDateTime),
+        viesti = Option(r.nextString()),
+        vastaus = Option(r.nextString())
       )
     )
 
@@ -470,6 +473,7 @@ class HakemusRepository extends BaseResultHandlers {
           SELECT
             v.id,
             v.hakemus_id,
+            h.asiatunnus,
             v.lahettaja_oid,
             v.vastaanottaja_oid,
             v.luotu,
@@ -478,6 +482,7 @@ class HakemusRepository extends BaseResultHandlers {
             v.vastaus
           FROM
             yk_viesti v
+          LEFT JOIN hakemus h on h.id = v.hakemus_id
           WHERE
             v.lahettaja_oid = $userOid OR v.vastaanottaja_oid = $userOid
           """.as[YkViestiListItem],

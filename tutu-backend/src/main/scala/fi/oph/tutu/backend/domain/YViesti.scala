@@ -22,6 +22,12 @@ case class DbYkViesti(
   )
   hakemusOid: HakemusOid,
   @(Schema @field)(
+    example = "OPH-197-2025",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 40
+  )
+  asiatunnus: Option[String],
+  @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 36
@@ -60,6 +66,7 @@ case class DbYkViesti(
 case class YkViesti(
   id: String,
   hakemusOid: String,
+  asiatunnus: String,
   lahettaja_oid: Option[String] = None,
   vastaanottaja_oid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
@@ -71,6 +78,7 @@ case class YkViesti(
 case class YkViestiListItem(
   id: UUID,
   hakemusId: UUID,
+  asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
