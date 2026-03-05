@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, SortDef, Viesti}
+import fi.oph.tutu.backend.domain.{HakemusOid, ListSortParam, SortDef, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
 import fi.oph.tutu.backend.utils.Utility.currentLocalDateTime
@@ -9,6 +9,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
+import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{
   DeleteMapping,
@@ -43,11 +44,12 @@ class ViestiController(
   )
   def listaaViestit(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    @RequestParam(required = false, defaultValue = "") sort: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      viestiService.haeViestiLista(HakemusOid(hakemusOid), sort)
+      val sortParams = resolveSortParams(sort)
+      viestiService.haeViestiLista(HakemusOid(hakemusOid), sortParams)
     } match {
       case Success(result) => {
         auditLog.logRead(
@@ -58,6 +60,12 @@ class ViestiController(
         )
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(result))
       }
+      case Failure(exception @ (_: IllegalArgumentException | _: InvalidDataAccessApiUsageException)) =>
+        LOG.error(s"Virheellinen sort-parametri: $sort", exception)
+        errorMessageMapper.mapPlainErrorMessage(
+          s"Virheellinen sort-parametri: $sort",
+          HttpStatus.BAD_REQUEST
+        )
       case Failure(exception) =>
         LOG.error(s"Viestilistan haku epäonnistui hakemukselle $hakemusOid", exception)
         errorMessageMapper.mapErrorMessage(exception)

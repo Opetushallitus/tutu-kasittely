@@ -208,7 +208,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(7)
   def haeVahvistettuViestiPalauttaaOlemassaolevanViestinKannasta(): Unit = {
-    val viesti = viestiRepository.haeViestiLista(hakemusId.get).head
+    val viesti = viestiRepository.haeViestiLista(hakemusId.get, None).head
     mvc
       .perform(
         get(s"/api/viesti/${viesti.id}")
@@ -221,7 +221,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(8)
-  def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestis(): Unit = {
+  def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestit(): Unit = {
     viestiRepository.lisaaViesti(
       hakemusId.get,
       Viesti(
@@ -229,7 +229,7 @@ class ViestiControllerTest extends IntegrationTestBase {
         tyyppi = Some(ennakkotieto),
         otsikko = Some("Toinen"),
         viesti = Some("Toinen viesti"),
-        vahvistettu = Some(LocalDateTime.now()),
+        vahvistettu = Some(LocalDateTime.parse("2026-02-04T14:30:00")),
         vahvistaja = Some("test user")
       ),
       "test user"
@@ -241,7 +241,7 @@ class ViestiControllerTest extends IntegrationTestBase {
         tyyppi = Some(ennakkotieto),
         otsikko = Some("Kolmas"),
         viesti = Some("Kolmas viesti"),
-        vahvistettu = Some(LocalDateTime.now()),
+        vahvistettu = Some(LocalDateTime.parse("2026-02-05T14:30:00")),
         vahvistaja = Some("test user")
       ),
       "test user"
@@ -258,8 +258,54 @@ class ViestiControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(9)
+  def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestitSortattunaAikaleimanMukaan(): Unit = {
+    mvc
+      .perform(
+        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:desc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$", hasSize(3)))
+      .andExpect(jsonPath("$[0].otsikko").value("Vahvistettu"))
+      .andExpect(jsonPath("$[2].otsikko").value("Toinen"))
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadViestit), any())
+
+    mvc
+      .perform(
+        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:asc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$[0].otsikko").value("Toinen"))
+      .andExpect(jsonPath("$[2].otsikko").value("Vahvistettu"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(10)
+  def haeViestilistaPalauttaa400JosSorttausParametritVirheellisest(): Unit = {
+    mvc
+      .perform(
+        get(s"/api/viestilista/$hakemusOid?sort=hopohopolopolopo")
+      )
+      .andExpect(status().isBadRequest)
+
+    mvc
+      .perform(
+        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:hopo")
+      )
+      .andExpect(status().isBadRequest)
+
+    mvc
+      .perform(
+        get(s"/api/viestilista/$hakemusOid?sort=eiootammoistakenttaa:desc")
+      )
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(11)
   def poistaViestiPalauttaa204(): Unit = {
-    val viesti = viestiRepository.haeViestiLista(hakemusId.get).head
+    val viesti = viestiRepository.haeViestiLista(hakemusId.get, None).head
     mvc
       .perform(
         MockMvcRequestBuilders
@@ -267,12 +313,12 @@ class ViestiControllerTest extends IntegrationTestBase {
           .`with`(csrf())
       )
       .andExpect(status().isNoContent)
-    assertEquals(2, viestiRepository.haeViestiLista(hakemusId.get).size)
+    assertEquals(2, viestiRepository.haeViestiLista(hakemusId.get, None).size)
   }
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(10)
+  @Order(12)
   def poistaViestiPalauttaa404JosViestiaEiLoydy(): Unit = {
     var idCandidate = UUID.randomUUID()
     while (viestiRepository.haeViesti(idCandidate).isDefined) {
@@ -289,7 +335,7 @@ class ViestiControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(11)
+  @Order(13)
   def tallennaViestiPalauttaa500JosHakemustaEiLoydy(): Unit = {
     val newViesti =
       s"""{"kieli": "fi", "viestityyppi": "taydennyspyynto", "otsikko": "Testiviesti", "teksti": "Tämä on testiviesti"}"""

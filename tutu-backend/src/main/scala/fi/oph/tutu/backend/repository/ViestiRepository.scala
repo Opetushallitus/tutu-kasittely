@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Kieli, Viesti, ViestiListItem, Viestityyppi}
+import fi.oph.tutu.backend.domain.SortDef.Desc
+import fi.oph.tutu.backend.domain.{Kieli, ListSortParam, SortDef, Viesti, ViestiListItem, Viestityyppi}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -86,15 +87,25 @@ class ViestiRepository extends BaseResultHandlers {
     }
   }
 
-  def haeViestiLista(hakemusId: UUID): Seq[ViestiListItem] = {
+  private val sortableFields = Set("vahvistettu", "otsikko", "vahvistaja", "tyyppi")
+
+  def haeViestiLista(hakemusId: UUID, sortParams: Option[ListSortParam]): Seq[ViestiListItem] = {
+    val baseSql = sql"""SELECT id, tyyppi, otsikko, vahvistettu, vahvistaja
+                         FROM viesti
+                         WHERE hakemus_id = ${hakemusId.toString}::uuid
+                         AND vahvistettu IS NOT NULL"""
+    val sortedSql = sortParams match {
+      case Some(ListSortParam(sortField, sortDirection)) if sortableFields.contains(sortField) =>
+        val sortDirParameter = SortDef.toSql(sortDirection)
+        baseSql.concat(sql" ORDER BY #$sortField #$sortDirParameter")
+      case Some(ListSortParam(sortField, _)) =>
+        throw IllegalArgumentException(s"Tuntematon sort kenttä: $sortField")
+      case _ => baseSql
+    }
+
     try {
       db.run(
-        sql"""
-          SELECT id, tyyppi, otsikko, vahvistettu, vahvistaja
-          FROM viesti
-          WHERE hakemus_id = ${hakemusId.toString}::uuid
-          AND vahvistettu IS NOT NULL
-           """.as[ViestiListItem],
+        sortedSql.as[ViestiListItem],
         "hae_viestilista"
       )
     } catch {
