@@ -150,7 +150,8 @@ class PaatosService(
   }
 
   def haePaatosteksti(
-    hakemusOid: HakemusOid
+    hakemusOid: HakemusOid,
+    luoja: String
   ): (Paatosteksti, Boolean) = {
     paatosRepository.haePaatosteksti(hakemusOid) match {
       case Some(paatosteksti) =>
@@ -159,7 +160,7 @@ class PaatosService(
       case None =>
         hakemusRepository.haeHakemus(hakemusOid) match {
           case Some(hakemus) =>
-            (paatosRepository.tallennaUusiPaatosteksti(hakemus.id, generatePaatosTeksti(hakemusOid)), true)
+            (paatosRepository.tallennaUusiPaatosteksti(hakemus.id, generatePaatosTeksti(hakemusOid), luoja), true)
           case None =>
             throw NotFoundException(s"Hakemus $hakemusOid not found")
         }
@@ -172,7 +173,7 @@ class PaatosService(
     paatosteksti: Paatosteksti,
     luojaTaiMuokkaaja: String
   ): (Paatosteksti, Paatosteksti) = {
-    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid)
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
     val uusiPaatosteksti       = paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
     val muokkaajaNimi: String  = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
     (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
@@ -184,7 +185,7 @@ class PaatosService(
     paatosteksti: Paatosteksti,
     luojaTaiMuokkaaja: String
   ): (Paatosteksti, Paatosteksti) = {
-    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid)
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
     val uusiPaatosteksti       = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
     hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
     val muokkaajaNimi: String = onrService.haeNimi(uusiPaatosteksti.muokkaaja)

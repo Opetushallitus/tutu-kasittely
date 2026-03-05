@@ -68,10 +68,10 @@ const EditorInnerContainer = styled('div')({
 
 export function Editor({
   editorRef,
-  updateHasChanges,
+  onChange,
 }: {
   editorRef: RefObject<LexicalEditor | null>;
-  updateHasChanges: (editor: LexicalEditor) => void;
+  onChange: (editor: LexicalEditor) => void;
 }) {
   const theme = useTheme();
 
@@ -113,7 +113,7 @@ export function Editor({
       />
       <OnChangePlugin
         onChange={(_state, editor) => {
-          updateHasChanges(editor);
+          onChange(editor);
         }}
       />
     </LexicalComposer>

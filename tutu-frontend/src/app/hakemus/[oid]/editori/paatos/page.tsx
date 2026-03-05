@@ -76,10 +76,7 @@ export default function PaatosEditorPage() {
         <OphTypography variant={'h2'}>
           {t('hakemus.editori.paatos.otsikko')}
         </OphTypography>
-        <Editor
-          editorRef={editorRef}
-          updateHasChanges={updateHasChanges}
-        ></Editor>
+        <Editor editorRef={editorRef} onChange={updateHasChanges}></Editor>
         <OphButton
           sx={{ alignSelf: 'flex-end' }}
           variant={'contained'}

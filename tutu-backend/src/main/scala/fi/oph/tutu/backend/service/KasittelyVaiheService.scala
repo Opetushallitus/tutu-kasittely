@@ -94,9 +94,9 @@ class KasittelyVaiheService(
       tiedot.paatostekstiVahvistettu.isDefined
     ) match
       // Päätöksen tilat - tarkistetaan onko päätös tehty
-      case (_, _, _, _, _, _, true, true, true) => KasittelyVaihe.LoppukasittelyValmis
-      case (_, _, _, _, _, _, _, true, true)    => KasittelyVaihe.HyvaksyttyEiLahetetty
-      case (_, _, _, _, _, _, _, _, true)       => KasittelyVaihe.HyvaksynnassaTaiLoppukasittelyssa
+      case (_, _, _, _, _, _, true, true, _) => KasittelyVaihe.LoppukasittelyValmis
+      case (_, _, _, _, _, _, _, true, _)    => KasittelyVaihe.HyvaksyttyEiLahetetty
+      case (_, _, _, _, _, _, _, _, true)    => KasittelyVaihe.HyvaksynnassaTaiLoppukasittelyssa
 
       // Prioriteettijärjestys: Tarkista ensin kesken olevat toimenpiteet
       case (true, _, _, _, _, _, _, _, _) => KasittelyVaihe.OdottaaTaydennysta

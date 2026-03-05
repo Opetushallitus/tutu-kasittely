@@ -522,6 +522,50 @@ class KasittelyVaiheServiceTest {
     assertEquals(KasittelyVaihe.LoppukasittelyValmis, result)
   }
 
+  def testResolveReturnsHyvaksynnassaTaiLoppukasittelyssaWhenPaatostekstiVahvistettuSet(): Unit = {
+    val tiedot = KasittelyVaiheTiedot(
+      selvityksetSaatu = false,
+      vahvistusPyyntoLahetetty = None,
+      vahvistusSaatu = None,
+      imiPyyntoLahetetty = None,
+      imiPyyntoVastattu = None,
+      lausuntoKesken = false,
+      paatosHyvaksymispaiva = None,
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = Some(now)
+    )
+
+    when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
+      .thenReturn(Some(tiedot))
+
+    val result =
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+
+    assertEquals(KasittelyVaihe.HyvaksynnassaTaiLoppukasittelyssa, result)
+  }
+
+  def testResolvePrioritizesHyvaksyttyEiLahetettyOverHyvaksynnassaTaiLoppukasittelyssa(): Unit = {
+    val tiedot = KasittelyVaiheTiedot(
+      selvityksetSaatu = false,
+      vahvistusPyyntoLahetetty = None,
+      vahvistusSaatu = None,
+      imiPyyntoLahetetty = None,
+      imiPyyntoVastattu = None,
+      lausuntoKesken = false,
+      paatosHyvaksymispaiva = Some(now),
+      paatosLahetyspaiva = None,
+      paatostekstiVahvistettu = Some(now)
+    )
+
+    when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
+      .thenReturn(Some(tiedot))
+
+    val result =
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+
+    assertEquals(KasittelyVaihe.HyvaksyttyEiLahetetty, result)
+  }
+
   @Test
   def testResolvePrioritizesPaatosTilatOverOdottaaVahvistusta(): Unit = {
     val tiedot = KasittelyVaiheTiedot(

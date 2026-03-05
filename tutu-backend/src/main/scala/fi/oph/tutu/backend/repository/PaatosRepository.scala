@@ -593,7 +593,7 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def tallennaUusiPaatosteksti(hakemusId: UUID, sisalto: String): Paatosteksti = {
+  def tallennaUusiPaatosteksti(hakemusId: UUID, sisalto: String, luoja: String): Paatosteksti = {
     try {
       db.run(
         sql"""INSERT INTO paatosteksti
@@ -601,7 +601,7 @@ class PaatosRepository extends BaseResultHandlers {
            VALUES (
              ${hakemusId.toString}::uuid,
              $sisalto,
-             $TUTU_SERVICE
+             $luoja
            )
            RETURNING
              id,

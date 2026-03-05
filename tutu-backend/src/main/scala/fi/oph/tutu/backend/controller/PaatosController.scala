@@ -177,7 +177,7 @@ class PaatosController(
   }
 
   @GetMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti/"),
+    path = Array("paatos/{hakemusOid}/paatosteksti"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
@@ -198,18 +198,19 @@ class PaatosController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      paatosService.haePaatosteksti(HakemusOid(hakemusOid))
+      val user = userService.getEnrichedUserDetails(true)
+      paatosService.haePaatosteksti(HakemusOid(hakemusOid), user.userOid)
     } match {
       case Success((paatosteksti, created)) =>
         if (created) {
-          auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
-        } else {
           auditLog.logCreate(
             auditLog.getUser(request),
             Map("hakemusOid" -> hakemusOid),
             CreatePaatosteksti,
             paatosteksti
           )
+        } else {
+          auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
         }
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosteksti))
       case Failure(exception) =>
