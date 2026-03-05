@@ -74,5 +74,7 @@ case class YkViestiListItem(
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
-  luettu: Option[LocalDateTime] = None
+  luettu: Option[LocalDateTime] = None,
+  viesti: Option[String] = None,
+  vastaus: Option[String] = None
 )
