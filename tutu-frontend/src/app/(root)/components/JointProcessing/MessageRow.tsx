@@ -1,6 +1,7 @@
 import { AccessTimeFilled, CheckCircle } from '@mui/icons-material';
 import { Grid2, styled, TableCell, TableRow } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
+import * as dateFns from 'date-fns';
 import Link from 'next/link';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -26,14 +27,15 @@ export default function MessageRow({
   message: YhteisenKasittelynViesti;
 }) {
   const { t } = useTranslations();
-  const { lahetysPvm, asiatunnus, vastaus, hakijanNimi, hakemusOid } = message;
-  const vastaamatta = vastaus === undefined || vastaus.length === 0;
+  const { luotu, asiatunnus, vastaus, hakijanNimi, hakemusOid } = message;
+  const vastaamatta = vastaus === null || vastaus?.length === 0;
+  const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy HH:mm') : '-';
 
   // TODO: Korjaa oikea linkki
   return (
     <TableRow>
       <StyledTableCell>
-        <OphTypography variant="body1">{lahetysPvm}</OphTypography>
+        <OphTypography variant="body1">{lahetysAika}</OphTypography>
       </StyledTableCell>
       <StyledTableCell>
         <Grid2 container wrap={'nowrap'}>

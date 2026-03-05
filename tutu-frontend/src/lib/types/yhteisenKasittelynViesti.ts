@@ -1,7 +1,7 @@
 export type YhteisenKasittelynViesti = {
   hakemusOid: string;
   asiatunnus: string;
-  lahetysPvm: string;
+  luotu: string;
   lahettajaOid: string;
   lahettaja: string;
   vastaanottajaOid: string;
