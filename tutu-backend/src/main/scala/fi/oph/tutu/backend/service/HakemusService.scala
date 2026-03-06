@@ -557,7 +557,6 @@ class HakemusService(
           )
         val saapumisPvm          = Some(toLocalDateTime(ataruHakemus.submitted))
         val ataruHakemusMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated))
-        val taydennyspyyntoPvm   = ataruHakemus.`information-request-timestamp`.map(toLocalDateTime)
 
         val muutokset = ListBuffer[String]()
         if (formId != dbHakemus.formId)
@@ -572,15 +571,13 @@ class HakemusService(
           else dbHakemus.peruutusPvm
         if (asetaPeruutetuksi)
           muutokset += s"hakemus peruutettu $peruutusPvm"
-        if (taydennyspyyntoPvm != dbHakemus.viimeisinTaydennyspyyntoPvm)
-          muutokset += s"viimeisinTaydennyspyyntoPvm: ${dbHakemus.viimeisinTaydennyspyyntoPvm} -> $taydennyspyyntoPvm"
         if (saapumisPvm != dbHakemus.saapumisPvm)
           muutokset += s"saapumisPvm: ${dbHakemus.saapumisPvm} -> $saapumisPvm"
         if (ataruHakemusMuokattu != dbHakemus.ataruHakemusMuokattu)
           muutokset += s"ataruHakemusMuokattu: ${dbHakemus.ataruHakemusMuokattu} -> $ataruHakemusMuokattu"
-        if (dbHakemus.hakijaEtunimet != Some(ataruHakemus.etunimet))
+        if (!dbHakemus.hakijaEtunimet.contains(ataruHakemus.etunimet))
           muutokset += s"hakijaEtunimet: ${dbHakemus.hakijaEtunimet} -> ${ataruHakemus.etunimet}"
-        if (dbHakemus.hakijaSukunimi != Some(ataruHakemus.sukunimi))
+        if (!dbHakemus.hakijaSukunimi.contains(ataruHakemus.sukunimi))
           muutokset += s"hakijaSukunimi: ${dbHakemus.hakijaSukunimi} -> ${ataruHakemus.sukunimi}"
 
         if (muutokset.nonEmpty) {
@@ -593,7 +590,6 @@ class HakemusService(
               onkoPeruutettu = asetaPeruutetuksi || dbHakemus.onkoPeruutettu,
               peruutusPvm = peruutusPvm,
               formId = formId,
-              viimeisinTaydennyspyyntoPvm = taydennyspyyntoPvm,
               saapumisPvm = saapumisPvm,
               ataruHakemusMuokattu = ataruHakemusMuokattu,
               hakijaEtunimet = Some(ataruHakemus.etunimet),

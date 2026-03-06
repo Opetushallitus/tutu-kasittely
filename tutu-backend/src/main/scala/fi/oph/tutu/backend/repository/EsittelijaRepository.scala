@@ -93,13 +93,18 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def insertEsittelija(esittelijaOid: UserOid, muokkaajaTaiLuoja: String): Option[DbEsittelija] =
+  def insertEsittelija(
+    esittelijaOid: UserOid,
+    muokkaajaTaiLuoja: String,
+    kutsumanimi: String | Null = null,
+    sukunimi: String | Null = null
+  ): Option[DbEsittelija] =
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
         sql"""
-          INSERT INTO esittelija (esittelija_oid, luoja)
-          VALUES ($esittelijaOidString, $muokkaajaTaiLuoja)
+          INSERT INTO esittelija (esittelija_oid, luoja, kutsumanimi, sukunimi)
+          VALUES ($esittelijaOidString, $muokkaajaTaiLuoja, $kutsumanimi, $sukunimi)
           RETURNING id, esittelija_oid, kutsumanimi, sukunimi
         """.as[DbEsittelija].head,
         "insertEsittelija"

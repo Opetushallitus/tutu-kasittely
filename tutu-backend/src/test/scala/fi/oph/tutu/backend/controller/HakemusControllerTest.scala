@@ -79,8 +79,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       MockMvcBuilders.webAppContextSetup(context).apply(configurer)
     mockMvc = intermediate.build()
 
-    esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi")
-    esittelijaRepository.paivitaEsittelijaNimi(esittelijaOidString, "Esko", "Esittelijä")
+    esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi", "Esko", "Esittelijä")
     maakoodi = maakoodiRepository.upsertMaakoodi(
       "maatjavaltiot2_752",
       "Ruotsi",
@@ -520,7 +519,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), paivitettyHakemus.saapumisPvm.get)
     assertEquals("Testi Kolmas", paivitettyHakemus.hakijaEtunimet.get)
     assertEquals("Hakija", paivitettyHakemus.hakijaSukunimi.get)
-    assertEquals(toLocalDateTime("2026-01-03T19:30:45.597Z"), paivitettyHakemus.viimeisinTaydennyspyyntoPvm.get)
+    // Ei päivity
+    assertEquals(LocalDateTime.parse("2026-01-01T18:30:45.597"), paivitettyHakemus.viimeisinTaydennyspyyntoPvm.get)
   }
 
   @Test

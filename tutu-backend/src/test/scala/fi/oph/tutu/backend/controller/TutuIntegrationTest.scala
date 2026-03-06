@@ -230,7 +230,6 @@ class TutuIntegrationTest extends IntegrationTestBase {
     assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.ataruHakemusMuokattu.get)
     assertEquals(Some("Testi Toka"), insertedHakemus.hakijaEtunimet)
     assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
-    assertEquals(Some(toLocalDateTime("2025-07-21T11:06:38.273Z")), insertedHakemus.viimeisinTaydennyspyyntoPvm)
 
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
@@ -279,7 +278,6 @@ class TutuIntegrationTest extends IntegrationTestBase {
     assertEquals(toLocalDateTime("2025-05-14T11:06:38.273Z"), insertedHakemus.ataruHakemusMuokattu.get)
     assertEquals(Some("Testi"), insertedHakemus.hakijaEtunimet)
     assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
-    assertEquals(Some(toLocalDateTime("2025-07-14T11:06:38.273Z")), insertedHakemus.viimeisinTaydennyspyyntoPvm)
 
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
@@ -331,7 +329,6 @@ class TutuIntegrationTest extends IntegrationTestBase {
     assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), insertedHakemus.ataruHakemusMuokattu.get)
     assertEquals(Some("Testi Neljäs"), insertedHakemus.hakijaEtunimet)
     assertEquals(Some("Hakija"), insertedHakemus.hakijaSukunimi)
-    assertEquals(None, insertedHakemus.viimeisinTaydennyspyyntoPvm)
     assertEquals(Some("ASIATUNNUS-001"), insertedHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
     assertEquals(Some("maatjavaltiot2_834"), insertedHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri)
 
