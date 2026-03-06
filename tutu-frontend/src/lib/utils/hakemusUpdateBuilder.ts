@@ -26,7 +26,6 @@ export const buildHakemusUpdateRequest = (
 ): HakemusUpdateRequest => ({
   hakemusKoskee: hakemus.hakemusKoskee,
   asiatunnus: hakemus.asiatunnus || null,
-  kirjausPvm: hakemus.kirjausPvm || null,
   esittelyPvm: hakemus.esittelyPvm || null,
   paatosPvm: hakemus.paatosPvm || null,
   esittelijaOid: hakemus.esittelijaOid || null,

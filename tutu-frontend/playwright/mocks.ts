@@ -209,7 +209,7 @@ export const mockHakemus = async (
           yksiloityVTJ: true,
         },
         asiatunnus: 'OPH-111-2025',
-        kirjausPvm: '2025-05-14T10:59:47.597',
+        saapumisPvm: '2025-05-14T10:59:47.597',
         esittelyPvm: '2025-05-28T10:59:47.597',
         paatosPvm: '2025-05-28T10:59:47.597',
         esittelijaOid: '1.2.246.562.24.999999999999',

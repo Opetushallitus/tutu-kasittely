@@ -13,25 +13,6 @@ import org.springframework.stereotype.{Component, Service}
 import org.json4s.*
 import org.json4s.Extraction.extract
 import org.json4s.native.JsonMethods.*
-import org.springframework.context.annotation.Profile
-
-@Profile(Array("!test"))
-@Component
-class KoodistoMaintenance(koodistoService: KoodistoService) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[KoodistoMaintenance])
-
-  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def dailySyncMaakoodit(): Unit = {
-    try {
-      LOG.info("maatjavaltiot2 sync attempt")
-      koodistoService.getKoodisto("maatjavaltiot2")
-      LOG.info("maatjavaltiot2 sync successful")
-    } catch {
-      case e: Exception =>
-        LOG.error("maatjavaltiot2 sync failed", e)
-    }
-  }
-}
 
 @Component
 @Service

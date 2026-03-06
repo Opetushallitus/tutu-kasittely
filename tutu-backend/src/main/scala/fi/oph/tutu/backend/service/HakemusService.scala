@@ -64,7 +64,13 @@ class HakemusService(
         asiakirjaId,
         None,
         None,
-        ATARU_SERVICE
+        ATARU_SERVICE,
+        saapumisPvm = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.submitted))),
+        ataruHakemusMuokattu = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.latestVersionCreated))),
+        hakijaEtunimet = Some(ataruHakemus.etunimet),
+        hakijaSukunimi = Some(ataruHakemus.sukunimi),
+        viimeisinTaydennyspyyntoPvm = ataruHakemus.`information-request-timestamp`
+          .map(ts => java.sql.Timestamp.valueOf(toLocalDateTime(ts)))
       )
       tutkinnot = ataruHakemusParser.parseTutkinnot(hakemusId, ataruHakemus)
       _ <-
@@ -112,7 +118,13 @@ class HakemusService(
         asiakirjaId,
         vastaavaEhdollinenPaatos,
         suoritusMaaKoodiUri,
-        ATARU_SERVICE
+        ATARU_SERVICE,
+        saapumisPvm = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.submitted))),
+        ataruHakemusMuokattu = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.latestVersionCreated))),
+        hakijaEtunimet = Some(ataruHakemus.etunimet),
+        hakijaSukunimi = Some(ataruHakemus.sukunimi),
+        viimeisinTaydennyspyyntoPvm = ataruHakemus.`information-request-timestamp`
+          .map(ts => java.sql.Timestamp.valueOf(toLocalDateTime(ts)))
       )
       // TODO oma päätöstyypi lopulliselle päätökselle
       savedPaatos <- paatosRepository.tallennaPaatosAction(
@@ -268,7 +280,7 @@ class HakemusService(
           liitteidenTilat = ataruHakemusParser.parseLiitteidenTilat(ataruHakemus, lomake),
           hakemusKoskee = dbHakemus.hakemusKoskee,
           asiatunnus = dbHakemus.asiatunnus,
-          kirjausPvm = Some(toLocalDateTime(ataruHakemus.submitted)),
+          saapumisPvm = dbHakemus.saapumisPvm,
           // TODO: esittelyPvm, paatosPvm.
           esittelyPvm = None,
           paatosPvm = None,
@@ -350,96 +362,46 @@ class HakemusService(
       return Seq.empty[HakemusListItem]
     }
 
-    // Datasisältöhaku eri palveluista (Ataru, TUTU, ...)
-    val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
-      case Left(error)     => throw error
-      case Right(response) =>
-        parse(response).extract[Seq[AtaruHakemus]]
-    }
+    val hakemusList = hakemusRepository.haeHakemusLista(hakemusOidit)
 
-    val hakemusList = hakemusRepository
-      .haeHakemusLista(hakemusOidit)
-      .flatMap { hakemus =>
-        val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == hakemus.hakemusOid)
-
-        val esittelija = hakemus.esittelijaOid match {
-          case None                => (null, null)
-          case Some(esittelijaOid) =>
-            onrService.haeHenkilo(esittelijaOid) match {
-              case Left(error)    => (null, null)
-              case Right(henkilo) => (henkilo.kutsumanimi, henkilo.sukunimi)
-            }
-        }
-
-        ataruHakemus match {
-          case None =>
-            LOG.warn(
-              s"Atarusta ei löytynyt hakemusta TUTU-hakemusOidille: ${hakemus.hakemusOid}, ei näytetä hakemusta listassa."
-            )
-            None
-          case Some(ataruHakemus) =>
-            Some(
-              HakemusListItem(
-                asiatunnus = hakemus.asiatunnus,
-                hakija = s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}",
-                aika = ataruHakemus.submitted,
-                viimeinenAsiakirjaHakijalta =
-                  hakemus.viimeinenAsiakirjaHakijalta.map(dateStr => dateStr.split(" ").head),
-                hakemusOid = hakemus.hakemusOid,
-                hakemusKoskee = hakemus.hakemusKoskee,
-                esittelijaOid = hakemus.esittelijaOid,
-                esittelijaKutsumanimi = esittelija(0),
-                esittelijaSukunimi = esittelija(1),
-                kasittelyVaihe = hakemus.kasittelyVaihe,
-                muokattu = hakemus.muokattu,
-                taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
-                  case None            => None
-                  case Some(timestamp) => Some(toLocalDateTime(timestamp))
-                },
-                ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated)),
-                apHakemus = hakemus.apHakemus,
-                onkoPeruutettu = hakemus.onkoPeruutettu
-              )
-            )
-        }
-      }
+    // TODO: siirrä lajittelu DB-tasolle (ORDER BY) osana sivutustoteutusta
     sort match {
       case null => hakemusList
       case _    =>
         val sortParam = sort.split(":").headOption.getOrElse("undefined")
         val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
 
-        val sortedList: Seq[HakemusListItem] = sortDef match {
+        sortDef match {
           case SortDef.Asc =>
             sortParam match {
-              case "hakija"         => hakemusList.sortBy(_.hakija)
-              case "asiatunnus"     => hakemusList.sortBy(_.asiatunnus)
-              case "esittelija"     => hakemusList.sortBy(_.esittelijaKutsumanimi)
+              case "hakija"     => hakemusList.sortBy(_.hakija)
+              case "asiatunnus" => hakemusList.sortBy(_.asiatunnus)
+              case "esittelija" =>
+                hakemusList.sortBy(item => s"${item.esittelijaSukunimi} ${item.esittelijaKutsumanimi}")
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe)
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue))
-              case "saapumisPvm"  => hakemusList.sortBy(_.aika)
-              case "kokonaisaika" => hakemusList.sortBy(_.aika).reverse
+              case "saapumisPvm"  => hakemusList.sortBy(_.saapumisPvm)
+              case "kokonaisaika" => hakemusList.sortBy(_.saapumisPvm).reverse
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta).reverse
-
-              case _ => hakemusList
+              case _              => hakemusList
             }
           case SortDef.Desc =>
             sortParam match {
-              case "hakija"         => hakemusList.sortBy(_.hakija).reverse
-              case "asiatunnus"     => hakemusList.sortBy(_.asiatunnus).reverse
-              case "esittelija"     => hakemusList.sortBy(_.esittelijaKutsumanimi).reverse
+              case "hakija"     => hakemusList.sortBy(_.hakija).reverse
+              case "asiatunnus" => hakemusList.sortBy(_.asiatunnus).reverse
+              case "esittelija" =>
+                hakemusList.sortBy(item => s"${item.esittelijaSukunimi} ${item.esittelijaKutsumanimi}").reverse
               case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe).reverse
               case "hakemusKoskee"  =>
                 hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue)).reverse
-              case "saapumisPvm"  => hakemusList.sortBy(_.aika).reverse
-              case "kokonaisaika" => hakemusList.sortBy(_.aika)
+              case "saapumisPvm"  => hakemusList.sortBy(_.saapumisPvm).reverse
+              case "kokonaisaika" => hakemusList.sortBy(_.saapumisPvm)
               case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta)
               case _              => hakemusList
             }
           case SortDef.Undefined => hakemusList
         }
-        sortedList
     }
   }
 
@@ -593,6 +555,9 @@ class HakemusService(
             dbHakemus,
             ataruHakemus
           )
+        val saapumisPvm          = Some(toLocalDateTime(ataruHakemus.submitted))
+        val ataruHakemusMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated))
+
         val muutokset = ListBuffer[String]()
         if (formId != dbHakemus.formId)
           muutokset += s"form_id: ${dbHakemus.formId} -> $formId"
@@ -606,6 +571,15 @@ class HakemusService(
           else dbHakemus.peruutusPvm
         if (asetaPeruutetuksi)
           muutokset += s"hakemus peruutettu $peruutusPvm"
+        if (saapumisPvm != dbHakemus.saapumisPvm)
+          muutokset += s"saapumisPvm: ${dbHakemus.saapumisPvm} -> $saapumisPvm"
+        if (ataruHakemusMuokattu != dbHakemus.ataruHakemusMuokattu)
+          muutokset += s"ataruHakemusMuokattu: ${dbHakemus.ataruHakemusMuokattu} -> $ataruHakemusMuokattu"
+        if (!dbHakemus.hakijaEtunimet.contains(ataruHakemus.etunimet))
+          muutokset += s"hakijaEtunimet: ${dbHakemus.hakijaEtunimet} -> ${ataruHakemus.etunimet}"
+        if (!dbHakemus.hakijaSukunimi.contains(ataruHakemus.sukunimi))
+          muutokset += s"hakijaSukunimi: ${dbHakemus.hakijaSukunimi} -> ${ataruHakemus.sukunimi}"
+
         if (muutokset.nonEmpty) {
           LOG.info(s"Päivitetään hakemus ${hakemusOid.s} ${muutokset.mkString(", ")}")
           hakemusRepository.paivitaHakemus(
@@ -615,7 +589,11 @@ class HakemusService(
               hakemusKoskee = hakemusKoskee,
               onkoPeruutettu = asetaPeruutetuksi || dbHakemus.onkoPeruutettu,
               peruutusPvm = peruutusPvm,
-              formId = formId
+              formId = formId,
+              saapumisPvm = saapumisPvm,
+              ataruHakemusMuokattu = ataruHakemusMuokattu,
+              hakijaEtunimet = Some(ataruHakemus.etunimet),
+              hakijaSukunimi = Some(ataruHakemus.sukunimi)
             ),
             ATARU_SERVICE
           )

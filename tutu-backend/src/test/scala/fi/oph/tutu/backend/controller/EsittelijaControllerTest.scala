@@ -1,9 +1,9 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.domain.{KansalaisuusKoodi, OnrUser}
+import fi.oph.tutu.backend.domain.Esittelija
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.OnrService
+import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -31,7 +31,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
   private var mockMvc: MockMvc               = null
 
   @MockitoBean
-  var mockOnrService: OnrService = _
+  var mockUserService: UserService = _
 
   @MockitoBean
   var auditLog: AuditLog = _
@@ -61,37 +61,12 @@ class EsittelijaControllerTest extends IntegrationTestBase {
         |  }
         |]""".stripMargin
 
-    when(
-      kayttooikeusService.haeEsittelijat
-    ).thenReturn(Right(Seq("1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002")))
-
-    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000001"))
-      .thenReturn(
-        Right(
-          OnrUser(
-            oidHenkilo = "1.2.246.562.24.00000000001",
-            kutsumanimi = "Roope",
-            sukunimi = "Roihuvuori",
-            kansalaisuus = Seq(KansalaisuusKoodi("123")),
-            hetu = Some("010171-789X"),
-            true
-          )
-        )
+    when(mockUserService.haeEsittelijat).thenReturn(
+      Seq(
+        Esittelija(esittelijaOid = "1.2.246.562.24.00000000001", etunimi = "Roope", sukunimi = "Roihuvuori"),
+        Esittelija(esittelijaOid = "1.2.246.562.24.00000000002", etunimi = "Jarmo", sukunimi = "Jakomäki")
       )
-
-    when(mockOnrService.haeHenkilo("1.2.246.562.24.00000000002"))
-      .thenReturn(
-        Right(
-          OnrUser(
-            oidHenkilo = "1.2.246.562.24.00000000002",
-            kutsumanimi = "Jarmo",
-            sukunimi = "Jakomäki",
-            kansalaisuus = Seq(KansalaisuusKoodi("123")),
-            hetu = Some("010171-789X"),
-            false
-          )
-        )
-      )
+    )
 
     mockMvc
       .perform(

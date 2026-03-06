@@ -160,11 +160,11 @@ export default function HakemusRow({
         )}
       </StyledTableCell>
       <StyledTableCell>
-        {dateFns.formatDate(hakemus.aika, 'd.M.yyyy')}
+        {dateFns.formatDate(hakemus.saapumisPvm, 'd.M.yyyy')}
       </StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaikaKk', '', {
-          aika: muotoileKokonaisaika(hakemus.aika),
+          aika: muotoileKokonaisaika(hakemus.saapumisPvm),
         })}
       </StyledTableCell>
       <StyledTableCell>

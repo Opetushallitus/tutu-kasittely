@@ -23,7 +23,14 @@ class EsittelijaRepository {
   val LOG: Logger      = LoggerFactory.getLogger(classOf[EsittelijaRepository])
 
   implicit val getEsittelijaResult: GetResult[DbEsittelija] =
-    GetResult(r => DbEsittelija(UUID.fromString(r.nextString()), UserOid(r.nextString())))
+    GetResult(r =>
+      DbEsittelija(
+        esittelijaId = UUID.fromString(r.nextString()),
+        esittelijaOid = UserOid(r.nextString()),
+        kutsumanimi = r.nextStringOption(),
+        sukunimi = r.nextStringOption()
+      )
+    )
 
   /**
    * Hakee esittelijän maakoodin perusteella
@@ -37,13 +44,13 @@ class EsittelijaRepository {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
-      SELECT e.id, e.esittelija_oid
-      FROM esittelija e
-      INNER JOIN maakoodi m ON m.esittelija_id = e.id
-      WHERE m.koodiuri = $maakoodiUri
-      AND m.esittelija_id IS NOT NULL
-      AND e.esittelija_oid IS NOT NULL
-      """.as[DbEsittelija].head,
+          SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi
+          FROM esittelija e
+          INNER JOIN maakoodi m ON m.esittelija_id = e.id
+          WHERE m.koodiuri = $maakoodiUri
+          AND m.esittelija_id IS NOT NULL
+          AND e.esittelija_oid IS NOT NULL
+        """.as[DbEsittelija].head,
         "haeEsittelijaMaakoodilla"
       )
       Some(esittelija)
@@ -66,8 +73,9 @@ class EsittelijaRepository {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
-        SELECT id, esittelija_oid from esittelija
-        WHERE esittelija_oid = $oid
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi
+          FROM esittelija
+          WHERE esittelija_oid = $oid
         """.as[DbEsittelija].head,
         "haeEsittelijaOidilla"
       )
@@ -85,14 +93,19 @@ class EsittelijaRepository {
    * @return
    * Esittelija
    */
-  def insertEsittelija(esittelijaOid: UserOid, muokkaajaTaiLuoja: String): Option[DbEsittelija] =
+  def insertEsittelija(
+    esittelijaOid: UserOid,
+    muokkaajaTaiLuoja: String,
+    kutsumanimi: String | Null = null,
+    sukunimi: String | Null = null
+  ): Option[DbEsittelija] =
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
         sql"""
-        INSERT INTO esittelija (esittelija_oid, luoja)
-        VALUES ($esittelijaOidString, $muokkaajaTaiLuoja)
-        RETURNING id, esittelija_oid
+          INSERT INTO esittelija (esittelija_oid, luoja, kutsumanimi, sukunimi)
+          VALUES ($esittelijaOidString, $muokkaajaTaiLuoja, $kutsumanimi, $sukunimi)
+          RETURNING id, esittelija_oid, kutsumanimi, sukunimi
         """.as[DbEsittelija].head,
         "insertEsittelija"
       )
@@ -107,8 +120,9 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-        SELECT esittelija_oid from esittelija
-        WHERE esittelija_oid IS NOT NULL
+          SELECT esittelija_oid
+          FROM esittelija
+          WHERE esittelija_oid IS NOT NULL
         """.as[String],
         "listAllEsittelijaOids"
       )
@@ -123,8 +137,9 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-        SELECT id, esittelija_oid from esittelija
-        WHERE esittelija_oid IS NOT NULL
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi
+          FROM esittelija
+          WHERE esittelija_oid IS NOT NULL
         """.as[DbEsittelija],
         "haeKaikkiEsittelijat"
       )
@@ -132,6 +147,22 @@ class EsittelijaRepository {
       case e: Exception =>
         LOG.warn("Esittelijöiden haku epäonnistui", e)
         Seq.empty
+    }
+  }
+
+  def paivitaEsittelijaNimi(oid: String, kutsumanimi: String, sukunimi: String): Unit = {
+    try {
+      db.run(
+        sqlu"""
+          UPDATE esittelija
+          SET kutsumanimi = $kutsumanimi, sukunimi = $sukunimi
+          WHERE esittelija_oid = $oid
+        """,
+        "paivitaEsittelijaNimi"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.warn(s"Esittelijän nimen päivitys epäonnistui oidilla: $oid")
     }
   }
 

@@ -13,14 +13,14 @@ import {
 type KaikkiSelvityksetSaatuProps = {
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
-  kirjausPvm: string;
+  saapumisPvm: string;
   hakemusKoskee: HakemusKoskee;
 };
 
 export const KaikkiSelvityksetSaatu = ({
   asiakirjaTieto,
   updateAsiakirjaTieto,
-  kirjausPvm,
+  saapumisPvm,
   hakemusKoskee,
 }: KaikkiSelvityksetSaatuProps) => {
   const { t } = useTranslations();
@@ -74,7 +74,7 @@ export const KaikkiSelvityksetSaatu = ({
           label={t('hakemus.asiakirjat.viimeinenAsiakirjaHakijalta')}
           dataTestId={'viimeinen-asiakirja-hakijalta'}
           maxDate={new Date()}
-          minDate={new Date(kirjausPvm)}
+          minDate={new Date(saapumisPvm)}
         />
       )}
     </>

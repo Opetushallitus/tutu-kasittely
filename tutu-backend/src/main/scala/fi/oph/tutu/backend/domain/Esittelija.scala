@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
 import java.util.UUID
 import scala.annotation.meta.field
-import scala.beans.BeanProperty
 
 @Schema(name = "Esittelija")
 case class DbEsittelija(
@@ -14,12 +13,14 @@ case class DbEsittelija(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 16
   )
-  @BeanProperty esittelijaId: UUID,
+  esittelijaId: UUID,
   @(Schema @field)(
     example = "1.2.246.562.24.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED
   )
-  @BeanProperty esittelijaOid: UserOid
+  esittelijaOid: UserOid,
+  kutsumanimi: Option[String],
+  sukunimi: Option[String]
 )
 
 case class Esittelija(

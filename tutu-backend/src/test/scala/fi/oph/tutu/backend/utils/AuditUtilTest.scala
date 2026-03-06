@@ -155,7 +155,7 @@ class AuditUtilTest {
           "fieldType": "textField"
         },
         {
-          "key": "last-name", 
+          "key": "last-name",
           "value": "honka",
           "fieldType": "textField"
         }
@@ -169,7 +169,7 @@ class AuditUtilTest {
       ],
       "hakemusKoskee": 1,
       "asiatunnus": "OPH-197-2025",
-      "kirjausPvm": "2025-05-14T10:59:47.597Z",
+      "saapumisPvm": "2025-05-14T10:59:47.597Z",
       "esittelyPvm": null,
       "paatosPvm": null,
       "esittelijaOid": "1.2.246.562.24.00000000000000006666",
@@ -221,7 +221,7 @@ class AuditUtilTest {
           "fieldType": "textField"
         },
         {
-          "key": "last-name", 
+          "key": "last-name",
           "value": "honka",
           "fieldType": "textField"
         },
@@ -245,7 +245,7 @@ class AuditUtilTest {
       ],
       "hakemusKoskee": 1,
       "asiatunnus": "OPH-197-2025-UPDATED",
-      "kirjausPvm": "2025-05-14T10:59:47.597Z",
+      "saapumisPvm": "2025-05-14T10:59:47.597Z",
       "esittelyPvm": "2025-05-15T09:00:00.000Z",
       "paatosPvm": null,
       "esittelijaOid": "1.2.246.562.24.00000000000000006666",

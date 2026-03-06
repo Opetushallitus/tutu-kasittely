@@ -178,15 +178,4 @@ class KayttooikeusService(
         Right(eiPalvelukayttajat)
     }
   }
-
-  @CacheEvict(value = Array("esittelijat"), allEntries = true)
-  @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyEsittelijatCache(): Unit =
-    LOG.info("Emptying esittelijat cache")
-
-  @CachePut(Array("esittelijat"))
-  def updateCached(kayttooikeusRyhmaId: String, value: Seq[UserOid]): Unit = {
-    val esittelijatCache = cacheManager.getCache("esittelijat")
-    esittelijatCache.put(kayttooikeusRyhmaId, value)
-  }
 }

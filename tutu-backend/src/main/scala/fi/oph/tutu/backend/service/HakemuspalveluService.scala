@@ -69,6 +69,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
     haeHakemus(hakemusOid).map(response => parse(response).extract[AtaruHakemus])
   }
 
+  /*
   def haeHakemukset(hakemusOidit: Seq[HakemusOid]): Either[Throwable, String] = {
     val jsonObj: JValue  = JObject("hakemusOids" -> Extraction.decompose(hakemusOidit.map(_.toString)))
     val jsonBody: String = compact(render(jsonObj))
@@ -82,6 +83,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
       case Right(response: String) => Right(response)
     }
   }
+   */
 
   def haeMuutoshistoria(hakemusOid: HakemusOid): Either[Throwable, String] = {
     httpService.get(

@@ -45,28 +45,32 @@ class HakemusRepository extends BaseResultHandlers {
         onkoPeruutettu = r.nextBoolean(),
         peruutusPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         peruutusLisatieto = r.nextStringOption(),
-        viimeisinTaydennyspyyntoPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        viimeisinTaydennyspyyntoPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        ataruHakemusMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        hakijaEtunimet = r.nextStringOption(),
+        hakijaSukunimi = r.nextStringOption()
       )
     )
 
   implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
     GetResult(r =>
       HakemusListItem(
-        null,
-        null,
-        r.nextString(),
-        r.nextInt(),
-        Option(r.nextString()),
-        Option(r.nextString()),
-        null,
-        null,
-        KasittelyVaihe.fromString(r.nextString()),
-        Option(r.nextString()),
-        null,
-        null,
-        Option(r.nextBoolean()),
-        Option(r.nextString()),
-        Option(r.nextBoolean())
+        hakija = r.nextStringOption().getOrElse(""),
+        saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        hakemusOid = r.nextString(),
+        hakemusKoskee = r.nextInt(),
+        esittelijaOid = r.nextStringOption(),
+        asiatunnus = r.nextStringOption(),
+        esittelijaKutsumanimi = r.nextStringOption().orNull,
+        esittelijaSukunimi = r.nextStringOption().orNull,
+        kasittelyVaihe = KasittelyVaihe.fromString(r.nextString()),
+        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        taydennyspyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        ataruHakemustaMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        apHakemus = Option(r.nextBoolean()),
+        viimeinenAsiakirjaHakijalta = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        onkoPeruutettu = Option(r.nextBoolean())
       )
     )
 
@@ -86,7 +90,12 @@ class HakemusRepository extends BaseResultHandlers {
     asiakirjaId: UUID,
     lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
     lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
-    luoja: String
+    luoja: String,
+    saapumisPvm: Option[java.sql.Timestamp] = None,
+    ataruHakemusMuokattu: Option[java.sql.Timestamp] = None,
+    hakijaEtunimet: Option[String] = None,
+    hakijaSukunimi: Option[String] = None,
+    viimeisinTaydennyspyyntoPvm: Option[java.sql.Timestamp] = None
   ): DBIO[UUID] =
     val hakemusOidString                                   = hakemusOid.toString
     val esittelijaIdOrNull                                 = esittelijaId.map(_.toString).orNull
@@ -94,14 +103,23 @@ class HakemusRepository extends BaseResultHandlers {
       lopullinenPaatosVastaavaEhdollinenAsiatunnus.orNull
     val lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull =
       lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri.orNull
+    val saapumisPvmOrNull                 = saapumisPvm.orNull
+    val ataruHakemusMuokattuOrNull        = ataruHakemusMuokattu.orNull
+    val hakijaEtunimetOrNull              = hakijaEtunimet.orNull
+    val hakijaSukunimiOrNull              = hakijaSukunimi.orNull
+    val viimeisinTaydennyspyyntoPvmOrNull = viimeisinTaydennyspyyntoPvm.orNull
 
     sql"""
       INSERT INTO hakemus (hakemus_oid, hakemus_koskee, form_id, esittelija_id,
         asiakirja_id, lopullinen_paatos_ehdollisen_asiatunnus,
-        lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja)
+        lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja,
+        saapumis_pvm, ataru_hakemus_muokattu, hakija_etunimet, hakija_sukunimi,
+        viimeisin_taydennyspyynto_paiva)
       VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid,
         $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
-        $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja)
+        $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja,
+        $saapumisPvmOrNull, $ataruHakemusMuokattuOrNull, $hakijaEtunimetOrNull, $hakijaSukunimiOrNull,
+        $viimeisinTaydennyspyyntoPvmOrNull)
       RETURNING id
     """.as[UUID].head
 
@@ -163,7 +181,21 @@ class HakemusRepository extends BaseResultHandlers {
       db.run(
         sql"""
             SELECT
-              h.hakemus_oid, h.hakemus_koskee, e.esittelija_oid, h.asiatunnus, h.kasittely_vaihe, h.muokattu, a.ap_hakemus, a.viimeinen_asiakirja_hakijalta, h.onko_peruutettu
+              COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+              h.saapumis_pvm,
+              h.hakemus_oid,
+              h.hakemus_koskee,
+              e.esittelija_oid,
+              h.asiatunnus,
+              e.kutsumanimi,
+              e.sukunimi,
+              h.kasittely_vaihe,
+              h.muokattu,
+              h.viimeisin_taydennyspyynto_paiva,
+              h.ataru_hakemus_muokattu,
+              a.ap_hakemus,
+              a.viimeinen_asiakirja_hakijalta,
+              h.onko_peruutettu
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -213,7 +245,11 @@ class HakemusRepository extends BaseResultHandlers {
               h.onko_peruutettu,
               h.peruutus_paiva,
               h.peruutus_lisatieto,
-              h.viimeisin_taydennyspyynto_paiva
+              h.viimeisin_taydennyspyynto_paiva,
+              h.saapumis_pvm,
+              h.ataru_hakemus_muokattu,
+              h.hakija_etunimet,
+              h.hakija_sukunimi
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -339,6 +375,10 @@ class HakemusRepository extends BaseResultHandlers {
     val peruutusLisatieto           = hakemus.peruutusLisatieto
     val viimeisinTaydennyspyyntoPvm = hakemus.viimeisinTaydennyspyyntoPvm.map(java.sql.Timestamp.valueOf).orNull
     val formId                      = hakemus.formId
+    val saapumisPvmOpt              = hakemus.saapumisPvm.map(java.sql.Timestamp.valueOf).orNull
+    val ataruHakemusMuokattuOpt     = hakemus.ataruHakemusMuokattu.map(java.sql.Timestamp.valueOf).orNull
+    val hakijaEtunimetOpt           = hakemus.hakijaEtunimet.orNull
+    val hakijaSukunimiOpt           = hakemus.hakijaSukunimi.orNull
 
     try
       db.run(
@@ -359,7 +399,11 @@ class HakemusRepository extends BaseResultHandlers {
           peruutus_paiva = $peruutusPvm,
           peruutus_lisatieto = $peruutusLisatieto,
           viimeisin_taydennyspyynto_paiva = $viimeisinTaydennyspyyntoPvm,
-          form_id = $formId
+          form_id = $formId,
+          saapumis_pvm =$saapumisPvmOpt,
+          ataru_hakemus_muokattu = $ataruHakemusMuokattuOpt,
+          hakija_etunimet = $hakijaEtunimetOpt,
+          hakija_sukunimi = $hakijaSukunimiOpt
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

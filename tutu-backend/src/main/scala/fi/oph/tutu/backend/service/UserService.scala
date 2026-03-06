@@ -12,7 +12,6 @@ import org.springframework.stereotype.{Component, Service}
 class UserService(
   onrService: OnrService,
   authenticationFacade: AuthenticationFacade,
-  kayttooikeusService: KayttooikeusService,
   esittelijaRepository: EsittelijaRepository
 ) {
 
@@ -41,30 +40,15 @@ class UserService(
   }
 
   def haeEsittelijat: Seq[Esittelija] = {
-    kayttooikeusService.haeEsittelijat match {
-      case Left(error) =>
-        throw KayttooikeusServiceException("Käyttöoikeusryhmän tietojen haku epäonnistui.", error)
-      case Right(esittelijaOidit) =>
-        // Get all esittelijat data in a single query
-        val dbEsittelijat = esittelijaRepository.haeKaikkiEsittelijat()
-
-        // Combine with ONR data for the active esittelijat
-        esittelijaOidit.flatMap(oid => {
-          onrService.haeHenkilo(oid) match {
-            case Left(error) =>
-              throw OnrServiceException(s"Henkilön tietojen haku epäonnistui OID:lla $oid", error)
-            case Right(esittelija) =>
-              val dbEsittelijaId = dbEsittelijat.find(_.esittelijaOid.toString == oid).map(_.esittelijaId)
-              Some(
-                Esittelija(
-                  esittelija.oidHenkilo,
-                  esittelija.kutsumanimi,
-                  esittelija.sukunimi,
-                  dbEsittelijaId
-                )
-              )
-          }
-        })
-    }
+    esittelijaRepository
+      .haeKaikkiEsittelijat()
+      .map(e =>
+        Esittelija(
+          esittelijaOid = e.esittelijaOid.toString,
+          etunimi = e.kutsumanimi.getOrElse(""),
+          sukunimi = e.sukunimi.getOrElse(""),
+          id = Some(e.esittelijaId)
+        )
+      )
   }
 }

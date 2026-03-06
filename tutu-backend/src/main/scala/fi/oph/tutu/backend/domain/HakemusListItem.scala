@@ -4,18 +4,18 @@ import java.time.LocalDateTime
 
 case class HakemusListItem(
   hakija: String,
-  aika: String,
+  saapumisPvm: Option[LocalDateTime],
   hakemusOid: String,
   hakemusKoskee: Int,
-  esittelijaOid: Option[String],
-  asiatunnus: Option[String],
+  esittelijaOid: Option[String] = None,
+  asiatunnus: Option[String] = None,
   esittelijaKutsumanimi: String,
   esittelijaSukunimi: String,
   kasittelyVaihe: KasittelyVaihe,
-  muokattu: Option[String],
-  taydennyspyyntoLahetetty: Option[LocalDateTime],
+  muokattu: Option[LocalDateTime] = None,
+  taydennyspyyntoLahetetty: Option[LocalDateTime] = None,
   ataruHakemustaMuokattu: Option[LocalDateTime] = None,
   apHakemus: Option[Boolean] = None,
-  viimeinenAsiakirjaHakijalta: Option[String],
+  viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
   onkoPeruutettu: Option[Boolean] = None
 )

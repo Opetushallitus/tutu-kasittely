@@ -160,7 +160,7 @@ const AsiakirjaHookLayer = ({
     asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
   );
   const asiakirjaMetadataWithSaapumisaika = asiakirjaMetadata?.map((m) =>
-    m.saapumisaika ? m : { ...m, saapumisaika: hakemus!.kirjausPvm },
+    m.saapumisaika ? m : { ...m, saapumisaika: hakemus!.saapumisPvm },
   );
 
   /* ----------------------------------------- */
@@ -276,7 +276,7 @@ const AsiakirjaPagePure = ({
         asiakirjaTieto={asiakirja}
         hakemusKoskee={hakemus.hakemusKoskee}
         updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
-        kirjausPvm={hakemus.kirjausPvm}
+        saapumisPvm={hakemus.saapumisPvm}
       />
       <ApHakemus
         asiakirjaTieto={asiakirja}

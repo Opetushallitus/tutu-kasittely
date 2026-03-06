@@ -120,7 +120,31 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime]
+  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  saapumisPvm: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  ataruHakemusMuokattu: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "Matti",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  hakijaEtunimet: Option[String],
+  @(Schema @field)(
+    example = "Sukunimi",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 255
+  )
+  hakijaSukunimi: Option[String]
 )
 
 case class Hakemus(
@@ -133,7 +157,7 @@ case class Hakemus(
   liitteidenTilat: Seq[AttachmentReview],
   hakemusKoskee: Int,
   asiatunnus: Option[String] = None,
-  kirjausPvm: Option[LocalDateTime] = None,
+  saapumisPvm: Option[LocalDateTime] = None,
   esittelyPvm: Option[LocalDateTime] = None,
   paatosPvm: Option[LocalDateTime] = None,
   esittelijaOid: Option[String] = None,
@@ -163,7 +187,6 @@ case class Hakemus(
 case class HakemusUpdateRequest(
   hakemusKoskee: Int,
   asiatunnus: Option[String],
-  kirjausPvm: Option[LocalDateTime],
   esittelyPvm: Option[LocalDateTime],
   paatosPvm: Option[LocalDateTime],
   esittelijaOid: Option[String],
