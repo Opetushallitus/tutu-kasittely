@@ -1,10 +1,6 @@
 package fi.oph.tutu.backend
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.config.JacksonConfig
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
@@ -37,7 +33,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer
 
 import java.io.FileNotFoundException
 import java.sql.DriverManager
-import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source

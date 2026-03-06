@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Paatosteksti } from '@/src/lib/types/paatosteksti';
+import { handleSuccessMessage } from '@/src/lib/utils';
 
 const getPaatosteksti = async (hakemusOid: string): Promise<Paatosteksti> => {
-  const url = `paatos/${hakemusOid}/paatosteksti/`;
+  const url = `paatos/${hakemusOid}/paatosteksti`;
 
   return await doApiFetch(url);
 };
@@ -25,6 +27,7 @@ export const usePaatosteksti = (hakemusOid: string) => {
   const queryKey = ['paatosteksti', hakemusOid];
 
   const { addToast } = useToaster();
+  const { t } = useTranslations();
 
   const query = useQuery({
     queryKey: queryKey,
@@ -49,20 +52,20 @@ export const usePaatosteksti = (hakemusOid: string) => {
     onSuccess: async (response, { vahvista }) => {
       const paivitettyPaatosteksti = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatosteksti);
-      // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      await queryClient.invalidateQueries({
-        queryKey: ['getHakemus', hakemusOid],
-      });
-      addToast({
-        type: 'success',
-        key: vahvista
-          ? 'success.paatostekstiVahvista'
-          : 'success.paatostekstiTallennus',
-        message: vahvista
+      if (vahvista) {
+        // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
+        await queryClient.invalidateQueries({
+          queryKey: ['getHakemus', hakemusOid],
+        });
+      }
+      handleSuccessMessage(
+        true,
+        addToast,
+        vahvista
           ? 'hakemus.editori.paatos.paatostekstiVahvista.success'
           : 'hakemus.editori.paatos.paatostekstiTallennus.success',
-        timeMs: 3000,
-      });
+        t,
+      );
     },
   });
 
@@ -71,10 +74,11 @@ export const usePaatosteksti = (hakemusOid: string) => {
   };
 
   return {
-    ...query,
     paatosteksti: query.data,
     savePaatosteksti,
+    isSuccess: query.isSuccess,
     isLoading: query.isLoading,
+    error: query.error,
     updateOngoing: isPending,
     updateSuccess: isSuccess,
     updateError: updateError,

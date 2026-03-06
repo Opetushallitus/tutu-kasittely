@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.SortDef.Desc
 import fi.oph.tutu.backend.domain.{Kieli, ListSortParam, SortDef, Viesti, ViestiListItem, Viestityyppi}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired

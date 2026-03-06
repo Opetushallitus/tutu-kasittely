@@ -43,22 +43,22 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   private var mvc: MockMvc                   = null
 
   @MockitoBean
-  private var userService: UserService = _
+  var userService: UserService = _
 
   @MockitoBean
-  private var onrService: OnrService = _
+  var onrService: OnrService = _
 
   @MockitoBean
-  private var koodistoService: KoodistoService = _
+  var koodistoService: KoodistoService = _
 
   @MockitoBean
-  private var hallintoOikeusService: HallintoOikeusService = _
+  var hallintoOikeusService: HallintoOikeusService = _
 
   @MockitoBean
-  private var maakoodiService: MaakoodiService = _
+  var maakoodiService: MaakoodiService = _
 
   @MockitoBean
-  private var auditLog: AuditLog = _
+  var auditLog: AuditLog = _
 
   val lomakeId: Long         = 1527182
   val hakemusOid: HakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666")
@@ -1238,8 +1238,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(16)
   def tallennaPaatosPaivittaaSisallon(): Unit = {
-    val expectedRaw = scala.io.Source.fromResource("paatosteksti_paatos_taso.html").mkString
-
     val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithTaso)
     val result       = mvc
       .perform(
@@ -1267,8 +1265,6 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(17)
   def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleiman(): Unit = {
-    val expectedRaw = scala.io.Source.fromResource("paatosteksti_paatos_taso.html").mkString
-
     val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithTaso)
     val result       = mvc
       .perform(

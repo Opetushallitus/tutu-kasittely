@@ -18,6 +18,7 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
@@ -28,18 +29,15 @@ export default function PaatosEditorPage() {
   const { paatosteksti, savePaatosteksti, updateOngoing, error, updateError } =
     usePaatosteksti(oid);
   const [hasChanges, setHasChanges] = useState(false);
+  useUnsavedChanges(hasChanges);
 
   const { showConfirmation } = useGlobalConfirmationModal();
-
   const { addToast } = useToaster();
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.paatostekstiLataus', t);
-  }, [error, addToast, t]);
-
-  useEffect(() => {
     handleFetchError(addToast, updateError, 'virhe.paatostekstiTallennus', t);
-  }, [updateError, addToast, t]);
+  }, [error, updateError, addToast, t]);
 
   useEffect(() => {
     if (paatosteksti) {
