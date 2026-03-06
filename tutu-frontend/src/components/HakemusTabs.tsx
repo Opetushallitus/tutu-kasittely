@@ -70,7 +70,7 @@ const useActiveTabFromPath = () => {
     }
   }
 
-  return 'perustiedot';
+  return;
 };
 
 const TabLink = (props: TabLinkProps) => {
@@ -161,7 +161,8 @@ export const HakemusTabs = ({
     // When selecting 'Perustelu' -> select first subitem instead
   };
 
-  const showSubTabs = SUB_TAB_NAMES.includes(selectedTabName);
+  const showSubTabs =
+    selectedTabName !== undefined && SUB_TAB_NAMES.includes(selectedTabName);
   const isEhdollinen = hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS;
 
   const tabProps = [
@@ -207,7 +208,7 @@ export const HakemusTabs = ({
       }}
     >
       <Tabs
-        value={selectedTabName}
+        value={selectedTabName ?? false}
         onChange={handleChange}
         orientation="vertical"
         aria-label={t('hakemusTabs.navigaatio')}

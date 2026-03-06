@@ -13,6 +13,9 @@ const StyledIconButton = styled('button')(() => ({
     backgroundColor: ophColors.white,
     cursor: 'pointer',
   },
+  display: 'flex',
+  alignItems: 'center',
+  justifyItems: 'center',
 }));
 
 export const IconButton = ({ children, ...rest }: StyledIconButtonProps) => {

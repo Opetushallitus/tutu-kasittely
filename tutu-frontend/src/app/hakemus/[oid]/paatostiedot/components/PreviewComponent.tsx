@@ -1,3 +1,4 @@
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import { Stack, styled } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -12,6 +13,7 @@ interface PreviewComponentProps {
   closeButtonText: string;
   content: React.ReactNode;
   showCopyButton?: boolean;
+  hakemusOid: string;
 }
 
 export const PreviewContent = styled(Box)({
@@ -24,7 +26,7 @@ export const PreviewComponent = ({
   headerText,
   closeButtonText,
   content,
-  showCopyButton = false,
+  hakemusOid,
 }: PreviewComponentProps) => {
   const { t } = useTranslations();
 
@@ -47,15 +49,22 @@ export const PreviewComponent = ({
           alignItems="center"
         >
           <OphTypography variant="h2">{t(headerText)}</OphTypography>
-          {/*TODO: lisätään kopiointinappi ja logiikka*/}
-          {showCopyButton && null}
-          <OphButton
-            data-testid="close-preview-button"
-            onClick={() => setShowPreview(false)}
-            startIcon={<CloseIcon />}
-          >
-            {t(closeButtonText)}
-          </OphButton>
+          <Stack direction={'row'}>
+            <OphButton
+              variant={'contained'}
+              href={`/hakemus/${hakemusOid}/editori/viesti`}
+              startIcon={<CheckCircleOutlineRoundedIcon />}
+            >
+              {t('hakemus.paatos')}
+            </OphButton>
+            <OphButton
+              data-testid="close-preview-button"
+              onClick={() => setShowPreview(false)}
+              startIcon={<CloseIcon />}
+            >
+              {t(closeButtonText)}
+            </OphButton>
+          </Stack>
         </Stack>
         {content}
       </Stack>

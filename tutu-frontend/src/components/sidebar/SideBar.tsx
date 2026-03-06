@@ -83,7 +83,7 @@ export const SideBar = ({ hakemusOid }: SideBarProps) => {
       />
       <AvaaPerusteluMuistioButton />
       <ToimintoLinkki
-        href="/"
+        href={`/hakemus/${hakemusOid}/editori/paatos`}
         gap={theme.spacing(1)}
         icon={<CheckCircleIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaPaatos')}

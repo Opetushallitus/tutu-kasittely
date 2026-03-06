@@ -104,7 +104,7 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
       case Right(responseJson) =>
         try {
           val json = parse(responseJson)
-          (json \ "withinCodeElements") match {
+          json \ "withinCodeElements" match {
             case JArray(elements) =>
               elements.flatMap { element =>
                 (element \ "codeElementUri").extractOpt[String].filter(_.startsWith("oppilaitosnumero_"))

@@ -90,23 +90,25 @@ class KasittelyVaiheService(
       tiedot.selvityksetSaatu,
       modified.isAfter(submitted),
       tiedot.paatosLahetyspaiva.isDefined,
-      tiedot.paatosHyvaksymispaiva.isDefined
+      tiedot.paatosHyvaksymispaiva.isDefined,
+      tiedot.paatostekstiVahvistettu.isDefined
     ) match
       // Päätöksen tilat - tarkistetaan onko päätös tehty
-      case (_, _, _, _, _, _, true, true) => KasittelyVaihe.LoppukasittelyValmis
-      case (_, _, _, _, _, _, _, true)    => KasittelyVaihe.HyvaksyttyEiLahetetty
+      case (_, _, _, _, _, _, true, true, _) => KasittelyVaihe.LoppukasittelyValmis
+      case (_, _, _, _, _, _, _, true, _)    => KasittelyVaihe.HyvaksyttyEiLahetetty
+      case (_, _, _, _, _, _, _, _, true)    => KasittelyVaihe.HyvaksynnassaTaiLoppukasittelyssa
 
       // Prioriteettijärjestys: Tarkista ensin kesken olevat toimenpiteet
-      case (true, _, _, _, _, _, _, _) => KasittelyVaihe.OdottaaTaydennysta
-      case (_, true, _, _, _, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
-      case (_, _, true, _, _, _, _, _) => KasittelyVaihe.OdottaaLausuntoa
-      case (_, _, _, true, _, _, _, _) => KasittelyVaihe.OdottaaIMIVastausta
+      case (true, _, _, _, _, _, _, _, _) => KasittelyVaihe.OdottaaTaydennysta
+      case (_, true, _, _, _, _, _, _, _) => KasittelyVaihe.OdottaaVahvistusta
+      case (_, _, true, _, _, _, _, _, _) => KasittelyVaihe.OdottaaLausuntoa
+      case (_, _, _, true, _, _, _, _, _) => KasittelyVaihe.OdottaaIMIVastausta
 
       // Jos selvitykset saatu ja ei toimenpiteitä kesken -> valmis käsiteltäväksi
-      case (false, false, false, false, true, _, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
+      case (false, false, false, false, true, _, _, _, _) => KasittelyVaihe.ValmisKasiteltavaksi
       // Jos kaikkia selvityksiä ei vielä saatu, mutta hakemusta on editoitu sen saapumisen jälkeen
       // (esim. vastattu täydennyspyyntöön) -> HakemustaTaydennetty
-      case (false, false, false, false, false, true, _, _) => KasittelyVaihe.HakemustaTaydennetty
+      case (false, false, false, false, false, true, _, _, _) => KasittelyVaihe.HakemustaTaydennetty
       // Oletusarvo: alkukäsittely kesken
       // (mahdollistaa tilan regression kun toimenpiteitä poistetaan)
       case _ => AlkukasittelyKesken

@@ -86,7 +86,8 @@ class AsiakirjaRepository extends BaseResultHandlers {
         imiPyyntoVastattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         lausuntoKesken = r.nextBoolean(),
         paatosHyvaksymispaiva = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        paatosLahetyspaiva = Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        paatosLahetyspaiva = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        paatostekstiVahvistettu = r.nextTimestampOption().map(_.toLocalDateTime)
       )
     )
 
@@ -126,9 +127,11 @@ class AsiakirjaRepository extends BaseResultHandlers {
                     AND l.saapunut IS NULL
                 ) as lausunto_kesken,
                 p.hyvaksymispaiva,
-                p.lahetyspaiva
+                p.lahetyspaiva,
+                pt.vahvistettu
               FROM asiakirja a
               LEFT JOIN paatos p ON p.hakemus_id = ${hakemusId.toString}::uuid
+              LEFT JOIN paatosteksti pt ON pt.hakemus_id = ${hakemusId.toString}::uuid
               WHERE a.id = ${id.toString}::uuid
             """.as[KasittelyVaiheTiedot].headOption,
             "hae_kasittely_vaihe_tiedot"

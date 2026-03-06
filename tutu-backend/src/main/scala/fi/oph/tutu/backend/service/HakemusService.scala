@@ -500,6 +500,18 @@ class HakemusService(
     paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja, haeAtaruHakemus(hakemusOid))
   }
 
+  def paivitaKasittelyVaiheSisaisesti(
+    hakemusOid: HakemusOid,
+    luojaTaiMuokkaaja: String
+  ): Unit = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case Some(dbHakemus) =>
+        paivitaKasittelyVaihe(hakemusOid, dbHakemus, luojaTaiMuokkaaja, haeAtaruHakemus(hakemusOid))
+      case None =>
+        LOG.warn(s"Vastaanotettiin tilapäivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
+    }
+  }
+
   def paivitaKasittelyVaiheAtarusta(
     hakemusOid: HakemusOid,
     ataruHakemuksenTila: AtaruHakemuksenTila,

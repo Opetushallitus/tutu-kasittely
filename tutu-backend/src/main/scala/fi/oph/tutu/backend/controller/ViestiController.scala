@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, ListSortParam, SortDef, Viesti}
+import fi.oph.tutu.backend.domain.{HakemusOid, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
 import fi.oph.tutu.backend.utils.Utility.currentLocalDateTime
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.{
   RestController
 }
 
-import java.time.LocalDateTime
 import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
@@ -51,7 +50,7 @@ class ViestiController(
       val sortParams = resolveSortParams(sort)
       viestiService.haeViestiLista(HakemusOid(hakemusOid), sortParams)
     } match {
-      case Success(result) => {
+      case Success(result) =>
         auditLog.logRead(
           "viestilista",
           mapper.writeValueAsString(Map("hakemusOid" -> hakemusOid)),
@@ -59,7 +58,6 @@ class ViestiController(
           request
         )
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(result))
-      }
       case Failure(exception @ (_: IllegalArgumentException | _: InvalidDataAccessApiUsageException)) =>
         LOG.error(s"Virheellinen sort-parametri: $sort", exception)
         errorMessageMapper.mapPlainErrorMessage(

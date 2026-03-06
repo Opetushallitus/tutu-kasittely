@@ -69,7 +69,7 @@ export const useViesti = (hakemusOid?: string) => {
     mutationFn: (viesti: Viesti) =>
       putViesti(hakemusOid!, { viesti, vahvista: true }),
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey });
+      await queryClient.invalidateQueries({ queryKey });
     },
   });
 

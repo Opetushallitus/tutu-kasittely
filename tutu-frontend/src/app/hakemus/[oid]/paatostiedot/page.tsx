@@ -335,6 +335,7 @@ const Paatostiedot = ({
         </Stack>
         {showPaatosTekstiPreview && (
           <PreviewComponent
+            hakemusOid={hakemus.hakemusOid}
             setShowPreview={setShowPaatosTekstiPreview}
             headerText={'hakemus.paatos.paatosteksti'}
             closeButtonText={'yleiset.sulje'}
