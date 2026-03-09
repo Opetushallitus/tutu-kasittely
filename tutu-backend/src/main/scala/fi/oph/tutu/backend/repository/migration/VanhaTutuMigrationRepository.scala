@@ -47,7 +47,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
     """.as[UUID].head
 
     db.run(query, "vanha-tutu-migration-create-chunk")
-  } recoverWith { case e: Exception =>
+  }.recoverWith { case e: Exception =>
     LOG.error(s"Chunk tallennus epäonnistui: ${e.getMessage}", e)
     Failure(new RuntimeException(s"Chunk tallennus epäonnistui: ${e.getMessage}", e))
   }
