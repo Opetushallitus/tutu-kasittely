@@ -30,12 +30,7 @@ class JacksonConfig {
   def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper = {
     val mapper = builder.createXmlMapper(false).build[ObjectMapper]()
     mapper.registerModule(DefaultScalaModule)
-
-    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-    val javaTimeModule               = new JavaTimeModule()
-    javaTimeModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
-    javaTimeModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
-    mapper.registerModule(javaTimeModule)
+    mapper.registerModule(new JavaTimeModule)
 
     val customModule = new SimpleModule()
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
