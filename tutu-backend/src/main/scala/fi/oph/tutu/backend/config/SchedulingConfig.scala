@@ -18,9 +18,7 @@ class SchedulingConfig {
     scheduler.setThreadNamePrefix("tutu-scheduler-")
     scheduler.setAwaitTerminationSeconds(10)
     scheduler.setWaitForTasksToCompleteOnShutdown(true)
-    scheduler.setErrorHandler(t => {
-      LOG.error("Scheduled task failed", t)
-    })
+    scheduler.setErrorHandler(t => LOG.error("Scheduled task failed", t))
     scheduler
   }
 }
