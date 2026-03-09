@@ -41,13 +41,13 @@ class ViestiControllerTest extends IntegrationTestBase {
   private var mvc: MockMvc                   = null
 
   @MockitoBean
-  private var userService: UserService = _
+  var userService: UserService = _
 
   @MockitoBean
-  private var onrService: OnrService = _
+  var onrService: OnrService = _
 
   @MockitoBean
-  private var auditLog: AuditLog = _
+  var auditLog: AuditLog = _
 
   val lomakeId: Long          = 1527182
   val hakemusOid              = HakemusOid("1.2.246.562.11.00000000001")

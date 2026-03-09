@@ -15,7 +15,7 @@ export const getPaatos = async (
 export const getPaatosTeksti = async (
   hakemusOid: string | undefined,
 ): Promise<string> => {
-  const url = `paatos/${hakemusOid}/paatosteksti`;
+  const url = `paatos/${hakemusOid}/paatosteksti/generate`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 

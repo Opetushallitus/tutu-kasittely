@@ -18,8 +18,8 @@ import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
 test.beforeEach(mockBasicForHakemus);
 
 test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
-  mockUser(page);
-  mockHakemus(page);
+  await mockUser(page);
+  await mockHakemus(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -43,8 +43,8 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
 });
 
 test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => {
-  mockUser(page, 'sv');
-  mockHakemus(page, 'sv');
+  await mockUser(page, 'sv');
+  await mockHakemus(page, 'sv');
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
@@ -56,8 +56,8 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
 });
 
 test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
-  mockUser(page);
-  page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+  await mockUser(page);
+  await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
     await route.fulfill({
       status: 500,
       contentType: 'application/json',

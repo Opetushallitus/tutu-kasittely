@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.SortDef.Undefined
 import fi.oph.tutu.backend.repository.{HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
@@ -43,7 +42,7 @@ class ViestiService(
           case None         =>
             val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
-              s"""Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
+              s"""Hakemuksella $hakemusOid ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
                   kieli: ${ataruHakemus.lang}"""
             )
             Some(Viesti(hakemusId = Some(dbHakemus.id), kieli = Kieli.optionFromString(ataruHakemus.lang)))

@@ -236,7 +236,7 @@ test('Kenttien tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
 test('Viestin latauksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  page.route('**/tutu-backend/api/viesti/tyoversio/*', async (route) => {
+  await page.route('**/tutu-backend/api/viesti/tyoversio/*', async (route) => {
     await route.fulfill({
       status: 500,
       contentType: 'application/json',
@@ -258,15 +258,18 @@ test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
   await mockViestiTyoversio(page, tyoversio);
-  page.route('**/tutu-backend/api/viesti/1.2.246.562.11.**', async (route) => {
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        message: 'tallennusvirhe',
-      }),
-    });
-  });
+  await page.route(
+    '**/tutu-backend/api/viesti/1.2.246.562.11.**',
+    async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: 'tallennusvirhe',
+        }),
+      });
+    },
+  );
   await page
     .getByTestId('viesti-otsikko-input')
     .getByRole('textbox')

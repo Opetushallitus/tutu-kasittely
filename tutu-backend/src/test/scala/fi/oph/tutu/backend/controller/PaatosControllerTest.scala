@@ -28,8 +28,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.{get,
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, jsonPath, status}
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
-import scala.jdk.CollectionConverters._
 
+import scala.jdk.CollectionConverters.*
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -43,22 +43,22 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   private var mvc: MockMvc                   = null
 
   @MockitoBean
-  private var userService: UserService = _
+  var userService: UserService = _
 
   @MockitoBean
-  private var onrService: OnrService = _
+  var onrService: OnrService = _
 
   @MockitoBean
-  private var koodistoService: KoodistoService = _
+  var koodistoService: KoodistoService = _
 
   @MockitoBean
-  private var hallintoOikeusService: HallintoOikeusService = _
+  var hallintoOikeusService: HallintoOikeusService = _
 
   @MockitoBean
-  private var maakoodiService: MaakoodiService = _
+  var maakoodiService: MaakoodiService = _
 
   @MockitoBean
-  private var auditLog: AuditLog = _
+  var auditLog: AuditLog = _
 
   val lomakeId: Long         = 1527182
   val hakemusOid: HakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666")
@@ -932,7 +932,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(14)
-  def haePaatosTekstiPalauttaaPaatosTekstinEriPaatoksille(): Unit = {
+  def generatePaatosTekstiGeneroiPaatosTekstinEriPaatoksille(): Unit = {
     val tasoId = Some(
       paatosRepository
         .tallennaPaatos(
@@ -1111,13 +1111,13 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       val expectedRaw = scala.io.Source.fromResource(fixtureName).mkString
 
       val result = mvc
-        .perform(get(s"/api/paatos/${hid}/paatosteksti"))
+        .perform(get(s"/api/paatos/$hid/paatosteksti/generate"))
         .andExpect(status().isOk)
         .andExpect(content().contentType("text/html;charset=UTF-8"))
         .andReturn()
 
       val body = result.getResponse.getContentAsString.mkString
-      System.out.println(s"$testName Body:\n${body}\n")
+      System.out.println(s"$testName Body:\n$body\n")
 
       def prettify(html: String): List[String] = {
         val newlined = html
@@ -1134,5 +1134,140 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosPreview), any())
       reset(auditLog)
     }
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(15)
+  def haePaatosTekstiTallentaaJaPalauttaaGeneroidunPaatostekstinJosPaatostekstiaEiOle(): Unit = {
+    // Common mocks for generation
+    when(onrService.haeHenkilo("1.2.246.562.24.00000000001"))
+      .thenReturn(
+        Right(
+          OnrUser(
+            oidHenkilo = "1.2.246.562.24.00000000001",
+            kutsumanimi = "Roope",
+            sukunimi = "Roihuvuori",
+            kansalaisuus = Seq(KansalaisuusKoodi("123")),
+            hetu = Some("010171-789X"),
+            true
+          )
+        )
+      )
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6667.json")))
+    when(hakemuspalveluService.haeJaParsiHakemus(any[HakemusOid]))
+      .thenReturn(Right(JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]))
+    when(koodistoService.getKoodistoRelaatiot(any[String])).thenReturn(Right("""[
+          {
+            "koodiUri": "maakunta_01",
+            "koodiArvo": "01",
+            "tila": "HYVAKSYTTY"
+          }
+        ]"""))
+    when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
+      Some(
+        Maakoodi(
+          id = UUID.randomUUID,
+          esittelijaId = None,
+          koodiUri = "",
+          fi = "Suomenmaa",
+          sv = "Ruotsinmaa",
+          en = "Englanninmaa"
+        )
+      )
+    )
+    when(hallintoOikeusService.haeHallintoOikeusByKunta(any[String]))
+      .thenReturn(
+        HallintoOikeus(
+          Some(UUID.fromString("9d36433f-c391-4f45-81e7-d14f95236ce9")),
+          "HAMEENLINNA",
+          Map(
+            Kieli.fi -> "Hämeenlinnan hallinto-oikeus",
+            Kieli.sv -> "Tavastehus förvaltningsdomstol",
+            Kieli.en -> "Hämeenlinna Administrative Court"
+          ),
+          Some(
+            Map(
+              Kieli.fi -> "Koulukatu 9, 13100 Hämeenlinna",
+              Kieli.sv -> "Koulukatu 9, 13100 Tavastehus",
+              Kieli.en -> "Koulukatu 9, 13100 Hämeenlinna"
+            )
+          ),
+          Some("029 56 46000"),
+          Some("hameenlinna.ho@oikeus.fi"),
+          Some(
+            Map(
+              Kieli.fi -> "https://oikeus.fi/hameenlinna",
+              Kieli.sv -> "https://oikeus.fi/hameenlinna/sv",
+              Kieli.en -> "https://oikeus.fi/hameenlinna/en"
+            )
+          )
+        )
+      )
+
+    val expectedRaw = scala.io.Source.fromResource("paatosteksti_paatos_taso.html").mkString
+
+    assert(paatosRepository.haePaatosteksti(hakemusOidWithTaso).isEmpty)
+    val result = mvc
+      .perform(get(s"/api/paatos/$hakemusOidWithTaso/paatosteksti"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value(expectedRaw.split("\\n").reduce(_ + _)))
+      .andExpect(jsonPath("$.muokkaaja").isEmpty)
+      .andExpect(jsonPath("$.muokattu").isEmpty)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
+      .andReturn()
+
+    assert(paatosRepository.haePaatosteksti(hakemusOidWithTaso).isDefined)
+
+    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePaatosteksti), any())
+    reset(auditLog)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(16)
+  def tallennaPaatosPaivittaaSisallon(): Unit = {
+    val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithTaso)
+    val result       = mvc
+      .perform(
+        put(s"/api/paatos/$hakemusOidWithTaso/paatosteksti/${paatosteksti.get.id}")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(mapper.writeValueAsString(paatosteksti.get.copy(sisalto = "Muokattu sisältö")))
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("Muokattu sisältö"))
+      .andExpect(jsonPath("$.muokattu").isString)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
+      .andReturn()
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatosteksti), any())
+    reset(auditLog)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(17)
+  def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleiman(): Unit = {
+    val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithTaso)
+    val result       = mvc
+      .perform(
+        put(s"/api/paatos/$hakemusOidWithTaso/paatosteksti/${paatosteksti.get.id}/vahvista")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(mapper.writeValueAsString(paatosteksti.get.copy(sisalto = "Vahvistettu sisältö")))
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("Vahvistettu sisältö"))
+      .andExpect(jsonPath("$.muokattu").isString)
+      .andExpect(jsonPath("$.vahvistettu").isString)
+      .andReturn()
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatosteksti), any())
+    reset(auditLog)
   }
 }

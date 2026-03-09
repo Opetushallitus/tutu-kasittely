@@ -224,6 +224,18 @@ object AuditOperation {
     val name = "PAATOKSEN_ESIKATSELUN_LUKU"
   }
 
+  case object CreatePaatosteksti extends AuditOperation {
+    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
+  }
+
+  case object ReadPaatosteksti extends AuditOperation {
+    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
+  }
+
+  case object UpdatePaatosteksti extends AuditOperation {
+    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
+  }
+
   case object UpdateAsiatunnus extends AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }

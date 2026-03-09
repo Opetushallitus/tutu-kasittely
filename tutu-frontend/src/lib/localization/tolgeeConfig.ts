@@ -3,7 +3,7 @@ import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 
 import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 
-import { isTesting } from '../configuration/configuration';
+import { isDev, isTesting } from '../configuration/configuration';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
@@ -17,9 +17,10 @@ export function TolgeeBase() {
     .use(FormatIcu())
     .use(
       BackendFetch({
-        prefix: isTesting
-          ? '/lokalisointi/tolgee' // Devi proxyn kautta
-          : getConfiguration().LOKALISOINTI_URL,
+        prefix:
+          isTesting || isDev
+            ? '/lokalisointi/tolgee' // Devi proxyn kautta
+            : getConfiguration().LOKALISOINTI_URL,
         next: {
           revalidate: REVALIDATE_TIME_SECONDS,
         },

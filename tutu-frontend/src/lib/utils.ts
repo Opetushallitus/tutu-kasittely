@@ -46,7 +46,7 @@ export const handleFetchError = (
   error: unknown,
   baseKey: string,
   t: TFunction,
-  timeMs?: number,
+  timeMs: number = 2500,
 ) => {
   if (error) {
     if (error instanceof FetchError) {
@@ -85,13 +85,14 @@ export const handleSuccessMessage = (
   addToast: AddToastCallback,
   translationKey: string,
   t: TFunction,
+  timeMs: number = 2500,
 ) => {
   if (isSuccess)
     addToast({
       key: translationKey,
       type: 'success',
       message: t(translationKey),
-      timeMs: 2500,
+      timeMs: timeMs,
     });
 };
 

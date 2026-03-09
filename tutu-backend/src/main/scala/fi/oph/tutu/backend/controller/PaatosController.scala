@@ -1,9 +1,16 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Paatos}
+import fi.oph.tutu.backend.domain.{HakemusOid, Paatos, Paatosteksti}
 import fi.oph.tutu.backend.service.{PaatosService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{ReadPaatos, ReadPaatosPreview, UpdatePaatos}
+import fi.oph.tutu.backend.utils.AuditOperation.{
+  CreatePaatosteksti,
+  ReadPaatos,
+  ReadPaatosPreview,
+  ReadPaatosteksti,
+  UpdatePaatos,
+  UpdatePaatosteksti
+}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -11,6 +18,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.*
 
+import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -53,7 +61,7 @@ class PaatosController(
     Try {
       paatosService.haePaatos(HakemusOid(hakemusOid))
     } match {
-      case Success(result) => {
+      case Success(result) =>
         result match {
           case None =>
             LOG.info(s"Päätöstä ei löytynyt")
@@ -62,7 +70,6 @@ class PaatosController(
             auditLog.logRead("päätös", hakemusOid, ReadPaatos, request)
             ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatos))
         }
-      }
       case Failure(exception) =>
         LOG.error(s"Päätöksen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
@@ -137,21 +144,188 @@ class PaatosController(
   }
 
   @GetMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti"),
+    path = Array("paatos/{hakemusOid}/paatosteksti/generate"),
     produces = Array(MediaType.TEXT_HTML_VALUE)
   )
-  def haePaatosTeksti(
+  @Operation(
+    summary = "Generoi päätöstekstipohjan",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def generatePaatosteksti(
     @PathVariable hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      paatosService.haePaatosTeksti(HakemusOid(hakemusOid))
+      paatosService.generatePaatosTeksti(HakemusOid(hakemusOid))
     } match {
       case Success(paatosTeksti) =>
         auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
         ResponseEntity.status(HttpStatus.OK).body(paatosTeksti)
       case Failure(exception) =>
         LOG.error(s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hakee päätöstekstin tai palauttaa ja tallentaa tietokantaan generoidun päätöstekstipohjan",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def haePaatosteksti(
+    @PathVariable hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user = userService.getEnrichedUserDetails(true)
+      paatosService.haePaatosteksti(HakemusOid(hakemusOid), user.userOid)
+    } match {
+      case Success((paatosteksti, created)) =>
+        if (created) {
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("hakemusOid" -> hakemusOid),
+            CreatePaatosteksti,
+            paatosteksti
+          )
+        } else {
+          auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
+        }
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosteksti))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PutMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää päätöstekstin",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def tallennaPaatosteksti(
+    @PathVariable hakemusOid: String,
+    @PathVariable paatostekstiId: String,
+    @RequestBody paatosBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    val user         = userService.getEnrichedUserDetails(true)
+    val paatosteksti = mapper.readValue(paatosBytes, classOf[Paatosteksti])
+    Try {
+      paatosService.tallennaPaatosteksti(
+        HakemusOid(hakemusOid),
+        UUID.fromString(paatostekstiId),
+        paatosteksti,
+        user.userOid
+      )
+    } match {
+      case Success((vanha, uusi)) =>
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdatePaatosteksti,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(vanha)),
+            Some(mapper.writeValueAsString(uusi))
+          )
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PutMapping(
+    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}/vahvista"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Päivittää päätöstekstin ja merkitsee sen vahvistetuksi",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def vahvistaPaatosteksti(
+    @PathVariable hakemusOid: String,
+    @PathVariable paatostekstiId: String,
+    @RequestBody paatosBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    val user         = userService.getEnrichedUserDetails(true)
+    val paatosteksti = mapper.readValue(paatosBytes, classOf[Paatosteksti])
+    Try {
+      paatosService.vahvistaPaatosteksti(
+        HakemusOid(hakemusOid),
+        UUID.fromString(paatostekstiId),
+        paatosteksti,
+        user.userOid
+      )
+    } match {
+      case Success((vanha, uusi)) =>
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdatePaatosteksti,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(vanha)),
+            Some(mapper.writeValueAsString(uusi))
+          )
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          exception
+        )
         errorMessageMapper.mapErrorMessage(exception)
     }
   }

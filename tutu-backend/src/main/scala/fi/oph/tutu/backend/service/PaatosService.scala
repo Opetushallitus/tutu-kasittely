@@ -2,12 +2,14 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
-import fi.oph.tutu.backend.service.generator.paatosteksti.generatePaatosTeksti
+import fi.oph.tutu.backend.service.generator.paatosteksti
 import fi.oph.tutu.backend.utils.{Constants, TutuJsonFormats}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jvalue2extractable
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
+
+import java.util.UUID
 
 @Component
 @Service
@@ -19,7 +21,8 @@ class PaatosService(
   hakemuspalveluService: HakemuspalveluService,
   hallintoOikeusService: HallintoOikeusService,
   ataruLomakeParser: AtaruLomakeParser,
-  maakoodiService: MaakoodiService
+  maakoodiService: MaakoodiService,
+  onrService: OnrService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
@@ -128,7 +131,7 @@ class PaatosService(
     (currentPaatos, updatedPaatos)
   }
 
-  def haePaatosTeksti(
+  def generatePaatosTeksti(
     hakemusOid: HakemusOid
   ): String = {
     val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
@@ -143,7 +146,49 @@ class PaatosService(
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
-    generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus, maakoodiService)
+    paatosteksti.generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus, maakoodiService)
   }
 
+  def haePaatosteksti(
+    hakemusOid: HakemusOid,
+    luoja: String
+  ): (Paatosteksti, Boolean) = {
+    paatosRepository.haePaatosteksti(hakemusOid) match {
+      case Some(paatosteksti) =>
+        val muokkaajaNimi: String = onrService.haeNimi(paatosteksti.muokkaaja)
+        (paatosteksti.copy(muokkaaja = Some(muokkaajaNimi)), false)
+      case None =>
+        hakemusRepository.haeHakemus(hakemusOid) match {
+          case Some(hakemus) =>
+            (paatosRepository.tallennaUusiPaatosteksti(hakemus.id, generatePaatosTeksti(hakemusOid), luoja), true)
+          case None =>
+            throw NotFoundException(s"Hakemus $hakemusOid not found")
+        }
+    }
+  }
+
+  def tallennaPaatosteksti(
+    hakemusOid: HakemusOid,
+    paatostekstiId: UUID,
+    paatosteksti: Paatosteksti,
+    luojaTaiMuokkaaja: String
+  ): (Paatosteksti, Paatosteksti) = {
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
+    val uusiPaatosteksti       = paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+    val muokkaajaNimi: String  = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
+    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
+  }
+
+  def vahvistaPaatosteksti(
+    hakemusOid: HakemusOid,
+    paatostekstiId: UUID,
+    paatosteksti: Paatosteksti,
+    luojaTaiMuokkaaja: String
+  ): (Paatosteksti, Paatosteksti) = {
+    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
+    val uusiPaatosteksti       = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+    hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
+    val muokkaajaNimi: String = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
+    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
+  }
 }
