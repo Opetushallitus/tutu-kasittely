@@ -5,7 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import fi.oph.tutu.backend.config.JacksonConfig
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
@@ -29,7 +28,6 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.{UseMainMethod, WebEnvironment}
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 import org.springframework.test.context.{DynamicPropertyRegistry, DynamicPropertySource}
 import org.testcontainers.containers.wait.strategy.Wait

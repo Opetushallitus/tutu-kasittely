@@ -10,7 +10,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.{assertEquals, assertLinesMatch}
+import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import scala.jdk.CollectionConverters.*
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 import java.util.UUID
 
 @AutoConfigureMockMvc
@@ -1213,21 +1213,12 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       .perform(get(s"/api/paatos/$hakemusOidWithTaso/paatosteksti"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value(expectedRaw.split("\\n").reduce(_ + _)))
+      .andExpect(jsonPath("$.muokkaaja").isEmpty)
+      .andExpect(jsonPath("$.muokattu").isEmpty)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
       .andReturn()
 
-    val body = mapper.readValue(result.getResponse.getContentAsString, classOf[Paatosteksti])
-
-    def prettify(html: String): List[String] = {
-      val newlined = html
-        .replaceAll("(<br>|</p>|</h[1-6]>)", "$1\n")
-
-      newlined.split("\\n").toList
-    }
-
-    val actual   = prettify(body.sisalto)
-    val expected = expectedRaw.split("\\n").toList
-
-    assertLinesMatch(expected.asJava, actual.asJava)
     assert(paatosRepository.haePaatosteksti(hakemusOidWithTaso).isDefined)
 
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePaatosteksti), any())
@@ -1248,14 +1239,10 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("Muokattu sisältö"))
+      .andExpect(jsonPath("$.muokattu").isString)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
       .andReturn()
-
-    val body = mapper.readValue(result.getResponse.getContentAsString, classOf[Paatosteksti])
-
-    assert(paatosRepository.haePaatosteksti(hakemusOidWithTaso).isDefined)
-    assertEquals("Muokattu sisältö", body.sisalto)
-    assertEquals(LocalDate.now, body.muokattu.get.toLocalDate)
-    assert(body.vahvistettu.isEmpty)
 
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatosteksti), any())
     reset(auditLog)
@@ -1275,12 +1262,10 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("Vahvistettu sisältö"))
+      .andExpect(jsonPath("$.muokattu").isString)
+      .andExpect(jsonPath("$.vahvistettu").isString)
       .andReturn()
-
-    val body = mapper.readValue(result.getResponse.getContentAsString, classOf[Paatosteksti])
-
-    assertEquals("Vahvistettu sisältö", body.sisalto)
-    assertEquals(LocalDate.now, body.vahvistettu.get.toLocalDate)
 
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatosteksti), any())
     reset(auditLog)
