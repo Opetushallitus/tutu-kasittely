@@ -39,9 +39,11 @@ import org.springframework.web.context.WebApplicationContext
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
 class TutkintoControllerTest extends IntegrationTestBase {
+
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @MockitoBean
   var auditLog: AuditLog = _
@@ -186,4 +188,5 @@ class TutkintoControllerTest extends IntegrationTestBase {
     assertEquals(tutkinnot2.length, tutkinnot1.length - 1)
     assertTrue(!tutkinnot2.exists(_.id.getOrElse("") == poistettuId))
   }
+
 }

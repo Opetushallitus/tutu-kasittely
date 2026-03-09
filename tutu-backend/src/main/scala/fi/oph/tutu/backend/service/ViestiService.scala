@@ -24,13 +24,13 @@ class ViestiService(
       case Some(dbHakemus: DbHakemus) =>
         viestiRepository
           .haeViestiLista(dbHakemus.id, sortParams)
-          .map(viesti => {
+          .map { viesti =>
             val vahvistaja = onrService.haeHenkilo(viesti.vahvistaja) match {
               case Left(error)    => ""
               case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
             }
             viesti.copy(vahvistaja = vahvistaja)
-          })
+          }
       case _ => List()
     }
   }
@@ -43,7 +43,7 @@ class ViestiService(
           case None         =>
             val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
-              s"""Hakemuksella ${hakemusOid} ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
+              s"""Hakemuksella $hakemusOid ei ole keskeneräistä (vahvistamatonta) viestiä, palautetaan uusi viesti,
                   kieli: ${ataruHakemus.lang}"""
             )
             Some(Viesti(hakemusId = Some(dbHakemus.id), kieli = Kieli.optionFromString(ataruHakemus.lang)))
@@ -92,4 +92,5 @@ class ViestiService(
   def poistaViesti(id: UUID): Int = {
     viestiRepository.poistaViesti(id)
   }
+
 }

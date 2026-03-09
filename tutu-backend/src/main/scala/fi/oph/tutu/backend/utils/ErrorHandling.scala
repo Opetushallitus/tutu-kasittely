@@ -22,4 +22,5 @@ object ErrorHandling {
     logger.error(s"$operation epäonnistui", exception)
     throw exception
   }
+
 }

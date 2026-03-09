@@ -16,13 +16,15 @@ import scala.util.{Failure, Success}
 @Component
 @Repository
 class PaatosRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[PaatosRepository])
+
+  val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosRepository])
 
   final val DB_TIMEOUT = 30.seconds
 
-  implicit val getPaatosResult: GetResult[Paatos] = GetResult(r =>
+  implicit val getPaatosResult: GetResult[Paatos] = GetResult { r =>
     Paatos(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
@@ -35,9 +37,9 @@ class PaatosRepository extends BaseResultHandlers {
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
     )
-  )
+  }
 
-  implicit val getPaatosTietoResult: GetResult[PaatosTieto] = GetResult(r =>
+  implicit val getPaatosTietoResult: GetResult[PaatosTieto] = GetResult { r =>
     PaatosTieto(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatosId = Some(r.nextObject().asInstanceOf[UUID]),
@@ -52,9 +54,9 @@ class PaatosRepository extends BaseResultHandlers {
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
     )
-  )
+  }
 
-  implicit val getTutkintoTaiOpintoResult: GetResult[TutkintoTaiOpinto] = GetResult(r =>
+  implicit val getTutkintoTaiOpintoResult: GetResult[TutkintoTaiOpinto] = GetResult { r =>
     TutkintoTaiOpinto(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
@@ -68,9 +70,9 @@ class PaatosRepository extends BaseResultHandlers {
       muokkaaja = r.nextStringOption(),
       opetuskieli = r.nextStringOption()
     )
-  )
+  }
 
-  implicit val getKelpoisuusResult: GetResult[Kelpoisuus] = GetResult(r =>
+  implicit val getKelpoisuusResult: GetResult[Kelpoisuus] = GetResult { r =>
     Kelpoisuus(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
@@ -87,7 +89,7 @@ class PaatosRepository extends BaseResultHandlers {
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
     )
-  )
+  }
 
   /**
    * Tallentaa päätöksen (palauttaa DBIO-actionin transaktioita varten)
@@ -195,9 +197,7 @@ class PaatosRepository extends BaseResultHandlers {
       }
     }
     tutkinnotTaiOpinnotActions = tutkinnotTaiOpinnotActions ++ modifyData.poistetut.flatMap { id =>
-      haeTutkinnotTaiOpinnot(id).flatMap { tto =>
-        tto.id.map(poistaTutkintoTaiOpinto)
-      }
+      haeTutkinnotTaiOpinnot(id).flatMap(tto => tto.id.map(poistaTutkintoTaiOpinto))
     }
 
     var kelpoisuusActions = {
@@ -223,14 +223,12 @@ class PaatosRepository extends BaseResultHandlers {
       }
     }
     kelpoisuusActions = kelpoisuusActions ++ modifyData.poistetut.flatMap { id =>
-      haeKelpoisuudet(id).flatMap { kelpoisuus =>
-        kelpoisuus.id.map(poistaKelpoisuus)
-      }
+      haeKelpoisuudet(id).flatMap(kelpoisuus => kelpoisuus.id.map(poistaKelpoisuus))
     }
     val separatelySavedPaatostiedot =
       modifyData.uudet.filter(_.containsTutkinnotOrKelpoisuudet)
 
-    val addEntityActionsForNewPaatostiedot = separatelySavedPaatostiedot.flatMap(pt => {
+    val addEntityActionsForNewPaatostiedot = separatelySavedPaatostiedot.flatMap { pt =>
       val paatostieto   = tallennaPaatosTieto(paatosId, pt, luojaTaiMuokkaaja)
       val paatostietoId = paatostieto.id.get
 
@@ -240,7 +238,7 @@ class PaatosRepository extends BaseResultHandlers {
       val kelpoisuusActions = pt.kelpoisuudet.map(k => lisaaKelpoisuus(paatostietoId, k, luojaTaiMuokkaaja))
 
       tutkinnotTaiOpinnotActions ++ kelpoisuusActions
-    })
+    }
 
     val paatostietoActions = modifyData.uudet
       .filterNot(_.containsTutkinnotOrKelpoisuudet)
@@ -320,7 +318,7 @@ class PaatosRepository extends BaseResultHandlers {
   private def paivitaPaatosTieto(
     paatosTieto: PaatosTieto,
     muokkaaja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
         UPDATE paatostieto
         SET
@@ -336,6 +334,7 @@ class PaatosRepository extends BaseResultHandlers {
           muokkaaja = $muokkaaja
         WHERE id = ${paatosTieto.id.get.toString}::uuid
       """
+  }
 
   def haePaatosTiedot(paatosId: UUID): Seq[PaatosTieto] = {
     try {
@@ -360,13 +359,14 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def poistaPaatosTieto(id: UUID): DBIO[Int] =
+  private def poistaPaatosTieto(id: UUID): DBIO[Int] = {
     sqlu"""
         DELETE FROM paatostieto
         WHERE id = ${id.toString}::uuid
       """
+  }
 
-  def lisaaTutkintoTaiOpinto(paatostietoId: UUID, tutkintoTaiOpinto: TutkintoTaiOpinto, luoja: String): DBIO[Int] =
+  def lisaaTutkintoTaiOpinto(paatostietoId: UUID, tutkintoTaiOpinto: TutkintoTaiOpinto, luoja: String): DBIO[Int] = {
     sqlu"""
           INSERT INTO tutkinto_tai_opinto (
             paatostieto_id,
@@ -388,11 +388,12 @@ class PaatosRepository extends BaseResultHandlers {
             $luoja,
             ${tutkintoTaiOpinto.opetuskieli.orNull}
           )"""
+  }
 
   private def paivitaTutkintoTaiOpinto(
     tutkintoTaiOpinto: TutkintoTaiOpinto,
     muokkaaja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
           UPDATE tutkinto_tai_opinto
           SET
@@ -408,6 +409,7 @@ class PaatosRepository extends BaseResultHandlers {
             opetuskieli = ${tutkintoTaiOpinto.opetuskieli.orNull}
           WHERE id = ${tutkintoTaiOpinto.id.get.toString}::uuid
         """
+  }
 
   def haeTutkinnotTaiOpinnot(paatostietoId: UUID): Seq[TutkintoTaiOpinto] = {
     try {
@@ -432,13 +434,14 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def poistaTutkintoTaiOpinto(id: UUID): DBIO[Int] =
+  private def poistaTutkintoTaiOpinto(id: UUID): DBIO[Int] = {
     sqlu"""
           DELETE FROM tutkinto_tai_opinto
           WHERE id = ${id.toString}::uuid
         """
+  }
 
-  private def lisaaKelpoisuus(paatostietoId: UUID, kelpoisuus: Kelpoisuus, luoja: String): DBIO[Int] =
+  private def lisaaKelpoisuus(paatostietoId: UUID, kelpoisuus: Kelpoisuus, luoja: String): DBIO[Int] = {
     sqlu"""
           INSERT INTO kelpoisuus (
             paatostieto_id,
@@ -466,11 +469,12 @@ class PaatosRepository extends BaseResultHandlers {
             ${Serialization.write(kelpoisuus.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
             $luoja
           )"""
+  }
 
   private def paivitaKelpoisuus(
     kelpoisuus: Kelpoisuus,
     muokkaaja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
           UPDATE kelpoisuus
           SET
@@ -492,6 +496,7 @@ class PaatosRepository extends BaseResultHandlers {
             muokkaaja = $muokkaaja
           WHERE id = ${kelpoisuus.id.get.toString}::uuid
         """
+  }
 
   def haeKelpoisuudet(paatostietoId: UUID): Seq[Kelpoisuus] = {
     try {
@@ -517,13 +522,14 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def poistaKelpoisuus(id: UUID): DBIO[Int] =
+  private def poistaKelpoisuus(id: UUID): DBIO[Int] = {
     sqlu"""
           DELETE FROM kelpoisuus
           WHERE id = ${id.toString}::uuid
         """
+  }
 
-  def asetaPaatosPeruutetuksi(hakemusId: UUID, muokkaaja: String) =
+  def asetaPaatosPeruutetuksi(hakemusId: UUID, muokkaaja: String) = {
     try {
       db.run(
         sql"""
@@ -543,4 +549,6 @@ class PaatosRepository extends BaseResultHandlers {
           e
         )
     }
+  }
+
 }

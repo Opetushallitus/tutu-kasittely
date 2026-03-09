@@ -10,6 +10,7 @@ case class KoodistoItem(
   voimassaLoppuPvm: Option[LocalDate] = None,
   tila: Option[String] = None
 ) {
+
   def isValid(referenceDate: LocalDate = LocalDate.now()): Boolean = {
     val isAfterStart   = voimassaAlkuPvm.forall(start => !referenceDate.isBefore(start))
     val isBeforeEnd    = voimassaLoppuPvm.forall(end => referenceDate.isBefore(end))
@@ -17,4 +18,5 @@ case class KoodistoItem(
 
     isAfterStart && isBeforeEnd && isActiveStatus
   }
+
 }

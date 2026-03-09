@@ -12,26 +12,35 @@ case class ImiPyynto(
   imiPyyntoLahetetty: Option[LocalDateTime] = None,
   imiPyyntoVastattu: Option[LocalDateTime] = None
 ) {
-  def this(partialImiPyynto: Option[ImiPyynto]) =
+
+  def this(partialImiPyynto: Option[ImiPyynto]) = {
     this(
       imiPyynto = partialImiPyynto.flatMap(_.imiPyynto),
       imiPyyntoNumero = partialImiPyynto.flatMap(_.imiPyyntoNumero),
       imiPyyntoLahetetty = partialImiPyynto.flatMap(_.imiPyyntoLahetetty),
       imiPyyntoVastattu = partialImiPyynto.flatMap(_.imiPyyntoVastattu)
     )
+  }
 
   @JsonIgnore
-  def getNumeroIfPyyntoTrue: Option[String] =
+  def getNumeroIfPyyntoTrue: Option[String] = {
     if (imiPyynto.contains(true)) imiPyyntoNumero else None
+  }
+
   @JsonIgnore
-  def getLahetettyIfPyyntoTrue: Option[LocalDateTime] =
+  def getLahetettyIfPyyntoTrue: Option[LocalDateTime] = {
     if (imiPyynto.contains(true)) imiPyyntoLahetetty else None
+  }
+
   @JsonIgnore
-  def getVastattuIfPyyntoTrue: Option[LocalDateTime] =
+  def getVastattuIfPyyntoTrue: Option[LocalDateTime] = {
     if (imiPyynto.contains(true)) imiPyyntoVastattu else None
+  }
+
 }
 
 class ImiPyyntoDeserializer extends JsonDeserializer[ImiPyynto] {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): ImiPyynto = {
     if (p.getCurrentToken == JsonToken.VALUE_NULL) {
       ImiPyynto(
@@ -66,4 +75,5 @@ class ImiPyyntoDeserializer extends JsonDeserializer[ImiPyynto] {
       ImiPyynto(imiPyynto, imiPyyntoNumero, imiPyyntoLahetetty, imiPyyntoVastattu)
     }
   }
+
 }

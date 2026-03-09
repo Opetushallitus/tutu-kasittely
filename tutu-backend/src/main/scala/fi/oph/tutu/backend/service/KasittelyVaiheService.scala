@@ -111,4 +111,5 @@ class KasittelyVaiheService(
       // (mahdollistaa tilan regression kun toimenpiteitä poistetaan)
       case _ => AlkukasittelyKesken
   }
+
 }

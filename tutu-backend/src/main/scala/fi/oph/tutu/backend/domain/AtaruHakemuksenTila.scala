@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.domain
 
 enum AtaruHakemuksenTila:
+
   case Kasittelematta, Kasittelyssa, KutsuttuHaastatteluun, KutsuttuValintaKokeeseen, Arvioinnissa, Valintaesitys,
     Kasitelty,
     TaydennysPyynto, KasittelyMaksamatta, KasittelyMaksettu, PaatosMaksuAvoin,
@@ -8,6 +9,7 @@ enum AtaruHakemuksenTila:
     PaatosMaksettu, Laskutuksessa, Tuntematon
 
 object AtaruHakemuksenTila {
+
   private val ATARU2TUTU_TILA_MAPPINGS: Map[String, AtaruHakemuksenTila] = Map(
     "unprocessed"              -> Kasittelematta,
     "processing"               -> Kasittelyssa,
@@ -24,11 +26,12 @@ object AtaruHakemuksenTila {
     "decision-fee-paid"        -> PaatosMaksettu,
     "invoiced"                 -> Laskutuksessa
   )
+
   val UNDEFINED = "unprocessed"
 
-  def fromString(value: String): AtaruHakemuksenTila = if (ATARU2TUTU_TILA_MAPPINGS.contains(value))
+  def fromString(value: String): AtaruHakemuksenTila = if (ATARU2TUTU_TILA_MAPPINGS.contains(value)) {
     ATARU2TUTU_TILA_MAPPINGS(value)
-  else throw new IllegalArgumentException(s"Tuntematon hakemuspalveluhakemuksen tila: $value")
+  } else throw new IllegalArgumentException(s"Tuntematon hakemuspalveluhakemuksen tila: $value")
 
   def isValidAtarutila(value: String): Boolean = ATARU2TUTU_TILA_MAPPINGS.contains(value)
 }

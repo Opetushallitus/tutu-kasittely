@@ -4,6 +4,7 @@ enum Kieli:
   case fi, sv, en
 
 object Kieli:
+
   def optionFromString(value: String): Option[Kieli] = value match {
     case "fi"                             => Some(fi)
     case "sv"                             => Some(sv)

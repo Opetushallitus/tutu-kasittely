@@ -38,6 +38,7 @@ class ChunkingStrategy(chunkingConfig: ChunkingConfig) {
     // Ei rajoiteta maksimimäärää - 2GB tiedostot voivat tarvita useita paloja
     calculatedChunks
   }
+
 }
 
 /**

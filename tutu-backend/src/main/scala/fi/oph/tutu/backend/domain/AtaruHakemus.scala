@@ -34,12 +34,15 @@ case class AtaruHakemus(
   hakutoiveet: Seq[String],
   `information-request-timestamp`: Option[String]
 ) {
-  def hakemuksenTila(): AtaruHakemuksenTila =
+
+  def hakemuksenTila(): AtaruHakemuksenTila = {
     AtaruHakemuksenTila.fromString(
       `application-hakukohde-reviews`
         .collectFirst(review => review.state)
         .getOrElse(AtaruHakemuksenTila.UNDEFINED)
     )
+  }
+
 }
 
 case class AtaruHakemusListItem(

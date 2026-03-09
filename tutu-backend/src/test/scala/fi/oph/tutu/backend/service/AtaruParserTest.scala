@@ -16,6 +16,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
+
   @Mock
   var koodistoService: KoodistoService = _
 
@@ -95,8 +96,9 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     when(koodistoService.getKoodisto("kunta")).thenReturn(List())
     val hakemusWoOpitional = hakemus.copy(
       henkilotunnus = None,
-      content =
+      content = {
         hakemus.content.copy(answers = hakemus.content.answers.filterNot(a => a.key == "phone" || a.key == "email"))
+      }
     )
     val hakija = ataruHakemusParser.parseHakija(hakemusWoOpitional)
     assertEquals("Testi Kolmas", hakija.etunimet)
@@ -127,6 +129,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   @Nested
   @DisplayName("parseSisalto")
   class ParseSisalto extends UnitTestBase with TutuJsonFormats {
+
     @Test
     def extractValuesWithNoAnswer(): Unit = {
       val result = extractValues(None)
@@ -420,13 +423,13 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
         SisaltoItem(
           key = item.id,
           fieldType = "",
-          value = item.options.map(opt =>
+          value = item.options.map { opt =>
             SisaltoValue(
               opt.label,
               opt.value,
               traverseContent(opt.followups, handleItem)
             )
-          ),
+          },
           label = Map()
         )
       }
@@ -476,6 +479,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
       assertEquals(valuesOf402.head.value, "502")
     }
+
   }
 
   @Test
@@ -735,4 +739,5 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
       liitteidenTilat.find(_.attachment == "5b179002-91a4-449d-8c4a-d024637a516d").orNull
     )
   }
+
 }

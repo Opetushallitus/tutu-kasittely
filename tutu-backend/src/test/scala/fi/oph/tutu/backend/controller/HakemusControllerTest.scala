@@ -48,7 +48,8 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @MockitoBean
   var auditLog: AuditLog = _
@@ -749,4 +750,5 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     verify(auditLog, times(2)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
   }
+
 }

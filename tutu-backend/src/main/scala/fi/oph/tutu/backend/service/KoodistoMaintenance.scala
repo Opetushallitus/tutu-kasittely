@@ -16,4 +16,5 @@ class KoodistoMaintenance(koodistoService: KoodistoService) {
     koodistoService.getKoodisto("maatjavaltiot2")
     LOG.info("Maatjavaltiot2 sync done")
   }
+
 }

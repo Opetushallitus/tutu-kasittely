@@ -21,7 +21,8 @@ class UserControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -32,7 +33,7 @@ class UserControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  def get200ResponseFromHealthcheckUnautheticated(): Unit =
+  def get200ResponseFromHealthcheckUnautheticated(): Unit = {
     mockMvc
       .perform(
         get("/api/healthcheck")
@@ -40,19 +41,23 @@ class UserControllerTest extends IntegrationTestBase {
       )
       .andExpect(status.isOk)
       .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
+  }
 
   @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
-  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit =
+  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit = {
     mockMvc
       .perform(get("/api/session"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+  }
 
   @Test
   @WithAnonymousUser
-  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit =
+  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit = {
     mockMvc
       .perform(get("/api/session"))
       .andExpect(status().isUnauthorized)
+  }
+
 }

@@ -25,9 +25,11 @@ import org.springframework.web.context.request.{RequestContextHolder, ServletReq
   }
 
   private def getCurrentHttpRequest: HttpServletRequest = {
-    val requestAttributes =
+    val requestAttributes = {
       RequestContextHolder.getRequestAttributes
         .asInstanceOf[ServletRequestAttributes]
+    }
     requestAttributes.getRequest
   }
+
 }

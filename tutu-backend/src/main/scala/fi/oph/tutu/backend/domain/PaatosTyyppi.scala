@@ -4,6 +4,7 @@ enum PaatosTyyppi:
   case Taso, Kelpoisuus, TiettyTutkintoTaiOpinnot, RiittavatOpinnot, LopullinenPaatos
 
 object PaatosTyyppi:
+
   def optionFromString(value: String): Option[PaatosTyyppi] = value match
     case "Taso"                           => Some(Taso)
     case "Kelpoisuus"                     => Some(Kelpoisuus)

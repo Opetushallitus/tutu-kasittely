@@ -469,12 +469,12 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeJatkoOpintoKelpoisuusMuuProducesString(): Unit = {
     val result = haeJatkoOpintoKelpoisuus(
-      somePerustelu.map(perustelu =>
+      somePerustelu.map { perustelu =>
         perustelu.copy(
           jatkoOpintoKelpoisuus = Some("muu"),
           jatkoOpintoKelpoisuusLisatieto = Some("Jatkoon")
         )
-      )
+      }
     )
 
     assert(result.get.contains("Jatko-opintokelpoisuus: muu"))
@@ -760,7 +760,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeTutkinnonTaiOpinnonLisavaatimuksetProducesString(): Unit = {
-    val lisavaatimuksetMaybe: Option[MyonteisenPaatoksenLisavaatimukset] =
+    val lisavaatimuksetMaybe: Option[MyonteisenPaatoksenLisavaatimukset] = {
       Some(
         MyonteisenPaatoksenLisavaatimukset(
           taydentavatOpinnot = true,
@@ -768,6 +768,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           sopeutumisaika = true
         )
       )
+    }
 
     val result = haeTutkinnonTaiOpinnonLisavaatimukset(lisavaatimuksetMaybe)
 
@@ -779,7 +780,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeKelpoisuudenLisavaatimuksetProducesString(): Unit = {
-    val lisavaatimuksetMaybe: Option[KelpoisuudenLisavaatimukset] =
+    val lisavaatimuksetMaybe: Option[KelpoisuudenLisavaatimukset] = {
       Some(
         KelpoisuudenLisavaatimukset(
           olennaisiaEroja = Some(true),
@@ -848,6 +849,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           )
         )
       )
+    }
 
     val result = haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe)
 
@@ -865,4 +867,5 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("Kohtalainen kokemus"))
     assert(result.get.contains("- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Osittain"))
   }
+
 }

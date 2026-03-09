@@ -28,7 +28,8 @@ class EsittelijaControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @MockitoBean
   var mockUserService: UserService = _
@@ -47,7 +48,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
-    val expectedResult =
+    val expectedResult = {
       """[
         |  {
         |    "esittelijaOid": "1.2.246.562.24.00000000001",
@@ -60,6 +61,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
         |    "sukunimi": "Jakomäki"
         |  }
         |]""".stripMargin
+    }
 
     when(mockUserService.haeEsittelijat).thenReturn(
       Seq(
@@ -76,4 +78,5 @@ class EsittelijaControllerTest extends IntegrationTestBase {
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(content().json(expectedResult))
   }
+
 }

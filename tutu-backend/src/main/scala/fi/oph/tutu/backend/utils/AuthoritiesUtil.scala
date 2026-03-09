@@ -8,6 +8,7 @@ import scala.jdk.CollectionConverters.*
 import scala.util.matching.Regex
 
 object AuthoritiesUtil {
+
   def getTutuAuthorities(
     allAuthorities: util.Collection[? <: GrantedAuthority]
   ): List[String] = {
@@ -17,6 +18,8 @@ object AuthoritiesUtil {
       .flatMap(role => tutuAuthoritiesRegex.findFirstIn(role.getAuthority))
   }
 
-  def hasTutuAuthorities(allAuthorities: List[String]): Boolean =
+  def hasTutuAuthorities(allAuthorities: List[String]): Boolean = {
     allAuthorities.exists(role => role.startsWith(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  }
+
 }

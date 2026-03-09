@@ -178,4 +178,5 @@ class KayttooikeusService(
         Right(eiPalvelukayttajat)
     }
   }
+
 }

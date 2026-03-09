@@ -11,12 +11,14 @@ enum ValmistumisenVahvistusVastaus {
 }
 
 object ValmistumisenVahvistusVastaus {
+
   def fromString(value: String): ValmistumisenVahvistusVastaus = value match {
     case "Myonteinen"  => Myonteinen
     case "Kielteinen"  => Kielteinen
     case "EiVastausta" => EiVastausta
     case _             => null
   }
+
 }
 
 case class ValmistumisenVahvistus(
@@ -26,6 +28,7 @@ case class ValmistumisenVahvistus(
   valmistumisenVahvistusVastaus: Option[ValmistumisenVahvistusVastaus],
   valmistumisenVahvistusLisatieto: Option[String]
 ) {
+
   def this(
     partialValmistumisenVahvistus: Option[ValmistumisenVahvistus]
   ) = this(
@@ -45,20 +48,29 @@ case class ValmistumisenVahvistus(
   )
 
   @JsonIgnore
-  def getPyyntoLahetettyIfVahvistusTrue: Option[LocalDateTime] =
+  def getPyyntoLahetettyIfVahvistusTrue: Option[LocalDateTime] = {
     if (valmistumisenVahvistus) valmistumisenVahvistusPyyntoLahetetty else None
+  }
+
   @JsonIgnore
-  def getSaatuIfVahvistusTrue: Option[LocalDateTime] =
+  def getSaatuIfVahvistusTrue: Option[LocalDateTime] = {
     if (valmistumisenVahvistus) valmistumisenVahvistusSaatu else None
+  }
+
   @JsonIgnore
-  def getVastausIfVahvistusTrue: Option[ValmistumisenVahvistusVastaus] =
+  def getVastausIfVahvistusTrue: Option[ValmistumisenVahvistusVastaus] = {
     if (valmistumisenVahvistus) valmistumisenVahvistusVastaus else None
+  }
+
   @JsonIgnore
-  def getLisatietoIfVahvistusTrue: Option[String] =
+  def getLisatietoIfVahvistusTrue: Option[String] = {
     if (valmistumisenVahvistus) valmistumisenVahvistusLisatieto else None
+  }
+
 }
 
 class ValmistumisenVahvistusDeserializer extends JsonDeserializer[ValmistumisenVahvistus] {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): ValmistumisenVahvistus = {
     if (p.getCurrentToken == JsonToken.VALUE_NULL) {
       ValmistumisenVahvistus(
@@ -105,4 +117,5 @@ class ValmistumisenVahvistusDeserializer extends JsonDeserializer[ValmistumisenV
       )
     }
   }
+
 }

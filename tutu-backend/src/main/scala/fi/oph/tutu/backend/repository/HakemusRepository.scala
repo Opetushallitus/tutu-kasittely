@@ -15,6 +15,7 @@ import scala.util.{Failure, Success, Try}
 @Component
 @Repository
 class HakemusRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
@@ -24,8 +25,8 @@ class HakemusRepository extends BaseResultHandlers {
   implicit val getHakemusOidResult: GetResult[HakemusOid] =
     GetResult(r => HakemusOid(r.nextString()))
 
-  implicit val getHakemusResult: GetResult[DbHakemus] =
-    GetResult(r =>
+  implicit val getHakemusResult: GetResult[DbHakemus] = {
+    GetResult { r =>
       DbHakemus(
         id = UUID.fromString(r.nextString()),
         hakemusOid = HakemusOid(r.nextString()),
@@ -51,10 +52,11 @@ class HakemusRepository extends BaseResultHandlers {
         hakijaEtunimet = r.nextStringOption(),
         hakijaSukunimi = r.nextStringOption()
       )
-    )
+    }
+  }
 
-  implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
-    GetResult(r =>
+  implicit val getHakemusListItemResult: GetResult[HakemusListItem] = {
+    GetResult { r =>
       HakemusListItem(
         hakija = r.nextStringOption().getOrElse(""),
         saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
@@ -72,7 +74,8 @@ class HakemusRepository extends BaseResultHandlers {
         viimeinenAsiakirjaHakijalta = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         onkoPeruutettu = Option(r.nextBoolean())
       )
-    )
+    }
+  }
 
   /**
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
@@ -96,7 +99,7 @@ class HakemusRepository extends BaseResultHandlers {
     hakijaEtunimet: Option[String] = None,
     hakijaSukunimi: Option[String] = None,
     viimeisinTaydennyspyyntoPvm: Option[java.sql.Timestamp] = None
-  ): DBIO[UUID] =
+  ): DBIO[UUID] = {
     val hakemusOidString                                   = hakemusOid.toString
     val esittelijaIdOrNull                                 = esittelijaId.map(_.toString).orNull
     val lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull =
@@ -122,6 +125,7 @@ class HakemusRepository extends BaseResultHandlers {
         $viimeisinTaydennyspyyntoPvmOrNull)
       RETURNING id
     """.as[UUID].head
+  }
 
   /**
    * Tallentaa uuden hakemuksen
@@ -140,8 +144,8 @@ class HakemusRepository extends BaseResultHandlers {
     lopullinenPaatosVastaavaEhdollinenAsiatunnus: Option[String],
     lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: Option[String],
     luoja: String
-  ): UUID =
-    try
+  ): UUID = {
+    try {
       db.run(
         tallennaHakemusAction(
           hakemusOid,
@@ -155,7 +159,7 @@ class HakemusRepository extends BaseResultHandlers {
         ),
         "tallenna_hakemus"
       )
-    catch {
+    } catch {
       case e: Exception =>
         LOG.error(s"Hakemuksen tallennus epäonnistui: $e")
         throw new RuntimeException(
@@ -163,6 +167,7 @@ class HakemusRepository extends BaseResultHandlers {
           e
         )
     }
+  }
 
   /**
    * Palauttaa listan hakemuksista hakemusOid-listan pohjalta
@@ -308,7 +313,7 @@ class HakemusRepository extends BaseResultHandlers {
 
       if (hakemusKoskee.nonEmpty) {
         val hakemusKoskeeList = hakemusKoskee.map(hk => s"$hk").mkString(", ")
-        whereClauses += s"h.hakemus_koskee IN (${hakemusKoskeeList})"
+        whereClauses += s"h.hakemus_koskee IN ($hakemusKoskeeList)"
       }
 
       if (vaiheet.nonEmpty) {
@@ -380,7 +385,7 @@ class HakemusRepository extends BaseResultHandlers {
     val hakijaEtunimetOpt           = hakemus.hakijaEtunimet.orNull
     val hakijaSukunimiOpt           = hakemus.hakijaSukunimi.orNull
 
-    try
+    try {
       db.run(
         sql"""
         UPDATE hakemus
@@ -410,7 +415,7 @@ class HakemusRepository extends BaseResultHandlers {
       """.as[HakemusOid].head,
         "paivita_taysi_hakemus"
       )
-    catch {
+    } catch {
       case e: Exception =>
         LOG.error(s"Hakemuksen täysi päivitys epäonnistui: $e")
         throw new RuntimeException(
@@ -420,12 +425,13 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] =
+  private def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): DBIO[Int] = {
     sqlu"""
       UPDATE hakemus
       SET asiatunnus = $asiatunnus, muokkaaja = $muokkaaja
       WHERE hakemus_oid = ${hakemusOid.toString}
     """
+  }
 
   def suoritaPaivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
     Try {
@@ -438,7 +444,7 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  def onkoHakemusOlemassa(hakemusOid: HakemusOid): Boolean =
+  def onkoHakemusOlemassa(hakemusOid: HakemusOid): Boolean = {
     try {
       db.run(
         sql"""SELECT EXISTS (SELECT 1 FROM hakemus WHERE hakemus_oid = ${hakemusOid.s}) """.as[Boolean].head,
@@ -451,4 +457,6 @@ class HakemusRepository extends BaseResultHandlers {
           e
         )
     }
+  }
+
 }

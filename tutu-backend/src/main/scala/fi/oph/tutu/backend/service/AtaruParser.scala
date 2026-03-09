@@ -60,7 +60,7 @@ def traverseContent(
   handleItem: LomakeContentItem => SisaltoItem
 ): Seq[SisaltoItem] = {
   // map content
-  val newItems = content.flatMap((item: LomakeContentItem) => {
+  val newItems = content.flatMap { (item: LomakeContentItem) =>
     // handle this
     val newItem = handleItem(item)
 
@@ -79,7 +79,7 @@ def traverseContent(
     } else {
       Some(resultItem)
     }
-  })
+  }
 
   newItems
 }
@@ -90,7 +90,7 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
   val answer = answers.find(a => a.key == item.id)
   val values = extractValues(answer)
 
-  val valinnat = values.map((value: String) => {
+  val valinnat = values.map { (value: String) =>
     val emptyOption = Valinta(
       label = Map(
         Kieli.fi -> value,
@@ -106,15 +106,15 @@ def transformItem(answers: Seq[Answer], item: LomakeContentItem): SisaltoItem = 
         emptyOption
       )
     valinta
-  })
+  }
 
-  val sisaltoValues = valinnat.map((valinta: Valinta) => {
+  val sisaltoValues = valinnat.map { (valinta: Valinta) =>
     SisaltoValue(
       valinta.label,
       valinta.value,
       traverseContent(valinta.followups, item => transformItem(answers, item))
     )
-  })
+  }
 
   SisaltoItem(
     key = item.id,
@@ -144,6 +144,7 @@ def extractValues(answerMaybe: Option[Answer]): Seq[String] = {
 @Component
 @Service
 class AtaruHakemusParser(koodistoService: KoodistoService) {
+
   private def findRequiredSingleStringAnswer(key: String, allAnswers: Seq[Answer]): String = {
     findSingleStringAnswer(key, allAnswers).getOrElse("")
   }
@@ -215,34 +216,37 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   private def getAttachementKeys(contentItems: Seq[LomakeContentItem]): Seq[String] = {
-    contentItems.flatMap(contentItem => {
+    contentItems.flatMap { contentItem =>
       val keysOfChildren    = getAttachementKeys(contentItem.children)
       val keysFromFollowups = contentItem.options.flatMap(o => getAttachementKeys(o.followups))
-      if (contentItem.fieldType == "attachment")
+      if (contentItem.fieldType == "attachment") {
         keysOfChildren ++ keysFromFollowups :+ contentItem.id
-      else
+      } else {
         keysOfChildren ++ keysFromFollowups
-    })
+      }
+    }
   }
 
   def parseLiitteidenTilat(ataruHakemus: AtaruHakemus, ataruLomake: AtaruLomake): Seq[AttachmentReview] = {
     val allAttachmentKeys = getAttachementKeys(ataruLomake.content)
     // TODO Ylemmän ehdon voi poistaa kunhan ataru ja tutu ovat ajantasalla
-    val tilat =
-      if (ataruHakemus.`application-hakukohde-attachment-reviews`.nonEmpty)
+    val tilat = {
+      if (ataruHakemus.`application-hakukohde-attachment-reviews`.nonEmpty) {
         ataruHakemus.`application-hakukohde-attachment-reviews`
-      else
-        ataruHakemus.`latest-attachment-reviews`.map(r =>
+      } else {
+        ataruHakemus.`latest-attachment-reviews`.map { r =>
           AttachmentReview(
             r.attachment,
             r.state,
             r.hakukohde,
             Some(toLocalDateTime(r.updateTime))
           )
-        )
-    allAttachmentKeys.map(key => {
+        }
+      }
+    }
+    allAttachmentKeys.map { key =>
       tilat.find(tila => tila.attachment == key).getOrElse(AttachmentReview(key, "not-checked", "form", None))
-    })
+    }
   }
 
   def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {
@@ -272,8 +276,9 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         },
         opinnaytetyo =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
-        harjoittelu =
+        harjoittelu = {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
+        }
       )
     )
     val isTutkinto2Defined = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers).isDefined
@@ -303,8 +308,9 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         },
         opinnaytetyo =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
-        harjoittelu =
+        harjoittelu = {
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
+        }
       )
     }
 
@@ -335,8 +341,9 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
               },
           opinnaytetyo =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPINNAYTETYO, answers).flatMap(ataruAnswerToBoolean),
-          harjoittelu =
+          harjoittelu = {
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_HARJOITTELU, answers).flatMap(ataruAnswerToBoolean)
+          }
         )
     }
 
@@ -367,11 +374,13 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
       .map(_.toInt)
       .contains(HAKEMUKSEN_PERUUTUS_VAHVISTETTU)
   }
+
 }
 
 @Component
 @Service
 class AtaruLomakeParser() {
+
   def parsePaatosTietoOptions(lomake: AtaruLomake): PaatosTietoOptions = {
     val kelpoisuusOptions = findOptionsByAtaruKysymysId(
       Constants.ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS,
@@ -486,8 +495,8 @@ class AtaruLomakeParser() {
           PaatosTietoOption(
             label = Some(option.label),
             value = Some(optionPathVal),
-            children = option.followups.flatMap { followup =>
-              collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
+            children = {
+              option.followups.flatMap(followup => collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal))
             }
           )
         }
@@ -504,8 +513,8 @@ class AtaruLomakeParser() {
       PaatosTietoOption(
         label = Some(option.label),
         value = Some(optionPathVal),
-        children = option.followups.flatMap { followup =>
-          collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
+        children = {
+          option.followups.flatMap(followup => collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal))
         }
       )
     }
@@ -514,4 +523,5 @@ class AtaruLomakeParser() {
   private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
     item.id == kysymysId.definedId || item.id == kysymysId.generatedId
   }
+
 }

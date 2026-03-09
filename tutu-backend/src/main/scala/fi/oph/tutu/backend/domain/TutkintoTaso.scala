@@ -4,6 +4,7 @@ enum TutkintoTaso:
   case AlempiKorkeakoulu, YlempiKorkeakoulu
 
 object TutkintoTaso:
+
   def optionFromString(value: String): Option[TutkintoTaso] = value match
     case "AlempiKorkeakoulu"              => Some(AlempiKorkeakoulu)
     case "YlempiKorkeakoulu"              => Some(YlempiKorkeakoulu)

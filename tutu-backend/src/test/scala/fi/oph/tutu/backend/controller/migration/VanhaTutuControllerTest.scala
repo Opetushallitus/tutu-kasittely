@@ -38,7 +38,8 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = _
+
+  private var mockMvc: MockMvc = _
 
   @Autowired
   var vanhaTutuRepository: VanhaTutuRepository = _

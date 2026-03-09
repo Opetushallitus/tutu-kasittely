@@ -35,7 +35,7 @@ class HallintoOikeusService(
       hallintoOikeusRepository.findAll()
     } catch {
       case e: Exception =>
-        LOG.error(s"Kaikkien hallinto-oikeuksien haku epäonnistui: ${e}")
+        LOG.error(s"Kaikkien hallinto-oikeuksien haku epäonnistui: $e")
         Seq.empty
     }
   }

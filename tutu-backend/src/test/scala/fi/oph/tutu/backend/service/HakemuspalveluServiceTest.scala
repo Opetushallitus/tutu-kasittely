@@ -6,6 +6,7 @@ import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.{Mock, MockitoAnnotations}
 
 class HakemuspalveluServiceTest extends UnitTestBase {
+
   @Mock
   var httpService: HttpService = _
 
@@ -36,4 +37,5 @@ class HakemuspalveluServiceTest extends UnitTestBase {
     fileIdsWithTimestamp1.foreach(id => assertEquals("2025-06-17T13:02:20.473", muutosHistoria(id)))
     fileIdsWithTimestamp2.foreach(id => assertEquals("2025-10-16T09:33:02.234580", muutosHistoria(id)))
   }
+
 }

@@ -6,15 +6,18 @@ import org.springframework.context.annotation.{Bean, Configuration, Profile}
 
 @Configuration
 class DokumenttipalveluConfig:
+
   @Bean
   @Profile(Array("prod"))
   def prodDokumenttipalvelu(
     @Value("${aws.region}") region: String,
     @Value("${aws.bucket.name}") bucketName: String
-  ): Dokumenttipalvelu =
+  ): Dokumenttipalvelu = {
     Dokumenttipalvelu(region, bucketName)
+  }
 
   @Bean
   @Profile(Array("dev", "test"))
-  def mockDokumenttipalvelu(): Dokumenttipalvelu =
+  def mockDokumenttipalvelu(): Dokumenttipalvelu = {
     new MockDokumenttipalvelu
+  }

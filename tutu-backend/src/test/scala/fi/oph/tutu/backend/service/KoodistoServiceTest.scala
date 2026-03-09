@@ -10,6 +10,7 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 
 class KoodistoServiceTest extends UnitTestBase {
+
   @Mock
   var httpService: HttpService = _
 
@@ -51,4 +52,5 @@ class KoodistoServiceTest extends UnitTestBase {
       maatJaValtiot.last.nimi
     )
   }
+
 }

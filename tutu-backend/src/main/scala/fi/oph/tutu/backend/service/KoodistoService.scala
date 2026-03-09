@@ -85,8 +85,9 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
 
   @CacheEvict(value = Array("koodisto", "koodistoRelaatiot"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyKoodistoCache(): Unit =
+  def emptyKoodistoCache(): Unit = {
     LOG.info("Emptying koodisto-cache and koodistoRelaatiot-cache")
+  }
 
   @CachePut(Array("koodisto"))
   def updateCached(koodisto: String, value: String): Unit = {
@@ -157,4 +158,5 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
 
     korkeakoulut
   }
+
 }

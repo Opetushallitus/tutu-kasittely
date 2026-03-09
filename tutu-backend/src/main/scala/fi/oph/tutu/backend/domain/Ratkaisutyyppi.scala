@@ -4,6 +4,7 @@ enum Ratkaisutyyppi:
   case Paatos, PeruutusTaiRaukeaminen, Oikaisu, JatetaanTutkimatta, Siirto
 
 object Ratkaisutyyppi:
+
   def optionFromString(value: String): Option[Ratkaisutyyppi] = value match
     case "Paatos"                         => Some(Paatos)
     case "PeruutusTaiRaukeaminen"         => Some(PeruutusTaiRaukeaminen)

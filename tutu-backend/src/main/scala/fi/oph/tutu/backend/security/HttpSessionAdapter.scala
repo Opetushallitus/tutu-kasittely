@@ -59,4 +59,5 @@ class HttpSessionAdapter(
   @Override
   def isNew(): Boolean =
     false;
+
 }

@@ -274,4 +274,5 @@ class TutkintoController(
         errorMessageMapper.mapErrorMessage(e)
     }
   }
+
 }

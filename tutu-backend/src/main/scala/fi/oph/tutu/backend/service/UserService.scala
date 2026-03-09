@@ -24,10 +24,11 @@ class UserService(
       val username      = principal.getUsername
       val asiointikieli = onrService.haeAsiointikieli(username) match {
         case Left(e) =>
-          if (throwOnrException)
+          if (throwOnrException) {
             throw e
-          else
+          } else {
             None
+          }
         case Right(v) => Some(v)
       }
 
@@ -42,13 +43,14 @@ class UserService(
   def haeEsittelijat: Seq[Esittelija] = {
     esittelijaRepository
       .haeKaikkiEsittelijat()
-      .map(e =>
+      .map { e =>
         Esittelija(
           esittelijaOid = e.esittelijaOid.toString,
           etunimi = e.kutsumanimi.getOrElse(""),
           sukunimi = e.sukunimi.getOrElse(""),
           id = Some(e.esittelijaId)
         )
-      )
+      }
   }
+
 }

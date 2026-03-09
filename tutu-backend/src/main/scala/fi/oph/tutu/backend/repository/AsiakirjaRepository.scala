@@ -27,14 +27,15 @@ import scala.util.{Failure, Success}
 @Component
 @Repository
 class AsiakirjaRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[AsiakirjaRepository])
 
-  implicit val getAsiakirjaResult: GetResult[DbAsiakirja] =
-    GetResult(r =>
+  implicit val getAsiakirjaResult: GetResult[DbAsiakirja] = {
+    GetResult { r =>
       DbAsiakirja(
         id = UUID.fromString(r.nextString()),
         allekirjoituksetTarkistettu = r.nextBoolean(),
@@ -57,27 +58,30 @@ class AsiakirjaRepository extends BaseResultHandlers {
         huomiotMuistioon = r.nextStringOption(),
         esittelijanHuomioita = r.nextStringOption()
       )
-    )
+    }
+  }
 
-  implicit val getPyydettavaAsiakirjaResult: GetResult[PyydettavaAsiakirja] =
-    GetResult(r =>
+  implicit val getPyydettavaAsiakirjaResult: GetResult[PyydettavaAsiakirja] = {
+    GetResult { r =>
       PyydettavaAsiakirja(
         Option(UUID.fromString(r.nextString())),
         r.nextString()
       )
-    )
+    }
+  }
 
-  implicit val getAsiakirjamalliTutkinnostaResult: GetResult[AsiakirjamalliTutkinnosta] =
-    GetResult(r =>
+  implicit val getAsiakirjamalliTutkinnostaResult: GetResult[AsiakirjamalliTutkinnosta] = {
+    GetResult { r =>
       AsiakirjamalliTutkinnosta(
         AsiakirjamalliLahde.valueOf(r.nextString()),
         r.nextBoolean(),
         Option(r.nextString())
       )
-    )
+    }
+  }
 
-  implicit val getKasittelyVaiheTiedotResult: GetResult[KasittelyVaiheTiedot] =
-    GetResult(r =>
+  implicit val getKasittelyVaiheTiedotResult: GetResult[KasittelyVaiheTiedot] = {
+    GetResult { r =>
       KasittelyVaiheTiedot(
         selvityksetSaatu = r.nextBoolean(),
         vahvistusPyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
@@ -88,7 +92,8 @@ class AsiakirjaRepository extends BaseResultHandlers {
         paatosHyvaksymispaiva = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         paatosLahetyspaiva = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
-    )
+    }
+  }
 
   /**
    * Hakee vain ne tiedot, joita tarvitaan käsittelyvaiheen ratkaisemiseen.
@@ -257,7 +262,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
   }
 
   def tallennaUudetAsiakirjatiedot(asiakirja: Asiakirja, luoja: String): UUID = {
-    try
+    try {
       val asiakirjaId = db.run(
         tallennaUudetAsiakirjatiedotAction(asiakirja, luoja),
         "tallenna_uudet_asiakirjatiedot"
@@ -291,7 +296,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
       }
 
       asiakirjaId
-    catch {
+    } catch {
       case e: Exception =>
         LOG.error(s"Asiakirjatietojen tallennus epäonnistui: $e")
         throw new RuntimeException(
@@ -332,11 +337,12 @@ class AsiakirjaRepository extends BaseResultHandlers {
     asiakirjaId: UUID,
     asiakirjaTyyppi: String,
     virkailijaOid: UserOid
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
           INSERT INTO pyydettava_asiakirja (asiakirja_id, asiakirja_tyyppi, luoja)
           VALUES (${asiakirjaId.toString}::uuid, $asiakirjaTyyppi::asiakirjan_tyyppi, ${virkailijaOid.toString})
         """
+  }
 
   /**
    * Päivittää pyydettävän asiakirjan
@@ -352,12 +358,13 @@ class AsiakirjaRepository extends BaseResultHandlers {
     id: UUID,
     asiakirjaTyyppi: String,
     virkailijaOid: UserOid
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
             UPDATE pyydettava_asiakirja
             SET asiakirja_tyyppi = $asiakirjaTyyppi::asiakirjan_tyyppi, muokkaaja = ${virkailijaOid.toString}
             WHERE id = ${id.toString}::uuid
           """
+  }
 
   /**
    * Poistaa pyydettävän asiakirjan
@@ -367,11 +374,12 @@ class AsiakirjaRepository extends BaseResultHandlers {
    */
   private def poistaPyydettavaAsiakirja(
     id: UUID
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
           DELETE FROM pyydettava_asiakirja
           WHERE id = ${id.toString}::uuid
         """
+  }
 
   /**
    * Hakee hakemuksen pyydettävät asiakirjat
@@ -423,7 +431,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
     asiakirjaId: UUID,
     asiakirjamalli: AsiakirjamalliTutkinnosta,
     virkailijaOid: UserOid
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       INSERT INTO asiakirjamalli_tutkinnosta (asiakirja_id, lahde, vastaavuus, kuvaus, luoja)
       VALUES (
@@ -434,12 +442,13 @@ class AsiakirjaRepository extends BaseResultHandlers {
         ${virkailijaOid.toString}
       )
     """
+  }
 
   private def muokkaaAsiakirjamallia(
     asiakirjaId: UUID,
     asiakirjamalli: AsiakirjamalliTutkinnosta,
     virkailijaOid: UserOid
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       UPDATE asiakirjamalli_tutkinnosta
       SET vastaavuus = ${asiakirjamalli.vastaavuus},
@@ -448,13 +457,15 @@ class AsiakirjaRepository extends BaseResultHandlers {
       WHERE asiakirja_id = ${asiakirjaId.toString}::uuid
         AND lahde = ${asiakirjamalli.lahde.toString}::asiakirja_malli_lahde
     """
+  }
 
-  private def poistaAsiakirjamalli(asiakirjaId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] =
+  private def poistaAsiakirjamalli(asiakirjaId: UUID, lahde: AsiakirjamalliLahde): DBIO[Int] = {
     sqlu"""
       DELETE FROM asiakirjamalli_tutkinnosta
       WHERE asiakirja_id = ${asiakirjaId.toString}::uuid
         AND lahde = ${lahde.toString}::asiakirja_malli_lahde
     """
+  }
 
   /**
    * Hakee hakemuksen asiakirjamallit tutkinnosta
@@ -504,12 +515,13 @@ class AsiakirjaRepository extends BaseResultHandlers {
   ): UUID = {
     try {
       // Hae nykyiset tiedot nested collection -muutosten selvittämiseksi
-      val (currentPyydettavatAsiakirjat, currentAsiakirjamallitTutkinnoista) =
+      val (currentPyydettavatAsiakirjat, currentAsiakirjamallitTutkinnoista) = {
         haeKaikkiAsiakirjaTiedot(Some(asiakirjaId)) match {
           case Some((_, pyydettavat, mallit)) => (pyydettavat, mallit)
           case None                           =>
             throw new RuntimeException(s"Asiakirjaa ei löydy id:llä $asiakirjaId")
         }
+      }
 
       // Päivitä pääasiakirjan kentät suoraan ilman mergeä
       val valmistumisenVahvistusVastausOrNull = asiakirja.valmistumisenVahvistus.valmistumisenVahvistusVastaus
@@ -586,4 +598,5 @@ class AsiakirjaRepository extends BaseResultHandlers {
         )
     }
   }
+
 }

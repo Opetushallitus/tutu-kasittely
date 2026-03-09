@@ -4,6 +4,7 @@ enum Viestityyppi:
   case taydennyspyynto, ennakkotieto, muu
 
 object Viestityyppi:
+
   def optionFromString(value: String): Option[Viestityyppi] = value match {
     case "taydennyspyynto"                => Some(taydennyspyynto)
     case "ennakkotieto"                   => Some(ennakkotieto)

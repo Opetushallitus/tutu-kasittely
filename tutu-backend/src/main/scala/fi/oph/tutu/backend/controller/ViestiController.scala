@@ -175,8 +175,9 @@ class ViestiController(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestBody viestiBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
-  ): ResponseEntity[Any] =
+  ): ResponseEntity[Any] = {
     tallennaViesti(hakemusOid, viestiBytes, request)
+  }
 
   private def tallennaViesti(
     hakemusOid: String,
@@ -261,8 +262,9 @@ class ViestiController(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestBody viestiBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
-  ): ResponseEntity[Any] =
+  ): ResponseEntity[Any] = {
     tallennaViesti(hakemusOid, viestiBytes, request, true)
+  }
 
   @DeleteMapping(path = Array("viesti/{id}"))
   @Operation(
@@ -311,4 +313,5 @@ class ViestiController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
 }

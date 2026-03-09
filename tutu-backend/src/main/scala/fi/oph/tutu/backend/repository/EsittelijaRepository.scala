@@ -16,21 +16,23 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component
 @Repository
 class EsittelijaRepository {
+
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[EsittelijaRepository])
 
-  implicit val getEsittelijaResult: GetResult[DbEsittelija] =
-    GetResult(r =>
+  implicit val getEsittelijaResult: GetResult[DbEsittelija] = {
+    GetResult { r =>
       DbEsittelija(
         esittelijaId = UUID.fromString(r.nextString()),
         esittelijaOid = UserOid(r.nextString()),
         kutsumanimi = r.nextStringOption(),
         sukunimi = r.nextStringOption()
       )
-    )
+    }
+  }
 
   /**
    * Hakee esittelijän maakoodin perusteella
@@ -98,7 +100,7 @@ class EsittelijaRepository {
     muokkaajaTaiLuoja: String,
     kutsumanimi: String | Null = null,
     sukunimi: String | Null = null
-  ): Option[DbEsittelija] =
+  ): Option[DbEsittelija] = {
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
@@ -115,6 +117,7 @@ class EsittelijaRepository {
         LOG.warn(s"Esittelijän insert epäonnistui oidilla: ${esittelijaOid.toString}", e)
         None
     }
+  }
 
   def haeKaikkiEsitteilijaOidit(): Seq[String] = {
     try {
@@ -166,16 +169,18 @@ class EsittelijaRepository {
     }
   }
 
-  private def syncInsert(oid: String, muokkaajaTaiLuoja: String): DBIO[Int] =
+  private def syncInsert(oid: String, muokkaajaTaiLuoja: String): DBIO[Int] = {
     sqlu"""
       INSERT INTO esittelija (esittelija_oid, luoja)
       VALUES ($oid, $muokkaajaTaiLuoja)
     """
+  }
 
-  private def syncDelete(oid: String): DBIO[Int] =
+  private def syncDelete(oid: String): DBIO[Int] = {
     sqlu"""
       DELETE FROM esittelija WHERE esittelija_oid = $oid
     """
+  }
 
   def syncFromKayttooikeusService(esittelijaOids: Seq[String], muokkaajaTaiLuoja: String): Unit = {
     val existing = haeKaikkiEsitteilijaOidit().toSet
@@ -205,4 +210,5 @@ class EsittelijaRepository {
         throw new RuntimeException(s"Esittelija sync failed: ${e.getMessage}", e)
     }
   }
+
 }

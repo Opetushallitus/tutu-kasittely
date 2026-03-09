@@ -29,8 +29,9 @@ object KayttooikeusFixture:
   val palveluServiceProviderJson: String = mapper.writeValueAsString(palveluServiceProvider)
 
   // Helper for custom kayttajatiedot
-  def kayttajatiedotJson(username: String, kayttajaTyyppi: String): String =
+  def kayttajatiedotJson(username: String, kayttajaTyyppi: String): String = {
     mapper.writeValueAsString(Kayttajatiedot(username, None, kayttajaTyyppi))
+  }
 
   // Kayttooikeusryhma data structures
   case class KayttooikeusRyhma(id: Int, nimi: String)
@@ -41,5 +42,6 @@ object KayttooikeusFixture:
   val kayttooikeusRyhmatJson: String =
     mapper.writeValueAsString(Seq(tutuEsittelijaRyhma))
 
-  def henkilotJson(oids: String*): String =
+  def henkilotJson(oids: String*): String = {
     mapper.writeValueAsString(PersonOids(oids.toSeq))
+  }

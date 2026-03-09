@@ -21,14 +21,19 @@ import java.util.{Collections, UUID}
 import scala.util.{Failure, Success}
 
 class MigrationServiceTest extends UnitTestBase {
+
   @Mock
   var dokumenttipalvelu: Dokumenttipalvelu = _
+
   @Mock
   var vanhaTutuRepository: VanhaTutuRepository = _
+
   @Mock
   var vanhaTutuMigrationRepository: VanhaTutuMigrationRepository = _
+
   @Mock
   var chunkProcessor: ChunkProcessor = _
+
   @Mock
   var xmlChunker: XmlChunker = _
 
@@ -348,4 +353,5 @@ class MigrationServiceTest extends UnitTestBase {
       verify(chunkProcessor, times(1)).cleanupProcessedChunks()
     }
   }
+
 }

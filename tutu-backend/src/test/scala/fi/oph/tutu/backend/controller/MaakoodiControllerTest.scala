@@ -32,7 +32,8 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @MockitoBean
   var auditLog: AuditLog = _
@@ -198,4 +199,5 @@ class MaakoodiControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isNotFound)
   }
+
 }

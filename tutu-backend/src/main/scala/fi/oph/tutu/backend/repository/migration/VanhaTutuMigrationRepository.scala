@@ -21,13 +21,14 @@ import scala.util.{Failure, Try}
 @Component
 @Repository
 class VanhaTutuMigrationRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
   final private val DB_TIMEOUT = 30.seconds
   val LOG: Logger              = LoggerFactory.getLogger(classOf[VanhaTutuMigrationRepository])
 
-  implicit val getVanhaTutuMigrationChunkResult: GetResult[VanhaTutuMigrationChunk] = GetResult(r =>
+  implicit val getVanhaTutuMigrationChunkResult: GetResult[VanhaTutuMigrationChunk] = GetResult { r =>
     VanhaTutuMigrationChunk(
       id = UUID.fromString(r.nextString()),
       chunkIndex = r.nextInt(),
@@ -37,7 +38,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       createdAt = r.nextTimestamp().toLocalDateTime,
       processedAt = r.nextTimestampOption().map(_.toLocalDateTime)
     )
-  )
+  }
 
   def createChunk(chunkIndex: Int, totalChunks: Int, xmlChunk: String): Try[UUID] = Try {
     val query = sql"""
@@ -47,7 +48,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
     """.as[UUID].head
 
     db.run(query, "vanha-tutu-migration-create-chunk")
-  } recoverWith { case e: Exception =>
+  }.recoverWith { case e: Exception =>
     LOG.error(s"Chunk tallennus epäonnistui: ${e.getMessage}", e)
     Failure(new RuntimeException(s"Chunk tallennus epäonnistui: ${e.getMessage}", e))
   }
@@ -73,7 +74,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-get-single-unprocessed").headOption
     } catch {
       case e: Exception =>
-        LOG.error(s"Yksittäisen käsittelemättömän chunkin haku epäonnistui: ${e}")
+        LOG.error(s"Yksittäisen käsittelemättömän chunkin haku epäonnistui: $e")
         throw new RuntimeException(
           s"Yksittäisen käsittelemättömän chunkin haku epäonnistui: ${e.getMessage}",
           e
@@ -92,7 +93,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-mark-processed")
     } catch {
       case e: Exception =>
-        LOG.error(s"Vanha tutu migraation chunk merkitseminen käsitellyksi epäonnistui id:llä $chunkId: ${e}")
+        LOG.error(s"Vanha tutu migraation chunk merkitseminen käsitellyksi epäonnistui id:llä $chunkId: $e")
         throw new RuntimeException(
           s"Vanha tutu migraation chunk merkitseminen käsitellyksi epäonnistui: ${e.getMessage}",
           e
@@ -110,7 +111,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-delete-processed")
     } catch {
       case e: Exception =>
-        LOG.error(s"Käsiteltyjen vanha tutu migraation chunk poisto epäonnistui: ${e}")
+        LOG.error(s"Käsiteltyjen vanha tutu migraation chunk poisto epäonnistui: $e")
         throw new RuntimeException(
           s"Käsiteltyjen vanha tutu migraation chunk poisto epäonnistui: ${e.getMessage}",
           e
@@ -127,7 +128,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-delete-all")
     } catch {
       case e: Exception =>
-        LOG.error(s"Kaikkien vanha tutu migraation chunk poisto epäonnistui: ${e}")
+        LOG.error(s"Kaikkien vanha tutu migraation chunk poisto epäonnistui: $e")
         throw new RuntimeException(
           s"Kaikkien vanha tutu migraation chunk poisto epäonnistui: ${e.getMessage}",
           e
@@ -144,7 +145,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-count")
     } catch {
       case e: Exception =>
-        LOG.error(s"Vanha tutu migraation chunk laskenta epäonnistui: ${e}")
+        LOG.error(s"Vanha tutu migraation chunk laskenta epäonnistui: $e")
         throw new RuntimeException(
           s"Vanha tutu migraation chunk laskenta epäonnistui: ${e.getMessage}",
           e
@@ -161,7 +162,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-unprocessed-count")
     } catch {
       case e: Exception =>
-        LOG.error(s"Käsittelemättömien vanha tutu migraation chunk laskenta epäonnistui: ${e}")
+        LOG.error(s"Käsittelemättömien vanha tutu migraation chunk laskenta epäonnistui: $e")
         throw new RuntimeException(
           s"Käsittelemättömien vanha tutu migraation chunk laskenta epäonnistui: ${e.getMessage}",
           e
@@ -180,11 +181,12 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
       db.run(query, "vanha-tutu-migration-update-total-chunks")
     } catch {
       case e: Exception =>
-        LOG.error(s"Vanha tutu migraation chunk total_chunks päivitys epäonnistui: ${e}")
+        LOG.error(s"Vanha tutu migraation chunk total_chunks päivitys epäonnistui: $e")
         throw new RuntimeException(
           s"Vanha tutu migraation chunk total_chunks päivitys epäonnistui: ${e.getMessage}",
           e
         )
     }
   }
+
 }

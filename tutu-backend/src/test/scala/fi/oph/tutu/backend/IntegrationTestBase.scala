@@ -41,6 +41,7 @@ import java.util.{Random, UUID}
 import scala.io.Source
 
 object IntegrationTestBase extends Object {
+
   private val postgresContainer = new PostgreSQLContainer("postgres:16.8")
     .withDatabaseName("tutu")
     .withUsername("app")
@@ -61,6 +62,7 @@ object IntegrationTestBase extends Object {
       () => postgresContainer.getPassword
     )
   }
+
 }
 
 @SpringBootTest(
@@ -70,12 +72,14 @@ object IntegrationTestBase extends Object {
 )
 @TestInstance(Lifecycle.PER_CLASS)
 class IntegrationTestBase {
+
   def loadJson(fileName: String): String = {
     val stream = Option(getClass.getClassLoader.getResourceAsStream(fileName))
       .getOrElse(throw new FileNotFoundException(s"$fileName not found in classpath"))
 
     Source.fromInputStream(stream).mkString
   }
+
   @Autowired
   private val flyway: Flyway = null
 
@@ -116,8 +120,10 @@ class IntegrationTestBase {
 
   @MockitoBean
   var kayttooikeusService: KayttooikeusService = _
+
   @MockitoBean
   var hakemuspalveluService: HakemuspalveluService = _
+
   @MockitoBean
   var ataruHakemusParser: AtaruHakemusParser = _
 
@@ -152,9 +158,7 @@ class IntegrationTestBase {
 
       val tables        = Iterator.continually(rs).takeWhile(_.next()).map(_.getString(1)).toList
       val emptiedTables = tables.filterNot(PROTECTED_TABLES.contains(_))
-      emptiedTables.foreach { t =>
-        stmt.execute(s"TRUNCATE TABLE $t CASCADE;")
-      }
+      emptiedTables.foreach(t => stmt.execute(s"TRUNCATE TABLE $t CASCADE;"))
 
       stmt.close()
       conn.close()
@@ -243,4 +247,5 @@ class IntegrationTestBase {
     )
     asiakirjaId
   }
+
 }

@@ -34,7 +34,8 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+
+  private var mockMvc: MockMvc = null
 
   @MockitoBean
   var mockOnrService: OnrService = _
@@ -201,11 +202,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6666.json")))
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
-    val requestJson =
+    val requestJson = {
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006666",
           "hakemusKoskee": 1
           }"""
+    }
 
     mockMvc
       .perform(
@@ -249,11 +251,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
       .thenReturn(Right(loadJson("ataruHakemus6665.json")))
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_752"))
 
-    val requestJson =
+    val requestJson = {
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006665",
           "hakemusKoskee": 0
           }"""
+    }
 
     mockMvc
       .perform(
@@ -300,11 +303,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
     when(ataruHakemusParser.parseLopullinenPaatosVastaavaEhdollinen(any()))
       .thenReturn(Some("ASIATUNNUS-001"))
 
-    val requestJson =
+    val requestJson = {
       """{
           "hakemusOid": "1.2.246.562.11.00000000000000006668",
           "hakemusKoskee": 5
           }"""
+    }
 
     mockMvc
       .perform(
@@ -334,4 +338,5 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateHakemus), any())
   }
+
 }

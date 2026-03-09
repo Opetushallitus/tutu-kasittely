@@ -149,6 +149,7 @@ case class Asiakirja(
   huomiotMuistioon: Option[String] = None,
   esittelijanHuomioita: Option[String] = None
 ) {
+
   def this(
     dbAsiakirja: DbAsiakirja,
     pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja],
@@ -180,9 +181,11 @@ case class Asiakirja(
     huomiotMuistioon = dbAsiakirja.huomiotMuistioon,
     esittelijanHuomioita = dbAsiakirja.esittelijanHuomioita
   )
+
 }
 
 class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): Asiakirja = {
     if (p.getCurrentToken == JsonToken.VALUE_NULL) {
       // Return default Asiakirja with empty values
@@ -208,10 +211,11 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
         .filterNot(_.isNull)
         .map(_.asText)
 
-      val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot =
+      val alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot = {
         Option(node.get("alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot"))
           .filterNot(_.isNull)
           .map(_.asText)
+      }
 
       val viimeinenAsiakirjaHakijalta = Option(node.get("viimeinenAsiakirjaHakijalta"))
         .filterNot(_.isNull)
@@ -305,4 +309,5 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
       )
     }
   }
+
 }

@@ -28,32 +28,37 @@ class AuditLog(val logger: Logger) {
   val audit               = new Audit(logger, "tutu", ApplicationType.VIRKAILIJA)
   private val errorLogger = LoggerFactory.getLogger(classOf[AuditLog])
 
-  def logRead(kohde: String, tunniste: String, operaatio: AuditOperation, request: HttpServletRequest): Unit =
+  def logRead(kohde: String, tunniste: String, operaatio: AuditOperation, request: HttpServletRequest): Unit = {
     val target = new Target.Builder().setField(kohde, tunniste).build()
     audit.log(getUser(request), operaatio, target, Changes.EMPTY)
+  }
 
-  def logCreate(user: User, targetFields: Map[String, String], operaatio: AuditOperation, muutokset: Any): Unit =
+  def logCreate(user: User, targetFields: Map[String, String], operaatio: AuditOperation, muutokset: Any): Unit = {
     val target = new Target.Builder()
-    for ((key, value) <- targetFields)
+    for ((key, value) <- targetFields) {
       target.setField(key, value)
+    }
     // Tämä kludge on lisätty koska audit-lokirjaston gson-konfiguraatio ei kykene serialisoimaan esim. java.time.Instant-luokkia
     // (eikä paljon muutakaan), mutta kirjaston metodit haluavat kuitenkin parametreina gson-objekteja.
     // Tällä tavoin audit lokille voi antaa suoraan entiteetin ja kaikki kentät tallennetaan.
     val elements: JsonArray = new JsonArray()
     elements.add(JsonParser.parseString(mapper.writeValueAsString(muutokset)))
     audit.log(user, operaatio, target.build(), elements)
+  }
 
-  def logChanges(user: User, targetFields: Map[String, String], operaatio: AuditOperation, changes: Changes): Unit =
+  def logChanges(user: User, targetFields: Map[String, String], operaatio: AuditOperation, changes: Changes): Unit = {
     val target = new Target.Builder()
-    for ((key, value) <- targetFields)
+    for ((key, value) <- targetFields) {
       target.setField(key, value)
+    }
     audit.log(user, operaatio, target.build(), changes)
+  }
 
   def logWithParams(
     request: HttpServletRequest,
     operation: Operation,
     raporttiParams: Map[String, Any]
-  ): Unit =
+  ): Unit = {
     try {
       val paramsJson = toJson(raporttiParams)
       val target     =
@@ -64,6 +69,7 @@ class AuditLog(val logger: Logger) {
         errorLogger.error(s"Auditlokitus epäonnistui: ${e.getMessage}")
         throw AuditException(e.getMessage)
     }
+  }
 
   val mapper = {
     // luodaan objectmapper jonka pitäisi pystyä serialisoimaan "kaikki mahdollinen"
@@ -74,14 +80,15 @@ class AuditLog(val logger: Logger) {
     mapper
   }
 
-  def toJson(value: Any): String =
-    try
+  def toJson(value: Any): String = {
+    try {
       mapper.writeValueAsString(value)
-    catch {
+    } catch {
       case e: Exception =>
         errorLogger.error("JSON-konversio epäonnistui: " + e.getMessage)
         throw AuditException(e.getMessage)
     }
+  }
 
   def getUser(request: HttpServletRequest): User = {
     val userOid = getCurrentPersonOid()
@@ -122,6 +129,7 @@ class AuditLog(val logger: Logger) {
       )
     )
   }
+
 }
 
 trait AuditOperation extends Operation {
@@ -255,6 +263,7 @@ object AuditOperation {
   case object DeleteViesti extends AuditOperation {
     val name = "VIESTIN_POISTO"
   }
+
 }
 
 case class AuditException(message: String) extends Exception(message)

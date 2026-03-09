@@ -24,15 +24,15 @@ class VanhaTutuService(
     Try {
       vanhaTutuRepository
         .get(id)
-        .map(rivi => {
+        .map { rivi =>
           val id       = rivi.id
           val dataJson = rivi.dataJson
 
           val json = mapper.readTree(dataJson).asInstanceOf[ObjectNode]
           json.put("id", id)
           json
-        })
-    } recoverWith { case e: Exception =>
+        }
+    }.recoverWith { case e: Exception =>
       LOG.error(s"Vanhan tutun haku epäonnistui id:llä $id", e)
       Failure(e)
     }
@@ -41,18 +41,19 @@ class VanhaTutuService(
   def listaaHakemuksia(queryString: String, pageNum: Int, pageSize: Int): Seq[ObjectNode] = {
     vanhaTutuRepository
       .list(queryString, pageNum, pageSize)
-      .map(rivi => {
+      .map { rivi =>
         val id       = rivi.id
         val dataJson = rivi.dataJson
 
         val json = mapper.readTree(dataJson).asInstanceOf[ObjectNode]
         json.put("id", id)
         json
-      })
+      }
   }
 
   def listaaHakemuksiaCount(queryString: String): Int = {
     vanhaTutuRepository
       .countList(queryString)
   }
+
 }

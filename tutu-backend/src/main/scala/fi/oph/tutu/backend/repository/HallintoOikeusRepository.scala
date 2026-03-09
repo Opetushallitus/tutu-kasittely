@@ -13,13 +13,14 @@ import scala.concurrent.duration.DurationInt
 @Component
 @Repository
 class HallintoOikeusRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[HallintoOikeusRepository])
 
+  val LOG: Logger      = LoggerFactory.getLogger(classOf[HallintoOikeusRepository])
   final val DB_TIMEOUT = 30.seconds
 
-  implicit val getHallintoOikeusResult: GetResult[HallintoOikeus] = GetResult(r =>
+  implicit val getHallintoOikeusResult: GetResult[HallintoOikeus] = GetResult { r =>
     HallintoOikeus(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       koodi = r.nextString(),
@@ -31,21 +32,21 @@ class HallintoOikeusRepository extends BaseResultHandlers {
       luotu = r.nextTimestampOption(),
       muokattu = r.nextTimestampOption()
     )
-  )
+  }
 
-  implicit val getMaakuntaHallintoOikeusResult: GetResult[MaakuntaHallintoOikeus] = GetResult(r =>
+  implicit val getMaakuntaHallintoOikeusResult: GetResult[MaakuntaHallintoOikeus] = GetResult { r =>
     MaakuntaHallintoOikeus(
       id = Some(r.nextObject().asInstanceOf[UUID]),
       maakuntaKoodi = r.nextString(),
       hallintoOikeusId = r.nextObject().asInstanceOf[UUID]
     )
-  )
+  }
 
   /**
    * Hakee hallinto-oikeuden ID:llä
    */
   def findById(id: UUID): Option[HallintoOikeus] = {
-    try
+    try {
       db.run(
         sql"""
           SELECT id, koodi, nimi::text, osoite::text,
@@ -56,9 +57,9 @@ class HallintoOikeusRepository extends BaseResultHandlers {
         """.as[HallintoOikeus].headOption,
         "hae_hallinto_oikeus_by_id"
       )
-    catch {
+    } catch {
       case e: Exception =>
-        LOG.error(s"Hallinto-oikeuden haku ID:llä $id epäonnistui: ${e}")
+        LOG.error(s"Hallinto-oikeuden haku ID:llä $id epäonnistui: $e")
         throw new RuntimeException(s"Hallinto-oikeuden haku epäonnistui: ${e.getMessage}", e)
     }
   }
@@ -67,7 +68,7 @@ class HallintoOikeusRepository extends BaseResultHandlers {
    * Hakee hallinto-oikeuden koodilla
    */
   def findByKoodi(koodi: String): Option[HallintoOikeus] = {
-    try
+    try {
       db.run(
         sql"""
           SELECT id, koodi, nimi::text, osoite::text,
@@ -78,9 +79,9 @@ class HallintoOikeusRepository extends BaseResultHandlers {
         """.as[HallintoOikeus].headOption,
         "hae_hallinto_oikeus_by_koodi"
       )
-    catch {
+    } catch {
       case e: Exception =>
-        LOG.error(s"Hallinto-oikeuden haku koodilla $koodi epäonnistui: ${e}")
+        LOG.error(s"Hallinto-oikeuden haku koodilla $koodi epäonnistui: $e")
         throw new RuntimeException(s"Hallinto-oikeuden haku epäonnistui: ${e.getMessage}", e)
     }
   }
@@ -89,7 +90,7 @@ class HallintoOikeusRepository extends BaseResultHandlers {
    * Hakee kaikki hallinto-oikeudet
    */
   def findAll(): Seq[HallintoOikeus] = {
-    try
+    try {
       db.run(
         sql"""
           SELECT id, koodi, nimi::text, osoite::text,
@@ -100,9 +101,9 @@ class HallintoOikeusRepository extends BaseResultHandlers {
         """.as[HallintoOikeus],
         "hae_kaikki_hallinto_oikeudet"
       )
-    catch {
+    } catch {
       case e: Exception =>
-        LOG.error(s"Kaikkien hallinto-oikeuksien haku epäonnistui: ${e}")
+        LOG.error(s"Kaikkien hallinto-oikeuksien haku epäonnistui: $e")
         throw new RuntimeException(s"Hallinto-oikeuksien haku epäonnistui: ${e.getMessage}", e)
     }
   }
@@ -113,7 +114,7 @@ class HallintoOikeusRepository extends BaseResultHandlers {
    * @return Mapping jos löytyy
    */
   def findByMaakuntaKoodi(maakuntaKoodi: String): Option[MaakuntaHallintoOikeus] = {
-    try
+    try {
       db.run(
         sql"""
           SELECT id, maakunta_koodi, hallinto_oikeus_id
@@ -122,9 +123,9 @@ class HallintoOikeusRepository extends BaseResultHandlers {
         """.as[MaakuntaHallintoOikeus].headOption,
         "hae_maakunta_hallinto_oikeus_by_maakunta"
       )
-    catch {
+    } catch {
       case e: Exception =>
-        LOG.error(s"Maakunta-hallinto-oikeus mappingin haku maakunnalla $maakuntaKoodi epäonnistui: ${e}")
+        LOG.error(s"Maakunta-hallinto-oikeus mappingin haku maakunnalla $maakuntaKoodi epäonnistui: $e")
         throw new RuntimeException(s"Maakunta-hallinto-oikeus mappingin haku epäonnistui: ${e.getMessage}", e)
     }
   }

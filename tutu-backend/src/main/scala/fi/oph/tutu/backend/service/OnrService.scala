@@ -78,8 +78,9 @@ class OnrService(httpService: HttpService) {
 
   @CacheEvict(value = Array("asiointikieli"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyAsiointikieliCache(): Unit =
+  def emptyAsiointikieliCache(): Unit = {
     LOG.info("Emptying asiointikieli cache")
+  }
 
   @CachePut(Array("asiointikieli"))
   def updateCached(personOid: String, value: String): Unit = {
@@ -89,12 +90,14 @@ class OnrService(httpService: HttpService) {
 
   @CacheEvict(value = Array("henkilo"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyHenkiloCache(): Unit =
+  def emptyHenkiloCache(): Unit = {
     LOG.info("Emptying henkilo cache")
+  }
 
   @CachePut(Array("henkilo"))
   def updateCached(personOid: String, value: OnrUser): Unit = {
     val henkiloCache = cacheManager.getCache("henkilo")
     henkiloCache.put(personOid, value)
   }
+
 }

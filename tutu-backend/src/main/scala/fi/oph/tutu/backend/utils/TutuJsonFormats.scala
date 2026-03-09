@@ -7,6 +7,7 @@ import org.json4s.FieldSerializer.{renameFrom, renameTo}
 import java.time.LocalDate
 
 trait TutuJsonFormats {
+
   implicit val formats: Formats = {
     DefaultFormats + FieldSerializer[AtaruHakemus](
       renameTo("latestVersionCreated", "created"),
@@ -14,10 +15,11 @@ trait TutuJsonFormats {
     ) + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
 
   }
+
 }
 
 object AnswerValueSerializer
-    extends CustomSerializer[AnswerValue](format =>
+    extends CustomSerializer[AnswerValue](format => {
       (
         {
           case JString(value) =>
@@ -50,10 +52,10 @@ object AnswerValueSerializer
             JArray(Nil)
         }
       )
-    )
+    })
 
 object KoodistoItemSerializer
-    extends CustomSerializer[KoodistoItem](_ =>
+    extends CustomSerializer[KoodistoItem](_ => {
       (
         {
           case JObject(fields) =>
@@ -92,10 +94,10 @@ object KoodistoItemSerializer
           JObject("koodiUri" -> koodiUri, "koodiArvo" -> koodiArvo, "nimi" -> nimiObj)
         }
       )
-    )
+    })
 
 object KielistettySerializer
-    extends CustomSerializer[Kielistetty](_ =>
+    extends CustomSerializer[Kielistetty](_ => {
       (
         {
           case JObject(fields) =>
@@ -132,9 +134,10 @@ object KielistettySerializer
             obj
         }
       )
-    )
+    })
+
 object KasittelyVaiheSerializer
-    extends CustomSerializer[KasittelyVaihe](_ =>
+    extends CustomSerializer[KasittelyVaihe](_ => {
       (
         {
           case JString(value) => KasittelyVaihe.fromString(value)
@@ -145,10 +148,10 @@ object KasittelyVaiheSerializer
           JString(vaihe.toString)
         }
       )
-    )
+    })
 
 object AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
-    extends CustomSerializer[AmmattikokemusElinikainenOppiminenKorvaavuus](_ =>
+    extends CustomSerializer[AmmattikokemusElinikainenOppiminenKorvaavuus](_ => {
       (
         {
           case JString(value) => AmmattikokemusElinikainenOppiminenKorvaavuus.fromString(value)
@@ -161,4 +164,4 @@ object AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
           JString(korvaavuus.toString)
         }
       )
-    )
+    })

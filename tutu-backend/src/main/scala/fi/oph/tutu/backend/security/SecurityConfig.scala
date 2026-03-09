@@ -38,6 +38,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
 @EnableWebSecurity
 @EnableJdbcHttpSession(tableName = "VIRKAILIJA_SESSION")
 class SecurityConfig {
+
   final private val SPRING_CAS_SECURITY_CHECK_PATH =
     "/api/j_spring_cas_security_check"
 
@@ -132,8 +133,9 @@ class SecurityConfig {
   }
 
   @Bean
-  def ticketValidator(): TicketValidator =
+  def ticketValidator(): TicketValidator = {
     Cas20ServiceTicketValidator(cas_url)
+  }
 
   @Bean
   def casAuthenticationProvider(
@@ -154,22 +156,26 @@ class SecurityConfig {
   def authenticationManager(
     http: HttpSecurity,
     casAuthenticationProvider: CasAuthenticationProvider
-  ): AuthenticationManager =
+  ): AuthenticationManager = {
     http
       .getSharedObject(classOf[AuthenticationManagerBuilder])
       .authenticationProvider(casAuthenticationProvider)
       .build()
+  }
 
   class PreserveXForwardedForFilter extends Filter {
+
     override def doFilter(req: ServletRequest, res: ServletResponse, chain: FilterChain): Unit = {
       val request = req.asInstanceOf[HttpServletRequest]
       val xff     = Option(request.getHeader("X-Forwarded-For")).getOrElse("localhost")
       val wrapped = new HttpServletRequestWrapper(request) {
-        override def getHeader(name: String): String =
+        override def getHeader(name: String): String = {
           if (name.equalsIgnoreCase("XFF_ORIGINAL")) xff else super.getHeader(name)
+        }
       }
       chain.doFilter(wrapped, res)
     }
+
   }
 
   @Bean
@@ -223,7 +229,7 @@ class SecurityConfig {
 
     http
       .securityMatcher("/**")
-      .authorizeHttpRequests(requests =>
+      .authorizeHttpRequests { requests =>
         requests
           .requestMatchers(
             "/api/csrf",
@@ -234,36 +240,36 @@ class SecurityConfig {
           .permitAll()
           .anyRequest()
           .fullyAuthenticated()
-      )
-      .csrf(csrf =>
+      }
+      .csrf { csrf =>
         csrf
           .ignoringRequestMatchers(
             "/api/healthcheck",
             "/api/csrf",
             "/api/ataru-hakemus"
           )
-      )
-      .exceptionHandling(exceptionHandling =>
+      }
+      .exceptionHandling { exceptionHandling =>
         // corsin takia suoran cas uudelleenohjauksen sijaan palautetaan http 401 ja käli hoitaa forwardoinnin login apiin
         exceptionHandling.authenticationEntryPoint(
           new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
         )
-      )
+      }
       .addFilterAt(authenticationFilter, classOf[CasAuthenticationFilter])
       .addFilterBefore(
         singleLogoutFilter(sessionMappingStorage),
         classOf[CasAuthenticationFilter]
       )
-      .securityContext(securityContext =>
+      .securityContext { securityContext =>
         securityContext
           .requireExplicitSave(true)
           .securityContextRepository(securityContextRepository)
-      )
-      .logout(logout =>
+      }
+      .logout { logout =>
         logout
           .logoutUrl("/logout")
           .deleteCookies("JSESSIONID")
-      )
+      }
       .build()
   }
 
@@ -273,18 +279,19 @@ class SecurityConfig {
   def apiLoginFilterChain(
     http: HttpSecurity,
     casAuthenticationEntryPoint: CasAuthenticationEntryPoint
-  ): SecurityFilterChain =
+  ): SecurityFilterChain = {
     http
       .securityMatcher("/api/login")
-      .authorizeHttpRequests(requests =>
+      .authorizeHttpRequests { requests =>
         requests
           .requestMatchers(SPRING_CAS_SECURITY_CHECK_PATH)
           .permitAll() // päästetään läpi cas-logout
           .anyRequest
           .fullyAuthenticated
-      )
+      }
       .exceptionHandling(c => c.authenticationEntryPoint(casAuthenticationEntryPoint))
       .build()
+  }
 
   //
   // Käsitellään CASilta tuleva SLO-pyyntö
@@ -306,4 +313,5 @@ class SecurityConfig {
     serializer.setCookieName("JSESSIONID")
     serializer
   }
+
 }

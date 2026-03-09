@@ -13,13 +13,14 @@ import slick.jdbc.PostgresProfile.api.*
 @Component
 @Repository
 class ViestiRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiRepository])
 
-  implicit val getViestiResult: GetResult[Viesti] =
-    GetResult(r =>
+  implicit val getViestiResult: GetResult[Viesti] = {
+    GetResult { r =>
       Viesti(
         id = Some(r.nextObject().asInstanceOf[UUID]),
         hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
@@ -33,10 +34,11 @@ class ViestiRepository extends BaseResultHandlers {
         luoja = Some(r.nextString()),
         muokkaaja = r.nextStringOption()
       )
-    )
+    }
+  }
 
-  implicit val getViestiListItemResult: GetResult[ViestiListItem] =
-    GetResult(r =>
+  implicit val getViestiListItemResult: GetResult[ViestiListItem] = {
+    GetResult { r =>
       ViestiListItem(
         id = r.nextObject().asInstanceOf[UUID],
         tyyppi = Viestityyppi.optionFromString(r.nextString()).orNull,
@@ -44,7 +46,8 @@ class ViestiRepository extends BaseResultHandlers {
         vahvistettu = r.nextTimestamp().toLocalDateTime,
         vahvistaja = r.nextString()
       )
-    )
+    }
+  }
 
   def haeViesti(id: UUID): Option[Viesti] = {
     try {
@@ -191,4 +194,5 @@ class ViestiRepository extends BaseResultHandlers {
         )
     }
   }
+
 }

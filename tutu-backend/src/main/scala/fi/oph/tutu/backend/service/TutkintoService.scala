@@ -11,6 +11,7 @@ import java.util.UUID
 class TutkintoService(
   tutkintoRepository: TutkintoRepository
 ) {
+
   def haeTutkinnot(hakemusOid: HakemusOid): Seq[Tutkinto] = {
     tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
   }
@@ -34,4 +35,5 @@ class TutkintoService(
   def paivitaTutkinto(tutkinto: Tutkinto, luojaTaiMuokkaaja: UserOid): Unit = {
     tutkintoRepository.suoritaPaivitaTutkinto(tutkinto, luojaTaiMuokkaaja.toString)
   }
+
 }

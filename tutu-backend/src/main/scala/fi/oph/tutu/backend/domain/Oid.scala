@@ -23,8 +23,10 @@ case class UserOid(s: String) extends Oid {
 }
 
 class HakemusOidDeserializer extends JsonDeserializer[HakemusOid] {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): HakemusOid = {
     val value = p.getValueAsString
     HakemusOid(value)
   }
+
 }

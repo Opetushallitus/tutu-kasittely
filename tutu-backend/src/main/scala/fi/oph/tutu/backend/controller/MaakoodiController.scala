@@ -99,4 +99,5 @@ class MaakoodiController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
 }

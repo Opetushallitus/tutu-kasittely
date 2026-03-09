@@ -48,4 +48,5 @@ class MaakoodiService(
       .updateMaakoodi(id, esittelijaId, muokkaaja)
       .map(db => Maakoodi(db.id, db.esittelijaId, db.koodiUri, db.fi, db.sv, db.en))
   }
+
 }

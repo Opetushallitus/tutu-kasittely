@@ -451,4 +451,5 @@ class AuditUtilTest {
     assertTrue(fieldNames.contains("imiPyynto.imiPyyntoNumero"))
     assertTrue(fieldNames.contains("imiPyynto.imiPyyntoLahetetty"))
   }
+
 }

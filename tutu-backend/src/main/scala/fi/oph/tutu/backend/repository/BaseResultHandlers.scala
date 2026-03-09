@@ -9,6 +9,7 @@ import slick.jdbc.GetResult
 import java.util.UUID
 
 class BaseResultHandlers extends TutuJsonFormats {
+
   @Autowired
   protected var jsonMapper: ObjectMapper = _
 
@@ -40,4 +41,5 @@ class BaseResultHandlers extends TutuJsonFormats {
   protected def kielistettyOptionToJson(kielistetty: Option[Kielistetty]): Option[String] = {
     kielistetty.map(kielistettyToJson)
   }
+
 }

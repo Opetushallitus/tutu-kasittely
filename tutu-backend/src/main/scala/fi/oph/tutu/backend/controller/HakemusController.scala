@@ -198,9 +198,10 @@ class HakemusController(
   ): ResponseEntity[Any] = {
     val user        = userService.getEnrichedUserDetails(true)
     val authorities = user.authorities
-    val tilaEnum    =
+    val tilaEnum    = {
       if (AtaruHakemuksenTila.isValidAtarutila(tila)) AtaruHakemuksenTila.fromString(tila)
       else Tuntematon
+    }
 
     if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
       errorMessageMapper.mapPlainErrorMessage(
@@ -346,7 +347,7 @@ class HakemusController(
     @PathVariable("hakemusOid") hakemusOid: String,
     @RequestBody hakemusBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
-  ): ResponseEntity[Any] =
+  ): ResponseEntity[Any] = {
     try {
       val user        = userService.getEnrichedUserDetails(true)
       val authorities = user.authorities
@@ -392,6 +393,7 @@ class HakemusController(
         LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
         errorMessageMapper.mapErrorMessage(e)
     }
+  }
 
   @GetMapping(
     path = Array("liite/metadata/{hakemusOid}"),
@@ -479,9 +481,9 @@ class HakemusController(
             hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus, user.userOid)
           } match {
             case Success(result) =>
-              if (result == 0)
+              if (result == 0) {
                 errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
-              else {
+              } else {
                 auditLog.logChanges(
                   AuditLog.getUser(request),
                   Map("asiatunnus" -> asiatunnus),
@@ -503,4 +505,5 @@ class HakemusController(
         errorMessageMapper.mapErrorMessage(e)
     }
   }
+
 }

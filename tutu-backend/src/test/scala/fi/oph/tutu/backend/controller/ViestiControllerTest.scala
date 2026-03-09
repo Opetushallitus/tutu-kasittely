@@ -36,9 +36,11 @@ import java.util.UUID
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
 class ViestiControllerTest extends IntegrationTestBase {
+
   @Autowired
   private val context: WebApplicationContext = null
-  private var mvc: MockMvc                   = null
+
+  private var mvc: MockMvc = null
 
   @MockitoBean
   private var userService: UserService = _

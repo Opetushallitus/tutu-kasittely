@@ -14,10 +14,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class ChunkProcessorTest extends UnitTestBase {
+
   @Mock
   var vanhaTutuMigrationRepository: VanhaTutuMigrationRepository = _
+
   @Mock
   var vanhaTutuRepository: VanhaTutuRepository = _
+
   @Mock
   var chunkingConfig: ChunkingConfig = _
 
@@ -383,4 +386,5 @@ class ChunkProcessorTest extends UnitTestBase {
     assertTrue(result.failed.get.isInstanceOf[IllegalArgumentException])
     assertTrue(result.failed.get.getMessage.contains("Chunk XML content is empty"))
   }
+
 }

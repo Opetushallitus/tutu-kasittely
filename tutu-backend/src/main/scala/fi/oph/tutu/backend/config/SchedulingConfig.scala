@@ -21,4 +21,5 @@ class SchedulingConfig {
     scheduler.setErrorHandler(t => LOG.error("Scheduled task failed", t))
     scheduler
   }
+
 }

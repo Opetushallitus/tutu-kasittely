@@ -102,4 +102,5 @@ class TutuDatabase(
   def combineIntDBIOs(ints: Seq[DBIO[Int]]): DBIO[Int] = {
     DBIO.fold(ints, 0)(_ + _)
   }
+
 }

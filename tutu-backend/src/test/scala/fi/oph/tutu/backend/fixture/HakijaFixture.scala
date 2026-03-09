@@ -7,6 +7,7 @@ val suomi = Map(
   Kieli.valueOf("sv") -> "Finland",
   Kieli.valueOf("en") -> "Finland"
 )
+
 val kajaani = Map(
   Kieli.valueOf("fi") -> "Kajaani",
   Kieli.valueOf("sv") -> "Kajana",

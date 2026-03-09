@@ -26,16 +26,18 @@ class UserController(
   def healthcheck = "Tutu is alive and kicking!"
 
   @GetMapping(path = Array("login"))
-  def login =
+  def login = {
     RedirectView(tutuUiUrl)
+  }
 
   @GetMapping(
     path = Array("session"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
-  def session: ResponseEntity[Map[String, String]] =
+  def session: ResponseEntity[Map[String, String]] = {
     // Palautetaan jokin paluuarvo koska client-kirjasto sellaisen haluaa
     ResponseEntity.ok(Map("status" -> "ok"))
+  }
 
   @GetMapping(
     path = Array("csrf"),
@@ -52,13 +54,14 @@ class UserController(
   def user(): String = {
     val enrichedUserDetails = userService.getEnrichedUserDetails()
     mapper.writeValueAsString(
-      UserResponse(
-        user =
-          if (enrichedUserDetails == null)
-            null
-          else
-            enrichedUserDetails
-      )
+      UserResponse(user = {
+        if (enrichedUserDetails == null) {
+          null
+        } else {
+          enrichedUserDetails
+        }
+      })
     )
   }
+
 }

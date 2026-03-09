@@ -55,4 +55,5 @@ class EsittelijaController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
 }

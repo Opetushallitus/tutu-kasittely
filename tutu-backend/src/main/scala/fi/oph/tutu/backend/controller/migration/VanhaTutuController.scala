@@ -143,9 +143,7 @@ class VanhaTutuController(
       val hakemusCount = vanhaTutuService.listaaHakemuksiaCount(queryString)
 
       val items = mapper.createArrayNode()
-      hakemusLista.foreach { item =>
-        items.add(item)
-      }
+      hakemusLista.foreach(item => items.add(item))
 
       val jsonRoot = mapper.createObjectNode()
 
@@ -163,4 +161,5 @@ class VanhaTutuController(
       }
     }
   }
+
 }

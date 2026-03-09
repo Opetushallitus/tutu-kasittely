@@ -14,6 +14,7 @@ import scala.util.Success
 
 @ExtendWith(Array(classOf[MockitoExtension]))
 class VanhaTutuMigrationRepositoryTest {
+
   @Mock
   var vanhaTutuMigrationRepository: VanhaTutuMigrationRepository = _
 
@@ -409,4 +410,5 @@ class VanhaTutuMigrationRepositoryTest {
     verify(vanhaTutuMigrationRepository).markChunkAsProcessed(chunk1Id)
     verify(vanhaTutuMigrationRepository).getChunkCount()
   }
+
 }

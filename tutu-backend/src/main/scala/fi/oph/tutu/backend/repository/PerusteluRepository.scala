@@ -18,6 +18,7 @@ import scala.util.{Failure, Success}
 @Component
 @Repository
 class PerusteluRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
@@ -25,7 +26,7 @@ class PerusteluRepository extends BaseResultHandlers {
   val LOG: Logger      = LoggerFactory.getLogger(classOf[PerusteluRepository])
 
   implicit val getPerusteluResult: GetResult[Perustelu] = {
-    GetResult(r =>
+    GetResult { r =>
       Perustelu(
         id = Option(UUID.fromString(r.nextString())),
         hakemusId = Option(UUID.fromString(r.nextString())),
@@ -51,11 +52,11 @@ class PerusteluRepository extends BaseResultHandlers {
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         muokkaaja = r.nextStringOption()
       )
-    )
+    }
   }
 
   implicit val getLausuntopyyntoResult: GetResult[Lausuntopyynto] = {
-    GetResult(r =>
+    GetResult { r =>
       Lausuntopyynto(
         Option(UUID.fromString(r.nextString())),
         Option(UUID.fromString(r.nextString())),
@@ -65,7 +66,7 @@ class PerusteluRepository extends BaseResultHandlers {
         Option(r.nextTimestamp()).map(_.toLocalDateTime),
         Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
-    )
+    }
   }
 
   /**
@@ -333,7 +334,7 @@ class PerusteluRepository extends BaseResultHandlers {
     perusteluId: UUID,
     lausuntopyynto: Lausuntopyynto,
     luoja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       INSERT INTO lausuntopyynto (perustelu_id, jarjestys, lausunnon_antaja_koodiuri, lausunnon_antaja_muu, lahetetty, saapunut, luoja)
       VALUES (
@@ -345,11 +346,12 @@ class PerusteluRepository extends BaseResultHandlers {
         ${lausuntopyynto.saapunut.map(java.sql.Timestamp.valueOf).orNull},
         $luoja
       )"""
+  }
 
   private def paivitaLausuntoPyynto(
     lausuntopyynto: Lausuntopyynto,
     muokkaaja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       UPDATE lausuntopyynto
       SET
@@ -361,10 +363,13 @@ class PerusteluRepository extends BaseResultHandlers {
         muokkaaja = $muokkaaja
       WHERE id = ${lausuntopyynto.id.get.toString}::uuid
     """
+  }
 
-  private def poistaLausuntopyynto(id: UUID): DBIO[Int] =
+  private def poistaLausuntopyynto(id: UUID): DBIO[Int] = {
     sqlu"""
       DELETE FROM lausuntopyynto
       WHERE id = ${id.toString}::uuid
     """
+  }
+
 }

@@ -12,6 +12,7 @@ import org.mockito.{Mock, MockitoAnnotations}
 import java.util.UUID
 
 class HallintoOikeusServiceTest extends UnitTestBase {
+
   @Mock
   var hallintoOikeusRepository: HallintoOikeusRepository = _
 

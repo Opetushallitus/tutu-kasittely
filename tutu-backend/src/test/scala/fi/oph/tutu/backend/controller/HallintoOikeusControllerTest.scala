@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import java.util.UUID
 
 class HallintoOikeusControllerTest extends UnitTestBase {
+
   @Mock
   var hallintoOikeusService: HallintoOikeusService = _
 

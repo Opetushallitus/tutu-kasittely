@@ -8,4 +8,5 @@ object SecurityConstants {
 
   final val SECURITY_ROOLI_ESITTELIJA_FULL =
     SECURITY_ROOLI_PREFIX + SECURITY_ROOLI_ESITTELIJA
+
 }

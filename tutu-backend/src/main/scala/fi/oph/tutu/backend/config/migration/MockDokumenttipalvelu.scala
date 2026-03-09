@@ -13,8 +13,9 @@ import scala.io.Source
 
 @Profile(Array("dev", "test"))
 class MockDokumenttipalvelu extends Dokumenttipalvelu("mock-region", "mock-bucket") {
-  private val logger         = LoggerFactory.getLogger(getClass)
-  private val mockFilePath   = "filemaker-migration/vanha_tutu_m.xml" // 200 tapausta, saa muuttaa pienemmäksi jos tarve
+  private val logger       = LoggerFactory.getLogger(getClass)
+  private val mockFilePath = "filemaker-migration/vanha_tutu_m.xml" // 200 tapausta, saa muuttaa pienemmäksi jos tarve
+
   private val mockXmlContent = {
     val resource = new ClassPathResource(mockFilePath)
     val source   = Source.fromInputStream(resource.getInputStream)
@@ -24,6 +25,7 @@ class MockDokumenttipalvelu extends Dokumenttipalvelu("mock-region", "mock-bucke
       source.close()
     }
   }
+
   private val contentType = "application/xml"
 
   /**
@@ -44,4 +46,5 @@ class MockDokumenttipalvelu extends Dokumenttipalvelu("mock-region", "mock-bucke
       Instant.now()
     )
   }
+
 }

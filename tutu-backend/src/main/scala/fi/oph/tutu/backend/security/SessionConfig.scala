@@ -26,4 +26,5 @@ class SessionConfig {
     )
     jdbcSessionMappingStorage
   }
+
 }

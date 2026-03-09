@@ -125,17 +125,18 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
       case Right(response) =>
         val liitteidenTiedot = parse(response).values.asInstanceOf[List[Map[String, Any]]]
 
-        val liitteidenTiedotJaLinkit = liitteidenTiedot.map(tiedot => {
+        val liitteidenTiedotJaLinkit = liitteidenTiedot.map { tiedot =>
           val liitteenAvain = tiedot("key").toString
           val downloadLink  = s"$opintopolku_virkailija_domain/lomake-editori/api/files/content/$liitteenAvain"
           var tiedotJaLinkkiJaSaapumisaika = tiedot + ("download-url" -> downloadLink)
-          tiedotJaLinkkiJaSaapumisaika =
-            if (muutosHistoria.contains(liitteenAvain))
+          tiedotJaLinkkiJaSaapumisaika = {
+            if (muutosHistoria.contains(liitteenAvain)) {
               tiedotJaLinkkiJaSaapumisaika + ("saapumisaika" -> muutosHistoria(liitteenAvain))
-            else tiedotJaLinkkiJaSaapumisaika
+            } else tiedotJaLinkkiJaSaapumisaika
+          }
 
           tiedotJaLinkkiJaSaapumisaika
-        })
+        }
         Some(compact(render(Extraction.decompose(liitteidenTiedotJaLinkit))))
     }
   }
@@ -143,13 +144,13 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   def resolveLiitteidenMuutoshistoria(jsonString: String): Map[String, String] = {
     val mappings = parse(jsonString) match {
       case JArray(rawItems) =>
-        rawItems.flatMap(item => {
+        rawItems.flatMap { item =>
           val fields    = item.asInstanceOf[JObject].values
           val time      = (item \ "time").extract[String]
           val localTime = toLocalDateTime(time)
 
           val keysOfModifiedFields = fields.keys.toSeq.diff(COMMON_MUUTOSHISTORIA_FIELDS)
-          keysOfModifiedFields.flatMap(key =>
+          keysOfModifiedFields.flatMap { key =>
             item \ key match {
               case JObject(subFields) =>
                 val oldValue = subFields.find(_._1 == "old")
@@ -165,8 +166,8 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
                 }
               case _ => Seq()
             }
-          )
-        })
+          }
+        }
       case _ => Seq()
     }
     mappings.toMap
@@ -174,12 +175,14 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
 
   @CacheEvict(value = Array("lomake"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
-  def emptyLomakeCache(): Unit =
+  def emptyLomakeCache(): Unit = {
     LOG.info("Emptying lomake-cache")
+  }
 
   @CachePut(Array("lomake"))
   def updateCached(lomake: AtaruLomake): Unit = {
     val lomakeCache = cacheManager.getCache("lomake")
     lomakeCache.put(lomake.id, lomake)
   }
+
 }

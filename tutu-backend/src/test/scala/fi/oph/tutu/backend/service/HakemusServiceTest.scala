@@ -25,26 +25,37 @@ class HakemusServiceTest extends UnitTestBase {
 
   @Mock
   var esittelijaRepository: EsittelijaRepository = _
+
   @Mock
   var hakemusRepository: HakemusRepository = _
+
   @Mock
   var asiakirjaRepository: AsiakirjaRepository = _
+
   @Mock
   var perusteluRepository: PerusteluRepository = _
+
   @Mock
   var tutkintoRepository: TutkintoRepository = _
+
   @Mock
   var kasittelyVaiheService: KasittelyVaiheService = _
+
   @Mock
   var paatosRepository: PaatosRepository = _
+
   @Mock
   var hakemuspalveluService: HakemuspalveluService = _
+
   @Mock
   var onrService: OnrService = _
+
   @Mock
   var ataruHakemusParser: AtaruHakemusParser = _
+
   @Mock
   var userService: UserService = _
+
   @Mock
   var db: TutuDatabase = _
 
@@ -72,6 +83,7 @@ class HakemusServiceTest extends UnitTestBase {
   @Nested
   @DisplayName("paivitaTiedotAtarusta")
   class PaivitaTiedotAtarusta extends UnitTestBase {
+
     def makeDbHakemus(hakemusOid: HakemusOid, formId: Long): DbHakemus = {
       DbHakemus(
         id = UUID.randomUUID,
@@ -202,5 +214,7 @@ class HakemusServiceTest extends UnitTestBase {
       /* Update function should not be called */
       assertEquals(formUpdateCalled, false)
     }
+
   }
+
 }

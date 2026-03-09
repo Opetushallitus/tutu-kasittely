@@ -205,7 +205,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mvc: MockMvc                   = null
+
+  private var mvc: MockMvc = null
 
   @MockitoBean
   private var userService: UserService = _
@@ -230,13 +231,15 @@ class PerusteluControllerTest extends IntegrationTestBase {
   var perustelu4: Perustelu    = makePerusteluWithAP()
 
   def perustelu2Json(perustelu: Perustelu, ignoreFields: String*): String = {
-    val lausuntopyynnotAsMap =
-      if (perustelu.lausuntopyynnot.nonEmpty)
+    val lausuntopyynnotAsMap = {
+      if (perustelu.lausuntopyynnot.nonEmpty) {
         perustelu.lausuntopyynnot.map { lp =>
           lp.productElementNames.toList.zip(lp.productIterator.toList).toMap -- ignoreFields
         }
-      else
+      } else {
         Seq.empty
+      }
+    }
 
     val uoro      = perustelu.uoRoSisalto
     val uoroAsMap =
@@ -350,7 +353,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid}")
+        put(s"/api/perustelu/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -381,7 +384,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perusteluJSON = perustelu2Json(perustelu.copy(id = perusteluId), "luotu", "muokattu", "muokkaaja")
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid}")
+        get(s"/api/perustelu/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -464,7 +467,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid2}")
+        put(s"/api/perustelu/$hakemusOid2")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -490,7 +493,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid2}")
+        get(s"/api/perustelu/$hakemusOid2")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -557,7 +560,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid3}")
+        put(s"/api/perustelu/$hakemusOid3")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -578,18 +581,18 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def haePerusteluWithLausuntotietoPalauttaa200(): Unit = {
     val perusteluId         = perusteluRepository.haePerustelu(hakemusId3.get).get.id
     val lausuntopyynnotInDb = perusteluRepository.haeLausuntopyynnot(perusteluId.get)
-    val lausuntopyynnot     = perustelu3.lausuntopyynnot.map(lp =>
+    val lausuntopyynnot     = perustelu3.lausuntopyynnot.map { lp =>
       lp.copy(
         perusteluId = Some(perusteluId.get),
         id = lausuntopyynnotInDb
-          .find(lpDb =>
+          .find { lpDb =>
             lpDb.lausunnonAntajaKoodiUri == lp.lausunnonAntajaKoodiUri &&
-              lpDb.lausunnonAntajaMuu == lp.lausunnonAntajaMuu
-          )
+            lpDb.lausunnonAntajaMuu == lp.lausunnonAntajaMuu
+          }
           .get
           .id
       )
-    )
+    }
     val perusteluJSON = perustelu2Json(
       perustelu3.copy(id = perusteluId, lausuntopyynnot = lausuntopyynnot),
       "luotu",
@@ -599,7 +602,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid3}")
+        get(s"/api/perustelu/$hakemusOid3")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -678,7 +681,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid4}")
+        put(s"/api/perustelu/$hakemusOid4")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -704,7 +707,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid4}")
+        get(s"/api/perustelu/$hakemusOid4")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -752,4 +755,5 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(content().json(perusteluJSON))
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePerustelu), any())
   }
+
 }

@@ -33,14 +33,12 @@ class PerusteluService(
       .haeHakemus(hakemusOid)
       .flatMap { dbHakemus =>
         perusteluRepository.haePerustelu(dbHakemus.id).flatMap { perustelu =>
-          {
-            perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
-              case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
-                Some(
-                  perustelu.copy(lausuntopyynnot = lausuntoPyynnot)
-                )
-              case _ => Some(perustelu)
-            }
+          perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
+            case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
+              Some(
+                perustelu.copy(lausuntopyynnot = lausuntoPyynnot)
+              )
+            case _ => Some(perustelu)
           }
         }
       }
@@ -74,9 +72,10 @@ class PerusteluService(
 
         // Lausuntopyynnöt - korvaa kaikki
         val currentLausuntopyynnot   = perusteluRepository.haeLausuntopyynnot(latestSavedPerustelu.id.orNull)
-        val lausuntopyyntoModifyData =
+        val lausuntopyyntoModifyData = {
           HakemusModifyOperationResolver
             .resolveLausuntopyyntoModifyOperations(currentLausuntopyynnot, perustelu.lausuntopyynnot)
+        }
 
         perusteluRepository.suoritaLausuntopyyntojenModifiointi(
           latestSavedPerustelu.id.orNull,
@@ -96,13 +95,13 @@ class PerusteluService(
         }
 
         Some(
-          latestSavedPerustelu.copy(
-            lausuntopyynnot =
-              if (newlySavedLausuntoPyynnot.nonEmpty)
-                newlySavedLausuntoPyynnot
-              else
-                latestSavedPerustelu.lausuntopyynnot
-          )
+          latestSavedPerustelu.copy(lausuntopyynnot = {
+            if (newlySavedLausuntoPyynnot.nonEmpty) {
+              newlySavedLausuntoPyynnot
+            } else {
+              latestSavedPerustelu.lausuntopyynnot
+            }
+          })
         )
       case _ => None
     }
@@ -130,4 +129,5 @@ class PerusteluService(
 
     Some(perusteluMuistio)
   }
+
 }

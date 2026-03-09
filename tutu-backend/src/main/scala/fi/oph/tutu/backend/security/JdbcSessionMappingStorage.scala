@@ -20,10 +20,11 @@ class JdbcSessionMappingStorage(
   @Override
   def removeSessionByMappingId(mappingId: String): HttpSession = {
     LOG.debug(s"Poistetaan sessiomappaus cas tiketillä $mappingId")
-    val query =
+    val query = {
       sql"""SELECT virkailija_session_id FROM #$mappingTableName WHERE mapped_ticket_id = $mappingId"""
         .as[String]
         .headOption
+    }
     val sessionIdOpt = tutuDatabase.run(query, "selectSessionIdByMappingId")
 
     sessionIdOpt

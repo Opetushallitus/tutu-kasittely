@@ -137,8 +137,9 @@ class HakemusService(
     luoKokonaishakemus(hakemus.hakemusOid, transactionalAction)
   }
 
-  def onkoHakemusJoOlemassa(hakemusOid: HakemusOid): Boolean =
+  def onkoHakemusJoOlemassa(hakemusOid: HakemusOid): Boolean = {
     hakemusRepository.onkoHakemusOlemassa(hakemusOid)
+  }
 
   def haeAtaruHakemus(hakemusOid: HakemusOid): AtaruHakemus = {
     hakemuspalveluService.haeHakemus(hakemusOid) match {
@@ -190,8 +191,11 @@ class HakemusService(
           existingDbTutkinto.muokkaaja match {
             // Jos ei muokattu virkailijan toimesta, ylikirjoitetaan, muuten päivitetään tarvittavat tiedot
             case Some(ATARU_SERVICE) | None =>
-              if (existingDbTutkinto.muokattu.isEmpty || ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get))
+              if (
+                existingDbTutkinto.muokattu.isEmpty || ataruHakemusModified.isAfter(existingDbTutkinto.muokattu.get)
+              ) {
                 tutkintoRepository.suoritaPaivitaTutkinto(ataruTutkinto.copy(id = existingDbTutkinto.id), ATARU_SERVICE)
+              }
             case Some(value) =>
               if (
                 (existingDbTutkinto.muokattu.isEmpty ||
@@ -477,8 +481,9 @@ class HakemusService(
           peruutusLisatieto = hakemusUpdateRequest.peruutusLisatieto
         )
 
-        if (!dbHakemus.onkoPeruutettu && hakemusUpdateRequest.onkoPeruutettu)
+        if (!dbHakemus.onkoPeruutettu && hakemusUpdateRequest.onkoPeruutettu) {
           paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, userOid.toString)
+        }
 
         hakemusRepository.paivitaHakemus(
           hakemusOid,
@@ -550,35 +555,45 @@ class HakemusService(
         val hakemusKoskee     = ataruHakemusParser.parseHakemusKoskee(ataruHakemus)
         val hakemusPeruutettu = ataruHakemusParser.onkoHakemusPeruutettu(ataruHakemus)
         val asetaPeruutetuksi = !dbHakemus.onkoPeruutettu && hakemusPeruutettu
-        val kasittelyVaihe    =
+        val kasittelyVaihe    = {
           kasittelyVaiheService.resolveKasittelyVaihe(
             dbHakemus,
             ataruHakemus
           )
+        }
         val saapumisPvm          = Some(toLocalDateTime(ataruHakemus.submitted))
         val ataruHakemusMuokattu = Some(toLocalDateTime(ataruHakemus.latestVersionCreated))
 
         val muutokset = ListBuffer[String]()
-        if (formId != dbHakemus.formId)
+        if (formId != dbHakemus.formId) {
           muutokset += s"form_id: ${dbHakemus.formId} -> $formId"
-        if (kasittelyVaihe != dbHakemus.kasittelyVaihe)
+        }
+        if (kasittelyVaihe != dbHakemus.kasittelyVaihe) {
           muutokset += s"${dbHakemus.kasittelyVaihe} -> $kasittelyVaihe"
-        if (hakemusKoskee != dbHakemus.hakemusKoskee)
+        }
+        if (hakemusKoskee != dbHakemus.hakemusKoskee) {
           muutokset += s"hakemusKoskee: ${dbHakemus.hakemusKoskee} -> $hakemusKoskee"
-        val peruutusPvm =
-          if (asetaPeruutetuksi)
+        }
+        val peruutusPvm = {
+          if (asetaPeruutetuksi) {
             Some(toLocalDateTime(ataruHakemus.latestVersionCreated))
-          else dbHakemus.peruutusPvm
-        if (asetaPeruutetuksi)
+          } else dbHakemus.peruutusPvm
+        }
+        if (asetaPeruutetuksi) {
           muutokset += s"hakemus peruutettu $peruutusPvm"
-        if (saapumisPvm != dbHakemus.saapumisPvm)
+        }
+        if (saapumisPvm != dbHakemus.saapumisPvm) {
           muutokset += s"saapumisPvm: ${dbHakemus.saapumisPvm} -> $saapumisPvm"
-        if (ataruHakemusMuokattu != dbHakemus.ataruHakemusMuokattu)
+        }
+        if (ataruHakemusMuokattu != dbHakemus.ataruHakemusMuokattu) {
           muutokset += s"ataruHakemusMuokattu: ${dbHakemus.ataruHakemusMuokattu} -> $ataruHakemusMuokattu"
-        if (!dbHakemus.hakijaEtunimet.contains(ataruHakemus.etunimet))
+        }
+        if (!dbHakemus.hakijaEtunimet.contains(ataruHakemus.etunimet)) {
           muutokset += s"hakijaEtunimet: ${dbHakemus.hakijaEtunimet} -> ${ataruHakemus.etunimet}"
-        if (!dbHakemus.hakijaSukunimi.contains(ataruHakemus.sukunimi))
+        }
+        if (!dbHakemus.hakijaSukunimi.contains(ataruHakemus.sukunimi)) {
           muutokset += s"hakijaSukunimi: ${dbHakemus.hakijaSukunimi} -> ${ataruHakemus.sukunimi}"
+        }
 
         if (muutokset.nonEmpty) {
           LOG.info(s"Päivitetään hakemus ${hakemusOid.s} ${muutokset.mkString(", ")}")
@@ -597,11 +612,13 @@ class HakemusService(
             ),
             ATARU_SERVICE
           )
-          if (asetaPeruutetuksi)
+          if (asetaPeruutetuksi) {
             paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, ATARU_SERVICE)
+          }
         }
       case _ =>
         LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
   }
+
 }

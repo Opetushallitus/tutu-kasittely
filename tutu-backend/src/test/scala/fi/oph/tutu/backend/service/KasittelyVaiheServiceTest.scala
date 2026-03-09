@@ -18,12 +18,14 @@ class KasittelyVaiheServiceTest {
 
   private var asiakirjaRepository: AsiakirjaRepository     = _
   private var kasittelyVaiheService: KasittelyVaiheService = _
-  private val dbHakemus    = dbHakemusFixture.copy(id = hakemusId, asiakirjaId = Some(asiakirjaId))
+  private val dbHakemus = dbHakemusFixture.copy(id = hakemusId, asiakirjaId = Some(asiakirjaId))
+
   private val ataruHakemus =
     ataruHakemusFixture.copy(submitted = "2026-01-29T14:30:45.597Z", latestVersionCreated = "2026-01-29T14:30:45.597Z")
 
-  private def ataruHakemusInTila(ataruHakemuksenTila: String): AtaruHakemus =
+  private def ataruHakemusInTila(ataruHakemuksenTila: String): AtaruHakemus = {
     ataruHakemus.copy(`application-hakukohde-reviews` = Seq(HakukohdeReview("", ataruHakemuksenTila, "")))
+  }
 
   @BeforeEach
   def setUp(): Unit = {
@@ -47,11 +49,12 @@ class KasittelyVaiheServiceTest {
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
       .thenReturn(Some(tiedot))
 
-    val result =
+    val result = {
       kasittelyVaiheService.resolveKasittelyVaihe(
         dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-29T18:30:45.597"))),
         ataruHakemusInTila("information-request")
       )
+    }
 
     assertEquals(KasittelyVaihe.OdottaaTaydennysta, result)
   }
@@ -438,11 +441,12 @@ class KasittelyVaiheServiceTest {
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(None, hakemusId))
       .thenReturn(None)
 
-    val result =
+    val result = {
       kasittelyVaiheService.resolveKasittelyVaihe(
         dbHakemus.copy(asiakirjaId = None),
         ataruHakemusInTila("processing-fee-paid")
       )
+    }
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -525,4 +529,5 @@ class KasittelyVaiheServiceTest {
 
     assertEquals(KasittelyVaihe.LoppukasittelyValmis, result)
   }
+
 }

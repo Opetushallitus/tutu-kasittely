@@ -6,6 +6,7 @@ import fi.oph.tutu.backend.service.{HakemuspalveluServiceException, Kayttooikeus
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 
 class ErrorMessageMapper(val objectMapper: ObjectMapper) {
+
   def mapErrorMessage(error: Throwable, status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR): ResponseEntity[Any] = {
     val origin = error match {
       case hse: HakemuspalveluServiceException => "hakemuspalvelu"
@@ -30,4 +31,5 @@ class ErrorMessageMapper(val objectMapper: ObjectMapper) {
       .contentType(MediaType.valueOf("text/plain; charset=UTF-8"))
       .body(body)
   }
+
 }

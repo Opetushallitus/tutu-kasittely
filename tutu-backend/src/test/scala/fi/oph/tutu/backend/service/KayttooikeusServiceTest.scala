@@ -113,4 +113,5 @@ class KayttooikeusServiceTest extends UnitTestBase {
 
     assertEquals(0, esittelijat.size, "Pitäisi olla tyhjä lista, kun kaikki ovat palvelukäyttäjiä")
   }
+
 }

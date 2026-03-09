@@ -4,6 +4,7 @@ enum SortDef:
   case Asc, Desc, Undefined
 
 object SortDef:
+
   def fromString(value: String): SortDef = value.toLowerCase match
     case "asc"  => Asc
     case "desc" => Desc

@@ -15,14 +15,15 @@ import scala.util.{Failure, Success, Try}
 @Component
 @Repository
 class TutkintoRepository extends BaseResultHandlers {
+
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
 
-  implicit val getTutkintoResult: GetResult[Tutkinto] =
-    GetResult(r =>
+  implicit val getTutkintoResult: GetResult[Tutkinto] = {
+    GetResult { r =>
       Tutkinto(
         id = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
         hakemusId = UUID.fromString(r.nextString()),
@@ -45,7 +46,8 @@ class TutkintoRepository extends BaseResultHandlers {
         muokkaaja = r.nextStringOption(),
         muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
-    )
+    }
+  }
 
   def lisaaTutkinto(tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
     val hakemusId                   = tutkinto.hakemusId
@@ -156,11 +158,12 @@ class TutkintoRepository extends BaseResultHandlers {
    */
   private def poistaTutkinto(
     id: UUID
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       DELETE FROM tutkinto
       WHERE id = ${id.toString}::uuid
     """
+  }
 
   def suoritaPoistaTutkinto(id: UUID): Int = {
     try {
@@ -186,7 +189,7 @@ class TutkintoRepository extends BaseResultHandlers {
   private def paivitaTutkinto(
     tutkinto: Tutkinto,
     muokkaaja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       UPDATE tutkinto
       SET
@@ -209,6 +212,7 @@ class TutkintoRepository extends BaseResultHandlers {
         muokkaaja = $muokkaaja
       WHERE id = ${tutkinto.id.get.toString}::uuid
     """
+  }
 
   /**
    * Hakee hakemuksen tutkinnot
@@ -219,7 +223,7 @@ class TutkintoRepository extends BaseResultHandlers {
    * hakemuksen tutkinnot
    */
   def haeTutkinnotHakemusOidilla(hakemusOid: HakemusOid): Seq[Tutkinto] = {
-    try
+    try {
       db.run(
         sql"""
     SELECT
@@ -251,7 +255,7 @@ class TutkintoRepository extends BaseResultHandlers {
           .as[Tutkinto],
         "hae_tutkinnot_hakemus_oidlla"
       )
-    catch {
+    } catch {
       case e: Exception =>
         LOG.error(s"Tutkintojen haku hakemusOid:lla $hakemusOid epäonnistui: $e")
         throw new RuntimeException(
@@ -262,7 +266,7 @@ class TutkintoRepository extends BaseResultHandlers {
   }
 
   def haeTutkintoIdlla(tutkintoId: UUID): Option[Tutkinto] = {
-    try
+    try {
       db.run(
         sql"""
         SELECT
@@ -292,7 +296,7 @@ class TutkintoRepository extends BaseResultHandlers {
           .as[Tutkinto],
         "hae_tutkinto_idlla"
       ).headOption
-    catch {
+    } catch {
       case e: Exception =>
         LOG.error(s"Tutkinnon haku id:lla $tutkintoId epäonnistui: $e")
         throw new RuntimeException(
@@ -301,4 +305,5 @@ class TutkintoRepository extends BaseResultHandlers {
         )
     }
   }
+
 }

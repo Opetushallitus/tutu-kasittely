@@ -16,14 +16,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component
 @Repository
 class MaakoodiRepository {
+
   @Autowired
   val db: TutuDatabase = null
 
   final val DB_TIMEOUT = 30.seconds
   val LOG: Logger      = LoggerFactory.getLogger(classOf[MaakoodiRepository])
 
-  implicit val getMaakoodiResult: GetResult[DbMaakoodi] =
-    GetResult(r =>
+  implicit val getMaakoodiResult: GetResult[DbMaakoodi] = {
+    GetResult { r =>
       DbMaakoodi(
         UUID.fromString(r.nextString()),
         Option(r.nextString()).map(UUID.fromString),
@@ -32,9 +33,10 @@ class MaakoodiRepository {
         r.nextString(),
         r.nextString()
       )
-    )
+    }
+  }
 
-  def listAll(): Seq[DbMaakoodi] =
+  def listAll(): Seq[DbMaakoodi] = {
     db.run(
       sql"""
         SELECT id, esittelija_id, koodiuri, fi, sv, en
@@ -42,6 +44,7 @@ class MaakoodiRepository {
       """.as[DbMaakoodi],
       "list_all_maakoodi"
     )
+  }
 
   /**
    * Creates or updates a maakoodi entry
@@ -91,7 +94,7 @@ class MaakoodiRepository {
     sv: String,
     en: String,
     muokkaajaTaiLuoja: String
-  ): DBIO[Int] =
+  ): DBIO[Int] = {
     sqlu"""
       INSERT INTO maakoodi (koodiuri, fi, sv, en, luoja)
       VALUES (
@@ -109,11 +112,13 @@ class MaakoodiRepository {
         muokkaaja = EXCLUDED.luoja,
         muokattu = now()
     """
+  }
 
-  private def syncDelete(koodiUri: String): DBIO[Int] =
+  private def syncDelete(koodiUri: String): DBIO[Int] = {
     sqlu"""
       DELETE FROM maakoodi WHERE koodiuri = $koodiUri
     """
+  }
 
   def syncFromKoodisto(
     items: Seq[KoodistoItem],
@@ -175,7 +180,7 @@ class MaakoodiRepository {
       val query = sql"""
         SELECT id, esittelija_id, koodiuri, fi, sv, en
         FROM maakoodi
-        WHERE koodiuri = ${uri}
+        WHERE koodiuri = $uri
       """.as[DbMaakoodi]
       val maakoodi = db.run(query.head, "getMaakoodi")
       Some(maakoodi)
@@ -228,4 +233,5 @@ class MaakoodiRepository {
         None
     }
   }
+
 }

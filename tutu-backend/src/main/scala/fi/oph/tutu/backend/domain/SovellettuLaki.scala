@@ -4,6 +4,7 @@ enum SovellettuLaki:
   case uo, ap, ap_seut, ro
 
 object SovellettuLaki:
+
   def optionFromString(value: String): Option[SovellettuLaki] = value match
     case "uo"                             => Some(uo)
     case "ap"                             => Some(ap)

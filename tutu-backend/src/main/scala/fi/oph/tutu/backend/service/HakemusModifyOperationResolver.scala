@@ -5,6 +5,7 @@ import fi.oph.tutu.backend.domain.*
 import java.util.UUID
 
 object HakemusModifyOperationResolver {
+
   private def pyydettavaAsiakirjaModified(
     currentAsiakirja: PyydettavaAsiakirja,
     toBeAsiakirja: PyydettavaAsiakirja
@@ -109,10 +110,11 @@ object HakemusModifyOperationResolver {
 
     val pieninPoistettuJarjestysNumero =
       currentTutkinnot.find(t => poistetut.contains(t.id.orNull)).map(_.jarjestys).getOrElse("")
-    val muutetutJaUudelleenNumeroitavat =
-      if (pieninPoistettuJarjestysNumero.nonEmpty)
+    val muutetutJaUudelleenNumeroitavat = {
+      if (pieninPoistettuJarjestysNumero.nonEmpty) {
         muutetut ++ resolveReIndexedTutkinnot(pieninPoistettuJarjestysNumero.toInt, toBeTutkinnot, poistetut)
-      else muutetut
+      } else muutetut
+    }
     TutkintoModifyData(uudet, muutetutJaUudelleenNumeroitavat, poistetut)
   }
 
@@ -129,4 +131,5 @@ object HakemusModifyOperationResolver {
       toBePaatosTiedot.filter(paatosTieto => currentPaatosTiedot.exists(paatosTietoModified(_, paatosTieto)))
     PaatosTietoModifyData(uudet, muutetut, poistetut)
   }
+
 }

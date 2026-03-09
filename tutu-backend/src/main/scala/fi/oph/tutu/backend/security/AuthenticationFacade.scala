@@ -12,6 +12,8 @@ trait IAuthenticationFacade {
 class AuthenticationFacade extends IAuthenticationFacade {
 
   @Override
-  def getAuthentication: Authentication =
+  def getAuthentication: Authentication = {
     SecurityContextHolder.getContext.getAuthentication
+  }
+
 }

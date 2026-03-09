@@ -26,42 +26,40 @@ class PaatosService(
   def haePaatos(hakemusOid: HakemusOid): Option[Paatos] = {
     hakemusRepository.haeHakemus(hakemusOid).flatMap { dbHakemus =>
       paatosRepository.haePaatos(dbHakemus.id).flatMap { paatos =>
-        {
-          val paatosTietoOptions = hakemuspalveluService.haeLomake(dbHakemus.formId) match {
-            case Right(response: String) =>
-              Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
-            case Left(error) =>
-              LOG.error(s"Lomakkeeen ${dbHakemus.formId} haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
-              None
-          }
+        val paatosTietoOptions = hakemuspalveluService.haeLomake(dbHakemus.formId) match {
+          case Right(response: String) =>
+            Some(ataruLomakeParser.parsePaatosTietoOptions(parse(response).extract[AtaruLomake]))
+          case Left(error) =>
+            LOG.error(s"Lomakkeeen ${dbHakemus.formId} haku epäonnistui hakemuspalvelusta: ${error.getMessage}")
+            None
+        }
 
-          paatosRepository.haePaatosTiedot(paatos.id.get) match {
-            case paatostiedot if paatostiedot.nonEmpty =>
-              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
-                paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get) match {
-                  case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
-                    paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot)
-                  case _ => paatosTieto
-                }
+        paatosRepository.haePaatosTiedot(paatos.id.get) match {
+          case paatostiedot if paatostiedot.nonEmpty =>
+            val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
+              paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get) match {
+                case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
+                  paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot)
+                case _ => paatosTieto
               }
-              val paatostiedotWithAllData = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot.map { paatosTieto =>
-                paatosRepository.haeKelpoisuudet(paatosTieto.id.get) match {
-                  case kelpoisuudet if kelpoisuudet.nonEmpty =>
-                    paatosTieto.copy(kelpoisuudet = kelpoisuudet)
-                  case _ => paatosTieto
-                }
+            }
+            val paatostiedotWithAllData = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot.map { paatosTieto =>
+              paatosRepository.haeKelpoisuudet(paatosTieto.id.get) match {
+                case kelpoisuudet if kelpoisuudet.nonEmpty =>
+                  paatosTieto.copy(kelpoisuudet = kelpoisuudet)
+                case _ => paatosTieto
               }
-              Some(
-                paatos.copy(
-                  paatosTiedot = paatostiedotWithAllData,
-                  paatosTietoOptions = paatosTietoOptions
-                )
+            }
+            Some(
+              paatos.copy(
+                paatosTiedot = paatostiedotWithAllData,
+                paatosTietoOptions = paatosTietoOptions
               )
-            case _ =>
-              Some(
-                paatos.copy(paatosTietoOptions = paatosTietoOptions)
-              )
-          }
+            )
+          case _ =>
+            Some(
+              paatos.copy(paatosTietoOptions = paatosTietoOptions)
+            )
         }
       }
     }
@@ -86,12 +84,13 @@ class PaatosService(
           case Some(paatos) => (paatos.paatosTiedot, paatos.paatosTietoOptions)
           case None         => (Nil, None)
         }
-        val paatosTietoModifyData =
+        val paatosTietoModifyData = {
           HakemusModifyOperationResolver
             .resolvePaatosTietoModifyOperations(currentPaatosTiedot, paatos.paatosTiedot) match {
             case modifyData @ PaatosTietoModifyData(uudet, muutetut, poistetut) => modifyData
             case null                                                           => PaatosTietoModifyData()
           }
+        }
 
         paatosRepository.suoritaPaatosTietojenModifiointi(
           latestSavedPaatos.id.orNull,
@@ -113,14 +112,15 @@ class PaatosService(
           latestSavedPaatos.copy(
             paatosTietoOptions = paatosTietoOptions,
             paatosTiedot = if (newlySavedPaatosTiedot.nonEmpty) {
-              newlySavedPaatosTiedot.map(paatosTieto =>
+              newlySavedPaatosTiedot.map { paatosTieto =>
                 paatosTieto.copy(
                   rinnastettavatTutkinnotTaiOpinnot = paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get),
                   kelpoisuudet = paatosRepository.haeKelpoisuudet(paatosTieto.id.get)
                 )
-              )
-            } else
+              }
+            } else {
               latestSavedPaatos.paatosTiedot
+            }
           )
         )
       case _ => None
@@ -135,9 +135,8 @@ class PaatosService(
     val tutkinnot: Seq[Tutkinto]           = tutkintoService.haeTutkinnot(hakemusOid)
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val paatos: Paatos                     = haePaatos(hakemusOid).get
-    val paatosKieli: String                = {
+    val paatosKieli: String                =
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
-    }
     val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers) match {
       case Some(kunta) => kunta
       case None        => "009"

@@ -52,4 +52,5 @@ class EsittelijaMaintenance(
         s"Onnistui: $success, epäonnistui: $failure, yhteensä: ${esittelijaOids.size}"
     )
   }
+
 }

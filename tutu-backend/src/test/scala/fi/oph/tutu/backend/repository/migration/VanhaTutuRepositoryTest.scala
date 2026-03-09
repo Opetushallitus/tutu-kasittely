@@ -68,4 +68,5 @@ class VanhaTutuRepositoryTest {
     assert(deletedData.isEmpty, "Data should be deleted")
     verify(vanhaTutuRepository, times(2)).get(id) // Called twice: once before deletion, once after
   }
+
 }
