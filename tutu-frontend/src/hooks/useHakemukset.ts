@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
-import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
+import { HakemusListResult } from '@/src/lib/types/hakemusListResult';
 
-export const getHakemukset = async (): Promise<HakemusListItem[]> => {
+export const getHakemukset = async (): Promise<HakemusListResult> => {
   const localStorageSearchParams = localStorage.getItem('tutu-query-string');
   const url = localStorageSearchParams
     ? `hakemuslista?${localStorageSearchParams}`

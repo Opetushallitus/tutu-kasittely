@@ -30,19 +30,18 @@ export default function FilemakerFilters() {
     handleFetchError(addToast, hakemuksetError, 'virhe.hakemuslistanLataus', t);
   }, [hakemuksetError, addToast, t]);
 
-  const [haku, setHaku] = useQueryState(
-    'fm-haku',
-    parseAsString.withDefault(''),
-  );
+  const [haku, setHaku] = useQueryState('query', parseAsString.withDefault(''));
 
+  const [_, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize, _setPageSize] = useQueryState(
-    'fm-pagesize',
+    'pagesize',
     parseAsInteger.withDefault(20),
   );
 
   const setPageSize = (val: string) => {
     const newValue = Number(val);
     if (Number.isFinite(newValue)) {
+      setPage(1);
       setFilemakerQueryStateAndLocalStorage(
         queryClient,
         _setPageSize,
@@ -70,13 +69,14 @@ export default function FilemakerFilters() {
             label={t('hakemuslista.haeHakemuksia')}
             sx={{ width: '100%' }}
             value={haku}
-            onChange={(event) =>
+            onChange={(event) => {
+              setPage(1);
               setFilemakerQueryStateAndLocalStorage(
                 queryClient,
                 setHaku,
                 event.target.value,
-              )
-            }
+              );
+            }}
             data-testid={'hakukentta'}
           ></OphInputFormField>
         </Grid>
@@ -87,17 +87,19 @@ export default function FilemakerFilters() {
         direction={'row'}
         justifyContent={'space-between'}
       >
-        <Grid size={'auto'} container alignItems="center">
-          {hakemukset?.count ?? 0} {t('hakemuslista.hakemusta')}
-        </Grid>
+        {hakemukset && (
+          <Grid size={'auto'} container alignItems="center">
+            {hakemukset.totalCount} {t('hakemuslista.hakemusta')}
+          </Grid>
+        )}
         <Grid size={'auto'} direction="row" container alignItems="center">
           <OphTypography id="fm-page-size-label">
-            {t('filemaker.pageSize.label')}
+            {t('filemaker.pageSize.label')}:
           </OphTypography>
           <OphSelect
             labelId="fm-page-size-label"
             onChange={(event) => setPageSize(event.target.value)}
-            value={`${pageSize ?? 20}`}
+            value={`${pageSize}`}
             options={[
               { label: '20', value: '20' },
               { label: '50', value: '50' },

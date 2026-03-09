@@ -2,12 +2,13 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { Esittelija } from '@/src/lib/types/esittelija';
 
+import { TFunction } from '../lib/localization/hooks/useTranslations';
 import { Maakoodi } from '../lib/types/maakoodi';
 
 interface EsittelijaSectionProps {
   esittelija: Esittelija;
   maakoodit: Maakoodi[] | undefined;
-  t: (key: string) => string;
+  t: TFunction;
 }
 
 const filterMaakooditByEsittelija = (

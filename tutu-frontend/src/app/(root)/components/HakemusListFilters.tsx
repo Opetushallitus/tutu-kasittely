@@ -10,11 +10,14 @@ import {
   OphFormFieldWrapper,
   OphInputFormField,
   OphSelectMultiple,
+  OphSelect,
+  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { redirect, useSearchParams } from 'next/navigation';
 import {
   parseAsArrayOf,
+  parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
   useQueryState,
@@ -40,17 +43,30 @@ export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const { options: esittelijaOptions, error } = useEsittelijat();
   const { addToast } = useToaster();
+
+  const { options: esittelijaOptions, error } = useEsittelijat();
+
+  const [_, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [pageSize, _setPageSize] = useQueryState(
+    'pagesize',
+    parseAsInteger.withDefault(20),
+  );
+
+  const setPageSize = (val: string) => {
+    const newValue = Number(val);
+    if (Number.isFinite(newValue)) {
+      setPage(1);
+      setQueryStateAndLocalStorage(queryClient, _setPageSize, newValue);
+    }
+  };
+
   const { data: hakemukset, error: hakemuksetError } = useHakemukset();
 
   useEffect(() => {
     handleFetchError(addToast, hakemuksetError, 'virhe.hakemuslistanLataus', t);
-  }, [hakemuksetError, addToast, t]);
-
-  useEffect(() => {
     handleFetchError(addToast, error, 'virhe.esittelijoidenLataus', t);
-  }, [error, addToast, t]);
+  }, [hakemuksetError, error, addToast, t]);
 
   const [nayta, setNayta] = useQueryState(
     'nayta',
@@ -100,13 +116,14 @@ export default function HakemusListFilters() {
                   <ToggleButton
                     selected={!naytaKaikki}
                     value={'omat'}
-                    onClick={() =>
+                    onClick={() => {
+                      setPage(1);
                       setQueryStateAndLocalStorage(
                         queryClient,
                         setNayta,
                         'omat',
-                      )
-                    }
+                      );
+                    }}
                     data-testid={'nayta-omat'}
                   >
                     {t('hakemuslista.omat')}
@@ -114,13 +131,14 @@ export default function HakemusListFilters() {
                   <ToggleButton
                     selected={naytaKaikki}
                     value={'kaikki'}
-                    onClick={() =>
+                    onClick={() => {
+                      setPage(1);
                       setQueryStateAndLocalStorage(
                         queryClient,
                         setNayta,
                         'kaikki',
-                      )
-                    }
+                      );
+                    }}
                   >
                     {t('hakemuslista.kaikki')}
                   </ToggleButton>
@@ -135,13 +153,14 @@ export default function HakemusListFilters() {
             label={t('hakemuslista.haeHakemuksia')}
             sx={{ width: '100%' }}
             value={haku}
-            onChange={(event) =>
+            onChange={(event) => {
+              setPage(1);
               setQueryStateAndLocalStorage(
                 queryClient,
                 setHaku,
                 event.target.value,
-              )
-            }
+              );
+            }}
             data-testid={'hakukentta'}
           ></OphInputFormField>
         </Grid>
@@ -161,13 +180,14 @@ export default function HakemusListFilters() {
                   }))}
                   value={vaiheet}
                   sx={{ width: '100%' }}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    setPage(1);
                     setQueryStateAndLocalStorage(
                       queryClient,
                       setVaiheet,
                       event.target.value,
-                    )
-                  }
+                    );
+                  }}
                   inputProps={{
                     'aria-label': t('hakemuslista.kasittelyvaihe'),
                   }}
@@ -190,13 +210,14 @@ export default function HakemusListFilters() {
                   }))}
                   value={hakemusKoskee}
                   sx={{ width: '100%' }}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    setPage(1);
                     setQueryStateAndLocalStorage(
                       queryClient,
                       setHakemusKoskee,
                       event.target.value,
-                    )
-                  }
+                    );
+                  }}
                   inputProps={{ 'aria-label': t('hakemuslista.hakemusKoskee') }}
                 />
               </div>
@@ -217,13 +238,14 @@ export default function HakemusListFilters() {
                       value: option.value,
                     }))}
                     value={esittelija}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      setPage(1);
                       setQueryStateAndLocalStorage(
                         queryClient,
                         setEsittelija,
                         event.target.value,
-                      )
-                    }
+                      );
+                    }}
                     inputProps={{
                       'aria-label': t('hakemuslista.esittelija'),
                     }}
@@ -242,11 +264,23 @@ export default function HakemusListFilters() {
       >
         {hakemukset && (
           <Grid size={'auto'}>
-            {hakemukset?.length} {t('hakemuslista.hakemusta')}
+            {hakemukset.totalCount} {t('hakemuslista.hakemusta')}
           </Grid>
         )}
-        <Grid size={'auto'}>
-          <div>sivutus</div>
+        <Grid size={'auto'} direction="row" container alignItems="center">
+          <OphTypography id="page-size-label">
+            {t('filemaker.pageSize.label')}:
+          </OphTypography>
+          <OphSelect
+            labelId="page-size-label"
+            onChange={(event) => setPageSize(event.target.value)}
+            value={`${pageSize}`}
+            options={[
+              { label: '20', value: '20' },
+              { label: '50', value: '50' },
+              { label: '100', value: '100' },
+            ]}
+          />
         </Grid>
       </Grid>
     </Grid>

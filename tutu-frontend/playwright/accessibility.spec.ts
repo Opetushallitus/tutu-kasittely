@@ -21,10 +21,20 @@ test('Saavutettavuus listanäkymä ok', async ({ page }) => {
 });
 
 test('Saavutettavuus filemaker listanäkymä ok', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/tutu-frontend/filemaker');
+  const otsikko = await translate(page, 'hakemuslista.otsikko');
+  await expect(page.getByTestId('hakemuslista-otsikko')).toHaveText(otsikko);
+  await expectPageAccessibilityOk(page);
+});
 
-  await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
-
+test('Saavutettavuus filemaker hakemus ok', async ({ page }) => {
+  await page.goto(
+    '/tutu-frontend/filemaker-hakemus/257acdfc-06c9-44b5-b76d-6c5d06200aa6',
+  );
+  const otsikko = await translate(page, 'hakemus.filemaker.otsikko');
+  await expect(page.getByTestId('filemaker-hakemus-otsikko')).toHaveText(
+    otsikko,
+  );
   await expectPageAccessibilityOk(page);
 });
 

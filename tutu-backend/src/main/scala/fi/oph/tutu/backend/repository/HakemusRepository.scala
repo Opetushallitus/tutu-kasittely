@@ -7,6 +7,7 @@ import org.springframework.stereotype.{Component, Repository}
 import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
@@ -164,47 +165,95 @@ class HakemusRepository extends BaseResultHandlers {
         )
     }
 
-  /**
-   * Palauttaa listan hakemuksista hakemusOid-listan pohjalta
-   * - Palautettavien kenttien listaa täydennettävä sitä mukaa
-   *   kun domain-luokka kasvaa
-   *
-   * @param hakemusOidit
-   *   hakemuspalvelun hakemusten oidit
-   *
-   * @return
-   *   HakemusOid-listan mukaiset hakemukset tietoineen
-   */
-  def haeHakemusLista(hakemusOidit: Seq[HakemusOid]): Seq[HakemusListItem] = {
+  def haeHakemusLista(
+    userOids: Seq[String],
+    hakemusKoskee: Seq[Int],
+    vaiheet: Seq[String],
+    apHakemus: Boolean,
+    sortParam: Option[ListSortParam],
+    page: Int,
+    pageSize: Int
+  ): (Seq[HakemusListItem], Long) = {
     try {
-      val oidt = hakemusOidit.map(oid => s"'${oid.s}'").mkString(", ")
-      db.run(
-        sql"""
-            SELECT
-              COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
-              h.saapumis_pvm,
-              h.hakemus_oid,
-              h.hakemus_koskee,
-              e.esittelija_oid,
-              h.asiatunnus,
-              e.kutsumanimi,
-              e.sukunimi,
-              h.kasittely_vaihe,
-              h.muokattu,
-              h.viimeisin_taydennyspyynto_paiva,
-              h.ataru_hakemus_muokattu,
-              a.ap_hakemus,
-              a.viimeinen_asiakirja_hakijalta,
-              h.onko_peruutettu
-            FROM
-              hakemus h
-            LEFT JOIN esittelija e on e.id = h.esittelija_id
-            LEFT JOIN asiakirja a on a.id = h.asiakirja_id
-            WHERE
-              h.hakemus_oid IN (#$oidt)
-            """.as[HakemusListItem],
-        "hae_hakemukset"
-      )
+      val whereClauses = Seq.newBuilder[String]
+
+      if (hakemusKoskee.nonEmpty || apHakemus) {
+        val list = hakemusKoskee.mkString(", ")
+        if (hakemusKoskee.nonEmpty && apHakemus) {
+          whereClauses += s"(h.hakemus_koskee IN ($list) OR a.ap_hakemus IS TRUE)"
+        } else if (hakemusKoskee.nonEmpty) {
+          whereClauses += s"h.hakemus_koskee IN ($list)"
+        } else {
+          whereClauses += s"a.ap_hakemus IS TRUE"
+        }
+      }
+
+      if (vaiheet.nonEmpty) {
+        val list = vaiheet.map(v => s"'$v'").mkString(", ")
+        whereClauses += s"h.kasittely_vaihe IN ($list)"
+      }
+
+      if (userOids.nonEmpty) {
+        val list = userOids.map(o => s"'$o'").mkString(", ")
+        whereClauses += s"e.esittelija_oid IN ($list)"
+      }
+
+      val whereClause = {
+        val clauses = whereClauses.result()
+        if (clauses.isEmpty) "" else "WHERE " + clauses.mkString(" AND ")
+      }
+
+      val orderBy = buildOrderBy(sortParam)
+      val offset  = (page - 1) * pageSize
+
+      val countAction = sql"""
+          SELECT COUNT(*)
+          FROM hakemus h
+          LEFT JOIN esittelija e ON e.id = h.esittelija_id
+          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
+          #$whereClause
+        """.as[Long].head
+
+      val dataAction = sql"""
+        WITH hakemus_ids AS (
+          SELECT h.id
+          FROM hakemus h
+          LEFT JOIN esittelija e ON e.id = h.esittelija_id
+          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
+          #$whereClause
+          ORDER BY #$orderBy
+          LIMIT $pageSize
+          OFFSET $offset
+        )
+        SELECT
+          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          h.saapumis_pvm,
+          h.hakemus_oid,
+          h.hakemus_koskee,
+          e.esittelija_oid,
+          h.asiatunnus,
+          e.kutsumanimi,
+          e.sukunimi,
+          h.kasittely_vaihe,
+          h.muokattu,
+          h.viimeisin_taydennyspyynto_paiva,
+          h.ataru_hakemus_muokattu,
+          a.ap_hakemus,
+          a.viimeinen_asiakirja_hakijalta,
+          h.onko_peruutettu
+        FROM hakemus h
+        LEFT JOIN esittelija e ON e.id = h.esittelija_id
+        LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
+        WHERE h.id IN (SELECT id FROM hakemus_ids)
+        ORDER BY #$orderBy
+      """.as[HakemusListItem]
+
+      val transactionalAction = for {
+        totalCount <- countAction
+        items      <- dataAction
+      } yield (items, totalCount)
+
+      db.runTransactionally(transactionalAction, "hae_hakemus_lista").get
     } catch {
       case e: Exception =>
         throw new RuntimeException(
@@ -213,6 +262,36 @@ class HakemusRepository extends BaseResultHandlers {
         )
     }
   }
+
+  private def buildOrderBy(sortParam: Option[ListSortParam]): String =
+    sortParam match {
+      case None                                => "h.saapumis_pvm DESC NULLS LAST"
+      case Some(ListSortParam(param, sortDef)) =>
+        val dir = SortDef.toSql(sortDef)
+        param match {
+          case "saapumisPvm"    => s"h.saapumis_pvm $dir"
+          case "hakija"         => s"h.hakija_etunimet $dir, h.hakija_sukunimi $dir"
+          case "asiatunnus"     => s"h.asiatunnus $dir"
+          case "esittelija"     => s"e.kutsumanimi $dir, e.sukunimi $dir"
+          case "kasittelyvaihe" => s"h.kasittely_vaihe $dir"
+          case "hakemusKoskee"  =>
+            // Map hakemus_koskee integers to label keys for ordering.
+            s"""CASE
+               |  WHEN h.hakemus_koskee = 0 THEN 'tutkinnonTasonRinnastaminen'
+               |  WHEN h.hakemus_koskee = 1 AND a.ap_hakemus IS TRUE THEN 'kelpoisuusAmmattiinAPHakemus'
+               |  WHEN h.hakemus_koskee = 1 THEN 'kelpoisuusAmmattiin'
+               |  WHEN h.hakemus_koskee = 2 THEN 'tutkintoSuoritusRinnastaminen'
+               |  WHEN h.hakemus_koskee = 3 THEN 'riittavatOpinnot'
+               |  WHEN h.hakemus_koskee = 4 THEN 'kelpoisuusAmmattiinAPHakemus'
+               |  WHEN h.hakemus_koskee = 5 THEN 'lopullinenPaatos'
+               |  ELSE h.hakemus_koskee::text
+               | END $dir""".stripMargin
+          case "kokonaisaika" => s"h.saapumis_pvm $dir"
+          case "hakijanaika"  => s"a.viimeinen_asiakirja_hakijalta $dir"
+          case unknown        =>
+            throw new IllegalArgumentException(s"Tuntematon sort-parametri: $unknown")
+        }
+    }
 
   /**
    * Palauttaa yksittäisen hakemuksen
@@ -262,78 +341,6 @@ class HakemusRepository extends BaseResultHandlers {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksen haku epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  /**
-   * PLACEHOLDER TOTEUTUS, KUNNES ElasticSearch-HAKU TOTEUTETTU
-   *
-   * @param userOids
-   * esittelijän oid
-   * @param hakemusKoskee
-   * hakemuspalvelun hakemuksen syy
-   * @param vaiheet
-   * tutu-hakemuksen käsittelyvaiheet
-   * @return
-   * hakuehtojen mukaisten hakemusten Oid:t
-   */
-  def haeHakemusOidit(
-    userOids: Seq[String],
-    hakemusKoskee: Seq[Int],
-    vaiheet: Seq[String],
-    apHakemus: Boolean
-  ): Seq[HakemusOid] = {
-    try {
-      val baseQuery = "SELECT h.hakemus_oid FROM hakemus h"
-
-      val joinClauses = Seq.newBuilder[String]
-
-      if (userOids.nonEmpty) {
-        val oidList = userOids.map(o => s"'$o'").mkString(", ")
-        joinClauses += s"INNER JOIN esittelija e ON h.esittelija_id = e.id AND e.esittelija_oid IN ($oidList)"
-      }
-
-      if (apHakemus) {
-        joinClauses += "INNER JOIN asiakirja a ON h.asiakirja_id = a.id AND a.ap_hakemus = true"
-      }
-      val joinClause = {
-        val clauses = joinClauses.result()
-        if (clauses.isEmpty) ""
-        else " " + clauses.mkString(" ")
-      }
-
-      val whereClauses = Seq.newBuilder[String]
-
-      if (hakemusKoskee.nonEmpty) {
-        val hakemusKoskeeList = hakemusKoskee.map(hk => s"$hk").mkString(", ")
-        whereClauses += s"h.hakemus_koskee IN (${hakemusKoskeeList})"
-      }
-
-      if (vaiheet.nonEmpty) {
-        val vaiheList = vaiheet.map(vaihe => s"'$vaihe'").mkString(", ")
-        whereClauses += s"h.kasittely_vaihe IN ($vaiheList)"
-      }
-
-      val whereClause = {
-        val clauses = whereClauses.result()
-        if (clauses.isEmpty) ""
-        else " WHERE " + clauses.mkString(" AND ")
-      }
-
-      val fullQuery = baseQuery + joinClause + whereClause
-
-      LOG.debug(fullQuery)
-
-      db.run(
-        sql"""#$fullQuery""".as[HakemusOid],
-        "hae_hakemus_oidt"
-      )
-    } catch {
-      case e: Exception =>
-        throw new RuntimeException(
-          s"HakemusOidien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }

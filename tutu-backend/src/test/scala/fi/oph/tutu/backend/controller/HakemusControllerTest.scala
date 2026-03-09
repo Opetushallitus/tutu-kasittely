@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+import org.hamcrest.Matchers.hasItems
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZonedDateTime}
@@ -192,7 +193,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val saapumisPvmStr     = toLocalDateTime("2025-05-14T10:59:47.597Z").toString
     val saapumisPvmStr6665 = toLocalDateTime("2025-05-14T11:06:38.273Z").toString
-    val expectedResult     = s"""[{
+    val expectedResult     = s"""{"items": [{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
                                 "saapumisPvm" : "$saapumisPvmStr",
@@ -232,7 +233,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken"
-                              } ]"""
+                              }], "totalCount": 4, "page": 1, "pageSize": 20, "totalPages": 1}"""
 
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), 0))
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1))
@@ -367,7 +368,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     )
 
     val saapumisPvmStr = toLocalDateTime("2025-05-14T10:59:47.597Z").toString()
-    val expectedResult = s"""[{
+    val expectedResult = s"""{"items": [{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
                                 "saapumisPvm" : "$saapumisPvmStr",
@@ -379,7 +380,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
                                 "taydennyspyyntoLahetetty": null
-                              } ]"""
+                              }], "totalCount": 1, "page": 1, "pageSize": 20, "totalPages": 1}"""
 
     mockMvc
       .perform(
@@ -676,6 +677,47 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals("Tarkistettu: lemmikkigerbiilin hoito", muuTutkintoAfterVirkailijaUpdate.muuTutkintoTieto.get)
 
     verify(auditLog, times(2)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemus), any())
+  }
+
+  @Test
+  @Order(10)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  def haeHakemuslistaHakemusKoskee1And4ReturnsOnly1AndAp(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+      )
+
+    // Ensure there's an AP flag set for one of the hakemukset
+    val hakemus     = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006667")).get
+    val asiakirjaId = hakemus.asiakirjaId.get
+    val asiakirja   = asiakirjaRepository.haeAsiakirjaTiedot(asiakirjaId).get
+    asiakirjaRepository.paivitaAsiakirjaTiedot(
+      asiakirjaId,
+      new Asiakirja(asiakirja.copy(apHakemus = Some(true)), Seq.empty, Map.empty),
+      UserOid(esittelijaOidString)
+    )
+
+    mockMvc
+      .perform(
+        get("/api/hakemuslista?hakemuskoskee=1&hakemuskoskee=4")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.items.length()").value(2))
+      .andExpect(jsonPath("$.totalCount").value(2))
+      .andExpect(
+        jsonPath("$.items[*].hakemusOid").value(
+          hasItems(
+            "1.2.246.562.11.00000000000000006666",
+            "1.2.246.562.11.00000000000000006667"
+          )
+        )
+      )
+      .andExpect(jsonPath("$.items[*].hakemusKoskee").value(hasItems(1, 1)))
+      .andExpect(jsonPath("$.items[*].apHakemus").value(hasItems(true, false)))
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
   }
 
   def haeHakemusTutkinnotEiMuutuJosHakemusEiMuuttunutValidRequestReturns200(): Unit = {

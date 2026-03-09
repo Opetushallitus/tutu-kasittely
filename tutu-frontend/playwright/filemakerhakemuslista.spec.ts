@@ -25,8 +25,8 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
 
   // odotetaan että hakemuslista on ladattu
-  await expect(page.getByTestId('hakemus-list')).toBeVisible();
-  const hakemusRow = page.getByTestId('hakemus-row');
+  await expect(page.getByTestId('filemaker-hakemus-list')).toBeVisible();
+  const hakemusRow = page.getByTestId('filemaker-hakemus-row');
 
   expect(await hakemusRow.count()).toBe(20);
 });
@@ -34,15 +34,11 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
 test('Hakemuslistan filtteri ja sivutus saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
-  // Navigoi filemaker-hakemuksiin
-  await page.goto('/tutu-frontend?fm-page=5&fm-haku=hakufraasi');
-  await expect(
-    page.getByTestId('hakemuslista-tab--filemakerHakemukset'),
-  ).toBeVisible();
-  await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
+  // Navigoi suoraan filemaker-hakemuksiin
+  await page.goto('/tutu-frontend/filemaker?page=5&query=hakufraasi');
 
   const hakukentta = page.getByTestId('hakukentta').locator('input');
-  const sivunumeroView = page.getByTestId('fm-page-view');
+  const sivunumeroView = page.getByTestId('page-view');
 
   await expect(hakukentta).toHaveValue('hakufraasi');
   await expect(sivunumeroView).toHaveText('5');
@@ -52,14 +48,13 @@ test('Hakemuslistan sivutuspainikkeet päivittävät hakuehdot', async ({
   page,
 }) => {
   // Navigoi filemaker-hakemuksiin
-  await page.goto('/tutu-frontend?fm-page=2');
-  await expect(
-    page.getByTestId('hakemuslista-tab--filemakerHakemukset'),
-  ).toBeVisible();
-  await page.getByTestId('hakemuslista-tab--filemakerHakemukset').click();
+  await page.goto('/tutu-frontend/filemaker?page=2');
 
-  const nextButton = page.getByTestId('fm-next-page');
-  const prevButton = page.getByTestId('fm-prev-page');
+  const nextButton = page.getByTestId('next-page');
+  const prevButton = page.getByTestId('prev-page');
+
+  // odotetaan että hakemuslista on ladattu
+  await expect(page.getByTestId('filemaker-hakemus-list')).toBeVisible();
 
   // Check that next button works
   const [nextPageRequest] = await Promise.all([
@@ -67,7 +62,7 @@ test('Hakemuslistan sivutuspainikkeet päivittävät hakuehdot', async ({
     nextButton.click(),
   ]);
 
-  expect(nextPageRequest.url()).toEqual(expect.stringContaining('fm-page=3'));
+  expect(nextPageRequest.url()).toContain('page=3');
 
   // Check that prev button works
   const [prevPageRequest] = await Promise.all([
@@ -75,5 +70,5 @@ test('Hakemuslistan sivutuspainikkeet päivittävät hakuehdot', async ({
     prevButton.click(),
   ]);
 
-  expect(prevPageRequest.url()).toEqual(expect.stringContaining('fm-page=2'));
+  expect(prevPageRequest.url()).toContain('page=2');
 });

@@ -2,7 +2,12 @@
 
 import { Table, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { parseAsStringLiteral, parseAsString, useQueryState } from 'nuqs';
+import {
+  parseAsInteger,
+  parseAsStringLiteral,
+  parseAsString,
+  useQueryState,
+} from 'nuqs';
 import { useEffect } from 'react';
 import * as R from 'remeda';
 
@@ -19,6 +24,7 @@ import {
   setQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
 
+import PaginationButtons from './PaginationButtons';
 import TableSortLabel from './TableSortLabel';
 
 const FIELD_KEYS = {
@@ -40,29 +46,35 @@ export function HakemusList({ user }: HakemusListProps) {
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
   const { t } = useTranslations();
+
+  const { isLoading, data, error } = useHakemukset();
+
+  useEffect(() => {
+    handleFetchError(addToast, error, 'virhe.hakemuslistanLataus', t);
+  }, [error, addToast, t]);
+
   const [sortDef, setSortDef] = useQueryState('sort', {
     ...parseAsString.withDefault('saapumisPvm:desc'),
     clearOnDefault: false,
   });
-  const { isLoading, data, error } = useHakemukset();
-  useEffect(() => {
-    handleFetchError(addToast, error, 'virhe.hakemuslistanLataus', t);
-  }, [error, addToast, t]);
+
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   const [nayta] = useQueryState(
     'nayta',
     parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
   );
 
-  const handleSort = async (sortDef: unknown) => {
-    await setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
+  const handleSort = (sortDef: unknown) => {
+    setPage(1);
+    setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
   };
 
   if (isLoading) return <FullSpinner></FullSpinner>;
 
   const hakemusRows =
     data && user
-      ? R.map(data, (hakemus) => {
+      ? R.map(data.items, (hakemus) => {
           return (
             <HakemusRow
               hakemus={hakemus}
@@ -73,27 +85,41 @@ export function HakemusList({ user }: HakemusListProps) {
         })
       : [];
 
+  const selectPage = (page: number): Promise<void> => {
+    return setQueryStateAndLocalStorage(queryClient, setPage, page);
+  };
+
+  const pageCount = data ? data.totalPages : 1;
+
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
-              nayta === 'omat' && fieldKey === FIELD_KEYS.esittelija ? null : (
-                <TableSortLabel
-                  key={fieldKey}
-                  fieldKey={fieldKey}
-                  sortDef={sortDef}
-                  handleSort={handleSort}
-                />
-              ),
-            )}
-          </TableRow>
-        </TableHead>
-        <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
-          {hakemusRows}
-        </StyledTableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {R.map(Object.values(FIELD_KEYS), (fieldKey) =>
+                nayta === 'omat' &&
+                fieldKey === FIELD_KEYS.esittelija ? null : (
+                  <TableSortLabel
+                    key={fieldKey}
+                    fieldKey={fieldKey}
+                    sortDef={sortDef}
+                    handleSort={handleSort}
+                  />
+                ),
+              )}
+            </TableRow>
+          </TableHead>
+          <StyledTableBody data-testid={'hakemus-list'} tabIndex={0}>
+            {hakemusRows}
+          </StyledTableBody>
+        </Table>
+      </TableContainer>
+      <PaginationButtons
+        page={page}
+        pageCount={pageCount}
+        selectPage={selectPage}
+      />
+    </>
   );
 }

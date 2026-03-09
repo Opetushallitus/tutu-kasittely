@@ -13,6 +13,7 @@ import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation._
 
 import scala.util.{Failure, Success, Try}
+import fi.oph.tutu.backend.domain.FilemakerHakemusListResult
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -116,9 +117,9 @@ class VanhaTutuController(
 
   /**
    * Listaa vanhoja TUTU-hakemuksia
-   * @param query hakusana - request param fm-haku
-   * @param page sivu      - request param fm-page
-   * @param size sivukoko  - request param fm-pagesize
+   * @param query hakusana - request param query
+   * @param page sivu      - request param page
+   * @param pagesize sivukoko  - request param pagesize
    */
   @GetMapping(path = Array("vanha-tutu/lista"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
   @Operation(
@@ -129,34 +130,40 @@ class VanhaTutuController(
     )
   )
   def listaaVanhojaHakemuksia(
-    @RequestParam("fm-haku", required = false) query: String,
-    @RequestParam("fm-page", required = false) page: String,
-    @RequestParam("fm-pagesize", required = false) size: String,
+    @RequestParam("query", required = false, defaultValue = "") query: String,
+    @RequestParam(required = false, defaultValue = "1") page: Int,
+    @RequestParam(required = false, defaultValue = "20") pagesize: Int,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val pageNum     = Try(page.toInt).getOrElse(1).max(1)            // Sivut alkaen numerosta 1 (default 1)
-      val pageSize    = Try(size.toInt).getOrElse(20).min(100).max(20) // Sivutus välillä 20 - 100 (default 20)
-      val queryString = Option(query).getOrElse("")
+      require(page >= 1, "page must be >= 1")
+      require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
 
-      val hakemusLista = vanhaTutuService.listaaHakemuksia(queryString, pageNum, pageSize)
-      val hakemusCount = vanhaTutuService.listaaHakemuksiaCount(queryString)
+      val items      = vanhaTutuService.listaaHakemuksia(query, page, pagesize)
+      val totalCount = vanhaTutuService.listaaHakemuksiaCount(query)
 
-      val items = mapper.createArrayNode()
-      hakemusLista.foreach { item =>
-        items.add(item)
-      }
+      val totalPages =
+        if (totalCount == 0) 1
+        else math.ceil(totalCount.toDouble / pagesize.max(1)).toInt
 
-      val jsonRoot = mapper.createObjectNode()
-
-      jsonRoot.put("count", hakemusCount)
-      jsonRoot.put("items", items)
-
-      mapper.writeValueAsString(jsonRoot)
+      FilemakerHakemusListResult(
+        items = items,
+        totalCount = totalCount,
+        page = page,
+        pageSize = pagesize,
+        totalPages = totalPages
+      )
     } match {
-      case Success(jsonString) => {
-        ResponseEntity.status(HttpStatus.OK).body(jsonString)
+      case Success(hakemuslista) => {
+        val response = mapper.writeValueAsString(hakemuslista)
+        ResponseEntity.status(HttpStatus.OK).body(response)
       }
+      case Failure(exception: IllegalArgumentException) =>
+        LOG.error(s"Virheellinen parametri:", exception)
+        errorMessageMapper.mapPlainErrorMessage(
+          exception.getMessage(),
+          HttpStatus.BAD_REQUEST
+        )
       case Failure(exception) => {
         LOG.error(s"Virhe haettaessa vanhojen hakemusten listaa", exception)
         errorMessageMapper.mapErrorMessage(exception)

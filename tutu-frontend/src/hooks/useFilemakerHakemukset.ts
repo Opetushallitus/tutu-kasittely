@@ -2,15 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 
-import { FilemakerHakemus } from '../lib/utils/filemakerDataUtils';
-
-type FilemakerHakemuksetListResult = {
-  count: number;
-  items: FilemakerHakemus[];
-};
+import { FilemakerHakemusListResult } from '../lib/types/filemakerHakemusListResult';
 
 export const getFilemakerHakemukset =
-  async (): Promise<FilemakerHakemuksetListResult> => {
+  async (): Promise<FilemakerHakemusListResult> => {
     const localStorageSearchParams = localStorage.getItem(
       'tutu-filemaker-query-string',
     );

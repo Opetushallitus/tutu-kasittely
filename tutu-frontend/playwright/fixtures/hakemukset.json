@@ -1,47 +1,53 @@
-[
-  {
-    "hakija": "Heikki Heittotähti",
-    "saapumisPvm": "2025-04-14T10:59:04.597",
-    "hakemusOid": "1.2.246.562.11.00000000001",
-    "hakemusKoskee": "2",
-    "esittelijaOid": "1.2.246.562.24.999999999999",
-    "asiatunnus": "OPH-001-1978",
-    "kasittelyVaihe": "AlkukasittelyKesken",
-    "taydennyspyyntoLahetetty": null,
-    "apHakemus": null
-  },
-  {
-    "hakija": "Kalle Katana",
-    "saapumisPvm": "2025-05-14T10:59:04.597",
-    "hakemusOid": "1.2.246.562.11.00000000002",
-    "hakemusKoskee": "2",
-    "esittelijaOid": "1.2.246.562.24.999999999998",
-    "asiatunnus": "OPH-123-2025",
-    "kasittelyVaihe": "AlkukasittelyKesken",
-    "taydennyspyyntoLahetetty": null,
-    "apHakemus": null
-  },
-  {
-    "hakija": "Simo Samurai",
-    "saapumisPvm": "2025-06-14T10:59:04.597",
-    "hakemusOid": "1.2.246.562.11.00000000003",
-    "hakemusKoskee": "2",
-    "esittelijaOid": null,
-    "asiatunnus": "OPH-123-2025",
-    "kasittelyVaihe": "AlkukasittelyKesken",
-    "taydennyspyyntoLahetetty": null,
-    "apHakemus": null,
-    "onkoPeruutettu": true
-  },
-  {
-    "hakija": "Seppuku Seppo",
-    "saapumisPvm": "2025-07-14T10:59:04.597",
-    "hakemusOid": "1.2.246.562.11.00000000004",
-    "hakemusKoskee": "1",
-    "esittelijaOid": null,
-    "asiatunnus": "OPH-123-2025",
-    "kasittelyVaihe": "OdottaaTaydennysta",
-    "taydennyspyyntoLahetetty": "2025-07-14T11:06:38.273Z",
-    "apHakemus": true
-  }
-]
+{
+  "items": [
+    {
+      "hakija": "Heikki Heittotähti",
+      "saapumisPvm": "2025-04-14T10:59:04.597",
+      "hakemusOid": "1.2.246.562.11.00000000001",
+      "hakemusKoskee": "2",
+      "esittelijaOid": "1.2.246.562.24.999999999999",
+      "asiatunnus": "OPH-001-1978",
+      "kasittelyVaihe": "AlkukasittelyKesken",
+      "taydennyspyyntoLahetetty": null,
+      "apHakemus": null
+    },
+    {
+      "hakija": "Kalle Katana",
+      "saapumisPvm": "2025-05-14T10:59:04.597",
+      "hakemusOid": "1.2.246.562.11.00000000002",
+      "hakemusKoskee": "2",
+      "esittelijaOid": "1.2.246.562.24.999999999998",
+      "asiatunnus": "OPH-123-2025",
+      "kasittelyVaihe": "AlkukasittelyKesken",
+      "taydennyspyyntoLahetetty": null,
+      "apHakemus": null
+    },
+    {
+      "hakija": "Simo Samurai",
+      "saapumisPvm": "2025-06-14T10:59:04.597",
+      "hakemusOid": "1.2.246.562.11.00000000003",
+      "hakemusKoskee": "2",
+      "esittelijaOid": null,
+      "asiatunnus": "OPH-123-2025",
+      "kasittelyVaihe": "AlkukasittelyKesken",
+      "taydennyspyyntoLahetetty": null,
+      "apHakemus": null,
+      "onkoPeruutettu": true
+    },
+    {
+      "hakija": "Seppuku Seppo",
+      "saapumisPvm": "2025-07-14T10:59:04.597",
+      "hakemusOid": "1.2.246.562.11.00000000004",
+      "hakemusKoskee": "1",
+      "esittelijaOid": null,
+      "asiatunnus": "OPH-123-2025",
+      "kasittelyVaihe": "OdottaaTaydennysta",
+      "taydennyspyyntoLahetetty": "2025-07-14T11:06:38.273Z",
+      "apHakemus": true
+    }
+  ],
+  "totalCount": 4,
+  "page": 1,
+  "pageSize": 20,
+  "totalPages": 1
+}
