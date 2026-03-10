@@ -32,7 +32,7 @@ class VanhaTutuService(
           json.put("id", id)
           json
         })
-    } recoverWith { case e: Exception =>
+    }.recoverWith { case e: Exception =>
       LOG.error(s"Vanhan tutun haku epäonnistui id:llä $id", e)
       Failure(e)
     }
