@@ -16,14 +16,14 @@ import {
   mergeRegister,
 } from '@lexical/utils';
 import {
-  DeleteOutlined,
   FormatBold,
+  FormatClear,
   FormatListBulleted,
   FormatListNumbered,
-  FormatStrikethrough,
-  Highlight,
+  HighlightOutlined,
   LinkOutlined,
   Redo,
+  StrikethroughS,
   Undo,
 } from '@mui/icons-material';
 import { Divider, Stack, styled } from '@mui/material';
@@ -56,19 +56,36 @@ import {
 
 const ToolbarContainer = styled(Stack)({
   width: '100%',
-  height: '40px',
+  height: '36px',
   borderBottom: '1px solid',
   borderColor: 'black',
 });
 
 const ToolbarInnerContainer = styled(Stack)({
-  padding: '4px 0',
+  padding: '0',
+  display: 'flex',
+  alignItems: 'center',
 });
 
 const iconStyle = (selected: boolean) => ({
-  color: selected ? ophColors.black : ophColors.grey700,
-  backgroundColor: selected ? ophColors.grey200 : ophColors.white,
-  borderRadius: '2px',
+  color: selected ? ophColors.grey900 : ophColors.grey700,
+});
+
+const buttonStyle = (selected: boolean) => ({
+  backgroundColor: selected ? ophColors.lightBlue2 : ophColors.white,
+  backgroundOpacity: selected ? 0.5 : 0,
+  '&:hover': {
+    backgroundOpacity: 1,
+    backgroundColor: ophColors.grey100,
+  },
+  height: '34px',
+  width: '38px',
+  padding: '1px',
+  margin: 0,
+  borderRadius: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 type BlockType = ListType | 'paragraph';
@@ -77,7 +94,7 @@ const initialState = {
   isBold: false,
   isStrikethrough: false,
   isHighlighted: false,
-  fontColor: ophColors.black as FontColor,
+  fontColor: ophColors.grey900 as FontColor,
   canUndo: false,
   canRedo: false,
   isLink: false,
@@ -214,6 +231,7 @@ export function Toolbar() {
           $patchStyleText(selection, { color: value });
         }
       });
+      updateToolbarState('fontColor', value);
     },
     [editor],
   );
@@ -231,12 +249,14 @@ export function Toolbar() {
           onClick={() => {
             editor.dispatchCommand(UNDO_COMMAND, undefined);
           }}
-          aria-label="Format Bold"
+          aria-label="Undo"
+          sx={buttonStyle(false)}
           startIcon={
             <Undo
-              style={{
+              sx={{
+                fontSize: '24px',
                 color: toolbarState.canUndo
-                  ? ophColors.black
+                  ? ophColors.grey900
                   : ophColors.grey400,
               }}
             />
@@ -247,12 +267,14 @@ export function Toolbar() {
           onClick={() => {
             editor.dispatchCommand(REDO_COMMAND, undefined);
           }}
-          aria-label="Format Bold"
+          aria-label="Redo"
+          sx={buttonStyle(false)}
           startIcon={
             <Redo
-              style={{
+              sx={{
+                fontSize: '24px',
                 color: toolbarState.canRedo
-                  ? ophColors.black
+                  ? ophColors.grey900
                   : ophColors.grey400,
               }}
             />
@@ -265,15 +287,17 @@ export function Toolbar() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
           }}
           aria-label="Format Bold"
-          startIcon={<FormatBold style={iconStyle(toolbarState.isBold)} />}
+          sx={buttonStyle(toolbarState.isBold)}
+          startIcon={<FormatBold sx={iconStyle(toolbarState.isBold)} />}
         />
         <OphButton
           onClick={() => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight');
           }}
           aria-label="Format highlight"
+          sx={buttonStyle(toolbarState.isHighlighted)}
           startIcon={
-            <Highlight style={iconStyle(toolbarState.isHighlighted)} />
+            <HighlightOutlined sx={iconStyle(toolbarState.isHighlighted)} />
           }
         />
         <OphButton
@@ -281,35 +305,40 @@ export function Toolbar() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
           }}
           aria-label="Format strikethrough"
+          sx={buttonStyle(toolbarState.isStrikethrough)}
           startIcon={
-            <FormatStrikethrough
-              style={iconStyle(toolbarState.isStrikethrough)}
-            />
+            <StrikethroughS sx={iconStyle(toolbarState.isStrikethrough)} />
           }
         />
-        <ColorPicker changeFontColor={changeFontColor} />
+        <ColorPicker
+          changeFontColor={changeFontColor}
+          selectedColor={toolbarState.fontColor}
+        />
         <OphButton
           onClick={clearFormatting}
           aria-label="Clear formatting"
-          startIcon={<DeleteOutlined style={{ color: ophColors.black }} />}
+          sx={buttonStyle(false)}
+          startIcon={<FormatClear sx={iconStyle(false)} />}
         />
       </ToolbarInnerContainer>
       <ToolbarInnerContainer direction={'row'}>
         <OphButton
           onClick={() => formatBulletList(editor, toolbarState.blockType)}
           aria-label="List Bulleted"
+          sx={buttonStyle(toolbarState.blockType === 'bullet')}
           startIcon={
             <FormatListBulleted
-              style={iconStyle(toolbarState.blockType === 'bullet')}
+              sx={iconStyle(toolbarState.blockType === 'bullet')}
             />
           }
         />
         <OphButton
           onClick={() => formatNumberedList(editor, toolbarState.blockType)}
           aria-label="List Numbered"
+          sx={buttonStyle(toolbarState.blockType === 'number')}
           startIcon={
             <FormatListNumbered
-              style={iconStyle(toolbarState.blockType === 'number')}
+              sx={iconStyle(toolbarState.blockType === 'number')}
             />
           }
         />
@@ -318,7 +347,8 @@ export function Toolbar() {
         <OphButton
           onClick={() => {}}
           aria-label="Add link"
-          startIcon={<LinkOutlined style={iconStyle(toolbarState.isLink)} />}
+          sx={buttonStyle(toolbarState.isLink)}
+          startIcon={<LinkOutlined sx={iconStyle(toolbarState.isLink)} />}
         />
       </ToolbarInnerContainer>
     </ToolbarContainer>
