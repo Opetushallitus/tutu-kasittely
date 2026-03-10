@@ -79,7 +79,7 @@ class HakemusRepository extends BaseResultHandlers {
       YkViestiListItem(
         id = r.nextObject().asInstanceOf[UUID],
         hakemusId = r.nextObject().asInstanceOf[UUID],
-        hakemusOid = r.nextString(),
+        hakemusOid = HakemusOid(r.nextString()),
         asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
