@@ -608,6 +608,10 @@ class HakemusController(
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def haeYkViestiLista(
+    @RequestParam(required = false) lahetetty: String,
+    @RequestParam(required = false) hakija: String,
+    @RequestParam(required = false) asiatunnus: String,
+    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -616,7 +620,7 @@ class HakemusController(
 
       hakemusService.haeYkViestiLista(
         userOid,
-        ""
+        sort
       )
     } match {
       case Success(ykviestit) =>
