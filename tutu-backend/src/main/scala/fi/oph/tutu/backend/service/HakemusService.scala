@@ -581,6 +581,59 @@ class HakemusService(
   def haeYkViestiLista(
     userOid: String,
     sort: String
-  ): Seq[YkViestiListItem] =
-    hakemusRepository.haeYkViestiLista(userOid)
+  ): Seq[YkViesti] = {
+    val lista        = hakemusRepository.haeYkViestiLista(userOid)
+    val hakemusOidit = lista.map(viesti => viesti.hakemusOid.asInstanceOf[HakemusOid])
+
+    val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
+      case Left(error)     => throw error
+      case Right(response) =>
+        parse(response).extract[Seq[AtaruHakemus]]
+    }
+    val ykViestiList = lista.flatMap { viesti =>
+      val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == viesti.hakemusOid)
+      val hakija       = ataruHakemus match {
+        case None               => ""
+        case Some(ataruHakemus) =>
+          s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}"
+      }
+      Some(
+        YkViesti(
+          id = viesti.id,
+          hakemusOid = viesti.hakemusOid,
+          asiatunnus = viesti.asiatunnus,
+          hakija = hakija,
+          lahettaja_oid = viesti.lahettajaOid,
+          vastaanottaja_oid = viesti.vastaanottajaOid,
+          luotu = viesti.luotu,
+          luettu = viesti.luettu,
+          viesti = viesti.viesti,
+          vastaus = viesti.vastaus
+        )
+      )
+    }
+    sort match {
+      case null => ykViestiList
+      case _    =>
+        val sortParam = sort.split(":").headOption.getOrElse("undefined")
+        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
+
+        val sortedList: Seq[YkViesti] = sortDef match {
+          case SortDef.Asc =>
+            sortParam match {
+              case "lahetetty"  => ykViestiList.sortBy(_.luotu)
+              case "hakija"     => ykViestiList.sortBy(_.hakija)
+              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
+            }
+          case SortDef.Desc =>
+            sortParam match {
+              case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
+              case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
+              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
+            }
+          case SortDef.Undefined => ykViestiList
+        }
+        sortedList
+    }
+  }
 }
