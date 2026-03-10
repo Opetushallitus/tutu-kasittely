@@ -14,7 +14,7 @@ import TableSortLabel from '../TableSortLabel';
 const FIELD_KEYS = {
   lahetetty: 'lahetetty',
   tila: 'tila',
-  hakijanNimi: 'hakijanNimi',
+  hakijanNimi: 'hakija',
   asiatunnus: 'asiatunnus',
 };
 
@@ -48,7 +48,7 @@ export default function SentMessages({
           <TableRow>
             {R.map(Object.values(FIELD_KEYS), (fieldKey) => (
               <TableSortLabel
-                mainKey="yhteineKasittely"
+                mainKey="yhteinenKasittely"
                 key={fieldKey}
                 fieldKey={fieldKey}
                 sortDef={sortDef}
