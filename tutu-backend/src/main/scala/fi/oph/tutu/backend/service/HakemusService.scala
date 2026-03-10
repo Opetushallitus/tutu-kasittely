@@ -583,7 +583,7 @@ class HakemusService(
     sort: String
   ): Seq[YkViesti] = {
     val lista        = hakemusRepository.haeYkViestiLista(userOid)
-    val hakemusOidit = lista.map(viesti => viesti.hakemusOid.asInstanceOf[HakemusOid])
+    val hakemusOidit = lista.map(viesti => viesti.hakemusOid)
 
     val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
       case Left(error)     => throw error
@@ -591,7 +591,7 @@ class HakemusService(
         parse(response).extract[Seq[AtaruHakemus]]
     }
     val ykViestiList = lista.flatMap { viesti =>
-      val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == viesti.hakemusOid)
+      val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == viesti.hakemusOid.toString)
       val hakija       = ataruHakemus match {
         case None               => ""
         case Some(ataruHakemus) =>
@@ -600,7 +600,7 @@ class HakemusService(
       Some(
         YkViesti(
           id = viesti.id,
-          hakemusOid = viesti.hakemusOid,
+          hakemusOid = viesti.hakemusOid.toString,
           asiatunnus = viesti.asiatunnus,
           hakija = hakija,
           lahettaja_oid = viesti.lahettajaOid,
