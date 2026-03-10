@@ -64,9 +64,10 @@ case class DbYkViesti(
 )
 
 case class YkViesti(
-  id: String,
+  id: UUID,
   hakemusOid: String,
-  asiatunnus: String,
+  asiatunnus: Option[String] = None,
+  hakija: String,
   lahettaja_oid: Option[String] = None,
   vastaanottaja_oid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
