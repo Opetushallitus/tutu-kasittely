@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ReceivedMessages from '@/src/app/(root)/components/JointProcessing/ReceivedMessages';
 import SentMessages from '@/src/app/(root)/components/JointProcessing/SentMessages';
 import { Tabs } from '@/src/app/(root)/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import useToaster from '@/src/hooks/useToaster';
 import { useYkViestilista } from '@/src/hooks/useYkViestilista';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
+import { handleFetchError } from '@/src/lib/utils';
 
 const countNotResponded = (messages: YhteisenKasittelynViesti[]) =>
   messages.filter((message) => message.status === 0).length;
@@ -16,9 +19,20 @@ const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
   messages.filter((message) => message.status === 1).length;
 
 export default function JointProcessingPage({ user }: { user: User | null }) {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
   const [tab, setTab] = useState<string>('saapuneet');
 
-  const { isLoading, data } = useYkViestilista();
+  const { isLoading, data, error } = useYkViestilista();
+
+  useEffect(() => {
+    handleFetchError(
+      addToast,
+      error,
+      'virhe.yhteisenkasittelynListanLataus',
+      t,
+    );
+  }, [error, addToast, t]);
 
   const handleTabChange = (newTab: string) => () => {
     if (newTab !== tab) {
