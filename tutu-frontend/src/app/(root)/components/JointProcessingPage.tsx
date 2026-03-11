@@ -10,10 +10,10 @@ import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 
 const countNotResponded = (messages: YhteisenKasittelynViesti[]) =>
-  messages.filter((message) => message.vastaus === null).length;
+  messages.filter((message) => message.status === 0).length;
 
 const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
-  messages.filter((message) => message.luettu === null).length;
+  messages.filter((message) => message.status === 1).length;
 
 export default function JointProcessingPage({ user }: { user: User | null }) {
   const [tab, setTab] = useState<string>('saapuneet');
