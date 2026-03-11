@@ -18,7 +18,7 @@ const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
 export default function JointProcessingPage({ user }: { user: User | null }) {
   const [tab, setTab] = useState<string>('saapuneet');
 
-  const { isLoading, data, error } = useYkViestilista();
+  const { isLoading, data } = useYkViestilista();
 
   const handleTabChange = (newTab: string) => () => {
     if (newTab !== tab) {
@@ -34,7 +34,6 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
     : [];
 
   if (isLoading) return <FullSpinner />;
-  console.log('DATA: ', data, error);
 
   return (
     <BoxWrapper>
