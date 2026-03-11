@@ -37,13 +37,13 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <Grid2 container wrap={'nowrap'}>
-          {status === 0 ? <StyledNotRespondedIcon /> : <StyledRespondedIcon />}
+          {status === 2 ? <StyledNotRespondedIcon /> : <StyledRespondedIcon />}
           <OphTypography variant="body1">
-            {status === 0
+            {status === 2
               ? t('yhteinenKasittely.vastaamatta')
               : t('yhteinenKasittely.vastattu')}
           </OphTypography>
-          {status === 2 && (
+          {status === 0 && (
             <OphTypography
               variant="body1"
               sx={{
