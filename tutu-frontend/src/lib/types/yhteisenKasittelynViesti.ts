@@ -6,7 +6,7 @@ export type YhteisenKasittelynViesti = {
   lahettaja: string;
   vastaanottajaOid: string;
   vastaanottaja: string;
-  hakijanNimi: string;
+  hakija: string;
   viesti: string;
   vastaus?: string;
   luettu?: string;
