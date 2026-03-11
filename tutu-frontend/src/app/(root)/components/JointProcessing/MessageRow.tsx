@@ -30,7 +30,6 @@ export default function MessageRow({
   const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
   const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy HH:mm') : '-';
 
-  // TODO: Korjaa oikea linkki
   return (
     <TableRow>
       <StyledTableCell>
@@ -62,7 +61,7 @@ export default function MessageRow({
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
-        <Link href={`/hakemus/${hakemusOid}/perustiedot`}>{hakija}</Link>
+        <Link href={`/hakemus/${hakemusOid}/yhteinenkasittely`}>{hakija}</Link>
       </StyledTableCell>
       <StyledTableCell>
         <OphTypography variant="body1">{asiatunnus}</OphTypography>
