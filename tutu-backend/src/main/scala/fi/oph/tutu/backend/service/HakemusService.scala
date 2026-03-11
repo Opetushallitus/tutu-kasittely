@@ -581,7 +581,7 @@ class HakemusService(
   def haeYkViestiLista(
     userOid: String,
     sort: String
-  ): Seq[YkViesti] = {
+  ): Seq[YkViestiListItem] = {
     val lista        = hakemusRepository.haeYkViestiLista(userOid)
     val hakemusOidit = lista.map(viesti => viesti.hakemusOid)
 
@@ -598,13 +598,14 @@ class HakemusService(
           s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}"
       }
       Some(
-        YkViesti(
+        YkViestiListItem(
           id = viesti.id,
+          hakemusId = viesti.hakemusId,
           hakemusOid = viesti.hakemusOid.toString,
           asiatunnus = viesti.asiatunnus,
           hakija = hakija,
-          lahettaja_oid = viesti.lahettajaOid,
-          vastaanottaja_oid = viesti.vastaanottajaOid,
+          lahettajaOid = viesti.lahettajaOid,
+          vastaanottajaOid = viesti.vastaanottajaOid,
           luotu = viesti.luotu,
           luettu = viesti.luettu,
           viesti = viesti.viesti,
@@ -618,7 +619,7 @@ class HakemusService(
         val sortParam = sort.split(":").headOption.getOrElse("undefined")
         val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
 
-        val sortedList: Seq[YkViesti] = sortDef match {
+        val sortedList: Seq[YkViestiListItem] = sortDef match {
           case SortDef.Asc =>
             sortParam match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu)
