@@ -27,7 +27,7 @@ export default function ReceivedMessages({
 }) {
   const queryClient = useQueryClient();
   const [sortDef, setSortDef] = useQueryState('sort', {
-    ...parseAsString.withDefault(''),
+    ...parseAsString.withDefault('tila:desc'),
     clearOnDefault: false,
   });
   const messageRows =
