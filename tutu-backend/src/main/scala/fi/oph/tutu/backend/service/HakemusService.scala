@@ -597,6 +597,7 @@ class HakemusService(
         case Some(ataruHakemus) =>
           s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}"
       }
+      val status: Number = if (viesti.vastaus.isEmpty) 0 else if (viesti.luettu.isEmpty) 1 else 2
       Some(
         YkViestiListItem(
           id = viesti.id,
@@ -609,7 +610,8 @@ class HakemusService(
           luotu = viesti.luotu,
           luettu = viesti.luettu,
           viesti = viesti.viesti,
-          vastaus = viesti.vastaus
+          vastaus = viesti.vastaus,
+          status = status
         )
       )
     }

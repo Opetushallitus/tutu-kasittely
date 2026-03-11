@@ -82,7 +82,7 @@ case class YkViestiListItem(
   asiatunnus: Option[String] = None,
   hakemusOid: String,
   hakija: String,
-  status: Option[String] = None,
+  status: Number,
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
