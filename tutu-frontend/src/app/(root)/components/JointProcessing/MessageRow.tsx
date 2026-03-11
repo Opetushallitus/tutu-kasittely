@@ -27,8 +27,7 @@ export default function MessageRow({
   message: YhteisenKasittelynViesti;
 }) {
   const { t } = useTranslations();
-  const { luotu, asiatunnus, vastaus, hakijanNimi, hakemusOid } = message;
-  const vastaamatta = vastaus === null || vastaus?.length === 0;
+  const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
   const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy HH:mm') : '-';
 
   // TODO: Korjaa oikea linkki
@@ -39,16 +38,31 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <Grid2 container wrap={'nowrap'}>
-          {vastaamatta ? <StyledNotRespondedIcon /> : <StyledRespondedIcon />}
+          {status === 0 ? <StyledNotRespondedIcon /> : <StyledRespondedIcon />}
           <OphTypography variant="body1">
-            {vastaamatta
+            {status === 0
               ? t('yhteinenKasittely.vastaamatta')
               : t('yhteinenKasittely.vastattu')}
           </OphTypography>
+          {status === 2 && (
+            <OphTypography
+              variant="body1"
+              sx={{
+                color: 'black',
+                background: ophColors.green5,
+                marginLeft: 1,
+                paddingLeft: 1,
+                paddingRight: 1,
+                borderRadius: 1,
+              }}
+            >
+              {t('yhteinenKasittely.uusi')}
+            </OphTypography>
+          )}
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
-        <Link href={`/hakemus/${hakemusOid}/perustiedot`}>{hakijanNimi}</Link>
+        <Link href={`/hakemus/${hakemusOid}/perustiedot`}>{hakija}</Link>
       </StyledTableCell>
       <StyledTableCell>
         <OphTypography variant="body1">{asiatunnus}</OphTypography>
