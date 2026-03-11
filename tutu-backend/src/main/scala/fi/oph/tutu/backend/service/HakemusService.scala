@@ -664,12 +664,14 @@ class HakemusService(
               case "lahetetty"  => ykViestiList.sortBy(_.luotu)
               case "hakija"     => ykViestiList.sortBy(_.hakija)
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
+              case "tila"       => ykViestiList.sortBy(_.status)
             }
           case SortDef.Desc =>
             sortParam match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
               case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
+              case "tila"       => ykViestiList.sortBy(_.status).reverse
             }
           case SortDef.Undefined => ykViestiList
         }
