@@ -9,14 +9,27 @@ import java.util.UUID
 @Component
 @Service
 class TutkintoService(
-  tutkintoRepository: TutkintoRepository
+  tutkintoRepository: TutkintoRepository,
+  onrService: OnrService
 ) {
   def haeTutkinnot(hakemusOid: HakemusOid): Seq[Tutkinto] = {
-    tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+    tutkintoRepository
+      .haeTutkinnotHakemusOidilla(hakemusOid)
+      .map((tutkinto: Tutkinto) =>
+        tutkinto.copy(
+          muokkaaja = onrService.haeNimiOption(tutkinto.muokkaaja)
+        )
+      )
   }
 
   def haeTutkinto(tutkintoId: UUID): Option[Tutkinto] = {
-    tutkintoRepository.haeTutkintoIdlla(tutkintoId)
+    tutkintoRepository
+      .haeTutkintoIdlla(tutkintoId)
+      .map((tutkinto: Tutkinto) =>
+        tutkinto.copy(
+          muokkaaja = onrService.haeNimiOption(tutkinto.muokkaaja)
+        )
+      )
   }
 
   def lisaaTutkinto(tutkinto: Tutkinto, luoja: String): Int = {

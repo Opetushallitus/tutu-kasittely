@@ -24,11 +24,9 @@ class ViestiService(
         viestiRepository
           .haeViestiLista(dbHakemus.id, sortParams)
           .map(viesti => {
-            val vahvistaja = onrService.haeHenkilo(viesti.vahvistaja) match {
-              case Left(error)    => ""
-              case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
-            }
-            viesti.copy(vahvistaja = vahvistaja)
+            viesti.copy(
+              vahvistaja = onrService.haeNimi(Some(viesti.vahvistaja))
+            )
           })
       case _ => List()
     }
@@ -55,15 +53,12 @@ class ViestiService(
   def haeViesti(id: UUID): Option[Viesti] = {
     viestiRepository.haeViesti(id) match {
       case Some(viesti) =>
-        viesti.vahvistaja match {
-          case Some(vahvistajaOid) =>
-            val vahvistaja = onrService.haeHenkilo(vahvistajaOid) match {
-              case Left(error)    => None
-              case Right(henkilo) => Some(s"${henkilo.kutsumanimi} ${henkilo.sukunimi}")
-            }
-            Some(viesti.copy(vahvistaja = vahvistaja))
-          case _ => Some(viesti.copy(vahvistaja = None))
-        }
+        Some(
+          viesti.copy(
+            vahvistaja = onrService.haeNimiOption(viesti.vahvistaja),
+            muokkaaja = onrService.haeNimiOption(viesti.muokkaaja)
+          )
+        )
       case _ => None
     }
   }

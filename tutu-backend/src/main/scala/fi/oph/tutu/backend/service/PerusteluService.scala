@@ -22,7 +22,8 @@ class PerusteluService(
   hakemuspalveluService: HakemuspalveluService,
   paatosService: PaatosService,
   maakoodiService: MaakoodiService,
-  koodistoService: KoodistoService
+  koodistoService: KoodistoService,
+  onrService: OnrService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
@@ -37,9 +38,17 @@ class PerusteluService(
             perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
               case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
                 Some(
-                  perustelu.copy(lausuntopyynnot = lausuntoPyynnot)
+                  perustelu.copy(
+                    lausuntopyynnot = lausuntoPyynnot,
+                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
+                  )
                 )
-              case _ => Some(perustelu)
+              case _ =>
+                Some(
+                  perustelu.copy(
+                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
+                  )
+                )
             }
           }
         }

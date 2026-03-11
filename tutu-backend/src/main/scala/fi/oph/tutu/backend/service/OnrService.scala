@@ -108,4 +108,15 @@ class OnrService(httpService: HttpService) {
     val henkiloCache = cacheManager.getCache("henkilo")
     henkiloCache.put(personOid, value)
   }
+
+  def haeNimiOption(maybePersonOid: Option[String]): Option[String] = {
+    val henkilo: Option[String] = maybePersonOid
+      .map(personOid => haeHenkilo(personOid).map(henkilo => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}").toOption)
+      .flatten
+    henkilo
+  }
+
+  def haeNimi(maybePersonOid: Option[String]): String = {
+    haeNimiOption(maybePersonOid).getOrElse("")
+  }
 }
