@@ -77,9 +77,9 @@ class HakemusRepository extends BaseResultHandlers {
       )
     )
 
-  implicit val getYkViestiListItemResult: GetResult[YkViestiListItem] =
+  implicit val getYkViestiListItemResult: GetResult[YkViesti] =
     GetResult(r =>
-      YkViestiListItem(
+      YkViesti(
         id = r.nextObject().asInstanceOf[UUID],
         hakemusId = r.nextObject().asInstanceOf[UUID],
         asiatunnus = Option(r.nextString()),
@@ -497,7 +497,7 @@ class HakemusRepository extends BaseResultHandlers {
         )
     }
 
-  def haeYkViestiLista(userOid: String): Seq[YkViestiListItem] =
+  def haeYkViestiLista(userOid: String): Seq[YkViesti] =
     try {
       db.run(
         sql"""
@@ -517,7 +517,7 @@ class HakemusRepository extends BaseResultHandlers {
           LEFT JOIN hakemus h on h.id = v.hakemus_id
           WHERE
             v.lahettaja_oid = $userOid OR v.vastaanottaja_oid = $userOid
-          """.as[YkViestiListItem],
+          """.as[YkViesti],
         "hae_ykviestit"
       )
     } catch {
