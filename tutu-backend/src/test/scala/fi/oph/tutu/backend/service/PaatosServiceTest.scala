@@ -4,6 +4,7 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 import java.util.UUID
 
@@ -63,7 +64,11 @@ class PaatosServiceTest extends UnitTestBase {
       onkoPeruutettu = false,
       peruutusPvm = None,
       peruutusLisatieto = None,
-      viimeisinTaydennyspyyntoPvm = None
+      viimeisinTaydennyspyyntoPvm = None,
+      saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      hakijaEtunimet = Some("Jorma Eero"),
+      hakijaSukunimi = Some("")
     )
   }
 

@@ -4,6 +4,7 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 import java.util.UUID
 import java.time.LocalDateTime
@@ -54,7 +55,11 @@ class ViestiServiceTest extends UnitTestBase {
       onkoPeruutettu = false,
       peruutusPvm = None,
       peruutusLisatieto = None,
-      viimeisinTaydennyspyyntoPvm = None
+      viimeisinTaydennyspyyntoPvm = None,
+      saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      hakijaEtunimet = Some("Jorma Eero"),
+      hakijaSukunimi = Some("")
     )
   }
 
@@ -92,7 +97,7 @@ class ViestiServiceTest extends UnitTestBase {
   def haeViestiListaPalauttaaVahvistajanNimen(): Unit = {
     // Data
     val hakemusOid       = HakemusOid("poop")
-    val sort             = ""
+    val sortParams       = None
     val dbHakemus        = makeDbHakemus(hakemusOid)
     val dbViestiListItem = ViestiListItem(
       id = UUID.randomUUID,
@@ -104,12 +109,13 @@ class ViestiServiceTest extends UnitTestBase {
 
     // Mock setup
     when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemus))
-    when(viestiRepository.haeViestiLista(any[UUID])).thenReturn(Seq(dbViestiListItem))
+    when(viestiRepository.haeViestiLista(any[UUID], any[Option[ListSortParam]])).thenReturn(Seq(dbViestiListItem))
 
     when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
 
     // Act
-    val viestiLista: Seq[ViestiListItem] = viestiService.haeViestiLista(hakemusOid = hakemusOid, sort = sort)
+    val viestiLista: Seq[ViestiListItem] =
+      viestiService.haeViestiLista(hakemusOid = hakemusOid, sortParams = sortParams)
 
     // Verify
     viestiLista.foreach(viestiListaItem => assertEquals(viestiListaItem.vahvistaja, "Topolino"))
