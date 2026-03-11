@@ -76,17 +76,6 @@ class OnrService(httpService: HttpService) {
     }
   }
 
-  def haeNimi(personOid: Option[String]): String = {
-    personOid match {
-      case None            => ""
-      case Some(muokkaaja) =>
-        haeHenkilo(muokkaaja) match {
-          case Left(_)        => ""
-          case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
-        }
-    }
-  }
-
   @CacheEvict(value = Array("asiointikieli"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
   def emptyAsiointikieliCache(): Unit =
