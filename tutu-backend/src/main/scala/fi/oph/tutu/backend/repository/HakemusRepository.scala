@@ -86,7 +86,7 @@ class HakemusRepository extends BaseResultHandlers {
         luettu = r.nextTimestampOption().map(_.toLocalDateTime),
         viesti = Option(r.nextString()),
         vastaus = Option(r.nextString()),
-        hakija = Option(r.nextString())
+        hakija = r.nextString()
       )
     )
 
@@ -475,7 +475,6 @@ class HakemusRepository extends BaseResultHandlers {
             v.id,
             v.hakemus_oid,
             h.asiatunnus,
-            h.hakemus_oid,
             v.lahettaja_oid,
             v.vastaanottaja_oid,
             v.luotu,

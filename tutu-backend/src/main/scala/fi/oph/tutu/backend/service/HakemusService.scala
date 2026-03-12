@@ -638,7 +638,7 @@ class HakemusService(
           id = viesti.id,
           hakemusOid = viesti.hakemusOid.toString,
           asiatunnus = viesti.asiatunnus,
-          hakija = viesti.hakija.toString,
+          hakija = viesti.hakija,
           lahettajaOid = viesti.lahettajaOid,
           vastaanottajaOid = viesti.vastaanottajaOid,
           luotu = viesti.luotu,
