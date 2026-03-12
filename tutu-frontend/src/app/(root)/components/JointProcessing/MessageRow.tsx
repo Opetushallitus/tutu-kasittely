@@ -33,14 +33,16 @@ export default function MessageRow({
   const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy HH:mm') : '-';
 
   return (
-    <TableRow>
+    <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
       <StyledTableCell>
-        <OphTypography variant="body1">{lahetysAika}</OphTypography>
+        <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
+          {lahetysAika}
+        </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
         <Grid2 container wrap={'nowrap'}>
           {status === 2 ? <StyledNotRespondedIcon /> : <StyledRespondedIcon />}
-          <OphTypography variant="body1">
+          <OphTypography variant="body1" data-testid={'viestin-status'}>
             {status === 2
               ? t('yhteinenKasittely.vastaamatta')
               : t('yhteinenKasittely.vastattu')}
@@ -63,10 +65,17 @@ export default function MessageRow({
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
-        <Link href={`/hakemus/${hakemusOid}/yhteinenkasittely`}>{hakija}</Link>
+        <Link
+          href={`/hakemus/${hakemusOid}/yhteinenkasittely`}
+          data-testid={'hakijan-nimi'}
+        >
+          {hakija}
+        </Link>
       </StyledTableCell>
       <StyledTableCell>
-        <OphTypography variant="body1">{asiatunnus}</OphTypography>
+        <OphTypography variant="body1" data-testid={'asiatunnus'}>
+          {asiatunnus}
+        </OphTypography>
       </StyledTableCell>
     </TableRow>
   );
