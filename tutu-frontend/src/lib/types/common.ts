@@ -1,6 +1,6 @@
 export type LanguageCode = 'fi' | 'sv' | 'en';
 
-interface OphRadioOption<T> {
+export interface OphRadioOption<T> {
   value: T;
   label: string;
 }
@@ -8,4 +8,9 @@ interface OphRadioOption<T> {
 export type NamedBoolean = {
   name: string;
   value: boolean;
+};
+
+export type OphSelectOption = {
+  label: string;
+  value: string;
 };

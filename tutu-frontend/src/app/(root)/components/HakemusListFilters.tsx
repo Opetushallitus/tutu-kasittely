@@ -9,6 +9,7 @@ import {
 import {
   OphFormFieldWrapper,
   OphInputFormField,
+  OphSelectMultiple,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { redirect, useSearchParams } from 'next/navigation';
@@ -25,8 +26,6 @@ import {
   kasittelyVaiheet,
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
-import { OphSelectOption } from '@/src/components/OphSelect';
-import { OphSelectMultiple } from '@/src/components/OphSelectMultiple';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
@@ -153,24 +152,27 @@ export default function HakemusListFilters() {
             label={t('hakemuslista.kasittelyvaihe')}
             sx={{ width: '100%' }}
             renderInput={() => (
-              <OphSelectMultiple
-                placeholder={t('yleiset.valitse')}
-                options={R.map(kasittelyVaiheet, (vaihe) => ({
-                  label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
-                  value: vaihe,
-                }))}
-                value={vaiheet}
-                sx={{ width: '100%' }}
-                onChange={(event) =>
-                  setQueryStateAndLocalStorage(
-                    queryClient,
-                    setVaiheet,
-                    event.target.value,
-                  )
-                }
-                data-testid={'kasittelyvaihe'}
-                inputProps={{ 'aria-label': t('hakemuslista.kasittelyvaihe') }}
-              />
+              <div data-testid={'kasittelyvaihe'}>
+                <OphSelectMultiple
+                  placeholder={t('yleiset.valitse')}
+                  options={R.map(kasittelyVaiheet, (vaihe) => ({
+                    label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
+                    value: vaihe,
+                  }))}
+                  value={vaiheet}
+                  sx={{ width: '100%' }}
+                  onChange={(event) =>
+                    setQueryStateAndLocalStorage(
+                      queryClient,
+                      setVaiheet,
+                      event.target.value,
+                    )
+                  }
+                  inputProps={{
+                    'aria-label': t('hakemuslista.kasittelyvaihe'),
+                  }}
+                />
+              </div>
             )}
           />
         </Grid>
@@ -179,24 +181,25 @@ export default function HakemusListFilters() {
             label={t('hakemuslista.hakemusKoskee')}
             sx={{ width: '100%' }}
             renderInput={() => (
-              <OphSelectMultiple
-                placeholder={t('yleiset.valitse')}
-                options={R.map(hakemusKoskeeOptions, (option) => ({
-                  label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
-                  value: option.value,
-                }))}
-                value={hakemusKoskee}
-                sx={{ width: '100%' }}
-                onChange={(event) =>
-                  setQueryStateAndLocalStorage(
-                    queryClient,
-                    setHakemusKoskee,
-                    event.target.value,
-                  )
-                }
-                data-testid={'hakemus-koskee'}
-                inputProps={{ 'aria-label': t('hakemuslista.hakemusKoskee') }}
-              />
+              <div data-testid={'hakemus-koskee'}>
+                <OphSelectMultiple
+                  placeholder={t('yleiset.valitse')}
+                  options={R.map(hakemusKoskeeOptions, (option) => ({
+                    label: t(`valinnat.hakemusKoskeeValinta.${option.label}`),
+                    value: option.value,
+                  }))}
+                  value={hakemusKoskee}
+                  sx={{ width: '100%' }}
+                  onChange={(event) =>
+                    setQueryStateAndLocalStorage(
+                      queryClient,
+                      setHakemusKoskee,
+                      event.target.value,
+                    )
+                  }
+                  inputProps={{ 'aria-label': t('hakemuslista.hakemusKoskee') }}
+                />
+              </div>
             )}
           />
         </Grid>
@@ -206,26 +209,26 @@ export default function HakemusListFilters() {
               label={t('hakemuslista.esittelija')}
               sx={{ width: '100%' }}
               renderInput={() => (
-                <OphSelectMultiple
-                  placeholder={t('yleiset.valitse')}
-                  options={R.map(
-                    esittelijaOptions,
-                    (option: OphSelectOption<string>) => ({
+                <div data-testid={'esittelija'}>
+                  <OphSelectMultiple
+                    placeholder={t('yleiset.valitse')}
+                    options={R.map(esittelijaOptions, (option) => ({
                       label: option.label,
                       value: option.value,
-                    }),
-                  )}
-                  value={esittelija}
-                  onChange={(event) =>
-                    setQueryStateAndLocalStorage(
-                      queryClient,
-                      setEsittelija,
-                      event.target.value,
-                    )
-                  }
-                  data-testid={'esittelija'}
-                  inputProps={{ 'aria-label': t('hakemuslista.esittelija') }}
-                />
+                    }))}
+                    value={esittelija}
+                    onChange={(event) =>
+                      setQueryStateAndLocalStorage(
+                        queryClient,
+                        setEsittelija,
+                        event.target.value,
+                      )
+                    }
+                    inputProps={{
+                      'aria-label': t('hakemuslista.esittelija'),
+                    }}
+                  />
+                </div>
               )}
             />
           </Grid>

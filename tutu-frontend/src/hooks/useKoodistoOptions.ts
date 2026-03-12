@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { OphSelectOption } from '@/src/components/OphSelect';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
+
+import { OphSelectOption } from '../lib/types/common';
 
 type KoodistoItem = {
   koodiUri: string;
@@ -18,7 +19,7 @@ type KoodistoItem = {
 const getKoodistoOptions = (
   koodisto: KoodistoItem[],
   lang: string,
-): OphSelectOption<string>[] => {
+): OphSelectOption[] => {
   return koodisto
     .filter(
       (item) => item.nimi && item.nimi[lang as keyof KoodistoItem['nimi']],
@@ -34,10 +35,10 @@ const getKorkeakouluOptions = (
   koodisto: KoodistoItem[],
   lang: string,
   muuLabel: string,
-): OphSelectOption<string>[] => {
+): OphSelectOption[] => {
   const options = getKoodistoOptions(koodisto, lang);
 
-  const muuOption: OphSelectOption<string> = {
+  const muuOption: OphSelectOption = {
     value: 'muu',
     label: muuLabel,
   };
