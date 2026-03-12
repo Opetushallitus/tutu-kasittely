@@ -502,7 +502,7 @@ class HakemusRepository extends BaseResultHandlers {
     } catch {
       case e: Exception =>
         throw new RuntimeException(
-          s"Yhteisen käsitetelyn viestien listaus epäonnistui: ${e.getMessage}",
+          s"Yhteisen käsittelyn viestien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }
