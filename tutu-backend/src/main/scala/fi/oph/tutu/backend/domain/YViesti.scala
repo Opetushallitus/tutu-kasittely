@@ -73,7 +73,7 @@ case class YkViesti(
   luettu: Option[LocalDateTime] = None,
   viesti: Option[String] = None,
   vastaus: Option[String] = None,
-  hakija: Option[String] = None
+  hakija: String
 )
 
 case class YkViestiListItem(
