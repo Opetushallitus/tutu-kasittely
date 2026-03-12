@@ -38,7 +38,12 @@ export default function ReceivedMessages({
       : [];
 
   const handleSort = async (sortDef: unknown) => {
-    await setQueryStateAndLocalStorage(queryClient, setSortDef, sortDef);
+    await setQueryStateAndLocalStorage(
+      queryClient,
+      setSortDef,
+      sortDef,
+      'getYkViestilista',
+    );
   };
 
   return (
