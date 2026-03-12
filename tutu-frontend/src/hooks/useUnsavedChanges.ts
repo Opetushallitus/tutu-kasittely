@@ -26,6 +26,8 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
           header: t('yleiset.tallentamattomiaMuutoksia'),
           content: t('virhe.tallennus'),
           confirmButtonText: t('yleiset.jatkaTallentamatta'),
+          cancelButtonText: t('yleiset.palaaTallentamaan'),
+          confirmPrimary: false,
           handleConfirmAction: () => {
             onDiscard?.();
             resolve(true);
@@ -63,6 +65,8 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
         header: t('yleiset.tallentamattomiaMuutoksia'),
         content: t('yleiset.lomakkeellaOnMuutoksia'),
         confirmButtonText: t('yleiset.jatkaTallentamatta'),
+        cancelButtonText: t('yleiset.palaaTallentamaan'),
+        confirmPrimary: false,
         handleConfirmAction: () => {
           onDiscard?.();
           if (destinationKey != null) {
@@ -89,6 +93,8 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
         header: t('yleiset.tallentamattomiaMuutoksia'),
         content: t('yleiset.lomakkeellaOnMuutoksia'),
         confirmButtonText: t('yleiset.jatkaTallentamatta'),
+        cancelButtonText: t('yleiset.palaaTallentamaan'),
+        confirmPrimary: false,
         handleConfirmAction: () => {
           onDiscard?.();
           guard.accept();
