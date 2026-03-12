@@ -11,9 +11,9 @@ import {
 import React from 'react';
 
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { OphSelectOption } from '@/src/components/OphSelect';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { OphSelectOption } from '@/src/lib/types/common';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
@@ -52,8 +52,8 @@ const tutkintotodistusOtsikko = {
 
 export type TutkintoProps = {
   tutkinto: Tutkinto;
-  maatJaValtiotOptions: OphSelectOption<string>[];
-  koulutusLuokitusOptions: OphSelectOption<string>[];
+  maatJaValtiotOptions: OphSelectOption[];
+  koulutusLuokitusOptions: OphSelectOption[];
   updateTutkintoAction: (tutkinto: Tutkinto) => void;
   deleteTutkintoAction: (tutkinto: Tutkinto) => void;
   paatosKieli: string;

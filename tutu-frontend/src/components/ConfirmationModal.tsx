@@ -36,8 +36,10 @@ export type ConfirmationModalProps = {
   header: string;
   content: string;
   confirmButtonText: string;
+  cancelButtonText?: string;
   handleConfirmAction: () => void;
   handleCloseAction?: () => void;
+  confirmPrimary?: boolean;
 };
 
 type ConfirmationModalContextValue = {
@@ -88,10 +90,14 @@ export const ConfirmationModal = ({
   header,
   content,
   confirmButtonText,
+  cancelButtonText,
   handleConfirmAction,
   handleCloseAction,
+  confirmPrimary = true,
 }: ConfirmationModalProps) => {
   const { t } = useTranslations();
+  const confirmVariant = confirmPrimary ? 'contained' : 'outlined';
+  const cancelVariant = confirmPrimary ? 'outlined' : 'contained';
   return (
     <Modal
       open={open}
@@ -121,14 +127,14 @@ export const ConfirmationModal = ({
           <Stack direction="row" gap={2} justifyContent="flex-end">
             <OphButton
               data-testid="modal-peruuta-button"
-              variant="outlined"
+              variant={cancelVariant}
               onClick={handleCloseAction}
             >
-              {t('yleiset.peruuta')}
+              {cancelButtonText ?? t('yleiset.peruuta')}
             </OphButton>
             <OphButton
               data-testid="modal-confirm-button"
-              variant="contained"
+              variant={confirmVariant}
               onClick={handleConfirmAction}
             >
               {confirmButtonText}

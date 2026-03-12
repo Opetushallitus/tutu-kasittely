@@ -12,16 +12,16 @@ import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { OphSelectOption } from '@/src/components/OphSelect';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { OphSelectOption } from '@/src/lib/types/common';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
 export type LausuntopyyntoProps = {
   lausuntopyynto: Lausuntopyynto;
   updateLausuntopyyntoAction: (lausuntopyynto: Lausuntopyynto) => void;
   deleteLausuntopyyntoAction: (jarjestysnumero: number) => void;
-  korkeakouluOptions: OphSelectOption<string>[];
+  korkeakouluOptions: OphSelectOption[];
   isKoodistoLoading: boolean;
   t: TFunction;
   theme: Theme;

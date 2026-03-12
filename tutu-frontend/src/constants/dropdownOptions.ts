@@ -1,7 +1,7 @@
-import { OphSelectOption } from '@/src/components/OphSelect';
+import { OphSelectOption } from '../lib/types/common';
 
 // Katso HakemusKoskee hakemus.ts
-export const hakemusKoskeeOptions: Array<OphSelectOption<string>> = [
+export const hakemusKoskeeOptions: Array<OphSelectOption> = [
   { value: '0', label: 'tutkinnonTasonRinnastaminen' },
   { value: '1', label: 'kelpoisuusAmmattiin' },
   { value: '2', label: 'tutkintoSuoritusRinnastaminen' },

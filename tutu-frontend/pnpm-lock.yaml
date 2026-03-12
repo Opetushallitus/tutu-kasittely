@@ -56,8 +56,8 @@ importers:
         specifier: ^7.3.6
         version: 7.3.6(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3)
       '@opetushallitus/oph-design-system':
-        specifier: ^1.1.0
-        version: 1.1.0(@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@15.5.9(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+        specifier: ^1.2.0
+        version: 1.2.0(@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@15.5.9(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       '@tanstack/react-query':
         specifier: ^5.74.4
         version: 5.90.12(react@19.2.3)
@@ -1035,15 +1035,12 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@opetushallitus/oph-design-system@1.1.0':
-    resolution: {integrity: sha512-5yR7TefzuMfJtcvBCmIuDu7/sVz2UZIFuJvmFlwH+hiP7kMoXYkxw4q6O+V949QMucXgj93mdDsM1b+AuQbQhA==, tarball: https://npm.pkg.github.com/download/@opetushallitus/oph-design-system/1.1.0/58bf38df9d2511ae9de60c53dea30d0831825ad5}
+  '@opetushallitus/oph-design-system@1.2.0':
+    resolution: {integrity: sha512-fmNuy9tpC6A9EGWJqIEd7ZgyksRaPnSIMWO7WiYXUCLIArIy6VGr6QKJ3ZkhT46XIsLQSXAOEtFbrOWh2Phb8g==, tarball: https://npm.pkg.github.com/download/@opetushallitus/oph-design-system/1.2.0/949a0d24001c8030b0592b5728602b41531c9e79}
     peerDependencies:
       '@mui/material': ^6 || ^7
       next: ^14 || ^15
       react: ^18 || ^19
-    peerDependenciesMeta:
-      next:
-        optional: true
 
   '@pkgr/core@0.2.9':
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
@@ -4161,12 +4158,11 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@opetushallitus/oph-design-system@1.1.0(@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@15.5.9(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+  '@opetushallitus/oph-design-system@1.2.0(@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@15.5.9(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@mui/material': 6.5.0(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react: 19.2.3
-    optionalDependencies:
       next: 15.5.9(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
 
   '@pkgr/core@0.2.9': {}
 
