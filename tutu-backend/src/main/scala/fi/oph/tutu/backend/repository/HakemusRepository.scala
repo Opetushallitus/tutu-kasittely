@@ -481,8 +481,8 @@ class HakemusRepository extends BaseResultHandlers {
             v.luotu,
             v.luettu,
             v.viesti,
-            v.vastaus
-            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+            v.vastaus,
+            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
