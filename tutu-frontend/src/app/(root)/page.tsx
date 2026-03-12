@@ -23,7 +23,7 @@ const StyledInfoIcon = styled(ErrorIcon)({
   color: ophColors.red2,
   textColor: ophColors.white,
   position: 'absolute',
-  left: '92%',
+  left: '93%',
   top: '10%',
 });
 
