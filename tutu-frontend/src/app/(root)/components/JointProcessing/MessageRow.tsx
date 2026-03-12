@@ -23,8 +23,10 @@ const StyledRespondedIcon = styled(CheckCircle)({
 
 export default function MessageRow({
   message,
+  showTag = false,
 }: {
   message: YhteisenKasittelynViesti;
+  showTag?: boolean;
 }) {
   const { t } = useTranslations();
   const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
@@ -43,7 +45,7 @@ export default function MessageRow({
               ? t('yhteinenKasittely.vastaamatta')
               : t('yhteinenKasittely.vastattu')}
           </OphTypography>
-          {status === 0 && (
+          {status === 1 && showTag && (
             <OphTypography
               variant="body1"
               sx={{
