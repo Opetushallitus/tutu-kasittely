@@ -503,4 +503,57 @@ class HakemusController(
         errorMessageMapper.mapErrorMessage(e)
     }
   }
+
+  @GetMapping(
+    path = Array("ykViestiOnkoViesteja"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def ykViestiOnkoViesteja(
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user    = userService.getEnrichedUserDetails(true)
+      val userOid = user.userOid
+
+      val onkoViesteja = hakemusService.isYkViesteja(userOid)
+      LOG.info(s"Onko viestejä: $onkoViesteja")
+      onkoViesteja
+    } match {
+      case Success(viesteja) =>
+        val response = mapper.writeValueAsString(viesteja)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn viestien tilan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
+    path = Array("ykviestilista"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeYkViestiLista(
+    @RequestParam(required = false) lahetetty: String,
+    @RequestParam(required = false) hakija: String,
+    @RequestParam(required = false) asiatunnus: String,
+    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user    = userService.getEnrichedUserDetails(true)
+      val userOid = user.userOid
+
+      hakemusService.haeYkViestiLista(
+        userOid,
+        sort
+      )
+    } match {
+      case Success(ykviestit) =>
+        val response = mapper.writeValueAsString(ykviestit)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn listan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
 }

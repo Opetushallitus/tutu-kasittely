@@ -614,4 +614,65 @@ class HakemusService(
         LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
   }
+
+  def isYkViesteja(
+    userOid: String
+  ): Boolean = {
+    val lista        = hakemusRepository.haeYkViestiLista(userOid)
+    val lukemattomia = lista.count(viesti => viesti.vastaanottajaOid.contains(userOid) && viesti.luettu.isEmpty)
+    val vastaamatta  = lista.count(viesti => viesti.lahettajaOid.contains(userOid) && viesti.vastaus.isEmpty)
+    lukemattomia > 0 || vastaamatta > 0
+  }
+
+  def haeYkViestiLista(
+    userOid: String,
+    sort: String
+  ): Seq[YkViestiListItem] = {
+    val lista        = hakemusRepository.haeYkViestiLista(userOid)
+    val hakemusOidit = lista.map(viesti => viesti.hakemusOid)
+
+    val ykViestiList = lista.flatMap { viesti =>
+      val status: Int = if (viesti.vastaus.isEmpty) 2 else if (viesti.luettu.isEmpty) 1 else 0
+      Some(
+        YkViestiListItem(
+          id = viesti.id,
+          hakemusOid = viesti.hakemusOid.toString,
+          asiatunnus = viesti.asiatunnus,
+          hakija = viesti.hakija,
+          lahettajaOid = viesti.lahettajaOid,
+          vastaanottajaOid = viesti.vastaanottajaOid,
+          luotu = viesti.luotu,
+          luettu = viesti.luettu,
+          viesti = viesti.viesti,
+          vastaus = viesti.vastaus,
+          status = status
+        )
+      )
+    }
+    sort match {
+      case null => ykViestiList
+      case _    =>
+        val sortParam = sort.split(":").headOption.getOrElse("undefined")
+        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
+
+        val sortedList: Seq[YkViestiListItem] = sortDef match {
+          case SortDef.Asc =>
+            sortParam match {
+              case "lahetetty"  => ykViestiList.sortBy(_.luotu)
+              case "hakija"     => ykViestiList.sortBy(_.hakija)
+              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
+              case "tila"       => ykViestiList.sortBy(_.status)
+            }
+          case SortDef.Desc =>
+            sortParam match {
+              case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
+              case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
+              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
+              case "tila"       => ykViestiList.sortBy(_.status).reverse
+            }
+          case SortDef.Undefined => ykViestiList
+        }
+        sortedList
+    }
+  }
 }

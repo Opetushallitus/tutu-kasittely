@@ -74,13 +74,29 @@ class HakemusRepository extends BaseResultHandlers {
       )
     )
 
+  implicit val getYkViestiListItemResult: GetResult[YkViesti] =
+    GetResult(r =>
+      YkViesti(
+        id = r.nextObject().asInstanceOf[UUID],
+        hakemusOid = HakemusOid(r.nextString()),
+        asiatunnus = Option(r.nextString()),
+        lahettajaOid = Option(r.nextString()),
+        vastaanottajaOid = Option(r.nextString()),
+        luotu = Some(r.nextTimestamp().toLocalDateTime),
+        luettu = r.nextTimestampOption().map(_.toLocalDateTime),
+        viesti = Option(r.nextString()),
+        vastaus = Option(r.nextString()),
+        hakija = r.nextString()
+      )
+    )
+
   /**
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
    *
    * @param hakemusOid
-   *   hakemuspalvelun hakemuksen oid
+   * hakemuspalvelun hakemuksen oid
    * @return
-   *   DBIO action joka palauttaa tallennetun hakemuksen id:n
+   * DBIO action joka palauttaa tallennetun hakemuksen id:n
    */
   def tallennaHakemusAction(
     hakemusOid: HakemusOid,
@@ -127,9 +143,9 @@ class HakemusRepository extends BaseResultHandlers {
    * Tallentaa uuden hakemuksen
    *
    * @param hakemusOid
-   *   hakemuspalvelun hakemuksen oid
+   * hakemuspalvelun hakemuksen oid
    * @return
-   *   tallennetun hakemuksen id
+   * tallennetun hakemuksen id
    */
   def tallennaHakemus(
     hakemusOid: HakemusOid,
@@ -167,13 +183,12 @@ class HakemusRepository extends BaseResultHandlers {
   /**
    * Palauttaa listan hakemuksista hakemusOid-listan pohjalta
    * - Palautettavien kenttien listaa täydennettävä sitä mukaa
-   *   kun domain-luokka kasvaa
+   * kun domain-luokka kasvaa
    *
    * @param hakemusOidit
-   *   hakemuspalvelun hakemusten oidit
-   *
+   * hakemuspalvelun hakemusten oidit
    * @return
-   *   HakemusOid-listan mukaiset hakemukset tietoineen
+   * HakemusOid-listan mukaiset hakemukset tietoineen
    */
   def haeHakemusLista(hakemusOidit: Seq[HakemusOid]): Seq[HakemusListItem] = {
     try {
@@ -448,6 +463,37 @@ class HakemusRepository extends BaseResultHandlers {
       case e: Exception =>
         throw new RuntimeException(
           s"Hakemuksen olemassaolon tarkistus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+
+  def haeYkViestiLista(userOid: String): Seq[YkViesti] =
+    try {
+      db.run(
+        sql"""
+          SELECT
+            v.id,
+            v.hakemus_oid,
+            h.asiatunnus,
+            v.lahettaja_oid,
+            v.vastaanottaja_oid,
+            v.luotu,
+            v.luettu,
+            v.viesti,
+            v.vastaus,
+            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+          FROM
+            yk_viesti v
+          LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+          WHERE
+            v.lahettaja_oid = $userOid OR v.vastaanottaja_oid = $userOid
+          """.as[YkViesti],
+        "hae_ykviestit"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Yhteisen käsittelyn viestien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }
