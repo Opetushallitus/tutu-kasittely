@@ -213,6 +213,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
   @MockitoBean
   private var auditLog: AuditLog = _
 
+  @MockitoBean
+  var onrService: OnrService = _
+
   val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
   var hakemusId: Option[UUID] = None
   var perustelu: Perustelu    = makePerustelu()
@@ -347,6 +350,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
 
     mvc
       .perform(
@@ -379,6 +383,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def haePerusteluPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
     val perusteluJSON = perustelu2Json(perustelu.copy(id = perusteluId), "luotu", "muokattu", "muokkaaja")
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+
     mvc
       .perform(
         get(s"/api/perustelu/${hakemusOid}")
@@ -415,6 +422,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -462,6 +471,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+
     mvc
       .perform(
         put(s"/api/perustelu/${hakemusOid2}")
@@ -487,6 +498,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val uoro          = perustelu2.uoRoSisalto
     val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = uoro)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
 
     mvc
       .perform(
@@ -518,6 +531,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -554,6 +569,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
 
     mvc
       .perform(
@@ -597,6 +614,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       "muokkaaja"
     )
 
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+
     mvc
       .perform(
         get(s"/api/perustelu/${hakemusOid3}")
@@ -639,6 +658,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+
     mvc
       .perform(
         put(s"/api/perustelu/$hakemusOid3")
@@ -676,6 +697,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+
     mvc
       .perform(
         put(s"/api/perustelu/${hakemusOid4}")
@@ -701,6 +724,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val ap            = perustelu4.apSisalto
     val perustelu     = perustelu4.copy(id = perusteluId, apSisalto = ap)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
 
     mvc
       .perform(
@@ -732,6 +757,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
 
     mvc
       .perform(

@@ -212,7 +212,13 @@ class HakemusService(
           }
       }
     }
-    tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+    tutkintoRepository
+      .haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+      .map(tutkinto =>
+        tutkinto.copy(
+          muokkaaja = onrService.haeNimiOption(tutkinto.muokkaaja)
+        )
+      )
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {
@@ -262,14 +268,6 @@ class HakemusService(
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val henkilo: String = dbHakemus.muokkaaja match {
-          case None            => ""
-          case Some(muokkaaja) =>
-            onrService.haeHenkilo(muokkaaja) match {
-              case Left(_)        => ""
-              case Right(henkilo) => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}"
-            }
-        }
         val tutuHakemus = Hakemus(
           hakemusOid = dbHakemus.hakemusOid.toString,
           lomakeOid = lomake.key,
@@ -293,7 +291,7 @@ class HakemusService(
           kasittelyVaihe =
             dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
           muokattu = dbHakemus.muokattu,
-          muokkaaja = henkilo,
+          muokkaaja = onrService.haeNimi(dbHakemus.muokkaaja),
           muutosHistoria = Seq(),
           taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
             case None            => None

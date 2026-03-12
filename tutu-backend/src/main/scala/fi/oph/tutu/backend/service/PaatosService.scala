@@ -40,29 +40,46 @@ class PaatosService(
 
           paatosRepository.haePaatosTiedot(paatos.id.get) match {
             case paatostiedot if paatostiedot.nonEmpty =>
-              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
+              val paatostiedotWithMuokkaaja = paatostiedot.map { paatosTieto =>
+                paatosTieto.copy(
+                  muokkaaja = onrService.haeNimiOption(paatosTieto.muokkaaja)
+                )
+              }
+              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedotWithMuokkaaja.map { paatosTieto =>
                 paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get) match {
                   case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
-                    paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot)
+                    paatosTieto.copy(
+                      rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot.map { tutkintoTaiOpinto =>
+                        tutkintoTaiOpinto.copy(muokkaaja = onrService.haeNimiOption(tutkintoTaiOpinto.muokkaaja))
+                      }
+                    )
                   case _ => paatosTieto
                 }
               }
               val paatostiedotWithAllData = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot.map { paatosTieto =>
                 paatosRepository.haeKelpoisuudet(paatosTieto.id.get) match {
                   case kelpoisuudet if kelpoisuudet.nonEmpty =>
-                    paatosTieto.copy(kelpoisuudet = kelpoisuudet)
+                    paatosTieto.copy(
+                      kelpoisuudet = kelpoisuudet.map { kelpoisuus =>
+                        kelpoisuus.copy(muokkaaja = onrService.haeNimiOption(kelpoisuus.muokkaaja))
+                      }
+                    )
                   case _ => paatosTieto
                 }
               }
               Some(
                 paatos.copy(
                   paatosTiedot = paatostiedotWithAllData,
-                  paatosTietoOptions = paatosTietoOptions
+                  paatosTietoOptions = paatosTietoOptions,
+                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
                 )
               )
             case _ =>
               Some(
-                paatos.copy(paatosTietoOptions = paatosTietoOptions)
+                paatos.copy(
+                  paatosTietoOptions = paatosTietoOptions,
+                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
+                )
               )
           }
         }
@@ -122,8 +139,10 @@ class PaatosService(
                   kelpoisuudet = paatosRepository.haeKelpoisuudet(paatosTieto.id.get)
                 )
               )
-            } else
+            } else {
               latestSavedPaatos.paatosTiedot
+            },
+            muokkaaja = onrService.haeNimiOption(latestSavedPaatos.muokkaaja)
           )
         )
       case _ => None

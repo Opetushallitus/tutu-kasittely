@@ -50,6 +50,112 @@ class HakemusServiceTest extends UnitTestBase {
 
   var hakemusService: HakemusService = _
 
+  def makeDbHakemus(hakemusOid: HakemusOid, formId: Long): DbHakemus = {
+    DbHakemus(
+      id = UUID.randomUUID,
+      hakemusOid = hakemusOid,
+      hakemusKoskee = 1,
+      formId = formId,
+      esittelijaId = None,
+      esittelijaOid = None,
+      asiakirjaId = None,
+      asiatunnus = None,
+      kasittelyVaihe = KasittelyVaihe.ValmisKasiteltavaksi,
+      muokattu = None,
+      yhteistutkinto = false,
+      lopullinenPaatosVastaavaEhdollinenAsiatunnus = None,
+      lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = None,
+      esittelijanHuomioita = None,
+      muokkaaja = None,
+      onkoPeruutettu = false,
+      peruutusPvm = None,
+      peruutusLisatieto = None,
+      viimeisinTaydennyspyyntoPvm = None,
+      saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
+      hakijaEtunimet = Some("Jorma Eero"),
+      hakijaSukunimi = Some("")
+    )
+  }
+
+  def makeAtaruHakemus(form_id: Long): AtaruHakemus = {
+    AtaruHakemus(
+      haku = None,
+      etunimet = "Jorma Eero",
+      key = "",
+      form_id = form_id,
+      content = Content(answers = Seq()),
+      latestVersionCreated = "2025-05-14T10:59:47.597Z",
+      state = "",
+      modified = "2025-05-14T10:59:47.597Z",
+      submitted = "2025-05-14T10:59:47.597Z",
+      lang = "",
+      sukunimi = "",
+      `application-review-notes` = None,
+      henkilotunnus = None,
+      `person-oid` = "",
+      `application-hakukohde-attachment-reviews` = Seq(),
+      `latest-attachment-reviews` = Seq(),
+      `application-hakukohde-reviews` = Seq(),
+      hakutoiveet = Seq(),
+      `information-request-timestamp` = None
+    )
+  }
+
+  def makeHakija(
+    henkiloOid: String = "",
+    etunimet: String = "",
+    kutsumanimi: String = "",
+    sukunimi: String = "",
+    kansalaisuus: Seq[Kielistetty] = Seq(),
+    hetu: Option[String] = None,
+    syntymaaika: String = "",
+    matkapuhelin: Option[String] = None,
+    asuinmaa: Kielistetty = Map(),
+    katuosoite: String = "",
+    postinumero: String = "",
+    postitoimipaikka: String = "",
+    kotikunta: Kielistetty = Map(),
+    sahkopostiosoite: Option[String] = None,
+    yksiloityVTJ: Boolean = false
+  ): Hakija = {
+    Hakija(
+      henkiloOid = henkiloOid,
+      etunimet = etunimet,
+      kutsumanimi = kutsumanimi,
+      sukunimi = sukunimi,
+      kansalaisuus = kansalaisuus,
+      hetu = hetu,
+      syntymaaika = syntymaaika,
+      matkapuhelin = matkapuhelin,
+      asuinmaa = asuinmaa,
+      katuosoite = katuosoite,
+      postinumero = postinumero,
+      postitoimipaikka = postitoimipaikka,
+      kotikunta = kotikunta,
+      sahkopostiosoite = sahkopostiosoite,
+      yksiloityVTJ = yksiloityVTJ
+    )
+  }
+
+  def makeOnrUser(
+    oidHenkilo: String = "",
+    kutsumanimi: String = "",
+    sukunimi: String = "",
+    kansalaisuus: Seq[KansalaisuusKoodi] = Seq(),
+    hetu: Option[String] = None,
+    yksiloityVTJ: Boolean = false
+  ): OnrUser = {
+    OnrUser(
+      oidHenkilo = oidHenkilo,
+      kutsumanimi = kutsumanimi,
+      sukunimi = sukunimi,
+      kansalaisuus = kansalaisuus,
+      hetu = hetu,
+      yksiloityVTJ = yksiloityVTJ
+    )
+  }
+
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
@@ -72,58 +178,6 @@ class HakemusServiceTest extends UnitTestBase {
   @Nested
   @DisplayName("paivitaTiedotAtarusta")
   class PaivitaTiedotAtarusta extends UnitTestBase {
-    def makeDbHakemus(hakemusOid: HakemusOid, formId: Long): DbHakemus = {
-      DbHakemus(
-        id = UUID.randomUUID,
-        hakemusOid = hakemusOid,
-        hakemusKoskee = 1,
-        formId = formId,
-        esittelijaId = None,
-        esittelijaOid = None,
-        asiakirjaId = None,
-        asiatunnus = None,
-        kasittelyVaihe = KasittelyVaihe.ValmisKasiteltavaksi,
-        muokattu = None,
-        yhteistutkinto = false,
-        lopullinenPaatosVastaavaEhdollinenAsiatunnus = None,
-        lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri = None,
-        esittelijanHuomioita = None,
-        muokkaaja = None,
-        onkoPeruutettu = false,
-        peruutusPvm = None,
-        peruutusLisatieto = None,
-        viimeisinTaydennyspyyntoPvm = None,
-        saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
-        ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
-        hakijaEtunimet = Some("Jorma Eero"),
-        hakijaSukunimi = Some("")
-      )
-    }
-
-    def makeAtaruHakemus(form_id: Long): AtaruHakemus = {
-      AtaruHakemus(
-        haku = None,
-        etunimet = "Jorma Eero",
-        key = "",
-        form_id = form_id,
-        content = Content(answers = Seq()),
-        latestVersionCreated = "2025-05-14T10:59:47.597Z",
-        state = "",
-        modified = "2025-05-14T10:59:47.597Z",
-        submitted = "2025-05-14T10:59:47.597Z",
-        lang = "",
-        sukunimi = "",
-        `application-review-notes` = None,
-        henkilotunnus = None,
-        `person-oid` = "",
-        `application-hakukohde-attachment-reviews` = Seq(),
-        `latest-attachment-reviews` = Seq(),
-        `application-hakukohde-reviews` = Seq(),
-        hakutoiveet = Seq(),
-        `information-request-timestamp` = None
-      )
-    }
-
     @Test
     def paivitaTiedotAtarustaIdentifiesChangedFormId(): Unit = {
 
@@ -202,5 +256,35 @@ class HakemusServiceTest extends UnitTestBase {
       /* Update function should not be called */
       assertEquals(formUpdateCalled, false)
     }
+  }
+
+  @Test
+  def haeHakemusPalauttaaMuokkaajanNimen(): Unit = {
+
+    // Data
+    val hakemusOid             = HakemusOid("poop")
+    val dbHakemus              = makeDbHakemus(hakemusOid, 5)
+    val ataruHakemus           = makeAtaruHakemus(5)
+    val ataruHakemusJsonString = objectMapper.writeValueAsString(ataruHakemus)
+    val lomakeJsonString       = loadJson("ataruLomake.json")
+    val hakija                 = makeHakija()
+    val henkilo                = makeOnrUser()
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemus))
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid])).thenReturn(Right(ataruHakemusJsonString))
+    when(hakemuspalveluService.haeLomake(any[Long])).thenReturn(Right(lomakeJsonString))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakija)
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus])).thenReturn(Seq())
+    when(onrService.haeHenkilo(any[String])).thenReturn(Right(henkilo))
+    when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
+
+    when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
+
+    // Act
+    val hakemus: Hakemus = hakemusService.haeHakemus(hakemusOid).get
+
+    // Verify
+    assertEquals(hakemus.muokkaaja, "Topolino")
   }
 }
