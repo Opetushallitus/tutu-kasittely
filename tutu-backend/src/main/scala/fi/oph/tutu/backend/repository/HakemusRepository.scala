@@ -79,15 +79,15 @@ class HakemusRepository extends BaseResultHandlers {
     GetResult(r =>
       YkViesti(
         id = r.nextObject().asInstanceOf[UUID],
-        hakemusId = r.nextObject().asInstanceOf[UUID],
-        asiatunnus = Option(r.nextString()),
         hakemusOid = HakemusOid(r.nextString()),
+        asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
         luettu = r.nextTimestampOption().map(_.toLocalDateTime),
         viesti = Option(r.nextString()),
-        vastaus = Option(r.nextString())
+        vastaus = Option(r.nextString()),
+        hakija = Option(r.nextString())
       )
     )
 
@@ -481,7 +481,7 @@ class HakemusRepository extends BaseResultHandlers {
         sql"""
           SELECT
             v.id,
-            v.hakemus_id,
+            v.hakemus_oid,
             h.asiatunnus,
             h.hakemus_oid,
             v.lahettaja_oid,
@@ -490,9 +490,10 @@ class HakemusRepository extends BaseResultHandlers {
             v.luettu,
             v.viesti,
             v.vastaus
+            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           FROM
             yk_viesti v
-          LEFT JOIN hakemus h on h.id = v.hakemus_id
+          LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
           WHERE
             v.lahettaja_oid = $userOid OR v.vastaanottaja_oid = $userOid
           """.as[YkViesti],
