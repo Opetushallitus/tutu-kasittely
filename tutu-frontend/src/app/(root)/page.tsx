@@ -1,6 +1,6 @@
 'use client';
 
-import InfoIcon from '@mui/icons-material/Info';
+import ErrorIcon from '@mui/icons-material/Error';
 import { Box, styled, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {
   OphTypography,
@@ -15,11 +15,16 @@ import JointProcessingPage from '@/src/app/(root)/components/JointProcessingPage
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageLayout } from '@/src/components/PageLayout';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { useOnkoYkViesteja } from '@/src/hooks/useOnkoYkViesteja';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 
-const StyledInfoIcon = styled(InfoIcon)({
-  color: ophColors.red1,
+const StyledInfoIcon = styled(ErrorIcon)({
+  color: ophColors.red2,
+  textColor: ophColors.white,
+  position: 'absolute',
+  left: '92%',
+  top: '10%',
 });
 
 export default function ListViewPage() {
@@ -29,6 +34,7 @@ export default function ListViewPage() {
   const hasTutuUserRights = hasTutuRole(userRoles);
 
   const [page, setPage] = useState<string>('hakemukset');
+  const { data } = useOnkoYkViesteja();
 
   const TitleYhteinen = ({ unreadAnswers }: { unreadAnswers?: boolean }) => {
     return (
@@ -71,6 +77,10 @@ export default function ListViewPage() {
                   selected={page === 'hakemukset'}
                   value={'hakemukset'}
                   onClick={() => setPage('hakemukset')}
+                  sx={{
+                    borderColor: ophColors.white,
+                    height: 50,
+                  }}
                 >
                   {t('sivuValinta.hakemukset')}
                 </ToggleButton>
@@ -78,8 +88,12 @@ export default function ListViewPage() {
                   selected={page !== 'hakemukset'}
                   value={'yhteinenKasittely'}
                   onClick={() => setPage('yhteinenKasittely')}
+                  sx={{
+                    borderColor: ophColors.white,
+                    height: 50,
+                  }}
                 >
-                  <TitleYhteinen unreadAnswers={false} />
+                  <TitleYhteinen unreadAnswers={data as boolean} />
                 </ToggleButton>
               </ToggleButtonGroup>
               <Link href="/maajako" style={{ textDecoration: 'none' }}>
