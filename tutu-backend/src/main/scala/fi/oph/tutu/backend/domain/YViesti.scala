@@ -65,22 +65,21 @@ case class DbYkViesti(
 
 case class YkViesti(
   id: UUID,
-  hakemusId: UUID,
-  asiatunnus: Option[String] = None,
   hakemusOid: HakemusOid,
+  asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
   viesti: Option[String] = None,
-  vastaus: Option[String] = None
+  vastaus: Option[String] = None,
+  hakija: Option[String] = None
 )
 
 case class YkViestiListItem(
   id: UUID,
-  hakemusId: UUID,
-  asiatunnus: Option[String] = None,
   hakemusOid: String,
+  asiatunnus: Option[String] = None,
   hakija: String,
   status: Int,
   lahettajaOid: Option[String] = None,

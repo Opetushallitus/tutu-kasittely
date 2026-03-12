@@ -598,26 +598,14 @@ class HakemusService(
     val lista        = hakemusRepository.haeYkViestiLista(userOid)
     val hakemusOidit = lista.map(viesti => viesti.hakemusOid)
 
-    val ataruHakemukset = hakemuspalveluService.haeHakemukset(hakemusOidit) match {
-      case Left(error)     => throw error
-      case Right(response) =>
-        parse(response).extract[Seq[AtaruHakemus]]
-    }
     val ykViestiList = lista.flatMap { viesti =>
-      val ataruHakemus = ataruHakemukset.find(ataruHakemus => ataruHakemus.key == viesti.hakemusOid.toString)
-      val hakija       = ataruHakemus match {
-        case None               => ""
-        case Some(ataruHakemus) =>
-          s"${ataruHakemus.etunimet} ${ataruHakemus.sukunimi}"
-      }
       val status: Int = if (viesti.vastaus.isEmpty) 2 else if (viesti.luettu.isEmpty) 1 else 0
       Some(
         YkViestiListItem(
           id = viesti.id,
-          hakemusId = viesti.hakemusId,
           hakemusOid = viesti.hakemusOid.toString,
           asiatunnus = viesti.asiatunnus,
-          hakija = hakija,
+          hakija = viesti.hakija.toString,
           lahettajaOid = viesti.lahettajaOid,
           vastaanottajaOid = viesti.vastaanottajaOid,
           luotu = viesti.luotu,
