@@ -76,6 +76,7 @@ class ViestiControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit = {
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
     when(onrService.haeHenkilo("test user"))
       .thenReturn(
         Right(

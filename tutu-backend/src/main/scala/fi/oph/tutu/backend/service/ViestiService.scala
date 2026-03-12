@@ -18,6 +18,13 @@ class ViestiService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
+  def taytaNimet(viesti: Viesti): Viesti = {
+    viesti.copy(
+      vahvistaja = onrService.haeNimiOption(viesti.vahvistaja),
+      muokkaaja = onrService.haeNimiOption(viesti.muokkaaja)
+    )
+  }
+
   def haeViestiLista(hakemusOid: HakemusOid, sortParams: Option[ListSortParam]): Seq[ViestiListItem] = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
@@ -36,7 +43,7 @@ class ViestiService(
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
         viestiRepository.haeVahvistamatonViesti(dbHakemus.id) match {
-          case Some(viesti) => Some(viesti)
+          case Some(viesti) => Some(taytaNimet(viesti))
           case None         =>
             val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
@@ -51,16 +58,7 @@ class ViestiService(
   }
 
   def haeViesti(id: UUID): Option[Viesti] = {
-    viestiRepository.haeViesti(id) match {
-      case Some(viesti) =>
-        Some(
-          viesti.copy(
-            vahvistaja = onrService.haeNimiOption(viesti.vahvistaja),
-            muokkaaja = onrService.haeNimiOption(viesti.muokkaaja)
-          )
-        )
-      case _ => None
-    }
+    viestiRepository.haeViesti(id).map(taytaNimet)
   }
 
   def tallennaViesti(
@@ -78,7 +76,7 @@ class ViestiService(
           case Some(existing) => viestiRepository.tallennaViesti(existing.id.get, viesti, luojaTaiMuokkaaja)
           case _              => viestiRepository.lisaaViesti(dbHakemus.id, viesti, luojaTaiMuokkaaja)
         }
-        (currentViesti, Some(newOrUpdatedViesti))
+        (currentViesti.map(taytaNimet), Some(newOrUpdatedViesti).map(taytaNimet))
       case _ => (None, None)
     }
   }

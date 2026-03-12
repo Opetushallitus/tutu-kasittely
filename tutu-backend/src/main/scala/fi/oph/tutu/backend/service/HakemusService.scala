@@ -212,7 +212,13 @@ class HakemusService(
           }
       }
     }
-    tutkintoRepository.haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+    tutkintoRepository
+      .haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
+      .map(tutkinto =>
+        tutkinto.copy(
+          muokkaaja = onrService.haeNimiOption(tutkinto.muokkaaja)
+        )
+      )
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {

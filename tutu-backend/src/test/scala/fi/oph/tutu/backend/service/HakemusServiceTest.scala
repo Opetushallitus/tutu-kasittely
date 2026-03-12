@@ -277,6 +277,7 @@ class HakemusServiceTest extends UnitTestBase {
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakija)
     when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus])).thenReturn(Seq())
     when(onrService.haeHenkilo(any[String])).thenReturn(Right(henkilo))
+    when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 
     when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
 

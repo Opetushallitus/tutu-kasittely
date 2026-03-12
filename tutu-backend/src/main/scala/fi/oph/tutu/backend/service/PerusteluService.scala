@@ -106,6 +106,7 @@ class PerusteluService(
 
         Some(
           latestSavedPerustelu.copy(
+            muokkaaja = onrService.haeNimiOption(latestSavedPerustelu.muokkaaja),
             lausuntopyynnot =
               if (newlySavedLausuntoPyynnot.nonEmpty)
                 newlySavedLausuntoPyynnot
