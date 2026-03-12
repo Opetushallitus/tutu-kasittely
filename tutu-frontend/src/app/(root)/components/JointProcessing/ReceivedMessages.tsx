@@ -62,7 +62,10 @@ export default function ReceivedMessages({
             ))}
           </TableRow>
         </TableHead>
-        <StyledTableBody data-testid={'saapuneet-viestit-list'} tabIndex={0}>
+        <StyledTableBody
+          data-testid={'vastaanotetut-viestit-list'}
+          tabIndex={0}
+        >
           {messageRows}
         </StyledTableBody>
       </Table>
