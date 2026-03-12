@@ -615,6 +615,15 @@ class HakemusService(
     }
   }
 
+  def isYkViesteja(
+    userOid: String
+  ): Boolean = {
+    val lista        = hakemusRepository.haeYkViestiLista(userOid)
+    val lukemattomia = lista.count(viesti => viesti.vastaanottajaOid.contains(userOid) && viesti.luettu.isEmpty)
+    val vastaamatta  = lista.count(viesti => viesti.lahettajaOid.contains(userOid) && viesti.vastaus.isEmpty)
+    lukemattomia > 0 || vastaamatta > 0
+  }
+
   def haeYkViestiLista(
     userOid: String,
     sort: String
