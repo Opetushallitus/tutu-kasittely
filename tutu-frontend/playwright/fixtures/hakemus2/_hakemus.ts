@@ -74,4 +74,5 @@ export const _hakemus: Hakemus = {
   lopullinenPaatosVastaavaEhdollinenAsiatunnus: 'OPH-11-2025',
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri: 'maatjavaltiot2_762',
   onkoPeruutettu: false,
+  peruutusPvm: null,
 };

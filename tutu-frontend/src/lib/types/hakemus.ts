@@ -46,7 +46,7 @@ export type Hakemus = {
   lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri?: string;
   esittelijanHuomioita?: string;
   onkoPeruutettu: boolean;
-  peruutusPvm?: string;
+  peruutusPvm: string | null;
   peruutusLisatieto?: string;
   viimeisinTaydennyspyyntoPvm?: string;
 };

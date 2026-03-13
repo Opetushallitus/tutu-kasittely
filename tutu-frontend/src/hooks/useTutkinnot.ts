@@ -8,6 +8,8 @@ import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { updateTutkintoJarjestys } from '@/src/lib/utils';
 
+import { normalize } from './useEditableState';
+
 const getTutkinnot = async (hakemusOid?: string): Promise<Tutkinto[]> => {
   const url = `hakemus/${hakemusOid}/tutkinto/`;
   return await doApiFetch(url, undefined, 'no-store');
@@ -118,7 +120,7 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
 
   const hasChanges = useMemo(() => {
     if (!localTutkinnot || !query.data) return false;
-    return !isDeepEqual(localTutkinnot, query.data);
+    return !isDeepEqual(normalize(localTutkinnot), normalize(query.data));
   }, [localTutkinnot, query.data]);
 
   const save = () => {

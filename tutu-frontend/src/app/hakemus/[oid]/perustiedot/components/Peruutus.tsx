@@ -6,6 +6,7 @@ import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { Muistio } from '@/src/components/Muistio';
+import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 
@@ -28,8 +29,8 @@ export const Peruutus = ({
   const updatePeruutusPvm = (date: Date | null) => {
     updateHakemus({
       peruutusPvm: date
-        ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm")
-        : undefined,
+        ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
+        : null,
     });
   };
 

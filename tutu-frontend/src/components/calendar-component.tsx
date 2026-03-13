@@ -9,13 +9,18 @@ import {
   OphInput,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
+import { fi, sv, enGB } from 'date-fns/locale';
 import { forwardRef, ReactNode, useRef } from 'react';
-import DatePicker from 'react-datepicker';
+import { DatePicker, registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { capitalize } from 'remeda';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
+
+registerLocale('fi', fi);
+registerLocale('sv', sv);
+registerLocale('en', enGB);
 
 const CALENDAR_CLASSNAME = 'oph-calendar';
 
@@ -41,6 +46,10 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
         '&:focus': {
           outline: `2px solid ${ophColors.black}`,
         },
+      },
+      '&__day--outside-month': {
+        visibility: 'hidden',
+        pointerEvents: 'none',
       },
       '&__day--selected, &__day--keyboard-selected': {
         backgroundColor: ophColors.blue2,
