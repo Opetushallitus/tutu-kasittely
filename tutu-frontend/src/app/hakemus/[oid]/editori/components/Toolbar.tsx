@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { $isLinkNode } from '@lexical/link';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $isListNode, ListNode, ListType } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $patchStyleText } from '@lexical/selection';
@@ -52,6 +52,7 @@ import {
   formatBulletList,
   formatNumberedList,
   getSelectedNode,
+  sanitizeUrl,
 } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 
 const ToolbarContainer = styled(Stack)({
@@ -120,7 +121,11 @@ function $findTopLevelElement(node: LexicalNode) {
   return topLevelElement;
 }
 
-export function Toolbar() {
+export function Toolbar({
+  setIsLinkEditMode,
+}: {
+  setIsLinkEditMode: (isLinkEditMode: boolean) => void;
+}) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
   const [toolbarState, setToolbarState] = useState<ToolbarState>(initialState);
@@ -236,6 +241,16 @@ export function Toolbar() {
     [editor],
   );
 
+  const insertLink = useCallback(() => {
+    if (!toolbarState.isLink) {
+      setIsLinkEditMode(true);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+    } else {
+      setIsLinkEditMode(false);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  }, [editor, toolbarState.isLink, setIsLinkEditMode]);
+
   return (
     <ToolbarContainer
       direction={'row'}
@@ -345,7 +360,7 @@ export function Toolbar() {
       </ToolbarInnerContainer>
       <ToolbarInnerContainer direction={'row'}>
         <OphButton
-          onClick={() => {}}
+          onClick={insertLink}
           aria-label="Add link"
           sx={buttonStyle(toolbarState.isLink)}
           startIcon={<LinkOutlined sx={iconStyle(toolbarState.isLink)} />}
