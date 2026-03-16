@@ -8,8 +8,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 
 const StyledInfoIcon = styled(ErrorIcon)({
-  color: ophColors.red2,
-  textColor: ophColors.white,
+  color: ophColors.orange3,
   position: 'absolute',
   left: '93%',
   top: '10%',
