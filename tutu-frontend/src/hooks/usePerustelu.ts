@@ -12,14 +12,14 @@ export const getPerusteluMuistio = async (
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const getPerustelu = async (
+const getPerustelu = async (
   hakemusOid: string | undefined,
 ): Promise<Perustelu> => {
   const url = `perustelu/${hakemusOid}`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const putPerustelu = (hakemusOid: string, perustelu: Perustelu) => {
+const putPerustelu = (hakemusOid: string, perustelu: Perustelu) => {
   const url = `perustelu/${hakemusOid}`;
   return doApiPut(url, perustelu);
 };

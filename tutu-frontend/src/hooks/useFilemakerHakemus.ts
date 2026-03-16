@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 
-export const getFilemakerHakemus = async (id: string): Promise<any> => {
+const getFilemakerHakemus = async (id: string): Promise<any> => {
   const url = `vanha-tutu/${id}`;
 
   return await doApiFetch(url, undefined, 'no-store');

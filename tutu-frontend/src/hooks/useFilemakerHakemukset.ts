@@ -5,7 +5,7 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { Paginated } from '../lib/types/paginated';
 import { FilemakerHakemus } from '../lib/utils/filemakerDataUtils';
 
-export const getFilemakerHakemukset = async (): Promise<
+const getFilemakerHakemukset = async (): Promise<
   Paginated<FilemakerHakemus>
 > => {
   const localStorageSearchParams = localStorage.getItem(

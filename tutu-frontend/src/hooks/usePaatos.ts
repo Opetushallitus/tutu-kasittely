@@ -6,27 +6,25 @@ import { useShowPreview } from '@/src/context/ShowPreviewContext';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Paatos } from '@/src/lib/types/paatos';
 
-export const getPaatos = async (
-  hakemusOid: string | undefined,
-): Promise<Paatos> => {
+const getPaatos = async (hakemusOid: string | undefined): Promise<Paatos> => {
   return await doApiFetch(`paatos/${hakemusOid}`, undefined, 'no-store');
 };
 
-export const getPaatosTeksti = async (
+const generatePaatosTeksti = async (
   hakemusOid: string | undefined,
 ): Promise<string> => {
   const url = `paatos/${hakemusOid}/paatosteksti/generate`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-export const putPaatos = (hakemusOid: string, paatos: Paatos) => {
+const putPaatos = (hakemusOid: string, paatos: Paatos) => {
   return doApiPut(`paatos/${hakemusOid}`, paatos);
 };
 
 export const usePaatos = (hakemusOid: string | undefined) => {
   const queryKey = ['paatos', hakemusOid];
+  const generateQueryKey = ['paatos', 'generate', hakemusOid];
   const { showPaatosTekstiPreview } = useShowPreview();
-
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -34,6 +32,14 @@ export const usePaatos = (hakemusOid: string | undefined) => {
     queryFn: () => getPaatos(hakemusOid),
     enabled: !!hakemusOid,
     throwOnError: false,
+  });
+
+  const generatedQuery = useQuery({
+    queryKey: generateQueryKey,
+    queryFn: () => generatePaatosTeksti(hakemusOid),
+    enabled: !!hakemusOid && showPaatosTekstiPreview,
+    throwOnError: false,
+    staleTime: 0, // Regenerate when previewed
   });
 
   const {
@@ -50,7 +56,8 @@ export const usePaatos = (hakemusOid: string | undefined) => {
       await queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
       });
-      if (showPaatosTekstiPreview) await getPaatosTeksti(hakemusOid);
+      // Ensure generated preview is refreshed if open
+      await queryClient.invalidateQueries({ queryKey: generateQueryKey });
     },
   });
 
@@ -60,6 +67,9 @@ export const usePaatos = (hakemusOid: string | undefined) => {
 
   return {
     ...query,
+    paatosteksti: generatedQuery.data,
+    isPaatosTekstiLoading:
+      generatedQuery.isLoading || generatedQuery.isFetching,
     updatePaatos,
     paatos: query.data,
     isPaatosLoading: query.isLoading,

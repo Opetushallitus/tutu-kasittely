@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
 
-export const getMaakoodit = async (): Promise<Maakoodi[]> => {
+const getMaakoodit = async (): Promise<Maakoodi[]> => {
   return await doApiFetch('maakoodi', undefined, 'no-store');
 };
 
@@ -27,7 +27,7 @@ export const useMaakoodit = (options?: UseMaakooditOptions) => {
   return { data, isLoading, error };
 };
 
-export const updateMaakoodi = async (
+const updateMaakoodi = async (
   id: string,
   esittelijaId?: string,
 ): Promise<void> => {

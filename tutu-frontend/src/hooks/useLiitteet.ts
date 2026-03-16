@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { AsiakirjaMetadata } from '@/src/lib/types/hakemus';
 
-export const getLiitteet = async (
+const getLiitteet = async (
   hakemusOid: string,
   avaimet: string,
 ): Promise<AsiakirjaMetadata[]> => {
