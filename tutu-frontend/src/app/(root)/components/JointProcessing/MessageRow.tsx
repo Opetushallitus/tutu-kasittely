@@ -30,7 +30,7 @@ export default function MessageRow({
 }) {
   const { t } = useTranslations();
   const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
-  const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy HH:mm') : '-';
+  const lahetysAika = luotu ? dateFns.format(luotu, 'dd.MM.yy') : '-';
 
   return (
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
