@@ -278,6 +278,7 @@ export const mockHakemus = async (
         },
         taydennyspyyntoLahetetty: '2025-12-14T10:59:47.597',
         liitteidenTilat: [],
+        peruutusPvm: null,
       } as Hakemus),
     });
   });

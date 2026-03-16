@@ -72,4 +72,5 @@ export const _hakemus: Hakemus = {
   liitteidenTilat: [],
   yhteistutkinto: false,
   onkoPeruutettu: false,
+  peruutusPvm: null,
 };

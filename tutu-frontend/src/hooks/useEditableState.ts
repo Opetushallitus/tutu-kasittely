@@ -25,6 +25,11 @@ export type EditableState<T> = {
   discard: () => void;
 };
 
+// Normalizes null values to ""
+// This makes it not a change when a server has null and client has "" (common with form inputs)
+export const normalize = (obj: unknown) =>
+  JSON.parse(JSON.stringify(obj, (_k, v) => (v === null ? '' : v)));
+
 export const useEditableState = <T>(
   serverData: T | undefined,
   onSave: (data: T) => void,
@@ -41,7 +46,7 @@ export const useEditableState = <T>(
   // Track if there are unsaved changes using deep equality
   const hasChanges = useMemo(() => {
     if (!serverData || !editedData) return false;
-    return !isDeepEqual(serverData, editedData);
+    return !isDeepEqual(normalize(serverData), normalize(editedData));
   }, [serverData, editedData]);
 
   // Update local state only (doesn't save to server)
