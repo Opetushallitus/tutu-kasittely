@@ -1,9 +1,12 @@
 package fi.oph.tutu.backend.service.generator.perustelumuistio
 
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit.DAYS
+
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService}
+import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, OnrService}
 import fi.oph.tutu.backend.service.generator.{formatDate, toKyllaEi}
-import fi.oph.tutu.backend.utils.{Constants, haeKysymyksenTiedot}
+import fi.oph.tutu.backend.utils.{Constants, Utility, haeKysymyksenTiedot}
 
 def haeImiPyyntoTieto(hakemusMaybe: Option[Hakemus]): Option[String] = {
   val imiPyynto: Option[ImiPyynto] = hakemusMaybe.flatMap(_.asiakirja).map(_.imiPyynto)
@@ -1015,9 +1018,52 @@ def haePaatostiedot(paatosMaybe: Option[Paatos], tutkinnot: Seq[Tutkinto]): Opti
   }
 }
 
+def haeEsittelija(hakemusMaybe: Option[Hakemus], onrService: OnrService): Option[String] = {
+  onrService
+    .haeNimiOption(hakemusMaybe.flatMap(_.esittelijaOid))
+    .map(nimi => s"Esittelijä: $nimi")
+}
+
+def haeKasittelyajat(hakemusMaybe: Option[Hakemus]): Option[String] = {
+  val viimeisinAsiakirjaPvmMaybe: Option[LocalDateTime] = hakemusMaybe
+    .flatMap(_.asiakirja)
+    .flatMap(_.viimeinenAsiakirjaHakijalta)
+  val paatosPvmMaybe: Option[LocalDateTime] = hakemusMaybe
+    .flatMap(_.paatosPvm)
+  val saapumisPvmMaybe: Option[LocalDateTime] = hakemusMaybe
+    .flatMap(_.saapumisPvm)
+  val esittelyPvmMaybe: Option[LocalDateTime] = hakemusMaybe
+    .flatMap(_.esittelyPvm)
+
+  val aikaKirjauksestaEsittelyynMonths: Option[Double] = (saapumisPvmMaybe, esittelyPvmMaybe) match {
+    case (Some(saapumisPvm), Some(esittelyPvm)) =>
+      Some(DAYS.between(saapumisPvm, esittelyPvm)).map(days => Utility.toPrecision(days / 30.0, 1))
+    case (_, _) => None
+  }
+  val aikaAsiakirjastaPaatokseenMonths: Option[Double] = (viimeisinAsiakirjaPvmMaybe, paatosPvmMaybe) match {
+    case (Some(viimeisinAsiakirjaPvm), Some(paatosPvm)) =>
+      Some(DAYS.between(viimeisinAsiakirjaPvm, paatosPvm)).map(days => Utility.toPrecision(days / 30.0, 1))
+    case (_, _) => None
+  }
+
+  val result = Seq(
+    aikaKirjauksestaEsittelyynMonths.map(months => s"Aika kirjauspäivämäärästä esittelypäivämäärään ${months} kk"),
+    aikaAsiakirjastaPaatokseenMonths.map(months =>
+      s"Aika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään ${months} kk"
+    )
+  ).flatten.mkString("\n")
+
+  if (result != "") {
+    Some(result)
+  } else {
+    None
+  }
+}
+
 def generate(
   koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
+  onrService: OnrService,
   hakemusMaybe: Option[Hakemus],
   tutkinnot: Seq[Tutkinto],
   ataruHakemusMaybe: Option[AtaruHakemus],
@@ -1025,6 +1071,8 @@ def generate(
   paatosMaybe: Option[Paatos]
 ): String = {
   val result: Seq[String] = Seq[Option[String]](
+    haeEsittelija(hakemusMaybe, onrService),
+    haeKasittelyajat(hakemusMaybe),
     haeHakijanNimi(hakemusMaybe),
     haeHakijanSyntymaaika(hakemusMaybe),
     haeHakemusKoskee(hakemusMaybe),
