@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
-import { HakemusListResult } from '@/src/lib/types/hakemusListResult';
 
-export const getHakemukset = async (): Promise<HakemusListResult> => {
+import { HakemusListItem } from '../lib/types/hakemusListItem';
+import { Paginated } from '../lib/types/paginated';
+
+export const getHakemukset = async (): Promise<Paginated<HakemusListItem>> => {
   const localStorageSearchParams = localStorage.getItem('tutu-query-string');
   const url = localStorageSearchParams
     ? `hakemuslista?${localStorageSearchParams}`
