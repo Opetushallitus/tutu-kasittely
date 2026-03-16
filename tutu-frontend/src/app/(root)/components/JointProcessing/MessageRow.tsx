@@ -2,8 +2,8 @@ import { AccessTimeFilled, CheckCircle } from '@mui/icons-material';
 import { Grid2, styled, TableCell, TableRow } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
-import Link from 'next/link';
 
+import { StyledLink } from '@/src/components/StyledLink';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 
@@ -65,12 +65,13 @@ export default function MessageRow({
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
-        <Link
+        <StyledLink
           href={`/hakemus/${hakemusOid}/yhteinenkasittely`}
           data-testid={'hakijan-nimi'}
+          sx={{ fontWeight: 'normal' }}
         >
           {hakija}
-        </Link>
+        </StyledLink>
       </StyledTableCell>
       <StyledTableCell>
         <OphTypography variant="body1" data-testid={'asiatunnus'}>
