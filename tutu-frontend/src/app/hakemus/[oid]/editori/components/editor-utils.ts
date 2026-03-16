@@ -162,9 +162,9 @@ export function setFloatingElemPositionForLinkEditor(
   verticalGap: number = VERTICAL_GAP,
   horizontalOffset: number = HORIZONTAL_OFFSET,
 ): void {
-  const scrollerElem = anchorElem.parentElement;
+  const contentEditableElem = anchorElem.children.item(0) as HTMLElement | null;
 
-  if (targetRect === null || !scrollerElem) {
+  if (targetRect === null || !contentEditableElem) {
     floatingElem.style.opacity = '0';
     floatingElem.style.transform = 'translate(-10000px, -10000px)';
     return;
@@ -172,7 +172,7 @@ export function setFloatingElemPositionForLinkEditor(
 
   const floatingElemRect = floatingElem.getBoundingClientRect();
   const anchorElementRect = anchorElem.getBoundingClientRect();
-  const editorScrollerRect = scrollerElem.getBoundingClientRect();
+  const editorScrollerRect = contentEditableElem.getBoundingClientRect();
 
   let top = targetRect.top - verticalGap;
   let left = targetRect.left - horizontalOffset;

@@ -35,7 +35,7 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { styled, useTheme } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
 import { RefObject, useState } from 'react';
 
@@ -65,14 +65,14 @@ const editorConfig: InitialConfigType = {
   },
 };
 
-const EditorContainer = styled('div')({
+const EditorContainer = styled(Box)({
   width: '100%',
   height: '800px',
   border: '1px solid',
   borderColor: 'black',
 });
 
-const EditorInnerContainer = styled('div')({
+const EditorInnerContainer = styled(Box)({
   '& p': {
     marginTop: 0,
   },
@@ -82,10 +82,10 @@ const EditorInnerContainer = styled('div')({
 });
 
 const URL_REGEX =
-  /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)(?<![-.+():%])/;
+  /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(?<![-.+():%])/;
 
 const EMAIL_REGEX =
-  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
 
 const MATCHERS = [
   createLinkMatcherWithRegExp(URL_REGEX, (text) => {
@@ -122,14 +122,19 @@ export function Editor({
         <EditorInnerContainer>
           <RichTextPlugin
             contentEditable={
-              <div ref={onRef} style={{ position: 'relative' }}>
+              <div
+                ref={onRef}
+                style={{
+                  position: 'relative',
+                  height: '760px',
+                  overflow: 'scroll',
+                }}
+              >
                 <ContentEditable
                   data-testid={'editor-content-editable'}
                   style={{
                     padding: theme.spacing(1),
                     outline: 'none',
-                    height: '760px',
-                    overflow: 'scroll',
                   }}
                   aria-placeholder={''}
                   placeholder={<span>{''}</span>}
@@ -168,7 +173,7 @@ export function Editor({
             setIsLinkEditMode={setIsLinkEditMode}
           />
         )}
-      </>{' '}
+      </>
     </LexicalComposer>
   );
 }

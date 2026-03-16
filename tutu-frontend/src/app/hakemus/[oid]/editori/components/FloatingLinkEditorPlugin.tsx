@@ -15,8 +15,8 @@ import {
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $findMatchingParent, mergeRegister } from '@lexical/utils';
 import { Check, Close, Delete, Edit } from '@mui/icons-material';
-import { IconButton, styled } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { Box, IconButton, styled } from '@mui/material';
+import { ophColors, OphInput } from '@opetushallitus/oph-design-system';
 import {
   $getSelection,
   $isLineBreakNode,
@@ -48,7 +48,7 @@ function preventDefault(
   event.preventDefault();
 }
 
-const LinkEditorContainer = styled('div')({
+const LinkEditorContainer = styled(Box)({
   display: 'flex',
   position: 'absolute',
   top: 0,
@@ -65,21 +65,7 @@ const LinkEditorContainer = styled('div')({
   gap: 4,
 });
 
-const LinkInput = styled('input')({
-  flex: 1,
-  boxSizing: 'border-box',
-  margin: '8px 12px',
-  padding: '6px 12px',
-  borderRadius: 15,
-  backgroundColor: ophColors.grey100,
-  fontSize: 15,
-  color: ophColors.grey900,
-  border: 0,
-  outline: 0,
-  fontFamily: 'inherit',
-});
-
-const LinkViewContainer = styled('div')({
+const LinkViewContainer = styled(Box)({
   display: 'flex',
   flex: 1,
   alignItems: 'center',
@@ -121,19 +107,22 @@ function FloatingLinkEditor({
 
   const $updateLinkEditor = useCallback(() => {
     const selection = $getSelection();
+    const setLinkUrlAndEditedLinkUrl = (url: string) => {
+      setLinkUrl(url);
+      if (isLinkEditMode) {
+        setEditedLinkUrl(url);
+      }
+    };
     if ($isRangeSelection(selection)) {
       const node = getSelectedNode(selection);
       const linkParent = $findMatchingParent(node, $isLinkNode);
 
       if (linkParent) {
-        setLinkUrl(linkParent.getURL());
+        setLinkUrlAndEditedLinkUrl(linkParent.getURL());
       } else if ($isLinkNode(node)) {
-        setLinkUrl(node.getURL());
+        setLinkUrlAndEditedLinkUrl(node.getURL());
       } else {
-        setLinkUrl('');
-      }
-      if (isLinkEditMode) {
-        setEditedLinkUrl(linkUrl);
+        setLinkUrlAndEditedLinkUrl('');
       }
     } else if ($isNodeSelection(selection)) {
       const nodes = selection.getNodes();
@@ -141,14 +130,11 @@ function FloatingLinkEditor({
         const node = nodes[0];
         const parent = node.getParent();
         if ($isLinkNode(parent)) {
-          setLinkUrl(parent.getURL());
+          setLinkUrlAndEditedLinkUrl(parent.getURL());
         } else if ($isLinkNode(node)) {
-          setLinkUrl(node.getURL());
+          setLinkUrlAndEditedLinkUrl(node.getURL());
         } else {
-          setLinkUrl('');
-        }
-        if (isLinkEditMode) {
-          setEditedLinkUrl(linkUrl);
+          setLinkUrlAndEditedLinkUrl('');
         }
       }
     }
@@ -197,7 +183,7 @@ function FloatingLinkEditor({
     }
 
     return true;
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl]);
+  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
@@ -283,7 +269,7 @@ function FloatingLinkEditor({
   }, [editorRef, setIsLink, setIsLinkEditMode, isLink]);
 
   const monitorInputInteraction = (
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     if (event.key === 'Enter') {
       handleLinkSubmission(event);
@@ -295,7 +281,7 @@ function FloatingLinkEditor({
 
   const handleLinkSubmission = (
     event:
-      | React.KeyboardEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
       | React.MouseEvent<HTMLElement>,
   ) => {
     event.preventDefault();
@@ -329,8 +315,13 @@ function FloatingLinkEditor({
     <LinkEditorContainer ref={editorRef}>
       {!isLink ? null : isLinkEditMode ? (
         <>
-          <LinkInput
+          <OphInput
             className="link-input"
+            sx={{
+              flex: 1,
+              border: 0,
+              outline: 0,
+            }}
             ref={inputRef}
             value={editedLinkUrl}
             onChange={(event) => {

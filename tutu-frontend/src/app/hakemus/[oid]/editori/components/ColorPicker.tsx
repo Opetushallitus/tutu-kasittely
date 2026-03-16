@@ -3,6 +3,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useRef, useState } from 'react';
+import { toUpperCase } from 'remeda';
 
 import { useCloseOnClickOutside } from '@/src/hooks/useCloseOnClickOutside';
 
@@ -13,7 +14,7 @@ export const fontColors = [
   ophColors.grey900,
 ];
 
-export type FontColor = (typeof fontColors)[number];
+export type FontColor = '' | (typeof fontColors)[number];
 
 const iconStyle = {
   color: ophColors.grey700,
@@ -40,7 +41,7 @@ export function ColorPicker({
 }) {
   const [open, setOpen] = useState(false);
 
-  const ref = useRef<HTMLElement>(undefined);
+  const ref = useRef<HTMLElement>(null);
   useCloseOnClickOutside(ref, () => setOpen(false));
 
   return (
@@ -53,7 +54,6 @@ export function ColorPicker({
         sx={{
           borderRadius: '4px',
           '&:hover': {
-            backgroundOpacity: 1,
             backgroundColor: ophColors.grey100,
           },
           height: '34px',
@@ -70,13 +70,17 @@ export function ColorPicker({
             padding: '15px',
             backgroundColor: ophColors.white,
             boxShadow: '0 2px 5px 0 rgba(0,0,0,0.25)',
+            zIndex: 10,
           }}
         >
           <Stack direction={'row'} gap={'15px'}>
             {fontColors.map((fontColor) => (
               <OphButton
                 key={fontColor}
-                sx={colorButtonStyle(fontColor, fontColor === selectedColor)}
+                sx={colorButtonStyle(
+                  fontColor,
+                  fontColor === toUpperCase(selectedColor),
+                )}
                 onClick={() => {
                   setOpen(false);
                   changeFontColor(fontColor);

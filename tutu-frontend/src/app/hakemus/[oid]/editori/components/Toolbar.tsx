@@ -9,7 +9,10 @@
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $isListNode, ListNode, ListType } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $patchStyleText } from '@lexical/selection';
+import {
+  $getSelectionStyleValueForProperty,
+  $patchStyleText,
+} from '@lexical/selection';
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
@@ -27,6 +30,7 @@ import {
   Undo,
 } from '@mui/icons-material';
 import { Divider, Stack, styled } from '@mui/material';
+import { alpha, rgbToHex } from '@mui/system';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import {
   $getSelection,
@@ -73,10 +77,10 @@ const iconStyle = (selected: boolean) => ({
 });
 
 const buttonStyle = (selected: boolean) => ({
-  backgroundColor: selected ? ophColors.lightBlue2 : ophColors.white,
-  backgroundOpacity: selected ? 0.5 : 0,
+  backgroundColor: selected
+    ? alpha(ophColors.lightBlue2, 0.5)
+    : ophColors.white,
   '&:hover': {
-    backgroundOpacity: 1,
     backgroundColor: ophColors.grey100,
   },
   height: '34px',
@@ -139,6 +143,7 @@ export function Toolbar({
       [key]: value,
     }));
   };
+
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
@@ -149,6 +154,16 @@ export function Toolbar({
         selection.hasFormat('strikethrough'),
       );
       updateToolbarState('isHighlighted', selection.hasFormat('highlight'));
+
+      const selectionColor = $getSelectionStyleValueForProperty(
+        selection,
+        'color',
+        ophColors.grey900,
+      );
+      updateToolbarState(
+        'fontColor',
+        selectionColor === '' ? '' : (rgbToHex(selectionColor) as FontColor),
+      );
 
       const anchorNode = selection.anchor.getNode();
       const element = $findTopLevelElement(anchorNode);
