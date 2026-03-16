@@ -3,11 +3,10 @@
 import {
   Box,
   Divider,
-  Link,
-  LinkProps,
   Stack,
   styled,
   Tab,
+  TabProps,
   Tabs,
   useTheme,
 } from '@mui/material';
@@ -39,32 +38,14 @@ const Content = styled('pre')({
   textWrap: 'auto',
 });
 
-const TabLink = (props: LinkProps & { selected?: boolean }) => {
-  return (
-    <Link
-      {...props}
-      href="#"
-      sx={{
-        '&:hover': {
-          textDecoration: 'none',
-        },
-        '&.Mui-selected': {
-          color: ophColors.blue2,
-        },
-      }}
-    />
-  );
-};
-
 type LinkedTabLinkProps = {
   value?: string;
   setTab: (_?: string) => void;
-  selected?: boolean;
-} & Omit<LinkProps, 'href'>;
+} & TabProps;
 
 const LinkedTab = (props: LinkedTabLinkProps) => {
   const { t } = useTranslations();
-  const { value, setTab, selected } = props;
+  const { value, setTab, ...rest } = props;
   const sx = {
     textAlign: 'left',
     alignItems: 'flex-start',
@@ -75,10 +56,9 @@ const LinkedTab = (props: LinkedTabLinkProps) => {
     <Tab
       value={value}
       onClick={() => setTab(value)}
-      selected={selected}
       label={t(`filemakerTabs.${value}`)}
-      component={TabLink}
       sx={sx}
+      {...rest}
     />
   );
 };
@@ -148,16 +128,8 @@ export default function FilemakerHakemus() {
                 },
               }}
             >
-              <LinkedTab
-                value={'perustelumuistio'}
-                selected={tab === 'perustelumuistio'}
-                setTab={setTab}
-              />
-              <LinkedTab
-                value={'paatos'}
-                selected={tab === 'paatos'}
-                setTab={setTab}
-              />
+              <LinkedTab value={'perustelumuistio'} setTab={setTab} />
+              <LinkedTab value={'paatos'} setTab={setTab} />
             </Tabs>
           </InnerBoxWrapper>
           <Stack
@@ -179,7 +151,10 @@ export default function FilemakerHakemus() {
                   gap={theme.spacing(2)}
                   sx={{ marginRight: theme.spacing(3) }}
                 >
-                  <OphTypography variant={'h2'}>
+                  <OphTypography
+                    variant={'h2'}
+                    data-testid="filemaker-hakemus-otsikko"
+                  >
                     {t('hakemus.filemaker.otsikko')}
                   </OphTypography>
                   <Content>

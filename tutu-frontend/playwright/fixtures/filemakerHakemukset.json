@@ -1,5 +1,8 @@
 {
-  "count": 122,
+  "totalCount": 122,
+  "page": 2,
+  "pageSize": 20,
+  "totalPages": 7,
   "items": [
     {
       "Etunimet": "Testi-Ritva",

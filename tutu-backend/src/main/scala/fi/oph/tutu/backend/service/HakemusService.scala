@@ -335,72 +335,39 @@ class HakemusService(
     userOid: Option[String],
     hakemuskoskee: Option[String],
     vaihe: Option[String],
-    sort: String
-  ): Seq[HakemusListItem] = {
-    val vaiheet: Seq[String] = vaihe.map(stringToSeq).getOrElse(Seq())
-
-    val userOids: Seq[String] = userOid.map(stringToSeq).getOrElse(Seq())
-
+    sortParam: Option[ListSortParam],
+    page: Int,
+    pageSize: Int
+  ): HakemusListResult = {
+    val vaiheet: Seq[String]          = vaihe.map(stringToSeq).getOrElse(Seq())
+    val userOids: Seq[String]         = userOid.map(stringToSeq).getOrElse(Seq())
     val hakemusKoskeeParams: Seq[Int] = hakemuskoskee.map(stringToIntSeq).getOrElse(Seq())
 
-    // jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
-    val hakemusKoskeeQueryParams = hakemusKoskeeParams.map(param => if (param == 4) 1 else param)
+    // Jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
+    val hakemusKoskeeQueryParams = hakemusKoskeeParams.filter(param => param != 4)
     val apHakemusQueryParam      = hakemusKoskeeParams.contains(4)
 
-    val hakemusOidit: Seq[HakemusOid] =
-      hakemusRepository.haeHakemusOidit(userOids, hakemusKoskeeQueryParams, vaiheet, apHakemusQueryParam)
+    val (items, totalCount) = hakemusRepository.haeHakemusLista(
+      userOids,
+      hakemusKoskeeQueryParams,
+      vaiheet,
+      apHakemusQueryParam,
+      sortParam,
+      page,
+      pageSize
+    )
 
-    // Jos hakemusOideja ei löydy, palautetaan tyhjä lista
-    if (hakemusOidit.isEmpty) {
-      LOG.warn(
-        "Hakemuksia ei löytynyt parametreillä: " + userOid.getOrElse("None") + ", " + hakemuskoskee.getOrElse(
-          "None"
-        ) + ", " + vaihe.getOrElse("None")
-      )
-      return Seq.empty[HakemusListItem]
-    }
+    val totalPages =
+      if (totalCount == 0) 1
+      else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
 
-    val hakemusList = hakemusRepository.haeHakemusLista(hakemusOidit)
-
-    // TODO: siirrä lajittelu DB-tasolle (ORDER BY) osana sivutustoteutusta
-    sort match {
-      case null => hakemusList
-      case _    =>
-        val sortParam = sort.split(":").headOption.getOrElse("undefined")
-        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
-
-        sortDef match {
-          case SortDef.Asc =>
-            sortParam match {
-              case "hakija"     => hakemusList.sortBy(_.hakija)
-              case "asiatunnus" => hakemusList.sortBy(_.asiatunnus)
-              case "esittelija" =>
-                hakemusList.sortBy(item => s"${item.esittelijaSukunimi} ${item.esittelijaKutsumanimi}")
-              case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe)
-              case "hakemusKoskee"  =>
-                hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue))
-              case "saapumisPvm"  => hakemusList.sortBy(_.saapumisPvm)
-              case "kokonaisaika" => hakemusList.sortBy(_.saapumisPvm).reverse
-              case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta).reverse
-              case _              => hakemusList
-            }
-          case SortDef.Desc =>
-            sortParam match {
-              case "hakija"     => hakemusList.sortBy(_.hakija).reverse
-              case "asiatunnus" => hakemusList.sortBy(_.asiatunnus).reverse
-              case "esittelija" =>
-                hakemusList.sortBy(item => s"${item.esittelijaSukunimi} ${item.esittelijaKutsumanimi}").reverse
-              case "kasittelyvaihe" => hakemusList.sortBy(_.kasittelyVaihe).reverse
-              case "hakemusKoskee"  =>
-                hakemusList.sortBy(item => hakemusKoskeeOrder.getOrElse(item.hakemusKoskee, Int.MaxValue)).reverse
-              case "saapumisPvm"  => hakemusList.sortBy(_.saapumisPvm).reverse
-              case "kokonaisaika" => hakemusList.sortBy(_.saapumisPvm)
-              case "hakijanaika"  => hakemusList.sortBy(_.viimeinenAsiakirjaHakijalta)
-              case _              => hakemusList
-            }
-          case SortDef.Undefined => hakemusList
-        }
-    }
+    HakemusListResult(
+      items = items,
+      totalCount = totalCount,
+      page = page,
+      pageSize = pageSize,
+      totalPages = totalPages
+    )
   }
 
   /**

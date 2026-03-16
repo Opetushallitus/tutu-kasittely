@@ -27,6 +27,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockKoodistot(page),
     mockTutkinnot(page),
     mockFilemakerList(page),
+    mockFilemakerHakemus(page),
     mockYhteinenKasittely(page),
   ]);
 };
@@ -110,6 +111,24 @@ export const mockFilemakerList = async (page: Page) => {
       });
     },
   );
+};
+
+export const mockFilemakerHakemus = async (page: Page) => {
+  await page.route('**/tutu-backend/api/vanha-tutu/*', async (route: Route) => {
+    const url = route.request().url();
+    const id = url.split('/').pop()?.split('?')[0];
+    const raw = await readFile(
+      path.join(__dirname, './fixtures/filemakerHakemukset.json'),
+      'utf-8',
+    );
+    const data = JSON.parse(raw);
+    const hakemus = data.items.find((h: { id: string }) => h.id === id);
+    await route.fulfill({
+      status: hakemus ? 200 : 404,
+      contentType: 'application/json',
+      body: JSON.stringify(hakemus ?? {}),
+    });
+  });
 };
 
 export const mockUser = async (page: Page, kieli: string = 'fi') => {

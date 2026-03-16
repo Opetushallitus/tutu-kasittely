@@ -10,8 +10,8 @@ object SortDef:
     case _ => Undefined // TODO: Tässä voisi heittää poikkeuksen, mutta tällä hetkellä Undefined on helpompi käsitellä
 
   def toSql(sortDef: SortDef): String = sortDef match
-    case Asc  => "ASC"
-    case Desc => "DESC"
+    case Asc  => "ASC NULLS FIRST"
+    case Desc => "DESC NULLS LAST"
     case _    => throw new IllegalArgumentException(s"Undefined sort definition: $sortDef")
 
 val hakemusKoskeeOrder: Map[Int, Int] = Map(

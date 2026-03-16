@@ -1,13 +1,14 @@
 'use client';
 
-import { HakemusList } from '@/src/app/(root)/components/HakemusList';
-import HakemusListFilters from '@/src/app/(root)/components/HakemusListFilters';
 import MainPageLayout from '@/src/app/(root)/components/MainPageLayout';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 
-export default function ListViewPage() {
+import FilemakerFilters from '../components/FilemakerFilters';
+import { FilemakerList } from '../components/FilemakerList';
+
+export default function FilemakerListViewPage() {
   const { t } = useTranslations();
   const user = useAuthorizedUser();
   const userRoles = user?.authorities;
@@ -18,16 +19,12 @@ export default function ListViewPage() {
       t={t}
       hasTutuUserRights={hasTutuUserRights}
       tabsButtons={[
-        { tabName: 'hakemukset', active: true },
-        {
-          linkPath: '/filemaker',
-          tabName: 'filemakerHakemukset',
-          active: false,
-        },
+        { linkPath: '/', tabName: 'hakemukset', active: false },
+        { tabName: 'filemakerHakemukset', active: true },
       ]}
     >
-      <HakemusListFilters />
-      <HakemusList user={user} />
+      <FilemakerFilters />
+      <FilemakerList />
     </MainPageLayout>
   );
 }

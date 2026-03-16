@@ -271,12 +271,18 @@ class HakemusController(
     @RequestParam(required = false) hakemuskoskee: String,
     @RequestParam(required = false) esittelija: String,
     @RequestParam(required = false) vaihe: String,
-    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    @RequestParam(required = false, defaultValue = "") sort: String,
+    @RequestParam(required = false, defaultValue = "1") page: Int,
+    @RequestParam(required = false, defaultValue = "20") pagesize: Int,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user    = userService.getEnrichedUserDetails(true)
-      val userOid = nayta match {
+      require(page >= 1, "page must be >= 1")
+      require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
+
+      val sortParam = resolveSortParams(sort)
+      val user      = userService.getEnrichedUserDetails(true)
+      val userOid   = nayta match {
         case "omat" => Option(user.userOid)
         case null   =>
           esittelija match {
@@ -289,21 +295,32 @@ class HakemusController(
         userOid,
         Option(hakemuskoskee),
         Option(vaihe),
-        sort
+        sortParam,
+        page,
+        pagesize
       )
     } match {
-      case Success(hakemukset) =>
+      case Success(hakemuslista) =>
         val params = mapper.writeValueAsString(
           Map(
             "nayta"         -> Option(nayta).getOrElse(""),
             "hakemuskoskee" -> Option(hakemuskoskee).getOrElse(""),
             "esittelija"    -> Option(esittelija).getOrElse(""),
-            "vaihe"         -> Option(vaihe).getOrElse("")
+            "vaihe"         -> Option(vaihe).getOrElse(""),
+            "sort"          -> sort,
+            "page"          -> page,
+            "pagesize"      -> pagesize
           )
         )
         auditLog.logRead("hakemuslista", params, ReadHakemukset, request)
-        val response = mapper.writeValueAsString(hakemukset)
+        val response = mapper.writeValueAsString(hakemuslista)
         ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception: IllegalArgumentException) =>
+        LOG.error(s"Virheellinen parametri:", exception)
+        errorMessageMapper.mapPlainErrorMessage(
+          exception.getMessage(),
+          HttpStatus.BAD_REQUEST
+        )
       case Failure(exception) =>
         LOG.error("Hakemuslistan haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
