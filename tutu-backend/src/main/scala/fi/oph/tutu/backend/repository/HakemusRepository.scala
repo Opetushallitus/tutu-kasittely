@@ -177,15 +177,15 @@ class HakemusRepository extends BaseResultHandlers {
     try {
       val whereClauses = Seq.newBuilder[String]
 
+      // Yhdistetään ehdot sillä jos ap_hakemus, niin kannassa on hakemus_koskee=1
       if (hakemusKoskee.nonEmpty || apHakemus) {
-        val list = hakemusKoskee.mkString(", ")
-        if (hakemusKoskee.nonEmpty && apHakemus) {
-          whereClauses += s"(h.hakemus_koskee IN ($list) OR a.ap_hakemus IS TRUE)"
-        } else if (hakemusKoskee.nonEmpty) {
-          whereClauses += s"h.hakemus_koskee IN ($list)"
-        } else {
-          whereClauses += s"a.ap_hakemus IS TRUE"
-        }
+        val list  = hakemusKoskee.mkString(", ")
+        val ehdot = List(
+          Option.when(list.nonEmpty)(s"h.hakemus_koskee IN ($list)"),
+          Option.when(apHakemus)("a.ap_hakemus IS TRUE")
+        ).flatten
+
+        whereClauses += s"(${ehdot.mkString(" OR ")})"
       }
 
       if (vaiheet.nonEmpty) {
