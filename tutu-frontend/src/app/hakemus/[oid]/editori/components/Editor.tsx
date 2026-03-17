@@ -69,6 +69,7 @@ const EditorContainer = styled(Box)({
   width: '100%',
   height: '800px',
   border: '1px solid',
+  borderRadius: '4px',
   borderColor: 'black',
 });
 
@@ -109,7 +110,7 @@ export function Editor({
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
 
-  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
+  const onRef = (_floatingAnchorElem: HTMLDivElement | null) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
@@ -122,24 +123,30 @@ export function Editor({
         <EditorInnerContainer>
           <RichTextPlugin
             contentEditable={
-              <div
-                ref={onRef}
+              <Box
                 style={{
-                  position: 'relative',
                   height: '760px',
                   overflow: 'scroll',
                 }}
               >
-                <ContentEditable
-                  data-testid={'editor-content-editable'}
+                <Box
+                  ref={onRef}
                   style={{
-                    padding: theme.spacing(1),
-                    outline: 'none',
+                    position: 'relative',
                   }}
-                  aria-placeholder={''}
-                  placeholder={<span>{''}</span>}
-                />
-              </div>
+                >
+                  <ContentEditable
+                    data-testid={'editor-content-editable'}
+                    name={'editor-content-editable'}
+                    style={{
+                      padding: theme.spacing(1),
+                      outline: 'none',
+                    }}
+                    aria-placeholder={''}
+                    placeholder={<span>{''}</span>}
+                  />
+                </Box>
+              </Box>
             }
             ErrorBoundary={LexicalErrorBoundary}
           />

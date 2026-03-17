@@ -24,7 +24,6 @@ const colorButtonStyle = (color: FontColor, selected: boolean) => ({
   width: '24px',
   height: '24px',
   backgroundColor: color,
-  sizing: 'box-sizing',
   border: selected ? '1px solid white' : 'none',
   boxShadow: selected ? '0 0 4px 2px rgba(0,0,0,0.27)' : 'none',
   '&:hover': {
@@ -41,7 +40,7 @@ export function ColorPicker({
 }) {
   const [open, setOpen] = useState(false);
 
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   useCloseOnClickOutside(ref, () => setOpen(false));
 
   return (

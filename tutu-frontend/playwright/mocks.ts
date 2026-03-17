@@ -10,6 +10,7 @@ import { getPaatos } from '@/playwright/fixtures/paatos1';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
+import { Paatosteksti } from '@/src/lib/types/paatosteksti';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
@@ -538,6 +539,43 @@ export const mockYhteinenKasittely = async (page: Page) => {
           },
         ]),
       });
+    },
+  );
+};
+
+const defaultPaatosteksti: Paatosteksti = {
+  id: 'paatosteksti-id',
+  hakemusId: 'hakemus-id',
+  luotu: '2025-05-28T10:59:04.597',
+  luoja: 'Lauri Luoja',
+  sisalto:
+    '<p><span style="white-space: pre-wrap;">Päätosteksti sisältö</span></p>',
+};
+
+export const mockPaatosteksti = (
+  page: Page,
+  paatosteksti?: Partial<Paatosteksti>,
+) => {
+  return page.route(
+    '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti**',
+    async (route: Route) => {
+      if (route.request().method() === 'PUT') {
+        const putData = route.request().postDataJSON() as Record<
+          string,
+          unknown
+        >;
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(putData),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ ...defaultPaatosteksti, ...paatosteksti }),
+        });
+      }
     },
   );
 };

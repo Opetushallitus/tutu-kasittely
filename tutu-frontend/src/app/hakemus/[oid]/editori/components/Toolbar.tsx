@@ -84,7 +84,7 @@ const buttonStyle = (selected: boolean) => ({
     backgroundColor: ophColors.grey100,
   },
   height: '34px',
-  width: '38px',
+  width: '40px',
   padding: '1px',
   margin: 0,
   borderRadius: '4px',

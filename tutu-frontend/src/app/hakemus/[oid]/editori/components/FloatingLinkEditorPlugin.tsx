@@ -56,10 +56,10 @@ const LinkEditorContainer = styled(Box)({
   zIndex: 10,
   maxWidth: 400,
   width: '100%',
+  height: '40px',
   opacity: 0,
   backgroundColor: ophColors.white,
   boxShadow: '0 5px 10px rgba(0,0,0,0.3)',
-  borderRadius: 8,
   willChange: 'transform',
   alignItems: 'center',
   gap: 4,
@@ -68,8 +68,9 @@ const LinkEditorContainer = styled(Box)({
 const LinkViewContainer = styled(Box)({
   display: 'flex',
   flex: 1,
+  gap: 4,
   alignItems: 'center',
-  margin: '8px 12px',
+  margin: '8px 0 8px 12px',
   overflow: 'hidden',
   '& a': {
     flex: 1,
@@ -146,6 +147,10 @@ function FloatingLinkEditor({
     if (editorElem === null) {
       return;
     }
+    if (!isLink) {
+      setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem);
+      return;
+    }
 
     const rootElement = editor.getRootElement();
 
@@ -183,7 +188,7 @@ function FloatingLinkEditor({
     }
 
     return true;
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode]);
+  }, [editor, isLink, isLinkEditMode, anchorElem, setIsLinkEditMode]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
@@ -330,6 +335,7 @@ function FloatingLinkEditor({
             onKeyDown={(event) => {
               monitorInputInteraction(event);
             }}
+            name="link-input"
           />
           <IconButton
             size="small"
