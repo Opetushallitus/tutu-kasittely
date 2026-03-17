@@ -56,6 +56,7 @@ export default function PaatostiedotPage() {
     isPaatosLoading,
     paatos,
     error: paatosError,
+    generateError,
     updatePaatos,
     isUpdateOngoing: isPaatosUpdateOngoing,
     isUpdateSuccess: isPaatosUpdateSuccess,
@@ -72,8 +73,16 @@ export default function PaatostiedotPage() {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
+    handleFetchError(addToast, generateError, 'virhe.paatoksenLataus', t);
     handleFetchError(addToast, paatosUpdateError, 'virhe.tallennus', t, 4000);
-  }, [addToast, hakemusError, paatosError, paatosUpdateError, t]);
+  }, [
+    addToast,
+    hakemusError,
+    paatosError,
+    paatosUpdateError,
+    generateError,
+    t,
+  ]);
 
   useEffect(() => {
     if (isPaatosUpdateSuccess) {

@@ -178,7 +178,7 @@ class HakemusService(
     ataruHakemus: AtaruHakemus,
     dbHakemus: DbHakemus,
     dbTutkinnot: Seq[Tutkinto]
-  ): Seq[Tutkinto] = {
+  ): Unit = {
     val ataruTutkinnot       = ataruHakemusParser.parseTutkinnot(dbHakemus.id, ataruHakemus)
     val ataruHakemusModified = toLocalDateTime(ataruHakemus.modified)
 
@@ -208,17 +208,10 @@ class HakemusService(
                   ),
                   ataruTutkinto.muokkaaja.getOrElse(TUTU_SERVICE)
                 )
-              } else { 0 }
+              }
           }
       }
     }
-    tutkintoRepository
-      .haeTutkinnotHakemusOidilla(dbHakemus.hakemusOid)
-      .map(tutkinto =>
-        tutkinto.copy(
-          muokkaaja = onrService.haeNimiOption(tutkinto.muokkaaja)
-        )
-      )
   }
 
   def haeHakemus(hakemusOid: HakemusOid): Option[Hakemus] = {

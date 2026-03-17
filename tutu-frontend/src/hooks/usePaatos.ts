@@ -53,11 +53,11 @@ export const usePaatos = (hakemusOid: string | undefined) => {
       const paivitettyPaatos = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatos);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-      await queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
       });
       // Ensure generated preview is refreshed if open
-      await queryClient.invalidateQueries({ queryKey: generateQueryKey });
+      queryClient.invalidateQueries({ queryKey: generateQueryKey });
     },
   });
 
@@ -70,6 +70,7 @@ export const usePaatos = (hakemusOid: string | undefined) => {
     paatosteksti: generatedQuery.data,
     isPaatosTekstiLoading:
       generatedQuery.isLoading || generatedQuery.isFetching,
+    generateError: generatedQuery.error,
     updatePaatos,
     paatos: query.data,
     isPaatosLoading: query.isLoading,
