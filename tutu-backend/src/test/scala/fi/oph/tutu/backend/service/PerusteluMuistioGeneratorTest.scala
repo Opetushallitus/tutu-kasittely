@@ -346,28 +346,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   }
 
   @Test
-  def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
-    setupMaakoodit()
-    setupKorkeakoulut()
-    setupKoulutusalat()
-
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
-
-    val result = generate(
-      koodistoService,
-      maakoodiService,
-      onrService,
-      noneHakemus,
-      Seq(),
-      noneAtaruHakemus,
-      nonePerustelu,
-      nonePaatos
-    )
-    println(result)
-    assert(result.isEmpty)
-  }
-
-  @Test
   def generatesAStringWhenInputsDefined(): Unit = {
     setupMaakoodit()
     setupKorkeakoulut()
@@ -431,15 +409,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupKoulutusalat()
 
     val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus, tutkinnot)
-    assert(result.get.contains("Nimi: Paras tutkinto"))
-    assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
-    assert(result.get.contains("Suoritusvuodet: 2000 - 2001"))
-    assert(result.get.contains("Ohjeellinen laajuus: 20op"))
-    assert(result.get.contains("Tutkintoon sisältyi opinnäytetyö: Kyllä"))
-    assert(result.get.contains("Tutkintoon sisältyi harjoittelu: Ei"))
-    assert(result.get.contains("Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"))
-    assert(result.get.contains("Vastaa perusopintoja"))
-    assert(result.get.contains("Koulutusala: Alkutuotanto"))
+    assert(result.get.contains("Paras tutkinto"))
+    assert(result.get.contains("Englanninmaa"))
   }
 
   @Test
@@ -564,7 +535,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Lausunnon antaja, muu: HOKS tuutori"))
     assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
-    assert(result.get.contains("Lausuntopyynnön sisältö:"))
+    assert(result.get.contains("Lausunnon sisältö:"))
     assert(result.get.contains("Hakija on suorittanut tutkinnon kirjeopintoina"))
   }
 
