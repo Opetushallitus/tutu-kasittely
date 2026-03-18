@@ -682,7 +682,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   }
 
   @Test
-  def haeKielteisenPaatoksenPerustelutProducesString(): Unit = {
+  def haeKielteisenPaatosTiedonPerustelutProducesString(): Unit = {
     val paatosTiedot = PaatosTieto(
       kielteisenPaatoksenPerustelut = Some(
         KielteisenPaatoksenPerustelut(
@@ -695,7 +695,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKielteisenPaatoksenPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
+    val result = haeKielteisenPaatosTiedonPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
 
     assert(result.get.contains("Kielteisen päätöksen perustelut:"))
     assert(result.get.contains("- Epävirallinen korkeakoulu"))
