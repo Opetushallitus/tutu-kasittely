@@ -105,13 +105,13 @@ class TutuIntegrationTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def luoHakemusInvalidRequestReturns400(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
         fi.oph.tutu.backend.domain.User(
           userOid = "kayttaja",
-          authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+          authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
         )
       )
 
@@ -170,7 +170,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
   @Test
   @WithMockUser(
     value = HakemusControllerTestConstants.ESITTELIJA_OID,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
     val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1)
@@ -191,12 +191,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
   @Order(1)
   @WithMockUser(
     value = esittelijaOidString,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def luoHakemusValidRequestReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6666.json")))
@@ -238,12 +238,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
   @Order(2)
   @WithMockUser(
     value = esittelijaOidString,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def luoHakemusValidRequestReturns200WithCorrectEsittelijaOid(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6665.json")))
@@ -286,12 +286,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
   @Order(3)
   @WithMockUser(
     value = esittelijaOidString,
-    authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL)
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def luoLopullinenPaatosHakemusReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6668.json")))
