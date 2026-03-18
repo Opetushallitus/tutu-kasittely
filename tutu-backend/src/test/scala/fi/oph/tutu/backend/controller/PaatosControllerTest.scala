@@ -945,7 +945,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     )
 
     // Teksti palauttaa fixturen tutkinnon kuitenkin
-    val tutkinto = Tutkinto(
+    val tutkinto1 = Tutkinto(
       id = None,
       hakemusId = hakemusIdWithTaso.get,
       jarjestys = "1",
@@ -956,9 +956,22 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       maakoodiUri = None
     )
 
-    tutkintoRepository.suoritaLisaaTutkinto(tutkinto, "test user")
-    val savedTutkinnot  = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOidWithTaso)
-    val savedTutkintoId = savedTutkinnot.head.id
+    val tutkinto2 = Tutkinto(
+      id = None,
+      hakemusId = hakemusIdWithTaso.get,
+      jarjestys = "2",
+      todistusOtsikko = Some("tutkintotodistus"),
+      nimi = Some("Tutkintonimi2"),
+      paaaaineTaiErikoisala = Some("Pääaine"),
+      oppilaitos = Some("Oppilaitos"),
+      maakoodiUri = None
+    )
+
+    tutkintoRepository.suoritaLisaaTutkinto(tutkinto1, "test user")
+    tutkintoRepository.suoritaLisaaTutkinto(tutkinto2, "test user")
+    val savedTutkinnot   = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOidWithTaso)
+    val savedTutkintoId1 = savedTutkinnot.head.id
+    val savedTutkintoId2 = savedTutkinnot(1).id
 
     paatosRepository.tallennaPaatosTieto(
       tasoId.get,
@@ -967,11 +980,27 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosId = tasoId,
         paatosTyyppi = Some(PaatosTyyppi.Taso),
         sovellettuLaki = Some(SovellettuLaki.ap_seut),
-        tutkintoId = savedTutkintoId,
+        tutkintoId = savedTutkintoId1,
         lisaaTutkintoPaatostekstiin = None,
         myonteinenPaatos = Some(true),
         kielteisenPaatoksenPerustelut = None,
         tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
+      ),
+      "test user"
+    )
+
+    paatosRepository.tallennaPaatosTieto(
+      tasoId.get,
+      PaatosTieto(
+        id = None,
+        paatosId = tasoId,
+        paatosTyyppi = Some(PaatosTyyppi.Taso),
+        sovellettuLaki = Some(SovellettuLaki.ap_seut),
+        tutkintoId = savedTutkintoId2,
+        lisaaTutkintoPaatostekstiin = Some(true),
+        myonteinenPaatos = Some(true),
+        kielteisenPaatoksenPerustelut = None,
+        tutkintoTaso = Some(TutkintoTaso.AlempiKorkeakoulu)
       ),
       "test user"
     )
@@ -993,7 +1022,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosId = riittavatOpinnotId,
         paatosTyyppi = Some(PaatosTyyppi.RiittavatOpinnot),
         sovellettuLaki = Some(SovellettuLaki.ap_seut),
-        tutkintoId = savedTutkintoId,
+        tutkintoId = savedTutkintoId1,
         lisaaTutkintoPaatostekstiin = None,
         myonteinenPaatos = Some(true),
         kielteisenPaatoksenPerustelut = None,
@@ -1117,11 +1146,11 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         .andReturn()
 
       val body = result.getResponse.getContentAsString.mkString
-      System.out.println(s"$testName Body:\n$body\n")
+      System.out.println(s"$testName Body:\n${prettify(body).mkString("\n")}\n")
 
       def prettify(html: String): List[String] = {
         val newlined = html
-          .replaceAll("(<br>|</p>|</h[1-6]>)", "$1\n")
+          .replaceAll("(<br>|</p>|</strong>)", "$1\n")
 
         newlined.split("\\n").toList
       }
