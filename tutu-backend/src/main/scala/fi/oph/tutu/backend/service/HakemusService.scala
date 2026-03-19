@@ -223,7 +223,7 @@ class HakemusService(
 
     val lomake = hakemuspalveluService.haeLomake(ataruHakemus.form_id) match {
       case Left(error: Throwable) =>
-        LOG.warn(s"Ataru-lomakkeen haku epäonnistui lomake-id:llä ${ataruHakemus.form_id}: ", error.getMessage)
+        LOG.warn(s"Ataru-lomakkeen haku epäonnistui lomake-id:llä ${ataruHakemus.form_id}: ${error.getMessage}")
         return None
       case Right(response: String) => parse(response).extract[AtaruLomake]
     }

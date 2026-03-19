@@ -135,7 +135,7 @@ class PerusteluController(
             )
         }
       case Failure(e) =>
-        LOG.error("Perustelun päivitys epäonnistui", e.getMessage)
+        LOG.error(s"Perustelun päivitys epäonnistui: ${e.getMessage}")
         errorMessageMapper.mapPlainErrorMessage(
           RESPONSE_400_DESCRIPTION,
           HttpStatus.BAD_REQUEST
@@ -155,7 +155,7 @@ class PerusteluController(
         val response = mapper.writeValueAsString(perusteluMuistio)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
-        LOG.error("Perustelumuistion haku epäonnistui", exception.getMessage)
+        LOG.error(s"Perustelumuistion haku epäonnistui: ${exception.getMessage}")
         errorMessageMapper.mapErrorMessage(exception)
     }
   }

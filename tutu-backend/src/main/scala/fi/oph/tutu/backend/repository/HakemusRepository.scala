@@ -33,7 +33,7 @@ class HakemusRepository extends BaseResultHandlers {
         hakemusKoskee = r.nextInt(),
         formId = r.nextLong(),
         esittelijaId = r.nextStringOption().map(UUID.fromString),
-        esittelijaOid = Option(UserOid(r.nextString())),
+        esittelijaOid = r.nextStringOption().map(UserOid(_)),
         asiakirjaId = r.nextStringOption().map(UUID.fromString),
         asiatunnus = r.nextStringOption(),
         kasittelyVaihe = KasittelyVaihe.fromString(r.nextString()),
