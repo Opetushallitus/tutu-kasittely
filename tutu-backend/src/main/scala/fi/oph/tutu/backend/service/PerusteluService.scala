@@ -131,6 +131,7 @@ class PerusteluService(
     val perusteluMuistio = generatePerusteluMuistio(
       koodistoService,
       maakoodiService,
+      onrService,
       hakemusMaybe,
       tutkinnot,
       ataruHakemusMaybe,

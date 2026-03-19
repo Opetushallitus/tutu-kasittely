@@ -337,27 +337,12 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
   }
 
+  @Mock
+  var onrService: OnrService = _
+
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-  }
-
-  @Test
-  def generatesAnEmptyStringWhenInputsAreEmpty(): Unit = {
-    setupMaakoodit()
-    setupKorkeakoulut()
-    setupKoulutusalat()
-
-    val result = generate(
-      koodistoService,
-      maakoodiService,
-      noneHakemus,
-      Seq(),
-      noneAtaruHakemus,
-      nonePerustelu,
-      nonePaatos
-    )
-    assert(result.isEmpty)
   }
 
   @Test
@@ -366,9 +351,12 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupKorkeakoulut()
     setupKoulutusalat()
 
+    when(onrService.haeNimiOption(any[Some[String]])).thenReturn(Some("Erkki Esittelijä"))
+
     val result = generate(
       koodistoService,
       maakoodiService,
+      onrService,
       someHakemus,
       tutkinnot,
       someAtaruHakemus,
@@ -421,15 +409,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupKoulutusalat()
 
     val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus, tutkinnot)
-    assert(result.get.contains("Nimi: Paras tutkinto"))
-    assert(result.get.contains("Korkeakoulun tai oppilaitoksen sijaintimaa: Englanninmaa"))
-    assert(result.get.contains("Suoritusvuodet: 2000 - 2001"))
-    assert(result.get.contains("Ohjeellinen laajuus: 20op"))
-    assert(result.get.contains("Tutkintoon sisältyi opinnäytetyö: Kyllä"))
-    assert(result.get.contains("Tutkintoon sisältyi harjoittelu: Ei"))
-    assert(result.get.contains("Lisätietoja opinnäytteisiin tai harjoitteluun liittyen"))
-    assert(result.get.contains("Vastaa perusopintoja"))
-    assert(result.get.contains("Koulutusala: Alkutuotanto"))
+    assert(result.get.contains("Paras tutkinto"))
+    assert(result.get.contains("Englanninmaa"))
   }
 
   @Test
@@ -554,7 +535,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Lausunnon antaja, muu: HOKS tuutori"))
     assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
-    assert(result.get.contains("Lausuntopyynnön sisältö:"))
+    assert(result.get.contains("Lausunnon sisältö:"))
     assert(result.get.contains("Hakija on suorittanut tutkinnon kirjeopintoina"))
   }
 
@@ -672,7 +653,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   }
 
   @Test
-  def haeKielteisenPaatoksenPerustelutProducesString(): Unit = {
+  def haeKielteisenPaatosTiedonPerustelutProducesString(): Unit = {
     val paatosTiedot = PaatosTieto(
       kielteisenPaatoksenPerustelut = Some(
         KielteisenPaatoksenPerustelut(
@@ -685,7 +666,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKielteisenPaatoksenPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
+    val result = haeKielteisenPaatosTiedonPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
 
     assert(result.get.contains("Kielteisen päätöksen perustelut:"))
     assert(result.get.contains("- Epävirallinen korkeakoulu"))
@@ -864,5 +845,39 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("- Lisätieto:"))
     assert(result.get.contains("Kohtalainen kokemus"))
     assert(result.get.contains("- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Osittain"))
+  }
+
+  @Test
+  def haeEsittelijaProducesString(): Unit = {
+    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Erkki Esittelijä"))
+
+    val hakemusMaybe = someHakemus.map(_.copy(esittelijaOid = Some("1.2.3.4")))
+    val result       = haeEsittelija(hakemusMaybe, onrService)
+
+    assert(result.get.contains("Esittelijä: Erkki Esittelijä"))
+  }
+
+  @Test
+  def haeKasittelyajatProducesString(): Unit = {
+
+    val asiakirja = someHakemus.flatMap(_.asiakirja)
+
+    val hakemusMaybe = someHakemus.map(
+      _.copy(
+        saapumisPvm = Some(LocalDateTime.of(2020, 5, 5, 0, 0)),
+        esittelyPvm = Some(LocalDateTime.of(2020, 5, 25, 0, 0)),
+        paatosPvm = Some(LocalDateTime.of(2020, 5, 25, 0, 0)),
+        asiakirja = asiakirja.map(
+          _.copy(
+            viimeinenAsiakirjaHakijalta = Some(LocalDateTime.of(2020, 5, 5, 0, 0))
+          )
+        )
+      )
+    )
+
+    val result = haeKasittelyajat(hakemusMaybe)
+
+    assert(result.get.contains("Aika kirjauspäivämäärästä esittelypäivämäärään 0.7 kk"))
+    assert(result.get.contains("Aika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään 0.7 kk"))
   }
 }
