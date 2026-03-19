@@ -7,6 +7,9 @@ import java.time.LocalDateTime
 import scala.annotation.meta.field
 import java.util.UUID
 
+enum ViestinTila:
+  case vastaamatta, vastattu, uusiVastaus
+
 @Schema(name = "YkViesti")
 case class DbYkViesti(
   @(Schema @field)(
@@ -81,7 +84,7 @@ case class YkViestiListItem(
   hakemusOid: String,
   asiatunnus: Option[String] = None,
   hakija: String,
-  status: Int,
+  status: ViestinTila,
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
