@@ -585,7 +585,7 @@ class HakemusService(
     val saapuneet    = hakemusRepository.haeYkSaapuneetViestit(userOid)
     val lahetetyt    = hakemusRepository.haeYkLahetetytViestit(userOid)
     val lukemattomia = saapuneet.count(viesti => viesti.luettu.isEmpty)
-    val vastaamatta  = lista.count(viesti => viesti.vastaus.isEmpty)
+    val vastaamatta  = lahetetyt.count(viesti => viesti.vastaus.isEmpty)
     lukemattomia > 0 || vastaamatta > 0
   }
 
