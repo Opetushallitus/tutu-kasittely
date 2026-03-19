@@ -475,7 +475,7 @@ class HakemusRepository extends BaseResultHandlers {
         )
     }
 
-  def haeYkViestiLista(userOid: String): Seq[YkViesti] =
+  def haeYkSaapuneetViestit(userOid: String): Seq[YkViesti] =
     try {
       db.run(
         sql"""
@@ -494,14 +494,45 @@ class HakemusRepository extends BaseResultHandlers {
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
           WHERE
-            v.lahettaja_oid = $userOid OR v.vastaanottaja_oid = $userOid
+            v.vastaanottaja_oid = $userOid
           """.as[YkViesti],
-        "hae_ykviestit"
+        "hae_yksaapuneetViestit"
       )
     } catch {
       case e: Exception =>
         throw new RuntimeException(
-          s"Yhteisen käsittelyn viestien listaus epäonnistui: ${e.getMessage}",
+          s"Yhteisen käsittelyn saapuneiden viestien listaus epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+
+  def haeYkLahetetytViestit(userOid: String): Seq[YkViesti] =
+    try {
+      db.run(
+        sql"""
+        SELECT
+          v.id,
+          v.hakemus_oid,
+          h.asiatunnus,
+          v.lahettaja_oid,
+          v.vastaanottaja_oid,
+          v.luotu,
+          v.luettu,
+          v.viesti,
+          v.vastaus,
+          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+        FROM
+          yk_viesti v
+        LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+        WHERE
+          v.lahettaja_oid = $userOid
+        """.as[YkViesti],
+        "hae_yklahetetytViestit"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Yhteisen käsittelyn lähetettyjen viestien listaus epäonnistui: ${e.getMessage}",
           e
         )
     }

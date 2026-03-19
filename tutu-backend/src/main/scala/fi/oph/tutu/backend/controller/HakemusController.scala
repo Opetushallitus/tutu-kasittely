@@ -546,10 +546,10 @@ class HakemusController(
   }
 
   @GetMapping(
-    path = Array("ykviestilista"),
+    path = Array("ykSaapuneetViestit"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
-  def haeYkViestiLista(
+  def haeYkSaapuneetViestit(
     @RequestParam(required = false) lahetetty: String,
     @RequestParam(required = false) hakija: String,
     @RequestParam(required = false) asiatunnus: String,
@@ -560,7 +560,7 @@ class HakemusController(
       val user    = userService.getEnrichedUserDetails(true)
       val userOid = user.userOid
 
-      hakemusService.haeYkViestiLista(
+      hakemusService.haeYkSaapuneetViestit(
         userOid,
         sort
       )
@@ -569,7 +569,36 @@ class HakemusController(
         val response = mapper.writeValueAsString(ykviestit)
         ResponseEntity.status(HttpStatus.OK).body(response)
       case Failure(exception) =>
-        LOG.error("Yhteisen käsittelyn listan haku epäonnistui", exception)
+        LOG.error("Yhteisen käsittelyn saapuneiden viestien listan haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
+    path = Array("ykLahetetytViestit"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeYkLahetetytViestit(
+    @RequestParam(required = false) lahetetty: String,
+    @RequestParam(required = false) hakija: String,
+    @RequestParam(required = false) asiatunnus: String,
+    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user    = userService.getEnrichedUserDetails(true)
+      val userOid = user.userOid
+
+      hakemusService.haeYkLahetetytViestit(
+        userOid,
+        sort
+      )
+    } match {
+      case Success(ykviestit) =>
+        val response = mapper.writeValueAsString(ykviestit)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn lähetettyjen viestien listan haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
