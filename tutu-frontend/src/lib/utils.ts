@@ -130,3 +130,6 @@ export const nullifyStringFieldsIfEmpty = <T>(
   });
   return result;
 };
+
+export const anyRealContentInHtml = (html: string) =>
+  /[^\s<>]/.test(html.replace(/<[^>]*>/g, ''));

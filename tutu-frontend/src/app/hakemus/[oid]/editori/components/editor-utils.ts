@@ -1,3 +1,4 @@
+import { createHeadlessEditor } from '@lexical/headless';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -191,3 +192,8 @@ export function setFloatingElemPositionForLinkEditor(
   floatingElem.style.opacity = '1';
   floatingElem.style.transform = `translate(${left}px, ${top}px)`;
 }
+export const convertHtmlToMarkdown = (html: string) => {
+  const editor = createHeadlessEditor({ namespace: 'html-to-md' });
+  importHtml(editor, html);
+  return exportMarkdown(editor);
+};

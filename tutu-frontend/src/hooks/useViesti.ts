@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
+import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Viesti } from '@/src/lib/types/viesti';
 
 const getViestiTyoversio = async (
@@ -20,7 +20,10 @@ type UpdateViestiParams = {
   vahvista: boolean;
 };
 
-export type ViestiUpdateCallback = (viesti: Viesti) => void;
+export type ViestiUpdateCallback = (
+  viesti: Viesti,
+  successCallback?: () => void,
+) => void;
 
 const putViesti = (
   hakemusOid: string,
@@ -46,7 +49,7 @@ export const useViesti = (hakemusOid?: string) => {
 
   const {
     mutate: updateViestiMutation,
-    isPending: updateOngoing,
+    isPending: viestiUpdateOngoing,
     isSuccess: viestiUpdateSuccess,
     error: viestiUpdateError,
     reset: viestiUpdateReset,
@@ -68,14 +71,22 @@ export const useViesti = (hakemusOid?: string) => {
   } = useMutation({
     mutationFn: (viesti: Viesti) =>
       putViesti(hakemusOid!, { viesti, vahvista: true }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey });
-    },
+  });
+
+  const {
+    mutate: poistaViestiMutation,
+    isPending: poistoOngoing,
+    isSuccess: poistoSuccess,
+    error: poistoError,
+    reset: viestiPoistoReset,
+  } = useMutation({
+    mutationFn: (viestiId: string) => doApiDelete(`viesti/${viestiId}`),
   });
 
   const resetMutationStatuses = () => {
     viestiUpdateReset();
     viestiVahvistusReset();
+    viestiPoistoReset();
   };
 
   const updateViesti: ViestiUpdateCallback = (viesti: Viesti) => {
@@ -83,22 +94,43 @@ export const useViesti = (hakemusOid?: string) => {
     updateViestiMutation(viesti);
   };
 
-  const vahvistaViesti: ViestiUpdateCallback = (viesti: Viesti) => {
+  const vahvistaViesti: ViestiUpdateCallback = (
+    viesti: Viesti,
+    successCallback?: () => void,
+  ) => {
     resetMutationStatuses();
-    vahvistaViestiMutation(viesti);
+    vahvistaViestiMutation(viesti, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey });
+        if (successCallback) successCallback();
+      },
+    });
+  };
+
+  const poistaViesti = (viestiId: string, successCallback?: () => void) => {
+    resetMutationStatuses();
+    poistaViestiMutation(viestiId, {
+      onSuccess: () => {
+        if (successCallback) successCallback();
+      },
+    });
   };
 
   return {
     ...query,
     updateViesti: updateViesti,
     vahvistaViesti: vahvistaViesti,
+    poistaViesti: poistaViesti,
     viesti: query.data,
     isViestiLoading: query.isLoading,
     viestiLoadingError: query.error,
-    updateOrVahvistusOngoing: updateOngoing || vahvistusOngoing,
+    updateOngoing: viestiUpdateOngoing || vahvistusOngoing,
+    poistoOngoing,
     viestiUpdateSuccess,
     viestiUpdateError,
     vahvistusSuccess,
     vahvistusError,
+    poistoSuccess,
+    poistoError,
   };
 };
