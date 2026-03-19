@@ -991,8 +991,8 @@ def haePaatostiedot(paatosMaybe: Option[Paatos], tutkinnot: Seq[Tutkinto]): Opti
     case Some(paatos) =>
       val ratkaisutyyppi: Option[String] = haeRatkaisutyyppi(paatos)
 
-      val osapaatoskohtaisetTiedot = paatos.paatosTiedot.zipWithIndex
-        .map((paatosTiedot: PaatosTieto, index: Int) => {
+      val osapaatoskohtaisetTiedot = paatos.paatosTiedot
+        .map((paatosTiedot: PaatosTieto) => {
           val paatosTyyppi     = haePaatosTyyppi(paatosTiedot)
           val sovellettuLaki   = haeSovellettuLaki(paatosTiedot)
           val tutkinnonNimi    = haeTutkinnonNimi(paatosTiedot, tutkinnot)
