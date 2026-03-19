@@ -12,7 +12,7 @@ object AuthoritiesUtil {
     allAuthorities: util.Collection[? <: GrantedAuthority]
   ): List[String] = {
     val tutuAuthoritiesRegex: Regex =
-      s"${SecurityConstants.SECURITY_ROOLI_CRUD_FULL}.*".r
+      s"${SecurityConstants.SECURITY_ROOLI_PREFIX}.*".r
     allAuthorities.asScala.toList
       .flatMap(role => tutuAuthoritiesRegex.findFirstIn(role.getAuthority))
   }
