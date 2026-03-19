@@ -6,7 +6,10 @@ import { Tabs } from '@/src/app/(root)/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
-import { useYkViestilista } from '@/src/hooks/useYkViestilista';
+import {
+  useYkGetReceivedMessages,
+  useYkGetSentMessages,
+} from '@/src/hooks/useYkViestilista';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
@@ -23,16 +26,26 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
   const { addToast } = useToaster();
   const [tab, setTab] = useState<string>('saapuneet');
 
-  const { isLoading, data, error } = useYkViestilista();
+  const {
+    isLoading: receivedLoading,
+    data: receivedMessages,
+    error: receivedError,
+  } = useYkGetReceivedMessages();
+
+  const {
+    isLoading: sentLoading,
+    data: sentMessages,
+    error: sentError,
+  } = useYkGetSentMessages();
 
   useEffect(() => {
     handleFetchError(
       addToast,
-      error,
+      sentError || receivedError,
       'virhe.yhteisenkasittelynListanLataus',
       t,
     );
-  }, [error, addToast, t]);
+  }, [receivedError, sentError, addToast, t]);
 
   const handleTabChange = (newTab: string) => () => {
     if (newTab !== tab) {
@@ -40,14 +53,7 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
     }
   };
 
-  const receivedMessages = data
-    ? data.filter((item) => item.vastaanottajaOid === user?.userOid)
-    : [];
-  const sentMesssages = data
-    ? data.filter((item) => item.lahettajaOid === user?.userOid)
-    : [];
-
-  if (isLoading) return <FullSpinner />;
+  if (receivedLoading || sentLoading) return <FullSpinner />;
 
   return (
     <BoxWrapper>
@@ -58,20 +64,20 @@ export default function JointProcessingPage({ user }: { user: User | null }) {
             onClick: handleTabChange('saapuneet'),
             tabName: 'saapuneet',
             active: tab === 'saapuneet',
-            value: countNotResponded(receivedMessages),
+            value: countNotResponded(receivedMessages || []),
           },
           {
             onClick: handleTabChange('lahetetyt'),
             tabName: 'lahetetyt',
             active: tab === 'lahetetyt',
-            value: countNotRead(sentMesssages),
+            value: countNotRead(sentMessages || []),
           },
         ]}
       />
       {tab === 'lahetetyt' ? (
-        <SentMessages messageList={sentMesssages} user={user} />
+        <SentMessages messageList={sentMessages || []} user={user} />
       ) : (
-        <ReceivedMessages messageList={receivedMessages} user={user} />
+        <ReceivedMessages messageList={receivedMessages || []} user={user} />
       )}
     </BoxWrapper>
   );
