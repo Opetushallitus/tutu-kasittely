@@ -39,7 +39,7 @@ case class PaatosTieto(
   lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
   myonteinenPaatos: Option[Boolean] = None,
   kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
-  tutkintoTaso: Option[TutkintoTaso],
+  tutkintoTaso: Option[TutkintoTaso] = None,
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
   kelpoisuudet: Seq[Kelpoisuus] = Seq(),
   luotu: Option[LocalDateTime] = None,
