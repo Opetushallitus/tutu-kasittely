@@ -94,7 +94,7 @@ class HakemusController(
         try hakemus = mapper.readValue(hakemusBytes, classOf[UusiAtaruHakemus])
         catch {
           case e: Exception =>
-            LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+            LOG.error(s"Hakemuksen luonti epäonnistui: ${e.getMessage}")
             return errorMessageMapper.mapPlainErrorMessage(
               RESPONSE_400_DESCRIPTION,
               HttpStatus.BAD_REQUEST
@@ -143,7 +143,7 @@ class HakemusController(
       }
     } catch {
       case e: Exception =>
-        LOG.error("Hakemuksen luonti epäonnistui", e.getMessage)
+        LOG.error(s"Hakemuksen luonti epäonnistui: ${e.getMessage}")
         errorMessageMapper.mapErrorMessage(e)
     }
   }

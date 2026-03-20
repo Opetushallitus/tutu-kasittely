@@ -5,7 +5,7 @@ import { VahvistettuViestiListItem } from '@/src/lib/types/viesti';
 
 export const VAHVISTETUT_VIESTIT_SORT_KEY = 'tutu-viestit-sort';
 
-export const getVahvistetutViestit = async (
+const getVahvistetutViestit = async (
   hakemusOid: string,
 ): Promise<VahvistettuViestiListItem[]> => {
   const viestiListaSortParam = localStorage.getItem(

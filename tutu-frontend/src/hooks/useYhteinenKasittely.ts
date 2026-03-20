@@ -21,14 +21,14 @@ const getYhteinenKasittely = async (
   );
 };
 
-export const postYhteinenKasittely = async (
+const postYhteinenKasittely = async (
   hakemusOid: string,
   kasittely: YhteinenKasittely,
 ): Promise<unknown> => {
   return doApiPost(`hakemus/${hakemusOid}/yhteinenkasittely`, kasittely);
 };
 
-export const patchYhteinenKasittelyVastaus = async (
+const patchYhteinenKasittelyVastaus = async (
   hakemusOid: string,
   payload: { id: string; vastaus?: string },
 ): Promise<unknown> => {

@@ -46,9 +46,7 @@ const getKorkeakouluOptions = (
   return [...options, muuOption];
 };
 
-export const getKoodisto = async (
-  koodisto: string,
-): Promise<KoodistoItem[]> => {
+const getKoodisto = async (koodisto: string): Promise<KoodistoItem[]> => {
   const url = `koodisto/${koodisto}`;
   return await doApiFetch(url, undefined, 'no-store');
 };

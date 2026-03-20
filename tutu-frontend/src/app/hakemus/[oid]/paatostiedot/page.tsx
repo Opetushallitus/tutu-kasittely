@@ -8,7 +8,7 @@ import {
   OphSelectFormField,
   OphButton,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { PaatosHeader } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosHeader';
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
@@ -23,7 +23,7 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
-import { getPaatosTeksti, usePaatos } from '@/src/hooks/usePaatos';
+import { usePaatos } from '@/src/hooks/usePaatos';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
@@ -56,10 +56,13 @@ export default function PaatostiedotPage() {
     isPaatosLoading,
     paatos,
     error: paatosError,
+    generateError,
     updatePaatos,
     isUpdateOngoing: isPaatosUpdateOngoing,
     isUpdateSuccess: isPaatosUpdateSuccess,
     updateError: paatosUpdateError,
+    paatosteksti,
+    isPaatosTekstiLoading,
   } = usePaatos(hakemusState.editedData?.hakemusOid);
 
   const paatosState = useEditableState(paatos, updatePaatos);
@@ -70,8 +73,16 @@ export default function PaatostiedotPage() {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
     handleFetchError(addToast, paatosError, 'virhe.paatoksenLataus', t);
+    handleFetchError(addToast, generateError, 'virhe.paatoksenLataus', t);
     handleFetchError(addToast, paatosUpdateError, 'virhe.tallennus', t, 4000);
-  }, [addToast, hakemusError, paatosError, paatosUpdateError, t]);
+  }, [
+    addToast,
+    hakemusError,
+    paatosError,
+    paatosUpdateError,
+    generateError,
+    t,
+  ]);
 
   useEffect(() => {
     if (isPaatosUpdateSuccess) {
@@ -97,8 +108,9 @@ export default function PaatostiedotPage() {
       paatosState={paatosState}
       updateOngoing={isSaving || isPaatosUpdateOngoing}
       hakemusState={hakemusState}
-      updateSuccess={isPaatosUpdateSuccess}
       tutkinnot={tutkintoState.editedData ?? []}
+      paatosteksti={paatosteksti}
+      isPaatosTekstiLoading={isPaatosTekstiLoading}
     />
   );
 }
@@ -107,23 +119,22 @@ const Paatostiedot = ({
   paatosState,
   updateOngoing,
   hakemusState,
-  updateSuccess,
   tutkinnot,
+  paatosteksti,
+  isPaatosTekstiLoading,
 }: {
   paatosState: EditableState<Paatos>;
   updateOngoing: boolean;
   hakemusState: EditableState<Hakemus>;
-  updateSuccess: boolean;
   tutkinnot: Tutkinto[];
+  paatosteksti?: string | undefined;
+  isPaatosTekstiLoading?: boolean;
 }) => {
   const { t } = useTranslations();
   const theme = useTheme();
   const paatos = paatosState.editedData;
   const hakemus = hakemusState.editedData;
 
-  const [isPaatosTekstiLoading, setIsPaatosTekstiLoading] =
-    useState<boolean>(true);
-  const [paatosTeksti, setPaatosTeksti] = useState<string>('');
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
@@ -135,18 +146,6 @@ const Paatostiedot = ({
       paatosState.discard();
     }
   });
-
-  useEffect(() => {
-    if (showPaatosTekstiPreview) {
-      getPaatosTeksti(hakemus!.hakemusOid).then((sisalto: string) => {
-        setPaatosTeksti(sisalto || '');
-        setIsPaatosTekstiLoading(false);
-      });
-    }
-    return () => {
-      setIsPaatosTekstiLoading(true);
-    };
-  }, [hakemus, showPaatosTekstiPreview, updateSuccess]);
 
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
@@ -228,7 +227,7 @@ const Paatostiedot = ({
     <FullSpinner />
   ) : (
     <PreviewContent>
-      <div dangerouslySetInnerHTML={{ __html: paatosTeksti }} />
+      <div dangerouslySetInnerHTML={{ __html: paatosteksti ?? '' }} />
     </PreviewContent>
   );
 

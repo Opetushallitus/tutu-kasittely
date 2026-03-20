@@ -99,10 +99,15 @@ class OnrService(httpService: HttpService) {
   }
 
   def haeNimiOption(maybePersonOid: Option[String]): Option[String] = {
-    val henkilo: Option[String] = maybePersonOid
-      .map(personOid => haeHenkilo(personOid).map(henkilo => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}").toOption)
-      .flatten
-    henkilo
+    // Only attempt to fetch person data for values that look like a person OID.
+    // System-origin values (e.g. "Hakemuspalvelu") should not trigger a lookup.
+    maybePersonOid
+      .flatMap(personOid => {
+        if (personOid.startsWith("1.2"))
+          haeHenkilo(personOid).map(henkilo => s"${henkilo.kutsumanimi} ${henkilo.sukunimi}").toOption
+        else
+          None
+      })
   }
 
   def haeNimi(maybePersonOid: Option[String]): String = {
