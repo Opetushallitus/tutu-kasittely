@@ -64,7 +64,7 @@ class OnrService(httpService: HttpService) {
 
   @Cacheable(value = Array("henkilo"))
   def haeHenkilo(personOid: String): Either[Throwable, OnrUser] = {
-    LOG.info("Fetching henkilö from oppijanumerorekisteri")
+    LOG.info(s"Fetching henkilö from oppijanumerorekisteri $personOid")
     httpService.get(
       onrCasClient,
       s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/henkilo/$personOid"
