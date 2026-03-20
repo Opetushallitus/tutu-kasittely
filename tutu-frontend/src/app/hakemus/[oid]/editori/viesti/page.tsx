@@ -203,7 +203,7 @@ const ViestiPageComponent = ({
   const { showConfirmation } = useGlobalConfirmationModal();
   const currentViesti = viestiState.editedData!;
 
-  useUnsavedChanges(viestiState.hasChanges);
+  useUnsavedChanges(viestiState.hasChanges, viestiState.discard);
 
   useEffect(() => {
     importHtml(editorRef.current, currentViesti.viesti || '');
@@ -325,6 +325,9 @@ const ViestiPageComponent = ({
                 handleConfirmAction: () => {
                   vahvistaViesti(currentViesti);
                   if (viestiState.hasChanges) {
+                    // Vahvistettaessa viesti myös tallennetaan
+                    // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
+                    // joten discardataan mahdolliset muutokset
                     viestiState.discard();
                   }
                 },
