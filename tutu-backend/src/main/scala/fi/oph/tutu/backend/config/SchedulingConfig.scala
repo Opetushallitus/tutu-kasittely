@@ -14,7 +14,7 @@ class SchedulingConfig {
   @Bean
   def taskScheduler(): ThreadPoolTaskScheduler = {
     val scheduler = new ThreadPoolTaskScheduler()
-    scheduler.setPoolSize(4)
+    scheduler.setPoolSize(1)
     scheduler.setThreadNamePrefix("tutu-scheduler-")
     scheduler.setAwaitTerminationSeconds(10)
     scheduler.setWaitForTasksToCompleteOnShutdown(true)
