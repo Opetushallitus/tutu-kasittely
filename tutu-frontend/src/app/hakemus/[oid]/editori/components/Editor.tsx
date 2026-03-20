@@ -7,7 +7,11 @@
  *
  */
 
-import { LinkNode } from '@lexical/link';
+import {
+  AutoLinkNode,
+  createLinkMatcherWithRegExp,
+  LinkNode,
+} from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import {
   BOLD_STAR,
@@ -17,6 +21,7 @@ import {
   STRIKETHROUGH,
   UNORDERED_LIST,
 } from '@lexical/markdown';
+import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import {
   InitialConfigType,
   LexicalComposer,
@@ -25,21 +30,31 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { styled, useTheme } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
-import { RefObject } from 'react';
+import { RefObject, useState } from 'react';
 
+import { validateUrl } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 import { ExtendedTextNode } from '@/src/app/hakemus/[oid]/editori/components/ExtendedTextNode';
+import FloatingLinkEditorPlugin from '@/src/app/hakemus/[oid]/editori/components/FloatingLinkEditorPlugin';
 
 import { Toolbar } from './Toolbar';
 
 const editorConfig: InitialConfigType = {
   namespace: 'React.js Demo',
-  nodes: [ParagraphNode, ExtendedTextNode, ListNode, ListItemNode, LinkNode],
+  nodes: [
+    ParagraphNode,
+    ExtendedTextNode,
+    ListNode,
+    ListItemNode,
+    LinkNode,
+    AutoLinkNode,
+  ],
   onError(error: Error) {
     throw error;
   },
@@ -50,14 +65,15 @@ const editorConfig: InitialConfigType = {
   },
 };
 
-const EditorContainer = styled('div')({
+const EditorContainer = styled(Box)({
   width: '100%',
   height: '800px',
   border: '1px solid',
+  borderRadius: '4px',
   borderColor: 'black',
 });
 
-const EditorInnerContainer = styled('div')({
+const EditorInnerContainer = styled(Box)({
   '& p': {
     marginTop: 0,
   },
@@ -65,6 +81,21 @@ const EditorInnerContainer = styled('div')({
     textDecoration: 'line-through',
   },
 });
+
+const URL_REGEX =
+  /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(?<![-.+():%])/;
+
+const EMAIL_REGEX =
+  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+
+const MATCHERS = [
+  createLinkMatcherWithRegExp(URL_REGEX, (text) => {
+    return text.startsWith('http') ? text : `https://${text}`;
+  }),
+  createLinkMatcherWithRegExp(EMAIL_REGEX, (text) => {
+    return `mailto:${text}`;
+  }),
+];
 
 export function Editor({
   editorRef,
@@ -75,24 +106,47 @@ export function Editor({
 }) {
   const theme = useTheme();
 
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+  const [floatingAnchorElem, setFloatingAnchorElem] =
+    useState<HTMLDivElement | null>(null);
+
+  const onRef = (_floatingAnchorElem: HTMLDivElement | null) => {
+    if (_floatingAnchorElem !== null) {
+      setFloatingAnchorElem(_floatingAnchorElem);
+    }
+  };
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <EditorContainer>
-        <Toolbar />
+        <Toolbar setIsLinkEditMode={setIsLinkEditMode} />
         <EditorInnerContainer>
           <RichTextPlugin
             contentEditable={
-              <ContentEditable
-                data-testid={'editor-content-editable'}
+              <Box
                 style={{
-                  padding: theme.spacing(1),
-                  outline: 'none',
                   height: '760px',
                   overflow: 'scroll',
                 }}
-                aria-placeholder={''}
-                placeholder={<span>{''}</span>}
-              />
+              >
+                <Box
+                  ref={onRef}
+                  style={{
+                    position: 'relative',
+                  }}
+                >
+                  <ContentEditable
+                    data-testid={'editor-content-editable'}
+                    name={'editor-content-editable'}
+                    style={{
+                      padding: theme.spacing(1),
+                      outline: 'none',
+                    }}
+                    aria-placeholder={''}
+                    placeholder={<span>{''}</span>}
+                  />
+                </Box>
+              </Box>
             }
             ErrorBoundary={LexicalErrorBoundary}
           />
@@ -100,6 +154,8 @@ export function Editor({
       </EditorContainer>
       <HistoryPlugin />
       <ListPlugin />
+      <LinkPlugin validateUrl={validateUrl} />
+      <AutoLinkPlugin matchers={MATCHERS} />
       <EditorRefPlugin editorRef={editorRef} />
       <MarkdownShortcutPlugin
         transformers={[
@@ -116,6 +172,15 @@ export function Editor({
           onChange(editor);
         }}
       />
+      <>
+        {floatingAnchorElem && (
+          <FloatingLinkEditorPlugin
+            anchorElem={floatingAnchorElem}
+            isLinkEditMode={isLinkEditMode}
+            setIsLinkEditMode={setIsLinkEditMode}
+          />
+        )}
+      </>
     </LexicalComposer>
   );
 }

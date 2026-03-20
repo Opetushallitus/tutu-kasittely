@@ -52,7 +52,7 @@ export const PreviewComponent = ({
           <Stack direction={'row'}>
             <OphButton
               variant={'contained'}
-              href={`/hakemus/${hakemusOid}/editori/viesti`}
+              href={`/hakemus/${hakemusOid}/editori/paatos`}
               startIcon={<CheckCircleOutlineRoundedIcon />}
             >
               {t('hakemus.paatos')}

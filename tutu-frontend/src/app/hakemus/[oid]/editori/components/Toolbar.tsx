@@ -6,27 +6,31 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { $isLinkNode } from '@lexical/link';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $isListNode, ListNode, ListType } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $patchStyleText } from '@lexical/selection';
+import {
+  $getSelectionStyleValueForProperty,
+  $patchStyleText,
+} from '@lexical/selection';
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
   mergeRegister,
 } from '@lexical/utils';
 import {
-  DeleteOutlined,
   FormatBold,
+  FormatClear,
   FormatListBulleted,
   FormatListNumbered,
-  FormatStrikethrough,
-  Highlight,
+  HighlightOutlined,
   LinkOutlined,
   Redo,
+  StrikethroughS,
   Undo,
 } from '@mui/icons-material';
 import { Divider, Stack, styled } from '@mui/material';
+import { alpha, rgbToHex } from '@mui/system';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import {
   $getSelection,
@@ -52,23 +56,41 @@ import {
   formatBulletList,
   formatNumberedList,
   getSelectedNode,
+  sanitizeUrl,
 } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 
 const ToolbarContainer = styled(Stack)({
   width: '100%',
-  height: '40px',
+  height: '36px',
   borderBottom: '1px solid',
   borderColor: 'black',
 });
 
 const ToolbarInnerContainer = styled(Stack)({
-  padding: '4px 0',
+  padding: '0',
+  display: 'flex',
+  alignItems: 'center',
 });
 
 const iconStyle = (selected: boolean) => ({
-  color: selected ? ophColors.black : ophColors.grey700,
-  backgroundColor: selected ? ophColors.grey200 : ophColors.white,
-  borderRadius: '2px',
+  color: selected ? ophColors.grey900 : ophColors.grey700,
+});
+
+const buttonStyle = (selected: boolean) => ({
+  backgroundColor: selected
+    ? alpha(ophColors.lightBlue2, 0.5)
+    : ophColors.white,
+  '&:hover': {
+    backgroundColor: ophColors.grey100,
+  },
+  height: '34px',
+  width: '40px',
+  padding: '1px',
+  margin: 0,
+  borderRadius: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 type BlockType = ListType | 'paragraph';
@@ -77,7 +99,7 @@ const initialState = {
   isBold: false,
   isStrikethrough: false,
   isHighlighted: false,
-  fontColor: ophColors.black as FontColor,
+  fontColor: ophColors.grey900 as FontColor,
   canUndo: false,
   canRedo: false,
   isLink: false,
@@ -103,7 +125,11 @@ function $findTopLevelElement(node: LexicalNode) {
   return topLevelElement;
 }
 
-export function Toolbar() {
+export function Toolbar({
+  setIsLinkEditMode,
+}: {
+  setIsLinkEditMode: (isLinkEditMode: boolean) => void;
+}) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
   const [toolbarState, setToolbarState] = useState<ToolbarState>(initialState);
@@ -117,6 +143,7 @@ export function Toolbar() {
       [key]: value,
     }));
   };
+
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
@@ -127,6 +154,16 @@ export function Toolbar() {
         selection.hasFormat('strikethrough'),
       );
       updateToolbarState('isHighlighted', selection.hasFormat('highlight'));
+
+      const selectionColor = $getSelectionStyleValueForProperty(
+        selection,
+        'color',
+        ophColors.grey900,
+      );
+      updateToolbarState(
+        'fontColor',
+        selectionColor === '' ? '' : (rgbToHex(selectionColor) as FontColor),
+      );
 
       const anchorNode = selection.anchor.getNode();
       const element = $findTopLevelElement(anchorNode);
@@ -214,9 +251,20 @@ export function Toolbar() {
           $patchStyleText(selection, { color: value });
         }
       });
+      updateToolbarState('fontColor', value);
     },
     [editor],
   );
+
+  const insertLink = useCallback(() => {
+    if (!toolbarState.isLink) {
+      setIsLinkEditMode(true);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+    } else {
+      setIsLinkEditMode(false);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  }, [editor, toolbarState.isLink, setIsLinkEditMode]);
 
   return (
     <ToolbarContainer
@@ -231,12 +279,14 @@ export function Toolbar() {
           onClick={() => {
             editor.dispatchCommand(UNDO_COMMAND, undefined);
           }}
-          aria-label="Format Bold"
+          aria-label="Undo"
+          sx={buttonStyle(false)}
           startIcon={
             <Undo
-              style={{
+              sx={{
+                fontSize: '24px',
                 color: toolbarState.canUndo
-                  ? ophColors.black
+                  ? ophColors.grey900
                   : ophColors.grey400,
               }}
             />
@@ -247,12 +297,14 @@ export function Toolbar() {
           onClick={() => {
             editor.dispatchCommand(REDO_COMMAND, undefined);
           }}
-          aria-label="Format Bold"
+          aria-label="Redo"
+          sx={buttonStyle(false)}
           startIcon={
             <Redo
-              style={{
+              sx={{
+                fontSize: '24px',
                 color: toolbarState.canRedo
-                  ? ophColors.black
+                  ? ophColors.grey900
                   : ophColors.grey400,
               }}
             />
@@ -265,15 +317,17 @@ export function Toolbar() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
           }}
           aria-label="Format Bold"
-          startIcon={<FormatBold style={iconStyle(toolbarState.isBold)} />}
+          sx={buttonStyle(toolbarState.isBold)}
+          startIcon={<FormatBold sx={iconStyle(toolbarState.isBold)} />}
         />
         <OphButton
           onClick={() => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight');
           }}
           aria-label="Format highlight"
+          sx={buttonStyle(toolbarState.isHighlighted)}
           startIcon={
-            <Highlight style={iconStyle(toolbarState.isHighlighted)} />
+            <HighlightOutlined sx={iconStyle(toolbarState.isHighlighted)} />
           }
         />
         <OphButton
@@ -281,44 +335,50 @@ export function Toolbar() {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
           }}
           aria-label="Format strikethrough"
+          sx={buttonStyle(toolbarState.isStrikethrough)}
           startIcon={
-            <FormatStrikethrough
-              style={iconStyle(toolbarState.isStrikethrough)}
-            />
+            <StrikethroughS sx={iconStyle(toolbarState.isStrikethrough)} />
           }
         />
-        <ColorPicker changeFontColor={changeFontColor} />
+        <ColorPicker
+          changeFontColor={changeFontColor}
+          selectedColor={toolbarState.fontColor}
+        />
         <OphButton
           onClick={clearFormatting}
           aria-label="Clear formatting"
-          startIcon={<DeleteOutlined style={{ color: ophColors.black }} />}
+          sx={buttonStyle(false)}
+          startIcon={<FormatClear sx={iconStyle(false)} />}
         />
       </ToolbarInnerContainer>
       <ToolbarInnerContainer direction={'row'}>
         <OphButton
           onClick={() => formatBulletList(editor, toolbarState.blockType)}
           aria-label="List Bulleted"
+          sx={buttonStyle(toolbarState.blockType === 'bullet')}
           startIcon={
             <FormatListBulleted
-              style={iconStyle(toolbarState.blockType === 'bullet')}
+              sx={iconStyle(toolbarState.blockType === 'bullet')}
             />
           }
         />
         <OphButton
           onClick={() => formatNumberedList(editor, toolbarState.blockType)}
           aria-label="List Numbered"
+          sx={buttonStyle(toolbarState.blockType === 'number')}
           startIcon={
             <FormatListNumbered
-              style={iconStyle(toolbarState.blockType === 'number')}
+              sx={iconStyle(toolbarState.blockType === 'number')}
             />
           }
         />
       </ToolbarInnerContainer>
       <ToolbarInnerContainer direction={'row'}>
         <OphButton
-          onClick={() => {}}
+          onClick={insertLink}
           aria-label="Add link"
-          startIcon={<LinkOutlined style={iconStyle(toolbarState.isLink)} />}
+          sx={buttonStyle(toolbarState.isLink)}
+          startIcon={<LinkOutlined sx={iconStyle(toolbarState.isLink)} />}
         />
       </ToolbarInnerContainer>
     </ToolbarContainer>

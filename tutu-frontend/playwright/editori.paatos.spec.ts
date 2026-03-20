@@ -1,4 +1,4 @@
-import { expect, Page, Route, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import { expectRequestData } from '@/playwright/helpers/testUtils';
 import { translate } from '@/playwright/helpers/translate';
@@ -8,8 +8,8 @@ import {
   mockUser,
   mockHakemus,
   mockPaatos,
+  mockPaatosteksti,
 } from '@/playwright/mocks';
-import { Paatosteksti } from '@/src/lib/types/paatosteksti';
 
 test.beforeEach(async ({ page }) => {
   await mockInit(page);
@@ -17,48 +17,13 @@ test.beforeEach(async ({ page }) => {
   await mockUser(page);
   await mockHakemus(page);
   await mockPaatos(page);
+  await mockPaatosteksti(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/paatos',
   );
 });
 
-const defaultPaatosteksti: Paatosteksti = {
-  id: 'paatosteksti-id',
-  hakemusId: 'hakemus-id',
-  luotu: '2025-05-28T10:59:04.597',
-  luoja: 'Lauri Luoja',
-  sisalto:
-    '<p><span style="white-space: pre-wrap;">Päätosteksti sisältö</span></p>',
-};
-
-const mockPaatosteksti = (page: Page, paatosteksti?: Paatosteksti) => {
-  return page.route(
-    '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti**',
-    async (route: Route) => {
-      if (route.request().method() === 'PUT') {
-        const putData = route.request().postDataJSON() as Record<
-          string,
-          unknown
-        >;
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(putData),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(paatosteksti ?? defaultPaatosteksti),
-        });
-      }
-    },
-  );
-};
-
 test('Olemassaoleva työversio näkyy oikein', async ({ page }) => {
-  await mockPaatosteksti(page);
-
   await expect(page.getByTestId('editor-content-editable')).toHaveText(
     'Päätosteksti sisältö',
   );
@@ -69,8 +34,6 @@ test('Olemassaoleva työversio näkyy oikein', async ({ page }) => {
 });
 
 test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
-  await mockPaatosteksti(page);
-
   const saveButton = page.getByTestId('save-ribbon-button');
   await expect(saveButton).toBeHidden();
 
@@ -89,8 +52,6 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
 test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', async ({
   page,
 }) => {
-  await mockPaatosteksti(page);
-
   const saveButton = page.getByTestId('save-ribbon-button');
   await expect(saveButton).toBeHidden();
 
@@ -120,7 +81,6 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
 test('Päätöstekstin tallennuksen epäonnistuessa näytetään virhetoast', async ({
   page,
 }) => {
-  await mockPaatosteksti(page);
   await page.route(
     '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti/paatosteksti-id**',
     async (route) => {
