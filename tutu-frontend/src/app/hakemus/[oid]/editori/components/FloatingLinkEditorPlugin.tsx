@@ -5,7 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
+/**
+ * Based on Lexical's FloatingLinkEditorPlugin, modified to fit the needs of our application and design system.
+ *
+ * Original source:
+ * https://github.com/facebook/lexical/blob/58349463736a08433c52c5319f08df7cd997d7a1/packages/lexical-playground/src/plugins/FloatingLinkEditorPlugin/index.tsx
+ *
+ * */
 import {
   $createLinkNode,
   $isAutoLinkNode,
