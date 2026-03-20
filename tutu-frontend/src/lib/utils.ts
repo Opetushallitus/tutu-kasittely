@@ -6,7 +6,7 @@ import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 export const hasTutuRole = (userRoles?: Array<string>) => {
-  return userRoles?.includes('ROLE_APP_TUTU_ESITTELIJA');
+  return userRoles?.includes('ROLE_APP_TUTU_CRUD');
 };
 
 export async function setQueryStateAndLocalStorage<T>(

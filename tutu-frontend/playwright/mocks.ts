@@ -143,6 +143,8 @@ export const mockUser = async (page: Page, kieli: string = 'fi') => {
           authorities: [
             'ROLE_APP_TUTU_ESITTELIJA',
             'ROLE_APP_TUTU_ESITTELIJA_1.2.246.562.10.00000000001',
+            'ROLE_APP_TUTU_CRUD',
+            'ROLE_APP_TUTU_CRUD_1.2.246.562.10.00000000001',
           ],
           asiointikieli: kieli,
         },

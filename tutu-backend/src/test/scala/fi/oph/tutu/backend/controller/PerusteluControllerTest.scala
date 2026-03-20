@@ -337,7 +337,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(1)
   def tallennaPerusteluPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluJSON = perustelu2Json(perustelu, "id", "luotu", "muokattu", "muokkaaja")
@@ -378,7 +378,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(2)
   def haePerusteluPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
@@ -403,7 +403,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(3)
   def tallennaMuokattuPerusteluPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
@@ -447,7 +447,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(4)
   def haePerusteluPalauttaa404KunPerusteluaEiKannassa(): Unit = {
     mvc
@@ -458,7 +458,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(5)
   def tallennaPerusteluWithUoRoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluJSON = perustelu2Json(perustelu2, "id", "perusteluId", "luotu", "muokattu", "muokkaaja")
@@ -491,7 +491,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(6)
   def haePerusteluWithUoroPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId2.get).get.id
@@ -515,7 +515,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
   def tallennaMuokattuPerusteluWithUoRoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId = perusteluRepository.haePerustelu(hakemusId2.get).get.id
@@ -555,7 +555,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(8)
   def tallennaPerusteluWithLausuntopyynnotPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluJSON =
@@ -590,7 +590,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(9)
   def haePerusteluWithLausuntotietoPalauttaa200(): Unit = {
     val perusteluId         = perusteluRepository.haePerustelu(hakemusId3.get).get.id
@@ -631,7 +631,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(10)
   def tallennaMuokattuPerusteluWithLausuntotietoPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId     = perusteluRepository.haePerustelu(hakemusId3.get).get.id
@@ -684,7 +684,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(11)
   def tallennaPerusteluWithAPPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluJSON = perustelu2Json(perustelu4, "id", "perusteluId", "luotu", "muokattu", "muokkaaja")
@@ -717,7 +717,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(12)
   def haePerusteluWithAPPalauttaa200(): Unit = {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId4.get).get.id
@@ -741,7 +741,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(13)
   def tallennaMuokattuPerusteluWithAPPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val perusteluId = perusteluRepository.haePerustelu(hakemusId4.get).get.id

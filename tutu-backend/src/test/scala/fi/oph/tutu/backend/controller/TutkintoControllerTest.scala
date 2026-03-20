@@ -109,11 +109,11 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(1)
-  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeTutkinnotValidRequestReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
 
     val tutkinnot = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
@@ -136,11 +136,11 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(2)
-  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaTutkinnotValidRequestReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
-        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
 
     val tutkinnot         = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
@@ -166,7 +166,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(3)
-  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def poistaTutkintoValidRequestReturns204(): Unit = {
     val tutkinnot1  = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
     val poistettuId = tutkinnot1.head.id.get

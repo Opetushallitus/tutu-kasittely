@@ -101,7 +101,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(1)
   def haeViestinTyoversioPalauttaa404ElleiHakemustaLoydy(): Unit = {
     mvc
@@ -112,7 +112,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(2)
   def haeViestinTyoversioPalauttaaUudenViestinElleiLoydyKannasta(): Unit = {
     initAtaruHakemusRequests()
@@ -127,7 +127,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(3)
   def tallennaUusiViestiPalauttaa200(): Unit = {
     val newViesti =
@@ -145,7 +145,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(4)
   def tallennaOlemassaolevaViestiPalauttaa200(): Unit = {
     val viesti        = viestiRepository.haeVahvistamatonViesti(hakemusId.get).get
@@ -167,7 +167,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(5)
   def haeViestinTyoversioPalauttaaOlemassaolevanViestinKannasta(): Unit = {
     val viesti = viestiRepository.haeVahvistamatonViesti(hakemusId.get).get
@@ -182,7 +182,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(6)
   def vahvistaViestiPalauttaa200(): Unit = {
     val viesti        = viestiRepository.haeVahvistamatonViesti(hakemusId.get).get
@@ -206,7 +206,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
   def haeVahvistettuViestiPalauttaaOlemassaolevanViestinKannasta(): Unit = {
     val viesti = viestiRepository.haeViestiLista(hakemusId.get, None).head
@@ -220,7 +220,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(8)
   def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestit(): Unit = {
     viestiRepository.lisaaViesti(
@@ -257,7 +257,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(9)
   def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestitSortattunaAikaleimanMukaan(): Unit = {
     mvc
@@ -280,7 +280,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(10)
   def haeViestilistaPalauttaa400JosSorttausParametritVirheellisest(): Unit = {
     mvc
@@ -303,7 +303,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(11)
   def poistaViestiPalauttaa204(): Unit = {
     val viesti = viestiRepository.haeViestiLista(hakemusId.get, None).head
@@ -318,7 +318,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(12)
   def poistaViestiPalauttaa404JosViestiaEiLoydy(): Unit = {
     var idCandidate = UUID.randomUUID()
@@ -335,7 +335,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(13)
   def tallennaViestiPalauttaa500JosHakemustaEiLoydy(): Unit = {
     val newViesti =

@@ -45,7 +45,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeEsittelijatReturns200WithValidHenkilot(): Unit = {
     val expectedResult =
       """[
