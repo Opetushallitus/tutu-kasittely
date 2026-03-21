@@ -12,6 +12,7 @@ import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Paatosteksti } from '@/src/lib/types/paatosteksti';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
+import { VahvistettuViestiListItem, Viesti } from '@/src/lib/types/viesti';
 
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
 
@@ -578,6 +579,93 @@ export const mockPaatosteksti = (
           body: JSON.stringify({ ...defaultPaatosteksti, ...paatosteksti }),
         });
       }
+    },
+  );
+};
+
+export const uusiViesti: Viesti = { kieli: 'en' };
+export const viestiTyoversio: Viesti = {
+  kieli: 'fi',
+  tyyppi: 'ennakkotieto',
+  otsikko: 'Työversio',
+  viesti: 'Tämä on työversio',
+};
+
+export const mockViestiTyoversio = (page: Page, viesti: Viesti) => {
+  let callCounter = 0;
+  return page.route(
+    '**/tutu-backend/api/viesti/tyoversio/*',
+    async (route: Route) => {
+      callCounter++;
+      const response = callCounter === 1 ? viesti : uusiViesti;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(response),
+      });
+    },
+  );
+};
+
+export const mockViesti = (page: Page, viesti: Viesti) => {
+  return page.route(
+    '**/tutu-backend/api/viesti/1.2.246.562.11.**',
+    async (route: Route) => {
+      if (route.request().method() === 'PUT') {
+        const putData = route.request().postDataJSON() as Record<
+          string,
+          unknown
+        >;
+        viesti = { ...viesti, ...unwrapData(putData) };
+        if (route.request().url().includes('/vahvista')) {
+          viesti.vahvistaja = 'viljo vahvistaja';
+        }
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(viesti),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(viesti),
+        });
+      }
+    },
+  );
+};
+
+export const VIESTILISTAN_ENSIMMAINEN_AIKALEIMA = '01.02.2026 14:00';
+export const mockViestiLista = (page: Page) => {
+  const viestiLista: VahvistettuViestiListItem[] = [
+    {
+      id: crypto.randomUUID(),
+      tyyppi: 'ennakkotieto',
+      otsikko: 'Viesti1',
+      vahvistettu: '2026-02-01T12:00:00Z',
+    },
+    {
+      id: crypto.randomUUID(),
+      tyyppi: 'taydennyspyynto',
+      otsikko: 'Viesti2',
+      vahvistettu: '2026-02-02T12:00:00Z',
+    },
+    {
+      id: crypto.randomUUID(),
+      tyyppi: 'muu',
+      otsikko: 'Viesti3',
+      vahvistettu: '2026-02-03T12:00:00Z',
+    },
+  ];
+  return page.route(
+    '**/tutu-backend/api/viestilista/1.2.246.562.11.00000000001',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(viestiLista),
+      });
     },
   );
 };

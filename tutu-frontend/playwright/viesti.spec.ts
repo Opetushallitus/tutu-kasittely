@@ -9,9 +9,12 @@ import {
   mockInit,
   mockUser,
   mockHakemus,
-  unwrapData,
+  mockViestiTyoversio,
+  uusiViesti,
+  mockViestiLista,
+  viestiTyoversio,
+  mockViesti,
 } from '@/playwright/mocks';
-import { Viesti } from '@/src/lib/types/viesti';
 
 test.beforeEach(async ({ page }) => {
   await mockInit(page);
@@ -22,59 +25,6 @@ test.beforeEach(async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );
 });
-
-const uusiViesti: Viesti = { kieli: 'en' };
-const tyoversio: Viesti = {
-  kieli: 'fi',
-  tyyppi: 'ennakkotieto',
-  otsikko: 'Työversio',
-  viesti: 'Tämä on työversio',
-};
-
-const mockViestiTyoversio = (page: Page, viesti: Viesti) => {
-  let callCounter = 0;
-  return page.route(
-    '**/tutu-backend/api/viesti/tyoversio/*',
-    async (route: Route) => {
-      callCounter++;
-      const response = callCounter === 1 ? viesti : uusiViesti;
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(response),
-      });
-    },
-  );
-};
-
-const mockViesti = (page: Page, viesti: Viesti) => {
-  return page.route(
-    '**/tutu-backend/api/viesti/1.2.246.562.11.**',
-    async (route: Route) => {
-      if (route.request().method() === 'PUT') {
-        const putData = route.request().postDataJSON() as Record<
-          string,
-          unknown
-        >;
-        viesti = { ...viesti, ...unwrapData(putData) };
-        if (route.request().url().includes('/vahvista')) {
-          viesti.vahvistaja = 'viljo vahvistaja';
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(viesti),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(viesti),
-        });
-      }
-    },
-  );
-};
 
 const expectViestiFormToBeEmpty = async (page: Page) => {
   await expect(page.getByTestId('viesti-kieli-select')).toHaveText('Englanti');
@@ -102,8 +52,11 @@ test('Uusi viesti näkyy oikein, hakemuksen kieli valittu automaattisesti', asyn
   await expectViestiFormToBeEmpty(page);
 });
 
-test('Olemassaoleva työversio näkyy oikein', async ({ page }) => {
-  await mockViestiTyoversio(page, tyoversio);
+test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViestiLista(page);
   await expect(page.getByTestId('viesti-kieli-select')).toHaveText('Suomi');
   await expect(
     page.locator('input[type="radio"][value="ennakkotieto"]'),
@@ -116,11 +69,16 @@ test('Olemassaoleva työversio näkyy oikein', async ({ page }) => {
   );
   await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
+
+  const viestiTable = page.getByTestId('vahvistettu-viesti-table');
+  await expect(viestiTable).toBeVisible();
+  await expect(viestiTable.locator('tbody tr')).toHaveCount(3);
 });
 
 test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
   await mockViestiTyoversio(page, uusiViesti);
   await mockViesti(page, uusiViesti);
+  await mockViestiLista(page);
 
   await expectDataFromDropdownSelection(
     page,
@@ -145,10 +103,6 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
     },
   );
 
-  // @TODO Tähän oma tallennus-tarkistus kun editorin hasChanges -logiikka on valmis
-  await page
-    .getByTestId('editor-content-editable')
-    .fill('Tämä on varsinainen viesti');
   await expectRequestData(
     page,
     '/viesti/',
@@ -160,6 +114,17 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
       kieli: 'sv',
       tyyppi: 'muu',
       otsikko: 'Tämä on otsikko',
+    },
+  );
+  await expectRequestData(
+    page,
+    '/viesti/',
+    page
+      .getByTestId('editor-content-editable')
+      .fill('Tämä on varsinainen viesti'),
+    {
+      kieli: 'sv',
+      tyyppi: 'muu',
       viesti:
         '<p><span style="white-space: pre-wrap;">Tämä on varsinainen viesti</span></p>',
     },
@@ -174,8 +139,9 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
 test('Viestin vahvistamisesta lähetetään PUT -kutsu backendille ja viestin kentät tyhjennetään', async ({
   page,
 }) => {
-  await mockViestiTyoversio(page, tyoversio);
-  await mockViesti(page, tyoversio);
+  await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViesti(page, viestiTyoversio);
+  await mockViestiLista(page);
 
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
   await page.getByTestId('viesti-vahvista-button').click();
@@ -199,8 +165,9 @@ test('Viestin vahvistamisesta lähetetään PUT -kutsu backendille ja viestin ke
 test('Kenttien tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
   page,
 }) => {
-  await mockViestiTyoversio(page, tyoversio);
-  await mockViesti(page, tyoversio);
+  await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViesti(page, viestiTyoversio);
+  await mockViestiLista(page);
 
   await page.getByTestId('viesti-tyhjenna-button').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
@@ -245,6 +212,7 @@ test('Viestin latauksen epäonnistuessa näytetään virheteksti', async ({
       }),
     });
   });
+  await mockViestiLista(page);
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(
     'data-severity',
@@ -254,10 +222,37 @@ test('Viestin latauksen epäonnistuessa näytetään virheteksti', async ({
   await expect(page.getByTestId('viesti-kieli-select')).toBeHidden();
 });
 
+test('Viestilistan latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, viestiTyoversio);
+  await page.route(
+    '**/tutu-backend/api/viestilista/1.2.246.562.11.00000000001',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: 'latausvirhe',
+        }),
+      });
+    },
+  );
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'error',
+  );
+  const viestiTable = page.getByTestId('vahvistettu-viesti-table');
+  await expect(viestiTable).toBeVisible();
+  await expect(viestiTable.locator('tbody tr')).toHaveCount(0);
+});
+
 test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  await mockViestiTyoversio(page, tyoversio);
+  await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViestiLista(page);
   await page.route(
     '**/tutu-backend/api/viesti/1.2.246.562.11.**',
     async (route) => {

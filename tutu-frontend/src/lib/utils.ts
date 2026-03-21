@@ -114,19 +114,5 @@ export const updateTutkintoJarjestys = (
   }
 };
 
-type NullableKeys<T> = {
-  [K in keyof T]: null extends T[K] ? K : never;
-}[keyof T];
-
-export const nullifyStringFieldsIfEmpty = <T>(
-  obj: T,
-  fields: Array<NullableKeys<T>>,
-): T => {
-  const result: T = { ...obj };
-  fields.forEach((field) => {
-    if (typeof result[field] === 'string' && result[field] === '') {
-      (result[field] as string | null) = null;
-    }
-  });
-  return result;
-};
+export const anyRealContentInHtml = (html: string) =>
+  /[^\s<>]/.test(html.replace(/<[^>]*>/g, ''));
