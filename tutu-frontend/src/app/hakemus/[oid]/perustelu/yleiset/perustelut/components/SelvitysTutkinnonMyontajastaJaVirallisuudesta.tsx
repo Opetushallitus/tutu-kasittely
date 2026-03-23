@@ -33,7 +33,7 @@ export const SelvitysTutkinnonMyontajastaJaVirallisuudesta = ({
       multiline={true}
       data-testid={`yleiset-perustelut__selvitys-tutkinnon-asemqasta`}
       label={t(
-        'hakemus.perustelu.yleiset.perustelut.selvitysTutkinnonAsemasta',
+        'hakemus.perustelu.yleiset.perustelut.selvitysTutkinnonMyontajastaJaVirallisuudesta',
       )}
       value={currentValue}
       onChange={(event) => updatePerusteluWithValue(event.target.value)}
