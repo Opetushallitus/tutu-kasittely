@@ -30,6 +30,7 @@ interface AuroraDatabaseProps extends StackProps {
   auroraDbPassword: Secret
   subnetGroup: SubnetGroup
   alarmSnsTopic: sns.Topic
+  databaseName: string
 }
 
 export class AuroraDatabaseStack extends Stack {
@@ -54,7 +55,7 @@ export class AuroraDatabaseStack extends Stack {
         log_statement: 'ddl',
         log_temp_files: '1',
         max_locks_per_transaction: '150',
-        'cron.database_name': props.clusterName,
+        'cron.database_name': props.databaseName,
         max_connections: '500'
       }
     })

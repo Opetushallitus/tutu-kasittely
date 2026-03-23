@@ -147,7 +147,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     kmsKey: Kms.rdsKmsKey,
     auroraDbPassword: Secrets.webBackendAuroraPassword,
     subnetGroup: AuroraCommons.auroraSubnetGroup,
-    alarmSnsTopic: Monitor.topic
+    alarmSnsTopic: Monitor.topic,
+    databaseName: environmentConfig.aurora_databases.web_backend.database_name
   })
 
   const Alb = new AlbStack(app, 'AlbStack', {
