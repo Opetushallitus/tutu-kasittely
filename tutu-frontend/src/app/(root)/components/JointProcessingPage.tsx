@@ -16,10 +16,10 @@ import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynVies
 import { handleFetchError } from '@/src/lib/utils';
 
 const countNotResponded = (messages: YhteisenKasittelynViesti[]) =>
-  messages.filter((message) => message.status === 2).length;
+  messages.filter((message) => message.status === 'vastaamatta').length;
 
 const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
-  messages.filter((message) => message.status === 1).length;
+  messages.filter((message) => message.status === 'uusiVastaus').length;
 
 export default function JointProcessingPage({ user }: { user: User | null }) {
   const { t } = useTranslations();

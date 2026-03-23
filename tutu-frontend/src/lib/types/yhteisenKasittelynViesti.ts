@@ -10,5 +10,5 @@ export type YhteisenKasittelynViesti = {
   viesti: string;
   vastaus?: string;
   luettu?: string;
-  status?: number;
+  status?: string;
 };
