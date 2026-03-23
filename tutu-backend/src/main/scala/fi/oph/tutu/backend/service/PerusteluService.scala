@@ -23,7 +23,8 @@ class PerusteluService(
   paatosService: PaatosService,
   maakoodiService: MaakoodiService,
   koodistoService: KoodistoService,
-  onrService: OnrService
+  onrService: OnrService,
+  translationService: TranslationService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
@@ -132,6 +133,7 @@ class PerusteluService(
       koodistoService,
       maakoodiService,
       onrService,
+      translationService,
       hakemusMaybe,
       tutkinnot,
       ataruHakemusMaybe,

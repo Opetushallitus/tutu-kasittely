@@ -340,6 +340,9 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
 
+  @Mock
+  var translationService: TranslationService = _
+
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
@@ -357,6 +360,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       koodistoService,
       maakoodiService,
       onrService,
+      translationService,
       someHakemus,
       tutkinnot,
       someAtaruHakemus,
@@ -368,38 +372,38 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeHakijanNimiProducesString(): Unit = {
-    val result = haeHakijanNimi(someHakemus)
+    val result = haeHakijanNimi(translationService, someHakemus)
     assert(result.get.contains(hakijaFixture.etunimet))
     assert(result.get.contains(hakijaFixture.sukunimi))
   }
 
   @Test
   def haeHakijanSyntymaaikaProducesString(): Unit = {
-    val result = haeHakijanSyntymaaika(someHakemus)
+    val result = haeHakijanSyntymaaika(translationService, someHakemus)
     assert(result.get.contains(hakijaFixture.syntymaaika))
   }
 
   @Test
   def haeHakemusKoskeeProducesString(): Unit = {
-    val result = haeHakemusKoskee(someHakemus)
+    val result = haeHakemusKoskee(translationService, someHakemus)
     assert(result.get.contains("HakemusKoskee -- en"))
   }
 
   @Test
   def haeSuostumusSahkoiseenAsiointiinProducesString(): Unit = {
-    val result = haeSuostumusSahkoiseenAsiointiin(someHakemus)
+    val result = haeSuostumusSahkoiseenAsiointiin(translationService, someHakemus)
     assert(result.get.contains("Sähköinen asiointi sallittu"))
   }
 
   @Test
   def haeMuuTutkintoProducesString(): Unit = {
-    val result = haeMuuTutkinto(tutkinnot)
+    val result = haeMuuTutkinto(translationService, tutkinnot)
     assert(result.get.contains("Muu tutkinto sisältö"))
   }
 
   @Test
   def haeYhteistutkintoProducesString(): Unit = {
-    val result = haeYhteistutkinto(someHakemus)
+    val result = haeYhteistutkinto(translationService, someHakemus)
     assert(result.get.contains("Yhteistutkinto"))
   }
 
@@ -408,26 +412,27 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupMaakoodit()
     setupKoulutusalat()
 
-    val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus, tutkinnot)
+    val result =
+      haeTutkintokohtaisetTiedot(translationService, maakoodiService, koodistoService, someHakemus, tutkinnot)
     assert(result.get.contains("Paras tutkinto"))
     assert(result.get.contains("Englanninmaa"))
   }
 
   @Test
   def haeYleisetPerustelutProducesNoneForNone(): Unit = {
-    val result = haeYleisetPerustelut(nonePerustelu)
+    val result = haeYleisetPerustelut(translationService, nonePerustelu)
     assert(result.isEmpty)
   }
 
   @Test
   def haeYleisetPerustelutProducesNoneForEmptyPerustelu(): Unit = {
-    val result = haeYleisetPerustelut(emptyPerustelu)
+    val result = haeYleisetPerustelut(translationService, emptyPerustelu)
     assert(result.isEmpty)
   }
 
   @Test
   def haeYleisetPerustelutProducesStringForDataInPerustelu(): Unit = {
-    val result = haeYleisetPerustelut(somePerustelu)
+    val result = haeYleisetPerustelut(translationService, somePerustelu)
 
     assert(result.nonEmpty)
     assert(result.get.contains("Virallinen tutkinnon myöntäjä"))
@@ -442,7 +447,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeJatkoOpintoKelpoisuusProducesString(): Unit = {
-    val result = haeJatkoOpintoKelpoisuus(somePerustelu)
+    val result = haeJatkoOpintoKelpoisuus(translationService, somePerustelu)
 
     assert(result.get.contains("Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin"))
   }
@@ -450,6 +455,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeJatkoOpintoKelpoisuusMuuProducesString(): Unit = {
     val result = haeJatkoOpintoKelpoisuus(
+      translationService,
       somePerustelu.map(perustelu =>
         perustelu.copy(
           jatkoOpintoKelpoisuus = Some("muu"),
@@ -465,14 +471,14 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeAikaisemmatPaatoksetProducesString(): Unit = {
-    val result = haeAikaisemmatPaatokset(somePerustelu)
+    val result = haeAikaisemmatPaatokset(translationService, somePerustelu)
 
     assert(result.get.contains("Opetushallitus on tehnyt vastaavia päätöksiä: Kyllä"))
   }
 
   @Test
   def haeMuuPerusteluProducesString(): Unit = {
-    val result = haeMuuPerustelu(somePerustelu)
+    val result = haeMuuPerustelu(translationService, somePerustelu)
 
     assert(result.get.contains("Ratkaisun tai päätöksen muut perustelut"))
     assert(result.get.contains("Hyvin suoritettu"))
@@ -480,7 +486,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeUoRoPerusteluProducesString(): Unit = {
-    val result = haeUoRoPerustelu(somePerustelu)
+    val result = haeUoRoPerustelu(translationService, somePerustelu)
 
     assert(result.get.contains("Ero monialaisten opintojen sisällössä"))
     assert(result.get.contains("Muu ero"))
@@ -492,7 +498,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeApPerusteluProducesString(): Unit = {
-    val result = haeApPerustelu(somePerustelu)
+    val result = haeApPerustelu(translationService, somePerustelu)
 
     assert(
       result.get.contains(
@@ -531,7 +537,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeLausuntopyynnotProducesString(): Unit = {
     setupKorkeakoulut()
 
-    val result = haeLausuntopyynnot(koodistoService, somePerustelu)
+    val result = haeLausuntopyynnot(translationService, koodistoService, somePerustelu)
 
     assert(result.get.contains("Lausunnon antaja, muu: HOKS tuutori"))
     assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
@@ -541,7 +547,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeAsiakirjatProducesString(): Unit = {
-    val result = haeAsiakirjat(someHakemus)
+    val result = haeAsiakirjat(translationService, someHakemus)
 
     assert(result.get.contains("Kaikki tarvittavat selvitykset saatu: Kyllä"))
     assert(result.get.contains("Esittelijän huomioita asiakirjoista"))
@@ -556,7 +562,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatos = Paatos(
       seutArviointi = true
     )
-    val result = haeSeutArviointiTehty(paatos)
+    val result = haeSeutArviointiTehty(translationService, paatos)
 
     assert(result.get.contains("SEUT-arviointi tehty"))
   }
@@ -566,7 +572,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatos = Paatos(
       ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)
     )
-    val result = haeRatkaisutyyppi(paatos)
+    val result = haeRatkaisutyyppi(translationService, paatos)
 
     assert(result.get.contains("Ratkaisutyyppi: Päätös"))
   }
@@ -577,7 +583,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       paatosTyyppi = Some(PaatosTyyppi.Taso),
       tutkintoTaso = None
     )
-    val result = haePaatosTyyppi(paatosTiedot)
+    val result = haePaatosTyyppi(translationService, paatosTiedot)
 
     assert(result.get.contains("Päätöstyyppi: Taso"))
   }
@@ -588,7 +594,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       sovellettuLaki = Some(SovellettuLaki.uo),
       tutkintoTaso = None
     )
-    val result = haeSovellettuLaki(paatosTiedot)
+    val result = haeSovellettuLaki(translationService, paatosTiedot)
 
     assert(result.get.contains("Sovellettu laki: Päätös UO"))
   }
@@ -624,7 +630,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       )
     )
 
-    val result = haeTutkinnonNimi(paatosTiedot, tutkinnot)
+    val result = haeTutkinnonNimi(translationService, paatosTiedot, tutkinnot)
 
     assert(result.get.contains("Tutkinnon nimi, jota päätös koskee"))
     assert(result.get.contains("Paras tutkinto"))
@@ -636,7 +642,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       myonteinenPaatos = Some(true),
       tutkintoTaso = None
     )
-    val result = haeMyonteinenTaiKielteinen(paatosTiedot)
+    val result = haeMyonteinenTaiKielteinen(translationService, paatosTiedot)
 
     assert(result.get.contains("Päätös on myönteinen: Kyllä"))
   }
@@ -646,7 +652,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatosTiedot = PaatosTieto(
       tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
     )
-    val result = haeTutkinnonTaso(paatosTiedot)
+    val result = haeTutkinnonTaso(translationService, paatosTiedot)
 
     assert(result.get.contains("Tutkinnon taso:"))
     assert(result.get.contains("Ylempi korkeakoulututkinto"))
@@ -666,7 +672,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKielteisenPaatosTiedonPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
+    val result = haeKielteisenPaatosTiedonPerustelut(translationService, paatosTiedot.kielteisenPaatoksenPerustelut)
 
     assert(result.get.contains("Kielteisen päätöksen perustelut:"))
     assert(result.get.contains("- Epävirallinen korkeakoulu"))
@@ -686,7 +692,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot)
+    val result = haeRinnastettavatTutkinnotTaiOpinnot(translationService, paatosTiedot)
 
     assert(result.get.contains("Rinnastettavat tutkinnot tai opinnot:"))
     assert(result.get.contains("Paras tutkinto"))
@@ -702,7 +708,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKelpoisuudet(paatosTiedot)
+    val result = haeKelpoisuudet(translationService, paatosTiedot)
 
     assert(result.get.contains("Kelpoisuudet:"))
     assert(result.get.contains("Paras kelpoisuus"))
@@ -725,7 +731,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
     )
-    val result = haePeruutusTaiRaukeaminen(paatos)
+    val result = haePeruutusTaiRaukeaminen(translationService, paatos)
 
     assert(result.get.contains("Peruutuksen tai raukeamisen syyt:"))
     assert(result.get.contains("- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada"))
@@ -750,7 +756,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
 
-    val result = haeTutkinnonTaiOpinnonLisavaatimukset(lisavaatimuksetMaybe)
+    val result = haeTutkinnonTaiOpinnonLisavaatimukset(translationService, lisavaatimuksetMaybe)
 
     assert(result.get.contains("Lisävaatimukset:"))
     assert(result.get.contains("- Täydentävät opinnot"))
@@ -830,7 +836,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
 
-    val result = haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe)
+    val result = haeKelpoisuudenLisavaatimukset(translationService, lisavaatimuksetMaybe)
 
     assert(result.get.contains("Lisävaatimukset:"))
     assert(result.get.contains("Erot koulutuksessa"))
@@ -852,7 +858,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Erkki Esittelijä"))
 
     val hakemusMaybe = someHakemus.map(_.copy(esittelijaOid = Some("1.2.3.4")))
-    val result       = haeEsittelija(hakemusMaybe, onrService)
+    val result       = haeEsittelija(translationService, hakemusMaybe, onrService)
 
     assert(result.get.contains("Esittelijä: Erkki Esittelijä"))
   }
@@ -875,7 +881,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       )
     )
 
-    val result = haeKasittelyajat(hakemusMaybe)
+    val result = haeKasittelyajat(translationService, hakemusMaybe)
 
     assert(result.get.contains("Aika kirjauspäivämäärästä esittelypäivämäärään 0.7 kk"))
     assert(result.get.contains("Aika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään 0.7 kk"))
