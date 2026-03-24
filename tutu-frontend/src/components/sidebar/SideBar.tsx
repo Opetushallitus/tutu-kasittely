@@ -68,7 +68,7 @@ export const SideBar = ({ hakemusOid }: SideBarProps) => {
       <KasittelyVaihe showExtended={showExtendedKasittelyvaihe(pathName)} />
       <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
         <HakemusKoskee />
-        <Paatos />
+        <Paatos hakemusOid={hakemusOid} />
       </SidebarInfoStack>
       {showTaydennyspyynto(pathName) && (
         <SidebarInfoStack direction="column" gap={theme.spacing(2)}>

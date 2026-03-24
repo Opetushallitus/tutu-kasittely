@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test';
 
 import { mockAll } from '@/playwright/mocks';
 
+import { getPaatos } from './fixtures/paatos1';
+import { expectVisibleAndAttached } from './helpers/testUtils';
 import { translate } from './helpers/translate';
 
 test.beforeEach(mockAll);
@@ -65,4 +67,68 @@ test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async 
   const apHakemusBadge = page.getByTestId('hakemus-sidebar-ap-hakemus-badge');
 
   await expect(apHakemusBadge).toBeHidden();
+});
+
+test('Paatöksiä ei näytetä kun päätöstekstiä ei ole vahvistettu', async ({
+  page,
+}) => {
+  await page.route('**/paatos/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ...getPaatos(),
+        paatosTiedot: [
+          {
+            paatosId: '1',
+            paatosTyyppi: 'Taso',
+            myonteinenPaatos: true,
+            rinnastettavatTutkinnotTaiOpinnot: [],
+            kelpoisuudet: [],
+          },
+        ],
+        paatostekstiVahvistettu: null,
+      }),
+    });
+  });
+
+  await page.goto(
+    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+  );
+
+  const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
+  await expectVisibleAndAttached(hakemusKoskee);
+
+  await expect(page.getByTestId('hakemus-sidebar-paatos-item')).toHaveCount(0);
+});
+
+test('Päätös näkyy kun päätösteksti on vahvistettu', async ({ page }) => {
+  await page.route('**/paatos/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ...getPaatos(),
+        paatosTiedot: [
+          {
+            paatosId: '1',
+            paatosTyyppi: 'Taso',
+            myonteinenPaatos: true,
+            rinnastettavatTutkinnotTaiOpinnot: [],
+            kelpoisuudet: [],
+          },
+        ],
+        paatostekstiVahvistettu: '2025-05-28T10:59:04.597',
+      }),
+    });
+  });
+
+  await page.goto(
+    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+  );
+
+  const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
+  await expectVisibleAndAttached(hakemusKoskee);
+
+  await expect(page.getByTestId('hakemus-sidebar-paatos-item')).toHaveCount(1);
 });

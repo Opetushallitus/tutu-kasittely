@@ -32,6 +32,7 @@ class PaatosRepository extends BaseResultHandlers {
       peruutuksenTaiRaukeamisenSyy = Option(Serialization.read[PeruutuksenTaiRaukeamisenSyy](r.nextString())),
       hyvaksymispaiva = r.nextTimestampOption().map(_.toLocalDateTime),
       lahetyspaiva = r.nextTimestampOption().map(_.toLocalDateTime),
+      paatostekstiVahvistettu = r.nextTimestampOption().map(_.toLocalDateTime),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
@@ -133,7 +134,7 @@ class PaatosRepository extends BaseResultHandlers {
         lahetyspaiva = ${paatos.lahetyspaiva.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $luojaTaiMuokkaaja
       RETURNING id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty,
-        peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokkaaja
+        peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, null, luotu, luoja, muokkaaja
     """.as[Paatos].head
   }
 
@@ -157,9 +158,12 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-        SELECT id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luotu, luoja, muokkaaja
-        FROM paatos
-        WHERE hakemus_id = ${hakemusId.toString}::uuid
+          SELECT p.id, p.hakemus_id, p.ratkaisutyyppi, p.seut_arviointi_tehty,
+            p.peruutus_tai_raukeaminen_lisatiedot, p.hyvaksymispaiva, p.lahetyspaiva,
+            pt.vahvistettu, p.luotu, p.luoja, p.muokkaaja
+          FROM paatos p
+          LEFT JOIN paatosteksti pt ON p.hakemus_id = pt.hakemus_id
+          WHERE p.hakemus_id = ${hakemusId.toString}::uuid
       """.as[Paatos].headOption,
         "hae_paatos"
       )

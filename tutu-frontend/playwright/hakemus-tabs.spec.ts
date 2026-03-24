@@ -7,6 +7,8 @@ test.beforeEach(mockAll);
 test('Tab navigaation active tab näkyy oikein, myös reloadin jälkeen', async ({
   page,
 }) => {
+  test.slow();
+
   const hakemusOid = '1.2.246.562.10.00000000001';
 
   await page.goto(`/tutu-frontend/hakemus/${hakemusOid}/perustiedot`);

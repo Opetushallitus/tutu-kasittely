@@ -54,8 +54,13 @@ export const usePaatosteksti = (hakemusOid: string) => {
       queryClient.setQueryData(queryKey, paivitettyPaatosteksti);
       if (vahvista) {
         // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
-        await queryClient.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: ['getHakemus', hakemusOid],
+        });
+
+        // Invalidoi myös päätös, koska vahvistettu tila vaikuttaa sivupalkkiin
+        queryClient.invalidateQueries({
+          queryKey: ['paatos', hakemusOid],
         });
       }
       handleSuccessMessage(
