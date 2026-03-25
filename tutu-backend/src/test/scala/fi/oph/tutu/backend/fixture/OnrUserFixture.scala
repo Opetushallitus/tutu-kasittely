@@ -9,5 +9,6 @@ val onrUserFixture: OnrUser =
     sukunimi = "Esittelijä",
     kansalaisuus = Seq(KansalaisuusKoodi("123")),
     hetu = Some("010171-789X"),
-    true
+    yhteystiedotRyhma = Seq(),
+    yksiloityVTJ = true
   )

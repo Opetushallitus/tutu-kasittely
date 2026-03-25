@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
-import fi.oph.tutu.backend.utils.Utility.currentLocalDateTime
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -183,15 +182,9 @@ class ViestiController(
     merkitseVahvistetuksi: Boolean = false
   ): ResponseEntity[Any] = {
     Try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val viesti      = mapper.readValue(viestiBytes, classOf[Viesti])
-      val finalViesti = if (merkitseVahvistetuksi) {
-        viesti.copy(vahvistettu = Some(currentLocalDateTime()), vahvistaja = Some(user.userOid))
-      } else {
-        viesti
-      }
-
-      viestiService.tallennaViesti(HakemusOid(hakemusOid), finalViesti, user.userOid)
+      val user   = userService.getEnrichedUserDetails(true)
+      val viesti = mapper.readValue(viestiBytes, classOf[Viesti])
+      viestiService.tallennaViesti(HakemusOid(hakemusOid), viesti, user.userOid, merkitseVahvistetuksi)
     } match {
       case Success(result) =>
         result match {

@@ -1,8 +1,9 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{HakemusRepository, ViestiRepository}
+import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
+import fi.oph.tutu.backend.utils.Utility.currentLocalDateTime
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
@@ -13,15 +14,31 @@ import java.util.UUID
 class ViestiService(
   viestiRepository: ViestiRepository,
   hakemusRepository: HakemusRepository,
+  esittelijaRepository: EsittelijaRepository,
   onrService: OnrService,
-  hakemusService: HakemusService
+  hakemusService: HakemusService,
+  translationService: TranslationService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
+  private def haeEsittelija(esittelijaOid: Option[String]): Option[Esittelija] = {
+    esittelijaOid match {
+      case Some(esittelijaOid) =>
+        esittelijaRepository
+          .haeEsittelijaOidilla(esittelijaOid)
+          .map(_.toEsittelija)
+          .orElse(onrService.haeHenkilo(esittelijaOid).toOption.map(_.toEsittelija))
+      case _ => None
+    }
+  }
+
   def taytaNimet(viesti: Viesti): Viesti = {
+    val muokkaajaNimi = haeEsittelija(viesti.muokkaaja).map(_.kokoNimi())
     viesti.copy(
-      vahvistaja = onrService.haeNimiOption(viesti.vahvistaja),
-      muokkaaja = onrService.haeNimiOption(viesti.muokkaaja)
+      muokkaaja = muokkaajaNimi,
+      vahvistaja =
+        if (viesti.muokkaaja == viesti.vahvistaja) muokkaajaNimi
+        else haeEsittelija(viesti.vahvistaja).map(_.kokoNimi())
     )
   }
 
@@ -30,11 +47,6 @@ class ViestiService(
       case Some(dbHakemus: DbHakemus) =>
         viestiRepository
           .haeViestiLista(dbHakemus.id, sortParams)
-          .map(viesti => {
-            viesti.copy(
-              vahvistaja = onrService.haeNimi(Some(viesti.vahvistaja))
-            )
-          })
       case _ => List()
     }
   }
@@ -64,21 +76,64 @@ class ViestiService(
   def tallennaViesti(
     hakemusOid: HakemusOid,
     viesti: Viesti,
-    luojaTaiMuokkaaja: String
+    luojaTaiMuokkaaja: String,
+    merkitseVahvistetuksi: Boolean = false
   ): (Option[Viesti], Option[Viesti]) = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
-        val currentViesti = viesti.id match {
+        val viestiToSave = if (merkitseVahvistetuksi) {
+          taytaVahvistusTiedot(viesti, luojaTaiMuokkaaja)
+        } else {
+          viesti
+        }
+        val currentViesti = viestiToSave.id match {
           case Some(viestiId) => haeViesti(viestiId)
           case _              => None
         }
         val newOrUpdatedViesti = currentViesti match {
-          case Some(existing) => viestiRepository.tallennaViesti(existing.id.get, viesti, luojaTaiMuokkaaja)
-          case _              => viestiRepository.lisaaViesti(dbHakemus.id, viesti, luojaTaiMuokkaaja)
+          case Some(existing) => viestiRepository.tallennaViesti(existing.id.get, viestiToSave, luojaTaiMuokkaaja)
+          case _              => viestiRepository.lisaaViesti(dbHakemus.id, viestiToSave, luojaTaiMuokkaaja)
         }
         (currentViesti.map(taytaNimet), Some(newOrUpdatedViesti).map(taytaNimet))
       case _ => (None, None)
     }
+  }
+
+  private[service] def taytaVahvistusTiedot(viesti: Viesti, vahvistajaOid: String): Viesti = {
+    val viestiWithAllekirjoitus = haeEsittelija(Some(vahvistajaOid)) match {
+      case Some(esittelija) =>
+        viesti.kieli match {
+          case Some(kieli) =>
+            val tervehdysTeksti =
+              translationService.getTranslation(kieli.toString, "hakemus.viesti.allekirjoitus.tervehdys")
+            val ophTeksti =
+              translationService.getTranslation(kieli.toString, "hakemus.viesti.allekirjoitus.opetushallitus")
+            val sahkoposti    = esittelija.sahkoposti.getOrElse("")
+            val allekirjoitus =
+              s"""<p>
+                 |<span style="white-space: pre-wrap;">$tervehdysTeksti,</span>
+                 |<br><br>
+                 |<span style="white-space: pre-wrap;">${esittelija.kokoNimi()}</span>
+                 |<br>
+                 |<span style="white-space: pre-wrap;">$ophTeksti</span>
+                 |<br>
+                 |<a href="mailto:$sahkoposti"><span style="white-space: pre-wrap;">$sahkoposti</span></a>
+                 |<br>
+                 |<span style="white-space: pre-wrap;">${esittelija.puhelinnumero.getOrElse("")}</span>
+                 |</p>""".stripMargin.replaceAll("\n", "")
+            viesti.copy(viesti = Some(s"${viesti.viesti.getOrElse("")}$allekirjoitus"))
+          case _ =>
+            LOG.warn(s"Viestillä ei ollut valittua kieltä, allekirjoitus jätetään tyhjäksi")
+            viesti
+        }
+      case _ =>
+        LOG.warn(s"Esittelijää ei löytynyt oidilla: $vahvistajaOid, allekirjoitus jätetään tyhjäksi")
+        viesti
+    }
+    viestiWithAllekirjoitus.copy(
+      vahvistettu = Some(currentLocalDateTime()),
+      vahvistaja = Some(vahvistajaOid)
+    )
   }
 
   def poistaViesti(id: UUID): Int = {

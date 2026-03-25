@@ -150,6 +150,7 @@ class HakemusServiceTest extends UnitTestBase {
       sukunimi = sukunimi,
       kansalaisuus = kansalaisuus,
       hetu = hetu,
+      yhteystiedotRyhma = Seq(),
       yksiloityVTJ = yksiloityVTJ
     )
   }

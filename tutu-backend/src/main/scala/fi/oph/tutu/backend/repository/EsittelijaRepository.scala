@@ -28,7 +28,9 @@ class EsittelijaRepository {
         esittelijaId = UUID.fromString(r.nextString()),
         esittelijaOid = UserOid(r.nextString()),
         kutsumanimi = r.nextStringOption(),
-        sukunimi = r.nextStringOption()
+        sukunimi = r.nextStringOption(),
+        sahkoposti = r.nextStringOption(),
+        puhelinnumero = r.nextStringOption()
       )
     )
 
@@ -44,7 +46,7 @@ class EsittelijaRepository {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
-          SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi
+          SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi, e.sahkoposti, e.puhelinnumero
           FROM esittelija e
           INNER JOIN maakoodi m ON m.esittelija_id = e.id
           WHERE m.koodiuri = $maakoodiUri
@@ -73,7 +75,7 @@ class EsittelijaRepository {
     try {
       val esittelija: DbEsittelija = db.run(
         sql"""
-          SELECT id, esittelija_oid, kutsumanimi, sukunimi
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
           FROM esittelija
           WHERE esittelija_oid = $oid
         """.as[DbEsittelija].head,
@@ -83,6 +85,7 @@ class EsittelijaRepository {
     } catch {
       case e: Exception =>
         LOG.warn(s"Esittelijän haku epäonnistui oidilla: $oid")
+        LOG.error("", e)
         None
     }
   }
@@ -97,15 +100,17 @@ class EsittelijaRepository {
     esittelijaOid: UserOid,
     muokkaajaTaiLuoja: String,
     kutsumanimi: String | Null = null,
-    sukunimi: String | Null = null
+    sukunimi: String | Null = null,
+    sahkoposti: Option[String] = None,
+    puhelinnumero: Option[String] = None
   ): Option[DbEsittelija] =
     try {
       val esittelijaOidString      = esittelijaOid.toString
       val esittelija: DbEsittelija = db.run(
         sql"""
-          INSERT INTO esittelija (esittelija_oid, luoja, kutsumanimi, sukunimi)
-          VALUES ($esittelijaOidString, $muokkaajaTaiLuoja, $kutsumanimi, $sukunimi)
-          RETURNING id, esittelija_oid, kutsumanimi, sukunimi
+          INSERT INTO esittelija (esittelija_oid, luoja, kutsumanimi, sukunimi, sahkoposti, puhelinnumero)
+          VALUES ($esittelijaOidString, $muokkaajaTaiLuoja, $kutsumanimi, $sukunimi, ${sahkoposti.orNull}, ${puhelinnumero.orNull})
+          RETURNING id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
         """.as[DbEsittelija].head,
         "insertEsittelija"
       )
@@ -137,7 +142,7 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-          SELECT id, esittelija_oid, kutsumanimi, sukunimi
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
           FROM esittelija
           WHERE esittelija_oid IS NOT NULL
         """.as[DbEsittelija],
@@ -150,15 +155,21 @@ class EsittelijaRepository {
     }
   }
 
-  def paivitaEsittelijaNimi(oid: String, kutsumanimi: String, sukunimi: String): Unit = {
+  def paivitaEsittelijaTiedot(
+    oid: String,
+    kutsumanimi: String,
+    sukunimi: String,
+    sahkoposti: String,
+    puhelin: String
+  ): Unit = {
     try {
       db.run(
         sqlu"""
           UPDATE esittelija
-          SET kutsumanimi = $kutsumanimi, sukunimi = $sukunimi
+          SET kutsumanimi = $kutsumanimi, sukunimi = $sukunimi, sahkoposti = $sahkoposti, puhelinnumero = $puhelin
           WHERE esittelija_oid = $oid
         """,
-        "paivitaEsittelijaNimi"
+        "paivitaEsittelijaTiedot"
       )
     } catch {
       case e: Exception =>

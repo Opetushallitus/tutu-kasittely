@@ -8,13 +8,11 @@ import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 import java.util.UUID
 import java.time.LocalDateTime
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
+import fi.oph.tutu.backend.domain.Kieli.fi
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
-
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
@@ -29,9 +27,13 @@ class ViestiServiceTest extends UnitTestBase {
   @Mock
   var hakemusRepository: HakemusRepository = _
   @Mock
+  var esittelijaRepository: EsittelijaRepository = _
+  @Mock
   var onrService: OnrService = _
   @Mock
   var hakemusService: HakemusService = _
+  @Mock
+  var translationService: TranslationService = _
 
   var viestiService: ViestiService = _
 
@@ -69,8 +71,37 @@ class ViestiServiceTest extends UnitTestBase {
     viestiService = new ViestiService(
       viestiRepository,
       hakemusRepository,
+      esittelijaRepository,
       onrService,
-      hakemusService
+      hakemusService,
+      translationService
+    )
+    when(esittelijaRepository.haeEsittelijaOidilla("1.2.246.562.24.00000000001")).thenReturn(
+      Some(
+        DbEsittelija(UUID.randomUUID(), UserOid("1.2.246.562.24.00000000001"), Some("Topo"), Some("Lino"), None, None)
+      )
+    )
+    when(esittelijaRepository.haeEsittelijaOidilla("1.2.246.562.24.00000000002")).thenReturn(None)
+    when(onrService.haeHenkilo("1.2.246.562.24.00000000002")).thenReturn(
+      Right(
+        OnrUser(
+          "1.2.246.562.24.00000000002",
+          "Yrjö",
+          "Kortesniemi",
+          Seq(),
+          None,
+          true,
+          Seq(
+            OnrYhteystietoRyhma(
+              Seq(
+                OnrUserYhteystieto("YHTEYSTIETO_SAHKOPOSTI", "yka@åbh.sv"),
+                OnrUserYhteystieto("YHTEYSTIETO_MATKAPUHELINNUMERO", "050 123345")
+              )
+            ),
+            OnrYhteystietoRyhma(Seq(OnrUserYhteystieto("YHTEYSTIETO_PUHELINNUMERO", "123 456789")))
+          )
+        )
+      )
     )
   }
 
@@ -78,47 +109,33 @@ class ViestiServiceTest extends UnitTestBase {
   def haeViestiPalauttaaMuokkaajanJaVahvistajanNimen(): Unit = {
     // Data
     val viestiId = UUID.randomUUID
-    val dbViesti = Viesti(muokkaaja = Some("1234"), vahvistaja = Some("1234"))
+    val dbViesti =
+      Viesti(muokkaaja = Some("1.2.246.562.24.00000000001"), vahvistaja = Some("1.2.246.562.24.00000000002"))
 
     // Mock setup
     when(viestiRepository.haeViesti(any[UUID])).thenReturn(Some(dbViesti))
-
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
 
     // Act
     val viesti = viestiService.haeViesti(viestiId).get
 
     // Verify
-    assertEquals(viesti.muokkaaja, Some("Topolino"))
-    assertEquals(viesti.vahvistaja, Some("Topolino"))
+    assertEquals(Some("Topo Lino"), viesti.muokkaaja)
+    assertEquals(Some("Yrjö Kortesniemi"), viesti.vahvistaja)
   }
 
   @Test
-  def haeViestiListaPalauttaaVahvistajanNimen(): Unit = {
-    // Data
-    val hakemusOid       = HakemusOid("poop")
-    val sortParams       = None
-    val dbHakemus        = makeDbHakemus(hakemusOid)
-    val dbViestiListItem = ViestiListItem(
-      id = UUID.randomUUID,
-      tyyppi = Viestityyppi.muu,
-      otsikko = "",
-      vahvistettu = LocalDateTime.now,
-      vahvistaja = "1234"
-    )
-
-    // Mock setup
-    when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemus))
-    when(viestiRepository.haeViestiLista(any[UUID], any[Option[ListSortParam]])).thenReturn(Seq(dbViestiListItem))
-
-    when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
-
-    // Act
-    val viestiLista: Seq[ViestiListItem] =
-      viestiService.haeViestiLista(hakemusOid = hakemusOid, sortParams = sortParams)
-
-    // Verify
-    viestiLista.foreach(viestiListaItem => assertEquals(viestiListaItem.vahvistaja, "Topolino"))
+  def vahvistamisessaLisätäänAllekirjoitus(): Unit = {
+    val viesti = Viesti(kieli = Some(fi), viesti = Some("<p>alkuperäinen viesti</p>"))
+    when(translationService.getTranslation("fi", "hakemus.viesti.allekirjoitus.tervehdys"))
+      .thenReturn("Riehakasta perunannostolomaa")
+    when(translationService.getTranslation("fi", "hakemus.viesti.allekirjoitus.opetushallitus"))
+      .thenReturn("Opetushallitus")
+    val vahvistettu = viestiService.taytaVahvistusTiedot(viesti, "1.2.246.562.24.00000000002")
+    val sisalto     = vahvistettu.viesti.get
+    assert(sisalto.contains("Riehakasta perunannostolomaa,"))
+    assert(sisalto.contains("Opetushallitus"))
+    assert(sisalto.contains("Yrjö Kortesniemi"))
+    assert(sisalto.contains("mailto:yka@åbh.sv"))
+    assert(sisalto.contains("123 456789"))
   }
-
 }

@@ -21,6 +21,5 @@ case class ViestiListItem(
   id: UUID,
   tyyppi: Viestityyppi,
   otsikko: String,
-  vahvistettu: LocalDateTime,
-  vahvistaja: String
+  vahvistettu: LocalDateTime
 )
