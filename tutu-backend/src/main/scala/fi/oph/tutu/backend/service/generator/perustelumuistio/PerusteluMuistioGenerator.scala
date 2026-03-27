@@ -356,20 +356,20 @@ def haeJatkoOpintoKelpoisuus(
             case "toisen_vaiheen_korkeakouluopintoihin" =>
               translationService.getTranslation(
                 "fi",
-                "perustelumuistio.jatkoOpintoKeploisuus.toisen_vaiheen_korkeakouluopintoihin"
+                "perustelumuistio.jatkoOpintoKelpoisuus.toisen_vaiheen_korkeakouluopintoihin"
               )
             case "tieteellisiin_jatko-opintoihin" =>
               translationService.getTranslation(
                 "fi",
-                "perustelumuistio.jatkoOpintoKeploisuus.tieteellisiin_jatko-opintoihin"
+                "perustelumuistio.jatkoOpintoKelpoisuus.tieteellisiin_jatko-opintoihin"
               )
             case "muu" =>
-              translationService.getTranslation("fi", "perustelumuistio.jatkoOpintoKeploisuus.muu")
+              translationService.getTranslation("fi", "perustelumuistio.jatkoOpintoKelpoisuus.muu")
           },
         (perustelu.jatkoOpintoKelpoisuus, perustelu.jatkoOpintoKelpoisuusLisatieto) match {
           case (Some("muu"), Some(lisatieto)) => {
             val label =
-              translationService.getTranslation("fi", "perustelumuistio.jatkoOpintoKeploisuus.lisatieto.label")
+              translationService.getTranslation("fi", "perustelumuistio.jatkoOpintoKelpoisuus.lisatieto.label")
             Some(s"$label\n$lisatieto")
           }
           case (_, _) => None
@@ -895,20 +895,20 @@ def haeKielteisenPaatosTiedonPerustelut(
     .map(_.epavirallinenKorkeakoulu)
     .filter(_ == true)
     .map(_ =>
-      translationService.getTranslation("fi", "perustelumuistio.keilteinenPaatos.perustelu.epavirallinenKorkeakoulu")
+      translationService.getTranslation("fi", "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu")
     )
   val epavirallinenTutkinto = perustelut
     .map(_.epavirallinenTutkinto)
     .filter(_ == true)
     .map(_ =>
-      translationService.getTranslation("fi", "perustelumuistio.keilteinenPaatos.perustelu.epavirallinenTutkinto")
+      translationService.getTranslation("fi", "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto")
     )
   val eiVastaaSuomessaSuoritettavaaTutkintoa = perustelut
     .map(_.eiVastaaSuomessaSuoritettavaaTutkintoa)
     .filter(_ == true)
     .map(_ =>
       translationService
-        .getTranslation("fi", "perustelumuistio.keilteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista")
+        .getTranslation("fi", "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista")
     )
 
   val muuPerusteluSelected: Boolean = perustelut
@@ -919,7 +919,7 @@ def haeKielteisenPaatosTiedonPerustelut(
     perustelut
       .flatMap(_.muuPerusteluKuvaus)
       .map(kuvaus =>
-        val label = translationService.getTranslation("fi", "perustelumuistio.keilteinenPaatos.perustelu.muuLabel")
+        val label = translationService.getTranslation("fi", "perustelumuistio.kielteinenPaatos.perustelu.muuLabel")
         s"$label $kuvaus".trim
       )
   } else {
@@ -934,7 +934,7 @@ def haeKielteisenPaatosTiedonPerustelut(
   ).flatten
 
   if (result.nonEmpty) {
-    val label           = translationService.getTranslation("fi", "perustelumuistio.keilteinenPaatos.perustelu.label")
+    val label           = translationService.getTranslation("fi", "perustelumuistio.kielteinenPaatos.perustelu.label")
     val resultWithTitle = label +: result
     Some(resultWithTitle.mkString("\n"))
   } else {
