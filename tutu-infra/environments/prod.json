@@ -137,7 +137,7 @@
 
   "aurora_databases": {
     "web_backend": {
-      "version": "16.4",
+      "version": "16.11",
       "min_size_acu": 2,
       "max_size_acu": 16,
       "performance_insights": true,

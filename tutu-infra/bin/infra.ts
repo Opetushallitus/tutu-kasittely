@@ -31,7 +31,6 @@ const app = new cdk.App()
 
 // Load up configuration for the environment
 const environmentName: string = app.node.tryGetContext('environment')
-const utilityAccountId: string = app.node.tryGetContext('utility')
 const envEU = { region: 'eu-west-1' }
 const envEUAccount = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-west-1' }
 const envUS = { region: 'us-east-1' }
@@ -59,13 +58,8 @@ if (environmentName === 'dev') {
 if (environmentName === 'dev' || environmentName === 'qa' || environmentName === 'prod') {
   const revision = app.node.tryGetContext('revision')
 
-  if (utility === undefined) {
-    console.error('You must define utility account id in CDK context!')
-    process.exit(1)
-  }
-
   if (revision === undefined) {
-    console.error('You must define a valid revision in CDK context!')
+    console.error('You must define a valid (backend: ga-${{github.run_number}}) revision in CDK context!')
     process.exit(1)
   }
 
@@ -108,7 +102,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const HostedZones = new HostedZoneStack(app, 'HostedZoneStack', {
     env: envEU,
     stackName: `${environmentName}-hosted-zone`,
-    domain: environmentConfig.aws.domain,
+    domain: domain,
     vpc: Network.vpc
   })
 
@@ -224,7 +218,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     },
     parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS', 'CAS_USER', 'AWS_BUCKET_NAME'],
     secrets_manager_secrets: [Secrets.secrets.PG_PASS, Secrets.secrets.SESSION_SECRET],
-    utilityAccountId: utilityAccountId,
+    ecrAccountId: utilityConfig.accountId,
     listener: Alb.albListener,
     listenerPathPatterns: ['/tutu-backend/*'],
     healthCheckPath: '/tutu-backend/api/healthcheck',
