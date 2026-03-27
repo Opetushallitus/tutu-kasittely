@@ -230,7 +230,7 @@ def haePerustelunTutkintokohtaisetTiedot(
       val tutkintoonSisaltyiHarjoitteluLabel =
         translationService.getTranslation("fi", "perustelumuistio.tutkintoonSisaltyiHarjoittelu.label")
       val lisatietoaOpinnaytteisiinJaHArjoitteluunLabel =
-        translationService.getTranslation("fi", "perustelumuistio.lisatietoaOpinnaytteeseenJaHArjoitteluun.label")
+        translationService.getTranslation("fi", "perustelumuistio.lisatietoaOpinnaytteeseenJaHarjoitteluun.label")
 
       val suoritusvuodet = Seq(tutkinto.aloitusVuosi, tutkinto.paattymisVuosi).flatten
         .mkString(" - ")
