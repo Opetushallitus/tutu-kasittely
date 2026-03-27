@@ -113,14 +113,14 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       {
         lausunnonAntajaKoodiUri: null,
         lausunnonAntajaMuu: 'Esko Mörkö',
-        lahetetty: '2025-09-01T00:00:00',
-        saapunut: '2025-09-30T00:00:00',
+        lahetetty: '2025-09-01T00:00:00Z',
+        saapunut: '2025-09-30T00:00:00Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00Z',
+        saapunut: '2025-11-30T00:00:00Z',
       },
     ],
   });
@@ -135,13 +135,13 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
         lausunnonAntajaKoodiUri: null,
         lausunnonAntajaMuu: 'Esko Mörkö',
         lahetetty: matchingDate(),
-        saapunut: '2025-09-30T00:00:00',
+        saapunut: '2025-09-30T00:00:00Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00Z',
+        saapunut: '2025-11-30T00:00:00Z',
       },
     ],
   });
@@ -161,8 +161,8 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00Z',
+        saapunut: '2025-11-30T00:00:00Z',
       },
     ],
   });
@@ -200,14 +200,14 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-09-01T00:00:00',
-        saapunut: '2025-09-30T00:00:00',
+        lahetetty: '2025-09-01T00:00:00Z',
+        saapunut: '2025-09-30T00:00:00Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00Z',
+        saapunut: '2025-11-30T00:00:00Z',
       },
       {
         lausunnonAntajaKoodiUri: null,
@@ -230,8 +230,8 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
         {
           lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
           lausunnonAntajaMuu: null,
-          lahetetty: '2025-09-01T00:00:00',
-          saapunut: '2025-09-30T00:00:00',
+          lahetetty: '2025-09-01T00:00:00Z',
+          saapunut: '2025-09-30T00:00:00Z',
         },
         {
           lausunnonAntajaKoodiUri: null,

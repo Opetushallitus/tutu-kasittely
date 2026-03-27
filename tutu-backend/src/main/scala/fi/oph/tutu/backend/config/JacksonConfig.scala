@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.config
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -30,9 +29,11 @@ class JacksonConfig {
   def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper = {
     val mapper = builder.createXmlMapper(false).build[ObjectMapper]()
     mapper.registerModule(DefaultScalaModule)
-    mapper.registerModule(new JavaTimeModule)
 
+    val formatter    = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val customModule = new SimpleModule()
+    customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
+    customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
     customModule.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())

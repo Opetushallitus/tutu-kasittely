@@ -42,6 +42,7 @@
     "@tolgee/react": "^6.2.4",
     "@xstate/react": "^6.0.0",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "lexical": "^0.40.0",
     "next": "^15.5.9",
     "next-navigation-guard": "^0.2.0",

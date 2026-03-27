@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
@@ -14,6 +13,7 @@ import org.mockito.{Mock, MockitoAnnotations}
 
 import java.time.ZonedDateTime
 import java.util.UUID
+import java.time.ZoneId
 
 class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   @Mock
@@ -32,6 +32,11 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     MockitoAnnotations.openMocks(this)
     ataruHakemusParser = new AtaruHakemusParser(koodistoService)
     ataruLomakeParser = new AtaruLomakeParser()
+  }
+
+  @Test
+  def timeZoneOnUTC(): Unit = { // localDateTimet palauttavat UTCtä
+    assertEquals("UTC", ZoneId.systemDefault().getId)
   }
 
   @Test
@@ -712,7 +717,6 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
             .parse(
               "2025-12-17T11:06:38.273123+00:00"
             )
-            .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
         )
       ),
@@ -728,7 +732,6 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
             .parse(
               "2025-12-17T11:06:38.273123+00:00"
             )
-            .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
         )
       ),

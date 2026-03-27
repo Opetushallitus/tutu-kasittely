@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { useState } from 'react';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -19,6 +18,7 @@ import { match } from 'ts-pattern';
 import { TableHeaderCell } from '@/src/app/(root)/components/TableHeaderCell';
 import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { HAKEMUS_MUUTOSHISTORIA_SORT_KEY } from '@/src/context/HakemusContext';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { MuutosHistoriaItem } from '@/src/lib/types/hakemus';
 import { setLocalStorageAndLaunchHakemusQuery } from '@/src/lib/utils';
@@ -98,7 +98,7 @@ export const Muutoshistoria = ({
             {R.map(muutosHistoria, (muutos) => (
               <StyledTableRow key={muutos.time}>
                 <TableCell>
-                  {format(Date.parse(muutos.time), DATE_TIME_PLACEHOLDER)}
+                  {formatHelsinki(muutos.time, DATE_TIME_PLACEHOLDER)}
                 </TableCell>
                 <TableCell>{muokkaajaTieto(muutos)}</TableCell>
               </StyledTableRow>

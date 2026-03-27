@@ -1,10 +1,5 @@
 package fi.oph.tutu.backend
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AsiakirjamalliLahde.{aacrao, ece}
 import fi.oph.tutu.backend.fixture.{createTutkinnotFixture, hakijaFixture}
@@ -39,6 +34,8 @@ import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
+import fi.oph.tutu.backend.config.JacksonConfig
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 object IntegrationTestBase extends Object {
   private val postgresContainer = new PostgreSQLContainer("postgres:16.11")
@@ -121,15 +118,7 @@ class IntegrationTestBase {
   @MockitoBean
   var ataruHakemusParser: AtaruHakemusParser = _
 
-  val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-
-  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-  val javaTimeModule               = new JavaTimeModule()
-  javaTimeModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
-  javaTimeModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
-  mapper.registerModule(javaTimeModule)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+  val mapper = JacksonConfig().tutuMapper(Jackson2ObjectMapperBuilder())
 
   @BeforeAll
   def startContainer(): Unit = {

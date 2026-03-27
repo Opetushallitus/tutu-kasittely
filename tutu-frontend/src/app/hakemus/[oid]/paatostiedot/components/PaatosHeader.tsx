@@ -3,12 +3,12 @@
 import { Preview } from '@mui/icons-material';
 import { Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { formatUTC } from '@/src/lib/dateUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatos } from '@/src/lib/types/paatos';
 
@@ -42,13 +42,13 @@ export const PaatosHeader = ({
         </OphTypography>
         <Stack direction="row" gap={theme.spacing(2)}>
           <CalendarComponent
-            setDate={(date: Date | null) =>
+            setDate={(date: Date | null) => {
               updatePaatosField({
                 hyvaksymispaiva: date
-                  ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
+                  ? formatUTC(date, DATE_TIME_STANDARD_PLACEHOLDER)
                   : null,
-              })
-            }
+              });
+            }}
             selectedValue={hyvaksymispaiva}
             minDate={null}
             maxDate={lahetyspaiva}
@@ -59,7 +59,7 @@ export const PaatosHeader = ({
             setDate={(date: Date | null) =>
               updatePaatosField({
                 lahetyspaiva: date
-                  ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
+                  ? formatUTC(date, DATE_TIME_STANDARD_PLACEHOLDER)
                   : null,
               })
             }

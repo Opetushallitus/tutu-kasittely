@@ -280,7 +280,7 @@ export const mockHakemus = async (
           suostumusVahvistamiselleSaatu: true,
           esittelijanHuomioita: 'Muistion alkuperäinen sisältö',
         },
-        taydennyspyyntoLahetetty: '2025-12-14T10:59:47.597',
+        taydennyspyyntoLahetetty: '2025-12-14T10:59:47Z',
         liitteidenTilat: [],
         peruutusPvm: null,
       } as Hakemus),

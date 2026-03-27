@@ -5,6 +5,7 @@ import fi.oph.tutu.backend.domain.{HakemusOid, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
+import java.time.LocalDateTime
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
