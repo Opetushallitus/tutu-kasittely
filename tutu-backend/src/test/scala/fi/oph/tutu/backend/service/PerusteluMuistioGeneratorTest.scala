@@ -10,7 +10,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +19,7 @@ val translations = Map[String, String](
   "perustelumuistio.imipyynto.label"          -> "IMI-pyyntö:",
   "perustelumuistio.imipyynto.vastattu.label" -> "vastattu",
   "perustelumuistio.valmistuminenVahvistettu.vastaus.myonteinen" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: myönteinen",
-  "perustelumuistio.valmistuminenVahvistettu.vastaus.kielteinen" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: kielteinen",
+  "pferustelumuistio.valmistuminenVahvistettu.vastaus.kielteinen" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: kielteinen",
   "perustelumuistio.valmistuminenVahvistettu.vastaus.vastaustaEiSaatu" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: vastausta ei saatu",
   "perustelumuistio.selvityksetSaatu.vastaus.kylla"      -> "Kaikki tarvittavat selvitykset saatu: Kyllä",
   "perustelumuistio.selvityksetSaatu.vastaus.ei"         -> "Kaikki tarvittavat selvitykset saatu: Ei",
@@ -49,10 +48,10 @@ val translations = Map[String, String](
   "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.tutkijakoulutusaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Tieteellinen jatkotutknto",
   "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.ei_korkeakouluaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Alle korkeakoulutasoinen koulutus",
   "perustelumuistio.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa.label" -> "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:",
-  "perustelumuistio.jatkoOpintoKeploisuus.toisen_vaiheen_korkeakouluopintoihin" -> "Jatko-opintokelpoisuus: toisen vaiheen korkeakouluopintoihin",
-  "perustelumuistio.jatkoOpintoKeploisuus.tieteellisiin_jatko-opintoihin" -> "Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin",
-  "perustelumuistio.jatkoOpintoKeploisuus.muu"             -> "Jatko-opintokelpoisuus: muu",
-  "perustelumuistio.jatkoOpintoKeploisuus.lisatieto.label" -> "Jatko-opintokelpoisuuus, lisätieto:",
+  "perustelumuistio.jatkoOpintoKelpoisuus.toisen_vaiheen_korkeakouluopintoihin" -> "Jatko-opintokelpoisuus: toisen vaiheen korkeakouluopintoihin",
+  "perustelumuistio.jatkoOpintoKelpoisuus.tieteellisiin_jatko-opintoihin" -> "Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin",
+  "perustelumuistio.jatkoOpintoKelpoisuus.muu"             -> "Jatko-opintokelpoisuus: muu",
+  "perustelumuistio.jatkoOpintoKelpoisuus.lisatieto.label" -> "Jatko-opintokelpoisuuus, lisätieto:",
   "perustelumuistio.aikaisemmatPaatokset.kylla"            -> "Opetushallitus on tehnyt vastaavia päätöksiä: Kyllä",
   "perustelumuistio.aikaisemmatPaatokset.ei"               -> "Opetushallitus on tehnyt vastaavia päätöksiä: Ei",
   "perustelumuistio.muuPerustelu.label"                    -> "Ratkaisun tai päätöksen muut perustelut:",
@@ -122,11 +121,11 @@ val translations = Map[String, String](
   "perustelumuistio.myonteinenTaiKielteinen.label"            -> "Päätös on myönteinen:",
   "perustelumuistio.tutkinnonTaso.alempiKorkeakoulu"          -> "Tutkinnon taso: Alempi korkeakoulututkinto",
   "perustelumuistio.tutkinnonTaso.ylempiKorkeakoulu"          -> "Tutkinnon taso: Ylempi korkeakoulututkinto",
-  "perustelumuistio.keilteinenPaatos.perustelu.epavirallinenKorkeakoulu" -> "- Epävirallinen korkeakoulu",
-  "perustelumuistio.keilteinenPaatos.perustelu.epavirallinenTutkinto"    -> "- Epävirallinen tutkinto",
-  "perustelumuistio.keilteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista" -> "- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
-  "perustelumuistio.keilteinenPaatos.perustelu.muuLabel" -> "- Muu perustelu:",
-  "perustelumuistio.keilteinenPaatos.perustelu.label"    -> "Kielteisen päätöksen perustelut:",
+  "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu" -> "- Epävirallinen korkeakoulu",
+  "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto"    -> "- Epävirallinen tutkinto",
+  "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista" -> "- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
+  "perustelumuistio.kielteinenPaatos.perustelu.muuLabel" -> "- Muu perustelu:",
+  "perustelumuistio.kielteinenPaatos.perustelu.label"    -> "Kielteisen päätöksen perustelut:",
   "perustelumuistio.peruutusTaiRaukeaminen.syy.eiSaaHakemaansa" -> "- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",
   "perustelumuistio.peruutusTaiRaukeaminen.syy.muutenTyytymatonRatkaisuun" -> "- On muuten tyytymätön ratkaisuun",
   "perustelumuistio.peruutusTaiRaukeaminen.syy.eiAPLainMukainenTaiHaettuaAmmattipatevyytta" -> "- Ei AP-lain mukainen tutkinto tai haettua ammattipätevyyttä",
@@ -168,12 +167,6 @@ val translations = Map[String, String](
 )
 
 class PerusteluMuistioGeneratorTest extends UnitTestBase {
-
-  def answer[T](f: InvocationOnMock => T): org.mockito.stubbing.Answer[T] = {
-    new org.mockito.stubbing.Answer[T] {
-      override def answer(invocation: InvocationOnMock): T = f(invocation)
-    }
-  }
 
   val noneHakemus: Option[Hakemus]           = None
   val noneAtaruHakemus: Option[AtaruHakemus] = None
@@ -334,7 +327,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       form_id = 1,
       content = Content(
         answers = Seq(
-          fi.oph.tutu.backend.domain.Answer(
+          Answer(
             key = Constants.ATARU_SAHKOISEN_ASIOINNIN_LUPA.generatedId,
             value = SingleValue("0"),
             fieldType = ""

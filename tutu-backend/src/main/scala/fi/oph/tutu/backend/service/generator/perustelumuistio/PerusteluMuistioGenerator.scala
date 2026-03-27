@@ -498,7 +498,7 @@ def haeUoRoPerustelu(
           case (Some(true), None) =>
             Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muu"))
           case (Some(true), Some(selite)) => {
-            val label = Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel"))
+            val label = translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel")
             Some(s"$label\n$selite")
           }
           case (_, _) => None
@@ -534,7 +534,7 @@ def haeUoRoPerustelu(
           case (Some(true), None) =>
             Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muu"))
           case (Some(true), Some(selite)) => {
-            val label = Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel"))
+            val label = translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel")
             Some(s"$label\n$selite")
           }
           case (_, _) => None
@@ -559,7 +559,7 @@ def haeUoRoPerustelu(
           case (Some(true), None) =>
             Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muu"))
           case (Some(true), Some(selite)) => {
-            val label = Some(translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel"))
+            val label = translationService.getTranslation("fi", "perustelumuistio.uoro.koulutuserot.muuLabel")
             Some(s"$label\n$selite")
           }
           case (_, _) => None
