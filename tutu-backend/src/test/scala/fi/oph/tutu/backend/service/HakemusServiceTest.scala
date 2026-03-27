@@ -200,6 +200,7 @@ class HakemusServiceTest extends UnitTestBase {
           val uuid = invocation.getArgument[UUID](0)
           createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
         }
+      when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 
       // Setup spy for verification
       when(
@@ -244,6 +245,7 @@ class HakemusServiceTest extends UnitTestBase {
           val uuid = invocation.getArgument[UUID](0)
           createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
         }
+      when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 
       // Setup spy for verification
       when(
