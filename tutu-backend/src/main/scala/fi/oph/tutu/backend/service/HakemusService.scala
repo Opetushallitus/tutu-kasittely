@@ -228,96 +228,63 @@ class HakemusService(
       case Right(response: String) => parse(response).extract[AtaruLomake]
     }
 
-    val ataruHakija    = ataruHakemusParser.parseHakija(ataruHakemus)
-    val hakija: Hakija = onrService.haeHenkilo(ataruHakija.henkiloOid) match {
-      case Right(henkilo) =>
-        henkilo.hetu match {
-          case Some(hetu) =>
-            Hakija(
-              henkiloOid = henkilo.oidHenkilo,
-              etunimet = ataruHakija.etunimet,
-              kutsumanimi = ataruHakija.kutsumanimi,
-              sukunimi = ataruHakija.sukunimi,
-              kansalaisuus = henkilo.kansalaisuus match {
-                case koodit =>
-                  koodit.flatMap(koodi => ataruHakemusParser.countryCode2Name(Some(koodi.kansalaisuusKoodi)))
-                case null => ataruHakija.kansalaisuus
-              },
-              hetu = henkilo.hetu,
-              syntymaaika = ataruHakija.syntymaaika,
-              matkapuhelin = ataruHakija.matkapuhelin,
-              asuinmaa = ataruHakija.asuinmaa,
-              katuosoite = ataruHakija.katuosoite,
-              postinumero = ataruHakija.postinumero,
-              postitoimipaikka = ataruHakija.postitoimipaikka,
-              kotikunta = ataruHakija.kotikunta,
-              sahkopostiosoite = ataruHakija.sahkopostiosoite,
-              yksiloityVTJ = true
-            )
-          case _ => ataruHakija
-        }
-      case _ => ataruHakija
-    }
+    val hakija = ataruHakemusParser.parseHakija(ataruHakemus)
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
-        val tutuHakemus = Hakemus(
-          hakemusOid = dbHakemus.hakemusOid.toString,
-          lomakeOid = lomake.key,
-          lomakeId = lomake.id,
-          lomakkeenKieli = ataruHakemus.lang,
-          hakija = hakija,
-          sisalto = ataruHakemusParser.parseSisalto(ataruHakemus, lomake),
-          liitteidenTilat = ataruHakemusParser.parseLiitteidenTilat(ataruHakemus, lomake),
-          hakemusKoskee = dbHakemus.hakemusKoskee,
-          asiatunnus = dbHakemus.asiatunnus,
-          saapumisPvm = dbHakemus.saapumisPvm,
-          // TODO: esittelyPvm, paatosPvm.
-          esittelyPvm = None,
-          paatosPvm = None,
-          esittelijaOid = dbHakemus.esittelijaOid match {
-            case None                => None
-            case Some(esittelijaOid) => Some(esittelijaOid.toString)
-          },
-          ataruHakemuksenTila = ataruHakemus.hakemuksenTila(),
-          ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
-          kasittelyVaihe =
-            dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
-          muokattu = dbHakemus.muokattu,
-          muokkaaja = onrService.haeNimi(dbHakemus.muokkaaja),
-          muutosHistoria = Seq(),
-          taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
-            case None            => None
-            case Some(timestamp) => Some(toLocalDateTime(timestamp))
-          },
-          yhteistutkinto = dbHakemus.yhteistutkinto,
-          asiakirja = asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
-            case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
-              Some(
-                new Asiakirja(
-                  asiakirjaTiedot,
-                  pyydettavatAsiakirjat,
-                  asiakirjamallitTutkinnoista
+        Some(
+          Hakemus(
+            hakemusOid = dbHakemus.hakemusOid.toString,
+            lomakeOid = lomake.key,
+            lomakeId = lomake.id,
+            lomakkeenKieli = ataruHakemus.lang,
+            hakija = hakija,
+            sisalto = ataruHakemusParser.parseSisalto(ataruHakemus, lomake),
+            liitteidenTilat = ataruHakemusParser.parseLiitteidenTilat(ataruHakemus, lomake),
+            hakemusKoskee = dbHakemus.hakemusKoskee,
+            asiatunnus = dbHakemus.asiatunnus,
+            saapumisPvm = dbHakemus.saapumisPvm,
+            // TODO: esittelyPvm, paatosPvm.
+            esittelyPvm = None,
+            paatosPvm = None,
+            esittelijaOid = dbHakemus.esittelijaOid match {
+              case None                => None
+              case Some(esittelijaOid) => Some(esittelijaOid.toString)
+            },
+            ataruHakemuksenTila = ataruHakemus.hakemuksenTila(),
+            ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
+            kasittelyVaihe =
+              dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
+            muokattu = dbHakemus.muokattu,
+            muokkaaja = onrService.haeNimi(dbHakemus.muokkaaja),
+            muutosHistoria = Seq(),
+            taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
+              case None            => None
+              case Some(timestamp) => Some(toLocalDateTime(timestamp))
+            },
+            yhteistutkinto = dbHakemus.yhteistutkinto,
+            asiakirja = asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
+              case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
+                Some(
+                  new Asiakirja(
+                    asiakirjaTiedot,
+                    pyydettavatAsiakirjat,
+                    asiakirjamallitTutkinnoista
+                  )
                 )
-              )
-            case _ =>
-              None
-          },
-          lopullinenPaatosVastaavaEhdollinenAsiatunnus = dbHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
-          lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
-            dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
-          esittelijanHuomioita = dbHakemus.esittelijanHuomioita,
-          onkoPeruutettu = dbHakemus.onkoPeruutettu,
-          peruutusPvm = dbHakemus.peruutusPvm,
-          peruutusLisatieto = dbHakemus.peruutusLisatieto,
-          viimeisinTaydennyspyyntoPvm = dbHakemus.viimeisinTaydennyspyyntoPvm
+              case _ =>
+                None
+            },
+            lopullinenPaatosVastaavaEhdollinenAsiatunnus = dbHakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus,
+            lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri =
+              dbHakemus.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
+            esittelijanHuomioita = dbHakemus.esittelijanHuomioita,
+            onkoPeruutettu = dbHakemus.onkoPeruutettu,
+            peruutusPvm = dbHakemus.peruutusPvm,
+            peruutusLisatieto = dbHakemus.peruutusLisatieto,
+            viimeisinTaydennyspyyntoPvm = dbHakemus.viimeisinTaydennyspyyntoPvm
+          )
         )
-        paivitaTutkinnotAtaruHakemukselta(
-          ataruHakemus,
-          dbHakemus,
-          tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
-        )
-        Some(tutuHakemus)
       case None =>
         LOG.warn(s"Hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
         None
@@ -549,6 +516,12 @@ class HakemusService(
           muutokset += s"hakijaEtunimet: ${dbHakemus.hakijaEtunimet} -> ${ataruHakemus.etunimet}"
         if (!dbHakemus.hakijaSukunimi.contains(ataruHakemus.sukunimi))
           muutokset += s"hakijaSukunimi: ${dbHakemus.hakijaSukunimi} -> ${ataruHakemus.sukunimi}"
+
+        paivitaTutkinnotAtaruHakemukselta(
+          ataruHakemus,
+          dbHakemus,
+          tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+        )
 
         if (muutokset.nonEmpty) {
           LOG.info(s"Päivitetään hakemus ${hakemusOid.s} ${muutokset.mkString(", ")}")

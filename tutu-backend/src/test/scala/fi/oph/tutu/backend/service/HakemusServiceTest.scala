@@ -7,13 +7,11 @@ import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
+import fi.oph.tutu.backend.fixture.createTutkinnotFixtureBeforeMuuttuneetTutkinnot
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
-
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
@@ -197,6 +195,11 @@ class HakemusServiceTest extends UnitTestBase {
       when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(false)
       when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruHakemus]))
         .thenReturn(KasittelyVaihe.ValmisKasiteltavaksi)
+      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+        .thenAnswer { invocation =>
+          val uuid = invocation.getArgument[UUID](0)
+          createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
+        }
 
       // Setup spy for verification
       when(
@@ -211,7 +214,7 @@ class HakemusServiceTest extends UnitTestBase {
       }
 
       // Act
-      val result = hakemusService.paivitaTiedotAtarusta(hakemusOid)
+      hakemusService.paivitaTiedotAtarusta(hakemusOid)
 
       // Verify
       /* The new form ID should be stored */
@@ -236,6 +239,11 @@ class HakemusServiceTest extends UnitTestBase {
       when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(false)
       when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruHakemus]))
         .thenReturn(KasittelyVaihe.ValmisKasiteltavaksi)
+      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+        .thenAnswer { invocation =>
+          val uuid = invocation.getArgument[UUID](0)
+          createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
+        }
 
       // Setup spy for verification
       when(
@@ -250,7 +258,7 @@ class HakemusServiceTest extends UnitTestBase {
       }
 
       // Act
-      val result = hakemusService.paivitaTiedotAtarusta(hakemusOid)
+      hakemusService.paivitaTiedotAtarusta(hakemusOid)
 
       // Verify
       /* Update function should not be called */

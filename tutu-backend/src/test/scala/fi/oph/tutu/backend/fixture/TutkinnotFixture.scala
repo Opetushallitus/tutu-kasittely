@@ -17,7 +17,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     muuTutkintoTieto = None,
     todistuksenPaivamaara = Some("1.2.2000"),
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = Some("Paalikön erikoisala"),
+    paaAineTaiErikoisala = Some("Paalikön erikoisala"),
     todistusOtsikko = Some("tutkintotodistus"),
     ohjeellinenLaajuus = None
   ),
@@ -33,7 +33,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     muuTutkintoTieto = None,
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("ovrigbevis"),
     ohjeellinenLaajuus = None
   ),
@@ -49,7 +49,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     muuTutkintoTieto = None,
     todistuksenPaivamaara = Some("7.12.2001"),
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("muutodistusVirheellinen"),
     ohjeellinenLaajuus = None
   ),
@@ -67,7 +67,7 @@ def createTutkinnotFixture(hakemusId: UUID): Seq[Tutkinto] = Seq(
     ),
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = None,
     ohjeellinenLaajuus = None,
     muuTutkintoMuistio = None
@@ -87,7 +87,7 @@ def createTutkinnotFixtureBeforeMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkin
     muuTutkintoTieto = None,
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("tutkintotodistus"),
     ohjeellinenLaajuus = None
   ),
@@ -103,7 +103,7 @@ def createTutkinnotFixtureBeforeMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkin
     muuTutkintoTieto = None,
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("muutodistus"),
     ohjeellinenLaajuus = None
   ),
@@ -119,7 +119,7 @@ def createTutkinnotFixtureBeforeMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkin
     muuTutkintoTieto = Some("Ammuu-instituutti"),
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = None,
     ohjeellinenLaajuus = None,
     muuTutkintoMuistio = None
@@ -139,7 +139,7 @@ def createTutkinnotFixtureAfterMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkint
     muuTutkintoTieto = None,
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("examensbevis"),
     ohjeellinenLaajuus = None
   ),
@@ -155,7 +155,7 @@ def createTutkinnotFixtureAfterMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkint
     muuTutkintoTieto = None,
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = Some("ovrigbevis"),
     ohjeellinenLaajuus = None
   ),
@@ -171,7 +171,7 @@ def createTutkinnotFixtureAfterMuuttuneetTutkinnot(hakemusId: UUID): Seq[Tutkint
     muuTutkintoTieto = Some("Ammuu-instituutti, ypäjän hevosopisto"),
     todistuksenPaivamaara = None,
     koulutusalaKoodiUri = None,
-    paaaaineTaiErikoisala = None,
+    paaAineTaiErikoisala = None,
     todistusOtsikko = None,
     ohjeellinenLaajuus = None,
     muuTutkintoMuistio = None

@@ -10,7 +10,7 @@ export type Tutkinto = {
   muuTutkintoTieto?: string;
   todistuksenPaivamaara?: string;
   koulutusalaKoodiUri?: string;
-  paaaaineTaiErikoisala?: string;
+  paaAineTaiErikoisala?: string;
   todistusOtsikko?: string;
   muuTutkintoMuistio?: string;
   ohjeellinenLaajuus?: string;

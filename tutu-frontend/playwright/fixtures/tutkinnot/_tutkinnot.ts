@@ -13,7 +13,7 @@ export const _tutkinnot: Tutkinto[] = [
     muuTutkintoTieto: undefined,
     todistuksenPaivamaara: undefined,
     koulutusalaKoodiUri: undefined,
-    paaaaineTaiErikoisala: undefined,
+    paaAineTaiErikoisala: undefined,
     todistusOtsikko: 'tutkintotodistus',
   },
   {
@@ -28,7 +28,7 @@ export const _tutkinnot: Tutkinto[] = [
     muuTutkintoTieto: undefined,
     todistuksenPaivamaara: undefined,
     koulutusalaKoodiUri: undefined,
-    paaaaineTaiErikoisala: undefined,
+    paaAineTaiErikoisala: undefined,
     todistusOtsikko: 'muutodistus',
   },
   {
@@ -43,7 +43,7 @@ export const _tutkinnot: Tutkinto[] = [
     muuTutkintoTieto: 'En olekaan suorittanutkoulutusta',
     todistuksenPaivamaara: undefined,
     koulutusalaKoodiUri: undefined,
-    paaaaineTaiErikoisala: undefined,
+    paaAineTaiErikoisala: undefined,
     todistusOtsikko: undefined,
     muuTutkintoMuistio: 'HUOMIO!',
   },

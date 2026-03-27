@@ -46,7 +46,7 @@ private def getCommonPaatosHeader(
               .getOrElse("")
 
           val tutkintoNimi     = tutkinto.nimi.getOrElse("")
-          val tutkinnonPaaAine = tutkinto.paaaaineTaiErikoisala.getOrElse("")
+          val tutkinnonPaaAine = tutkinto.paaAineTaiErikoisala.getOrElse("")
           val korkeakoulu      = tutkinto.oppilaitos.getOrElse("")
           val maakoodiUri      = tutkinto.maakoodiUri
 

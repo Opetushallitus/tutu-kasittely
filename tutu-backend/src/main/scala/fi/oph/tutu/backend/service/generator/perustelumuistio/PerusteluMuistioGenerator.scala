@@ -203,7 +203,7 @@ def haeTutkintokohtaisetTiedot(
       Seq[String](
         tutkinto.todistusOtsikko.getOrElse("-"),
         tutkinto.nimi.getOrElse("-"),
-        tutkinto.paaaaineTaiErikoisala.getOrElse("-"),
+        tutkinto.paaAineTaiErikoisala.getOrElse("-"),
         tutkinto.oppilaitos.getOrElse("-"),
         kielistettyMaakoodi.getOrElse("-"),
         tutkinto.todistuksenPaivamaara.getOrElse("-")
@@ -237,7 +237,7 @@ def haePerustelunTutkintokohtaisetTiedot(
 
       Seq[String](
         s"${tutkinto.nimi.getOrElse("-")}",
-        s"${tutkinto.paaaaineTaiErikoisala.getOrElse("-")}",
+        s"${tutkinto.paaAineTaiErikoisala.getOrElse("-")}",
         s"$suoritusvuodetLabel $suoritusvuodet".trim,
         s"$ohjeellinenLaajuusLabel ${tutkinto.ohjeellinenLaajuus.getOrElse("-")}".trim,
         s"$tutkintoonSisaltyiOpinnaytetyoLabel ${tutkinto.opinnaytetyo.map(toKyllaEi).getOrElse("-")}".trim,
