@@ -11,6 +11,7 @@ export const getPaatos = (): Paatos => {
     paatosTietoOptions: paatosTietoOptions,
     hyvaksymispaiva: null,
     lahetyspaiva: null,
+    paatostekstiVahvistettu: null,
   };
 };
 
@@ -33,5 +34,6 @@ export const getPaatosWithPaatosTiedot = (): Paatos => {
     paatosTietoOptions: paatosTietoOptions,
     hyvaksymispaiva: null,
     lahetyspaiva: null,
+    paatostekstiVahvistettu: null,
   };
 };

@@ -961,4 +961,33 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatosteksti), any())
     reset(auditLog)
   }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(16)
+  def haePaatosPalauttaaVahvistetunPaatoksen(): Unit = {
+    val paatosteksti = paatosRepository
+      .haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot)
+
+    mvc
+      .perform(
+        put(
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/${paatosteksti.get.id}/vahvista"
+        )
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(mapper.writeValueAsString(paatosteksti.get.copy(sisalto = "Vahvistettu sisältö")))
+      )
+
+    mvc
+      .perform(
+        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.id").isString)
+      .andExpect(jsonPath("$.paatostekstiVahvistettu").isString)
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
+    reset(auditLog)
+  }
 }

@@ -60,6 +60,7 @@ export type Paatos = {
   paatosTietoOptions: PaatosTietoOptionGroup;
   hyvaksymispaiva: string | null;
   lahetyspaiva: string | null;
+  paatostekstiVahvistettu: string | null;
 };
 
 export type TutkintoTaiOpinto = {

@@ -13,6 +13,7 @@ case class Paatos(
   paatosTietoOptions: Option[PaatosTietoOptions] = None,
   hyvaksymispaiva: Option[LocalDateTime] = None,
   lahetyspaiva: Option[LocalDateTime] = None,
+  paatostekstiVahvistettu: Option[LocalDateTime] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None
