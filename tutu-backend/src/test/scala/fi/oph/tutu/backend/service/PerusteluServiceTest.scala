@@ -45,6 +45,8 @@ class PerusteluServiceTest extends UnitTestBase {
   var koodistoService: KoodistoService = _
   @Mock
   var onrService: OnrService = _
+  @Mock
+  var translationService: TranslationService = _
 
   var perusteluService: PerusteluService = _
 
@@ -90,7 +92,8 @@ class PerusteluServiceTest extends UnitTestBase {
       paatosService = paatosService,
       maakoodiService = maakoodiService,
       koodistoService = koodistoService,
-      onrService = onrService
+      onrService = onrService,
+      translationService = translationService
     )
   }
 

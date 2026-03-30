@@ -9,10 +9,162 @@ import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.invocation.InvocationOnMock
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+
+val translations = Map[String, String](
+  "perustelumuistio.imipyynto.label"          -> "IMI-pyyntö:",
+  "perustelumuistio.imipyynto.vastattu.label" -> "vastattu",
+  "perustelumuistio.valmistuminenVahvistettu.vastaus.myonteinen" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: myönteinen",
+  "pferustelumuistio.valmistuminenVahvistettu.vastaus.kielteinen" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: kielteinen",
+  "perustelumuistio.valmistuminenVahvistettu.vastaus.vastaustaEiSaatu" -> "Valmistuminen vahvistettu asiakirjan myöntäjältä tai toimivaltaiselta viranomaiselta\n  - Vastaus: vastausta ei saatu",
+  "perustelumuistio.selvityksetSaatu.vastaus.kylla"      -> "Kaikki tarvittavat selvitykset saatu: Kyllä",
+  "perustelumuistio.selvityksetSaatu.vastaus.ei"         -> "Kaikki tarvittavat selvitykset saatu: Ei",
+  "perustelumuistio.suostumusSahkoiseenAsiointiin.label" -> "Suostumus sähköiseen asiointiin:",
+  "perustelumuistio.hakijanNimi.label"                   -> "Hakijan nimi:",
+  "perustelumuistio.hakijanSyntymaaika.label"            -> "Hakijan syntymäaika: ",
+  "perustelumuistio.hakemusKoskee.label"                 -> "Hakemus koskee:",
+  "perustelumuistio.muuTutkinto.label"                   -> "Muu tutkinto:",
+  "perustelumuistio.yhteistutkinto.value"                -> "Yhteistutkinto",
+  "perustelumuistio.suoritusvuodet.label"                -> "Suoritusvuodet:",
+  "perustelumuistio.ohjeellinenLaajuus.label"            -> "Ohjeellinen laajuus: ",
+  "perustelumuistio.tutkintoonSisaltyiOpinnayte.label"   -> "Tutkintoon sisältyi opinnäytetyö: ",
+  "perustelumuistio.tutkintoonSisaltyiHarjoittelu.label" -> "Tutkintoon sisältyi harjoittelu: ",
+  "perustelumuistio.lisatietoaOpinnaytteeseenJaHArjoitteluun.label" -> "Lisätietoja opinnäytteisiin tai harjoitteluun liittyen: ",
+  "perustelumuistio.virallinenTutkinnonMyontaja.kylla" -> "Virallinen tutkinnon myöntäjä: Kyllä",
+  "perustelumuistio.virallinenTutkinnonMyontaja.ei"    -> "Virallinen tutkinnon myöntäjä: Ei",
+  "perustelumuistio.virallinenTutkinto.kylla"          -> "Virallinen tutkinto: Kyllä",
+  "perustelumuistio.virallinenTutkinto.ei"             -> "Virallinen tutkinto: Ei",
+  "perustelumuistio.lahdeLahtomaanKansallinenLahde.value" -> "Lähde: Lähtömaan kansallinen lähde (verkkosivut, lainsäädäntö, julkaisut)",
+  "perustelumuistio.lahdeLahtomaanVirallinenVastaus.value" -> "Lähde: Lähtömaan virallinen vastaus",
+  "perustelumuistio.lahdeKansainvalinenHakuteosTaiVerkkosivusto.value" -> "Lähde: Kansainvälinen hakuteos tai verkkosivusto",
+  "perustelumuistio.selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta.label" -> "Lyhyt selvitys tutkinnon myöntäjästä ja tutkinnon virallisuudesta:",
+  "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.alempi_korkeakouluaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Vähintään kolmivuotinen ensimmäisen vaiheen korkeakoulututkinto",
+  "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.ylempi_korkeakouluaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Toisen vaiheen korkeakoulututkinto",
+  "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.alempi_ja_ylempi_korkeakouluaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Yksiportainen tutkinto, johon sisältyvät ensimmäisen ja toisen vaiheen tutkinnot",
+  "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.tutkijakoulutusaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Tieteellinen jatkotutknto",
+  "perustelumuistio.ylimmanTutkinnonAsemaLahtomaanJarjestelmassa.ei_korkeakouluaste" -> "Ylimmän tutkinnon asema lähtömaan järjestelmässä: Alle korkeakoulutasoinen koulutus",
+  "perustelumuistio.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa.label" -> "Lyhyt selvitys tutkinnon asemasta lähtömaan järjestelmässä:",
+  "perustelumuistio.jatkoOpintoKelpoisuus.toisen_vaiheen_korkeakouluopintoihin" -> "Jatko-opintokelpoisuus: toisen vaiheen korkeakouluopintoihin",
+  "perustelumuistio.jatkoOpintoKelpoisuus.tieteellisiin_jatko-opintoihin" -> "Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin",
+  "perustelumuistio.jatkoOpintoKelpoisuus.muu"             -> "Jatko-opintokelpoisuus: muu",
+  "perustelumuistio.jatkoOpintoKelpoisuus.lisatieto.label" -> "Jatko-opintokelpoisuuus, lisätieto:",
+  "perustelumuistio.aikaisemmatPaatokset.kylla"            -> "Opetushallitus on tehnyt vastaavia päätöksiä: Kyllä",
+  "perustelumuistio.aikaisemmatPaatokset.ei"               -> "Opetushallitus on tehnyt vastaavia päätöksiä: Ei",
+  "perustelumuistio.muuPerustelu.label"                    -> "Ratkaisun tai päätöksen muut perustelut:",
+  "perustelumuistio.koulutuksenSisalto.label"              -> "Koulutuksen sisältö:",
+  "perustelumuistio.uoro.koulutuserot.opettajat.monialaisetSisalto" -> "Ero monialaisten opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.opettajat.monialaisetLaajuus" -> "Ero monialaisten opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.opettajat.pedagogisetSisalto" -> "Ero pedagogisten opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.opettajat.pedagogisetLaajuus" -> "Ero pedagogisten opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetLaajuus" -> "Ero kasvatustieteellisten opintojen laajuudessa (LO)",
+  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetVaativuus" -> "Ero kasvatustieteellisten opintojen vaativuudessa (LO)",
+  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetSisalto" -> "Ero kasvatustieteellisten opintojen sisällössä (LO)",
+  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetSisalto" -> "Ero opetettavan aineen opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetVaativuus" -> "Ero opetettavan aineen opintojen vaativuudessa",
+  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetLaajuus" -> "Ero opetettavan aineen opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.opettajat.erityisopettajaSisalto" -> "Ero erityisopettajan opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.opettajat.erityisopettajaLaajuus" -> "Ero erityisopettajan opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.muu"                              -> "Muu ero",
+  "perustelumuistio.uoro.koulutuserot.muuLabel"                         -> "Muu ero:",
+  "perustelumuistio.uoro.koulutuserot.vkopettajat.kasvatustieteellisetLaajuus" -> "Ero kasvatustieteellisten opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.vkopettajat.kasvatustieteellisetSisalto" -> "Ero kasvatustieteellisten opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.vkopettajat.opintojenLaajuus" -> "Ero varhaiskasvatuksen ja esiopetuksen opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.vkopettajat.opintojenSisalto" -> "Ero varhaiskasvatuksen ja esiopetuksen opintojen sisällössä",
+  "perustelumuistio.uoro.koulutuserot.otm.opintojenLaajuus"   -> "Ero oikeustieteellisten opintojen laajuudessa",
+  "perustelumuistio.uoro.koulutuserot.otm.opintojenVaativuus" -> "Ero oikeustieteellisten opintojen vaativuudessa",
+  "perustelumuistio.uoro.koulutuserot.otm.opintojenSisalto"   -> "Ero oikeustieteellisten opintojen sisällössä",
+  "perustelumuistio.uoro.muuTutkintoTaiSuoritus.label"        -> "Muu tutkinto tai opintosuoritus:",
+  "perustelumuistio.ap.lakiperuste.toisessaJasenmaassaSaanneltyKoulutus" -> "Toisessa jäsenmaassa säänneltyyn ammattiin johtanut koulutus tai säännelty ammatillinen koulutus",
+  "perustelumuistio.ap.lakiperuste.lahtomaassaSaavutetutOikeudet" -> "Pätevyys ammattiin lähtömaassa saavutettujen oikeuksien nojalla",
+  "perustelumuistio.ap.lakiperuste.toinenEUMaaTunnustanut" -> "EU-kansalaisen EU:n ulkopuolella hankkima ammattipätevyys, jonka toinen EU-maa on tunnustanut, ja henkilöllä on jäsenmaassa hankittu",
+  "perustelumuistio.ap.lakiperuste.saantelematonAmmattiJaTyokokemus" -> "Lähtömaassa sääntelemätön ammatti tai koulutus ja hakijalla vähintään vuoden ammattikokemus maasta, joka ei sääntele ammattia",
+  "perustelumuistio.ap.todistusEUKansalaisuusAsemasta.label" -> "Todistus, joka todistaa EU-kansalaisuuteen rinnaisteisen aseman:",
+  "perustelumuistio.ap.ammattiJohonPatevoitynyt.label" -> "Mihin ammattiin hakija on pätevöitynyt toisessa jäsenmaassa:",
+  "perustelumuistio.ap.ammattitoiminnanSisalto.label"        -> "Ammattitoiminnan pääasiallinen sisältö lähtömaassa:",
+  "perustelumuistio.ap.koulutuksenKestoJaSisalto.label"      -> "Koulutuksen kesto ja pääasiallinen sisältö:",
+  "perustelumuistio.ap.selvitykset.lahtomaanViranomaiselta"  -> "Vastaus lähtömaan toimivaltaiselta viranomaiselta",
+  "perustelumuistio.ap.selvitykset.lahtomaanLainsaadannosta" -> "Selvitetty lähtömaan lainsäädännöstä",
+  "perustelumuistio.ap.selvitykset.aikaisempiTapaus" -> "Selvitetty aikaisempien samanlaisten tapausten yhteydessä",
+  "perustelumuistio.ap.selvitykset.aikaisempiTapausLabel" -> "Selvitetty aikaisempien samanlaisten tapausten yhteydessä. Asiatunnus: ",
+  "perustelumuistio.ap.selvitykset.asiakirjoista"             -> "Ilmenee hakijan esittämistä asiakirjoista",
+  "perustelumuistio.ap.lisatietoja.label"                     -> "Lisätietoja:",
+  "perustelumuistio.ap.IMIHalytyksetTarkastettu"              -> "IMI-hälytykset tarkistettu",
+  "perustelumuistio.ap.muutPerustelut.label"                  -> "Muut AP-päätöksen perustelut:",
+  "perustelumuistio.ap.SEUTArviointi.label"                   -> "SEUT-arviointi:",
+  "perustelumuistio.lausuntopyynnot.lausunnonAntaja.muuLabel" -> "Lausunnon antaja, muu:",
+  "perustelumuistio.lausuntopyynnot.lausunnonAntaja.muu"      -> "Lausunnon antaja, muu",
+  "perustelumuistio.lausuntopyynnot.lausunnonAntaja.label"    -> "Lausunnon antaja:",
+  "perustelumuistio.lausuntopyynnot.lahetetty.label"          -> "Lähetetty:",
+  "perustelumuistio.lausuntopyynnot.saapunut.label"           -> "Saapunut:",
+  "perustelumuistio.lausuntopyynnot.sisalto.label"            -> "Lausunnon sisältö:",
+  "perustelumuistio.asiakirjat.esittelijanHuomiot.label"      -> "Esittelijän huomioita asiakirjoista:",
+  "perustelumuistio.SEUTArviointi"                            -> "SEUT-arviointi tehty",
+  "perustelumuistio.ratkaisutyyppi.paatos"                    -> "Ratkaisutyyppi: Päätös",
+  "perustelumuistio.ratkaisutyyppi.peruutusTaiRaukeaminen"    -> "Ratkaisutyyppi: Peruutus tai raukeaminen",
+  "perustelumuistio.ratkaisutyyppi.oikaisu"                   -> "Ratkaisutyyppi: Oikaisu",
+  "perustelumuistio.ratkaisutyyppi.jatetaanTutkimatta"        -> "Ratkaisutyyppi: Jätetään tutkimatta",
+  "perustelumuistio.ratkaisutyyppi.siirto"                    -> "Ratkaisutyyppi: Siirto",
+  "perustelumuistio.paatostyyppi.taso"                        -> "Päätöstyyppi: Taso",
+  "perustelumuistio.paatostyyppi.kelpoisuus"                  -> "Päätöstyyppi: Kelpoisuus",
+  "perustelumuistio.paatostyyppi.tiettyTutkintoTaiOpinnot"    -> "Päätöstyyppi: Tietty tutkinto tai opinnot",
+  "perustelumuistio.paatostyyppi.riittavatOpinnot"            -> "Päätöstyyppi: Riittävät opinnot",
+  "perustelumuistio.paatostyyppi.lopullinenPaatos"            -> "Päätöstyyppi: Lopullinen päätös",
+  "perustelumuistio.sovellettuLaki.uo"                        -> "Sovellettu laki: Päätös UO",
+  "perustelumuistio.sovellettuLaki.ap"                        -> "Sovellettu laki: Päätös AP",
+  "perustelumuistio.sovellettuLaki.apSeut"                    -> "Sovellettu laki: Päätös AP/SEUT",
+  "perustelumuistio.sovellettuLaki.ro"                        -> "Sovellettu laki: Päätös RO",
+  "perustelumuistio.tutkinnonNimi.label"                      -> "Tutkinnon nimi, jota päätös koskee:",
+  "perustelumuistio.myonteinenTaiKielteinen.label"            -> "Päätös on myönteinen:",
+  "perustelumuistio.tutkinnonTaso.alempiKorkeakoulu"          -> "Tutkinnon taso: Alempi korkeakoulututkinto",
+  "perustelumuistio.tutkinnonTaso.ylempiKorkeakoulu"          -> "Tutkinnon taso: Ylempi korkeakoulututkinto",
+  "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu" -> "- Epävirallinen korkeakoulu",
+  "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto"    -> "- Epävirallinen tutkinto",
+  "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista" -> "- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
+  "perustelumuistio.kielteinenPaatos.perustelu.muuLabel" -> "- Muu perustelu:",
+  "perustelumuistio.kielteinenPaatos.perustelu.label"    -> "Kielteisen päätöksen perustelut:",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.eiSaaHakemaansa" -> "- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.muutenTyytymatonRatkaisuun" -> "- On muuten tyytymätön ratkaisuun",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.eiAPLainMukainenTaiHaettuaAmmattipatevyytta" -> "- Ei AP-lain mukainen tutkinto tai haettua ammattipätevyyttä",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.eiVastaaTasoltaanSuomalaista" -> "- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.epavirallinenKorkeakouluTaiTutkinto" -> "- Epävirallinen korkeakoulu tai tutkinto",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.eiEdellytyksiaROTaiTasopaatokselle" -> "- Ei edellytyksiä RO- eikä tasopäätökselle",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.eiEdellytyksiaRinnastukselle" -> "- Ei edellytyksiä rinnastaa tiettyihin korkeakouluopintoihin",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.hakijallaOnJoPaatosKoulutuskokonaisuudesta" -> "- Hakijalla on jo päätös samasta koulutuskokonaisuudesta",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.muu"                         -> "- Muu syy, esim. aikataulu",
+  "perustelumuistio.peruutusTaiRaukeaminen.syy.label"                       -> "Peruutuksen tai raukeamisen syyt:",
+  "perustelumuistio.rinnastettavatTutkinnotTaiOpinnot.label"                -> "Rinnastettavat tutkinnot tai opinnot:",
+  "perustelumuistio.kelpoisuudet.label"                                     -> "Kelpoisuudet:",
+  "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.taydentavatOpinnot"  -> "- Täydentävät opinnot",
+  "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe"       -> "- Kelpoisuuskoe",
+  "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika"      -> "- Sopeutumisaika",
+  "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.label"               -> "Lisävaatimukset:",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.olennaisiaEroja"            -> "- Olennaisia eroja",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.erotKoulutuksessa.muuLabel" -> "- Muu ero:",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.erotKoulutuksessa.label"    -> "Erot koulutuksessa:",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.ammattikokemus" -> "- Ammattikokemus",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.elinikainenOppiminen" -> "- Elinikäinen oppiminen",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.lisatietoLabel" -> "- Lisätieto:",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.taysin" -> "- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Täysin",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.osittain" -> "- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Osittain",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ei" -> "- Korvaako ammattikokemus tai elinikäinen oppiminen olennaisen eron?: Ei, käytetään lähtökohtaista korvaavaa toimenpidettä",
+  "perustelumuistio.kelpoisuudenLisavaatimukset.label"          -> "Lisävaatimukset:",
+  "perustelumuistio.korvaavaToimenpide.label"                   -> "Korvaava toimenpide:",
+  "perustelumuistio.kelpoisuuskoe.sisalto.aihealue1"            -> "- Aihealue 1",
+  "perustelumuistio.kelpoisuuskoe.sisalto.aihealue2"            -> "- Aihealue 2",
+  "perustelumuistio.kelpoisuuskoe.sisalto.aihealue3"            -> "- Aihealue 3",
+  "perustelumuistio.kelpoisuuskoe.label"                        -> "- Kelpoisuuskoe:",
+  "perustelumuistio.sopeutumisajanKesto.label"                  -> "- Sopeutumisajan kesto:",
+  "perustelumuistio.paatosEsitys.label"                         -> "Päätösesitys:",
+  "perustelumuistio.esittelija.label"                           -> "Esittelijä:",
+  "perustelumuistio.kasittelyajat.kirjauksestaEsittelyyn.label" -> "Aika kirjauspäivämäärästä esittelypäivämäärään",
+  "perustelumuistio.kasittelyajat.asiakirjastaRatkaisuun.label" -> "Aika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään",
+  "perustelumuistio.kasittelyajat.yksikko.kuukautta" -> "kk",
+  "perustelumuistio.perustelu.label"                 -> "Perustelu:"
+)
 
 class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
@@ -340,9 +492,18 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
 
+  @Mock
+  var translationService: TranslationService = _
+
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
+    when(
+      translationService.getTranslation(any[String], any[String])
+    ).thenAnswer(i => {
+      val key = i.getArguments.apply(1).asInstanceOf[String]
+      translations.applyOrElse(key, key => key)
+    })
   }
 
   @Test
@@ -357,6 +518,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       koodistoService,
       maakoodiService,
       onrService,
+      translationService,
       someHakemus,
       tutkinnot,
       someAtaruHakemus,
@@ -368,38 +530,38 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeHakijanNimiProducesString(): Unit = {
-    val result = haeHakijanNimi(someHakemus)
+    val result = haeHakijanNimi(translationService, someHakemus)
     assert(result.get.contains(hakijaFixture.etunimet))
     assert(result.get.contains(hakijaFixture.sukunimi))
   }
 
   @Test
   def haeHakijanSyntymaaikaProducesString(): Unit = {
-    val result = haeHakijanSyntymaaika(someHakemus)
+    val result = haeHakijanSyntymaaika(translationService, someHakemus)
     assert(result.get.contains(hakijaFixture.syntymaaika))
   }
 
   @Test
   def haeHakemusKoskeeProducesString(): Unit = {
-    val result = haeHakemusKoskee(someHakemus)
+    val result = haeHakemusKoskee(translationService, someHakemus)
     assert(result.get.contains("HakemusKoskee -- en"))
   }
 
   @Test
   def haeSuostumusSahkoiseenAsiointiinProducesString(): Unit = {
-    val result = haeSuostumusSahkoiseenAsiointiin(someHakemus)
+    val result = haeSuostumusSahkoiseenAsiointiin(translationService, someHakemus)
     assert(result.get.contains("Sähköinen asiointi sallittu"))
   }
 
   @Test
   def haeMuuTutkintoProducesString(): Unit = {
-    val result = haeMuuTutkinto(tutkinnot)
+    val result = haeMuuTutkinto(translationService, tutkinnot)
     assert(result.get.contains("Muu tutkinto sisältö"))
   }
 
   @Test
   def haeYhteistutkintoProducesString(): Unit = {
-    val result = haeYhteistutkinto(someHakemus)
+    val result = haeYhteistutkinto(translationService, someHakemus)
     assert(result.get.contains("Yhteistutkinto"))
   }
 
@@ -408,26 +570,27 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupMaakoodit()
     setupKoulutusalat()
 
-    val result = haeTutkintokohtaisetTiedot(maakoodiService, koodistoService, someHakemus, tutkinnot)
+    val result =
+      haeTutkintokohtaisetTiedot(translationService, maakoodiService, koodistoService, someHakemus, tutkinnot)
     assert(result.get.contains("Paras tutkinto"))
     assert(result.get.contains("Englanninmaa"))
   }
 
   @Test
   def haeYleisetPerustelutProducesNoneForNone(): Unit = {
-    val result = haeYleisetPerustelut(nonePerustelu)
+    val result = haeYleisetPerustelut(translationService, nonePerustelu)
     assert(result.isEmpty)
   }
 
   @Test
   def haeYleisetPerustelutProducesNoneForEmptyPerustelu(): Unit = {
-    val result = haeYleisetPerustelut(emptyPerustelu)
+    val result = haeYleisetPerustelut(translationService, emptyPerustelu)
     assert(result.isEmpty)
   }
 
   @Test
   def haeYleisetPerustelutProducesStringForDataInPerustelu(): Unit = {
-    val result = haeYleisetPerustelut(somePerustelu)
+    val result = haeYleisetPerustelut(translationService, somePerustelu)
 
     assert(result.nonEmpty)
     assert(result.get.contains("Virallinen tutkinnon myöntäjä"))
@@ -442,7 +605,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeJatkoOpintoKelpoisuusProducesString(): Unit = {
-    val result = haeJatkoOpintoKelpoisuus(somePerustelu)
+    val result = haeJatkoOpintoKelpoisuus(translationService, somePerustelu)
 
     assert(result.get.contains("Jatko-opintokelpoisuus: tieteellisiin jatko-opintoihin"))
   }
@@ -450,6 +613,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeJatkoOpintoKelpoisuusMuuProducesString(): Unit = {
     val result = haeJatkoOpintoKelpoisuus(
+      translationService,
       somePerustelu.map(perustelu =>
         perustelu.copy(
           jatkoOpintoKelpoisuus = Some("muu"),
@@ -465,14 +629,14 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeAikaisemmatPaatoksetProducesString(): Unit = {
-    val result = haeAikaisemmatPaatokset(somePerustelu)
+    val result = haeAikaisemmatPaatokset(translationService, somePerustelu)
 
     assert(result.get.contains("Opetushallitus on tehnyt vastaavia päätöksiä: Kyllä"))
   }
 
   @Test
   def haeMuuPerusteluProducesString(): Unit = {
-    val result = haeMuuPerustelu(somePerustelu)
+    val result = haeMuuPerustelu(translationService, somePerustelu)
 
     assert(result.get.contains("Ratkaisun tai päätöksen muut perustelut"))
     assert(result.get.contains("Hyvin suoritettu"))
@@ -480,7 +644,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeUoRoPerusteluProducesString(): Unit = {
-    val result = haeUoRoPerustelu(somePerustelu)
+    val result = haeUoRoPerustelu(translationService, somePerustelu)
 
     assert(result.get.contains("Ero monialaisten opintojen sisällössä"))
     assert(result.get.contains("Muu ero"))
@@ -492,7 +656,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeApPerusteluProducesString(): Unit = {
-    val result = haeApPerustelu(somePerustelu)
+    val result = haeApPerustelu(translationService, somePerustelu)
 
     assert(
       result.get.contains(
@@ -531,7 +695,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeLausuntopyynnotProducesString(): Unit = {
     setupKorkeakoulut()
 
-    val result = haeLausuntopyynnot(koodistoService, somePerustelu)
+    val result = haeLausuntopyynnot(translationService, koodistoService, somePerustelu)
 
     assert(result.get.contains("Lausunnon antaja, muu: HOKS tuutori"))
     assert(result.get.contains("Lausunnon antaja: Paras korkeakoulu"))
@@ -541,7 +705,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeAsiakirjatProducesString(): Unit = {
-    val result = haeAsiakirjat(someHakemus)
+    val result = haeAsiakirjat(translationService, someHakemus)
 
     assert(result.get.contains("Kaikki tarvittavat selvitykset saatu: Kyllä"))
     assert(result.get.contains("Esittelijän huomioita asiakirjoista"))
@@ -556,7 +720,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatos = Paatos(
       seutArviointi = true
     )
-    val result = haeSeutArviointiTehty(paatos)
+    val result = haeSeutArviointiTehty(translationService, paatos)
 
     assert(result.get.contains("SEUT-arviointi tehty"))
   }
@@ -566,7 +730,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatos = Paatos(
       ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos)
     )
-    val result = haeRatkaisutyyppi(paatos)
+    val result = haeRatkaisutyyppi(translationService, paatos)
 
     assert(result.get.contains("Ratkaisutyyppi: Päätös"))
   }
@@ -577,7 +741,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       paatosTyyppi = Some(PaatosTyyppi.Taso),
       tutkintoTaso = None
     )
-    val result = haePaatosTyyppi(paatosTiedot)
+    val result = haePaatosTyyppi(translationService, paatosTiedot)
 
     assert(result.get.contains("Päätöstyyppi: Taso"))
   }
@@ -588,7 +752,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       sovellettuLaki = Some(SovellettuLaki.uo),
       tutkintoTaso = None
     )
-    val result = haeSovellettuLaki(paatosTiedot)
+    val result = haeSovellettuLaki(translationService, paatosTiedot)
 
     assert(result.get.contains("Sovellettu laki: Päätös UO"))
   }
@@ -624,7 +788,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       )
     )
 
-    val result = haeTutkinnonNimi(paatosTiedot, tutkinnot)
+    val result = haeTutkinnonNimi(translationService, paatosTiedot, tutkinnot)
 
     assert(result.get.contains("Tutkinnon nimi, jota päätös koskee"))
     assert(result.get.contains("Paras tutkinto"))
@@ -636,7 +800,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       myonteinenPaatos = Some(true),
       tutkintoTaso = None
     )
-    val result = haeMyonteinenTaiKielteinen(paatosTiedot)
+    val result = haeMyonteinenTaiKielteinen(translationService, paatosTiedot)
 
     assert(result.get.contains("Päätös on myönteinen: Kyllä"))
   }
@@ -646,7 +810,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     val paatosTiedot = PaatosTieto(
       tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
     )
-    val result = haeTutkinnonTaso(paatosTiedot)
+    val result = haeTutkinnonTaso(translationService, paatosTiedot)
 
     assert(result.get.contains("Tutkinnon taso:"))
     assert(result.get.contains("Ylempi korkeakoulututkinto"))
@@ -666,7 +830,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKielteisenPaatosTiedonPerustelut(paatosTiedot.kielteisenPaatoksenPerustelut)
+    val result = haeKielteisenPaatosTiedonPerustelut(translationService, paatosTiedot.kielteisenPaatoksenPerustelut)
 
     assert(result.get.contains("Kielteisen päätöksen perustelut:"))
     assert(result.get.contains("- Epävirallinen korkeakoulu"))
@@ -686,7 +850,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeRinnastettavatTutkinnotTaiOpinnot(paatosTiedot)
+    val result = haeRinnastettavatTutkinnotTaiOpinnot(translationService, paatosTiedot)
 
     assert(result.get.contains("Rinnastettavat tutkinnot tai opinnot:"))
     assert(result.get.contains("Paras tutkinto"))
@@ -702,7 +866,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       ),
       tutkintoTaso = None
     )
-    val result = haeKelpoisuudet(paatosTiedot)
+    val result = haeKelpoisuudet(translationService, paatosTiedot)
 
     assert(result.get.contains("Kelpoisuudet:"))
     assert(result.get.contains("Paras kelpoisuus"))
@@ -725,7 +889,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
     )
-    val result = haePeruutusTaiRaukeaminen(paatos)
+    val result = haePeruutusTaiRaukeaminen(translationService, paatos)
 
     assert(result.get.contains("Peruutuksen tai raukeamisen syyt:"))
     assert(result.get.contains("- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada"))
@@ -750,7 +914,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
 
-    val result = haeTutkinnonTaiOpinnonLisavaatimukset(lisavaatimuksetMaybe)
+    val result = haeTutkinnonTaiOpinnonLisavaatimukset(translationService, lisavaatimuksetMaybe)
 
     assert(result.get.contains("Lisävaatimukset:"))
     assert(result.get.contains("- Täydentävät opinnot"))
@@ -830,7 +994,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         )
       )
 
-    val result = haeKelpoisuudenLisavaatimukset(lisavaatimuksetMaybe)
+    val result = haeKelpoisuudenLisavaatimukset(translationService, lisavaatimuksetMaybe)
 
     assert(result.get.contains("Lisävaatimukset:"))
     assert(result.get.contains("Erot koulutuksessa"))
@@ -852,7 +1016,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Erkki Esittelijä"))
 
     val hakemusMaybe = someHakemus.map(_.copy(esittelijaOid = Some("1.2.3.4")))
-    val result       = haeEsittelija(hakemusMaybe, onrService)
+    val result       = haeEsittelija(translationService, hakemusMaybe, onrService)
 
     assert(result.get.contains("Esittelijä: Erkki Esittelijä"))
   }
@@ -875,7 +1039,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       )
     )
 
-    val result = haeKasittelyajat(hakemusMaybe)
+    val result = haeKasittelyajat(translationService, hakemusMaybe)
 
     assert(result.get.contains("Aika kirjauspäivämäärästä esittelypäivämäärään 0.7 kk"))
     assert(result.get.contains("Aika hakijan viimeisestä asiakirjasta ratkaisupäivämäärään 0.7 kk"))
