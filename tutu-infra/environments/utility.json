@@ -6,5 +6,6 @@
   },
   "backend_service_name": "tutu-backend",
   "frontend_service_name": "tutu-frontend",
-  "repository_regex": "tutu-kasittely"
+  "repository_regex": "tutu-kasittely",
+  "accountId": "413507233297"
 }

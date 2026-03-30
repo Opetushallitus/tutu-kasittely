@@ -51,7 +51,7 @@ interface EcsServiceStackProps extends StackProps {
   vpc: IVpc
   taskCpu: string
   taskMemory: string
-  utilityAccountId: string
+  ecrAccountId: string
   serviceName: string
   listener: IApplicationListener
   listenerPathPatterns: string[]
@@ -83,7 +83,7 @@ export class EcsServiceStack extends Stack {
 
     const ImageRepository = Repository.fromRepositoryAttributes(this, 'EcrRepository', {
       repositoryName: `${props.serviceName}`,
-      repositoryArn: `arn:aws:ecr:${Stack.of(this).region}:${props.utilityAccountId}:repository/${props.serviceName}`
+      repositoryArn: `arn:aws:ecr:${Stack.of(this).region}:${props.ecrAccountId}:repository/${props.serviceName}`
     })
 
     const ServiceLogGroup = new LogGroup(this, 'LogGroup', {
