@@ -202,7 +202,9 @@ const ViestiPageComponent = ({
   const { addToast } = useToaster();
   const editorRef = useRef<LexicalEditor | null>(null);
   const { showConfirmation } = useGlobalConfirmationModal();
-  const viestiState = useEditableState(viesti, () => {});
+  const viestiState = useEditableState(viesti, (viesti) =>
+    updateViesti(viesti),
+  );
 
   const currentViesti = viestiState.editedData!;
   const [editorHasChanges, setEditorHasChanges] = useState(false);
