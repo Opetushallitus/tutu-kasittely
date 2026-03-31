@@ -57,7 +57,7 @@ class TutkintoRepository extends BaseResultHandlers {
     val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
     val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
     val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
-    val paaaineTaiErikoisala        = tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull
+    val paaAineTaiErikoisala        = tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull
     val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
     val muuTutkintoMuistio          = tutkinto.muuTutkintoMuistio.orNull
     val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
@@ -96,7 +96,7 @@ class TutkintoRepository extends BaseResultHandlers {
         $muuTutkintoTietoOrNull,
         $todistuksenPaivamaaraOrNull,
         $koulutusalaKoodiUri,
-        $paaaineTaiErikoisala,
+        $paaAineTaiErikoisala,
         $todistusOtsikko,
         $ohjeellinenLaajuus,
         $opinnaytetyo,
