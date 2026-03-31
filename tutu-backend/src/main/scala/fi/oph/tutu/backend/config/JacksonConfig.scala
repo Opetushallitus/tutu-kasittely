@@ -26,14 +26,23 @@ class JacksonConfig {
 
   @Bean
   @Primary
-  def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper = {
-    val mapper = builder.createXmlMapper(false).build[ObjectMapper]()
+  def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper =
+    JacksonConfig.configure(builder.createXmlMapper(false).build[ObjectMapper]())
+}
+
+object JacksonConfig {
+  lazy val mapper: ObjectMapper = configure(new ObjectMapper())
+
+  private def configure(mapper: ObjectMapper): ObjectMapper = {
     mapper.registerModule(DefaultScalaModule)
 
-    val formatter    = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val customModule = new SimpleModule()
+
+    // LocalDateTime-kentät käsitellään UTC-ajassa
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
     customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
+
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
     customModule.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())

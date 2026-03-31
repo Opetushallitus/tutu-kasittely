@@ -35,7 +35,6 @@ import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 import fi.oph.tutu.backend.config.JacksonConfig
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 object IntegrationTestBase extends Object {
   private val postgresContainer = new PostgreSQLContainer("postgres:16.11")
@@ -118,7 +117,7 @@ class IntegrationTestBase {
   @MockitoBean
   var ataruHakemusParser: AtaruHakemusParser = _
 
-  val mapper = JacksonConfig().tutuMapper(Jackson2ObjectMapperBuilder())
+  val mapper = JacksonConfig.mapper
 
   @BeforeAll
   def startContainer(): Unit = {

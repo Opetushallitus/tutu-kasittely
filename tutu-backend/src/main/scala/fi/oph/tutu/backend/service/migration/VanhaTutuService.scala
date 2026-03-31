@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service.migration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.repository.migration.VanhaTutuRepository
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
@@ -13,12 +12,10 @@ import scala.util.{Failure, Try}
 @Component
 @Service
 class VanhaTutuService(
-  vanhaTutuRepository: VanhaTutuRepository
+  vanhaTutuRepository: VanhaTutuRepository,
+  mapper: ObjectMapper
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[VanhaTutuService])
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
 
   def haeVanhaTutuById(id: java.util.UUID): Try[Option[ObjectNode]] = {
     Try {

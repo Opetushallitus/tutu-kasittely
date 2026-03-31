@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.{Kayttajatiedot, UserOid}
 import fi.oph.tutu.backend.repository.EsittelijaRepository
@@ -24,7 +23,8 @@ case class KayttooikeusServiceException(message: String = "", cause: Throwable =
 @Service
 class KayttooikeusService(
   httpService: HttpService,
-  esittelijaRepository: EsittelijaRepository
+  esittelijaRepository: EsittelijaRepository,
+  mapper: ObjectMapper
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[KayttooikeusService])
 
@@ -54,9 +54,6 @@ class KayttooikeusService(
       .setJsessionName("JSESSIONID")
       .build()
   )
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
 
   private def haeEsittelijaKayttooikeusRyhmat: Either[Throwable, Seq[Int]] = {
     var esittelija_ids = Seq.empty[Int]

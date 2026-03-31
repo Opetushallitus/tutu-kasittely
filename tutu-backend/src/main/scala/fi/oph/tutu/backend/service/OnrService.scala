@@ -1,7 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.OnrUser
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
@@ -16,7 +15,7 @@ case class OnrServiceException(message: String = "", cause: Throwable = null) ex
 
 @Component
 @Service
-class OnrService(httpService: HttpService) {
+class OnrService(httpService: HttpService, mapper: ObjectMapper) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[OnrService])
 
   @Value("${opintopolku.virkailija.url}")
@@ -45,10 +44,6 @@ class OnrService(httpService: HttpService) {
       .setJsessionName("JSESSIONID")
       .build()
   )
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-  mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
   @Cacheable(value = Array("asiointikieli"))
   def haeAsiointikieli(personOid: String): Either[Throwable, String] = {

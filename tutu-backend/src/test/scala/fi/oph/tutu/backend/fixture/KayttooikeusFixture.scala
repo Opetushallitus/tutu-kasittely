@@ -1,13 +1,11 @@
 package fi.oph.tutu.backend.fixture
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import fi.oph.tutu.backend.config.JacksonConfig
 import fi.oph.tutu.backend.domain.Kayttajatiedot
 
 object KayttooikeusFixture:
 
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
+  val mapper = JacksonConfig.mapper
 
   // Test OIDs
   val virkailija1Oid            = "1.2.246.562.24.11111111111"

@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.{HallintoOikeus, Kieli}
 import fi.oph.tutu.backend.service.HallintoOikeusService
@@ -16,9 +15,6 @@ import java.util.UUID
 class HallintoOikeusControllerTest extends UnitTestBase {
   @Mock
   var hallintoOikeusService: HallintoOikeusService = _
-
-  @Mock
-  var mapper: ObjectMapper = _
 
   @Mock
   var auditLog: AuditLog = _

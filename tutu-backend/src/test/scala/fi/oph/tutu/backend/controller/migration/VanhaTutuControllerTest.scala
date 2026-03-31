@@ -1,8 +1,5 @@
 package fi.oph.tutu.backend.controller.migration
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.migration.VanhaTutuRepository
@@ -54,11 +51,6 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   final val esittelijaOid: String = "1.2.246.562.24.00000000000000006666"
   val mockUser: User              = User(esittelijaOid, List("ROLE_USER"), Some("fi"))
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-  mapper.registerModule(new JavaTimeModule)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   @BeforeAll
   def setup(): Unit = {

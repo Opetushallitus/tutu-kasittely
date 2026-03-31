@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.repository.migration
 
+import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.migration.VanhaTutuMigrationChunk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -13,7 +14,7 @@ import java.util.UUID
 import scala.util.Success
 
 @ExtendWith(Array(classOf[MockitoExtension]))
-class VanhaTutuMigrationRepositoryTest {
+class VanhaTutuMigrationRepositoryTest extends UnitTestBase {
   @Mock
   var vanhaTutuMigrationRepository: VanhaTutuMigrationRepository = _
 

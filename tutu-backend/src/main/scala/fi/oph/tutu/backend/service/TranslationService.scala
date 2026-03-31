@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.springframework.beans.factory.annotation.Value
 import org.slf4j.{Logger, LoggerFactory}
@@ -23,7 +22,7 @@ case class TranslationEntry(
 
 @Component
 @Service
-class TranslationService(httpService: HttpService) {
+class TranslationService(httpService: HttpService, mapper: ObjectMapper) {
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
 
@@ -47,9 +46,6 @@ class TranslationService(httpService: HttpService) {
       .setJsessionName("JSESSIONID")
       .build()
   )
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
 
   def getTranslation(locale: String, key: String): String = {
     httpService.get(

@@ -8,8 +8,6 @@ import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 import java.util.UUID
 import java.time.LocalDateTime
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.Kieli.fi
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
@@ -18,9 +16,6 @@ import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 
 class ViestiServiceTest extends UnitTestBase {
-
-  val objectMapper = new ObjectMapper()
-  objectMapper.registerModule(DefaultScalaModule)
 
   @Mock
   var viestiRepository: ViestiRepository = _
