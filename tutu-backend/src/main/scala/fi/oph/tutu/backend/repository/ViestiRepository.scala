@@ -40,8 +40,7 @@ class ViestiRepository extends BaseResultHandlers {
         id = r.nextObject().asInstanceOf[UUID],
         tyyppi = Viestityyppi.optionFromString(r.nextString()).orNull,
         otsikko = r.nextString(),
-        vahvistettu = r.nextTimestamp().toLocalDateTime,
-        vahvistaja = r.nextString()
+        vahvistettu = r.nextTimestamp().toLocalDateTime
       )
     )
 
@@ -89,7 +88,7 @@ class ViestiRepository extends BaseResultHandlers {
   private val sortableFields = Set("vahvistettu", "otsikko", "vahvistaja", "tyyppi")
 
   def haeViestiLista(hakemusId: UUID, sortParams: Option[ListSortParam]): Seq[ViestiListItem] = {
-    val baseSql = sql"""SELECT id, tyyppi, otsikko, vahvistettu, vahvistaja
+    val baseSql = sql"""SELECT id, tyyppi, otsikko, vahvistettu
                          FROM viesti
                          WHERE hakemus_id = ${hakemusId.toString}::uuid
                          AND vahvistettu IS NOT NULL"""

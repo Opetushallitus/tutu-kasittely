@@ -455,7 +455,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
             sukunimi = "Esittelijä",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010170-789X"),
-            false
+            yhteystiedotRyhma = Seq(),
+            yksiloityVTJ = false
           )
         )
       )
@@ -839,7 +840,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
             sukunimi = "Roihuvuori",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010171-789X"),
-            true
+            yhteystiedotRyhma = Seq(),
+            yksiloityVTJ = false
           )
         )
       )

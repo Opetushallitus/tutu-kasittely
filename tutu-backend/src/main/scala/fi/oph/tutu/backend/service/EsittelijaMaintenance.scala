@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.service
 
+import fi.oph.tutu.backend.domain.OnrUser
 import fi.oph.tutu.backend.repository.EsittelijaRepository
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.annotation.Profile
@@ -39,7 +40,14 @@ class EsittelijaMaintenance(
     esittelijaOids.foreach { oid =>
       onrService.haeHenkilo(oid) match {
         case Right(henkilo) =>
-          esittelijaRepository.paivitaEsittelijaNimi(oid, henkilo.kutsumanimi, henkilo.sukunimi)
+          val esittelija = henkilo.toEsittelija
+          esittelijaRepository.paivitaEsittelijaTiedot(
+            oid,
+            esittelija.etunimi,
+            esittelija.sukunimi,
+            esittelija.sahkoposti.orNull,
+            esittelija.puhelinnumero.orNull
+          )
           success += 1
         case Left(error) =>
           LOG.warn(s"Esittelijän $oid nimitietojen haku ONR:stä epäonnistui: ${error.getMessage}")

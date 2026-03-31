@@ -108,7 +108,8 @@ class HakemusControllerTest extends IntegrationTestBase {
             sukunimi = "Esittelijä",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
             hetu = Some("010170-789X"),
-            false
+            yhteystiedotRyhma = Seq(),
+            yksiloityVTJ = false
           )
         )
       )

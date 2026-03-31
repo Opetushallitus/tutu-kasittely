@@ -20,12 +20,27 @@ case class DbEsittelija(
   )
   esittelijaOid: UserOid,
   kutsumanimi: Option[String],
-  sukunimi: Option[String]
-)
+  sukunimi: Option[String],
+  sahkoposti: Option[String],
+  puhelinnumero: Option[String]
+) {
+  def toEsittelija: Esittelija = Esittelija(
+    esittelijaOid.toString,
+    kutsumanimi.getOrElse(""),
+    sukunimi.getOrElse(""),
+    sahkoposti,
+    puhelinnumero,
+    Some(esittelijaId)
+  )
+}
 
 case class Esittelija(
   esittelijaOid: String,
   etunimi: String,
   sukunimi: String,
+  sahkoposti: Option[String] = None,
+  puhelinnumero: Option[String] = None,
   id: Option[UUID] = None
-)
+) {
+  def kokoNimi(): String = s"$etunimi $sukunimi".trim
+}
