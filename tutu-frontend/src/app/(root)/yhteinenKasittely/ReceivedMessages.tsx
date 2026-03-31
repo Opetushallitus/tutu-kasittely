@@ -3,13 +3,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { parseAsString, useQueryState } from 'nuqs';
 import * as R from 'remeda';
 
-import MessageRow from '@/src/app/(root)/components/JointProcessing/MessageRow';
 import StyledTableBody from '@/src/app/(root)/components/StyledTableBody';
+import MessageRow from '@/src/app/(root)/yhteinenKasittely/MessageRow';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
 
-import TableSortLabel from '../TableSortLabel';
+import TableSortLabel from '../components/TableSortLabel';
 
 const FIELD_KEYS = {
   lahetetty: 'lahetetty',
@@ -18,7 +18,7 @@ const FIELD_KEYS = {
   asiatunnus: 'asiatunnus',
 };
 
-export default function SentMessages({
+export default function ReceivedMessages({
   messageList,
   user,
 }: {
@@ -27,13 +27,13 @@ export default function SentMessages({
 }) {
   const queryClient = useQueryClient();
   const [sortDef, setSortDef] = useQueryState('sort', {
-    ...parseAsString.withDefault('tila:asc'),
+    ...parseAsString.withDefault('tila:desc'),
     clearOnDefault: false,
   });
   const messageRows =
     messageList && user
       ? R.map(messageList, (message, index) => {
-          return <MessageRow message={message} showTag key={index} />;
+          return <MessageRow message={message} key={index} />;
         })
       : [];
 
@@ -53,7 +53,6 @@ export default function SentMessages({
           <TableRow>
             {R.map(Object.values(FIELD_KEYS), (fieldKey) => (
               <TableSortLabel
-                mainKey="yhteinenKasittely"
                 key={fieldKey}
                 fieldKey={fieldKey}
                 sortDef={sortDef}
@@ -62,7 +61,10 @@ export default function SentMessages({
             ))}
           </TableRow>
         </TableHead>
-        <StyledTableBody data-testid={'saapuneet-viestit-list'} tabIndex={0}>
+        <StyledTableBody
+          data-testid={'vastaanotetut-viestit-list'}
+          tabIndex={0}
+        >
           {messageRows}
         </StyledTableBody>
       </Table>

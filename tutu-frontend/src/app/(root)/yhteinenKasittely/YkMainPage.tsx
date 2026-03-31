@@ -1,17 +1,19 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 
-import ReceivedMessages from '@/src/app/(root)/components/JointProcessing/ReceivedMessages';
-import SentMessages from '@/src/app/(root)/components/JointProcessing/SentMessages';
 import { Tabs } from '@/src/app/(root)/components/Tabs';
+import ReceivedMessages from '@/src/app/(root)/yhteinenKasittely/ReceivedMessages';
+import SentMessages from '@/src/app/(root)/yhteinenKasittely/SentMessages';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import useToaster from '@/src/hooks/useToaster';
 import {
   useYkGetReceivedMessages,
   useYkGetSentMessages,
 } from '@/src/hooks/useYkViestilista';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 import { handleFetchError } from '@/src/lib/utils';
 
@@ -21,9 +23,10 @@ const countNotResponded = (messages: YhteisenKasittelynViesti[]) =>
 const countNotRead = (messages: YhteisenKasittelynViesti[]) =>
   messages.filter((message) => message.status === 'uusiVastaus').length;
 
-export default function JointProcessingPage({ user }: { user: User | null }) {
+export default function YkMainPage() {
   const { t } = useTranslations();
   const { addToast } = useToaster();
+  const user = useAuthorizedUser();
   const [tab, setTab] = useState<string>('saapuneet');
 
   const {

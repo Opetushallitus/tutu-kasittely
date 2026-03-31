@@ -7,13 +7,6 @@ import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProv
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 
-const StyledInfoIcon = styled(ErrorIcon)({
-  color: ophColors.orange3,
-  position: 'absolute',
-  left: '93%',
-  top: '10%',
-});
-
 export default function ListViewPage() {
   const { t } = useTranslations();
   const user = useAuthorizedUser();

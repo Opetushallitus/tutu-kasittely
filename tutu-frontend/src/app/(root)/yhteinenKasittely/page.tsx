@@ -7,28 +7,19 @@ import Link from 'next/link';
 import SivuValinta, {
   SelectedPage,
 } from '@/src/app/(root)/components/SivuValinta';
-import { Tabs } from '@/src/app/(root)/components/Tabs';
+import YkMainPage from '@/src/app/(root)/yhteinenKasittely/YkMainPage';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageLayout } from '@/src/components/PageLayout';
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { hasTutuRole } from '@/src/lib/utils';
 
-type TabButton = {
-  linkPath?: string;
-  tabName: string;
-  active: boolean;
-};
+export default function YkPage() {
+  const { t } = useTranslations();
+  const user = useAuthorizedUser();
+  const userRoles = user?.authorities;
+  const hasTutuUserRights = hasTutuRole(userRoles);
 
-export default function MainPageLayout({
-  t,
-  hasTutuUserRights,
-  tabsButtons,
-  children,
-}: {
-  t: TFunction;
-  hasTutuUserRights?: boolean;
-  tabsButtons: TabButton[];
-  children: React.ReactNode;
-}) {
   return (
     <PageLayout
       header={
@@ -52,7 +43,7 @@ export default function MainPageLayout({
               }}
             >
               <SivuValinta
-                active={SelectedPage.Hakemukset}
+                active={SelectedPage.YhteinenKasittely}
                 showNotification={true}
               />
               <Link href="/maajako" style={{ textDecoration: 'none' }}>
@@ -60,11 +51,7 @@ export default function MainPageLayout({
               </Link>
             </Box>
           </BoxWrapper>
-
-          <BoxWrapper>
-            <Tabs tPrefix="hakemuslista.tyyppi" buttons={tabsButtons} />
-            {children}
-          </BoxWrapper>
+          <YkMainPage />
         </>
       ) : (
         <OphTypography variant={'body1'} component={'p'}>
