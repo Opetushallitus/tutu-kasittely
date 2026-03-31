@@ -2,9 +2,10 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.fixture.createTutkinnotFixture
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
+import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, FINLAND_TZ}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
@@ -508,6 +509,17 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertTrue(paivitettyHakemus.onkoPeruutettu)
     assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.peruutusPvm.get)
     assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(dbHakemus.id).get.ratkaisutyyppi.get)
+
+    val tutkinnotFixture    = createTutkinnotFixture(dbHakemus.id)
+    val paivitetytTutkinnot = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
+    assertEquals(paivitetytTutkinnot.length, tutkinnotFixture.length)
+    paivitetytTutkinnot.foreach(t =>
+      assertEquals(ATARU_SERVICE, t.muokkaaja.get)
+      assertEquals(
+        tutkinnotFixture.find(ft => ft.jarjestys == t.jarjestys).get,
+        t.copy(id = None, muokkaaja = None, muokattu = None)
+      )
+    )
 
     // Kentät siirretty hakemukseen: tarkistetaan oikeat tyypit ja arvot
     assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.ataruHakemusMuokattu.get)
