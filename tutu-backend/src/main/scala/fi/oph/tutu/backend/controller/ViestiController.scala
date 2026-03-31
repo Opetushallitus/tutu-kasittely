@@ -42,7 +42,7 @@ class ViestiController(
   )
   def listaaViestit(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestParam(required = false, defaultValue = "") sort: String,
+    @RequestParam(required = false, defaultValue = "vahvistettu:desc") sort: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {

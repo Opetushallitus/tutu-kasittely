@@ -9,7 +9,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { LexicalEditor } from 'lexical';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Editor } from '@/src/app/hakemus/[oid]/editori/components/Editor';
 import {
@@ -24,7 +24,7 @@ import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster, { AddToastCallback } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useVahvistetutViestit } from '@/src/hooks/useVahvistetutViestit';
@@ -73,13 +73,10 @@ export default function ViestiPage() {
     poistoError,
   } = useViesti(hakemus?.hakemusOid);
 
-  const viestiState = useEditableState(viesti, (viesti) =>
-    updateViesti(viesti),
-  );
-
   const {
     viestiLista,
     refresh: paivitaVahvistettuLista,
+    isLoading: listaLoading,
     error: listaError,
   } = useVahvistetutViestit(hakemus?.hakemusOid);
 
@@ -131,8 +128,9 @@ export default function ViestiPage() {
   if (
     isHakemusLoading ||
     isViestiLoading ||
+    listaLoading ||
     !hakemus ||
-    !viestiState.editedData ||
+    !viesti ||
     poistoOngoing
   ) {
     return <FullSpinner></FullSpinner>;
@@ -153,9 +151,10 @@ export default function ViestiPage() {
   return (
     <ViestiPageComponent
       t={t}
-      viestiState={viestiState}
+      viesti={viesti}
       hakemus={hakemus}
       updateOngoing={updateOngoing}
+      updateViesti={updateViesti}
       vahvistaViesti={vahvistaViestiJaPaivitaLista}
       poistaViesti={poistaViestiJaPaivitaLista}
       vahvistettuLista={viestiLista || []}
@@ -180,18 +179,20 @@ const handleCopy = (
 
 const ViestiPageComponent = ({
   t,
-  viestiState,
+  viesti,
   hakemus,
   updateOngoing,
+  updateViesti,
   vahvistaViesti,
   poistaViesti,
   vahvistettuLista,
   paivitaVahvistettuLista,
 }: {
   t: TFunction;
-  viestiState: EditableState<Viesti>;
+  viesti: Viesti;
   hakemus: Hakemus;
   updateOngoing: boolean;
+  updateViesti: ViestiUpdateCallback;
   vahvistaViesti: ViestiUpdateCallback;
   poistaViesti: (viestiId: string) => void;
   vahvistettuLista: VahvistettuViestiListItem[];
@@ -201,13 +202,27 @@ const ViestiPageComponent = ({
   const { addToast } = useToaster();
   const editorRef = useRef<LexicalEditor | null>(null);
   const { showConfirmation } = useGlobalConfirmationModal();
-  const currentViesti = viestiState.editedData!;
+  const viestiState = useEditableState(viesti, () => {});
 
-  useUnsavedChanges(viestiState.hasChanges, viestiState.discard);
+  const currentViesti = viestiState.editedData!;
+  const [editorHasChanges, setEditorHasChanges] = useState(false);
+
+  useUnsavedChanges(
+    viestiState.hasChanges || editorHasChanges,
+    viestiState.discard,
+  );
 
   useEffect(() => {
     importHtml(editorRef.current, currentViesti.viesti || '');
   }, [editorRef, currentViesti.viesti]);
+
+  const onSave = useCallback(() => {
+    updateViesti(
+      editorHasChanges
+        ? { ...currentViesti, viesti: exportHtml(editorRef.current) }
+        : currentViesti,
+    );
+  }, [currentViesti, editorHasChanges, updateViesti]);
 
   const updateEditorChanges = (editor: LexicalEditor) => {
     const editorContent = exportHtml(editor);
@@ -215,9 +230,7 @@ const ViestiPageComponent = ({
       ? editorContent
       : '';
     const savedContent = currentViesti.viesti || '';
-    if (savedContent !== normalizedEditorContent) {
-      updateViestiPartially({ viesti: normalizedEditorContent });
-    }
+    setEditorHasChanges(savedContent !== normalizedEditorContent);
   };
 
   const isViestiEmpty =
@@ -323,12 +336,20 @@ const ViestiPageComponent = ({
                   `hakemus.viesti.vahvista.modal.vahvistaViesti`,
                 ),
                 handleConfirmAction: () => {
-                  vahvistaViesti(currentViesti);
+                  vahvistaViesti(
+                    editorHasChanges
+                      ? {
+                          ...currentViesti,
+                          viesti: exportHtml(editorRef.current),
+                        }
+                      : currentViesti,
+                  );
                   if (viestiState.hasChanges) {
                     // Vahvistettaessa viesti myös tallennetaan
                     // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
                     // joten discardataan mahdolliset muutokset
                     viestiState.discard();
+                    importHtml(editorRef.current, '');
                   }
                 },
               })
@@ -356,11 +377,9 @@ const ViestiPageComponent = ({
         }
       />
       <SaveRibbon
-        onSave={() => {
-          viestiState.save();
-        }}
+        onSave={onSave}
         isSaving={updateOngoing}
-        hasChanges={viestiState.hasChanges}
+        hasChanges={viestiState.hasChanges || editorHasChanges}
         lastSaved={hakemus.muokattu}
         modifier={hakemus.muokkaaja}
       />
