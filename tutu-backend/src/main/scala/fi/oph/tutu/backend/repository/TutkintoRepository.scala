@@ -35,7 +35,7 @@ class TutkintoRepository extends BaseResultHandlers {
         muuTutkintoTieto = r.nextStringOption(),
         todistuksenPaivamaara = r.nextStringOption(),
         koulutusalaKoodiUri = r.nextStringOption(),
-        paaaaineTaiErikoisala = r.nextStringOption(),
+        paaAineTaiErikoisala = r.nextStringOption(),
         todistusOtsikko = r.nextStringOption(),
         ohjeellinenLaajuus = r.nextStringOption(),
         opinnaytetyo = r.nextBooleanOption(),
@@ -57,7 +57,7 @@ class TutkintoRepository extends BaseResultHandlers {
     val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
     val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
     val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
-    val paaaineTaiErikoisala        = tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull
+    val paaAineTaiErikoisala        = tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull
     val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
     val muuTutkintoMuistio          = tutkinto.muuTutkintoMuistio.orNull
     val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
@@ -96,7 +96,7 @@ class TutkintoRepository extends BaseResultHandlers {
         $muuTutkintoTietoOrNull,
         $todistuksenPaivamaaraOrNull,
         $koulutusalaKoodiUri,
-        $paaaineTaiErikoisala,
+        $paaAineTaiErikoisala,
         $todistusOtsikko,
         $ohjeellinenLaajuus,
         $opinnaytetyo,
@@ -199,7 +199,7 @@ class TutkintoRepository extends BaseResultHandlers {
         muu_tutkinto_tieto = ${tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull},
         todistuksen_paivamaara = ${tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull},
         koulutusala_koodiuri = ${tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull},
-        paaaine_tai_erikoisala = ${tutkinto.paaaaineTaiErikoisala.filter(_.nonEmpty).orNull},
+        paaaine_tai_erikoisala = ${tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull},
         todistusotsikko = ${tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull},
         muu_tutkinto_muistio = ${tutkinto.muuTutkintoMuistio.orNull},
         ohjeellinen_laajuus = ${tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull},

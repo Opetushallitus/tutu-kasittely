@@ -15,7 +15,7 @@ case class Tutkinto(
   muuTutkintoTieto: Option[String] = None,
   todistuksenPaivamaara: Option[String] = None,
   koulutusalaKoodiUri: Option[String] = None,
-  paaaaineTaiErikoisala: Option[String] = None,
+  paaAineTaiErikoisala: Option[String] = None,
   todistusOtsikko: Option[String] = None,
   ohjeellinenLaajuus: Option[String] = None,
   opinnaytetyo: Option[Boolean] = None,

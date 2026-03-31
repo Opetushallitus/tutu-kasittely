@@ -183,11 +183,11 @@ export const TutkintoComponent = ({
         onChange={(event) =>
           updateCurrentTutkinto({
             ...tutkinto,
-            paaaaineTaiErikoisala: event.target.value,
+            paaAineTaiErikoisala: event.target.value,
           })
         }
         multiline={true}
-        value={tutkinto.paaaaineTaiErikoisala ?? ''}
+        value={tutkinto.paaAineTaiErikoisala ?? ''}
         inputProps={{
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
         }}

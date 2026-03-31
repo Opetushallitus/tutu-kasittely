@@ -265,7 +265,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodiUri = None,
-        paaaaineTaiErikoisala = None,
+        paaAineTaiErikoisala = None,
         todistusOtsikko = paatosKieli match {
           case Some("swedish") => Some("examensbevis")
           case _               => Some("tutkintotodistus")
@@ -296,7 +296,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         muuTutkintoTieto = None,
         todistuksenPaivamaara = None,
         koulutusalaKoodiUri = None,
-        paaaaineTaiErikoisala = None,
+        paaAineTaiErikoisala = None,
         todistusOtsikko = paatosKieli match {
           case Some("swedish") => Some("ovrigbevis")
           case _               => Some("muutodistus")
@@ -325,7 +325,7 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           muuTutkintoTieto = None,
           todistuksenPaivamaara = None,
           koulutusalaKoodiUri = None,
-          paaaaineTaiErikoisala = None,
+          paaAineTaiErikoisala = None,
           todistusOtsikko =
             if (isTutkinto2Defined) None
             else
@@ -340,24 +340,22 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         )
     }
 
-    if (findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers).isDefined) {
-      tutkinnot +=
-        Tutkinto(
-          id = None,
-          hakemusId = hakemusId,
-          nimi = None,
-          oppilaitos = None,
-          aloitusVuosi = None,
-          paattymisVuosi = None,
-          maakoodiUri = None,
-          jarjestys = "MUU",
-          muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
-          todistuksenPaivamaara = None,
-          koulutusalaKoodiUri = None,
-          paaaaineTaiErikoisala = None,
-          todistusOtsikko = None
-        )
-    }
+    tutkinnot +=
+      Tutkinto(
+        id = None,
+        hakemusId = hakemusId,
+        nimi = None,
+        oppilaitos = None,
+        aloitusVuosi = None,
+        paattymisVuosi = None,
+        maakoodiUri = None,
+        jarjestys = "MUU",
+        muuTutkintoTieto = findAnswerByAtaruKysymysId(Constants.ATARU_MUU_TUTKINTO_TIETO, answers),
+        todistuksenPaivamaara = None,
+        koulutusalaKoodiUri = None,
+        paaAineTaiErikoisala = None,
+        todistusOtsikko = None
+      )
     tutkinnot.toSeq
   }
 
