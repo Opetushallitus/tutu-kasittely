@@ -23,7 +23,7 @@ case class DbYkViesti(
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 36
   )
-  parenti_id: UUID,
+  parent_id: UUID,
   @(Schema @field)(
     example = "1.2.246.562.11.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED,
@@ -69,7 +69,7 @@ case class DbYkViesti(
 
 case class YkViesti(
   id: UUID,
-  parenti_id: UUID,
+  parent_id: Option[UUID] = None,
   hakemusOid: HakemusOid,
   asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
@@ -82,7 +82,7 @@ case class YkViesti(
 
 case class YkViestiListItem(
   id: UUID,
-  parent_id: UUID,
+  parent_id: Option[UUID] = None,
   hakemusOid: String,
   asiatunnus: Option[String] = None,
   hakija: String,
