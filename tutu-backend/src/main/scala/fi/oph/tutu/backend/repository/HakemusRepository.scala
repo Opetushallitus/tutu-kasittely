@@ -81,7 +81,7 @@ class HakemusRepository extends BaseResultHandlers {
     GetResult(r =>
       YkViesti(
         id = r.nextObject().asInstanceOf[UUID],
-        parent_id = r.nextObject().asInstanceOf[UUID],
+        parent_id = Option(r.nextObject().asInstanceOf[UUID]),
         hakemusOid = HakemusOid(r.nextString()),
         asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
