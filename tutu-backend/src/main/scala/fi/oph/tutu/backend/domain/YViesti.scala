@@ -19,6 +19,12 @@ case class DbYkViesti(
   )
   id: UUID,
   @(Schema @field)(
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
+    requiredMode = RequiredMode.REQUIRED,
+    maxLength = 36
+  )
+  parenti_id: UUID,
+  @(Schema @field)(
     example = "1.2.246.562.11.00000000000000006666",
     requiredMode = RequiredMode.REQUIRED,
     maxLength = 40
@@ -58,16 +64,12 @@ case class DbYkViesti(
     example = "Viestin sisältö",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  viesti: Option[String],
-  @(Schema @field)(
-    example = "Vastaus",
-    requiredMode = RequiredMode.NOT_REQUIRED
-  )
-  vastaus: Option[String]
+  viesti: Option[String]
 )
 
 case class YkViesti(
   id: UUID,
+  parenti_id: UUID,
   hakemusOid: HakemusOid,
   asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
@@ -75,12 +77,12 @@ case class YkViesti(
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
   viesti: Option[String] = None,
-  vastaus: Option[String] = None,
   hakija: String
 )
 
 case class YkViestiListItem(
   id: UUID,
+  parent_id: UUID,
   hakemusOid: String,
   asiatunnus: Option[String] = None,
   hakija: String,
@@ -89,6 +91,5 @@ case class YkViestiListItem(
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
-  viesti: Option[String] = None,
-  vastaus: Option[String] = None
+  viesti: Option[String] = None
 )
