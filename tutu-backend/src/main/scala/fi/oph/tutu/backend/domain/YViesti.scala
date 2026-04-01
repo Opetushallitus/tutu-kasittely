@@ -20,7 +20,7 @@ case class DbYkViesti(
   id: UUID,
   @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
-    requiredMode = RequiredMode.REQUIRED,
+    requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 36
   )
   parent_id: UUID,
@@ -82,7 +82,7 @@ case class YkViesti(
 
 case class YkViestiListItem(
   id: UUID,
-  parent_id: Option[UUID] = None,
+  parentId: Option[UUID] = None,
   hakemusOid: String,
   asiatunnus: Option[String] = None,
   hakija: String,
