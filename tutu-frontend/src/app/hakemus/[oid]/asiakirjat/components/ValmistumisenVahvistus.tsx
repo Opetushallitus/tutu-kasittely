@@ -4,7 +4,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
@@ -57,15 +56,12 @@ export const ValmistumisenVahvistusComponent = ({
   const updateVahvistusPyyntoLahetetty = (date: Date | null) => {
     setField(
       'valmistumisenVahvistusPyyntoLahetetty',
-      date ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm") : null,
+      date ? date.toISOString() : null,
     );
   };
 
   const updateVahvistusPyyntoVastattu = (date: Date | null) => {
-    setField(
-      'valmistumisenVahvistusSaatu',
-      date ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm") : null,
-    );
+    setField('valmistumisenVahvistusSaatu', date ? date.toISOString() : null);
   };
 
   const vahvistusVastausOptions: OphRadioOption<ValmistumisenVahvistusVastaus>[] =

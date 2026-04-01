@@ -81,11 +81,11 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
             valmistumisenVahvistus: true,
             valmistumisenVahvistusPyyntoLahetetty: dateFns.format(
               new Date().setDate(26),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS",
+              "yyyy-MM-dd'T'HH:mm:ss'Z'",
             ),
             valmistumisenVahvistusSaatu: dateFns.format(
               new Date().setDate(26),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS",
+              "yyyy-MM-dd'T'HH:mm:ss'Z'",
             ),
             valmistumisenVahvistusVastaus: 'Myonteinen',
             valmistumisenVahvistusLisatieto: 'Hyvinhän se meni',

@@ -1,5 +1,4 @@
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
@@ -64,10 +63,7 @@ export const KaikkiSelvityksetSaatu = ({
             if (value) {
               setViimeinenAsiakirjaHakijalta(value);
               updateAsiakirjaTieto({
-                viimeinenAsiakirjaHakijalta: dateFns.format(
-                  value,
-                  "yyyy-MM-dd'T'HH:mm",
-                ),
+                viimeinenAsiakirjaHakijalta: value.toISOString(),
               });
             }
           }}

@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import * as dateFns from 'date-fns';
 
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
@@ -8,13 +7,11 @@ import {
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
 import { mockAll } from '@/playwright/mocks';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 
 import { translate } from './helpers/translate';
 
 const matchingDate = () => {
-  const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
-  return dateFns.format(testDate, DATE_TIME_STANDARD_PLACEHOLDER);
+  return '2025-09-26T00:00:00.000Z';
 };
 
 test.beforeEach(async ({ page }) => {

@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.config
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{
@@ -16,18 +16,17 @@ import fi.oph.tutu.backend.domain.{
   ValmistumisenVahvistusDeserializer
 }
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 
 @Configuration
 class JacksonConfig {
 
   @Bean
   @Primary
-  def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper =
-    JacksonConfig.configure(builder.createXmlMapper(false).build[ObjectMapper]())
+  def tutuMapper(): ObjectMapper = JacksonConfig.mapper
 }
 
 object JacksonConfig {
@@ -35,13 +34,14 @@ object JacksonConfig {
 
   private def configure(mapper: ObjectMapper): ObjectMapper = {
     mapper.registerModule(DefaultScalaModule)
+    mapper.registerModule(new JavaTimeModule)
+    mapper.registerModule(new Jdk8Module())
 
     val customModule = new SimpleModule()
 
-    // LocalDateTime-kentät käsitellään UTC-ajassa
+    // LocalDateTime-kenttiin lisätään UTC-aikavyöhyke, vaikka LocalDateTime ei itsessään sisällä aikavyöhyketietoa. Huom myös sekuntitarkkuus.
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
-    customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
 
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())

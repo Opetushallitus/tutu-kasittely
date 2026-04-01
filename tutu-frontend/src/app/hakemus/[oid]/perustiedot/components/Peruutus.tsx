@@ -5,8 +5,6 @@ import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { Muistio } from '@/src/components/Muistio';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
-import { formatUTC } from '@/src/lib/dateUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 
@@ -28,9 +26,7 @@ export const Peruutus = ({
     : null;
   const updatePeruutusPvm = (date: Date | null) => {
     updateHakemus({
-      peruutusPvm: date
-        ? formatUTC(date, DATE_TIME_STANDARD_PLACEHOLDER)
-        : null,
+      peruutusPvm: date ? date.toISOString() : null,
     });
   };
 
