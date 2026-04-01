@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.service
 
+import fi.oph.tutu.backend.domain
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
 import fi.oph.tutu.backend.repository.{
@@ -582,10 +583,14 @@ class HakemusService(
   def isYkViesteja(
     userOid: String
   ): Boolean = {
-    val saapuneet    = hakemusRepository.haeYkSaapuneetViestit(userOid)
-    val lahetetyt    = hakemusRepository.haeYkLahetetytViestit(userOid)
+    val saapuneet = hakemusRepository.haeYkSaapuneetViestit(userOid)
+    val lahetetyt = hakemusRepository.haeYkLahetetytViestit(userOid)
+
+    // Suodatetaan uudet saapuneet viestit
     val lukemattomia = saapuneet.count(viesti => viesti.luettu.isEmpty)
-    val vastaamatta  = lahetetyt.count(viesti => viesti.vastaus.isEmpty)
+
+    // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
+    val vastaamatta = lahetetyt.count(viesti => viesti.luettu.isEmpty) // TODO: KORJAA TÄMÄ
     lukemattomia > 0 || vastaamatta > 0
   }
 
@@ -593,31 +598,38 @@ class HakemusService(
     userOid: String,
     sort: String
   ): Seq[YkViestiListItem] = {
-    val lista = hakemusRepository.haeYkSaapuneetViestit(userOid)
+    val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
+    val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
 
-    val ykViestiList = lista.flatMap { viesti =>
-      val status: ViestinTila = if (viesti.vastaus.isEmpty) ViestinTila.vastaamatta else ViestinTila.vastattu
-      Some(
-        YkViestiListItem(
-          id = viesti.id,
-          hakemusOid = viesti.hakemusOid.toString,
-          asiatunnus = viesti.asiatunnus,
-          hakija = viesti.hakija,
-          lahettajaOid = viesti.lahettajaOid,
-          vastaanottajaOid = viesti.vastaanottajaOid,
-          luotu = viesti.luotu,
-          luettu = viesti.luettu,
-          viesti = viesti.viesti,
-          vastaus = viesti.vastaus,
-          status = status
+    val ykViestiList = saapuneetViestit
+      .filter(viesti => viesti.parenti_id.isEmpty)
+      .flatMap { viesti =>
+        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parenti_id == viesti.id)
+        val status: ViestinTila =
+          if (vastaukset.isEmpty) ViestinTila.vastaamatta
+          else ViestinTila.vastattu
+        Some(
+          YkViestiListItem(
+            id = viesti.id,
+            parentId = viesti.parenti_id,
+            hakemusOid = viesti.hakemusOid.toString,
+            asiatunnus = viesti.asiatunnus,
+            hakija = viesti.hakija,
+            lahettajaOid = viesti.lahettajaOid,
+            vastaanottajaOid = viesti.vastaanottajaOid,
+            luotu = viesti.luotu,
+            luettu = viesti.luettu,
+            viesti = viesti.viesti,
+            status = status
+          )
         )
-      )
-    }
+      }
     sort match {
       case null => ykViestiList
       case _    =>
-        val sortParam               = sort.split(":").headOption.getOrElse("undefined")
-        val sortDef                 = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
+        val sortParam = sort.split(":").headOption.getOrElse("undefined")
+        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
+
         given Ordering[ViestinTila] = Ordering.by(_.ordinal)
 
         val sortedList: Seq[YkViestiListItem] = sortDef match {
@@ -645,29 +657,36 @@ class HakemusService(
     userOid: String,
     sort: String
   ): Seq[YkViestiListItem] = {
-    val lista = hakemusRepository.haeYkLahetetytViestit(userOid)
+    val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
+    val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
 
-    val ykViestiList = lista.flatMap { viesti =>
-      val status: ViestinTila =
-        if (viesti.vastaus.isEmpty) ViestinTila.vastaamatta
-        else if (viesti.luettu.isEmpty) ViestinTila.uusiVastaus
-        else ViestinTila.vastattu
-      Some(
-        YkViestiListItem(
-          id = viesti.id,
-          hakemusOid = viesti.hakemusOid.toString,
-          asiatunnus = viesti.asiatunnus,
-          hakija = viesti.hakija,
-          lahettajaOid = viesti.lahettajaOid,
-          vastaanottajaOid = viesti.vastaanottajaOid,
-          luotu = viesti.luotu,
-          luettu = viesti.luettu,
-          viesti = viesti.viesti,
-          vastaus = viesti.vastaus,
-          status = status
+    val ykViestiList = lahetetytViestit
+      .filter(viesti => viesti.parenti_id.isEmpty)
+      .flatMap { viesti =>
+        val uudetVastaukset =
+          saapuneetViestit.filter(vastaus => vastaus.parenti_id == viesti.id && viesti.luettu.isEmpty)
+        val lueteutVastaukset =
+          saapuneetViestit.filter(vastaus => vastaus.parenti_id == viesti.id && viesti.luettu.nonEmpty)
+        val status: ViestinTila =
+          if (uudetVastaukset.nonEmpty) ViestinTila.uusiVastaus
+          else if (lueteutVastaukset.nonEmpty) ViestinTila.vastattu
+          else ViestinTila.vastaamatta
+        Some(
+          YkViestiListItem(
+            id = viesti.id,
+            hakemusOid = viesti.hakemusOid.toString,
+            asiatunnus = viesti.asiatunnus,
+            hakija = viesti.hakija,
+            lahettajaOid = viesti.lahettajaOid,
+            vastaanottajaOid = viesti.vastaanottajaOid,
+            luotu = viesti.luotu,
+            luettu = viesti.luettu,
+            viesti = viesti.viesti,
+            vastaus = viesti.vastaus,
+            status = status
+          )
         )
-      )
-    }
+      }
     sort match {
       case null => ykViestiList
       case _    =>
