@@ -68,7 +68,7 @@ test('UO/RO-perustelun sovellettu tilanne -kentät toimivat oikein ja kenttien m
     lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
     selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
-    luotu: '2025-09-02T16:08:42.083643',
+    luotu: '2025-09-02T16:08:42Z',
     luoja: 'Hakemuspalvelu',
     uoRoSisalto: {},
   });

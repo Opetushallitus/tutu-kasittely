@@ -40,13 +40,13 @@ case class DbAsiakirja(
   )
   imiPyyntoNumero: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   imiPyyntoLahetetty: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -83,13 +83,13 @@ case class DbAsiakirja(
   )
   valmistumisenVahvistus: Boolean,
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   valmistumisenVahvistusPyyntoLahetetty: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -105,7 +105,7 @@ case class DbAsiakirja(
   )
   valmistumisenVahvistusLisatieto: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )

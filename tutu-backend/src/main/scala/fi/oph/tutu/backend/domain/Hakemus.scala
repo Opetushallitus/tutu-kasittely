@@ -66,7 +66,7 @@ case class DbHakemus(
   )
   kasittelyVaihe: KasittelyVaihe,
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -105,7 +105,7 @@ case class DbHakemus(
   )
   onkoPeruutettu: Boolean,
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -116,19 +116,19 @@ case class DbHakemus(
   )
   peruutusLisatieto: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   viimeisinTaydennyspyyntoPvm: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   saapumisPvm: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )

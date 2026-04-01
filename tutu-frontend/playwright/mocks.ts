@@ -168,12 +168,12 @@ export const mockHakemus = async (
     const muutosHistoriaRaw = [
       {
         role: 'Esittelija',
-        time: '2025-05-28T10:59:47.597',
+        time: '2025-05-28T10:59:47Z',
         modifiedBy: 'Esittelija Testi',
       },
       {
         role: 'Hakija',
-        time: '2025-06-15T15:14:47.597',
+        time: '2025-06-15T15:14:47Z',
         modifiedBy: 'Hakija Testi',
       },
     ];
@@ -232,15 +232,15 @@ export const mockHakemus = async (
           yksiloityVTJ: true,
         },
         asiatunnus: 'OPH-111-2025',
-        saapumisPvm: '2025-05-14T10:59:47.597',
-        esittelyPvm: '2025-05-28T10:59:47.597',
-        paatosPvm: '2025-05-28T10:59:47.597',
+        saapumisPvm: '2025-05-14T10:59:47Z',
+        esittelyPvm: '2025-05-28T10:59:47Z',
+        paatosPvm: '2025-05-28T10:59:47Z',
         esittelijaOid: '1.2.246.562.24.999999999999',
         ataruHakemuksenTila: 'kasittelymaksamatta',
         kasittelyVaihe: 'HakemustaTaydennetty',
-        muokattu: '2025-06-28T10:59:47.597',
+        muokattu: '2025-06-28T10:59:47Z',
         muokkaaja: 'Muokkaaja Matti',
-        ataruHakemustaMuokattu: '2025-07-28T10:59:47.597',
+        ataruHakemustaMuokattu: '2025-07-28T10:59:47Z',
         muutosHistoria: muutoshistoria,
         sisalto: _sisalto,
         yhteistutkinto: false,
@@ -395,7 +395,7 @@ export const mockPerustelu = async (page: Page) => {
     lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
     selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
     selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
-    luotu: '2025-09-02T16:08:42.083643',
+    luotu: '2025-09-02T16:08:42Z',
     luoja: 'Hakemuspalvelu',
     uoRoSisalto: {},
   };
@@ -549,7 +549,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
 const defaultPaatosteksti: Paatosteksti = {
   id: 'paatosteksti-id',
   hakemusId: 'hakemus-id',
-  luotu: '2025-05-28T10:59:04.597',
+  luotu: '2025-05-28T10:59:04Z',
   luoja: 'Lauri Luoja',
   sisalto:
     '<p><span style="white-space: pre-wrap;">Päätosteksti sisältö</span></p>',

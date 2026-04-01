@@ -35,7 +35,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   }
 
   @Test
-  def timeZoneOnUTC(): Unit = { // localDateTimet palauttavat UTCtä
+  def timeZoneOnUTC(): Unit = { // Backend aika käyttää aina UTC:tä jopa testeissä
     assertEquals("UTC", ZoneId.systemDefault().getId)
   }
 

@@ -40,11 +40,11 @@ export const PaatosHeader = ({
         </OphTypography>
         <Stack direction="row" gap={theme.spacing(2)}>
           <CalendarComponent
-            setDate={(date: Date | null) => {
+            setDate={(date: Date | null) =>
               updatePaatosField({
                 hyvaksymispaiva: date ? date.toISOString() : null,
-              });
-            }}
+              })
+            }
             selectedValue={hyvaksymispaiva}
             minDate={null}
             maxDate={lahetyspaiva}
