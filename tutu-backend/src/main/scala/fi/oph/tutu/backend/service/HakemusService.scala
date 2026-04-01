@@ -606,16 +606,16 @@ class HakemusService(
     val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
 
     val ykViestiList = saapuneetViestit
-      .filter(viesti => viesti.parenti_id.isEmpty)
+      .filter(viesti => viesti.parent_id.isEmpty)
       .flatMap { viesti =>
-        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parenti_id == viesti.id)
+        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parent_id == viesti.id)
         val status: ViestinTila =
           if (vastaukset.isEmpty) ViestinTila.vastaamatta
           else ViestinTila.vastattu
         Some(
           YkViestiListItem(
             id = viesti.id,
-            parentId = viesti.parenti_id,
+            parentId = viesti.parent_id,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
             hakija = viesti.hakija,
@@ -665,12 +665,12 @@ class HakemusService(
     val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
 
     val ykViestiList = lahetetytViestit
-      .filter(viesti => viesti.parenti_id.isEmpty)
+      .filter(viesti => viesti.parent_id.isEmpty)
       .flatMap { viesti =>
         val uudetVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parenti_id == viesti.id && viesti.luettu.isEmpty)
+          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && viesti.luettu.isEmpty)
         val lueteutVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parenti_id == viesti.id && viesti.luettu.nonEmpty)
+          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && viesti.luettu.nonEmpty)
         val status: ViestinTila =
           if (uudetVastaukset.nonEmpty) ViestinTila.uusiVastaus
           else if (lueteutVastaukset.nonEmpty) ViestinTila.vastattu
@@ -678,6 +678,7 @@ class HakemusService(
         Some(
           YkViestiListItem(
             id = viesti.id,
+            parentId = viesti.parent_id,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
             hakija = viesti.hakija,
@@ -686,7 +687,6 @@ class HakemusService(
             luotu = viesti.luotu,
             luettu = viesti.luettu,
             viesti = viesti.viesti,
-            vastaus = viesti.vastaus,
             status = status
           )
         )
