@@ -7,7 +7,11 @@ import {
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
+  BOLD_STAR,
+  LINK,
+  ORDERED_LIST,
   TRANSFORMERS,
+  UNORDERED_LIST,
 } from '@lexical/markdown';
 import { $isAtNodeEnd, $setBlocksType } from '@lexical/selection';
 import {
@@ -22,6 +26,8 @@ import {
   SKIP_SELECTION_FOCUS_TAG,
   TextNode,
 } from 'lexical';
+
+const MARKDOWN_TRANSFORMERS = [ORDERED_LIST, UNORDERED_LIST, LINK, BOLD_STAR];
 
 export const importHtml = (editor: LexicalEditor | null, html: string) => {
   if (editor) {
@@ -65,7 +71,7 @@ export const exportMarkdown = (editor: LexicalEditor | null) => {
   if (editor) {
     let content = '';
     editor.read(() => {
-      content = $convertToMarkdownString(TRANSFORMERS);
+      content = $convertToMarkdownString(MARKDOWN_TRANSFORMERS);
     });
     return content;
   }

@@ -133,6 +133,7 @@ export function Editor({
                   ref={onRef}
                   style={{
                     position: 'relative',
+                    height: '100%',
                   }}
                 >
                   <ContentEditable
@@ -141,6 +142,7 @@ export function Editor({
                     style={{
                       padding: theme.spacing(1),
                       outline: 'none',
+                      height: '100%',
                     }}
                     aria-placeholder={''}
                     placeholder={<span>{''}</span>}
