@@ -26,6 +26,7 @@ import { UtilityStack } from '../lib/utility-stack'
 import { MonitorStack } from '../lib/monitor-stack'
 import { FrontendNextjsStack } from '../lib/front-end-nextjs-stack'
 import { FrontendBuildBucketStack } from '../lib/frontend-build-bucket-stack'
+import { Runtime } from 'aws-cdk-lib/aws-lambda'
 
 const app = new cdk.App()
 
@@ -241,7 +242,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     env: envEU,
     crossRegionReferences: true,
     serviceName: utilityConfig.frontend_service_name,
-    skipBuild: Boolean(app.node.tryGetContext('skipfrontend'))
+    skipBuild: Boolean(app.node.tryGetContext('skipfrontend')),
+    runtime: Runtime.NODEJS_24_X
   })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
