@@ -448,8 +448,8 @@ class HakemusService(
     hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
   }
 
-  def asetaEsittelypaiva(hakemusOid: HakemusOid, esittelypvm: LocalDateTime, muokkaaja: String): Int = {
-    hakemusRepository.suoritaPaivitaEsittelypvm(hakemusOid, esittelypvm, muokkaaja)
+  def asetaEsittelypaiva(hakemusOid: HakemusOid, esittelyPvm: LocalDateTime, muokkaaja: String): Int = {
+    hakemusRepository.suoritaPaivitaEsittelyPvm(hakemusOid, esittelyPvm, muokkaaja)
   }
 
   def paivitaKasittelyVaiheSisaisesti(

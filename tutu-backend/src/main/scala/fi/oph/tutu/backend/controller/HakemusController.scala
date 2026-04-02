@@ -547,7 +547,7 @@ class HakemusController(
   )
   def asetaEsittelypaiva(
     @PathVariable("hakemusOid") hakemusOid: String,
-    @RequestBody esittelypvmBytes: Array[Byte],
+    @RequestBody esittelyPvmBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
@@ -560,8 +560,8 @@ class HakemusController(
           HttpStatus.FORBIDDEN
         )
       } else {
-        var esittelypvmUpdateRequest: EsittelypvmUpdateRequest = null
-        try esittelypvmUpdateRequest = mapper.readValue(esittelypvmBytes, classOf[EsittelypvmUpdateRequest])
+        var esittelyPvmUpdateRequest: EsittelyPvmUpdateRequest = null
+        try esittelyPvmUpdateRequest = mapper.readValue(esittelyPvmBytes, classOf[EsittelyPvmUpdateRequest])
         catch {
           case e: Exception =>
             LOG.error(s"Esittelypäivän asettaminen epäonnistui: ${e.getMessage}", e)
@@ -570,11 +570,11 @@ class HakemusController(
               HttpStatus.BAD_REQUEST
             )
         }
-        val esittelypvmMaybe: Option[LocalDateTime] = esittelypvmUpdateRequest.esittelypvm
-        val esittelypvm: LocalDateTime              = esittelypvmMaybe.getOrElse(LocalDateTime.now)
+        val esittelyPvmMaybe: Option[LocalDateTime] = esittelyPvmUpdateRequest.esittelyPvm
+        val esittelyPvm: LocalDateTime              = esittelyPvmMaybe.getOrElse(LocalDateTime.now)
 
         Try {
-          hakemusService.asetaEsittelypaiva(HakemusOid(hakemusOid), esittelypvm, user.userOid)
+          hakemusService.asetaEsittelypaiva(HakemusOid(hakemusOid), esittelyPvm, user.userOid)
         } match {
           case Success(result) =>
             if (result == 0)
@@ -582,9 +582,9 @@ class HakemusController(
             else {
               auditLog.logChanges(
                 AuditLog.getUser(request),
-                Map("esittelypvm" -> esittelypvm.toString),
-                UpdateEsittelypvm,
-                AuditUtil.getChanges(None, Some(esittelypvm.toString))
+                Map("esittelyPvm" -> esittelyPvm.toString),
+                UpdateEsittelyPvm,
+                AuditUtil.getChanges(None, Some(esittelyPvm.toString))
               )
               ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
             }

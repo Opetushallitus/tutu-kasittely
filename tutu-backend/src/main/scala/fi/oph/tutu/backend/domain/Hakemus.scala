@@ -146,7 +146,7 @@ case class DbHakemus(
   )
   hakijaSukunimi: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -211,6 +211,6 @@ case class AsiatunnusUpdateRequest(
   asiatunnus: String
 )
 
-case class EsittelypvmUpdateRequest(
-  esittelypvm: Option[LocalDateTime]
+case class EsittelyPvmUpdateRequest(
+  esittelyPvm: Option[LocalDateTime]
 )

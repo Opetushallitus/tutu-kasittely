@@ -448,17 +448,17 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  private def paivitaEsittelypvm(hakemusOid: HakemusOid, esittelypvm: LocalDateTime, muokkaaja: String): DBIO[Int] =
-    val esittelyPvmValue = java.sql.Timestamp.valueOf(esittelypvm)
+  private def paivitaEsittelyPvm(hakemusOid: HakemusOid, esittelyPvm: LocalDateTime, muokkaaja: String): DBIO[Int] =
+    val esittelyPvmValue = java.sql.Timestamp.valueOf(esittelyPvm)
     sqlu"""
       UPDATE hakemus
       SET esittely_pvm = $esittelyPvmValue, muokkaaja = $muokkaaja
       WHERE hakemus_oid = ${hakemusOid.toString}
     """
 
-  def suoritaPaivitaEsittelypvm(hakemusOid: HakemusOid, esittelypvm: LocalDateTime, muokkaaja: String): Int = {
+  def suoritaPaivitaEsittelyPvm(hakemusOid: HakemusOid, esittelyPvm: LocalDateTime, muokkaaja: String): Int = {
     Try {
-      db.run(paivitaEsittelypvm(hakemusOid, esittelypvm, muokkaaja), "PaivitaEsittelypvm")
+      db.run(paivitaEsittelyPvm(hakemusOid, esittelyPvm, muokkaaja), "PaivitaEsittelyPvm")
     } match {
       case Success(modified) => modified
       case Failure(e)        =>

@@ -240,7 +240,7 @@ object AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }
 
-  case object UpdateEsittelypvm extends AuditOperation {
+  case object UpdateEsittelyPvm extends AuditOperation {
     val name = "ESITTELYPAIVAN_MUOKKAUS"
   }
 
