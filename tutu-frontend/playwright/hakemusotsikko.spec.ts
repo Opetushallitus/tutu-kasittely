@@ -34,8 +34,7 @@ test('Hakemusotsikko näyttää peruutetun hakemuksen tiedot', async ({
   page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const hakemus = getHakemus();
     hakemus.onkoPeruutettu = true;
-    hakemus.ataruHakemustaMuokattu = '2025-07-28T10:59:47.597';
-
+    hakemus.ataruHakemustaMuokattu = '2025-07-28T10:59:47.597Z';
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

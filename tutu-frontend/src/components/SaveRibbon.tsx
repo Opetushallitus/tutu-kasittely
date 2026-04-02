@@ -7,10 +7,10 @@ import {
   OphTypography,
   ophColors,
 } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React, { useEffect, useRef } from 'react';
 
 import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
 
@@ -108,7 +108,7 @@ export const SaveRibbon = ({
               </OphTypography>
               <OphTypography variant="body1">
                 {lastSaved
-                  ? dateFns.format(Date.parse(lastSaved), DATE_TIME_PLACEHOLDER)
+                  ? formatHelsinki(lastSaved, DATE_TIME_PLACEHOLDER)
                   : ''}
                 {'  '}
                 {modifier ? modifier : ' '}

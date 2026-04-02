@@ -546,8 +546,8 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
       if (route.request().method() === 'GET') {
         const body = {
           ...paatos,
-          hyvaksymispaiva: '2025-10-26:12:00:00',
-          lahetyspaiva: '2025-10-26:12:00:00',
+          hyvaksymispaiva: '2025-10-26T12:00:00.000Z',
+          lahetyspaiva: '2025-10-26T12:00:00.000Z',
         };
         await route.fulfill({
           status: 200,
@@ -586,13 +586,13 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
   await expect(lahetyspaivaCalendar).toBeVisible();
 
   await hyvaksymispaivaCalendar.click();
-  await page.locator('.react-datepicker__day--026').nth(1).click();
+  await page.locator('.react-datepicker__day--026').last().click();
 
   await page.locator('body').click({ position: { x: 1, y: 1 } });
   await expect(hyvaksymispaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 
   await lahetyspaivaCalendar.click();
-  await page.locator('.react-datepicker__day--026').nth(1).click();
+  await page.locator('.react-datepicker__day--026').last().click();
   await page.locator('body').click({ position: { x: 1, y: 1 } });
   await expect(lahetyspaivaCalendar).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 });

@@ -41,7 +41,7 @@ case class DbAsiakirjamalliTutkinnosta(
   )
   kuvaus: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )

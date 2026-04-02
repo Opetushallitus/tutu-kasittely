@@ -5,11 +5,11 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
@@ -44,10 +44,7 @@ export const HakemusHeader = () => {
           <OphTypography data-testid="hakemusotsikko-kirjauspvm">
             {t('hakemusotsikko.kirjausPvm')}{' '}
             {hakemus.saapumisPvm
-              ? dateFns.format(
-                  Date.parse(hakemus?.saapumisPvm),
-                  DATE_PLACEHOLDER,
-                )
+              ? formatHelsinki(hakemus.saapumisPvm, DATE_PLACEHOLDER)
               : t('puuttuu')}
           </OphTypography>
           <Stack direction="row" alignItems="center" gap={theme.spacing(1)}>

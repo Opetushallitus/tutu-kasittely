@@ -63,8 +63,8 @@ test.describe('Tavalliset hakemukset', () => {
     const asiakirjaId6 = '#asiakirja__0443f1ca-6fd0-4919-812f-eaed4ae87933';
 
     const asiakirjarivit = page.locator('.asiakirja-row');
-    const hakemuksenLuontiaika = '14.05.2025 10:59';
-    const myohempiLiittenLisaysaika = '16.05.2025 10:59';
+    const hakemuksenLuontiaika = '14.05.2025 13:59';
+    const myohempiLiittenLisaysaika = '16.05.2025 13:59';
 
     await expect(asiakirjarivit).toHaveCount(7);
 
@@ -265,8 +265,8 @@ test.describe('Lopullinen päätös hakemukset', () => {
     const asiakirjaId7 = '#asiakirja__8003048a-92a2-4d3a-95a9-dae81e4533d8';
 
     const asiakirjarivit = page.locator('.asiakirja-row');
-    const hakemuksenLuontiaika = '14.05.2025 10:59';
-    const myohempiLiittenLisaysaika = '16.05.2025 10:59';
+    const hakemuksenLuontiaika = '14.05.2025 13:59';
+    const myohempiLiittenLisaysaika = '16.05.2025 13:59';
 
     await expect(asiakirjarivit).toHaveCount(7);
 

@@ -13,6 +13,7 @@ import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 import { StyledTableCell } from '@/src/components/StyledTableCell';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import useToaster from '@/src/hooks/useToaster';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ophColors } from '@/src/lib/theme';
@@ -160,7 +161,7 @@ export default function HakemusRow({
         )}
       </StyledTableCell>
       <StyledTableCell>
-        {dateFns.formatDate(hakemus.saapumisPvm, 'd.M.yyyy')}
+        {formatHelsinki(hakemus.saapumisPvm, 'd.M.yyyy')}
       </StyledTableCell>
       <StyledTableCell>
         {t('hakemuslista.kokonaisaikaKk', '', {

@@ -1,8 +1,6 @@
 package fi.oph.tutu.backend.repository.migration
 
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import fi.oph.tutu.backend.UnitTestBase
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.{BeforeEach, Test}
@@ -13,15 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension
 import java.util.UUID
 
 @ExtendWith(Array(classOf[MockitoExtension]))
-class VanhaTutuRepositoryTest {
+class VanhaTutuRepositoryTest extends UnitTestBase {
 
   @Mock
   var vanhaTutuRepository: VanhaTutuRepository = _
-
-  private val mapper = new ObjectMapper()
-  mapper.registerModule(DefaultScalaModule)
-  mapper.registerModule(new JavaTimeModule)
-  mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
   @BeforeEach
   def setupTest(): Unit = {

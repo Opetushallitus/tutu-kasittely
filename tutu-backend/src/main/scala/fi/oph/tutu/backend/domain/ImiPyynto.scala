@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 case class ImiPyynto(
   imiPyynto: Option[Boolean],
@@ -55,13 +56,15 @@ class ImiPyyntoDeserializer extends JsonDeserializer[ImiPyynto] {
         .filterNot(_.isNull)
         .map(_.asText)
 
+      val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'")
+
       val imiPyyntoLahetetty = Option(node.get("imiPyyntoLahetetty"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
 
       val imiPyyntoVastattu = Option(node.get("imiPyyntoVastattu"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
 
       ImiPyynto(imiPyynto, imiPyyntoNumero, imiPyyntoLahetetty, imiPyyntoVastattu)
     }

@@ -12,7 +12,6 @@ import org.mockito.{Mock, MockitoAnnotations}
 import org.mockito.invocation.InvocationOnMock
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 val translations = Map[String, String](
@@ -375,12 +374,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           jarjestys = Some(1),
           lausunnonAntajaKoodiUri = Some("testi-korkeakoulu"),
           lausunnonAntajaMuu = None,
-          lahetetty = Some(
-            LocalDateTime.parse("2025-07-01T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
-          ),
-          saapunut = Some(
-            LocalDateTime.parse("2025-07-02T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
-          )
+          lahetetty = Some(LocalDateTime.parse("2025-07-01T00:00:00")),
+          saapunut = Some(LocalDateTime.parse("2025-07-02T00:00:00"))
         ),
         Lausuntopyynto(
           id = None,
@@ -388,9 +383,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
           jarjestys = Some(2),
           lausunnonAntajaKoodiUri = Some("muu"),
           lausunnonAntajaMuu = Some("HOKS tuutori"),
-          lahetetty = Some(
-            LocalDateTime.parse("2025-07-01T00:00:00.000Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"))
-          ),
+          lahetetty = Some(LocalDateTime.parse("2025-07-01T00:00:00")),
           saapunut = None
         )
       ),

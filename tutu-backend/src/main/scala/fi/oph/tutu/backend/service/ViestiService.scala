@@ -3,11 +3,11 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import fi.oph.tutu.backend.utils.Utility.currentLocalDateTime
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
+import java.time.LocalDateTime
 
 @Component
 @Service
@@ -131,7 +131,7 @@ class ViestiService(
         viesti
     }
     viestiWithAllekirjoitus.copy(
-      vahvistettu = Some(currentLocalDateTime()),
+      vahvistettu = Some(LocalDateTime.now()),
       vahvistaja = Some(vahvistajaOid)
     )
   }

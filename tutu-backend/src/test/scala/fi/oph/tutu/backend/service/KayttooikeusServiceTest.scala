@@ -23,7 +23,8 @@ class KayttooikeusServiceTest extends UnitTestBase {
 
     kayttooikeusService = new KayttooikeusService(
       httpService,
-      esittelijaRepository
+      esittelijaRepository,
+      mapper
     )
 
     setupDefaultMocks()

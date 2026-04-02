@@ -5,7 +5,6 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
@@ -36,17 +35,11 @@ export const ImiPyyntoComponent = ({
   };
 
   const updateImiPyyntoLahetetty = (date: Date | null) => {
-    setField(
-      'imiPyyntoLahetetty',
-      date ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm") : '',
-    );
+    setField('imiPyyntoLahetetty', date ? date.toISOString() : '');
   };
 
   const updateImiPyyntoVastattu = (date: Date | null) => {
-    setField(
-      'imiPyyntoVastattu',
-      date ? dateFns.format(date, "yyyy-MM-dd'T'HH:mm") : '',
-    );
+    setField('imiPyyntoVastattu', date ? date.toISOString() : '');
   };
 
   const imiPyyntoOptions: OphRadioOption<string>[] = [

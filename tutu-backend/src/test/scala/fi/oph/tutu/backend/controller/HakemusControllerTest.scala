@@ -5,7 +5,7 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.fixture.createTutkinnotFixture
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.{ATARU_SERVICE, FINLAND_TZ}
+import fi.oph.tutu.backend.utils.Constants.ATARU_SERVICE
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
@@ -187,8 +187,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(hakemuspalveluService.haeHakemus(eqTo(HakemusOid("1.2.246.562.11.00000000000000006668"))))
       .thenReturn(Right(loadJson("ataruHakemus6668.json")))
 
-    val saapumisPvmStr     = toLocalDateTime("2025-05-14T10:59:47.597Z").toString
-    val saapumisPvmStr6665 = toLocalDateTime("2025-05-14T11:06:38.273Z").toString
+    val saapumisPvmStr     = "2025-05-14T10:59:47.597Z"
+    val saapumisPvmStr6665 = "2025-05-14T11:06:38.273Z"
     val expectedResult     = s"""{"items": [{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Neljäs Hakija",
@@ -260,12 +260,6 @@ class HakemusControllerTest extends IntegrationTestBase {
     )
     initAtaruHakemusRequests()
 
-    val saapumisPvm = ZonedDateTime
-      .parse("2025-05-14T10:59:47.597Z")
-      .withZoneSameInstant(FINLAND_TZ)
-      .toLocalDateTime
-    val saapumisPvmStr = saapumisPvm.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"))
-
     val expectedResult = s"""{
                                 "hakemusOid": "1.2.246.562.11.00000000000000006667",
                                 "hakija": {
@@ -293,7 +287,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 },
                                 "asiatunnus": null,
                                 "yhteistutkinto": false,
-                                "saapumisPvm": "$saapumisPvmStr",
+                                "saapumisPvm": "2025-05-14T10:59:47.597Z",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
                                 "esittelijaOid": 1.2.246.562.24.00000000000000006666,
@@ -326,7 +320,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                   "attachment" : "88d627a1-47d9-4bb2-aad2-16384a900352",
                                   "state" : "checked",
                                   "hakukohde" : "form",
-                                  "updateTime" : "2025-12-17T09:30:00"
+                                  "updateTime" : "2025-12-17T09:30:00.000Z"
                                 }, {
                                   "attachment" : "063912dd-2e57-4e69-a42c-35ff73d8953d",
                                   "state" : "not-checked",
@@ -363,11 +357,10 @@ class HakemusControllerTest extends IntegrationTestBase {
       UserOid(esittelijaOidString)
     )
 
-    val saapumisPvmStr = toLocalDateTime("2025-05-14T10:59:47.597Z").toString
     val expectedResult = s"""{"items": [{
                                 "asiatunnus" : null,
                                 "hakija" : "Testi Kolmas Hakija",
-                                "saapumisPvm" : "$saapumisPvmStr",
+                                "saapumisPvm" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
                                 "apHakemus": true,
@@ -409,6 +402,62 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(content().string("[]"))
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadLiitteenTiedot), any())
+  }
+
+  @Test
+  @Order(6)
+  @WithMockUser(
+    value = HakemusControllerTestConstants.ESITTELIJA_OID,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+  )
+  def paivitaHakemusTimestampWithMillisReturns200(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(
+          userOid = HakemusControllerTestConstants.ESITTELIJA_OID,
+          authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+        )
+      )
+    initAtaruHakemusRequests("ataruHakemus6666.json")
+    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006668")
+
+    // Testataan että frontend toISOString()-muoto deserialisoidaan oikein.
+    // Asiakirja on pakollinen.
+    val requestJson =
+      s"""{"peruutusPvm": "2026-04-01T21:00:00.000Z", "onkoPeruutettu": true,
+          "asiakirja": {
+            "apHakemus": false,
+            "suostumusVahvistamiselleSaatu": false,
+            "pyydettavatAsiakirjat" : [ {
+              "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
+            }, {
+              "asiakirjanTyyppi" : "tyotodistukset"
+            } ],
+            "asiakirjamallitTutkinnoista" : {
+              "ece" : {
+                "lahde" : "ece",
+                "vastaavuus" : true,
+                "kuvaus" : "Jotain kuvausta"
+              },
+              "aacrao" : {
+                "lahde" : "aacrao",
+                "vastaavuus" : false,
+                "kuvaus" : "Jotain muuta kuvausta"
+              }
+            }
+          }}"""
+
+    mockMvc
+      .perform(
+        put(s"/api/hakemus/$hakemusOid")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.peruutusPvm").value("2026-04-01T21:00:00.000Z"))
   }
 
   @Test

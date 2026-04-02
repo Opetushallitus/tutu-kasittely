@@ -7,12 +7,10 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OphSelectOption } from '@/src/lib/types/common';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
@@ -133,9 +131,7 @@ export const LausuntopyyntoComponent = ({
         <CalendarComponent
           setDate={(date: Date | null) =>
             updateCurrentLausuntopyynto({
-              lahetetty: date
-                ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
-                : null,
+              lahetetty: date ? date.toISOString() : null,
             })
           }
           selectedValue={lahetetty}
@@ -146,9 +142,7 @@ export const LausuntopyyntoComponent = ({
         <CalendarComponent
           setDate={(date: Date | null) =>
             updateCurrentLausuntopyynto({
-              saapunut: date
-                ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
-                : null,
+              saapunut: date ? date.toISOString() : null,
             })
           }
           selectedValue={saapunut}

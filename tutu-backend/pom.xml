@@ -330,6 +330,7 @@
                 <version>3.5.5</version>
                 <configuration>
                     <skipTests>false</skipTests>
+                    <argLine>-Duser.timezone=UTC</argLine>
                 </configuration>
             </plugin>
             <plugin>

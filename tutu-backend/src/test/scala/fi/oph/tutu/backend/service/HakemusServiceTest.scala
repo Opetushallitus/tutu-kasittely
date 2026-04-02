@@ -7,8 +7,6 @@ import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.fixture.createTutkinnotFixtureBeforeMuuttuneetTutkinnot
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
@@ -17,9 +15,6 @@ import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 
 class HakemusServiceTest extends UnitTestBase {
-
-  val objectMapper = new ObjectMapper()
-  objectMapper.registerModule(DefaultScalaModule)
 
   @Mock
   var esittelijaRepository: EsittelijaRepository = _
@@ -184,7 +179,7 @@ class HakemusServiceTest extends UnitTestBase {
       val hakemusOid             = HakemusOid("poop")
       val dbHakemus              = makeDbHakemus(hakemusOid, 5)
       val ataruHakemus           = makeAtaruHakemus(9)
-      val ataruHakemusJsonString = objectMapper.writeValueAsString(ataruHakemus)
+      val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
 
       // Spy variables
       var storedFormId = dbHakemus.formId
@@ -229,7 +224,7 @@ class HakemusServiceTest extends UnitTestBase {
       val hakemusOid             = HakemusOid("poop")
       val dbHakemus              = makeDbHakemus(hakemusOid, 5)
       val ataruHakemus           = makeAtaruHakemus(5)
-      val ataruHakemusJsonString = objectMapper.writeValueAsString(ataruHakemus)
+      val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
 
       // Spy variables
       var formUpdateCalled = false
@@ -276,7 +271,7 @@ class HakemusServiceTest extends UnitTestBase {
     val hakemusOid             = HakemusOid("poop")
     val dbHakemus              = makeDbHakemus(hakemusOid, 5)
     val ataruHakemus           = makeAtaruHakemus(5)
-    val ataruHakemusJsonString = objectMapper.writeValueAsString(ataruHakemus)
+    val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
     val lomakeJsonString       = loadJson("ataruLomake.json")
     val hakija                 = makeHakija()
     val henkilo                = makeOnrUser()

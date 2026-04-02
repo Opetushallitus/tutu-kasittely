@@ -174,7 +174,7 @@ test('Hakemuksen peruutustiedot näkyvät oikein, ja muutoksista lähetetään P
   await expect(peruutusLisatieto).toBeVisible();
 
   await peruutuspPvm.click();
-  await page.locator('.react-datepicker__day--026').nth(1).click();
+  await page.locator('.react-datepicker__day--026').last().click();
   await page.locator('body').click({ position: { x: 1, y: 1 } });
   await expect(peruutuspPvm).toHaveValue(/^26\.\d{2}\.\d{4}$/);
 

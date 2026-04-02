@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import * as dateFns from 'date-fns';
 
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
@@ -8,13 +7,11 @@ import {
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
 import { mockAll } from '@/playwright/mocks';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 
 import { translate } from './helpers/translate';
 
 const matchingDate = () => {
-  const testDate = new Date(2025, 8, 26, 0, 0, 0, 0);
-  return dateFns.format(testDate, DATE_TIME_STANDARD_PLACEHOLDER);
+  return '2025-09-26T00:00:00.000Z';
 };
 
 test.beforeEach(async ({ page }) => {
@@ -113,14 +110,14 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       {
         lausunnonAntajaKoodiUri: null,
         lausunnonAntajaMuu: 'Esko Mörkö',
-        lahetetty: '2025-09-01T00:00:00',
-        saapunut: '2025-09-30T00:00:00',
+        lahetetty: '2025-09-01T00:00:00.000Z',
+        saapunut: '2025-09-30T00:00:00.000Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00.000Z',
+        saapunut: '2025-11-30T00:00:00.000Z',
       },
     ],
   });
@@ -135,13 +132,13 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
         lausunnonAntajaKoodiUri: null,
         lausunnonAntajaMuu: 'Esko Mörkö',
         lahetetty: matchingDate(),
-        saapunut: '2025-09-30T00:00:00',
+        saapunut: '2025-09-30T00:00:00.000Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00.000Z',
+        saapunut: '2025-11-30T00:00:00.000Z',
       },
     ],
   });
@@ -161,8 +158,8 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00.000Z',
+        saapunut: '2025-11-30T00:00:00.000Z',
       },
     ],
   });
@@ -200,14 +197,14 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-09-01T00:00:00',
-        saapunut: '2025-09-30T00:00:00',
+        lahetetty: '2025-09-01T00:00:00.000Z',
+        saapunut: '2025-09-30T00:00:00.000Z',
       },
       {
         lausunnonAntajaKoodiUri: 'oppilaitosnumero_10076',
         lausunnonAntajaMuu: null,
-        lahetetty: '2025-11-01T00:00:00',
-        saapunut: '2025-11-30T00:00:00',
+        lahetetty: '2025-11-01T00:00:00.000Z',
+        saapunut: '2025-11-30T00:00:00.000Z',
       },
       {
         lausunnonAntajaKoodiUri: null,
@@ -230,8 +227,8 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
         {
           lausunnonAntajaKoodiUri: 'oppilaitosnumero_01901',
           lausunnonAntajaMuu: null,
-          lahetetty: '2025-09-01T00:00:00',
-          saapunut: '2025-09-30T00:00:00',
+          lahetetty: '2025-09-01T00:00:00.000Z',
+          saapunut: '2025-09-30T00:00:00.000Z',
         },
         {
           lausunnonAntajaKoodiUri: null,

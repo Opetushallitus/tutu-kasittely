@@ -1,9 +1,9 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionSummary, Box } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React from 'react';
 
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
 import { KasittelyDetails } from './KasittelyDetails';
@@ -56,7 +56,9 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
             </Box>
             <Box style={{ flex: 1 }}>
               <OphTypography variant="body2">
-                {dateFns.format(new Date(kasittely.luotu!), 'd.M.yyyy')}
+                {kasittely.luotu
+                  ? formatHelsinki(kasittely.luotu, 'd.M.yyyy')
+                  : ''}
               </OphTypography>
             </Box>
           </AccordionSummary>

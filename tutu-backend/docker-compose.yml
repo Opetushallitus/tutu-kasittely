@@ -8,5 +8,3 @@ services:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=app
       - POSTGRES_DB=tutu
-      - TZ=Europe/Helsinki
-      - PGTZ=Europe/Helsinki

@@ -12,10 +12,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import * as R from 'remeda';
 
 import { UusiBadge } from '@/src/components/Badges';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import {
   TFunction,
   useTranslations,
@@ -48,7 +48,7 @@ const lomakeOtsake = (asiakirja: SisaltoValue) => {
 
 const saapumisAika = (metadata?: AsiakirjaMetadata) => {
   return metadata?.saapumisaika
-    ? dateFns.format(metadata.saapumisaika, 'dd.MM.yyyy HH:mm')
+    ? formatHelsinki(metadata.saapumisaika, 'dd.MM.yyyy HH:mm')
     : '-';
 };
 

@@ -17,22 +17,34 @@ import fi.oph.tutu.backend.domain.{
   ValmistumisenVahvistusDeserializer
 }
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 
 @Configuration
 class JacksonConfig {
 
   @Bean
   @Primary
-  def tutuMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper = {
-    val mapper = builder.createXmlMapper(false).build[ObjectMapper]()
+  def tutuMapper(): ObjectMapper = JacksonConfig.mapper
+}
+
+object JacksonConfig {
+  lazy val mapper: ObjectMapper = configure(new ObjectMapper())
+
+  private def configure(mapper: ObjectMapper): ObjectMapper = {
     mapper.registerModule(DefaultScalaModule)
     mapper.registerModule(new JavaTimeModule)
+    mapper.registerModule(new Jdk8Module())
 
     val customModule = new SimpleModule()
+
+    // LocalDateTime-kenttiin lisätään UTC-aikavyöhyke, vaikka LocalDateTime ei itsessään sisällä aikavyöhyketietoa.
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
+    customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
+
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
     customModule.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())

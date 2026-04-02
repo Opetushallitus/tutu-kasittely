@@ -7,9 +7,6 @@ import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 
@@ -18,9 +15,6 @@ import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 
 class TutkintoServiceTest extends UnitTestBase {
-
-  val objectMapper = new ObjectMapper()
-  objectMapper.registerModule(DefaultScalaModule)
 
   @Mock
   var tutkintoRepository: TutkintoRepository = _

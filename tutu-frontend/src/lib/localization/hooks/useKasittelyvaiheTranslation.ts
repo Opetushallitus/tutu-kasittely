@@ -1,6 +1,7 @@
 import * as dateFns from 'date-fns';
 
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
@@ -21,10 +22,7 @@ export function useKasittelyvaiheTranslation(
   ) {
     return {
       translation: t(`hakemus.kasittelyvaihe.hakemustataydennettytalloin`, {
-        date: dateFns.format(
-          Date.parse(hakemus.ataruHakemustaMuokattu),
-          DATE_PLACEHOLDER,
-        ),
+        date: formatHelsinki(hakemus.ataruHakemustaMuokattu, DATE_PLACEHOLDER),
       }),
       timeLimitExceeded: false,
     };
@@ -38,7 +36,7 @@ export function useKasittelyvaiheTranslation(
     );
     return {
       translation: t(`hakemus.kasittelyvaihe.odottaataydennystamennessa`, {
-        date: dateFns.format(dateLimit, DATE_PLACEHOLDER),
+        date: formatHelsinki(dateLimit, DATE_PLACEHOLDER),
       }),
       timeLimitExceeded: dateLimit < new Date(),
     };

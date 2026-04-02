@@ -3,11 +3,9 @@
 import { Preview } from '@mui/icons-material';
 import { Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 import React from 'react';
 
 import { CalendarComponent } from '@/src/components/calendar-component';
-import { DATE_TIME_STANDARD_PLACEHOLDER } from '@/src/constants/constants';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatos } from '@/src/lib/types/paatos';
@@ -44,9 +42,7 @@ export const PaatosHeader = ({
           <CalendarComponent
             setDate={(date: Date | null) =>
               updatePaatosField({
-                hyvaksymispaiva: date
-                  ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
-                  : null,
+                hyvaksymispaiva: date ? date.toISOString() : null,
               })
             }
             selectedValue={hyvaksymispaiva}
@@ -58,9 +54,7 @@ export const PaatosHeader = ({
           <CalendarComponent
             setDate={(date: Date | null) =>
               updatePaatosField({
-                lahetyspaiva: date
-                  ? dateFns.format(date, DATE_TIME_STANDARD_PLACEHOLDER)
-                  : null,
+                lahetyspaiva: date ? date.toISOString() : null,
               })
             }
             disabled={!hyvaksymispaiva}

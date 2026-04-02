@@ -13,7 +13,8 @@ import fi.oph.tutu.backend.repository.{
 }
 import fi.oph.tutu.backend.utils.Constants.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import fi.oph.tutu.backend.utils.Utility.{currentLocalDateTime, stringToIntSeq, stringToSeq, toLocalDateTime}
+import fi.oph.tutu.backend.utils.Utility.{stringToIntSeq, stringToSeq, toLocalDateTime}
+import java.time.LocalDateTime
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
@@ -476,7 +477,7 @@ class HakemusService(
         val dbHakemusWithInfoRequestTimestamp = (ataruHakemuksenTila, infoRequestTimestamp) match {
           case (TaydennysPyynto, Some(timestamp)) =>
             dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(toLocalDateTime(timestamp)))
-          case (TaydennysPyynto, _) => dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(currentLocalDateTime()))
+          case (TaydennysPyynto, _) => dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.now()))
           case _                    => dbHakemus
         }
         paivitaKasittelyVaihe(hakemusOid, dbHakemusWithInfoRequestTimestamp, ATARU_SERVICE, haeAtaruHakemus(hakemusOid))

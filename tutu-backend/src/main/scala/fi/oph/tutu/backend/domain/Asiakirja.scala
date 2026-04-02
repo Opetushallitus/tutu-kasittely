@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.annotation.meta.field
 import scala.jdk.CollectionConverters.*
@@ -40,13 +41,13 @@ case class DbAsiakirja(
   )
   imiPyyntoNumero: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   imiPyyntoLahetetty: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -83,13 +84,13 @@ case class DbAsiakirja(
   )
   valmistumisenVahvistus: Boolean,
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
   valmistumisenVahvistusPyyntoLahetetty: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -105,7 +106,7 @@ case class DbAsiakirja(
   )
   valmistumisenVahvistusLisatieto: Option[String],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
@@ -213,9 +214,11 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
           .filterNot(_.isNull)
           .map(_.asText)
 
+      val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'")
+
       val viimeinenAsiakirjaHakijalta = Option(node.get("viimeinenAsiakirjaHakijalta"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
 
       val huomiotMuistioon = Option(node.get("huomiotMuistioon"))
         .filterNot(_.isNull)

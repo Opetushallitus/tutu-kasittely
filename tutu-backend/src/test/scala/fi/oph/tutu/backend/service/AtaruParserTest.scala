@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Constants.FINLAND_TZ
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
@@ -712,7 +711,6 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
             .parse(
               "2025-12-17T11:06:38.273123+00:00"
             )
-            .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
         )
       ),
@@ -728,7 +726,6 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
             .parse(
               "2025-12-17T11:06:38.273123+00:00"
             )
-            .withZoneSameInstant(FINLAND_TZ)
             .toLocalDateTime
         )
       ),

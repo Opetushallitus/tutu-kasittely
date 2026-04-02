@@ -17,7 +17,7 @@ class TranslationServiceTest extends UnitTestBase {
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-    translationService = new TranslationService(httpService)
+    translationService = new TranslationService(httpService, mapper)
   }
 
   @Test
