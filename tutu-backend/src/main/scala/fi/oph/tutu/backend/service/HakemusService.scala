@@ -608,7 +608,7 @@ class HakemusService(
     val ykViestiList = saapuneetViestit
       .filter(viesti => viesti.parent_id.isEmpty)
       .flatMap { viesti =>
-        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parent_id == viesti.id)
+        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id))
         val status: ViestinTila =
           if (vastaukset.isEmpty) ViestinTila.vastaamatta
           else ViestinTila.vastattu
@@ -668,9 +668,9 @@ class HakemusService(
       .filter(viesti => viesti.parent_id.isEmpty)
       .flatMap { viesti =>
         val uudetVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && viesti.luettu.isEmpty)
+          saapuneetViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id) && vastaus.luettu.isEmpty)
         val lueteutVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && viesti.luettu.nonEmpty)
+          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && vastaus.luettu.nonEmpty)
         val status: ViestinTila =
           if (uudetVastaukset.nonEmpty) ViestinTila.uusiVastaus
           else if (lueteutVastaukset.nonEmpty) ViestinTila.vastattu
