@@ -9,6 +9,7 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import java.time.LocalDateTime
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
@@ -50,7 +51,8 @@ class HakemusRepository extends BaseResultHandlers {
         saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         ataruHakemusMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         hakijaEtunimet = r.nextStringOption(),
-        hakijaSukunimi = r.nextStringOption()
+        hakijaSukunimi = r.nextStringOption(),
+        esittelyPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -328,7 +330,8 @@ class HakemusRepository extends BaseResultHandlers {
               h.saapumis_pvm,
               h.ataru_hakemus_muokattu,
               h.hakija_etunimet,
-              h.hakija_sukunimi
+              h.hakija_sukunimi,
+              h.esittely_pvm
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
@@ -442,6 +445,25 @@ class HakemusRepository extends BaseResultHandlers {
       case Failure(e)        =>
         LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
         throw new RuntimeException(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+    }
+  }
+
+  private def paivitaEsittelypvm(hakemusOid: HakemusOid, esittelypvm: LocalDateTime, muokkaaja: String): DBIO[Int] =
+    val esittelyPvmValue = java.sql.Timestamp.valueOf(esittelypvm)
+    sqlu"""
+      UPDATE hakemus
+      SET esittely_pvm = $esittelyPvmValue, muokkaaja = $muokkaaja
+      WHERE hakemus_oid = ${hakemusOid.toString}
+    """
+
+  def suoritaPaivitaEsittelypvm(hakemusOid: HakemusOid, esittelypvm: LocalDateTime, muokkaaja: String): Int = {
+    Try {
+      db.run(paivitaEsittelypvm(hakemusOid, esittelypvm, muokkaaja), "PaivitaEsittelypvm")
+    } match {
+      case Success(modified) => modified
+      case Failure(e)        =>
+        LOG.error(s"Virhe esittelypäivän päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe esittelypäivän päivittämisessä: ${e.getMessage}", e)
     }
   }
 

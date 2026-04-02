@@ -16,6 +16,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { getPerusteluMuistio } from '@/src/hooks/usePerustelu';
 import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { doApiPatch } from '@/src/lib/tutu-backend/api';
 
 import { FullSpinner } from '../FullSpinner';
 
@@ -23,6 +24,11 @@ const PreviewIconBlue = styled(PreviewIcon)({
   color: ophColors.blue2,
   paddingTop: '3px',
 });
+
+const asetaEsittelypaiva = async (hakemusOid: string) => {
+  const url = `hakemus/${hakemusOid}/esittelypvm`;
+  return doApiPatch(url, {});
+};
 
 export const AvaaPerusteluMuistioButton = () => {
   const theme = useTheme();
@@ -101,8 +107,20 @@ export const PerusteluMuistioModal = ({
     };
   }, [hakemusOid, open]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(muistio);
+  const handleCopy = async () => {
+    setIsLoading(true);
+
+    // Pyydä API:a asettamaan esittelypäivä
+    await asetaEsittelypaiva(hakemusOid);
+
+    // Pyydä perustelumuistioteksti uudelleen
+    const sisalto = await getPerusteluMuistio(hakemusOid);
+    setMuistio(sisalto || '');
+    setIsLoading(false);
+
+    // Kopioi teksti
+    navigator.clipboard.writeText(sisalto);
+
     addToast({
       key: 'hakemus.perustelumuistio.kopioi.toaster',
       message: t('hakemus.perustelumuistio.kopioituToast'),

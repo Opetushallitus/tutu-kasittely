@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.{
   RestController
 }
 
+import java.time.LocalDateTime
 import java.util.UUID
 import java.util.regex.Pattern
 import scala.util.{Failure, Success, Try}
@@ -517,6 +518,83 @@ class HakemusController(
     } catch {
       case e: Exception =>
         LOG.error(s"Virhe asiatunnuksen päivittämisessä: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+
+  @PatchMapping(path = Array("hakemus/{hakemusOid}/esittelypvm"))
+  @Operation(
+    summary = "Päivittää hakemuksen esittelypäivän",
+    description = "PATCH endpoint esittelypäivän asettamiselle",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def asetaEsittelypaiva(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody esittelypvmBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        var esittelypvmUpdateRequest: EsittelypvmUpdateRequest = null
+        try esittelypvmUpdateRequest = mapper.readValue(esittelypvmBytes, classOf[EsittelypvmUpdateRequest])
+        catch {
+          case e: Exception =>
+            LOG.error(s"Esittelypäivän asettaminen epäonnistui: ${e.getMessage}", e)
+            return errorMessageMapper.mapPlainErrorMessage(
+              RESPONSE_400_DESCRIPTION,
+              HttpStatus.BAD_REQUEST
+            )
+        }
+        val esittelypvmMaybe: Option[LocalDateTime] = esittelypvmUpdateRequest.esittelypvm
+        val esittelypvm: LocalDateTime              = esittelypvmMaybe.getOrElse(LocalDateTime.now)
+
+        Try {
+          hakemusService.asetaEsittelypaiva(HakemusOid(hakemusOid), esittelypvm, user.userOid)
+        } match {
+          case Success(result) =>
+            if (result == 0)
+              errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+            else {
+              auditLog.logChanges(
+                AuditLog.getUser(request),
+                Map("esittelypvm" -> esittelypvm.toString),
+                UpdateEsittelypvm,
+                AuditUtil.getChanges(None, Some(esittelypvm.toString))
+              )
+              ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
+            }
+          case Failure(exception) =>
+            errorMessageMapper.mapErrorMessage(exception)
+        }
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Virhe esittelypäivän asettamisessa: ${e.getMessage}", e)
         errorMessageMapper.mapErrorMessage(e)
     }
   }

@@ -80,7 +80,7 @@ def haeSuostumusSahkoiseenAsiointiin(
 def haeHakijanNimi(translationService: TranslationService, hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => {
     val label = translationService.getTranslation("fi", "perustelumuistio.hakijanNimi.label")
-    s"$label ${hakemus.hakija.etunimet} ${hakemus.hakija.sukunimi}".trim
+    s"$label ${hakemus.hakija.kutsumanimi} ${hakemus.hakija.sukunimi}".trim
   })
 }
 

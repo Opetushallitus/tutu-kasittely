@@ -240,6 +240,10 @@ object AuditOperation {
     val name = "ASIATUNNUKSEN_MUOKKAUS"
   }
 
+  case object UpdateEsittelypvm extends AuditOperation {
+    val name = "ESITTELYPAIVAN_MUOKKAUS"
+  }
+
   case object ReadTutkinnot extends AuditOperation {
     val name = "TUTKINTOJEN_LUKU"
   }
