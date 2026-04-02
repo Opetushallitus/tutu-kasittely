@@ -21,16 +21,63 @@ const StyledRespondedIcon = styled(CheckCircle)({
   paddingRight: 4,
 });
 
+enum Status {
+  vastaamatta = 'vastaamatta',
+  vastattu = 'vastattu',
+  uusiVastaus = 'uusiVastaus',
+}
+
 export default function MessageRow({
   message,
-  showTag = false,
 }: {
   message: YhteisenKasittelynViesti;
-  showTag?: boolean;
 }) {
   const { t } = useTranslations();
   const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
   const lahetysAika = luotu ? dateFns.format(luotu, 'd.M.yy') : '-';
+
+  const TagVastaamatta = () => (
+    <>
+      <StyledNotRespondedIcon />
+      <OphTypography variant="body1" data-testid={'viestin-status-vastaamatta'}>
+        {t('yhteinenKasittely.vastaamatta')}
+      </OphTypography>
+    </>
+  );
+
+  const TagVastattu = () => (
+    <>
+      <StyledRespondedIcon />
+      <OphTypography variant="body1" data-testid={'viestin-status-vastattu'}>
+        {t('yhteinenKasittely.vastattu')}
+      </OphTypography>
+    </>
+  );
+
+  const TagUusiVastaus = () => (
+    <>
+      <StyledRespondedIcon />
+      <OphTypography
+        variant="body1"
+        data-testid={'viestin-status-uusi-vastaus'}
+      >
+        {t('yhteinenKasittely.vastattu')}
+      </OphTypography>
+      <OphTypography
+        variant="body1"
+        sx={{
+          color: 'black',
+          background: ophColors.green5,
+          marginLeft: 1,
+          paddingLeft: 1,
+          paddingRight: 1,
+          borderRadius: 1,
+        }}
+      >
+        {t('yhteinenKasittely.uusi')}
+      </OphTypography>
+    </>
+  );
 
   return (
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
@@ -41,31 +88,9 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <Grid2 container wrap={'nowrap'}>
-          {status === 'vastaamatta' ? (
-            <StyledNotRespondedIcon />
-          ) : (
-            <StyledRespondedIcon />
-          )}
-          <OphTypography variant="body1" data-testid={'viestin-status'}>
-            {status === 'vastaamatta'
-              ? t('yhteinenKasittely.vastaamatta')
-              : t('yhteinenKasittely.vastattu')}
-          </OphTypography>
-          {status === 'vastattu' && showTag && (
-            <OphTypography
-              variant="body1"
-              sx={{
-                color: 'black',
-                background: ophColors.green5,
-                marginLeft: 1,
-                paddingLeft: 1,
-                paddingRight: 1,
-                borderRadius: 1,
-              }}
-            >
-              {t('yhteinenKasittely.uusi')}
-            </OphTypography>
-          )}
+          {status === Status.vastaamatta && <TagVastaamatta />}
+          {status === Status.vastattu && <TagVastattu />}
+          {status === Status.uusiVastaus && <TagUusiVastaus />}
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
