@@ -208,6 +208,7 @@ const ViestiPageComponent = ({
 
   const currentViesti = viestiState.editedData!;
   const [editorHasChanges, setEditorHasChanges] = useState(false);
+  const [editorEmpty, setEditorEmpty] = useState(!viesti.viesti);
 
   useUnsavedChanges(
     viestiState.hasChanges || editorHasChanges,
@@ -218,25 +219,37 @@ const ViestiPageComponent = ({
     importHtml(editorRef.current, currentViesti.viesti || '');
   }, [editorRef, currentViesti.viesti]);
 
+  const normalizedEditorContent = useCallback(
+    (editor: LexicalEditor | null) => {
+      const editorContent = editor ? exportHtml(editor) : '';
+      return anyRealContentInHtml(editorContent) ? editorContent : '';
+    },
+    [],
+  );
+
+  const viestiToBeSaved = useCallback(() => {
+    if (editorHasChanges) {
+      return {
+        ...currentViesti,
+        viesti: normalizedEditorContent(editorRef.current),
+      };
+    }
+    return currentViesti;
+  }, [currentViesti, editorHasChanges, normalizedEditorContent]);
+
   const onSave = useCallback(() => {
-    updateViesti(
-      editorHasChanges
-        ? { ...currentViesti, viesti: exportHtml(editorRef.current) }
-        : currentViesti,
-    );
-  }, [currentViesti, editorHasChanges, updateViesti]);
+    updateViesti(viestiToBeSaved());
+  }, [viestiToBeSaved, updateViesti]);
 
   const updateEditorChanges = (editor: LexicalEditor) => {
-    const editorContent = exportHtml(editor);
-    const normalizedEditorContent = anyRealContentInHtml(editorContent)
-      ? editorContent
-      : '';
+    const normalizedContent = normalizedEditorContent(editor);
     const savedContent = currentViesti.viesti || '';
-    setEditorHasChanges(savedContent !== normalizedEditorContent);
+    setEditorHasChanges(savedContent !== normalizedContent);
+    setEditorEmpty(!normalizedContent);
   };
 
   const isViestiEmpty =
-    !currentViesti.tyyppi && !currentViesti.otsikko && !currentViesti.viesti;
+    !currentViesti.tyyppi && !currentViesti.otsikko && editorEmpty;
 
   const updateViestiPartially = (
     updatedViesti: Partial<Viesti>,
@@ -317,7 +330,7 @@ const ViestiPageComponent = ({
         <Stack direction="row" gap={theme.spacing(1)}>
           <OphButton
             data-testid={`viesti-kopioi-button`}
-            disabled={!currentViesti.viesti}
+            disabled={editorEmpty}
             variant="outlined"
             startIcon={<CopyAll />}
             onClick={() =>
@@ -338,14 +351,7 @@ const ViestiPageComponent = ({
                   `hakemus.viesti.vahvista.modal.vahvistaViesti`,
                 ),
                 handleConfirmAction: () => {
-                  vahvistaViesti(
-                    editorHasChanges
-                      ? {
-                          ...currentViesti,
-                          viesti: exportHtml(editorRef.current),
-                        }
-                      : currentViesti,
-                  );
+                  vahvistaViesti(viestiToBeSaved());
                   if (viestiState.hasChanges) {
                     // Vahvistettaessa viesti myös tallennetaan
                     // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
