@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
           lahdeKansainvalinenHakuteosTaiVerkkosivusto: false,
           selvitysTutkinnonMyontajastaJaTutkinnonVirallisuudesta: '',
           selvitysTutkinnonAsemastaLahtomaanJarjestelmassa: '',
-          luotu: '2025-09-02T16:08:42Z',
+          luotu: '2025-09-02T16:08:42.083Z',
           luoja: 'Hakemuspalvelu',
           uoRoSisalto: {},
           apSisalto: apSisalto,

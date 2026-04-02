@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonNode}
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 enum ValmistumisenVahvistusVastaus {
   case Myonteinen, Kielteinen, EiVastausta
@@ -76,13 +77,15 @@ class ValmistumisenVahvistusDeserializer extends JsonDeserializer[ValmistumisenV
         case _ => false
       }
 
+      val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'")
+
       val valmistumisenVahvistusPyyntoLahetetty = Option(node.get("valmistumisenVahvistusPyyntoLahetetty"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
 
       val valmistumisenVahvistusSaatu = Option(node.get("valmistumisenVahvistusSaatu"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
       val valmistumisenVahvistusVastaus = Option(node.get("valmistumisenVahvistusVastaus"))
         .filterNot(_.isNull)
         .map { jsonNode =>

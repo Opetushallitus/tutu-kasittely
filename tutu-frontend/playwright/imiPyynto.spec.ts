@@ -53,13 +53,13 @@ test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', 
     if (callCount >= 6) {
       body.asiakirja.imiPyynto.imiPyyntoLahetetty = dateFns.format(
         new Date().setDate(26),
-        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
       );
     }
     if (callCount >= 7) {
       body.asiakirja.imiPyynto.imiPyyntoVastattu = dateFns.format(
         new Date().setDate(26),
-        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
       );
     }
 

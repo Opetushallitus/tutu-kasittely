@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.config
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{
@@ -39,9 +40,10 @@ object JacksonConfig {
 
     val customModule = new SimpleModule()
 
-    // LocalDateTime-kenttiin lisätään UTC-aikavyöhyke, vaikka LocalDateTime ei itsessään sisällä aikavyöhyketietoa. Huom myös sekuntitarkkuus.
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    // LocalDateTime-kenttiin lisätään UTC-aikavyöhyke, vaikka LocalDateTime ei itsessään sisällä aikavyöhyketietoa.
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
+    customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
 
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())

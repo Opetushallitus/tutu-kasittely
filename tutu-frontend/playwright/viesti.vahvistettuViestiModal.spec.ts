@@ -19,7 +19,7 @@ const defaultViesti: Viesti = {
   tyyppi: 'taydennyspyynto',
   otsikko: 'otsikko',
   viesti: '<p>viestin sisältö</p>',
-  vahvistettu: '2024-06-01T12:00:00Z',
+  vahvistettu: '2024-06-01T12:00:00.000Z',
   vahvistaja: 'Rauno Kinnula',
 };
 

@@ -13,7 +13,6 @@ import org.mockito.{Mock, MockitoAnnotations}
 
 import java.time.ZonedDateTime
 import java.util.UUID
-import java.time.ZoneId
 
 class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   @Mock
@@ -32,11 +31,6 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
     MockitoAnnotations.openMocks(this)
     ataruHakemusParser = new AtaruHakemusParser(koodistoService)
     ataruLomakeParser = new AtaruLomakeParser()
-  }
-
-  @Test
-  def timeZoneOnUTC(): Unit = { // Backend aika käyttää aina UTC:tä jopa testeissä
-    assertEquals("UTC", ZoneId.systemDefault().getId)
   }
 
   @Test

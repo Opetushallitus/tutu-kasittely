@@ -336,6 +336,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val paatosAsMap = paatos.productElementNames.toList
       .zip(paatos.productIterator.toList)
       .toMap -- ignoreFields + ("paatosTiedot" -> paatosTiedotAsMap)
+
     mapper.writeValueAsString(paatosAsMap)
   }
 

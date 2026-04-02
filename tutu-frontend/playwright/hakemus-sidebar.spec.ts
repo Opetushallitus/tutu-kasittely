@@ -118,7 +118,7 @@ test('Päätös näkyy kun päätösteksti on vahvistettu', async ({ page }) => 
             kelpoisuudet: [],
           },
         ],
-        paatostekstiVahvistettu: '2025-05-28T10:59:04Z',
+        paatostekstiVahvistettu: '2025-05-28T10:59:04.597Z',
       }),
     });
   });

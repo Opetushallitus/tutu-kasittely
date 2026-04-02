@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import scala.annotation.meta.field
 import scala.jdk.CollectionConverters.*
@@ -213,9 +214,11 @@ class AsiakirjaDeserializer extends JsonDeserializer[Asiakirja] {
           .filterNot(_.isNull)
           .map(_.asText)
 
+      val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]'Z'")
+
       val viimeinenAsiakirjaHakijalta = Option(node.get("viimeinenAsiakirjaHakijalta"))
         .filterNot(_.isNull)
-        .map(date => LocalDateTime.parse(date.asText))
+        .map(date => LocalDateTime.parse(date.asText, dtFormatter))
 
       val huomiotMuistioon = Option(node.get("huomiotMuistioon"))
         .filterNot(_.isNull)

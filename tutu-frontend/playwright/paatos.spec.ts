@@ -546,8 +546,8 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
       if (route.request().method() === 'GET') {
         const body = {
           ...paatos,
-          hyvaksymispaiva: '2025-10-26T12:00:00Z',
-          lahetyspaiva: '2025-10-26T12:00:00Z',
+          hyvaksymispaiva: '2025-10-26T12:00:00.000Z',
+          lahetyspaiva: '2025-10-26T12:00:00.000Z',
         };
         await route.fulfill({
           status: 200,
