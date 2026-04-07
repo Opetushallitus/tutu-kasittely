@@ -11,6 +11,7 @@ import YkMainPage from '@/src/app/(root)/yhteinenKasittely/YkMainPage';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageLayout } from '@/src/components/PageLayout';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { useOnkoYkViesteja } from '@/src/hooks/useOnkoYkViesteja';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { hasTutuRole } from '@/src/lib/utils';
 
@@ -19,6 +20,7 @@ export default function YkPage() {
   const user = useAuthorizedUser();
   const userRoles = user?.authorities;
   const hasTutuUserRights = hasTutuRole(userRoles);
+  const { data: hasMessages } = useOnkoYkViesteja();
 
   return (
     <PageLayout
@@ -44,7 +46,7 @@ export default function YkPage() {
             >
               <SivuValinta
                 active={SelectedPage.YhteinenKasittely}
-                showNotification={true}
+                showNotification={hasMessages}
               />
               <Link href="/maajako" style={{ textDecoration: 'none' }}>
                 <OphButton variant="text">{t('maajako.otsikko')}</OphButton>

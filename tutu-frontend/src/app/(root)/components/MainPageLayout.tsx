@@ -10,6 +10,7 @@ import SivuValinta, {
 import { Tabs } from '@/src/app/(root)/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageLayout } from '@/src/components/PageLayout';
+import { useOnkoYkViesteja } from '@/src/hooks/useOnkoYkViesteja';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 
 type TabButton = {
@@ -29,6 +30,7 @@ export default function MainPageLayout({
   tabsButtons: TabButton[];
   children: React.ReactNode;
 }) {
+  const { data: hasNewMessages } = useOnkoYkViesteja();
   return (
     <PageLayout
       header={
@@ -53,7 +55,7 @@ export default function MainPageLayout({
             >
               <SivuValinta
                 active={SelectedPage.Hakemukset}
-                showNotification={true}
+                showNotification={hasNewMessages}
               />
               <Link href="/maajako" style={{ textDecoration: 'none' }}>
                 <OphButton variant="text">{t('maajako.otsikko')}</OphButton>
