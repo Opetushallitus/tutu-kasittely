@@ -589,7 +589,8 @@ class HakemusService(
     val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
     // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    val uudetVastaukset = saapuneet.count(viesti => viesti.parent_id.isEmpty && viesti.luettu.isEmpty)
+    val vastaukset      = saapuneet.filter(viesti => viesti.parent_id.isDefined)
+    val uudetVastaukset = vastaukset.count(viesti => viesti.luettu.isEmpty)
 
     uudetViestit > 0 || uudetVastaukset > 0
   }
