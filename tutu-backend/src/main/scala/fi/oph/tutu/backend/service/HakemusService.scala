@@ -588,14 +588,14 @@ class HakemusService(
     userOid: String
   ): Boolean = {
     val saapuneet = hakemusRepository.haeYkSaapuneetViestit(userOid)
-    val lahetetyt = hakemusRepository.haeYkLahetetytViestit(userOid)
 
     // Suodatetaan uudet saapuneet viestit
-    val lukemattomia = saapuneet.count(viesti => viesti.luettu.isEmpty)
+    val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
     // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    val vastaamatta = lahetetyt.count(viesti => viesti.luettu.isEmpty) // TODO: KORJAA TÄMÄ
-    lukemattomia > 0 || vastaamatta > 0
+    val uudetVastaukset = saapuneet.count(viesti => viesti.parent_id.isEmpty && viesti.luettu.isEmpty)
+
+    uudetViestit > 0 || uudetVastaukset > 0
   }
 
   def haeYkSaapuneetViestit(
@@ -667,13 +667,15 @@ class HakemusService(
     val ykViestiList = lahetetytViestit
       .filter(viesti => viesti.parent_id.isEmpty)
       .flatMap { viesti =>
+        val vastaukset      = saapuneetViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id))
         val uudetVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id) && vastaus.luettu.isEmpty)
-        val lueteutVastaukset =
-          saapuneetViestit.filter(vastaus => vastaus.parent_id == viesti.id && vastaus.luettu.nonEmpty)
+          vastaukset.filter(vastaus => vastaus.luettu.isEmpty)
+        val luetutVastaukset =
+          vastaukset.filter(vastaus => vastaus.luettu.isDefined)
+
         val status: ViestinTila =
           if (uudetVastaukset.nonEmpty) ViestinTila.uusiVastaus
-          else if (lueteutVastaukset.nonEmpty) ViestinTila.vastattu
+          else if (luetutVastaukset.nonEmpty) ViestinTila.vastattu
           else ViestinTila.vastaamatta
         Some(
           YkViestiListItem(
