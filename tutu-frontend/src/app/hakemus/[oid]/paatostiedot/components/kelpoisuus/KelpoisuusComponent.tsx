@@ -129,6 +129,27 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   );
 };
 
+const KelpoisuusUOLiitannaisComponent = ({
+  t,
+  kelpoisuus,
+  updateAction,
+}: {
+  t: TFunction;
+  kelpoisuus: Kelpoisuus;
+  updateAction: KelpoisuusUpdateCallback;
+}) => {
+  return (
+    <MyonteinenTaiKielteinenPaatosComponent
+      myonteinenPaatos={kelpoisuus.myonteinenPaatos}
+      kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
+      updatePaatosAction={(paatos) => {
+        updateAction({ ...kelpoisuus, ...paatos });
+      }}
+      t={t}
+    />
+  );
+};
+
 export const KelpoisuusComponent = ({
   t,
   index,
@@ -144,6 +165,7 @@ export const KelpoisuusComponent = ({
   const showDirektiivitasoFields =
     kelpoisuus.kelpoisuus &&
     (sovellettuLaki === 'ap' || sovellettuLaki === 'ap_seut');
+  const showUOFields = kelpoisuus.kelpoisuus && sovellettuLaki === 'uo';
   const topLevelOptions = useMemo(
     () => [
       ...getPaatosTietoDropdownOptions(asiointikieli, kelpoisuusOptions, 2),
@@ -260,6 +282,13 @@ export const KelpoisuusComponent = ({
             theme={theme}
             kelpoisuus={kelpoisuus}
             kelpoisuusKey={selectedKelpoisuusKey?.value?.['fi']}
+            updateAction={updateKelpoisuus}
+          />
+        )}
+        {showUOFields && (
+          <KelpoisuusUOLiitannaisComponent
+            t={t}
+            kelpoisuus={kelpoisuus}
             updateAction={updateKelpoisuus}
           />
         )}
