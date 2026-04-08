@@ -25,8 +25,7 @@ export async function setYkViestilistaQueryState<T>(
   value: unknown,
   queryKey: string,
 ) {
-  const newSearchParams = await setQueryState(value as T);
-  localStorage.setItem('tutu-query-string', newSearchParams.toString());
+  setQueryState(value as T);
   await queryClient.invalidateQueries({ queryKey: [queryKey] });
 }
 
