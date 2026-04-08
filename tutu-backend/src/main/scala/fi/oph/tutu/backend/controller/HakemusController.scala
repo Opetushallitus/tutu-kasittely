@@ -616,7 +616,6 @@ class HakemusController(
       val userOid = user.userOid
 
       val onkoViesteja = hakemusService.isYkViesteja(userOid)
-      LOG.info(s"Onko viestejä: $onkoViesteja")
       onkoViesteja
     } match {
       case Success(viesteja) =>
