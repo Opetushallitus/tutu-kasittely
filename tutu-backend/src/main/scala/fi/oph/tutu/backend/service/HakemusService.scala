@@ -589,7 +589,7 @@ class HakemusService(
     val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
     // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    val vastaukset      = saapuneet.filter(viesti => viesti.parent_id.isDefined)
+    val vastaukset      = saapuneet.filter(viesti => viesti.parentId.isDefined)
     val uudetVastaukset = vastaukset.count(viesti => viesti.luettu.isEmpty)
 
     uudetViestit > 0 || uudetVastaukset > 0
@@ -603,16 +603,16 @@ class HakemusService(
     val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
 
     val ykViestiList = saapuneetViestit
-      .filter(viesti => viesti.parent_id.isEmpty)
+      .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id))
+        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parentId.contains(viesti.id))
         val status: ViestinTila =
           if (vastaukset.isEmpty) ViestinTila.vastaamatta
           else ViestinTila.vastattu
         Some(
           YkViestiListItem(
             id = viesti.id,
-            parentId = viesti.parent_id,
+            parentId = viesti.parentId,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
             hakija = viesti.hakija,
@@ -662,9 +662,9 @@ class HakemusService(
     val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
 
     val ykViestiList = lahetetytViestit
-      .filter(viesti => viesti.parent_id.isEmpty)
+      .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastaukset      = saapuneetViestit.filter(vastaus => vastaus.parent_id.contains(viesti.id))
+        val vastaukset      = saapuneetViestit.filter(vastaus => vastaus.parentId.contains(viesti.id))
         val uudetVastaukset =
           vastaukset.filter(vastaus => vastaus.luettu.isEmpty)
         val luetutVastaukset =
@@ -677,7 +677,7 @@ class HakemusService(
         Some(
           YkViestiListItem(
             id = viesti.id,
-            parentId = viesti.parent_id,
+            parentId = viesti.parentId,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
             hakija = viesti.hakija,
