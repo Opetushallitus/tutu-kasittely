@@ -7,7 +7,7 @@ import StyledTableBody from '@/src/app/(root)/components/StyledTableBody';
 import MessageRow from '@/src/app/(root)/yhteinenKasittely/MessageRow';
 import { User } from '@/src/lib/types/user';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
-import { setQueryStateAndLocalStorage } from '@/src/lib/utils';
+import { setYkViestilistaQueryState } from '@/src/lib/utils';
 
 import TableSortLabel from '../components/TableSortLabel';
 
@@ -38,11 +38,11 @@ export default function ReceivedMessages({
       : [];
 
   const handleSort = async (sortDef: unknown) => {
-    await setQueryStateAndLocalStorage(
+    await setYkViestilistaQueryState(
       queryClient,
       setSortDef,
       sortDef,
-      'getYkViestilista',
+      'getYkReceivedMessages',
     );
   };
 
