@@ -69,7 +69,7 @@ case class DbYkViesti(
 
 case class YkViesti(
   id: UUID,
-  parent_id: Option[UUID] = None,
+  parentId: Option[UUID] = None,
   hakemusOid: HakemusOid,
   asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
