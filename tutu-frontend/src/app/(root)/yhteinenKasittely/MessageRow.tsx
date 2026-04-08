@@ -1,9 +1,9 @@
 import { AccessTimeFilled, CheckCircle } from '@mui/icons-material';
 import { Grid2, styled, TableCell, TableRow } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import * as dateFns from 'date-fns';
 
 import { StyledLink } from '@/src/components/StyledLink';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
 
@@ -34,7 +34,6 @@ export default function MessageRow({
 }) {
   const { t } = useTranslations();
   const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
-  const lahetysAika = luotu ? dateFns.format(luotu, 'd.M.yy') : '-';
 
   const TagVastaamatta = () => (
     <>
@@ -83,7 +82,7 @@ export default function MessageRow({
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
       <StyledTableCell>
         <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
-          {lahetysAika}
+          {formatHelsinki(luotu, 'd.M.yyyy')}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
