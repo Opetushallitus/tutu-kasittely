@@ -13,7 +13,17 @@ export async function setQueryStateAndLocalStorage<T>(
   queryClient: QueryClient,
   setQueryState: (val: T) => Promise<URLSearchParams>,
   value: unknown,
-  queryKey: string = 'getHakemukset',
+) {
+  const newSearchParams = await setQueryState(value as T);
+  localStorage.setItem('tutu-query-string', newSearchParams.toString());
+  await queryClient.invalidateQueries({ queryKey: ['getHakemukset'] });
+}
+
+export async function setYkViestilistaQueryState<T>(
+  queryClient: QueryClient,
+  setQueryState: (val: T) => Promise<URLSearchParams>,
+  value: unknown,
+  queryKey: string,
 ) {
   const newSearchParams = await setQueryState(value as T);
   localStorage.setItem('tutu-query-string', newSearchParams.toString());
