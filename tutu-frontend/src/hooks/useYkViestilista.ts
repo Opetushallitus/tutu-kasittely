@@ -6,10 +6,12 @@ import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynVies
 export const getYkSentMessages = async (): Promise<
   YhteisenKasittelynViesti[]
 > => {
-  const localStorageSearchParams = localStorage.getItem('tutu-query-string');
+  const localStorageSearchParams = localStorage.getItem(
+    'tutu-ykviestit-getYkSentMessages',
+  );
   const url = localStorageSearchParams
     ? `ykLahetetytViestit?${localStorageSearchParams}`
-    : `ykLahetetytViestit?sort?saapumisPvm:desc`;
+    : `ykLahetetytViestit?sort?lahetetty:desc`;
 
   return await doApiFetch(url, undefined, 'no-store');
 };
@@ -17,10 +19,12 @@ export const getYkSentMessages = async (): Promise<
 export const getYkReceivedMessages = async (): Promise<
   YhteisenKasittelynViesti[]
 > => {
-  const localStorageSearchParams = localStorage.getItem('tutu-query-string');
+  const localStorageSearchParams = localStorage.getItem(
+    'tutu-ykviestit-getYkReceivedMessages',
+  );
   const url = localStorageSearchParams
     ? `ykSaapuneetViestit?${localStorageSearchParams}`
-    : `ykSaapuneetViestit?sort?saapumisPvm:desc`;
+    : `ykSaapuneetViestit?sort?lahetetty:desc`;
 
   return await doApiFetch(url, undefined, 'no-store');
 };
