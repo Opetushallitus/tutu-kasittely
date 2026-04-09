@@ -21,6 +21,7 @@ import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useToaster } from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
+import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
@@ -102,6 +103,11 @@ const YleisetPerustelut = ({
     handleFetchError(addToast, tutkintoUpdateError, 'virhe.tallennus', t);
   }, [tutkintoUpdateError, addToast, t]);
 
+  const lastModified = lastModifiedInArray([
+    ...(perusteluState.editedData ? [perusteluState.editedData] : []),
+    ...(tutkintoState.editedData ?? []),
+  ]);
+
   return (
     <>
       <VirallinenTutkinnonMyontaja
@@ -151,8 +157,8 @@ const YleisetPerustelut = ({
         onSave={handleSave}
         isSaving={isSaving || isTutkintoSaving}
         hasChanges={hasChanges}
-        lastSaved={perusteluState.editedData?.muokattu} // Tutkintojakin voi muokata
-        modifier={perusteluState.editedData?.muokkaaja}
+        lastSaved={lastModified.muokattu}
+        modifier={lastModified.muokkaaja}
       />
     </>
   );
