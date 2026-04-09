@@ -19,6 +19,16 @@ export async function setQueryStateAndLocalStorage<T>(
   await queryClient.invalidateQueries({ queryKey: ['getHakemukset'] });
 }
 
+export async function setYkViestilistaQueryState<T>(
+  queryClient: QueryClient,
+  setQueryState: (val: T) => Promise<URLSearchParams>,
+  value: unknown,
+  queryKey: string,
+) {
+  setQueryState(value as T);
+  await queryClient.invalidateQueries({ queryKey: [queryKey] });
+}
+
 export async function setFilemakerQueryStateAndLocalStorage<T>(
   queryClient: QueryClient,
   setQueryState: (val: T) => Promise<URLSearchParams>,
