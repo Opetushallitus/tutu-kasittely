@@ -1,17 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.domain.{
-  Asiakirja,
-  DbEsittelija,
-  HakemusOid,
-  KansalaisuusKoodi,
-  Kieli,
-  OnrUser,
-  User,
-  UserOid,
-  Viesti
-}
+import fi.oph.tutu.backend.domain.{Asiakirja, HakemusOid, KansalaisuusKoodi, Kieli, OnrUser, User, Viesti}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{OnrService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}

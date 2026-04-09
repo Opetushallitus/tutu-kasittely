@@ -17,7 +17,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.junit.jupiter.api.{BeforeAll, Order, Test, TestInstance, TestMethodOrder}
+import org.junit.jupiter.api.{BeforeAll, BeforeEach, Order, Test, TestInstance, TestMethodOrder}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +33,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
+import org.hamcrest.Matchers.{equalTo, everyItem, notNullValue}
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -108,6 +110,12 @@ class TutkintoControllerTest extends IntegrationTestBase {
       )
   }
 
+  @BeforeEach
+  def setupMocks(): Unit = {
+    when(mockOnrService.haeNimiOption(any()))
+      .thenAnswer(i => i.getArgument(0, classOf[Option[String]]).map(_ => "Muokkaaja"))
+  }
+
   @Test
   @Order(1)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -128,9 +136,15 @@ class TutkintoControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(
-        content().json(
-          mapper.writeValueAsString(tutkinnot)
-        )
+        content().json {
+          val tree = mapper.readTree(mapper.writeValueAsString(tutkinnot))
+          tree.forEach { node =>
+            val obj = node.asInstanceOf[ObjectNode]
+            obj.remove("muokattu")
+            obj.remove("muokkaaja")
+          }
+          mapper.writeValueAsString(tree)
+        }
       )
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadTutkinnot), any())
   }
@@ -158,7 +172,19 @@ class TutkintoControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(content().json(mapper.writeValueAsString(muutetutTutkinnot)))
+      .andExpect(jsonPath("$[*].muokkaaja", everyItem(equalTo("Muokkaaja"))))
+      .andExpect(jsonPath("$[*].muokattu", everyItem(notNullValue())))
+      .andExpect(
+        content().json {
+          val tree = mapper.readTree(mapper.writeValueAsString(muutetutTutkinnot))
+          tree.forEach { node =>
+            val obj = node.asInstanceOf[ObjectNode]
+            obj.remove("muokattu")
+            obj.remove("muokkaaja")
+          }
+          mapper.writeValueAsString(tree)
+        }
+      )
 
     val tutkinnot2 = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 

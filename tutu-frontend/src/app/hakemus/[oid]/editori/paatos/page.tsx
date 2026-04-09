@@ -108,8 +108,8 @@ export default function PaatosEditorPage() {
         onSave={onSave}
         isSaving={updateOngoing}
         hasChanges={hasChanges}
-        lastSaved={paatosteksti.muokattu ?? paatosteksti.luotu}
-        modifier={paatosteksti.muokkaaja ?? paatosteksti.luoja}
+        lastSaved={paatosteksti.muokattu}
+        modifier={paatosteksti.muokkaaja}
       />
     </>
   );

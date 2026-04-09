@@ -203,8 +203,8 @@ export default function UoroPage() {
         onSave={handleSave}
         isSaving={isPerusteluSaving}
         hasChanges={hasPerusteluChanges}
-        lastSaved={hakemus?.muokattu}
-        modifier={hakemus?.muokkaaja}
+        lastSaved={perusteluState.editedData?.muokattu}
+        modifier={perusteluState.editedData?.muokkaaja}
       />
     </>
   );

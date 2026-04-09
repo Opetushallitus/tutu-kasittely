@@ -14,6 +14,7 @@ case class Viesti(
   vahvistaja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None
 )
 
