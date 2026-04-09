@@ -10,7 +10,6 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -599,6 +598,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].lisaaTutkintoPaatostekstiin").isEmpty)
+      .andExpect(jsonPath("$.luoja").isString)
+      .andExpect(jsonPath("$.luotu").isString)
       .andExpect(content().json(paatosJSON))
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
@@ -634,6 +635,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           "$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].myonteisenPaatoksenLisavaatimukset.taydentavatOpinnot"
         ).value(true)
       )
+      .andExpect(jsonPath("$.luoja").isString)
+      .andExpect(jsonPath("$.luotu").isString)
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdatePaatos), any())
   }
 
@@ -656,7 +659,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           "$.paatosTiedot[0].rinnastettavatTutkinnotTaiOpinnot[0].myonteisenPaatoksenLisavaatimukset.taydentavatOpinnot"
         ).value(true)
       )
-
+      .andExpect(jsonPath("$.luoja").isString)
+      .andExpect(jsonPath("$.luotu").isString)
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
   }
 
@@ -669,6 +673,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosWithPaatosTiedotJaKelpoisuudet,
         "luoja",
         "luotu",
+        "muokattu",
         "muokkaaja",
         "paatosTietoOptions"
       )
@@ -691,6 +696,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
             "luoja",
             "luotu",
             "muokkaaja",
+            "muokattu",
             "paatosTietoOptions"
           )
         )
@@ -719,6 +725,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
             "luoja",
             "luotu",
             "muokkaaja",
+            "muokattu",
             "paatosTietoOptions"
           )
         )
@@ -736,6 +743,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         paatosWithNewPaatosTiedotWithTutkinnotJaKelpoisuudet,
         "luoja",
         "luotu",
+        "muokattu",
         "muokkaaja",
         "paatosTietoOptions"
       )
@@ -760,6 +768,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
             "luoja",
             "luotu",
             "muokkaaja",
+            "muokattu",
             "paatosTietoOptions"
           )
         )
