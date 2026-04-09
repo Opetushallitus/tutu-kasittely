@@ -147,7 +147,7 @@ export default function MaajakoPage() {
             {isEditing ? (
               <EditEsittelijaSection
                 esittelija={esittelija}
-                sortedMaakoodit={sortedMaakoodit}
+                maakoodit={sortedMaakoodit}
                 maakooditWithoutEsittelija={maakooditWithoutEsittelija}
                 t={t}
                 setMaakoodiToUpdate={setMaakoodiToUpdate}

@@ -61,7 +61,7 @@ interface SetMaakoodiToUpdateParams {
 
 interface EditEsittelijaSectionProps {
   esittelija: Esittelija;
-  sortedMaakoodit: Maakoodi[];
+  maakoodit: Maakoodi[];
   maakooditWithoutEsittelija: Maakoodi[];
 
   t: TFunction;
@@ -73,7 +73,7 @@ interface EditEsittelijaSectionProps {
 
 export const EditEsittelijaSection = ({
   esittelija,
-  sortedMaakoodit,
+  maakoodit,
   maakooditWithoutEsittelija,
 
   t,
@@ -95,7 +95,7 @@ export const EditEsittelijaSection = ({
           value: maakoodi.koodiUri,
         }))}
         value={
-          (sortedMaakoodit
+          (maakoodit
             .filter((maakoodi) => maakoodi.esittelijaId === esittelija.id)
             .map((maakoodi) => maakoodi.koodiUri) as never) || ''
         }
@@ -104,7 +104,7 @@ export const EditEsittelijaSection = ({
             ? event.target.value
             : [event.target.value];
 
-          const newMaakoodi = sortedMaakoodit?.find(
+          const newMaakoodi = maakoodit?.find(
             (maakoodi) =>
               selectedValues.includes(maakoodi.koodiUri) &&
               maakoodi.esittelijaId === null,
@@ -121,7 +121,7 @@ export const EditEsittelijaSection = ({
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {Array.isArray(selected) &&
-              sortedMaakoodit
+              maakoodit
                 .filter((maakoodi) => selected.includes(maakoodi.koodiUri))
                 .map((maakoodi) => (
                   <Chip
