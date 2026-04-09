@@ -30,6 +30,7 @@ class ViestiRepository extends BaseResultHandlers {
         vahvistaja = Option(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
         luoja = Some(r.nextString()),
+        muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
         muokkaaja = r.nextStringOption()
       )
     )
@@ -48,7 +49,7 @@ class ViestiRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          SELECT id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, muokkaaja
+          SELECT id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, muokattu, muokkaaja
           FROM viesti
           WHERE id = ${id.toString}::uuid
            """.as[Viesti].headOption,
@@ -68,7 +69,7 @@ class ViestiRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          SELECT id, hakemus_id, kieli, tyyppi, otsikko, viesti, null, null, luotu, luoja, muokkaaja
+          SELECT id, hakemus_id, kieli, tyyppi, otsikko, viesti, null, null, luotu, luoja, muokattu, muokkaaja
           FROM viesti
           WHERE hakemus_id = ${hakemusId.toString}::uuid
             AND vahvistettu IS NULL
@@ -129,7 +130,7 @@ class ViestiRepository extends BaseResultHandlers {
             ${viesti.vahvistettu.map(java.sql.Timestamp.valueOf).orNull},
             ${viesti.vahvistaja.orNull},
             $luoja)
-            RETURNING id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, null
+            RETURNING id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, muokattu, muokkaaja
           """.as[Viesti].head,
         "lisaa_viesti"
       )
@@ -157,7 +158,7 @@ class ViestiRepository extends BaseResultHandlers {
               vahvistaja = ${viesti.vahvistaja.orNull},
               muokkaaja = $muokkaaja
           WHERE id = ${id.toString}::uuid
-          RETURNING id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, muokkaaja
+          RETURNING id, hakemus_id, kieli, tyyppi, otsikko, viesti, vahvistettu, vahvistaja, luotu, luoja, muokattu, muokkaaja
         """.as[Viesti].head,
         "tallenna_viesti"
       )
