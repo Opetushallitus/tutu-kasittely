@@ -10,6 +10,8 @@ export type Viesti = {
   viesti?: string | null;
   vahvistettu?: string;
   vahvistaja?: string;
+  muokattu?: string | null;
+  muokkaaja?: string | null;
 };
 
 export type VahvistettuViestiListItem = {

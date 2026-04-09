@@ -33,7 +33,6 @@ import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import { Hakemus } from '@/src/lib/types/hakemus';
 import {
   VahvistettuViestiListItem,
   Viesti,
@@ -152,7 +151,6 @@ export default function ViestiPage() {
     <ViestiPageComponent
       t={t}
       viesti={viesti}
-      hakemus={hakemus}
       updateOngoing={updateOngoing}
       updateViesti={updateViesti}
       vahvistaViesti={vahvistaViestiJaPaivitaLista}
@@ -180,7 +178,6 @@ const handleCopy = (
 const ViestiPageComponent = ({
   t,
   viesti,
-  hakemus,
   updateOngoing,
   updateViesti,
   vahvistaViesti,
@@ -190,7 +187,6 @@ const ViestiPageComponent = ({
 }: {
   t: TFunction;
   viesti: Viesti;
-  hakemus: Hakemus;
   updateOngoing: boolean;
   updateViesti: ViestiUpdateCallback;
   vahvistaViesti: ViestiUpdateCallback;
@@ -388,8 +384,8 @@ const ViestiPageComponent = ({
         onSave={onSave}
         isSaving={updateOngoing}
         hasChanges={viestiState.hasChanges || editorHasChanges}
-        lastSaved={hakemus.muokattu}
-        modifier={hakemus.muokkaaja}
+        lastSaved={currentViesti.muokattu}
+        modifier={currentViesti.muokkaaja}
       />
     </Stack>
   );
