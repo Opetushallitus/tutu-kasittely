@@ -61,6 +61,10 @@ export type Paatos = {
   hyvaksymispaiva: string | null;
   lahetyspaiva: string | null;
   paatostekstiVahvistettu: string | null;
+  luotu: string | null;
+  luoja: string | null;
+  muokattu: string | null;
+  muokkaaja: string | null;
 };
 
 export type TutkintoTaiOpinto = {

@@ -48,7 +48,6 @@ export default function PaatostiedotPage() {
     isLoading: isHakemusLoading,
     hakemusState,
     error: hakemusError,
-    isSaving,
   } = useHakemus();
 
   const { tutkintoState } = useTutkinnot(hakemusState.editedData?.hakemusOid);
@@ -106,7 +105,7 @@ export default function PaatostiedotPage() {
   return (
     <Paatostiedot
       paatosState={paatosState}
-      updateOngoing={isSaving || isPaatosUpdateOngoing}
+      updateOngoing={isPaatosUpdateOngoing}
       hakemusState={hakemusState}
       tutkinnot={tutkintoState.editedData ?? []}
       paatosteksti={paatosteksti}
@@ -138,14 +137,7 @@ const Paatostiedot = ({
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
-  useUnsavedChanges(paatosState.hasChanges || hakemusState.hasChanges, () => {
-    if (hakemusState.hasChanges) {
-      hakemusState.discard();
-    }
-    if (paatosState.hasChanges) {
-      paatosState.discard();
-    }
-  });
+  useUnsavedChanges(paatosState.hasChanges, paatosState.discard);
 
   const [currentPaatosTiedot, setCurrentPaatosTiedot] = React.useState<
     PaatosTieto[]
@@ -324,12 +316,11 @@ const Paatostiedot = ({
           <SaveRibbon
             onSave={() => {
               paatosState.save();
-              hakemusState.save();
             }}
             isSaving={updateOngoing}
-            hasChanges={paatosState.hasChanges || hakemusState.hasChanges}
-            lastSaved={hakemus.muokattu}
-            modifier={hakemus.muokkaaja}
+            hasChanges={paatosState.hasChanges}
+            lastSaved={paatos.muokattu}
+            modifier={paatos.muokkaaja}
           />
         </Stack>
         {showPaatosTekstiPreview && (
