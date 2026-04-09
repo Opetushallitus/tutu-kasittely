@@ -359,8 +359,8 @@ export default function ApPage() {
         onSave={handleSave}
         isSaving={isPerusteluSaving}
         hasChanges={hasPerusteluChanges}
-        lastSaved={hakemus?.muokattu}
-        modifier={hakemus?.muokkaaja}
+        lastSaved={editedPerustelu?.muokattu}
+        modifier={editedPerustelu?.muokkaaja}
       />
     </>
   );
