@@ -19,6 +19,7 @@ import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
+import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -138,6 +139,8 @@ export default function TutkintoPage() {
     (tutkinto) => tutkinto.jarjestys === 'MUU',
   );
 
+  const lastModified = lastModifiedInArray(editedTutkinnot);
+
   return (
     <>
       <Stack
@@ -198,8 +201,8 @@ export default function TutkintoPage() {
         }}
         isSaving={isHakemusSaving || isSaving}
         hasChanges={hakemusState.hasChanges || tutkintoState.hasChanges}
-        lastSaved={hakemusState.editedData.muokattu}
-        modifier={hakemusState.editedData.muokkaaja}
+        lastSaved={lastModified.muokattu}
+        modifier={lastModified.muokkaaja}
       />
     </>
   );

@@ -126,19 +126,21 @@ class TutkintoController(
         HakemusModifyOperationResolver.resolveTutkintoModifyOperations(tallennetutTutkinnot, tutkinnot),
         UserOid(user.userOid)
       )
-      (tallennetutTutkinnot, tutkinnot)
+
+      val uudetTutkinnot = tutkintoService.haeTutkinnot(HakemusOid(hakemusOid))
+      (tallennetutTutkinnot, uudetTutkinnot)
     } match {
-      case Success((tallennetutTutkinnot, tutkinnot)) =>
+      case Success((tallennetutTutkinnot, uudetTutkinnot)) =>
         auditLog.logChanges(
           auditLog.getUser(request),
           Map("hakemusOid" -> hakemusOid),
           TallennaTutkinnot,
           AuditUtil.getChanges(
             Some(mapper.writeValueAsString(tallennetutTutkinnot)),
-            Some(mapper.writeValueAsString(tutkinnot))
+            Some(mapper.writeValueAsString(uudetTutkinnot))
           )
         )
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(tutkinnot))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uudetTutkinnot))
       case Failure(e) =>
         LOG.error("Tutkintojen tallentaminen epäonnistui", e)
         errorMessageMapper.mapPlainErrorMessage(

@@ -12,6 +12,8 @@ export const getPaatos = (): Paatos => {
     hyvaksymispaiva: null,
     lahetyspaiva: null,
     paatostekstiVahvistettu: null,
+    muokattu: '2024-06-01T12:00:00Z',
+    muokkaaja: 'Tutu',
   };
 };
 
@@ -35,5 +37,7 @@ export const getPaatosWithPaatosTiedot = (): Paatos => {
     hyvaksymispaiva: null,
     lahetyspaiva: null,
     paatostekstiVahvistettu: null,
+    muokattu: '2024-06-01T12:00:00Z',
+    muokkaaja: 'Tutu',
   };
 };
