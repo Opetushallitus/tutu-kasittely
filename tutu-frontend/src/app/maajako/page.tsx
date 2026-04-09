@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Chip, Divider, Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import {
   OphButton,
@@ -9,7 +9,10 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 
-import { EsittelijaSection } from '@/src/app/maajako/components/EsittelijaSection';
+import {
+  EditEsittelijaSection,
+  EsittelijaSection,
+} from '@/src/app/maajako/components/EsittelijaSection';
 import { SelectedMaakoodiInfo } from '@/src/app/maajako/components/SelectedMaakoodiInfo';
 import { AlertBox } from '@/src/components/AlertBox';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
@@ -140,78 +143,16 @@ export default function MaajakoPage() {
         </OphButton>
 
         {esittelijat?.map((esittelija, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={`esittelija-${index}`}>
             {isEditing ? (
-              <>
-                <OphTypography variant={'h4'}>
-                  {esittelija.etunimi} {esittelija.sukunimi}
-                </OphTypography>
-                <OphSelectFormField
-                  placeholder="yleiset.valitse"
-                  label={t('maajako.tutkinnonsuoritusmaat')}
-                  multiple
-                  data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
-                  options={maakooditWithoutEsittelija.map((maakoodi) => ({
-                    label: maakoodi.fi,
-                    value: maakoodi.koodiUri,
-                  }))}
-                  value={
-                    (sortedMaakoodit
-                      .filter(
-                        (maakoodi) => maakoodi.esittelijaId === esittelija.id,
-                      )
-                      .map((maakoodi) => maakoodi.koodiUri) as never) || ''
-                  }
-                  onChange={(event: SelectChangeEvent) => {
-                    const selectedValues = Array.isArray(event.target.value)
-                      ? event.target.value
-                      : [event.target.value];
-
-                    const newMaakoodi = maakoodit?.find(
-                      (maakoodi) =>
-                        selectedValues.includes(maakoodi.koodiUri) &&
-                        maakoodi.esittelijaId === null,
-                    );
-
-                    if (newMaakoodi && esittelija.id) {
-                      setMaakoodiToUpdate({
-                        id: newMaakoodi.id,
-                        esittelijaId: esittelija.id,
-                      });
-                    }
-                  }}
-                  sx={{ width: '100%' }}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {Array.isArray(selected) &&
-                        sortedMaakoodit
-                          .filter((maakoodi) =>
-                            selected.includes(maakoodi.koodiUri),
-                          )
-                          .map((maakoodi) => (
-                            <Chip
-                              key={maakoodi.koodiUri}
-                              label={maakoodi.fi}
-                              sx={{ borderRadius: '0px' }}
-                              data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
-                              onDelete={() => {
-                                if (maakoodi && esittelija.id) {
-                                  setMaakoodiToUpdate({
-                                    id: maakoodi.id,
-                                    esittelijaId: undefined,
-                                  });
-                                  updateMaakoodi();
-                                }
-                              }}
-                              onMouseDown={(event) => {
-                                event.stopPropagation();
-                              }}
-                            />
-                          ))}
-                    </Box>
-                  )}
-                ></OphSelectFormField>
-              </>
+              <EditEsittelijaSection
+                esittelija={esittelija}
+                sortedMaakoodit={sortedMaakoodit}
+                maakooditWithoutEsittelija={maakooditWithoutEsittelija}
+                t={t}
+                setMaakoodiToUpdate={setMaakoodiToUpdate}
+                updateMaakoodi={updateMaakoodi}
+              />
             ) : (
               <EsittelijaSection
                 esittelija={esittelija}

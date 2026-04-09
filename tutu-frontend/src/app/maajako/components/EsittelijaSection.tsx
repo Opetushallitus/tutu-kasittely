@@ -1,4 +1,10 @@
-import { OphTypography } from '@opetushallitus/oph-design-system';
+import { Box, Chip } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
+import {
+  OphSelectFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 
 import { Esittelija } from '@/src/lib/types/esittelija';
 
@@ -44,6 +50,102 @@ export const EsittelijaSection = ({
           ? maakooditForEsittelija.join(', ')
           : '-'}
       </OphTypography>
+    </>
+  );
+};
+
+interface SetMaakoodiToUpdateParams {
+  id: string;
+  esittelijaId?: string;
+}
+
+interface EditEsittelijaSectionProps {
+  esittelija: Esittelija;
+  sortedMaakoodit: Maakoodi[];
+  maakooditWithoutEsittelija: Maakoodi[];
+
+  t: TFunction;
+  setMaakoodiToUpdate: (any: SetMaakoodiToUpdateParams) => void;
+  updateMaakoodi: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<null, Error>>;
+}
+
+export const EditEsittelijaSection = ({
+  esittelija,
+  sortedMaakoodit,
+  maakooditWithoutEsittelija,
+
+  t,
+  setMaakoodiToUpdate,
+  updateMaakoodi,
+}: EditEsittelijaSectionProps) => {
+  return (
+    <>
+      <OphTypography variant={'h4'}>
+        {esittelija.etunimi} {esittelija.sukunimi}
+      </OphTypography>
+      <OphSelectFormField
+        placeholder="yleiset.valitse"
+        label={t('maajako.tutkinnonsuoritusmaat')}
+        multiple
+        data-testid={`esittelija-maaselection-${esittelija.id}`}
+        options={maakooditWithoutEsittelija.map((maakoodi) => ({
+          label: maakoodi.fi,
+          value: maakoodi.koodiUri,
+        }))}
+        value={
+          (sortedMaakoodit
+            .filter((maakoodi) => maakoodi.esittelijaId === esittelija.id)
+            .map((maakoodi) => maakoodi.koodiUri) as never) || ''
+        }
+        onChange={(event: SelectChangeEvent) => {
+          const selectedValues = Array.isArray(event.target.value)
+            ? event.target.value
+            : [event.target.value];
+
+          const newMaakoodi = sortedMaakoodit?.find(
+            (maakoodi) =>
+              selectedValues.includes(maakoodi.koodiUri) &&
+              maakoodi.esittelijaId === null,
+          );
+
+          if (newMaakoodi && esittelija.id) {
+            setMaakoodiToUpdate({
+              id: newMaakoodi.id,
+              esittelijaId: esittelija.id,
+            });
+          }
+        }}
+        sx={{ width: '100%' }}
+        renderValue={(selected) => (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            {Array.isArray(selected) &&
+              sortedMaakoodit
+                .filter((maakoodi) => selected.includes(maakoodi.koodiUri))
+                .map((maakoodi) => (
+                  <Chip
+                    key={maakoodi.koodiUri}
+                    label={maakoodi.fi}
+                    sx={{ borderRadius: '0px' }}
+                    data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
+                    onDelete={() => {
+                      if (maakoodi && esittelija.id) {
+                        setMaakoodiToUpdate({
+                          id: maakoodi.id,
+                          esittelijaId: undefined,
+                        });
+                        updateMaakoodi();
+                      }
+                    }}
+                    onMouseDown={(event) => {
+                      event.stopPropagation();
+                    }}
+                  />
+                ))}
+          </Box>
+        )}
+      ></OphSelectFormField>
     </>
   );
 };
