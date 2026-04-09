@@ -9,16 +9,19 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 
+import { EsittelijaSection } from '@/src/app/maajako/components/EsittelijaSection';
+import { SelectedMaakoodiInfo } from '@/src/app/maajako/components/SelectedMaakoodiInfo';
 import { AlertBox } from '@/src/components/AlertBox';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { EsittelijaSection } from '@/src/components/EsittelijaSection';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
 import useToaster from '@/src/hooks/useToaster';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
 import { handleFetchError } from '@/src/lib/utils';
 
@@ -113,16 +116,10 @@ export default function MaajakoPage() {
         <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
         <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
 
-        {maakooditWithoutEsittelija.length === 0 ? (
-          <SuccessBox infoText={t('maajako.kaikkiValittu')} />
-        ) : (
-          <AlertBox
-            infoText={maakooditWithoutEsittelija
-              .map((maakoodi) => maakoodi.fi)
-              .join(', ')}
-            headingText={t('maajako.varoitus')}
-          />
-        )}
+        <KaikkiValittuInfo
+          t={t}
+          maakooditWithoutEsittelija={maakooditWithoutEsittelija}
+        />
 
         <OphButton
           sx={{
@@ -234,3 +231,23 @@ export default function MaajakoPage() {
     </BoxWrapper>
   );
 }
+
+interface KaikkiValittuInfoProps {
+  t: TFunction;
+  maakooditWithoutEsittelija: Maakoodi[];
+}
+
+const KaikkiValittuInfo = ({
+  t,
+  maakooditWithoutEsittelija,
+}: KaikkiValittuInfoProps) =>
+  maakooditWithoutEsittelija.length === 0 ? (
+    <SuccessBox infoText={t('maajako.kaikkiValittu')} />
+  ) : (
+    <AlertBox
+      infoText={maakooditWithoutEsittelija
+        .map((maakoodi) => maakoodi.fi)
+        .join(', ')}
+      headingText={t('maajako.varoitus')}
+    />
+  );
