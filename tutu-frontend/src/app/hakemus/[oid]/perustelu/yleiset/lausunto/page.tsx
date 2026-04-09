@@ -161,8 +161,8 @@ export default function Lausuntotiedot() {
           onSave={save}
           isSaving={isPerusteluSaving}
           hasChanges={hasPerusteluChanges}
-          lastSaved={hakemus?.muokattu}
-          modifier={hakemus?.muokkaaja}
+          lastSaved={editedPerustelu?.muokattu}
+          modifier={editedPerustelu?.muokkaaja}
         />
       </Stack>
     </PerusteluLayout>
