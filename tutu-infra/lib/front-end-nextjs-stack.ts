@@ -5,6 +5,7 @@ import { IHostedZone } from 'aws-cdk-lib/aws-route53'
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront'
 import * as logs from 'aws-cdk-lib/aws-logs'
+import { Runtime } from 'aws-cdk-lib/aws-lambda'
 
 interface FrontendNextjsStackProps extends StackProps {
   nextjsPath: string
@@ -16,18 +17,21 @@ interface FrontendNextjsStackProps extends StackProps {
   envVars: Record<string, string>
   serviceName: string
   skipBuild: boolean
+  runtime: Runtime
 }
 
 const nameFunctionProps = (
   scope: Construct,
   environmentName: string,
   appName: string,
+  runtime: Runtime,
   lambdaName: string,
   logGroupOptions?: logs.LogGroupProps
 ): OptionalFunctionProps => {
   const id = `${environmentName}-${appName}-${lambdaName}`
   return {
     functionName: id,
+    runtime: runtime,
     logGroup: new logs.LogGroup(scope, id, {
       logGroupName: `/aws/lambda/${id}`,
       retention: logs.RetentionDays.INFINITE,
@@ -36,10 +40,15 @@ const nameFunctionProps = (
   }
 }
 
-const nameOverrides = (scope: Construct, environmentName: string, appName: string): NextjsOverrides => {
+const nameOverrides = (
+  scope: Construct,
+  environmentName: string,
+  appName: string,
+  runtime: Runtime
+): NextjsOverrides => {
   return {
     nextjsServer: {
-      functionProps: nameFunctionProps(scope, environmentName, appName, 'nextjs-server')
+      functionProps: nameFunctionProps(scope, environmentName, appName, runtime, 'nextjs-server')
     }
   }
 }
@@ -70,7 +79,7 @@ export class FrontendNextjsStack extends Stack {
               enableIpv6: false
             }
           },
-          ...nameOverrides(this, props.environment, props.serviceName)
+          ...nameOverrides(this, props.environment, props.serviceName, props.runtime)
         }
       })
     }
