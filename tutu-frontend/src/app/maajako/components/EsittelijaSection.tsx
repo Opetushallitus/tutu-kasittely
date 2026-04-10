@@ -80,6 +80,45 @@ export const EditEsittelijaSection = ({
   setMaakoodiToUpdate,
   updateMaakoodi,
 }: EditEsittelijaSectionProps) => {
+  const vapaatMaakooditOptions = maakooditWithoutEsittelija.map((maakoodi) => ({
+    label: maakoodi.fi,
+    value: maakoodi.koodiUri,
+  }));
+
+  const selectedValues =
+    (maakoodit
+      .filter((maakoodi) => maakoodi.esittelijaId === esittelija.id)
+      .map((maakoodi) => maakoodi.koodiUri) as never) || '';
+
+  const handleSetMaakoodi = (event: SelectChangeEvent) => {
+    const selectedValues = Array.isArray(event.target.value)
+      ? event.target.value
+      : [event.target.value];
+
+    const newMaakoodi = maakoodit?.find(
+      (maakoodi) =>
+        selectedValues.includes(maakoodi.koodiUri) &&
+        maakoodi.esittelijaId === null,
+    );
+
+    if (newMaakoodi && esittelija.id) {
+      setMaakoodiToUpdate({
+        id: newMaakoodi.id,
+        esittelijaId: esittelija.id,
+      });
+    }
+  };
+
+  const handleRemoveMaakoodi = (maakoodi: Maakoodi) => () => {
+    if (maakoodi && esittelija.id) {
+      setMaakoodiToUpdate({
+        id: maakoodi.id,
+        esittelijaId: undefined,
+      });
+      updateMaakoodi();
+    }
+  };
+
   return (
     <>
       <OphTypography variant={'h4'}>
@@ -90,33 +129,9 @@ export const EditEsittelijaSection = ({
         label={t('maajako.tutkinnonsuoritusmaat')}
         multiple
         data-testid={`esittelija-maaselection-${esittelija.id}`}
-        options={maakooditWithoutEsittelija.map((maakoodi) => ({
-          label: maakoodi.fi,
-          value: maakoodi.koodiUri,
-        }))}
-        value={
-          (maakoodit
-            .filter((maakoodi) => maakoodi.esittelijaId === esittelija.id)
-            .map((maakoodi) => maakoodi.koodiUri) as never) || ''
-        }
-        onChange={(event: SelectChangeEvent) => {
-          const selectedValues = Array.isArray(event.target.value)
-            ? event.target.value
-            : [event.target.value];
-
-          const newMaakoodi = maakoodit?.find(
-            (maakoodi) =>
-              selectedValues.includes(maakoodi.koodiUri) &&
-              maakoodi.esittelijaId === null,
-          );
-
-          if (newMaakoodi && esittelija.id) {
-            setMaakoodiToUpdate({
-              id: newMaakoodi.id,
-              esittelijaId: esittelija.id,
-            });
-          }
-        }}
+        options={vapaatMaakooditOptions}
+        value={selectedValues}
+        onChange={handleSetMaakoodi}
         sx={{ width: '100%' }}
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -129,15 +144,7 @@ export const EditEsittelijaSection = ({
                     label={maakoodi.fi}
                     sx={{ borderRadius: '0px' }}
                     data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
-                    onDelete={() => {
-                      if (maakoodi && esittelija.id) {
-                        setMaakoodiToUpdate({
-                          id: maakoodi.id,
-                          esittelijaId: undefined,
-                        });
-                        updateMaakoodi();
-                      }
-                    }}
+                    onDelete={handleRemoveMaakoodi(maakoodi)}
                     onMouseDown={(event) => {
                       event.stopPropagation();
                     }}
