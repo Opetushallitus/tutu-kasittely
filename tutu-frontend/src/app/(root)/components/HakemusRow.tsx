@@ -7,7 +7,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
 import Link from 'next/link';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 import { StyledTableCell } from '@/src/components/StyledTableCell';
@@ -53,20 +53,38 @@ export default function HakemusRow({
   const { t } = useTranslations();
   const [showEditAsiatunnus, setShowEditAsiatunnus] = useState(false);
   const [asiatunnus, setAsiatunnus] = useState(hakemus.asiatunnus);
+  const [savedAsiatunnus, setSavedAsiatunnus] = useState(hakemus.asiatunnus);
   const { addToast } = useToaster();
 
+  const editRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (!showEditAsiatunnus) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (editRef.current && !editRef.current.contains(event.target as Node)) {
+        setShowEditAsiatunnus(false);
+        setAsiatunnus(savedAsiatunnus);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showEditAsiatunnus, savedAsiatunnus]);
+
   const updateAsiatunnus = useCallback(async () => {
-    if (asiatunnus && asiatunnus !== '' && asiatunnus !== hakemus.asiatunnus) {
+    if (asiatunnus && asiatunnus !== '' && asiatunnus !== savedAsiatunnus) {
       try {
         await doApiPatch(`hakemus/${hakemus.hakemusOid}/asiatunnus`, {
           asiatunnus,
         });
+        setSavedAsiatunnus(asiatunnus);
         setShowEditAsiatunnus(false);
       } catch (error) {
         handleFetchError(addToast, error, 'virhe.paivitaAsiatunnus', t);
       }
+    } else {
+      setShowEditAsiatunnus(false);
     }
-  }, [asiatunnus, hakemus.asiatunnus, hakemus.hakemusOid, addToast, t]);
+  }, [asiatunnus, savedAsiatunnus, hakemus.hakemusOid, addToast, t]);
 
   const asiaTunnusValid = useMemo(() => {
     return (
@@ -97,7 +115,16 @@ export default function HakemusRow({
           data-testid="asiatunnus"
         >
           {showEditAsiatunnus ? (
-            <>
+            <form
+              ref={editRef}
+              style={{ display: 'contents' }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (asiaTunnusValid) {
+                  updateAsiatunnus();
+                }
+              }}
+            >
               <OphInputFormField
                 value={asiatunnus ?? ''}
                 onChange={(event) => {
@@ -105,13 +132,13 @@ export default function HakemusRow({
                 }}
               ></OphInputFormField>
               <OphButton
+                type="submit"
                 variant={'contained'}
-                onClick={updateAsiatunnus}
                 disabled={!asiaTunnusValid}
               >
                 {t('yleiset.tallenna')}
               </OphButton>
-            </>
+            </form>
           ) : (
             <>
               <OphTypography>{asiatunnus}</OphTypography>
