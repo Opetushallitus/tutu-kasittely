@@ -193,7 +193,6 @@ case class Hakemus(
 case class HakemusUpdateRequest(
   hakemusKoskee: Int,
   asiatunnus: Option[String],
-  esittelyPvm: Option[LocalDateTime],
   paatosPvm: Option[LocalDateTime],
   esittelijaOid: Option[String],
   kasittelyVaihe: KasittelyVaihe,

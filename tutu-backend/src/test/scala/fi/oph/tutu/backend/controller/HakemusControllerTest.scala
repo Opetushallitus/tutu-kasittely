@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 import org.hamcrest.Matchers.hasItems
+import org.hamcrest.CustomMatcher
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZonedDateTime}
@@ -700,7 +701,13 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Test
   @Order(11)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  def paivitaEsittelyPvmWitoutDateReturns204(): Unit = {
+  def paivitaEsittelyPvmWithoutDateReturns204(): Unit = {
+    def isToday(dateString: String): Boolean = {
+      val nowDate  = LocalDateTime.now.toLocalDate
+      val testDate = toLocalDateTime(dateString).toLocalDate
+      nowDate.isEqual(testDate)
+    }
+
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -731,6 +738,11 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$.esittelyPvm").isNotEmpty)
+      .andExpect(jsonPath("$.esittelyPvm").value(new CustomMatcher("Datestring represents today") {
+        def matches(item: Object): Boolean = {
+          val dateString = item.asInstanceOf[String]
+          isToday(dateString)
+        }
+      }))
   }
 }

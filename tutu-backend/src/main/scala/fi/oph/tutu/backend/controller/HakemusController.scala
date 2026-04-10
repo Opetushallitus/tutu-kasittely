@@ -526,13 +526,18 @@ class HakemusController(
   @Operation(
     summary = "Päivittää hakemuksen esittelypäivän",
     description = "PATCH endpoint esittelypäivän asettamiselle",
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[EsittelyPvmUpdateRequest]))
+      )
+    ),
     responses = Array(
       new ApiResponse(
-        responseCode = "200",
+        responseCode = "204",
         description = RESPONSE_200_DESCRIPTION
       ),
       new ApiResponse(
-        responseCode = "404",
+        responseCode = "400",
         description = RESPONSE_400_DESCRIPTION
       ),
       new ApiResponse(
@@ -586,7 +591,7 @@ class HakemusController(
                 UpdateEsittelyPvm,
                 AuditUtil.getChanges(None, Some(esittelyPvm.toString))
               )
-              ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
+              ResponseEntity.noContent().build()
             }
           case Failure(exception) =>
             errorMessageMapper.mapErrorMessage(exception)

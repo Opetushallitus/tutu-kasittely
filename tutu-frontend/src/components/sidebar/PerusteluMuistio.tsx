@@ -110,23 +110,26 @@ export const PerusteluMuistioModal = ({
   const handleCopy = async () => {
     setIsLoading(true);
 
-    // Pyydä API:a asettamaan esittelypäivä
-    await asetaEsittelypaiva(hakemusOid);
+    try {
+      // Pyydä API:a asettamaan esittelypäivä
+      await asetaEsittelypaiva(hakemusOid);
 
-    // Pyydä perustelumuistioteksti uudelleen
-    const sisalto = await getPerusteluMuistio(hakemusOid);
-    setMuistio(sisalto || '');
-    setIsLoading(false);
+      // Pyydä perustelumuistioteksti uudelleen
+      const sisalto = await getPerusteluMuistio(hakemusOid);
+      setMuistio(sisalto || '');
 
-    // Kopioi teksti
-    navigator.clipboard.writeText(sisalto);
+      // Kopioi teksti
+      navigator.clipboard.writeText(sisalto);
 
-    addToast({
-      key: 'hakemus.perustelumuistio.kopioi.toaster',
-      message: t('hakemus.perustelumuistio.kopioituToast'),
-      type: 'success',
-      timeMs: 2500,
-    });
+      addToast({
+        key: 'hakemus.perustelumuistio.kopioi.toaster',
+        message: t('hakemus.perustelumuistio.kopioituToast'),
+        type: 'success',
+        timeMs: 2500,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const content = isLoading ? (

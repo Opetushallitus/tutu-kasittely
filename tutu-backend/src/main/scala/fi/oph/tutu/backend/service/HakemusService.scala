@@ -21,7 +21,6 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 import slick.dbio.DBIO
 
-import java.time.LocalDateTime
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -275,7 +274,7 @@ class HakemusService(
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             saapumisPvm = dbHakemus.saapumisPvm,
-            // TODO: esittelyPvm, paatosPvm.
+            // TODO: paatosPvm
             esittelyPvm = dbHakemus.esittelyPvm,
             paatosPvm = None,
             esittelijaOid = dbHakemus.esittelijaOid match {
