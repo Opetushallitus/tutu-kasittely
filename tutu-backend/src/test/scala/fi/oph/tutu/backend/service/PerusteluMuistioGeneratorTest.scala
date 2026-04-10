@@ -524,7 +524,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   @Test
   def haeHakijanNimiProducesString(): Unit = {
     val result = haeHakijanNimi(translationService, someHakemus)
-    assert(result.get.contains(hakijaFixture.etunimet))
+    assert(result.get.contains(hakijaFixture.kutsumanimi))
     assert(result.get.contains(hakijaFixture.sukunimi))
   }
 

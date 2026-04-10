@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 import org.hamcrest.Matchers.hasItems
+import org.hamcrest.CustomMatcher
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZonedDateTime}
@@ -658,5 +659,90 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.items[*].apHakemus").value(hasItems(true, false)))
 
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
+  }
+
+  @Test
+  @Order(10)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def paivitaEsittelyPvmWithDateReturns204(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+      )
+    initAtaruHakemusRequests()
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+
+    val requestJson = """{"esittelyPvm": "2026-04-02T11:34:23.602Z"}"""
+
+    mockMvc
+      .perform(
+        patch(s"/api/hakemus/${hakemusOid.toString}/esittelypvm")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isNoContent)
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdateEsittelyPvm), any())
+
+    mockMvc
+      .perform(
+        get(s"/api/hakemus/${hakemusOid.toString}")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.esittelyPvm").value("2026-04-02T11:34:23.602Z"))
+  }
+
+  @Test
+  @Order(11)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def paivitaEsittelyPvmWithoutDateReturns204(): Unit = {
+    def isToday(dateString: String): Boolean = {
+      val nowDate  = LocalDateTime.now.toLocalDate
+      val testDate = toLocalDateTime(dateString).toLocalDate
+      nowDate.isEqual(testDate)
+    }
+
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+      )
+    initAtaruHakemusRequests()
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+
+    val requestJson = """{}"""
+
+    mockMvc
+      .perform(
+        patch(s"/api/hakemus/${hakemusOid.toString}/esittelypvm")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isNoContent)
+
+    verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdateEsittelyPvm), any())
+
+    mockMvc
+      .perform(
+        get(s"/api/hakemus/${hakemusOid.toString}")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.esittelyPvm").value(new CustomMatcher("Datestring represents today") {
+        def matches(item: Object): Boolean = {
+          val dateString = item.asInstanceOf[String]
+          isToday(dateString)
+        }
+      }))
   }
 }

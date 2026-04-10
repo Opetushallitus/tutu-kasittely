@@ -274,8 +274,8 @@ class HakemusService(
             hakemusKoskee = dbHakemus.hakemusKoskee,
             asiatunnus = dbHakemus.asiatunnus,
             saapumisPvm = dbHakemus.saapumisPvm,
-            // TODO: esittelyPvm, paatosPvm.
-            esittelyPvm = None,
+            // TODO: paatosPvm
+            esittelyPvm = dbHakemus.esittelyPvm,
             paatosPvm = None,
             esittelijaOid = dbHakemus.esittelijaOid match {
               case None                => None
@@ -445,6 +445,10 @@ class HakemusService(
 
   def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
     hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
+  }
+
+  def asetaEsittelypaiva(hakemusOid: HakemusOid, esittelyPvm: LocalDateTime, muokkaaja: String): Int = {
+    hakemusRepository.suoritaPaivitaEsittelyPvm(hakemusOid, esittelyPvm, muokkaaja)
   }
 
   def paivitaKasittelyVaiheSisaisesti(

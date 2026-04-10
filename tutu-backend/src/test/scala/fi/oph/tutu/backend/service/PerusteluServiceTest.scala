@@ -68,7 +68,8 @@ class PerusteluServiceTest extends UnitTestBase {
       saapumisPvm = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
       ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
       hakijaEtunimet = Some("Jorma Eero"),
-      hakijaSukunimi = Some("")
+      hakijaSukunimi = Some(""),
+      esittelyPvm = None
     )
   }
 
