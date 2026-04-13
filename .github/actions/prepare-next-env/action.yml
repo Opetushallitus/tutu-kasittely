@@ -4,11 +4,11 @@ runs:
   using: "composite"
   steps:
     - name: Set up pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v5
       with:
         version: 10
     - name: Set up node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version-file: "tutu-frontend/.nvmrc"
         cache: "pnpm"
@@ -16,12 +16,12 @@ runs:
         registry-url: "https://npm.pkg.github.com"
         scope: "@opetushallitus"
     - name: node_modules-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ github.workspace }}/tutu-frontend/node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}
     - name: Cache Next.js
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ github.workspace }}/tutu-frontend/.next/cache
         key: ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}-${{ hashFiles('./tutu-frontend/next.config.*', './tutu-frontend/src/**/*.ts', './tutu-frontend/src/**/*.tsx') }}
