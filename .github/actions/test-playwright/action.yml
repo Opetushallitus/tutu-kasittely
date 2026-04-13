@@ -8,7 +8,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
     - uses: ./.github/actions/prepare-next-env
     - name: Create self-signed dev certificates
       shell: bash
@@ -20,7 +20,7 @@ runs:
       env:
         PLAYWRIGHT_PROJECT: ${{ inputs.browser }}
       run: pnpm start-server-and-test-playwright-in-docker
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: playwright-report

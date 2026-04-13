@@ -30,13 +30,13 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/prepare-next-env
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: "tutu-infra/.nvmrc"
       - name: Configure AWS utility-role credentials
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_TUTU_UTILITY_ROLE_ARN }}
           role-session-name: tutu-frontend-download-build-zip
@@ -51,14 +51,14 @@ jobs:
           cp -R .next/standalone/.next/server .next/server
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'dev' }}
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_TUTU_DEV_ROLE_ARN }}
           role-session-name: tutu-frontend-deploy-dev
           aws-region: eu-west-1
       - name: Configure AWS qa-role credentials
         if: ${{ inputs.environment == 'qa' }}
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_TUTU_QA_ROLE_ARN }}
           role-session-name: tutu-frontend-deploy-qa

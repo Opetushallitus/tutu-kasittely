@@ -21,7 +21,7 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await expect(page.getByTestId('hakemus-list')).toBeVisible();
   const hakemusRow = page.getByTestId('hakemus-row');
 
-  expect(await hakemusRow.count()).toBe(4);
+  await expect(hakemusRow).toHaveCount(4);
 });
 
 test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oikein', async ({
