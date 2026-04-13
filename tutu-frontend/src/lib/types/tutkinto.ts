@@ -17,4 +17,6 @@ export type Tutkinto = {
   opinnaytetyo?: boolean | null;
   harjoittelu?: boolean | null;
   perustelunLisatietoja?: string;
+  muokattu?: string | null;
+  muokkaaja?: string | null;
 };

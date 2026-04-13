@@ -126,7 +126,9 @@ class TutkintoController(
         HakemusModifyOperationResolver.resolveTutkintoModifyOperations(tallennetutTutkinnot, tutkinnot),
         UserOid(user.userOid)
       )
-      (tallennetutTutkinnot, tutkinnot)
+
+      val uudetTutkinnot = tutkintoService.haeTutkinnot(HakemusOid(hakemusOid))
+      (tallennetutTutkinnot, uudetTutkinnot)
     } match {
       case Success((tallennetutTutkinnot, tutkinnot)) =>
         auditLog.logChanges(

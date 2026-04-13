@@ -18,8 +18,8 @@ interface SaveRibbonProps {
   onSave: () => void;
   isSaving: boolean;
   hasChanges: boolean;
-  lastSaved?: string;
-  modifier?: string;
+  lastSaved?: string | null;
+  modifier?: string | null;
 }
 
 export const SaveRibbon = ({
