@@ -615,8 +615,7 @@ class HakemusController(
       val user    = userService.getEnrichedUserDetails(true)
       val userOid = user.userOid
 
-      val onkoViesteja = hakemusService.isYkViesteja(userOid)
-      onkoViesteja
+      hakemusService.isYkViesteja(userOid)
     } match {
       case Success(viesteja) =>
         val response = mapper.writeValueAsString(viesteja)
