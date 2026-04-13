@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS yk_viesti (
     luotu TIMESTAMPTZ DEFAULT now(),
     luettu TIMESTAMPTZ,
     viesti TEXT,
-    CONSTRAINT fk_viesti_hakemus FOREIGN KEY (hakemus_oid) REFERENCES hakemus(hakemus_oid)
+    CONSTRAINT fk_viesti_hakemus FOREIGN KEY (hakemus_oid) REFERENCES hakemus(hakemus_oid),
+    CONSTRAINT fk_parent FOREIGN KEY (parent_id) REFERENCES yk_viesti(id) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE yk_viesti IS 'Yhteiseen käsittelyyn liittyvät viestit';
