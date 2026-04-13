@@ -28,7 +28,7 @@ test('Hakemuslistaus latautuu', async ({ page }) => {
   await expect(page.getByTestId('filemaker-hakemus-list')).toBeVisible();
   const hakemusRow = page.getByTestId('filemaker-hakemus-row');
 
-  expect(await hakemusRow.count()).toBe(20);
+  await expect(hakemusRow).toHaveCount(20);
 });
 
 test('Hakemuslistan filtteri ja sivutus saa oikeat arvot query-parametreista', async ({
