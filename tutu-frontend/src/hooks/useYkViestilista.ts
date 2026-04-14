@@ -11,7 +11,7 @@ export const getYkSentMessages = async (): Promise<
   );
   const url = localStorageSearchParams
     ? `ykLahetetytViestit?${localStorageSearchParams}`
-    : `ykLahetetytViestit?sort?lahetetty:desc`;
+    : `ykLahetetytViestit?sort=lahetetty:desc`;
 
   return await doApiFetch(url, undefined, 'no-store');
 };
@@ -24,7 +24,7 @@ export const getYkReceivedMessages = async (): Promise<
   );
   const url = localStorageSearchParams
     ? `ykSaapuneetViestit?${localStorageSearchParams}`
-    : `ykSaapuneetViestit?sort?lahetetty:desc`;
+    : `ykSaapuneetViestit?sort=lahetetty:desc`;
 
   return await doApiFetch(url, undefined, 'no-store');
 };
