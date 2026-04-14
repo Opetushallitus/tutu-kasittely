@@ -61,7 +61,7 @@ export default function SentMessages({
             ))}
           </TableRow>
         </TableHead>
-        <StyledTableBody data-testid={'saapuneet-viestit-list'} tabIndex={0}>
+        <StyledTableBody data-testid={'lahetetyt-viestit-list'} tabIndex={0}>
           {messageRows}
         </StyledTableBody>
       </Table>
