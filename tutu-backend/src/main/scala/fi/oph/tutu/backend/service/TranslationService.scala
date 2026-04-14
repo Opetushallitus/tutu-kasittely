@@ -10,6 +10,7 @@ import org.springframework.stereotype.{Component, Service}
 
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
+import fi.oph.tutu.backend.domain.Kieli
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class TranslationEntry(
@@ -47,22 +48,23 @@ class TranslationService(httpService: HttpService, mapper: ObjectMapper) {
       .build()
   )
 
-  def getTranslation(locale: String, key: String): String = {
+  def getTranslation(locale: Kieli, key: String): String = {
     httpService.get(
       translationCasClient,
       s"$opintopolku_virkailija_domain/lokalisointi/api/v1/localisation?category=tutu-kasittely&key=$key&locale=$locale"
     ) match {
       case Left(error: Throwable) =>
+        System.out.println(s"Error fetching translation for key '$key' and locale '$locale': ${error.getMessage}")
         error match {
           case _ => key
         }
       case Right(jsonString: String) => {
         val items            = mapper.readValue(jsonString, new TypeReference[Seq[TranslationEntry]] {})
         val maybeTranslation = items
-          .filter(_.locale == locale)
+          .filter(_.locale == locale.toString())
           .map(_.value)
           .headOption
-
+        System.out.println(s"Fetched translation for key '$key' and locale '$locale': ${jsonString}")
         maybeTranslation match {
           case None              => key
           case Some(translation) => translation

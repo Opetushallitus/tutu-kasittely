@@ -8,7 +8,6 @@ import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
 import java.util.UUID
 import java.time.LocalDateTime
-import fi.oph.tutu.backend.domain.Kieli.fi
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
@@ -121,10 +120,10 @@ class ViestiServiceTest extends UnitTestBase {
 
   @Test
   def vahvistamisessaLisätäänAllekirjoitus(): Unit = {
-    val viesti = Viesti(kieli = Some(fi), viesti = Some("<p>alkuperäinen viesti</p>"))
-    when(translationService.getTranslation("fi", "hakemus.viesti.allekirjoitus.tervehdys"))
+    val viesti = Viesti(kieli = Some(Kieli.fi), viesti = Some("<p>alkuperäinen viesti</p>"))
+    when(translationService.getTranslation(Kieli.fi, "hakemus.viesti.allekirjoitus.tervehdys"))
       .thenReturn("Riehakasta perunannostolomaa")
-    when(translationService.getTranslation("fi", "hakemus.viesti.allekirjoitus.opetushallitus"))
+    when(translationService.getTranslation(Kieli.fi, "hakemus.viesti.allekirjoitus.opetushallitus"))
       .thenReturn("Opetushallitus")
     val vahvistettu = viestiService.taytaVahvistusTiedot(viesti, "1.2.246.562.24.00000000002")
     val sisalto     = vahvistettu.viesti.get

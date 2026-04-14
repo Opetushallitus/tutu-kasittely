@@ -492,7 +492,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     when(
-      translationService.getTranslation(any[String], any[String])
+      translationService.getTranslation(any[Kieli], any[String])
     ).thenAnswer(i => {
       val key = i.getArguments.apply(1).asInstanceOf[String]
       translations.applyOrElse(key, key => key)

@@ -105,9 +105,9 @@ class ViestiService(
         viesti.kieli match {
           case Some(kieli) =>
             val tervehdysTeksti =
-              translationService.getTranslation(kieli.toString, "hakemus.viesti.allekirjoitus.tervehdys")
+              translationService.getTranslation(kieli, "hakemus.viesti.allekirjoitus.tervehdys")
             val ophTeksti =
-              translationService.getTranslation(kieli.toString, "hakemus.viesti.allekirjoitus.opetushallitus")
+              translationService.getTranslation(kieli, "hakemus.viesti.allekirjoitus.opetushallitus")
             val sahkoposti    = esittelija.sahkoposti.getOrElse("")
             val allekirjoitus =
               s"""<p>

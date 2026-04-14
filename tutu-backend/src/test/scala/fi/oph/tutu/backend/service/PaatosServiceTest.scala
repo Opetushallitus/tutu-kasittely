@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
+import fi.oph.tutu.backend.service.generator.paatosteksti.PaatosTekstiGenerator
 
 class PaatosServiceTest extends UnitTestBase {
 
@@ -35,6 +36,8 @@ class PaatosServiceTest extends UnitTestBase {
   var maakoodiService: MaakoodiService = _
   @Mock
   var onrService: OnrService = _
+  @Mock
+  var paatosTekstiGenerator: PaatosTekstiGenerator = _
 
   var paatosService: PaatosService = _
 
@@ -79,7 +82,8 @@ class PaatosServiceTest extends UnitTestBase {
       hallintoOikeusService = hallintoOikeusService,
       ataruLomakeParser = ataruLomakeParser,
       maakoodiService = maakoodiService,
-      onrService = onrService
+      onrService = onrService,
+      paatosTekstiGenerator = paatosTekstiGenerator
     )
   }
 

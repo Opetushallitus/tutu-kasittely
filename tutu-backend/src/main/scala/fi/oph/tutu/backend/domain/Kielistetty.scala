@@ -8,6 +8,9 @@ object Kieli:
     case "fi"                             => Some(fi)
     case "sv"                             => Some(sv)
     case "en"                             => Some(en)
+    case "finnish"                        => Some(fi) // Ataru käyttää kielinä pitkiä muotoja
+    case "swedish"                        => Some(sv)
+    case "english"                        => Some(en)
     case s if Option(s).forall(_.isBlank) => None
     case _                                => throw new IllegalArgumentException(s"Tuntematon kieli: $value")
   }
