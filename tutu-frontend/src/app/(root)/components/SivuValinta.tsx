@@ -72,14 +72,22 @@ const TabButton = ({
 
   const isActive = active || activeTabName === tabName;
 
-  const StyledButton = isActive ? ActiveButton : InactiveButton;
   const InfoIcon = isActive ? ActiveInfoIcon : InactiveInfoIcon;
 
   return (
-    <StyledButton href={linkPath || ''} {...rest}>
-      {t(tabName)}
-      {showNotification && <InfoIcon />}
-    </StyledButton>
+    <>
+      {isActive ? (
+        <ActiveButton {...rest}>
+          {t(tabName)}
+          {showNotification && <InfoIcon />}
+        </ActiveButton>
+      ) : (
+        <InactiveButton href={linkPath || ''}>
+          {t(tabName)}
+          {showNotification && <InfoIcon />}
+        </InactiveButton>
+      )}
+    </>
   );
 };
 
