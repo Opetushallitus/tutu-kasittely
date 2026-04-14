@@ -638,12 +638,13 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user    = userService.getEnrichedUserDetails(true)
-      val userOid = user.userOid
+      val user      = userService.getEnrichedUserDetails(true)
+      val userOid   = user.userOid
+      val sortParam = resolveSortParams(sort)
 
       hakemusService.haeYkSaapuneetViestit(
         userOid,
-        sort
+        sortParam
       )
     } match {
       case Success(ykviestit) =>
@@ -667,12 +668,13 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user    = userService.getEnrichedUserDetails(true)
-      val userOid = user.userOid
+      val user      = userService.getEnrichedUserDetails(true)
+      val userOid   = user.userOid
+      val sortParam = resolveSortParams(sort)
 
       hakemusService.haeYkLahetetytViestit(
         userOid,
-        sort
+        sortParam
       )
     } match {
       case Success(ykviestit) =>

@@ -601,7 +601,7 @@ class HakemusService(
 
   def haeYkSaapuneetViestit(
     userOid: String,
-    sort: String
+    sortParam: Option[ListSortParam]
   ): Seq[YkViestiListItem] = {
     val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
     val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
@@ -629,38 +629,35 @@ class HakemusService(
           )
         )
       }
-    sort match {
-      case null => ykViestiList
-      case _    =>
-        val sortParam = sort.split(":").headOption.getOrElse("undefined")
-        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
-
+    sortParam match {
+      case None                                => ykViestiList
+      case Some(ListSortParam(param, sortDef)) =>
         given Ordering[ViestinTila] = Ordering.by(_.ordinal)
-
-        val sortedList: Seq[YkViestiListItem] = sortDef match {
+        sortDef match {
           case SortDef.Asc =>
-            sortParam match {
+            param match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu)
               case "hakija"     => ykViestiList.sortBy(_.hakija)
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
               case "tila"       => ykViestiList.sortBy(_.status)
+              case _            => ykViestiList
             }
           case SortDef.Desc =>
-            sortParam match {
+            param match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
               case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
               case "tila"       => ykViestiList.sortBy(_.status).reverse
+              case _            => ykViestiList
             }
-          case SortDef.Undefined => ykViestiList
+          case _ => ykViestiList
         }
-        sortedList
     }
   }
 
   def haeYkLahetetytViestit(
     userOid: String,
-    sort: String
+    sortParam: Option[ListSortParam]
   ): Seq[YkViestiListItem] = {
     val lahetetytViestit = hakemusRepository.haeYkLahetetytViestit(userOid)
     val saapuneetViestit = hakemusRepository.haeYkSaapuneetViestit(userOid)
@@ -694,32 +691,29 @@ class HakemusService(
           )
         )
       }
-    sort match {
-      case null => ykViestiList
-      case _    =>
-        val sortParam = sort.split(":").headOption.getOrElse("undefined")
-        val sortDef   = SortDef.fromString(sort.split(":").lastOption.getOrElse("undefined"))
-
+    sortParam match {
+      case None                                => ykViestiList
+      case Some(ListSortParam(param, sortDef)) =>
         given Ordering[ViestinTila] = Ordering.by(_.ordinal)
-
-        val sortedList: Seq[YkViestiListItem] = sortDef match {
+        sortDef match {
           case SortDef.Asc =>
-            sortParam match {
+            param match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu)
               case "hakija"     => ykViestiList.sortBy(_.hakija)
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
               case "tila"       => ykViestiList.sortBy(_.status)
+              case _            => ykViestiList
             }
           case SortDef.Desc =>
-            sortParam match {
+            param match {
               case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
               case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
               case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
               case "tila"       => ykViestiList.sortBy(_.status).reverse
+              case _            => ykViestiList
             }
-          case SortDef.Undefined => ykViestiList
+          case _ => ykViestiList
         }
-        sortedList
     }
   }
 
