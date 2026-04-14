@@ -82,7 +82,7 @@ export default function MessageRow({
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
       <StyledTableCell>
         <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
-          {formatHelsinki(luotu, 'd.M.yyyy')}
+          {formatHelsinki(luotu || '', 'd.M.yyyy')}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
