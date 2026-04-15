@@ -4,7 +4,6 @@ import {
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 
 import { Esittelija } from '@/src/lib/types/esittelija';
 
@@ -54,31 +53,22 @@ export const EsittelijaSection = ({
   );
 };
 
-interface SetMaakoodiToUpdateParams {
-  id: string;
-  esittelijaId?: string;
-}
-
 interface EditEsittelijaSectionProps {
   esittelija: Esittelija;
   maakoodit: Maakoodi[];
   maakooditWithoutEsittelija: Maakoodi[];
-
   t: TFunction;
-  setMaakoodiToUpdate: (any: SetMaakoodiToUpdateParams) => void;
-  updateMaakoodi: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<QueryObserverResult<null, Error>>;
+  setMaakoodi: (id: string, esittelijaId: string | null) => void;
+  unsetMaakoodi: (id: string) => void;
 }
 
 export const EditEsittelijaSection = ({
   esittelija,
   maakoodit,
   maakooditWithoutEsittelija,
-
   t,
-  setMaakoodiToUpdate,
-  updateMaakoodi,
+  setMaakoodi,
+  unsetMaakoodi,
 }: EditEsittelijaSectionProps) => {
   const vapaatMaakooditOptions = maakooditWithoutEsittelija.map((maakoodi) => ({
     label: maakoodi.fi,
@@ -102,20 +92,13 @@ export const EditEsittelijaSection = ({
     );
 
     if (newMaakoodi && esittelija.id) {
-      setMaakoodiToUpdate({
-        id: newMaakoodi.id,
-        esittelijaId: esittelija.id,
-      });
+      setMaakoodi(newMaakoodi.id, esittelija.id);
     }
   };
 
   const handleRemoveMaakoodi = (maakoodi: Maakoodi) => () => {
     if (maakoodi && esittelija.id) {
-      setMaakoodiToUpdate({
-        id: maakoodi.id,
-        esittelijaId: undefined,
-      });
-      updateMaakoodi();
+      unsetMaakoodi(maakoodi.id);
     }
   };
 

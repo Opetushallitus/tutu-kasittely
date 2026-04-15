@@ -35,6 +35,11 @@ const updateMaakoodi = async (
   await doApiPut(url, {});
 };
 
+const updateMaakoodit = async (updateList: Maakoodi[]): Promise<void> => {
+  const url = `maakoodit`;
+  await doApiPut(url, updateList);
+};
+
 interface UseUpdateMaakoodiOptions {
   enabled?: boolean;
   onSuccess?: () => void;
@@ -57,6 +62,27 @@ export const useUpdateMaakoodi = (
       return null;
     },
     enabled: Boolean(options?.enabled && id),
+  });
+
+  return update;
+};
+
+export const useUpdateMaakoodit = (
+  updateList: Maakoodi[],
+  onSuccess?: () => void,
+) => {
+  const queryClient = useQueryClient();
+
+  const { refetch: update } = useQuery({
+    queryKey: ['updateMaakoodit'],
+    queryFn: async () => {
+      if (updateList.length === 0) return null;
+      await updateMaakoodit(updateList);
+      await queryClient.invalidateQueries({ queryKey: ['getMaakoodit'] });
+      onSuccess?.();
+      return null;
+    },
+    enabled: updateList.length > 0,
   });
 
   return update;
