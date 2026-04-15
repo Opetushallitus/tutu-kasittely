@@ -82,7 +82,7 @@ export const useUpdateMaakoodit = (
       onSuccess?.();
       return null;
     },
-    enabled: updateList.length > 0,
+    enabled: false,
   });
 
   return update;

@@ -60,7 +60,7 @@ export default function MaajakoPage() {
     error: esittelijatError,
   } = useEsittelijat();
 
-  useUpdateMaakoodit(updateList);
+  const doUpdateMaakoodit = useUpdateMaakoodit(updateList);
 
   useEffect(() => {
     handleFetchError(addToast, maakooditError, 'virhe.maakoodiLataus', t);
@@ -74,10 +74,10 @@ export default function MaajakoPage() {
     const initialSortedMaakoodit = sortMaakoodit(maakoodit);
 
     const initialHasChangesModel: ChangeModelType =
-      initialSortedMaakoodit.reduce(
-        (acc, maakoodi) => ({ ...acc, [maakoodi.id]: maakoodi.esittelijaId }),
-        {},
-      );
+      initialSortedMaakoodit.reduce((acc, maakoodi) => {
+        acc[maakoodi.id] = maakoodi.esittelijaId;
+        return acc;
+      }, {} as ChangeModelType);
 
     setSortedMaakoodit(initialSortedMaakoodit);
     setInitialHasChangesModel(initialHasChangesModel);
@@ -123,7 +123,7 @@ export default function MaajakoPage() {
     setMaakoodi(id, null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (hasChanges) {
       setIsSaving(true);
       try {
@@ -132,10 +132,11 @@ export default function MaajakoPage() {
             ([id, esittelija]) => initialHasChangesModel[id] !== esittelija,
           )
           .map(([id]) => id);
-        const updateList = sortedMaakoodit.filter((maakoodi) =>
+        const newUpdateList = sortedMaakoodit.filter((maakoodi) =>
           changedList.includes(maakoodi.id),
         );
-        setUpdateList(updateList);
+        await setUpdateList(newUpdateList);
+        doUpdateMaakoodit();
       } finally {
         setIsSaving(false);
       }
@@ -201,8 +202,8 @@ export default function MaajakoPage() {
               : t('maajako.muokkaamaajakoa')}
           </OphButton>
 
-          {esittelijat?.map((esittelija, index) => (
-            <React.Fragment key={`esittelija-${index}`}>
+          {esittelijat?.map((esittelija) => (
+            <React.Fragment key={`esittelija-${esittelija.esittelijaOid}`}>
               {isEditing ? (
                 <EditEsittelijaSection
                   esittelija={esittelija}

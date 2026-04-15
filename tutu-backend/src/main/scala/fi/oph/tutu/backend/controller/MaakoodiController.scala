@@ -121,18 +121,15 @@ class MaakoodiController(
       (maakoodit, vanhatMaakoodit)
     } match {
       case Success((maakoodit, vanhatMaakoodit)) =>
-        maakoodit.map(maakoodi =>
-          auditLog.logChanges(
-            auditLog.getUser(request),
-            Map(
-              "maakoodiId"   -> maakoodi.id.toString,
-              "esittelijaId" -> maakoodi.esittelijaId.map(_.toString).getOrElse("")
-            ),
-            UpdateMaakoodi,
-            AuditUtil.getChanges(
-              vanhatMaakoodit.find(m => m.id == maakoodi.id).map(m => mapper.writeValueAsString(m)),
-              Some(mapper.writeValueAsString(maakoodi))
-            )
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map(
+            "maakoodit" -> maakoodit.map(maakoodi => maakoodi.id.toString).mkString(", ")
+          ),
+          UpdateMaakoodi,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(maakoodit)),
+            Some(mapper.writeValueAsString(vanhatMaakoodit))
           )
         )
 
