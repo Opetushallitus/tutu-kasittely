@@ -117,13 +117,11 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
   ): String = {
     val tutkinto = tutkintoNimi.map(n => s" ($n)").getOrElse("")
     val koulu    = getKorkeakouluTasoText(lang, tutkintoTaso)
-    lang match {
-      case Kieli.fi =>
-        s"""<p>Hakijan suorittama korkeakoulututkinto$tutkinto rinnastetaan Suomessa suoritettavaan ${koulu}n korkeakoulututkintoon.</p>"""
-      case _ =>
-        s"""<p>Den högskoleexamen som sökanden har avlagt$tutkinto jämställs med $koulu högskoleexamen som avläggs i Finland.</p>"""
-    }
-
+    translationService.getTranslation(
+      lang,
+      "paatosteksti.tasoPaatosTutkinto",
+      Map("tutkintoNimi" -> tutkinto, "koulu" -> koulu)
+    )
   }
 
   private def getTasoPaatosPerusteluBodyText(
@@ -133,12 +131,11 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
   ): String = {
     val tutkinto = tutkintoNimi.map(n => s" ($n)").getOrElse("")
     val koulu    = getKorkeakouluTasoText(lang, tutkintoTaso)
-    lang match {
-      case Kieli.fi =>
-        s"""<p>Opetushallitus on arvioinut hakijan tutkinnon$tutkinto vastaavan tasoltaan Suomessa suoritettavaa $koulu korkeakoulututkintoa. Arvio perustuu siihen, että tutkintoon johtanut korkeakouluopintojen kokonaisuus vastaa laajuudeltaan, vaativuudeltaan ja suuntautumiseltaan ${koulu}n korkeakoulututkintoon johtavaa korkeakouluopintojen kokonaisuutta.</p>"""
-      case _ =>
-        s"""<p>Utbildningsstyrelsen har bedömt att sökandens examen$tutkinto till sin nivå motsvarar en $koulu högskoleexamen som avläggs i Finland. Bedömningen grundar sig på att den helhet av högskolestudier som har lett till examen med hänsyn till dess omfång, svårighetsgrad och inriktning motsvarar den helhet av högskolestudier som leder till $koulu högskoleexamen.</p>"""
-    }
+    translationService.getTranslation(
+      lang,
+      "paatosteksti.tasoPaatosPerusteluBody",
+      Map("tutkintoNimi" -> tutkinto, "koulu" -> koulu)
+    )
   }
 
   private def getTasoPaatosPerusteluHeader(lang: Kieli): String = lang match {
@@ -149,12 +146,6 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
   private def getTasoPaatosLakiText(lang: Kieli): String = {
     this.translationService.getTranslation(lang, "paatosteksti.tasoPaatosLaki")
   }
-  /*lang match {
-  case Kieli.fi =>
-    "<strong>Lainkohdat, joihin päätös perustuu</strong><p>Laki ulkomailla suoritettujen korkeakouluopintojen tuottamasta virkakelpoisuudesta (1385/2015), 2, 3 ja 6 §</p>"
-  case _ =>
-    "<strong>Tillämpade rättsnormer</strong><p>Lagen om den tjänstebehörighet som högskolestudier utomlands medför (1385/2015), 2, 3 och 6 §</p>"
-}*/
 
   private def parseHallintoOikeusName(hallintoOikeus: String): String = {
     if (hallintoOikeus.contains("hallintotuomioistuin")) {
@@ -164,28 +155,17 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     }
   }
 
-  private def getCommonPaatosValitusoikeusText(lang: Kieli, hallintoOikeus: String): String = lang match {
-    case Kieli.fi =>
-      s"""<strong>Valitusoikeus</strong><p>Tähän päätökseen saa hakea muutosta valittamalla ${parseHallintoOikeusName(
-          hallintoOikeus
-        )}. Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä.</p>"""
-    case _ =>
-      s"""<strong>Besvärsrätt</strong><p>Ändring i detta beslut får sökas genom besvär hos $hallintoOikeus. Besvärstiden och förfarandet framgår av bifogade besvärsanvisning.</p>"""
+  private def getCommonPaatosValitusoikeusText(lang: Kieli, hallintoOikeus: String): String = {
+    val hallintoOikeusNimi = if (lang == Kieli.fi) parseHallintoOikeusName(hallintoOikeus) else hallintoOikeus
+    translationService.getTranslation(lang, "paatosteksti.valitusoikeus", Map("hallintoOikeus" -> hallintoOikeusNimi))
   }
 
   private def getCommonMaksunOikaisuText(lang: Kieli, isPeruutus: Boolean = false): String = {
+    val paatosMaksu =
+      if (isPeruutus) ""
+      else translationService.getTranslation(lang, "paatosteksti.maksunOikaisu.paatosMaksu")
 
-    val paatosMaksu = (lang, isPeruutus) match {
-      case (_, true)         => ""
-      case (Kieli.fi, false) => "<p>Päätösmaksu 395 euroa</p>"
-      case _                 => "<p>Beslutsavgift 395 euro</p>"
-    }
-    lang match {
-      case Kieli.fi =>
-        s"""<strong>Maksun oikaisu</strong><p>Päätöksestä perityt maksut perustuvat opetus- ja kulttuuriministeriön asetukseen Opetushallituksen ja sen erillisyksiköiden suoritteiden maksullisuudesta (1508/2025, 1 ja 2 §). Maksuihin voi vaatia oikaisua Opetushallitukselta. Liitteenä olevasta oikaisuvaatimusosoituksesta ilmenee oikaisuvaatimuksen määräaika ja se, miten oikaisua vaadittaessa on meneteltävä.</p><p>Käsittelymaksu 100 euroa</p>$paatosMaksu"""
-      case _ =>
-        s"""<strong>Omprövning som berör avgifterna</strong><p>Avgifterna för beslutet baserar sig på undervisnings- och kulturministeriets förordning om Utbildningsstyrelsens och dess fristående enheters avgiftsbelagda prestationer (1508/2025, 1 och 2 §). Omprövning som berör avgifterna kan begäras av Utbildningsstyrelsen. Av bifogade anvisning för begäran om omprövning framgår tiden för begäran om omprövning och ansökningsförfarandet.</p><p>Behandlingsavgift 100 euro</p>$paatosMaksu"""
-    }
+    translationService.getTranslation(lang, "paatosteksti.maksunOikaisu", Map("paatosMaksu" -> paatosMaksu))
   }
 
   private def getSelectTutkintoTasoText(lang: Kieli): String = lang match {
