@@ -9,7 +9,6 @@ import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
-import org.mockito.invocation.InvocationOnMock
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -492,7 +491,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     when(
-      translationService.getTranslation(any[String], any[String])
+      translationService.getTranslation(any[Kieli], any[String])
     ).thenAnswer(i => {
       val key = i.getArguments.apply(1).asInstanceOf[String]
       translations.applyOrElse(key, key => key)

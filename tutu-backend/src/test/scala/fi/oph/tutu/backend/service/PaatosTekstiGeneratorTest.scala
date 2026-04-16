@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.fixture.*
-import fi.oph.tutu.backend.service.generator.paatosteksti.generatePaatosTeksti
 import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
@@ -13,11 +12,55 @@ import org.mockito.{Mock, MockitoAnnotations}
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.jdk.CollectionConverters.*
+import fi.oph.tutu.backend.service.generator.paatosteksti.PaatosTekstiGenerator
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.mockito.Mockito
+import org.springframework.test.util.ReflectionTestUtils
+import org.springframework.cache.{Cache, CacheManager}
+
+val paatostekstiTranslations = Map[String, String](
+  "paatosteksti.maksunOikaisu" -> "<strong>Maksun oikaisu</strong><p>Päätöksestä perityt maksut perustuvat opetus- ja kulttuuriministeriön asetukseen Opetushallituksen ja sen erillisyksiköiden suoritteiden maksullisuudesta (1508/2025, 1 ja 2 §). Maksuihin voi vaatia oikaisua Opetushallitukselta. Liitteenä olevasta oikaisuvaatimusosoituksesta ilmenee oikaisuvaatimuksen määräaika ja se, miten oikaisua vaadittaessa on meneteltävä.</p><p>Käsittelymaksu 100 euroa</p>{paatosMaksu}",
+
+  "paatosteksti.maksunOikaisu.paatosMaksu" -> "<p>Päätösmaksu 395 euroa</p>",
+
+  "paatosteksti.tasoPaatosLaki" -> "<strong>Lainkohdat, joihin päätös perustuu</strong><p>Laki ulkomailla suoritettujen korkeakouluopintojen tuottamasta virkakelpoisuudesta (1385/2015), 2, 3 ja 6 §</p>",
+
+  "paatosteksti.tasoPaatosPerusteluBody" -> "<p>Opetushallitus on arvioinut hakijan tutkinnon{tutkintoNimi} vastaavan tasoltaan Suomessa suoritettavaa {koulu} korkeakoulututkintoa. Arvio perustuu siihen, että tutkintoon johtanut korkeakouluopintojen kokonaisuus vastaa laajuudeltaan, vaativuudeltaan ja suuntautumiseltaan {koulu}n korkeakoulututkintoon johtavaa korkeakouluopintojen kokonaisuutta.</p>",
+
+  "paatosteksti.tasoPaatos.myonteinen" -> "<p>Hakijan suorittama korkeakoulututkinto{tutkintoNimi} rinnastetaan Suomessa suoritettavaan {koulu}n korkeakoulututkintoon.</p>",
+
+  "paatosteksti.valitusoikeus" -> "<strong>Valitusoikeus</strong><p>Tähän päätökseen saa hakea muutosta valittamalla {hallintoOikeus}. Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä.</p>",
+
+  "paatosteksti.todistuksenPaivamaara"     -> "Todistuksen päivämäärä: {paivamaara}",
+  "paatosteksti.hakija"                    -> "Hakija:",
+  "paatosteksti.tasoPaatosPerusteluHeader" -> "<strong>Perustelu</strong>",
+  "paatosteksti.muuTutkinto"               -> "Muu tutkinto",
+
+  "paatosteksti.tasoPaatos.kielteinen" -> "<p>Hakijan suorittamaa tutkintoa ei rinnasteta Suomessa suoritettavaan korkeakoulututkintoon.</p>",
+
+  "paatosteksti.peruutus" -> "<strong>Päätös</strong><p>Hakija on peruuttanut hakemuksensa {peruutusPvm}. Hakemuksen käsittely raukeaa.</p>",
+
+  "paatosteksti.tutkinnonTaso.valitse" -> "<p>Valitse tutkinnon taso.</p>",
+  "paatosteksti.todo"                  -> "<p>Tällä hetkellä esikatselua ei ole saatavilla.</p>"
+)
 
 class PaatosTekstiGeneratorTest extends UnitTestBase {
 
   @Mock
   var maakoodiService: MaakoodiService = _
+
+  @Mock
+  var httpService: HttpService = _
+
+  @Mock
+  var mockCacheManager: CacheManager = _
+
+  @Mock
+  var mockCache: Cache = _
+
+  var translationService: TranslationService = _
+
+  var paatosTekstiGenerator: PaatosTekstiGenerator = _
 
   private val hakemusUUID = UUID.randomUUID()
   private val tutkintoId1 = UUID.randomUUID()
@@ -76,6 +119,28 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
   @BeforeEach
   def init(): Unit = {
     MockitoAnnotations.openMocks(this)
+
+    // Tyhjä cache
+    when(mockCacheManager.getCache("translations")).thenReturn(mockCache)
+    when(mockCache.get(any[String])).thenReturn(null)
+
+    // Käytetään spyta, jotta testataan oikealla koodilla parametrien korvausta
+    val realService = new TranslationService(httpService, new ObjectMapper())
+    ReflectionTestUtils.setField(realService, "cacheManager", mockCacheManager)
+    translationService = Mockito.spy(realService)
+
+    paatosTekstiGenerator = new PaatosTekstiGenerator(
+      translationService = translationService
+    )
+
+    Mockito
+      .doAnswer(i => {
+        val key = i.getArguments.apply(1).asInstanceOf[String]
+        paatostekstiTranslations.applyOrElse(key, key => key)
+      })
+      .when(translationService)
+      .getTranslation(any[Kieli], any[String])
+
     when(maakoodiService.getMaakoodiByUri(any[String])).thenReturn(
       Some(
         Maakoodi(
@@ -125,7 +190,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
       )
     )
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_taso.html"
     )
   }
@@ -154,11 +220,11 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     )
 
     assertHtml(
-      generatePaatosTeksti(
+      this.paatosTekstiGenerator.generatePaatosTeksti(
         makeHakemus(),
         tutkinnot.filter(_.id == Some(tutkintoId1)), // Yksi tutkinto vain
         paatos,
-        "finnish",
+        Kieli.fi,
         hallintoOikeus,
         maakoodiService
       ),
@@ -177,7 +243,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
       )
     )
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -193,7 +260,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
       )
     )
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -209,7 +277,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
       )
     )
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -221,11 +290,11 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
       peruutuksenTaiRaukeamisenSyy = Some(PeruutuksenTaiRaukeamisenSyy(muuSyy = Some(true)))
     )
     assertHtml(
-      generatePaatosTeksti(
+      this.paatosTekstiGenerator.generatePaatosTeksti(
         makeHakemus(peruutusPvm = Some(LocalDateTime.parse("2026-03-13T00:00:00"))),
         tutkinnot,
         paatos,
-        "finnish",
+        Kieli.fi,
         hallintoOikeus,
         maakoodiService
       ),
@@ -237,7 +306,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
   def oikaisuGeneroiTodoTekstin(): Unit = {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.Oikaisu))
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }
@@ -246,7 +316,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
   def jatetaanTutkimattaGeneroiTodoTekstin(): Unit = {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.JatetaanTutkimatta))
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }
@@ -255,7 +326,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
   def siirtoGeneroiTodoTekstin(): Unit = {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.Siirto))
     assertHtml(
-      generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, "finnish", hallintoOikeus, maakoodiService),
+      this.paatosTekstiGenerator
+        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }

@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
-import fi.oph.tutu.backend.service.generator.paatosteksti
+import fi.oph.tutu.backend.service.generator.paatosteksti.PaatosTekstiGenerator
 import fi.oph.tutu.backend.utils.{Constants, TutuJsonFormats}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jvalue2extractable
@@ -22,7 +22,8 @@ class PaatosService(
   hallintoOikeusService: HallintoOikeusService,
   ataruLomakeParser: AtaruLomakeParser,
   maakoodiService: MaakoodiService,
-  onrService: OnrService
+  onrService: OnrService,
+  paatosTekstiGenerator: PaatosTekstiGenerator
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
 
@@ -157,15 +158,25 @@ class PaatosService(
     val tutkinnot: Seq[Tutkinto]           = tutkintoService.haeTutkinnot(hakemusOid)
     val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
     val paatos: Paatos                     = haePaatos(hakemusOid).get
-    val paatosKieli: String                = {
-      findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers).getOrElse("fi")
+    val paatosKieli: Kieli                 = {
+      findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers)
+        .flatMap(Kieli.optionFromString(_))
+        .getOrElse(Kieli.fi)
     }
     val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers) match {
       case Some(kunta) => kunta
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
-    paatosteksti.generatePaatosTeksti(hakemus, tutkinnot, paatos, paatosKieli, hallintoOikeus, maakoodiService)
+
+    this.paatosTekstiGenerator.generatePaatosTeksti(
+      hakemus,
+      tutkinnot,
+      paatos,
+      paatosKieli,
+      hallintoOikeus,
+      maakoodiService
+    )
   }
 
   def haePaatosteksti(
