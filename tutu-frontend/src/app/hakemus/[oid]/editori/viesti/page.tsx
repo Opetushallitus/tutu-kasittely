@@ -27,26 +27,18 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster, { AddToastCallback } from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
-import { useVahvistetutViestit } from '@/src/hooks/useVahvistetutViestit';
-import { useViesti, ViestiUpdateCallback } from '@/src/hooks/useViesti';
+import { useViestiAll } from '@/src/hooks/useViestiAll';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  VahvistettuViestiListItem,
-  Viesti,
-  Viestityyppi,
-} from '@/src/lib/types/viesti';
-import {
-  handleFetchError,
-  handleSuccessMessage,
-  anyRealContentInHtml,
-} from '@/src/lib/utils';
+import { Hakemus } from '@/src/lib/types/hakemus';
+import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
+import { handleFetchError, anyRealContentInHtml } from '@/src/lib/utils';
 
 export default function ViestiPage() {
+  const { addToast } = useToaster();
   const { t } = useTranslations();
-
   const {
     isLoading: isHakemusLoading,
     hakemusState,
@@ -55,110 +47,19 @@ export default function ViestiPage() {
 
   const hakemus = hakemusState.editedData;
 
-  const {
-    isViestiLoading,
-    viesti,
-    viestiLoadingError,
-    updateViesti,
-    vahvistaViesti,
-    poistaViesti,
-    updateOngoing,
-    viestiUpdateSuccess,
-    viestiUpdateError,
-    vahvistusSuccess,
-    vahvistusError,
-    poistoOngoing,
-    poistoSuccess,
-    poistoError,
-  } = useViesti(hakemus?.hakemusOid);
-
-  const {
-    viestiLista,
-    refresh: paivitaVahvistettuLista,
-    isLoading: listaLoading,
-    error: listaError,
-  } = useVahvistetutViestit(hakemus?.hakemusOid);
-
-  const { addToast } = useToaster();
-
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
-    handleFetchError(addToast, viestiLoadingError, 'virhe.viestinLataus', t);
-    handleFetchError(addToast, listaError, 'virhe.viestiListanLataus', t);
-    handleFetchError(addToast, viestiUpdateError, 'virhe.viestinPaivitys', t);
-    handleFetchError(addToast, vahvistusError, 'virhe.viestinVahvistus', t);
-    handleFetchError(addToast, poistoError, 'virhe.viestinPoisto', t);
-  }, [
-    hakemusError,
-    viestiLoadingError,
-    viestiUpdateError,
-    vahvistusError,
-    addToast,
-    t,
-    listaError,
-    poistoError,
-  ]);
+  }, [hakemusError, addToast, t]);
 
-  useEffect(() => {
-    handleSuccessMessage(
-      viestiUpdateSuccess,
-      addToast,
-      'hakemus.viesti.paivitetty',
-      t,
-    );
-    handleSuccessMessage(
-      vahvistusSuccess,
-      addToast,
-      'hakemus.viesti.vahvistettu',
-      t,
-    );
-    handleSuccessMessage(
-      poistoSuccess,
-      addToast,
-      'hakemus.viesti.poistettu',
-      t,
-    );
-  }, [addToast, t, viestiUpdateSuccess, vahvistusSuccess, poistoSuccess]);
-
-  if (hakemusError || viestiLoadingError) {
+  if (hakemusError) {
     return null;
   }
 
-  if (
-    isHakemusLoading ||
-    isViestiLoading ||
-    listaLoading ||
-    !hakemus ||
-    !viesti ||
-    poistoOngoing
-  ) {
+  if (isHakemusLoading || !hakemus) {
     return <FullSpinner></FullSpinner>;
   }
 
-  const vahvistaViestiJaPaivitaLista = (viesti: Viesti) => {
-    vahvistaViesti(viesti, () => {
-      paivitaVahvistettuLista();
-    });
-  };
-
-  const poistaViestiJaPaivitaLista = (viestiId: string) => {
-    poistaViesti(viestiId, () => {
-      paivitaVahvistettuLista();
-    });
-  };
-
-  return (
-    <ViestiPageComponent
-      t={t}
-      viesti={viesti}
-      updateOngoing={updateOngoing}
-      updateViesti={updateViesti}
-      vahvistaViesti={vahvistaViestiJaPaivitaLista}
-      poistaViesti={poistaViestiJaPaivitaLista}
-      vahvistettuLista={viestiLista || []}
-      paivitaVahvistettuLista={paivitaVahvistettuLista}
-    />
-  );
+  return <ViestiPageComponent hakemus={hakemus} />;
 }
 
 const handleCopy = (
@@ -175,45 +76,39 @@ const handleCopy = (
   });
 };
 
-const ViestiPageComponent = ({
-  t,
-  viesti,
-  updateOngoing,
-  updateViesti,
-  vahvistaViesti,
-  poistaViesti,
-  vahvistettuLista,
-  paivitaVahvistettuLista,
-}: {
-  t: TFunction;
-  viesti: Viesti;
-  updateOngoing: boolean;
-  updateViesti: ViestiUpdateCallback;
-  vahvistaViesti: ViestiUpdateCallback;
-  poistaViesti: (viestiId: string) => void;
-  vahvistettuLista: VahvistettuViestiListItem[];
-  paivitaVahvistettuLista: () => void;
-}) => {
+const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
+  const { t } = useTranslations();
   const theme = useTheme();
   const { addToast } = useToaster();
   const editorRef = useRef<LexicalEditor | null>(null);
   const { showConfirmation } = useGlobalConfirmationModal();
+
+  const {
+    isLoading,
+    viesti,
+    viestiLista,
+    oletusSisalto,
+    updateViesti,
+    vahvistaViesti,
+    poistaViesti,
+    paivitaVahvistettuLista,
+    setViestityyppi: setViestityyppiForOletussisalto,
+    updateOngoing,
+    maybeError,
+  } = useViestiAll(hakemus?.hakemusOid);
+
   const viestiState = useEditableState(viesti, (viesti) =>
     updateViesti(viesti),
   );
 
-  const currentViesti = viestiState.editedData!;
+  const currentViesti = viestiState.editedData;
   const [editorHasChanges, setEditorHasChanges] = useState(false);
-  const [editorEmpty, setEditorEmpty] = useState(!viesti.viesti);
+  const [editorEmpty, setEditorEmpty] = useState(!viesti?.viesti);
 
   useUnsavedChanges(
     viestiState.hasChanges || editorHasChanges,
     viestiState.discard,
   );
-
-  useEffect(() => {
-    importHtml(editorRef.current, currentViesti.viesti || '');
-  }, [editorRef, currentViesti.viesti]);
 
   const normalizedEditorContent = useCallback(
     (editor: LexicalEditor | null) => {
@@ -223,29 +118,39 @@ const ViestiPageComponent = ({
     [],
   );
 
+  useEffect(() => {
+    const toBeSisalto = currentViesti?.viesti || oletusSisalto;
+    importHtml(editorRef.current, toBeSisalto || '');
+  }, [editorRef, currentViesti?.viesti, oletusSisalto]);
+
+  useEffect(() => {
+    setViestityyppiForOletussisalto(currentViesti?.tyyppi || null);
+  }, [currentViesti?.tyyppi, setViestityyppiForOletussisalto]);
+
   const viestiToBeSaved = useCallback(() => {
     if (editorHasChanges) {
       return {
-        ...currentViesti,
+        ...currentViesti!,
         viesti: normalizedEditorContent(editorRef.current),
       };
     }
-    return currentViesti;
+    return currentViesti!;
   }, [currentViesti, editorHasChanges, normalizedEditorContent]);
 
-  const onSave = useCallback(() => {
+  const onSave = () => {
     updateViesti(viestiToBeSaved());
-  }, [viestiToBeSaved, updateViesti]);
+    setEditorHasChanges(false);
+  };
 
   const updateEditorChanges = (editor: LexicalEditor) => {
     const normalizedContent = normalizedEditorContent(editor);
-    const savedContent = currentViesti.viesti || '';
+    const savedContent = currentViesti?.viesti || '';
     setEditorHasChanges(savedContent !== normalizedContent);
     setEditorEmpty(!normalizedContent);
   };
 
   const isViestiEmpty =
-    !currentViesti.tyyppi && !currentViesti.otsikko && editorEmpty;
+    !currentViesti?.tyyppi && !currentViesti?.otsikko && editorEmpty;
 
   const updateViestiPartially = (
     updatedViesti: Partial<Viesti>,
@@ -262,6 +167,14 @@ const ViestiPageComponent = ({
     viestiState.updateLocal(newViesti);
   };
 
+  if (maybeError?.isCritical) {
+    return null;
+  }
+
+  if (isLoading || !viesti) {
+    return <FullSpinner></FullSpinner>;
+  }
+
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -274,21 +187,21 @@ const ViestiPageComponent = ({
         {t('hakemus.viesti.sivunOtsikko')}
       </OphTypography>
       <KieliSelect
-        oletusKieli={currentViesti.kieli || 'fi'}
+        oletusKieli={currentViesti?.kieli || 'fi'}
         updateKieli={(kieli) => updateViestiPartially({ kieli: kieli })}
         t={t}
         theme={theme}
       />
       <ViestityyppiComponent
-        viestityyppi={currentViesti.tyyppi}
-        updateViestityyppi={(tyyppi: Viestityyppi) =>
-          updateViestiPartially({ tyyppi: tyyppi })
-        }
+        viestityyppi={currentViesti?.tyyppi}
+        updateViestityyppi={(tyyppi: Viestityyppi) => {
+          updateViestiPartially({ tyyppi: tyyppi });
+        }}
         t={t}
       />
       <OphInputFormField
         label={t('hakemus.viesti.otsikko')}
-        value={currentViesti.otsikko || ''}
+        value={currentViesti?.otsikko || ''}
         onChange={(event) =>
           updateViestiPartially({
             otsikko: event.target.value,
@@ -313,11 +226,26 @@ const ViestiPageComponent = ({
               confirmButtonText: t(
                 `hakemus.viesti.tyhjenna.modal.tyhjennaKentat`,
               ),
-              handleConfirmAction: () =>
-                updateViestiPartially(
-                  { tyyppi: null, otsikko: null, viesti: null },
-                  true,
-                ),
+              handleConfirmAction: () => {
+                if (currentViesti?.id) {
+                  updateViestiPartially(
+                    {
+                      tyyppi: null,
+                      otsikko: null,
+                      viesti: null,
+                    },
+                    true,
+                  );
+                } else {
+                  viestiState.discard();
+                  addToast({
+                    key: 'hakemus.viesti.tyhjenna.toaster',
+                    message: t('hakemus.viesti.tyhjennettyToast'),
+                    type: 'success',
+                    timeMs: 2500,
+                  });
+                }
+              },
             })
           }
         >
@@ -347,13 +275,16 @@ const ViestiPageComponent = ({
                   `hakemus.viesti.vahvista.modal.vahvistaViesti`,
                 ),
                 handleConfirmAction: () => {
-                  vahvistaViesti(viestiToBeSaved());
+                  vahvistaViesti(viestiToBeSaved(), () => {
+                    paivitaVahvistettuLista();
+                  });
                   if (viestiState.hasChanges) {
                     // Vahvistettaessa viesti myös tallennetaan
                     // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
                     // joten discardataan mahdolliset muutokset
                     viestiState.discard();
-                    importHtml(editorRef.current, '');
+                    setEditorHasChanges(false);
+                    setEditorEmpty(true);
                   }
                 },
               })
@@ -366,17 +297,23 @@ const ViestiPageComponent = ({
       <VahvistettuList
         t={t}
         theme={theme}
-        viestiLista={vahvistettuLista}
+        viestiLista={viestiLista || []}
         paivitaVahvistetut={paivitaVahvistettuLista}
         lisaaEditoriin={(html: string) => {
-          importHtml(editorRef.current, `${currentViesti.viesti || ''}${html}`);
+          importHtml(
+            editorRef.current,
+            `${currentViesti?.viesti || ''}${html}`,
+          );
         }}
         poistaViesti={(viestiId) =>
           showConfirmation({
             header: t(`hakemus.viesti.poista.modal.otsikko`),
             content: t(`hakemus.viesti.poista.modal.teksti`),
             confirmButtonText: t(`hakemus.viesti.poista.modal.poistaViesti`),
-            handleConfirmAction: () => poistaViesti(viestiId),
+            handleConfirmAction: () =>
+              poistaViesti(viestiId, () => {
+                paivitaVahvistettuLista();
+              }),
           })
         }
       />
@@ -384,8 +321,8 @@ const ViestiPageComponent = ({
         onSave={onSave}
         isSaving={updateOngoing}
         hasChanges={viestiState.hasChanges || editorHasChanges}
-        lastSaved={currentViesti.muokattu}
-        modifier={currentViesti.muokkaaja}
+        lastSaved={currentViesti?.muokattu}
+        modifier={currentViesti?.muokkaaja}
       />
     </Stack>
   );

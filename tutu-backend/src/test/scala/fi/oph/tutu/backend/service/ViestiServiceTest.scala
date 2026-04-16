@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
 import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.service.generator.viesti.ViestiSisaltoGenerator
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
@@ -27,7 +28,7 @@ class ViestiServiceTest extends UnitTestBase {
   @Mock
   var hakemusService: HakemusService = _
   @Mock
-  var translationService: TranslationService = _
+  var viestiSisaltoGenerator: ViestiSisaltoGenerator = _
 
   var viestiService: ViestiService = _
 
@@ -69,7 +70,7 @@ class ViestiServiceTest extends UnitTestBase {
       esittelijaRepository,
       onrService,
       hakemusService,
-      translationService
+      viestiSisaltoGenerator
     )
     when(esittelijaRepository.haeEsittelijaOidilla("1.2.246.562.24.00000000001")).thenReturn(
       Some(
@@ -116,21 +117,5 @@ class ViestiServiceTest extends UnitTestBase {
     // Verify
     assertEquals(Some("Topo Lino"), viesti.muokkaaja)
     assertEquals(Some("Yrjö Kortesniemi"), viesti.vahvistaja)
-  }
-
-  @Test
-  def vahvistamisessaLisätäänAllekirjoitus(): Unit = {
-    val viesti = Viesti(kieli = Some(Kieli.fi), viesti = Some("<p>alkuperäinen viesti</p>"))
-    when(translationService.getTranslation(Kieli.fi, "hakemus.viesti.allekirjoitus.tervehdys"))
-      .thenReturn("Riehakasta perunannostolomaa")
-    when(translationService.getTranslation(Kieli.fi, "hakemus.viesti.allekirjoitus.opetushallitus"))
-      .thenReturn("Opetushallitus")
-    val vahvistettu = viestiService.taytaVahvistusTiedot(viesti, "1.2.246.562.24.00000000002")
-    val sisalto     = vahvistettu.viesti.get
-    assert(sisalto.contains("Riehakasta perunannostolomaa,"))
-    assert(sisalto.contains("Opetushallitus"))
-    assert(sisalto.contains("Yrjö Kortesniemi"))
-    assert(sisalto.contains("mailto:yka@åbh.sv"))
-    assert(sisalto.contains("123 456789"))
   }
 }
