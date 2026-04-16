@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
@@ -35,9 +35,9 @@ const updateMaakoodi = async (
   await doApiPut(url, {});
 };
 
-const updateMaakoodit = async (updateList: Maakoodi[]): Promise<void> => {
+const updateMaakoodit = async (updateList: Maakoodi[]): Promise<Response> => {
   const url = `maakoodit`;
-  await doApiPut(url, updateList);
+  return doApiPut(url, updateList);
 };
 
 interface UseUpdateMaakoodiOptions {
@@ -67,23 +67,29 @@ export const useUpdateMaakoodi = (
   return update;
 };
 
-export const useUpdateMaakoodit = (
-  updateList: Maakoodi[],
-  onSuccess?: () => void,
-) => {
+export const useUpdateMaakoodit = () => {
   const queryClient = useQueryClient();
 
-  const { refetch: update } = useQuery({
-    queryKey: ['updateMaakoodit'],
-    queryFn: async () => {
-      if (updateList.length === 0) return null;
-      await updateMaakoodit(updateList);
+  const {
+    mutate,
+    isPending: isUpdateOngoing,
+    isSuccess: isUpdateSuccess,
+    error: updateError,
+  } = useMutation({
+    mutationFn: (maakoodit: Maakoodi[]) => updateMaakoodit(maakoodit),
+    onSuccess: async (_) => {
       await queryClient.invalidateQueries({ queryKey: ['getMaakoodit'] });
-      onSuccess?.();
-      return null;
     },
-    enabled: false,
   });
 
-  return update;
+  const update = (maakoodit: Maakoodi[]) => {
+    mutate(maakoodit);
+  };
+
+  return {
+    update,
+    isUpdateOngoing,
+    isUpdateSuccess,
+    updateError,
+  };
 };

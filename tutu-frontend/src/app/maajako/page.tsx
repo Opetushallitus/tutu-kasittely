@@ -42,12 +42,10 @@ export default function MaajakoPage() {
   const [sortedMaakoodit, setSortedMaakoodit] = useState([] as Maakoodi[]);
   const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [initialHasChangesModel, setInitialHasChangesModel] = useState(
     {} as ChangeModelType,
   );
   const [hasChangesModel, setHasChangesModel] = useState({} as ChangeModelType);
-  const [updateList, setUpdateList] = useState([] as Maakoodi[]);
 
   const {
     data: maakoodit,
@@ -59,16 +57,30 @@ export default function MaajakoPage() {
     isLoading: esittelijatIsLoading,
     error: esittelijatError,
   } = useEsittelijat();
-
-  const doUpdateMaakoodit = useUpdateMaakoodit(updateList);
+  //
+  const {
+    update: doUpdateMaakoodit,
+    isUpdateOngoing: isSaving,
+    isUpdateSuccess,
+    updateError,
+  } = useUpdateMaakoodit();
 
   useEffect(() => {
     handleFetchError(addToast, maakooditError, 'virhe.maakoodiLataus', t);
-  }, [maakooditError, addToast, t]);
+    handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t, 4000);
+  }, [addToast, maakooditError, esittelijatError, updateError, t]);
 
   useEffect(() => {
-    handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
-  }, [esittelijatError, addToast, t]);
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
 
   useEffect(() => {
     const initialSortedMaakoodit = sortMaakoodit(maakoodit);
@@ -125,21 +137,13 @@ export default function MaajakoPage() {
 
   const handleSave = async () => {
     if (hasChanges) {
-      setIsSaving(true);
-      try {
-        const changedList = Object.entries(hasChangesModel)
-          .filter(
-            ([id, esittelija]) => initialHasChangesModel[id] !== esittelija,
-          )
-          .map(([id]) => id);
-        const newUpdateList = sortedMaakoodit.filter((maakoodi) =>
-          changedList.includes(maakoodi.id),
-        );
-        await setUpdateList(newUpdateList);
-        doUpdateMaakoodit();
-      } finally {
-        setIsSaving(false);
-      }
+      const changedList = Object.entries(hasChangesModel)
+        .filter(([id, esittelija]) => initialHasChangesModel[id] !== esittelija)
+        .map(([id]) => id);
+      const newUpdateList = sortedMaakoodit.filter((maakoodi) =>
+        changedList.includes(maakoodi.id),
+      );
+      doUpdateMaakoodit(newUpdateList);
     }
   };
 
