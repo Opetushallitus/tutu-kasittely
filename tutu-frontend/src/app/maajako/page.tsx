@@ -1,26 +1,35 @@
 'use client';
 
-import { Box, Chip, Divider, Stack, useTheme } from '@mui/material';
+import { Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import {
   OphButton,
   OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import {
+  EditEsittelijaSection,
+  EsittelijaSection,
+} from '@/src/app/maajako/components/EsittelijaSection';
+import { SelectedMaakoodiInfo } from '@/src/app/maajako/components/SelectedMaakoodiInfo';
 import { AlertBox } from '@/src/components/AlertBox';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
-import { EsittelijaSection } from '@/src/components/EsittelijaSection';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { SelectedMaakoodiInfo } from '@/src/components/SelectedMaakoodiInfo';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
-import { useMaakoodit, useUpdateMaakoodi } from '@/src/hooks/useMaakoodit';
+import { useMaakoodit, useUpdateMaakoodit } from '@/src/hooks/useMaakoodit';
 import useToaster from '@/src/hooks/useToaster';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { Maakoodi } from '@/src/lib/types/maakoodi';
 import { handleFetchError } from '@/src/lib/utils';
+
+type ChangeModelType = { [id: string]: string | null };
 
 const sortMaakoodit = (maakoodit: Maakoodi[] | undefined) =>
   maakoodit?.slice().sort((a, b) => a.fi.localeCompare(b.fi)) || [];
@@ -29,6 +38,14 @@ export default function MaajakoPage() {
   const { t } = useTranslations();
   const theme = useTheme();
   const { addToast } = useToaster();
+
+  const [sortedMaakoodit, setSortedMaakoodit] = useState([] as Maakoodi[]);
+  const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [initialHasChangesModel, setInitialHasChangesModel] = useState(
+    {} as ChangeModelType,
+  );
+  const [hasChangesModel, setHasChangesModel] = useState({} as ChangeModelType);
 
   const {
     data: maakoodit,
@@ -40,197 +57,208 @@ export default function MaajakoPage() {
     isLoading: esittelijatIsLoading,
     error: esittelijatError,
   } = useEsittelijat();
-
-  const [maakoodiToUpdate, setMaakoodiToUpdate] = useState<{
-    id: string;
-    esittelijaId?: string;
-  }>();
-
-  const updateMaakoodi = useUpdateMaakoodi(
-    maakoodiToUpdate?.id,
-    maakoodiToUpdate?.esittelijaId,
-    {
-      enabled: !!maakoodiToUpdate,
-      onSuccess: () => {
-        setMaakoodiToUpdate(undefined);
-      },
-    },
-  );
-
-  const [selectedMaakoodi, setSelectedMaakoodi] = useState<string>('');
-  const [isEditing, setIsEditing] = useState(false);
+  //
+  const {
+    update: doUpdateMaakoodit,
+    isUpdateOngoing: isSaving,
+    isUpdateSuccess,
+    updateError,
+  } = useUpdateMaakoodit();
 
   useEffect(() => {
     handleFetchError(addToast, maakooditError, 'virhe.maakoodiLataus', t);
-  }, [maakooditError, addToast, t]);
+    handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
+    handleFetchError(addToast, updateError, 'virhe.tallennus', t, 4000);
+  }, [addToast, maakooditError, esittelijatError, updateError, t]);
 
   useEffect(() => {
-    handleFetchError(addToast, esittelijatError, 'virhe.esittelijatLataus', t);
-  }, [esittelijatError, addToast, t]);
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
+
+  useEffect(() => {
+    const initialSortedMaakoodit = sortMaakoodit(maakoodit);
+
+    const initialHasChangesModel: ChangeModelType =
+      initialSortedMaakoodit.reduce((acc, maakoodi) => {
+        acc[maakoodi.id] = maakoodi.esittelijaId;
+        return acc;
+      }, {} as ChangeModelType);
+
+    setSortedMaakoodit(initialSortedMaakoodit);
+    setInitialHasChangesModel(initialHasChangesModel);
+  }, [maakoodit]);
+
+  const maakooditWithoutEsittelija = useMemo(
+    () => sortedMaakoodit.filter((maakoodi) => maakoodi.esittelijaId == null),
+    [sortedMaakoodit],
+  );
+
+  const sortedMaakooditOptions = useMemo(() => {
+    return sortedMaakoodit.map((maakoodi) => ({
+      label: maakoodi.fi,
+      value: maakoodi.koodiUri,
+    }));
+  }, [sortedMaakoodit]);
+
+  const hasChanges = useMemo(() => {
+    return Object.entries(hasChangesModel).reduce((acc, [id, esittelija]) => {
+      return acc || initialHasChangesModel[id] !== esittelija;
+    }, false);
+  }, [initialHasChangesModel, hasChangesModel]);
+
+  const setMaakoodi = (id: string, esittelijaId: string | null) => {
+    const newModel = {
+      ...hasChangesModel,
+      [id]: esittelijaId,
+    };
+
+    const newSortedMaakoodit = sortedMaakoodit.map((maakoodi) => {
+      if (maakoodi.id === id) {
+        return { ...maakoodi, esittelijaId } as Maakoodi;
+      } else {
+        return maakoodi;
+      }
+    });
+
+    setHasChangesModel(newModel);
+    setSortedMaakoodit(newSortedMaakoodit);
+  };
+
+  const unsetMaakoodi = (id: string) => {
+    setMaakoodi(id, null);
+  };
+
+  const handleSave = async () => {
+    if (hasChanges) {
+      const changedList = Object.entries(hasChangesModel)
+        .filter(([id, esittelija]) => initialHasChangesModel[id] !== esittelija)
+        .map(([id]) => id);
+      const newUpdateList = sortedMaakoodit.filter((maakoodi) =>
+        changedList.includes(maakoodi.id),
+      );
+      doUpdateMaakoodit(newUpdateList);
+    }
+  };
 
   if (maakooditIsLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
 
-  // Sortataan maakoodit kerran per render
-  const sortedMaakoodit = sortMaakoodit(maakoodit);
-  const maakooditWithoutEsittelija = sortedMaakoodit.filter(
-    (maakoodi) => maakoodi.esittelijaId == null,
-  );
-  const sortedMaakooditOptions = sortedMaakoodit.map((maakoodi) => ({
-    label: maakoodi.fi,
-    value: maakoodi.koodiUri,
-  }));
-
   return (
-    <BoxWrapper sx={{ borderBottom: 'none' }}>
-      <Stack
-        gap={theme.spacing(2)}
-        sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
-      >
-        <OphTypography variant={'h3'}>
-          {t('maajako.kenellevalittu')}
-        </OphTypography>
-        <OphSelectFormField
-          placeholder={t('yleiset.valitse')}
-          label={t('maajako.suoritusmaa')}
-          sx={{ width: '50%', marginBottom: theme.spacing(1) }}
-          options={sortedMaakooditOptions}
-          value={selectedMaakoodi}
-          onChange={(event: SelectChangeEvent) =>
-            setSelectedMaakoodi(event.target.value)
-          }
-          data-testid={'suoritusmaa'}
-        ></OphSelectFormField>
-
-        <SelectedMaakoodiInfo
-          maakoodit={sortedMaakoodit}
-          selectedMaakoodi={selectedMaakoodi}
-          esittelijat={esittelijat}
-        />
-        <Divider sx={{ marginBottom: theme.spacing(1) }} />
-
-        <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
-        <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
-
-        {maakooditWithoutEsittelija.length === 0 ? (
-          <SuccessBox infoText={t('maajako.kaikkiValittu')} />
-        ) : (
-          <AlertBox
-            infoText={maakooditWithoutEsittelija
-              .map((maakoodi) => maakoodi.fi)
-              .join(', ')}
-            headingText={t('maajako.varoitus')}
-          />
-        )}
-
-        <OphButton
-          sx={{
-            width: '15%',
-            marginBottom: theme.spacing(1),
-            marginTop: theme.spacing(1),
-          }}
-          variant="outlined"
-          color="primary"
-          data-testid="toggle-edit"
-          onClick={() => {
-            setIsEditing((prev) => !prev);
-          }}
+    <>
+      <BoxWrapper sx={{ borderBottom: 'none' }}>
+        <Stack
+          gap={theme.spacing(2)}
+          sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
         >
-          {isEditing
-            ? t('maajako.poistumuokkaustilasta')
-            : t('maajako.muokkaamaajakoa')}
-        </OphButton>
+          <OphTypography variant={'h3'}>
+            {t('maajako.kenellevalittu')}
+          </OphTypography>
+          <OphSelectFormField
+            placeholder={t('yleiset.valitse')}
+            label={t('maajako.suoritusmaa')}
+            sx={{ width: '50%', marginBottom: theme.spacing(1) }}
+            options={sortedMaakooditOptions}
+            value={selectedMaakoodi}
+            onChange={(event: SelectChangeEvent) =>
+              setSelectedMaakoodi(event.target.value)
+            }
+            data-testid={'suoritusmaa'}
+          ></OphSelectFormField>
 
-        {esittelijat?.map((esittelija, index) => (
-          <React.Fragment key={index}>
-            {isEditing ? (
-              <>
-                <OphTypography variant={'h4'}>
-                  {esittelija.etunimi} {esittelija.sukunimi}
-                </OphTypography>
-                <OphSelectFormField
-                  placeholder="yleiset.valitse"
-                  label={t('maajako.tutkinnonsuoritusmaat')}
-                  multiple
-                  data-testid={`esittelija-maaselection-${esittelija.id ?? index}`}
-                  options={maakooditWithoutEsittelija.map((maakoodi) => ({
-                    label: maakoodi.fi,
-                    value: maakoodi.koodiUri,
-                  }))}
-                  value={
-                    (sortedMaakoodit
-                      .filter(
-                        (maakoodi) => maakoodi.esittelijaId === esittelija.id,
-                      )
-                      .map((maakoodi) => maakoodi.koodiUri) as never) || ''
-                  }
-                  onChange={(event: SelectChangeEvent) => {
-                    const selectedValues = Array.isArray(event.target.value)
-                      ? event.target.value
-                      : [event.target.value];
+          <SelectedMaakoodiInfo
+            maakoodit={sortedMaakoodit}
+            selectedMaakoodi={selectedMaakoodi}
+            esittelijat={esittelijat}
+          />
+          <Divider sx={{ marginBottom: theme.spacing(1) }} />
 
-                    const newMaakoodi = maakoodit?.find(
-                      (maakoodi) =>
-                        selectedValues.includes(maakoodi.koodiUri) &&
-                        maakoodi.esittelijaId === null,
-                    );
+          <OphTypography variant={'h3'}>{t('maajako.maajako')}</OphTypography>
+          <OphTypography variant={'body1'}>{t('maajako.kuvaus')}</OphTypography>
 
-                    if (newMaakoodi && esittelija.id) {
-                      setMaakoodiToUpdate({
-                        id: newMaakoodi.id,
-                        esittelijaId: esittelija.id,
-                      });
-                    }
-                  }}
-                  sx={{ width: '100%' }}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {Array.isArray(selected) &&
-                        sortedMaakoodit
-                          .filter((maakoodi) =>
-                            selected.includes(maakoodi.koodiUri),
-                          )
-                          .map((maakoodi) => (
-                            <Chip
-                              key={maakoodi.koodiUri}
-                              label={maakoodi.fi}
-                              sx={{ borderRadius: '0px' }}
-                              data-testid={`maakoodi-chip-${maakoodi.koodiUri}`}
-                              onDelete={() => {
-                                if (maakoodi && esittelija.id) {
-                                  setMaakoodiToUpdate({
-                                    id: maakoodi.id,
-                                    esittelijaId: undefined,
-                                  });
-                                  updateMaakoodi();
-                                }
-                              }}
-                              onMouseDown={(event) => {
-                                event.stopPropagation();
-                              }}
-                            />
-                          ))}
-                    </Box>
-                  )}
-                ></OphSelectFormField>
-              </>
-            ) : (
-              <EsittelijaSection
-                esittelija={esittelija}
-                maakoodit={sortedMaakoodit}
-                t={t}
+          <KaikkiValittuInfo
+            t={t}
+            maakooditWithoutEsittelija={maakooditWithoutEsittelija}
+          />
+
+          <OphButton
+            sx={{
+              width: '15%',
+              marginBottom: theme.spacing(1),
+              marginTop: theme.spacing(1),
+            }}
+            variant="outlined"
+            color="primary"
+            data-testid="toggle-edit"
+            onClick={() => {
+              setIsEditing((prev) => !prev);
+            }}
+          >
+            {isEditing
+              ? t('maajako.poistumuokkaustilasta')
+              : t('maajako.muokkaamaajakoa')}
+          </OphButton>
+
+          {esittelijat?.map((esittelija) => (
+            <React.Fragment key={`esittelija-${esittelija.esittelijaOid}`}>
+              {isEditing ? (
+                <EditEsittelijaSection
+                  esittelija={esittelija}
+                  maakoodit={sortedMaakoodit}
+                  maakooditWithoutEsittelija={maakooditWithoutEsittelija}
+                  t={t}
+                  setMaakoodi={setMaakoodi}
+                  unsetMaakoodi={unsetMaakoodi}
+                />
+              ) : (
+                <EsittelijaSection
+                  esittelija={esittelija}
+                  maakoodit={sortedMaakoodit}
+                  t={t}
+                />
+              )}
+              <Divider
+                sx={{
+                  marginTop: theme.spacing(2),
+                  marginBottom: theme.spacing(2),
+                }}
               />
-            )}
-            <Divider
-              sx={{
-                marginTop: theme.spacing(2),
-                marginBottom: theme.spacing(2),
-              }}
-            />
-          </React.Fragment>
-        ))}
-      </Stack>
-    </BoxWrapper>
+            </React.Fragment>
+          ))}
+        </Stack>
+      </BoxWrapper>
+      <SaveRibbon
+        onSave={handleSave}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+      />
+    </>
   );
 }
+
+interface KaikkiValittuInfoProps {
+  t: TFunction;
+  maakooditWithoutEsittelija: Maakoodi[];
+}
+
+const KaikkiValittuInfo = ({
+  t,
+  maakooditWithoutEsittelija,
+}: KaikkiValittuInfoProps) =>
+  maakooditWithoutEsittelija.length === 0 ? (
+    <SuccessBox infoText={t('maajako.kaikkiValittu')} />
+  ) : (
+    <AlertBox
+      infoText={maakooditWithoutEsittelija
+        .map((maakoodi) => maakoodi.fi)
+        .join(', ')}
+      headingText={t('maajako.varoitus')}
+    />
+  );

@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{DbMaakoodi, Kieli, KoodistoItem}
+import fi.oph.tutu.backend.domain.{DbMaakoodi, Kieli, KoodistoItem, Maakoodi}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
@@ -226,6 +226,30 @@ class MaakoodiRepository {
       case e: Exception =>
         LOG.error(s"Maakoodin päivitys epäonnistui - id: $id", e)
         None
+    }
+  }
+
+  def paivitaMaakoodiAction(id: UUID, esittelijaId: Option[UUID], muokkaaja: String): DBIO[Int] = {
+    val esittelijaIdSql = esittelijaId.map(uuid => s"'$uuid'::uuid").getOrElse("NULL")
+    sqlu"""
+      UPDATE maakoodi
+      SET
+        esittelija_id = #$esittelijaIdSql,
+        muokkaaja = $muokkaaja,
+        muokattu = now()
+      WHERE
+        id = ${id.toString}::uuid
+    """
+  }
+
+  def paivitaMaakoodit(maakoodit: Seq[Maakoodi], muokkaaja: String): Unit = {
+    val actions  = maakoodit.map(m => paivitaMaakoodiAction(m.id, m.esittelijaId, muokkaaja))
+    val combined = db.combineIntDBIOs(actions)
+    db.runTransactionally(combined, "suorita_maakoodien_modifiointi") match {
+      case Success(_) => ()
+      case Failure(e) =>
+        LOG.error(s"Virhe maakoodien modifioinnissa: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe maakoodien modifioinnissa: ${e.getMessage}", e)
     }
   }
 }

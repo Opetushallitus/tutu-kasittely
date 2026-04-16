@@ -48,4 +48,9 @@ class MaakoodiService(
       .updateMaakoodi(id, esittelijaId, muokkaaja)
       .map(db => Maakoodi(db.id, db.esittelijaId, db.koodiUri, db.fi, db.sv, db.en))
   }
+
+  def updateMaakoodit(maakoodit: Seq[Maakoodi], muokkaaja: String): Unit = {
+    maakoodiRepository
+      .paivitaMaakoodit(maakoodit, muokkaaja)
+  }
 }

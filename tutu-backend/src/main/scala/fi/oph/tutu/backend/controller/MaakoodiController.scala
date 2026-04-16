@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import fi.oph.tutu.backend.domain.Maakoodi
 import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadMaakoodit, UpdateMaakoodi}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
@@ -96,6 +97,45 @@ class MaakoodiController(
         }
       case Failure(exception) =>
         LOG.error("Maakoodin päivitys epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PutMapping(path = Array("maakoodit"), produces = Array(MediaType.APPLICATION_JSON_VALUE))
+  @Operation(
+    summary = "Päivittää maakoodilistan esittelijät",
+    responses = Array(
+      new ApiResponse(responseCode = "204", description = "Pyyntö vastaanotettu"),
+      new ApiResponse(responseCode = "500", description = "Palvelinvirhe")
+    )
+  )
+  def updateMaakoodit(
+    @RequestBody maakooditBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user            = userService.getEnrichedUserDetails(true)
+      val maakoodit       = mapper.readValue(maakooditBytes, classOf[Array[Maakoodi]])
+      val vanhatMaakoodit = maakoodit.flatMap(m => maakoodiService.getMaakoodiByUri(m.koodiUri))
+      maakoodiService.updateMaakoodit(maakoodit, user.userOid)
+      (maakoodit, vanhatMaakoodit)
+    } match {
+      case Success((maakoodit, vanhatMaakoodit)) =>
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map(
+            "maakoodit" -> maakoodit.map(maakoodi => maakoodi.id.toString).mkString(", ")
+          ),
+          UpdateMaakoodi,
+          AuditUtil.getChanges(
+            Some(mapper.writeValueAsString(maakoodit)),
+            Some(mapper.writeValueAsString(vanhatMaakoodit))
+          )
+        )
+
+        ResponseEntity.noContent().build()
+      case Failure(exception) =>
+        LOG.error("Maakoodien päivitys epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
