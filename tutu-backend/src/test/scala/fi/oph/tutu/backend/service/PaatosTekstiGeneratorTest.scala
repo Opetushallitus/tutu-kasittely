@@ -27,9 +27,21 @@ val paatostekstiTranslations = Map[String, String](
 
   "paatosteksti.tasoPaatosPerusteluBody" -> "<p>Opetushallitus on arvioinut hakijan tutkinnon{tutkintoNimi} vastaavan tasoltaan Suomessa suoritettavaa {koulu} korkeakoulututkintoa. Arvio perustuu siihen, että tutkintoon johtanut korkeakouluopintojen kokonaisuus vastaa laajuudeltaan, vaativuudeltaan ja suuntautumiseltaan {koulu}n korkeakoulututkintoon johtavaa korkeakouluopintojen kokonaisuutta.</p>",
 
-  "paatosteksti.tasoPaatosTutkinto" -> "<p>Hakijan suorittama korkeakoulututkinto{tutkintoNimi} rinnastetaan Suomessa suoritettavaan {koulu}n korkeakoulututkintoon.</p>",
+  "paatosteksti.tasoPaatos.myonteinen" -> "<p>Hakijan suorittama korkeakoulututkinto{tutkintoNimi} rinnastetaan Suomessa suoritettavaan {koulu}n korkeakoulututkintoon.</p>",
 
-  "paatosteksti.valitusoikeus" -> "<strong>Valitusoikeus</strong><p>Tähän päätökseen saa hakea muutosta valittamalla {hallintoOikeus}. Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä.</p>"
+  "paatosteksti.valitusoikeus" -> "<strong>Valitusoikeus</strong><p>Tähän päätökseen saa hakea muutosta valittamalla {hallintoOikeus}. Liitteenä olevasta valitusosoituksesta ilmenee valituksen määräaika ja se, miten muutosta haettaessa on meneteltävä.</p>",
+
+  "paatosteksti.todistuksenPaivamaara"     -> "Todistuksen päivämäärä: {paivamaara}",
+  "paatosteksti.hakija"                    -> "Hakija:",
+  "paatosteksti.tasoPaatosPerusteluHeader" -> "<strong>Perustelu</strong>",
+  "paatosteksti.muuTutkinto"               -> "Muu tutkinto",
+
+  "paatosteksti.tasoPaatos.kielteinen" -> "<p>Hakijan suorittamaa tutkintoa ei rinnasteta Suomessa suoritettavaan korkeakoulututkintoon.</p>",
+
+  "paatosteksti.peruutus" -> "<strong>Päätös</strong><p>Hakija on peruuttanut hakemuksensa {peruutusPvm}. Hakemuksen käsittely raukeaa.</p>",
+
+  "paatosteksti.tutkinnonTaso.valitse" -> "<p>Valitse tutkinnon taso.</p>",
+  "paatosteksti.todo"                  -> "<p>Tällä hetkellä esikatselua ei ole saatavilla.</p>"
 )
 
 class PaatosTekstiGeneratorTest extends UnitTestBase {

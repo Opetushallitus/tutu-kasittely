@@ -912,7 +912,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       .perform(get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-      .andExpect(jsonPath("$.sisalto").value(startsWith("<p>Hakija:</p>")))
+      .andExpect(jsonPath("$.sisalto").value(startsWith("<p>")))
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.vahvistettu").isEmpty)

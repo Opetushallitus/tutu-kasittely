@@ -30,7 +30,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     hakemus: Hakemus,
     tutkinnot: Seq[Tutkinto],
     paatos: Paatos,
-    paatosKieli: Kieli,
+    lang: Kieli,
     maakoodiService: MaakoodiService
   ): String = {
     val hakijaNimi        = s"${hakemus.hakija.sukunimi} ${hakemus.hakija.etunimet}"
@@ -60,7 +60,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
               .flatMap(maakoodiUri =>
                 maakoodiService
                   .getMaakoodiByUri(maakoodiUri)
-                  .flatMap(m => Some(if (paatosKieli == Kieli.fi) m.fi else m.sv))
+                  .flatMap(m => Some(if (lang == Kieli.fi) m.fi else m.sv))
               )
               .getOrElse("")
 
@@ -77,10 +77,13 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
             )
 
             if (tutkintoParts.nonEmpty) { // Filtteröi esim. Muut tutkinnot pois
-              if (paatosKieli == Kieli.fi)
-                s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>Todistuksen päivämäärä: $todistuksenPaivamaara</p>"""
-              else
-                s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>Datum för bevis: $todistuksenPaivamaara</p>"""
+              s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>"""
+                + translationService.getTranslation(
+                  lang,
+                  "paatosteksti.todistuksenPaivamaara",
+                  Map("paivamaara" -> todistuksenPaivamaara)
+                )
+                + "</p>"
             } else {
               ""
             }
@@ -88,12 +91,12 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
           .mkString("")
       }
 
-    paatosKieli match {
-      case Kieli.fi =>
-        s"""<p>Hakija:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
-      case _ =>
-        s"""<p>Sökande:</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
-    }
+    "<p>"
+      + translationService.getTranslation(
+        lang,
+        "paatosteksti.hakija"
+      )
+      + s"""</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
   }
 
   private def getTasoPaatosHeader(lang: Kieli, count: Number): String = lang match {
@@ -119,7 +122,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val koulu    = getKorkeakouluTasoText(lang, tutkintoTaso)
     translationService.getTranslation(
       lang,
-      "paatosteksti.tasoPaatosTutkinto",
+      "paatosteksti.tasoPaatos.myonteinen",
       Map("tutkintoNimi" -> tutkinto, "koulu" -> koulu)
     )
   }
@@ -138,9 +141,8 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     )
   }
 
-  private def getTasoPaatosPerusteluHeader(lang: Kieli): String = lang match {
-    case Kieli.fi => "<strong>Perustelu</strong>"
-    case _        => "<strong>Motivering</strong>"
+  private def getTasoPaatosPerusteluHeader(lang: Kieli): String = {
+    translationService.getTranslation(lang, "paatosteksti.tasoPaatosPerusteluHeader")
   }
 
   private def getTasoPaatosLakiText(lang: Kieli): String = {
@@ -168,9 +170,8 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     translationService.getTranslation(lang, "paatosteksti.maksunOikaisu", Map("paatosMaksu" -> paatosMaksu))
   }
 
-  private def getSelectTutkintoTasoText(lang: Kieli): String = lang match {
-    case Kieli.fi => "<p>Valitse tutkinnon taso.</p>"
-    case _        => "<p>Välj kvalifikationsnivå.</p>"
+  private def getSelectTutkintoTasoText(lang: Kieli): String = {
+    translationService.getTranslation(lang, "paatosteksti.tutkinnonTaso.valitse")
   }
 
   private def getTutkinto(tutkinnot: Seq[Tutkinto], paatosTieto: PaatosTieto): Option[Tutkinto] = {
@@ -181,7 +182,8 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     for {
       tutkinto <- getTutkinto(tutkinnot, paatosTieto) if paatosTieto.lisaaTutkintoPaatostekstiin.getOrElse(false)
       nimi     <-
-        if (tutkinto.jarjestys == "MUU") Some(if (lang == Kieli.fi) "Muu tutkinto" else "Annan examen")
+        if (tutkinto.jarjestys == "MUU")
+          Some(translationService.getTranslation(lang, "paatosteksti.muuTutkinto"))
         else tutkinto.nimi
     } yield nimi
   }
@@ -190,23 +192,18 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     hakemus: Hakemus,
     tutkinnot: Seq[Tutkinto],
     paatos: Paatos,
-    paatosKieli: Kieli
+    lang: Kieli
   ): String = {
     val tasoPaatosTiedot = paatos.paatosTiedot.filter(_.paatosTyyppi.get == PaatosTyyppi.Taso)
 
     val tutkintoTexts = tasoPaatosTiedot
       .map { pt =>
         if (pt.tutkintoTaso.isDefined)
-          getTasoPaatosTutkintoText(paatosKieli, pt.tutkintoTaso.get, getTutkintoNimi(paatosKieli, tutkinnot, pt))
+          getTasoPaatosTutkintoText(lang, pt.tutkintoTaso.get, getTutkintoNimi(lang, tutkinnot, pt))
         else if (pt.myonteinenPaatos.contains(false)) {
-          paatosKieli match {
-            case Kieli.fi =>
-              "<p>Hakijan suorittamaa tutkintoa ei rinnasteta Suomessa suoritettavaan korkeakoulututkintoon.</p>"
-            case _ =>
-              "<p>Den examen som den sökande har avlagt jämställs inte med en högskoleexamen som avläggs i Finland.</p>"
-          }
+          translationService.getTranslation(lang, "paatosteksti.tasoPaatos.kielteinen")
         } else
-          getSelectTutkintoTasoText(paatosKieli)
+          getSelectTutkintoTasoText(lang)
       }
       .mkString("")
 
@@ -234,15 +231,15 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
           }
         } else
           pt.tutkintoTaso
-            .map(taso => getTasoPaatosPerusteluBodyText(paatosKieli, taso, getTutkintoNimi(paatosKieli, tutkinnot, pt)))
+            .map(taso => getTasoPaatosPerusteluBodyText(lang, taso, getTutkintoNimi(lang, tutkinnot, pt)))
       }
       .mkString("")
 
-    getTasoPaatosHeader(paatosKieli, tasoPaatosTiedot.size)
+    getTasoPaatosHeader(lang, tasoPaatosTiedot.size)
       ++ tutkintoTexts
-      ++ getTasoPaatosPerusteluHeader(paatosKieli)
+      ++ getTasoPaatosPerusteluHeader(lang)
       ++ perusteluBodies
-      ++ getTasoPaatosLakiText(paatosKieli)
+      ++ getTasoPaatosLakiText(lang)
   }
 
   private def generatePeruutusTeksti(lang: Kieli, hakemus: Hakemus): String = {
@@ -250,19 +247,11 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
       case Some(date) => formatDate(date)
       case _          => if (lang == Kieli.fi) "[pp.kk.vvvv]" else "[dd.mm.åååå]"
     }
-    lang match {
-      case Kieli.fi =>
-        s"""<strong>Päätös</strong><p>Hakija on peruuttanut hakemuksensa $peruutusPvm. Hakemuksen käsittely raukeaa.</p>"""
-      case _ =>
-        s"""<strong>Beslut</strong><p>Den sökande har dragit tillbaka sin ansökan $peruutusPvm. Behandlingen av ansökan förfaller.</p>"""
-    }
+    translationService.getTranslation(lang, "paatosteksti.peruutus", Map("peruutusPvm" -> peruutusPvm))
   }
 
-  private def getTODOText(lang: Kieli): String = lang match {
-    case Kieli.fi =>
-      s"""<p>Tällä hetkellä esikatselua ei ole saatavilla.</p>"""
-    case _ =>
-      s"""<p>Det finns för närvarande ingen förhandsvisning tillgänglig.</p>"""
+  private def getTODOText(lang: Kieli): String = {
+    translationService.getTranslation(lang, "paatosteksti.todo")
   }
 
   def generatePaatosTeksti(
