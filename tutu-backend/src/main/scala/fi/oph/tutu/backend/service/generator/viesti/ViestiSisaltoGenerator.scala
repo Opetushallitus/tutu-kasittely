@@ -16,18 +16,15 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
   val LOG: Logger            = LoggerFactory.getLogger(classOf[ViestiSisaltoGenerator])
   private val DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-  private def rivi(kieli: Kieli, translationKey: String, parameters: Seq[(String, String)] = Seq()): String = {
-    val translation          = translationService.getTranslation(kieli, translationKey)
-    val formattedTranslation = parameters.foldLeft(translation) { case (text, (placeholder, value)) =>
-      text.replace(s"{$placeholder}", value)
-    }
-    s"""<span style="white-space: pre-wrap;">$formattedTranslation</span>"""
+  private def rivi(kieli: Kieli, translationKey: String, parameters: Map[String, String] = Map()): String = {
+    val translation = translationService.getTranslation(kieli, translationKey, parameters)
+    s"""<span style="white-space: pre-wrap;">$translation</span>"""
   }
 
   private def kappale(
     kieli: Kieli,
     translationKey: String | Array[String],
-    parameters: Seq[(String, String)] = Seq()
+    parameters: Map[String, String] = Map()
   ): String = {
     val rivit = translationKey match {
       case key: String         => rivi(kieli, key, parameters)
@@ -39,7 +36,7 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
   private def kappaleet(
     kieli: Kieli,
     translationKeys: Seq[String],
-    parameters: Seq[(String, String)] = Seq()
+    parameters: Map[String, String] = Map()
   ): String =
     translationKeys.map(key => kappale(kieli, key, parameters)).mkString
 
@@ -48,17 +45,19 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
         kieli,
         translationKey
       )}</strong></b></p>"""
+
   private[service] def maaraAika(timezone: ZoneId) =
     ZonedDateTime.now(timezone).plusDays(TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA).format(DATE_FORMATTER)
+
   def generateTaydennyspyyntoSisalto(viestiHakemusInfo: ViestiHakemusInfo): String = {
     val kieli = viestiHakemusInfo.kieli
     s"""${otsikko(kieli, "hakemus.viesti.taydennyspyynto.ylaOtsikko")}
        |${kappale(
         kieli,
         Array("hakemus.viesti.sisalto.maaraaika", "hakemus.viesti.sisalto.asiatunnus"),
-        Seq(
-          ("date", maaraAika(viestiHakemusInfo.requestTimezone)),
-          ("asiatunnus", viestiHakemusInfo.asiatunnus.getOrElse(""))
+        Map(
+          "date"       -> maaraAika(viestiHakemusInfo.requestTimezone),
+          "asiatunnus" -> viestiHakemusInfo.asiatunnus.map(at => s"($at)").getOrElse("")
         )
       )}
        |${kappaleet(kieli, Seq("hakemus.viesti.sisalto.tervehdys", "hakemus.viesti.sisalto.tietoaHakemuksesta"))}

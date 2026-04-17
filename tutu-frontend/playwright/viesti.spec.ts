@@ -319,6 +319,7 @@ test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
   await page.route(
     '**/tutu-backend/api/viesti/1.2.246.562.11.**',
     async (route) => {

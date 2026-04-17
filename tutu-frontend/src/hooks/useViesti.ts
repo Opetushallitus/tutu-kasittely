@@ -154,11 +154,11 @@ export const useViestiOletusSisalto = (
   const queryKey = ['viestiOletusSisalto', hakemusOid, tyyppi];
   const queryClient = useQueryClient();
 
+  // Tyypin ollessa tyhjä ei haluta näyttää mitään oletussisältöä =>
+  // Nollataan myös query cache ettei mahdollista aiempaa dataa palauteta
   if (!tyyppi) {
     queryClient.invalidateQueries({
-      predicate: (query) =>
-        query.queryKey[0] === 'viestiOletusSisalto' &&
-        query.queryKey[1] === hakemusOid,
+      queryKey: ['viestiOletusSisalto', hakemusOid],
     });
   }
 

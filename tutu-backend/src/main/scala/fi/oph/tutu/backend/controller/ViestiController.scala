@@ -1,29 +1,19 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Kieli, OletusSisaltoTyyppi, Viesti}
+import fi.oph.tutu.backend.domain.{HakemusOid, OletusSisaltoTyyppi, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
-import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
+import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{
-  DeleteMapping,
-  GetMapping,
-  PathVariable,
-  PutMapping,
-  RequestBody,
-  RequestMapping,
-  RequestParam,
-  RestController
-}
+import org.springframework.web.bind.annotation.*
 
 import java.time.ZoneId
 import java.util.UUID
-import scala.collection.JavaConverters.enumerationAsScalaIteratorConverter
 import scala.util.{Failure, Success, Try}
 
 @RestController

@@ -30,13 +30,13 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 export const isServer = typeof window === 'undefined';
 
 export type ErrorItem = {
-  error: Error;
+  error: Error | null;
   translationKey: string;
   isCritical?: boolean;
 };
 
 export const errorItem = (
-  error: Error,
+  error: Error | null,
   translationKey: string,
   isCritical: boolean = false,
 ) => ({

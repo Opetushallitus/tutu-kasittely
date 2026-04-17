@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { match, P } from 'ts-pattern';
 
 import useToaster from '@/src/hooks/useToaster';
 import { useVahvistetutViestit } from '@/src/hooks/useVahvistetutViestit';
@@ -43,35 +42,16 @@ export const useViestiAll = (hakemusOid?: string) => {
     sisaltoLoadingError,
   } = useViestiOletusSisalto(hakemusOid, viestityyppi);
 
-  const maybeError: ErrorItem | null = useMemo(
+  const maybeError: ErrorItem | undefined = useMemo(
     () =>
-      match([
-        viestiLoadingError,
-        viestiUpdateError,
-        vahvistusError,
-        poistoError,
-        listaError,
-        sisaltoLoadingError,
-      ])
-        .with([P.not(P.nullish), null, null, null, null, null], () =>
-          errorItem(viestiLoadingError!, 'virhe.viestinLataus', true),
-        )
-        .with([null, P.not(P.nullish), null, null, null, null], () =>
-          errorItem(viestiUpdateError!, 'virhe.viestinPaivitys'),
-        )
-        .with([null, null, P.not(P.nullish), null, null, null], () =>
-          errorItem(vahvistusError!, 'virhe.viestinVahvistus'),
-        )
-        .with([null, null, null, P.not(P.nullish), null, null], () =>
-          errorItem(poistoError!, 'virhe.viestinPoisto'),
-        )
-        .with([null, null, null, null, P.not(P.nullish), null], () =>
-          errorItem(listaError!, 'virhe.viestiListanLataus'),
-        )
-        .with([null, null, null, null, null, P.not(P.nullish)], () =>
-          errorItem(sisaltoLoadingError!, 'virhe.viestiSisallonLataus'),
-        )
-        .otherwise(() => null),
+      [
+        errorItem(viestiLoadingError, 'virhe.viestinLataus', true),
+        errorItem(viestiUpdateError, 'virhe.viestinPaivitys'),
+        errorItem(vahvistusError, 'virhe.viestinVahvistus'),
+        errorItem(poistoError, 'virhe.viestinPoisto'),
+        errorItem(listaError, 'virhe.viestiListanLataus'),
+        errorItem(sisaltoLoadingError, 'virhe.viestiSisallonLataus'),
+      ].find((err) => err.error),
     [
       listaError,
       poistoError,
@@ -84,11 +64,11 @@ export const useViestiAll = (hakemusOid?: string) => {
 
   const maybeSuccessMessage: string | null = useMemo(
     () =>
-      match([viestiUpdateSuccess, vahvistusSuccess, poistoSuccess])
-        .with([true, false, false], () => 'hakemus.viesti.paivitetty')
-        .with([false, true, false], () => 'hakemus.viesti.vahvistettu')
-        .with([false, false, true], () => 'hakemus.viesti.poistettu')
-        .otherwise(() => null),
+      [
+        { when: viestiUpdateSuccess, value: 'hakemus.viesti.paivitetty' },
+        { when: vahvistusSuccess, value: 'hakemus.viesti.vahvistettu' },
+        { when: poistoSuccess, value: 'hakemus.viesti.poistettu' },
+      ].find((item) => item.when)?.value || null,
     [poistoSuccess, vahvistusSuccess, viestiUpdateSuccess],
   );
 
