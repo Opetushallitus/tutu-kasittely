@@ -590,6 +590,10 @@ export const viestiTyoversio: Viesti = {
   otsikko: 'Työversio',
   viesti: 'Tämä on työversio',
 };
+export const tallennettuTyoversio: Viesti = {
+  ...viestiTyoversio,
+  id: '550e8400-e29b-41d4-a716-446655440000',
+};
 
 export const mockViestiTyoversio = (page: Page, viesti: Viesti) => {
   let callCounter = 0;
@@ -665,6 +669,19 @@ export const mockViestiLista = (page: Page) => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(viestiLista),
+      });
+    },
+  );
+};
+
+export const mockViestiOletussisalto = (page: Page) => {
+  return page.route(
+    '**/tutu-backend/api/viesti/oletussisalto/1.2.246.562.11.00000000001/**',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<span style="white-space: pre-wrap;">Oletussisältö</span>',
       });
     },
   );

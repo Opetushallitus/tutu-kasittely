@@ -3,13 +3,24 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
-import { Viesti } from '@/src/lib/types/viesti';
+import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
 
 const getViestiTyoversio = async (
   hakemusOid: string | undefined,
 ): Promise<Viesti> => {
   return await doApiFetch(
     `viesti/tyoversio/${hakemusOid}`,
+    undefined,
+    'no-store',
+  );
+};
+
+const getViestiOletussisalto = async (
+  hakemusOid?: string,
+  tyyppi?: Viestityyppi | null,
+): Promise<string> => {
+  return await doApiFetch(
+    `viesti/oletussisalto/${hakemusOid}/${tyyppi}`,
     undefined,
     'no-store',
   );
@@ -125,6 +136,7 @@ export const useViesti = (hakemusOid?: string) => {
     isViestiLoading: query.isLoading,
     viestiLoadingError: query.error,
     updateOngoing: viestiUpdateOngoing || vahvistusOngoing,
+    vahvistusOngoing,
     poistoOngoing,
     viestiUpdateSuccess,
     viestiUpdateError,
@@ -132,5 +144,35 @@ export const useViesti = (hakemusOid?: string) => {
     vahvistusError,
     poistoSuccess,
     poistoError,
+  };
+};
+
+export const useViestiOletusSisalto = (
+  hakemusOid?: string,
+  tyyppi?: Viestityyppi | null,
+) => {
+  const queryKey = ['viestiOletusSisalto', hakemusOid, tyyppi];
+  const queryClient = useQueryClient();
+
+  // Tyypin ollessa tyhjä ei haluta näyttää mitään oletussisältöä =>
+  // Nollataan myös query cache ettei mahdollista aiempaa dataa palauteta
+  if (!tyyppi) {
+    queryClient.invalidateQueries({
+      queryKey: ['viestiOletusSisalto', hakemusOid],
+    });
+  }
+
+  const query = useQuery({
+    queryKey,
+    queryFn: () => getViestiOletussisalto(hakemusOid, tyyppi),
+    enabled: !!hakemusOid && !!tyyppi,
+    throwOnError: false,
+  });
+
+  return {
+    ...query,
+    sisalto: query.data,
+    isSisaltoLoading: query.isLoading,
+    sisaltoLoadingError: query.error,
   };
 };

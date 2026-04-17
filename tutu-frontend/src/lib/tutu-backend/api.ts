@@ -94,6 +94,7 @@ export async function apiFetch(
             : undefined),
           'Content-Type':
             options?.headers?.['Content-Type'] ?? 'application/json',
+          'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
         body: options?.body,
       },

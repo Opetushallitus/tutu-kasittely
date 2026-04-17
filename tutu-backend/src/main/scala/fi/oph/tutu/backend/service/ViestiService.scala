@@ -2,12 +2,14 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository, ViestiRepository}
+import fi.oph.tutu.backend.service.generator.viesti.ViestiSisaltoGenerator
+import fi.oph.tutu.backend.utils.Constants.TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
+import java.time.{LocalDateTime, ZoneId}
 import java.util.UUID
-import java.time.LocalDateTime
 
 @Component
 @Service
@@ -17,7 +19,7 @@ class ViestiService(
   esittelijaRepository: EsittelijaRepository,
   onrService: OnrService,
   hakemusService: HakemusService,
-  translationService: TranslationService
+  viestiSisaltoGenerator: ViestiSisaltoGenerator
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
@@ -99,44 +101,48 @@ class ViestiService(
     }
   }
 
-  private[service] def taytaVahvistusTiedot(viesti: Viesti, vahvistajaOid: String): Viesti = {
-    val viestiWithAllekirjoitus = haeEsittelija(Some(vahvistajaOid)) match {
-      case Some(esittelija) =>
-        viesti.kieli match {
-          case Some(kieli) =>
-            val tervehdysTeksti =
-              translationService.getTranslation(kieli, "hakemus.viesti.allekirjoitus.tervehdys")
-            val ophTeksti =
-              translationService.getTranslation(kieli, "hakemus.viesti.allekirjoitus.opetushallitus")
-            val sahkoposti    = esittelija.sahkoposti.getOrElse("")
-            val allekirjoitus =
-              s"""<p>
-                 |<span style="white-space: pre-wrap;">$tervehdysTeksti,</span>
-                 |<br><br>
-                 |<span style="white-space: pre-wrap;">${esittelija.kokoNimi()}</span>
-                 |<br>
-                 |<span style="white-space: pre-wrap;">$ophTeksti</span>
-                 |<br>
-                 |<a href="mailto:$sahkoposti"><span style="white-space: pre-wrap;">$sahkoposti</span></a>
-                 |<br>
-                 |<span style="white-space: pre-wrap;">${esittelija.puhelinnumero.getOrElse("")}</span>
-                 |</p>""".stripMargin.replaceAll("\n", "")
-            viesti.copy(viesti = Some(s"${viesti.viesti.getOrElse("")}$allekirjoitus"))
-          case _ =>
-            LOG.warn(s"Viestillä ei ollut valittua kieltä, allekirjoitus jätetään tyhjäksi")
-            viesti
-        }
-      case _ =>
-        LOG.warn(s"Esittelijää ei löytynyt oidilla: $vahvistajaOid, allekirjoitus jätetään tyhjäksi")
-        viesti
-    }
-    viestiWithAllekirjoitus.copy(
+  private[service] def taytaVahvistusTiedot(viesti: Viesti, vahvistajaOid: String): Viesti =
+    viesti.copy(
       vahvistettu = Some(LocalDateTime.now()),
       vahvistaja = Some(vahvistajaOid)
     )
-  }
 
   def poistaViesti(id: UUID): Int = {
     viestiRepository.poistaViesti(id)
+  }
+
+  def haeOletusSisalto(
+    hakemusOid: HakemusOid,
+    esittelijaOid: String,
+    sisaltoTyyppi: OletusSisaltoTyyppi,
+    requestTimezone: ZoneId
+  ): Option[String] = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case Some(dbHakemus: DbHakemus) =>
+        val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
+        haeEsittelija(Some(esittelijaOid)) match {
+          case Some(esittelija) =>
+            val kieli       = Kieli.optionFromString(ataruHakemus.lang).getOrElse(Kieli.fi)
+            val hakemusInfo = ViestiHakemusInfo(
+              hakemusOid = hakemusOid,
+              esittelija = esittelija,
+              kieli = kieli,
+              requestTimezone = requestTimezone,
+              asiatunnus = dbHakemus.asiatunnus
+            )
+            sisaltoTyyppi match {
+              case OletusSisaltoTyyppi.taydennyspyynto =>
+                Some(viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(hakemusInfo))
+              case OletusSisaltoTyyppi.ennakkotieto =>
+                Some(viestiSisaltoGenerator.generateAllekirjoitus(hakemusInfo))
+              case OletusSisaltoTyyppi.muuViesti =>
+                Some(viestiSisaltoGenerator.generateAllekirjoitus(hakemusInfo))
+              case _ => Some("") // Oletuksena tyhjä sisältö, jos tyyppiä ei tunnisteta
+            }
+          case _ => None
+        }
+
+      case _ => None
+    }
   }
 }

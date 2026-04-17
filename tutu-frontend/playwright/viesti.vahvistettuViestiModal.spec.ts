@@ -6,6 +6,7 @@ import {
   mockInit,
   mockUser,
   mockViestiLista,
+  mockViestiOletussisalto,
   mockViestiTyoversio,
   uusiViesti,
   VIESTILISTAN_ENSIMMAINEN_AIKALEIMA,
@@ -95,6 +96,7 @@ test('Kopioitaessa editoriin, sisältö lisätään editorissa näytettävän te
   page,
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViestiOletussisalto(page);
   openModal(page);
   const modal = page.getByTestId('vahvistettu-viesti-modal');
   await expect(modal).toBeVisible();

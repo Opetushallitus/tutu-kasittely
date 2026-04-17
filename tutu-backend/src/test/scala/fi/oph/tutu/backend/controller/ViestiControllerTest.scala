@@ -1,16 +1,16 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.domain.{Asiakirja, HakemusOid, KansalaisuusKoodi, Kieli, OnrUser, User, Viesti}
-import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{OnrService, UserService}
-import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import fi.oph.tutu.backend.domain.Viestityyppi.ennakkotieto
+import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.security.SecurityConstants
+import fi.oph.tutu.backend.service.{OnrService, TranslationService, UserService}
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
-import org.junit.jupiter.api.{BeforeAll, BeforeEach, Order, Test, TestInstance, TestMethodOrder}
 import org.junit.jupiter.api.TestInstance.Lifecycle
+import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,6 +49,9 @@ class ViestiControllerTest extends IntegrationTestBase {
   @MockitoBean
   var auditLog: AuditLog = _
 
+  @MockitoBean
+  var translationService: TranslationService = _
+
   val lomakeId: Long          = 1527182
   val hakemusOid              = HakemusOid("1.2.246.562.11.00000000001")
   var hakemusId: Option[UUID] = None
@@ -71,6 +74,14 @@ class ViestiControllerTest extends IntegrationTestBase {
         None,
         "testi"
       )
+    )
+    esittelijaRepository.insertEsittelija(
+      UserOid("test user"),
+      "luoja",
+      "Yrjö",
+      "Kortesniemi",
+      Some("yka@niemi.fi"),
+      Some("123 456789")
     )
   }
 
@@ -99,6 +110,7 @@ class ViestiControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
+    when(translationService.getTranslation(any[Kieli], any[String])).thenReturn("")
   }
 
   @Test
@@ -332,4 +344,19 @@ class ViestiControllerTest extends IntegrationTestBase {
       .andExpect(status().is5xxServerError())
   }
 
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(13)
+  def haeOletusSisaltoPalauttaaHtmlMuotoistaSisaltoa(): Unit = {
+    initAtaruHakemusRequests()
+    val result = mvc
+      .perform(
+        get(s"/api/viesti/oletussisalto/$hakemusOid/taydennyspyynto")
+      )
+      .andExpect(status().isOk)
+      .andReturn()
+    assert(result.getResponse.getContentAsString.contains("Yrjö Kortesniemi"))
+    assert(result.getResponse.getContentAsString.contains("yka@niemi.fi"))
+    assert(result.getResponse.getContentAsString.contains("123 456789"))
+  }
 }
