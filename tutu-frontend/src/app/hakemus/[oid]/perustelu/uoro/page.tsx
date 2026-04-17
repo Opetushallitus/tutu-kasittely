@@ -85,6 +85,7 @@ export default function UoroPage() {
         <Stack direction="column" spacing={2}>
           <Muistio
             label={t('hakemus.perustelu.uoro.koulutuksenSisalto')}
+            testId="koulutuksenSisalto"
             helperText={t('hakemus.perustelu.uoro.koulutuksenSisaltoSelite')}
             sisalto={uoRoSisalto?.koulutuksenSisalto}
             updateMuistio={(value) => {
