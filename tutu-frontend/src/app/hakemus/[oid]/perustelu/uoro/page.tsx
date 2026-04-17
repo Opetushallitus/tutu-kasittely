@@ -1,19 +1,8 @@
 'use client';
 
 import { Stack } from '@mui/material';
-import {
-  OphCheckbox,
-  OphInputFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { SovellettuTilanne } from '@/src/app/hakemus/[oid]/perustelu/uoro/components/SovellettuTilanne';
-import {
-  opettajatBooleanFields,
-  otmBooleanFields,
-  vkBooleanFields,
-} from '@/src/app/hakemus/[oid]/perustelu/uoro/constants/perusteluUoRoBooleanFields';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -101,101 +90,6 @@ export default function UoroPage() {
             updateMuistio={(value) => {
               updatePerusteluUoRo('koulutuksenSisalto', value);
             }}
-          />
-          <OphTypography variant={'h3'}>
-            {t('hakemus.perustelu.uoro.erotKoulutuksenSisallossa')}
-          </OphTypography>
-          <OphTypography variant={'label'}>
-            {t('hakemus.perustelu.uoro.opettajat.otsikko')}
-          </OphTypography>
-          {opettajatBooleanFields.map(({ key, labelKey }) => (
-            <OphCheckbox
-              key={key as string}
-              label={t(labelKey)}
-              data-testid={`checkbox-${key as string}`}
-              checked={!!uoRoSisalto?.[key]}
-              onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
-            />
-          ))}
-          {uoRoSisalto?.opettajatMuuEro && (
-            <OphInputFormField
-              data-testid="opettajatMuuEroSelite"
-              sx={{ paddingLeft: 4 }}
-              multiline={true}
-              minRows={5}
-              label={t('yleiset.tasmenna')}
-              value={uoRoSisalto?.opettajatMuuEroSelite || ''}
-              onChange={(event) =>
-                updatePerusteluUoRo('opettajatMuuEroSelite', event.target.value)
-              }
-            />
-          )}
-          <OphTypography variant={'label'}>
-            {t('hakemus.perustelu.uoro.opettajatVk.otsikko')}
-          </OphTypography>
-          {vkBooleanFields.map(({ key, labelKey }) => (
-            <OphCheckbox
-              key={key as string}
-              label={t(labelKey)}
-              data-testid={`checkbox-${key as string}`}
-              checked={!!uoRoSisalto?.[key]}
-              onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
-            />
-          ))}
-          {uoRoSisalto?.vkOpettajatMuuEro && (
-            <OphInputFormField
-              sx={{ paddingLeft: 4 }}
-              multiline={true}
-              minRows={5}
-              label={t('yleiset.tasmenna')}
-              value={uoRoSisalto?.vkOpettajatMuuEroSelite || ''}
-              onChange={(event) =>
-                updatePerusteluUoRo(
-                  'vkOpettajatMuuEroSelite',
-                  event.target.value,
-                )
-              }
-            />
-          )}
-          <OphTypography variant={'label'}>
-            {t('hakemus.perustelu.uoro.otm.otsikko')}
-          </OphTypography>
-          {otmBooleanFields.map(({ key, labelKey }) => (
-            <OphCheckbox
-              key={key as string}
-              label={t(labelKey)}
-              data-testid={`checkbox-${key as string}`}
-              checked={!!uoRoSisalto?.[key]}
-              onChange={() => updatePerusteluUoRo(key, !uoRoSisalto?.[key])}
-            />
-          ))}
-          {uoRoSisalto?.otmMuuEro && (
-            <OphInputFormField
-              data-testid="otmMuuEroSelite"
-              sx={{ paddingLeft: 4 }}
-              multiline={true}
-              minRows={5}
-              label={t('yleiset.tasmenna')}
-              value={uoRoSisalto?.otmMuuEroSelite || ''}
-              onChange={(event) =>
-                updatePerusteluUoRo('otmMuuEroSelite', event.target.value)
-              }
-            />
-          )}
-          <Muistio
-            label={t('hakemus.perustelu.uoro.muuTutkinto')}
-            sisalto={uoRoSisalto?.muuTutkinto}
-            updateMuistio={(value) => {
-              updatePerusteluUoRo('muuTutkinto', value);
-            }}
-          />
-          <OphTypography variant={'h3'}>
-            {t('hakemus.perustelu.uoro.sovellettuTilanne.otsikko')}
-          </OphTypography>
-          <SovellettuTilanne
-            uoRoSisalto={uoRoSisalto}
-            updatePerusteluUoRoAction={updatePerusteluUoRo}
-            t={t}
           />
         </Stack>
       </PerusteluLayout>
