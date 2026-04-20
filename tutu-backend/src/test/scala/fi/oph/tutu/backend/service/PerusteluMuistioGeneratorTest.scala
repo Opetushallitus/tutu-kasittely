@@ -54,28 +54,6 @@ val translations = Map[String, String](
   "perustelumuistio.aikaisemmatPaatokset.ei"               -> "Opetushallitus on tehnyt vastaavia päätöksiä: Ei",
   "perustelumuistio.muuPerustelu.label"                    -> "Ratkaisun tai päätöksen muut perustelut:",
   "perustelumuistio.koulutuksenSisalto.label"              -> "Koulutuksen sisältö:",
-  "perustelumuistio.uoro.koulutuserot.opettajat.monialaisetSisalto" -> "Ero monialaisten opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.opettajat.monialaisetLaajuus" -> "Ero monialaisten opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.opettajat.pedagogisetSisalto" -> "Ero pedagogisten opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.opettajat.pedagogisetLaajuus" -> "Ero pedagogisten opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetLaajuus" -> "Ero kasvatustieteellisten opintojen laajuudessa (LO)",
-  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetVaativuus" -> "Ero kasvatustieteellisten opintojen vaativuudessa (LO)",
-  "perustelumuistio.uoro.koulutuserot.opettajat.kasvatustieteellisetSisalto" -> "Ero kasvatustieteellisten opintojen sisällössä (LO)",
-  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetSisalto" -> "Ero opetettavan aineen opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetVaativuus" -> "Ero opetettavan aineen opintojen vaativuudessa",
-  "perustelumuistio.uoro.koulutuserot.opettajat.opetettavatAineetLaajuus" -> "Ero opetettavan aineen opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.opettajat.erityisopettajaSisalto" -> "Ero erityisopettajan opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.opettajat.erityisopettajaLaajuus" -> "Ero erityisopettajan opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.muu"                              -> "Muu ero",
-  "perustelumuistio.uoro.koulutuserot.muuLabel"                         -> "Muu ero:",
-  "perustelumuistio.uoro.koulutuserot.vkopettajat.kasvatustieteellisetLaajuus" -> "Ero kasvatustieteellisten opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.vkopettajat.kasvatustieteellisetSisalto" -> "Ero kasvatustieteellisten opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.vkopettajat.opintojenLaajuus" -> "Ero varhaiskasvatuksen ja esiopetuksen opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.vkopettajat.opintojenSisalto" -> "Ero varhaiskasvatuksen ja esiopetuksen opintojen sisällössä",
-  "perustelumuistio.uoro.koulutuserot.otm.opintojenLaajuus"   -> "Ero oikeustieteellisten opintojen laajuudessa",
-  "perustelumuistio.uoro.koulutuserot.otm.opintojenVaativuus" -> "Ero oikeustieteellisten opintojen vaativuudessa",
-  "perustelumuistio.uoro.koulutuserot.otm.opintojenSisalto"   -> "Ero oikeustieteellisten opintojen sisällössä",
-  "perustelumuistio.uoro.muuTutkintoTaiSuoritus.label"        -> "Muu tutkinto tai opintosuoritus:",
   "perustelumuistio.ap.lakiperuste.toisessaJasenmaassaSaanneltyKoulutus" -> "Toisessa jäsenmaassa säänneltyyn ammattiin johtanut koulutus tai säännelty ammatillinen koulutus",
   "perustelumuistio.ap.lakiperuste.lahtomaassaSaavutetutOikeudet" -> "Pätevyys ammattiin lähtömaassa saavutettujen oikeuksien nojalla",
   "perustelumuistio.ap.lakiperuste.toinenEUMaaTunnustanut" -> "EU-kansalaisen EU:n ulkopuolella hankkima ammattipätevyys, jonka toinen EU-maa on tunnustanut, ja henkilöllä on jäsenmaassa hankittu",
@@ -391,10 +369,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muokattu = None,
       muokkaaja = None,
       uoRoSisalto = UoRoSisalto(
-        opettajatEroMonialaisetOpinnotSisalto = Some(true),
-        opettajatMuuEro = Some(true),
-        opettajatMuuEroSelite = Some("Tutkinto ei vaadi opetusnäytettä"),
-        muuTutkinto = Some("Muu tutkinto tai opintosuoritus -- body"),
         koulutuksenSisalto = Some("Koulutuksen sisältö muistio -- body")
       ),
       apSisalto = APSisalto(
@@ -638,12 +612,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   def haeUoRoPerusteluProducesString(): Unit = {
     val result = haeUoRoPerustelu(translationService, somePerustelu)
 
-    assert(result.get.contains("Ero monialaisten opintojen sisällössä"))
-    assert(result.get.contains("Muu ero"))
-    assert(result.get.contains("Tutkinto ei vaadi opetusnäytettä"))
-
     assert(result.get.contains("Koulutuksen sisältö muistio -- body"))
-    assert(result.get.contains("Muu tutkinto tai opintosuoritus -- body"))
   }
 
   @Test
