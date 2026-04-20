@@ -11,6 +11,8 @@ object Constants {
 
   val HAKEMUKSEN_PERUUTUS_VAHVISTETTU = 0
 
+  val TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA = 14
+
   val ATARU_PAATOS_KIELI: AtaruKysymysId =
     AtaruKysymysId("82c7260d-ebf0-4521-8f18-ad37e5490670", "paatos-kieli")
 

@@ -14,6 +14,8 @@ import {
   mockViestiLista,
   viestiTyoversio,
   mockViesti,
+  mockViestiOletussisalto,
+  tallennettuTyoversio,
 } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
@@ -57,6 +59,7 @@ test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async 
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
   await expect(page.getByTestId('viesti-kieli-select')).toHaveText('Suomi');
   await expect(
     page.locator('input[type="radio"][value="ennakkotieto"]'),
@@ -79,6 +82,7 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
   await mockViestiTyoversio(page, uusiViesti);
   await mockViesti(page, uusiViesti);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
 
   await expectDataFromDropdownSelection(
     page,
@@ -142,6 +146,7 @@ test('Viestin vahvistamisesta lähetetään PUT -kutsu backendille ja viestin ke
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViesti(page, viestiTyoversio);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
 
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
   await page.getByTestId('viesti-vahvista-button').click();
@@ -162,12 +167,51 @@ test('Viestin vahvistamisesta lähetetään PUT -kutsu backendille ja viestin ke
   await expectViestiFormToBeEmpty(page);
 });
 
-test('Kenttien tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
+test('Kenttien tyhjennyksessä tyhjennetään muut kentät paitsi kielivalinta', async ({
   page,
 }) => {
-  await mockViestiTyoversio(page, viestiTyoversio);
-  await mockViesti(page, viestiTyoversio);
+  await mockViestiTyoversio(page, uusiViesti);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
+  const kieliSelect = page.getByTestId('viesti-kieli-select');
+  const otsikko = page.getByTestId('viesti-otsikko-input').getByRole('textbox');
+  const sisalto = page.getByTestId('editor-content-editable');
+  await page
+    .getByTestId('viesti-tyyppi-radio-group')
+    .locator('input[type="radio"][value="ennakkotieto"]')
+    .click();
+  await otsikko.fill('Tämä on otsikko');
+  await sisalto.fill('Tämä on varsinainen viesti');
+
+  await expect(
+    page.locator('input[type="radio"][value="ennakkotieto"]'),
+  ).toBeChecked();
+  await expect(otsikko).toHaveValue('Tämä on otsikko');
+  await expect(sisalto).toHaveText('Tämä on varsinainen viesti');
+  await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
+  await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
+
+  await page.getByTestId('viesti-tyhjenna-button').click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+  await page.getByTestId('modal-confirm-button').click();
+
+  await expectViestiFormToBeEmpty(page);
+  await expect(kieliSelect).toHaveText('Englanti');
+
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'success',
+  );
+});
+
+test('Tallennetun viestin tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, tallennettuTyoversio);
+  await mockViesti(page, tallennettuTyoversio);
+  await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
 
   await page.getByTestId('viesti-tyhjenna-button').click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
@@ -193,11 +237,33 @@ test('Kenttien tyhjennyksestä lähetetään PUT -kutsu backendille', async ({
     page.getByTestId('viesti-otsikko-input').getByRole('textbox'),
   ).toBeEmpty();
   await expect(page.getByTestId('editor-content-editable')).toBeEmpty();
+  await expect(page.getByTestId('viesti-kopioi-button')).toBeDisabled();
+  await expect(page.getByTestId('viesti-vahvista-button')).toBeDisabled();
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(
     'data-severity',
     'success',
   );
+});
+
+test('Viestityypin oletussisältö latautuu automaattisesti', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, uusiViesti);
+  await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
+  const sisalto = page.getByTestId('editor-content-editable');
+  await page
+    .getByTestId('viesti-tyyppi-radio-group')
+    .locator('input[type="radio"][value="taydennyspyynto"]')
+    .click();
+
+  await expect(
+    page.locator('input[type="radio"][value="taydennyspyynto"]'),
+  ).toBeChecked();
+  await expect(sisalto).toHaveText('Oletussisältö');
+  await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
+  await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 });
 
 test('Viestin latauksen epäonnistuessa näytetään virheteksti', async ({
@@ -253,6 +319,7 @@ test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
   await page.route(
     '**/tutu-backend/api/viesti/1.2.246.562.11.**',
     async (route) => {
@@ -273,6 +340,39 @@ test('Viestin tallennuksen epäonnistuessa näytetään virheteksti', async ({
   await expect(saveButton).toBeVisible();
   await saveButton.click();
 
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'error',
+  );
+});
+
+test('Oletussisällön latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, uusiViesti);
+  await mockViestiLista(page);
+  await page.route(
+    '**/tutu-backend/api/viesti/oletussisalto/1.2.246.562.11.00000000001/**',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: 'Ei kovin kiva',
+        }),
+      });
+    },
+  );
+  await page
+    .getByTestId('viesti-tyyppi-radio-group')
+    .locator('input[type="radio"][value="taydennyspyynto"]')
+    .click();
+
+  await expect(
+    page.locator('input[type="radio"][value="taydennyspyynto"]'),
+  ).toBeChecked();
+  await expect(page.getByTestId('editor-content-editable')).toBeEmpty();
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(
     'data-severity',

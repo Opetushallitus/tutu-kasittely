@@ -10,6 +10,6 @@ object Utility {
   def toLocalDateTime(dateTime: String): LocalDateTime =
     ZonedDateTime.parse(dateTime).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime
 
-  def toPrecision(value: Double, precision: Int) =
+  def toPrecision(value: Double, precision: Int): Double =
     BigDecimal(value).setScale(precision, BigDecimal.RoundingMode.HALF_UP).toDouble
 }

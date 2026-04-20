@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.domain
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneId}
 import java.util.UUID
 
 case class Viesti(
@@ -23,4 +23,12 @@ case class ViestiListItem(
   tyyppi: Viestityyppi,
   otsikko: String,
   vahvistettu: LocalDateTime
+)
+
+case class ViestiHakemusInfo(
+  hakemusOid: HakemusOid,
+  esittelija: Esittelija,
+  kieli: Kieli,
+  requestTimezone: ZoneId,
+  asiatunnus: Option[String] = None
 )

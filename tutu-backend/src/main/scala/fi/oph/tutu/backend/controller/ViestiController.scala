@@ -1,26 +1,18 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Viesti}
+import fi.oph.tutu.backend.domain.{HakemusOid, OletusSisaltoTyyppi, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
-import fi.oph.tutu.backend.utils.AuditOperation.{CreateViesti, DeleteViesti, ReadViesti, ReadViestit, UpdateViesti}
+import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{
-  DeleteMapping,
-  GetMapping,
-  PathVariable,
-  PutMapping,
-  RequestBody,
-  RequestMapping,
-  RequestParam,
-  RestController
-}
+import org.springframework.web.bind.annotation.*
 
+import java.time.ZoneId
 import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
@@ -299,6 +291,47 @@ class ViestiController(
         }
       case Failure(exception) =>
         LOG.error(s"Viestin poisto epäonnistui, id: $id", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
+    path = Array("viesti/oletussisalto/{hakemusOid}/{tyyppi}"),
+    produces = Array(MediaType.TEXT_HTML_VALUE)
+  )
+  def getOletusSisalto(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("tyyppi") tyyppi: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val contentType = OletusSisaltoTyyppi.fromString(tyyppi)
+      val timezone    = request.getHeader("X-Timezone")
+      val zone        = Option(timezone).map(ZoneId.of).getOrElse(ZoneId.of("UTC"))
+      viestiService.haeOletusSisalto(HakemusOid(hakemusOid), user.userOid, contentType, zone)
+    } match {
+      case Success(result) =>
+        result match {
+          case Some(content) =>
+            ResponseEntity.status(HttpStatus.OK).body(content)
+          case None =>
+            LOG.warn(
+              s"Hakemuksen tietoja ei löytynyt hakemusOid:illa: $hakemusOid, oletussisältöä ei voitu generoida tyypille: $tyyppi"
+            )
+            errorMessageMapper.mapPlainErrorMessage(
+              "Hakemuksen tietoja ei löytynyt, oletussisältöä ei voitu generoida",
+              HttpStatus.NOT_FOUND
+            )
+        }
+      case Failure(iae: IllegalArgumentException) =>
+        LOG.error(s"Virheellinen sisältötyyppi", iae)
+        errorMessageMapper.mapPlainErrorMessage(
+          iae.getMessage,
+          HttpStatus.BAD_REQUEST
+        )
+      case Failure(exception) =>
+        LOG.error(s"Oletussisällön haku epäonnistui, hakemusOid: $hakemusOid, tyyppi: $tyyppi", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
