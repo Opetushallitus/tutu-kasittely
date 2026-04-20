@@ -91,7 +91,7 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
       translationService.getTranslation(kieli, "hakemus.viesti.allekirjoitus.opetushallitus")
     val sahkopostiRivi =
       if (esittelija.sahkoposti.isDefined)
-        s"""|<br><a href="mailto:${esittelija.sahkoposti.get}"><span style="white-space: pre-wrap;">${esittelija.sahkoposti.get}</span></a>"""
+        s"""|<br><span style="white-space: pre-wrap;">${esittelija.sahkoposti.get}</span>"""
       else ""
     val puhnoRivi =
       if (esittelija.puhelinnumero.isDefined)

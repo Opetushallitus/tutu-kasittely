@@ -66,7 +66,10 @@ export const useViestiAll = (hakemusOid?: string) => {
     () =>
       [
         { when: viestiUpdateSuccess, value: 'hakemus.viesti.paivitetty' },
-        { when: vahvistusSuccess, value: 'hakemus.viesti.vahvistettu' },
+        {
+          when: vahvistusSuccess,
+          value: 'hakemus.viesti.vahvistettuJaKopioitu',
+        },
         { when: poistoSuccess, value: 'hakemus.viesti.poistettu' },
       ].find((item) => item.when)?.value || null,
     [poistoSuccess, vahvistusSuccess, viestiUpdateSuccess],

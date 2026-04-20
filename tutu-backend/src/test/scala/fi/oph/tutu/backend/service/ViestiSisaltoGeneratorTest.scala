@@ -26,32 +26,32 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
     puhelinnumero = Some("123 456789")
   )
 
-  val timezone = ZoneId.of("Europe/Helsinki")
+  val timezone: ZoneId = ZoneId.of("Europe/Helsinki")
 
-  val otsikkoKaannokset = Seq[(String, String)](
+  val otsikkoKaannokset: Seq[(String, String)] = Seq[(String, String)](
     ("hakemus.viesti.taydennyspyynto.ylaOtsikko", "Pyyntö täydentää hakemusta"),
     ("hakemus.viesti.taydennyspyynto", "Täydennyspyyntö"),
     ("hakemus.viesti.taydennyspyynto.maaraaika.otsikko", "Määräaika"),
     ("hakemus.viesti.taydennyspyynto.kasittelyAika.otsikko", "Käsittelyaika")
   )
 
-  val allekirjoitusKaannokset = Seq[(String, String)](
+  val allekirjoitusKaannokset: Seq[(String, String)] = Seq[(String, String)](
     ("hakemus.viesti.allekirjoitus.opetushallitus", "Opetushallitus"),
     ("hakemus.viesti.allekirjoitus.tervehdys", "Riehakasta perunannostolomaa")
   )
 
-  val yleisetKaannokset = Seq[(String, String)](
+  val yleisetKaannokset: Seq[(String, String)] = Seq[(String, String)](
     ("hakemus.viesti.sisalto.tervehdys", "Howdy!!"),
     ("hakemus.viesti.sisalto.tietoaHakemuksesta", "Tää on hakemus"),
     ("hakemus.viesti.sisalto.lisatietoInfo", "Voit kysellä lisätietoa")
   )
 
-  val parametrisoidutKaannokset = Seq[(String, String)](
+  val parametrisoidutKaannokset: Seq[(String, String)] = Seq[(String, String)](
     ("hakemus.viesti.sisalto.maaraaika", "Määräaika: {date}"),
     ("hakemus.viesti.sisalto.asiatunnus", "Hakemuksesi Opetushallitukseen {asiatunnus}")
   )
 
-  val taydennyspyyntoKaannokset = Seq[(String, String)](
+  val taydennyspyyntoKaannokset: Seq[(String, String)] = Seq[(String, String)](
     ("hakemus.viesti.taydennyspyynto.yleisOhje", "Muutoksia täytyis tehdä"),
     ("hakemus.viesti.taydennyspyynto.tarkentavaOhje", "Ihan oikeasti"),
     ("hakemus.viesti.taydennyspyynto.maaraaika.yleisOhje", "Määräaika on tärkeä"),
@@ -60,8 +60,8 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
     ("hakemus.viesti.taydennyspyynto.kasittelyAika.info", "Ihan oikeasti käsitellään joskus")
   )
 
-  val kaannoksetIlmanParametrilistaa  = otsikkoKaannokset ++ allekirjoitusKaannokset
-  val kaannoksetParametrilistanKanssa = yleisetKaannokset ++ taydennyspyyntoKaannokset
+  val kaannoksetIlmanParametrilistaa: Seq[(String, String)]  = otsikkoKaannokset ++ allekirjoitusKaannokset
+  val kaannoksetParametrilistanKanssa: Seq[(String, String)] = yleisetKaannokset ++ taydennyspyyntoKaannokset
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
@@ -89,7 +89,7 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
     assert(sisalto.contains("Riehakasta perunannostolomaa,"))
     assert(sisalto.contains("Opetushallitus"))
     assert(sisalto.contains("Yrjö Kortesniemi"))
-    assert(sisalto.contains("mailto:yka@åbh.sv"))
+    assert(sisalto.contains("yka@åbh.sv"))
     assert(sisalto.contains("123 456789"))
   }
 
@@ -107,5 +107,6 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
     kaikkiKaannokset.foreach { teksti =>
       assert(sisalto.contains(teksti), s"Tekstin '$teksti' pitäisi löytyä sisällöstä")
     }
+    assertAllekirjoitus(sisalto)
   }
 }
