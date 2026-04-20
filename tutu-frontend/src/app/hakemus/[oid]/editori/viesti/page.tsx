@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteOutline, CopyAll } from '@mui/icons-material';
+import { DeleteOutline } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
 import { Stack } from '@mui/system';
 import {
@@ -25,13 +25,10 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
-import useToaster, { AddToastCallback } from '@/src/hooks/useToaster';
+import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useViestiAll } from '@/src/hooks/useViestiAll';
-import {
-  TFunction,
-  useTranslations,
-} from '@/src/lib/localization/hooks/useTranslations';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
 import { handleFetchError, anyRealContentInHtml } from '@/src/lib/utils';
@@ -61,20 +58,6 @@ export default function ViestiPage() {
 
   return <ViestiPageComponent hakemus={hakemus} />;
 }
-
-const handleCopy = (
-  viesti: string,
-  addToast: AddToastCallback,
-  t: TFunction,
-) => {
-  navigator.clipboard.writeText(viesti);
-  addToast({
-    key: 'hakemus.viesti.kopioi.toaster',
-    message: t('hakemus.viesti.kopioituToast'),
-    type: 'success',
-    timeMs: 2500,
-  });
-};
 
 const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   const { t } = useTranslations();
@@ -251,48 +234,38 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         >
           {t(`hakemus.viesti.tyhjenna`)}
         </OphButton>
-        <Stack direction="row" gap={theme.spacing(1)}>
-          <OphButton
-            data-testid={`viesti-kopioi-button`}
-            disabled={editorEmpty}
-            variant="outlined"
-            startIcon={<CopyAll />}
-            onClick={() =>
-              handleCopy(exportMarkdown(editorRef.current), addToast, t)
-            }
-          >
-            {t(`hakemus.viesti.kopioi`)}
-          </OphButton>
-          <OphButton
-            data-testid={`viesti-vahvista-button`}
-            disabled={isViestiEmpty}
-            variant="contained"
-            onClick={() =>
-              showConfirmation({
-                header: t(`hakemus.viesti.vahvista.modal.otsikko`),
-                content: t(`hakemus.viesti.vahvista.modal.teksti`),
-                confirmButtonText: t(
-                  `hakemus.viesti.vahvista.modal.vahvistaViesti`,
-                ),
-                handleConfirmAction: () => {
-                  vahvistaViesti(viestiToBeSaved(), () => {
-                    paivitaVahvistettuLista();
-                  });
-                  if (viestiState.hasChanges) {
-                    // Vahvistettaessa viesti myös tallennetaan
-                    // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
-                    // joten discardataan mahdolliset muutokset
-                    viestiState.discard();
-                    setEditorHasChanges(false);
-                    setEditorEmpty(true);
-                  }
-                },
-              })
-            }
-          >
-            {t(`hakemus.viesti.vahvista`)}
-          </OphButton>
-        </Stack>
+        <OphButton
+          data-testid={`viesti-vahvista-button`}
+          disabled={isViestiEmpty}
+          variant="contained"
+          onClick={() =>
+            showConfirmation({
+              header: t(`hakemus.viesti.vahvista.modal.otsikko`),
+              content: t(`hakemus.viesti.vahvista.modal.teksti`),
+              confirmButtonText: t(
+                `hakemus.viesti.vahvista.modal.vahvistaViesti`,
+              ),
+              handleConfirmAction: () => {
+                navigator.clipboard.writeText(
+                  exportMarkdown(editorRef.current),
+                );
+                vahvistaViesti(viestiToBeSaved(), () => {
+                  paivitaVahvistettuLista();
+                });
+                if (viestiState.hasChanges) {
+                  // Vahvistettaessa viesti myös tallennetaan
+                  // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
+                  // joten discardataan mahdolliset muutokset
+                  viestiState.discard();
+                  setEditorHasChanges(false);
+                  setEditorEmpty(true);
+                }
+              },
+            })
+          }
+        >
+          {t(`hakemus.viesti.vahvistaJaKopioi`)}
+        </OphButton>
       </Stack>
       <VahvistettuList
         t={t}

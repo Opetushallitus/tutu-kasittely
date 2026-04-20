@@ -41,7 +41,6 @@ const expectViestiFormToBeEmpty = async (page: Page) => {
   await expect(page.getByTestId('editor-content-editable')).toBeEmpty();
 
   await expect(page.getByTestId('viesti-tyhjenna-button')).toBeEnabled();
-  await expect(page.getByTestId('viesti-kopioi-button')).toBeDisabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeDisabled();
 };
 
@@ -70,7 +69,6 @@ test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async 
   await expect(page.getByTestId('editor-content-editable')).toHaveText(
     'Tämä on työversio',
   );
-  await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 
   const viestiTable = page.getByTestId('vahvistettu-viesti-table');
@@ -188,7 +186,6 @@ test('Kenttien tyhjennyksessä tyhjennetään muut kentät paitsi kielivalinta',
   ).toBeChecked();
   await expect(otsikko).toHaveValue('Tämä on otsikko');
   await expect(sisalto).toHaveText('Tämä on varsinainen viesti');
-  await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 
   await page.getByTestId('viesti-tyhjenna-button').click();
@@ -237,7 +234,6 @@ test('Tallennetun viestin tyhjennyksestä lähetetään PUT -kutsu backendille',
     page.getByTestId('viesti-otsikko-input').getByRole('textbox'),
   ).toBeEmpty();
   await expect(page.getByTestId('editor-content-editable')).toBeEmpty();
-  await expect(page.getByTestId('viesti-kopioi-button')).toBeDisabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeDisabled();
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(
@@ -262,7 +258,6 @@ test('Viestityypin oletussisältö latautuu automaattisesti', async ({
     page.locator('input[type="radio"][value="taydennyspyynto"]'),
   ).toBeChecked();
   await expect(sisalto).toHaveText('Oletussisältö');
-  await expect(page.getByTestId('viesti-kopioi-button')).toBeEnabled();
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 });
 
