@@ -35,7 +35,7 @@ test('Hakemuslistan filtteri ja sivutus saa oikeat arvot query-parametreista', a
   page,
 }) => {
   // Navigoi suoraan filemaker-hakemuksiin
-  await page.goto('/tutu-frontend/filemaker?page=5&query=hakufraasi');
+  await page.goto('/tutu-frontend/filemaker?page=5&haku=hakufraasi');
 
   const hakukentta = page.getByTestId('hakukentta').locator('input');
   const sivunumeroView = page.getByTestId('page-view');

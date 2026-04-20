@@ -325,6 +325,7 @@ class HakemusService(
 
   def haeHakemusLista(
     userOid: Option[String],
+    haku: Option[String],
     hakemuskoskee: Option[String],
     vaihe: Option[String],
     sortParam: Option[ListSortParam],
@@ -341,6 +342,7 @@ class HakemusService(
 
     val (items, totalCount) = hakemusRepository.haeHakemusLista(
       userOids,
+      haku,
       hakemusKoskeeQueryParams,
       vaiheet,
       apHakemusQueryParam,

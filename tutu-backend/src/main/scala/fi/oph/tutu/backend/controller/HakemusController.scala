@@ -268,6 +268,7 @@ class HakemusController(
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def listaaHakemukset(
+    @RequestParam(required = false) haku: String,
     @RequestParam(required = false) nayta: String,
     @RequestParam(required = false) hakemuskoskee: String,
     @RequestParam(required = false) esittelija: String,
@@ -294,6 +295,7 @@ class HakemusController(
 
       hakemusService.haeHakemusLista(
         userOid,
+        Option(haku),
         Option(hakemuskoskee),
         Option(vaihe),
         sortParam,

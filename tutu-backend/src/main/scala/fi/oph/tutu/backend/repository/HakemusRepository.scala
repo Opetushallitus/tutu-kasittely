@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
+import slick.jdbc.SQLActionBuilder
 
 @Component
 @Repository
@@ -185,6 +186,7 @@ class HakemusRepository extends BaseResultHandlers {
 
   def haeHakemusLista(
     userOids: Seq[String],
+    haku: Option[String],
     hakemusKoskee: Seq[Int],
     vaiheet: Seq[String],
     apHakemus: Boolean,
@@ -193,52 +195,57 @@ class HakemusRepository extends BaseResultHandlers {
     pageSize: Int
   ): (Seq[HakemusListItem], Long) = {
     try {
-      val whereClauses = Seq.newBuilder[String]
+      val whereClauses = Seq.newBuilder[SQLActionBuilder]
+
+      if (haku.nonEmpty) {
+        val qs = s"%${haku.get}%"
+        whereClauses += sql"""(COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '') ILIKE $qs
+                                OR h.asiatunnus ILIKE $qs)"""
+      }
 
       // Yhdistetään ehdot sillä jos ap_hakemus, niin kannassa on hakemus_koskee=1
       if (hakemusKoskee.nonEmpty || apHakemus) {
-        val list  = hakemusKoskee.mkString(", ")
         val ehdot = List(
-          Option.when(list.nonEmpty)(s"h.hakemus_koskee IN ($list)"),
-          Option.when(apHakemus)("a.ap_hakemus IS TRUE")
+          Option.when(hakemusKoskee.nonEmpty)(sql"h.hakemus_koskee = ANY($hakemusKoskee)"),
+          Option.when(apHakemus)(sql"a.ap_hakemus IS TRUE")
         ).flatten
+          .reduce(_ ++ sql" OR " ++ _)
 
-        whereClauses += s"(${ehdot.mkString(" OR ")})"
+        whereClauses += sql"(" ++ ehdot ++ sql")"
       }
 
       if (vaiheet.nonEmpty) {
-        val list = vaiheet.map(v => s"'$v'").mkString(", ")
-        whereClauses += s"h.kasittely_vaihe IN ($list)"
+        whereClauses += sql"h.kasittely_vaihe = ANY($vaiheet)"
       }
 
       if (userOids.nonEmpty) {
-        val list = userOids.map(o => s"'$o'").mkString(", ")
-        whereClauses += s"e.esittelija_oid IN ($list)"
+        whereClauses += sql"e.esittelija_oid = ANY($userOids)"
       }
 
       val whereClause = {
         val clauses = whereClauses.result()
-        if (clauses.isEmpty) "" else "WHERE " + clauses.mkString(" AND ")
+        if (clauses.isEmpty) sql""
+        else sql" WHERE " ++ clauses.reduce(_ ++ sql" AND " ++ _)
       }
 
       val orderBy = buildOrderBy(sortParam)
       val offset  = (page - 1) * pageSize
 
-      val countAction = sql"""
+      val countAction = (sql"""
           SELECT COUNT(*)
           FROM hakemus h
           LEFT JOIN esittelija e ON e.id = h.esittelija_id
-          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
-          #$whereClause
-        """.as[Long].head
+          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id"""
+        ++ whereClause).as[Long].head
 
-      val dataAction = sql"""
+      val dataAction = (sql"""
         WITH hakemus_ids AS (
           SELECT h.id
           FROM hakemus h
           LEFT JOIN esittelija e ON e.id = h.esittelija_id
-          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
-          #$whereClause
+          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id"""
+        ++ whereClause ++
+        sql"""
           ORDER BY #$orderBy
           LIMIT $pageSize
           OFFSET $offset
@@ -264,7 +271,7 @@ class HakemusRepository extends BaseResultHandlers {
         LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
         WHERE h.id IN (SELECT id FROM hakemus_ids)
         ORDER BY #$orderBy
-      """.as[HakemusListItem]
+      """).as[HakemusListItem]
 
       val transactionalAction = for {
         totalCount <- countAction

@@ -43,6 +43,23 @@ test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oi
   );
 });
 
+test('Hakemuslistaus haku query lähetetään oikein', async ({ page }) => {
+  await mockSuccessfullLists({ page });
+  await page.goto('/tutu-frontend');
+  await expect(page.getByTestId('hakemus-list')).toBeVisible();
+
+  const hakukentta = page.getByTestId('hakukentta').locator('input');
+
+  const [request] = await Promise.all([
+    page.waitForRequest((req) => req.url().includes('hakemuslista')),
+    // Kirjoita delaylla, debounce pitäisi yhdistää yhdeksi pyynnöksi
+    hakukentta.pressSequentially('OPH-1234', { delay: 20 }),
+  ]);
+
+  const url = new URL(request.url());
+  expect(url.searchParams.get('haku')).toBe('OPH-1234');
+});
+
 test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
