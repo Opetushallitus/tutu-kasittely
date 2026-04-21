@@ -93,3 +93,8 @@ case class YkViestiListItem(
   luettu: Option[LocalDateTime] = None,
   viesti: Option[String] = None
 )
+
+case class YkVastausDTO(
+  id: String,
+  vastaus: Option[String]
+)

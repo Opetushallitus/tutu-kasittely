@@ -116,4 +116,65 @@ class YkViestiController(
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
+
+  @GetMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeHakemuksenYkViestit(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      Seq()
+    } match {
+      case Success(ykViestit) =>
+        val response = mapper.writeValueAsString(ykViestit)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Hakemuksen yhteisen käsittelyn viestien haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PostMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def luoHakemuksenYkViesti(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody ykViestiBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      Seq()
+    } match {
+      case Success(_) =>
+        ResponseEntity.noContent().build()
+      case Failure(exception) =>
+        LOG.error("Hakemuksen yhteisen käsittelyn viestin luonti", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @PatchMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely/{viestiId}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def vastaaHakemuksenYkViestiin(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("viestiId") viestiId: String,
+    @RequestBody ykVastausBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      Seq()
+    } match {
+      case Success(_) =>
+        ResponseEntity.noContent().build()
+      case Failure(exception) =>
+        LOG.error("Hakemuksen yhteisen käsittelyn viestiin vastaaminen", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
 }
