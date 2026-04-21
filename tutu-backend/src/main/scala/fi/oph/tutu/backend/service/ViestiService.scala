@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{EsittelijaRepository, HakemusRepository, ViestiRepository}
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, EsittelijaRepository, HakemusRepository, ViestiRepository}
 import fi.oph.tutu.backend.service.generator.viesti.ViestiSisaltoGenerator
 import fi.oph.tutu.backend.utils.Constants.TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -17,6 +17,7 @@ class ViestiService(
   viestiRepository: ViestiRepository,
   hakemusRepository: HakemusRepository,
   esittelijaRepository: EsittelijaRepository,
+  asiakirjaRepository: AsiakirjaRepository,
   onrService: OnrService,
   hakemusService: HakemusService,
   viestiSisaltoGenerator: ViestiSisaltoGenerator
@@ -132,7 +133,16 @@ class ViestiService(
             )
             sisaltoTyyppi match {
               case OletusSisaltoTyyppi.taydennyspyynto =>
-                Some(viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(hakemusInfo))
+                val pyydettavatAsiakirjat = dbHakemus.asiakirjaId match {
+                  case Some(asiakirjaId) =>
+                    asiakirjaRepository.haePyydettavatAsiakirjat(asiakirjaId)
+                  case _ => Seq()
+                }
+                Some(
+                  viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(
+                    hakemusInfo.copy(pyydettavatAsiakirjat = pyydettavatAsiakirjat)
+                  )
+                )
               case OletusSisaltoTyyppi.ennakkotieto =>
                 Some(viestiSisaltoGenerator.generateAllekirjoitus(hakemusInfo))
               case OletusSisaltoTyyppi.muuViesti =>

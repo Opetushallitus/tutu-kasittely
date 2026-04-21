@@ -30,5 +30,6 @@ case class ViestiHakemusInfo(
   esittelija: Esittelija,
   kieli: Kieli,
   requestTimezone: ZoneId,
-  asiatunnus: Option[String] = None
+  asiatunnus: Option[String] = None,
+  pyydettavatAsiakirjat: Seq[PyydettavaAsiakirja] = Seq.empty
 )
