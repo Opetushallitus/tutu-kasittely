@@ -7,10 +7,11 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { redirect, useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
+import { useDebounce } from '@/src/hooks/useDebounce';
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
 import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -30,7 +31,7 @@ export default function FilemakerFilters() {
     handleFetchError(addToast, hakemuksetError, 'virhe.hakemuslistanLataus', t);
   }, [hakemuksetError, addToast, t]);
 
-  const [haku, setHaku] = useQueryState('query', parseAsString.withDefault(''));
+  const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
 
   const [_, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize, _setPageSize] = useQueryState(
@@ -50,32 +51,32 @@ export default function FilemakerFilters() {
     }
   };
 
-  const searchParams = useSearchParams();
-
-  if (searchParams.toString() === '') {
-    const localStorageSearchParams = localStorage.getItem(
-      'tutu-filemaker-query-string',
-    );
-    if (localStorageSearchParams && localStorageSearchParams !== '') {
-      redirect(`?${localStorageSearchParams}`);
+  useEffect(() => {
+    if (!window.location.search) {
+      const localStorageSearchParams = localStorage.getItem(
+        'tutu-filemaker-query-string',
+      );
+      if (localStorageSearchParams && localStorageSearchParams !== '') {
+        redirect(`?${localStorageSearchParams}`);
+      }
     }
-  }
+  }, []);
+
+  const debouncedFetch = useDebounce(() => {
+    setFilemakerQueryStateAndLocalStorage(queryClient, setPage, 1);
+  }, 300);
 
   return (
     <Grid container spacing={theme.spacing(2)}>
       <Grid container spacing={theme.spacing(2)} size={12}>
         <Grid size={12}>
           <OphInputFormField
-            label={t('hakemuslista.haeHakemuksia')}
+            label={t('filemaker.haeHakemuksia')}
             sx={{ width: '100%' }}
             value={haku}
             onChange={(event) => {
-              setPage(1);
-              setFilemakerQueryStateAndLocalStorage(
-                queryClient,
-                setHaku,
-                event.target.value,
-              );
+              setHaku(event.target.value);
+              debouncedFetch();
             }}
             data-testid={'hakukentta'}
           ></OphInputFormField>

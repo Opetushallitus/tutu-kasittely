@@ -14,7 +14,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { redirect, useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import {
   parseAsArrayOf,
   parseAsInteger,
@@ -30,6 +30,7 @@ import {
   naytaQueryStates,
 } from '@/src/app/(root)/components/types';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
+import { useDebounce } from '@/src/hooks/useDebounce';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { useHakemukset } from '@/src/hooks/useHakemukset';
 import useToaster from '@/src/hooks/useToaster';
@@ -96,14 +97,19 @@ export default function HakemusListFilters() {
     parseAsArrayOf(parseAsString).withDefault([]),
   );
 
-  const searchParams = useSearchParams();
-
-  if (searchParams.toString() === '') {
-    const localStorageSearchParams = localStorage.getItem('tutu-query-string');
-    if (localStorageSearchParams && localStorageSearchParams !== '') {
-      redirect(`?${localStorageSearchParams}`);
+  useEffect(() => {
+    if (!window.location.search) {
+      const localStorageSearchParams =
+        localStorage.getItem('tutu-query-string');
+      if (localStorageSearchParams && localStorageSearchParams !== '') {
+        redirect(`?${localStorageSearchParams}`);
+      }
     }
-  }
+  }, []);
+
+  const debouncedFetch = useDebounce(() => {
+    setQueryStateAndLocalStorage(queryClient, setPage, 1);
+  }, 300);
 
   return (
     <Grid container spacing={theme.spacing(2)}>
@@ -154,12 +160,8 @@ export default function HakemusListFilters() {
             sx={{ width: '100%' }}
             value={haku}
             onChange={(event) => {
-              setPage(1);
-              setQueryStateAndLocalStorage(
-                queryClient,
-                setHaku,
-                event.target.value,
-              );
+              setHaku(event.target.value);
+              debouncedFetch();
             }}
             data-testid={'hakukentta'}
           ></OphInputFormField>

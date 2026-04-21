@@ -130,7 +130,7 @@ class VanhaTutuController(
     )
   )
   def listaaVanhojaHakemuksia(
-    @RequestParam("query", required = false, defaultValue = "") query: String,
+    @RequestParam(required = false, defaultValue = "") haku: String,
     @RequestParam(required = false, defaultValue = "1") page: Int,
     @RequestParam(required = false, defaultValue = "20") pagesize: Int,
     request: jakarta.servlet.http.HttpServletRequest
@@ -139,8 +139,8 @@ class VanhaTutuController(
       require(page >= 1, "page must be >= 1")
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
 
-      val items      = vanhaTutuService.listaaHakemuksia(query, page, pagesize)
-      val totalCount = vanhaTutuService.listaaHakemuksiaCount(query)
+      val items      = vanhaTutuService.listaaHakemuksia(haku, page, pagesize)
+      val totalCount = vanhaTutuService.listaaHakemuksiaCount(haku)
 
       val totalPages =
         if (totalCount == 0) 1

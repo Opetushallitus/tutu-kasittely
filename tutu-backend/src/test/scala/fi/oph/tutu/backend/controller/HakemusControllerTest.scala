@@ -664,6 +664,36 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Test
   @Order(10)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuslistaHakuMatchesNameAndAsiatunnus(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+      )
+
+    // Name hit: "Testi Kolmas Hakija" contains "Kolmas"
+    mockMvc
+      .perform(get("/api/hakemuslista?haku=Kolmas"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006667"))
+
+    // Asiatunnus hit: set to "OPH-4321-2025" for hakemus 6667 in Order 7
+    mockMvc
+      .perform(get("/api/hakemuslista?haku=OPH-4321"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006667"))
+
+    // No match
+    mockMvc
+      .perform(get("/api/hakemuslista?haku=EiLöydyMitään"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+  }
+
+  @Test
+  @Order(11)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaEsittelyPvmWithDateReturns204(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
@@ -699,7 +729,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaEsittelyPvmWithoutDateReturns204(): Unit = {
     def isToday(dateString: String): Boolean = {
