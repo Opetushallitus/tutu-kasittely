@@ -351,6 +351,24 @@ class HakemusService(
     )
   }
 
+  def haeHakemuksetHaulla(
+    haku: String,
+    nakyma: String,
+    page: Int,
+    pageSize: Int
+  ): HakemusListResult = {
+    val (items, totalCount) = hakemusRepository.haeHakemuksetHaulla(haku, nakyma, page, pageSize)
+    val totalPages          = if (totalCount == 0) 1 else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
+
+    HakemusListResult(
+      items = items,
+      totalCount = totalCount,
+      page = page,
+      pageSize = pageSize,
+      totalPages = totalPages
+    )
+  }
+
   /**
    * Tallentaa hakemuksen kokonaan (PUT endpoint).
    * Korvaa kaikki käyttäjän muokattavat kentät.
