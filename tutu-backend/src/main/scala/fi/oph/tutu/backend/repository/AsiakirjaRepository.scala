@@ -384,7 +384,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
    * @return
    * hakemuksen pyydettävät asiakirjat
    */
-  private def haePyydettavatAsiakirjat(asiakirjaId: UUID): Seq[PyydettavaAsiakirja] = {
+  def haePyydettavatAsiakirjat(asiakirjaId: UUID): Seq[PyydettavaAsiakirja] = {
     try {
       db.run(
         sql"""

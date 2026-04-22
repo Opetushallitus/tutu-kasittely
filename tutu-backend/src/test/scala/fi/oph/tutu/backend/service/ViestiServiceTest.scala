@@ -24,6 +24,8 @@ class ViestiServiceTest extends UnitTestBase {
   @Mock
   var esittelijaRepository: EsittelijaRepository = _
   @Mock
+  var asiakirjaRepository: AsiakirjaRepository = _
+  @Mock
   var onrService: OnrService = _
   @Mock
   var hakemusService: HakemusService = _
@@ -68,6 +70,7 @@ class ViestiServiceTest extends UnitTestBase {
       viestiRepository,
       hakemusRepository,
       esittelijaRepository,
+      asiakirjaRepository,
       onrService,
       hakemusService,
       viestiSisaltoGenerator

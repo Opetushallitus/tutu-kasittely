@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service.generator.viesti
 
-import fi.oph.tutu.backend.domain.{Esittelija, Kieli, ViestiHakemusInfo}
+import fi.oph.tutu.backend.domain.{Esittelija, Kieli, PyydettavaAsiakirja, ViestiHakemusInfo}
 import fi.oph.tutu.backend.service.TranslationService
 import fi.oph.tutu.backend.utils.Constants.TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -13,8 +13,9 @@ import java.time.format.DateTimeFormatter
 @Component
 @Service
 class ViestiSisaltoGenerator(translationService: TranslationService) extends TutuJsonFormats {
-  val LOG: Logger            = LoggerFactory.getLogger(classOf[ViestiSisaltoGenerator])
-  private val DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+  val LOG: Logger                         = LoggerFactory.getLogger(classOf[ViestiSisaltoGenerator])
+  private val DATE_FORMATTER              = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+  private val KAANNOSTYYPPISET_ASIAKIRJAT = Set("tutkintotodistustenkaannokset", "liitteidenkaannokset")
 
   private def rivi(kieli: Kieli, translationKey: String, parameters: Map[String, String] = Map()): String = {
     val translation = translationService.getTranslation(kieli, translationKey, parameters)
@@ -49,6 +50,56 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
   private[service] def maaraAika(timezone: ZoneId) =
     ZonedDateTime.now(timezone).plusDays(TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA).format(DATE_FORMATTER)
 
+  private def pyydettavaAsiakirja(index: Int, kieli: Kieli, asiakirja: PyydettavaAsiakirja): String = {
+    val transKey = s"hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.${asiakirja.asiakirjanTyyppi}"
+    s"""<li value="$index"><span style="white-space: pre-wrap;">${translationService.getTranslation(
+        kieli,
+        transKey
+      )}</span></li>"""
+  }
+
+  private def kaannosLaatijaInfo(viestiHakemusInfo: ViestiHakemusInfo): String = {
+    if (viestiHakemusInfo.pyydettavatAsiakirjat.map(_.asiakirjanTyyppi).exists(KAANNOSTYYPPISET_ASIAKIRJAT.contains)) {
+      val kieli = viestiHakemusInfo.kieli
+      s"""${otsikko(kieli, "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.otsikko")}
+         |<ul>
+         |<li value="1"><span style="white-space: pre-wrap;">${translationService.getTranslation(
+          kieli,
+          "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.suomessaAuktorisoitu"
+        )}</span><br>
+         |<span style="white-space: pre-wrap;">${translationService.getTranslation(
+          kieli,
+          "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.suomessaAuktorisoitu.lista"
+        )}</span></li>
+         |<li value="2"><span style="white-space: pre-wrap;">${translationService.getTranslation(
+          kieli,
+          "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.lahtomaassaVirallinen"
+        )} ${translationService.getTranslation(kieli, "yleiset.tai")}</span></li>
+         |<li value="3"><span style="white-space: pre-wrap;">${translationService.getTranslation(
+          kieli,
+          "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.asiakirjanAntaja"
+        )}</span></li>
+         |</ul>
+         |""".stripMargin
+    } else {
+      ""
+    }
+  }
+  private def pyydettavatAsiakirjat(viestiHakemusInfo: ViestiHakemusInfo): String = {
+    if (viestiHakemusInfo.pyydettavatAsiakirjat.isEmpty) {
+      ""
+    } else {
+      val kieli          = viestiHakemusInfo.kieli
+      val asiakirjaLista = viestiHakemusInfo.pyydettavatAsiakirjat.zipWithIndex.map { case (asiakirja, idx) =>
+        pyydettavaAsiakirja(idx + 1, kieli, asiakirja)
+      }
+      s"""${otsikko(kieli, "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.otsikko")}
+         |<ul>${asiakirjaLista.mkString}</ul>
+         |${kaannosLaatijaInfo(viestiHakemusInfo)}
+         |""".stripMargin
+    }
+  }
+
   def generateTaydennyspyyntoSisalto(viestiHakemusInfo: ViestiHakemusInfo): String = {
     val kieli = viestiHakemusInfo.kieli
     s"""${otsikko(kieli, "hakemus.viesti.taydennyspyynto.ylaOtsikko")}
@@ -75,6 +126,7 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
           "hakemus.viesti.taydennyspyynto.maaraaika.lisaaikaOhje"
         )
       )}
+       |${pyydettavatAsiakirjat(viestiHakemusInfo)}
        |${otsikko(kieli, "hakemus.viesti.taydennyspyynto.kasittelyAika.otsikko")}
        |${kappale(kieli, "hakemus.viesti.taydennyspyynto.kasittelyAika.info")}
        |<br>${kappale(kieli, "hakemus.viesti.sisalto.lisatietoInfo")}

@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
-import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, ViestiHakemusInfo}
+import fi.oph.tutu.backend.domain.{Esittelija, HakemusOid, PyydettavaAsiakirja, ViestiHakemusInfo}
 import fi.oph.tutu.backend.service.generator.viesti.ViestiSisaltoGenerator
 import fi.oph.tutu.backend.domain.Kieli.fi
 import org.junit.jupiter.api.{BeforeEach, Test}
@@ -60,7 +60,42 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
     ("hakemus.viesti.taydennyspyynto.kasittelyAika.info", "Ihan oikeasti käsitellään joskus")
   )
 
-  val kaannoksetIlmanParametrilistaa: Seq[(String, String)]  = otsikkoKaannokset ++ allekirjoitusKaannokset
+  val tarvittavienAsiakirjojenKaannoksetIlmanKaannosinfoa: Seq[(String, String)] = Seq[(String, String)](
+    ("hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.otsikko", "Tarvittavat asiakirjat"),
+    (
+      "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.tutkintotodistustenjaljennokset",
+      "Tutkintotodistusten jäljennökset"
+    ),
+    ("hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.liitteidenjaljennokset", "Liitteiden jäljennökset")
+  )
+  val tarvittavienAsiakirjojenKaannoksetKaannosinfolla: Seq[(String, String)] = Seq[(String, String)](
+    ("hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.otsikko", "Käännöksen voi laatia"),
+    (
+      "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.suomessaAuktorisoitu",
+      "Suomessa auktorisoitu kääntäjä"
+    ),
+    (
+      "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.suomessaAuktorisoitu.lista",
+      "Listan löydät intternetistä"
+    ),
+    (
+      "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.lahtomaassaVirallinen",
+      "Lähtömaassa virallinen kääntäjä"
+    ),
+    ("yleiset.tai", "tai sitten vielä vaihtoehtona"),
+    ("hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.kaannoksenLaatija.asiakirjanAntaja", "asiakirjan antaja"),
+    (
+      "hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.tutkintotodistustenkaannokset",
+      "Tutkintotodistusten käännökset"
+    ),
+    ("hakemus.viesti.taydennyspyynto.pyydettavatAsiakirjat.liitteidenkaannokset", "Liitteiden käännökset")
+  )
+  val asiakirjatyypitKaannoksilla =
+    Seq("tutkintotodistustenkaannokset", "liitteidenkaannokset").map(tyyppi => PyydettavaAsiakirja(None, tyyppi))
+  val asiakirjatyypitIlmanKaannoksia =
+    Seq("tutkintotodistustenjaljennokset", "liitteidenjaljennokset").map(tyyppi => PyydettavaAsiakirja(None, tyyppi))
+  val kaannoksetIlmanParametrilistaa: Seq[(String, String)] =
+    otsikkoKaannokset ++ allekirjoitusKaannokset ++ tarvittavienAsiakirjojenKaannoksetKaannosinfolla ++ tarvittavienAsiakirjojenKaannoksetIlmanKaannosinfoa
   val kaannoksetParametrilistanKanssa: Seq[(String, String)] = yleisetKaannokset ++ taydennyspyyntoKaannokset
   @BeforeEach
   def setup(): Unit = {
@@ -103,10 +138,56 @@ class ViestiSisaltoGeneratorTest extends UnitTestBase {
       ViestiHakemusInfo(hakemusOid, esittelija, fi, timezone, Some("OPH-123-2026"))
     )
     val kaikkiKaannokset =
-      kaannoksetIlmanParametrilistaa.map(_._2) ++ kaannoksetParametrilistanKanssa.map(_._2) ++ parametrisoidutKaannokset
+      (otsikkoKaannokset ++ allekirjoitusKaannokset ++ yleisetKaannokset ++ taydennyspyyntoKaannokset)
+        .map(_._2) ++ parametrisoidutKaannokset
     kaikkiKaannokset.foreach { teksti =>
       assert(sisalto.contains(teksti), s"Tekstin '$teksti' pitäisi löytyä sisällöstä")
     }
     assertAllekirjoitus(sisalto)
+  }
+
+  @Test
+  def taydennyspyynnossaEiListataAsiakirjojaJosEiPyydetty(): Unit = {
+    val sisalto = viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(
+      ViestiHakemusInfo(hakemusOid, esittelija, fi, timezone, Some("OPH-123-2026"))
+    )
+    (tarvittavienAsiakirjojenKaannoksetIlmanKaannosinfoa.map(_._2) ++ tarvittavienAsiakirjojenKaannoksetKaannosinfolla
+      .map(_._2)).foreach { teksti =>
+      assert(!sisalto.contains(teksti), s"Tekstin '$teksti' ei pitäisi löytyä sisällöstä")
+    }
+  }
+
+  @Test
+  def taydennyspyynnossaListataanAsiakirjatIlmanKaannostietoaPyydettaessa(): Unit = {
+    val sisalto = viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(
+      ViestiHakemusInfo(hakemusOid, esittelija, fi, timezone, Some("OPH-123-2026"), asiakirjatyypitIlmanKaannoksia)
+    )
+    tarvittavienAsiakirjojenKaannoksetIlmanKaannosinfoa.map(_._2).foreach { teksti =>
+      assert(sisalto.contains(teksti), s"Tekstin '$teksti' pitäisi löytyä sisällöstä")
+    }
+    tarvittavienAsiakirjojenKaannoksetKaannosinfolla
+      .map(_._2)
+      .foreach { teksti =>
+        assert(!sisalto.contains(teksti), s"Tekstin '$teksti' ei pitäisi löytyä sisällöstä")
+      }
+  }
+
+  @Test
+  def taydennyspyynnossaListataanAsiakirjatKaannostiedollaPyydettaessa(): Unit = {
+    val sisalto = viestiSisaltoGenerator.generateTaydennyspyyntoSisalto(
+      ViestiHakemusInfo(
+        hakemusOid,
+        esittelija,
+        fi,
+        timezone,
+        Some("OPH-123-2026"),
+        asiakirjatyypitIlmanKaannoksia ++ asiakirjatyypitKaannoksilla
+      )
+    )
+    (tarvittavienAsiakirjojenKaannoksetIlmanKaannosinfoa ++ tarvittavienAsiakirjojenKaannoksetKaannosinfolla)
+      .map(_._2)
+      .foreach { teksti =>
+        assert(sisalto.contains(teksti), s"Tekstin '$teksti' pitäisi löytyä sisällöstä")
+      }
   }
 }
