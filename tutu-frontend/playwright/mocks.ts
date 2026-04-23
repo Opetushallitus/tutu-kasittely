@@ -510,31 +510,31 @@ export const mockYhteinenKasittely = async (page: Page) => {
         body: JSON.stringify([
           {
             id: 'q1',
-            vastaanottaja: 'Testi esittelijä',
+            vastaanottajaOid: '1.2.246.562.24.999999999999',
             kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
             luotu: '2026-02-04T09:12:00.000Z',
           },
           {
             id: 'q2',
-            vastaanottaja: 'Kalle Päätalo',
+            vastaanottajaOid: 'Kalle Päätalo',
             kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
             luotu: '2026-02-03T14:30:00.000Z',
           },
           {
             id: 'q3',
-            vastaanottaja: 'Otto Kehittäjä',
+            vastaanottajaOid: 'Otto Kehittäjä',
             kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
             luotu: '2026-02-01T08:05:00.000Z',
             jatkoKasittelyt: [
               {
                 id: 'q4',
-                vastaanottaja: 'Toinen Tyyppi',
+                vastaanottajaOid: 'Toinen Tyyppi',
                 kysymys: 'Tarvitaanko lisätietoja ???',
                 luotu: '2026-02-01T08:05:00.000Z',
               },
               {
                 id: 'q5',
-                vastaanottaja: 'Vastaaja Esittelijä',
+                vastaanottajaOid: 'Vastaaja Esittelijä',
                 kysymys: 'Tarvitaanko lisätietoja ???',
                 luotu: '2026-02-01T08:05:00.000Z',
               },
