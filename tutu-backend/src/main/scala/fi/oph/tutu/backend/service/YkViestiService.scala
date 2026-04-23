@@ -57,7 +57,8 @@ class YkViestiService(
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
             luettu = viesti.luettu,
-            viesti = viesti.viesti,
+            kysymys = viesti.kysymys,
+            vastaus = viesti.vastaus,
             status = status
           )
         )
@@ -119,7 +120,8 @@ class YkViestiService(
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
             luettu = viesti.luettu,
-            viesti = viesti.viesti,
+            kysymys = viesti.kysymys,
+            vastaus = viesti.vastaus,
             status = status
           )
         )
@@ -147,6 +149,51 @@ class YkViestiService(
             }
           case _ => ykViestiList
         }
+    }
+  }
+
+  def haeHakemuksenYkViestit(
+    hakemusOid: String,
+    user: User
+  ): Seq[YkViesti] = {
+    ykViestiRepository.haeHakemuksenYkViestit(
+      hakemusOid,
+      user.userOid
+    )
+  }
+
+  def luoHakemuksenYkViesti(
+    hakemusOid: String,
+    user: User,
+    ykKysymys: YkKysymysDTO
+  ): Unit = {
+
+    ykViestiRepository.luoHakemuksenYkViesti(
+      YkViesti(
+        id = null,
+        hakemusOid = HakemusOid(hakemusOid),
+        lahettajaOid = Some(user.userOid),
+        vastaanottajaOid = Some(ykKysymys.vastaanottaja),
+        kysymys = Option(ykKysymys.kysymys),
+        hakija = null
+      )
+    )
+  }
+
+  def vastaaHakemuksenYkViestiin(
+    hakemusOid: String,
+    user: User,
+    ykVastaus: YkVastausDTO
+  ): Unit = {
+    val ykViesti = ykViestiRepository.haeYkViesti(ykVastaus.id) match {
+      case Some(ykViesti) => {
+        ykViestiRepository.muokkaaHakemuksenYkViestia(
+          ykViesti.copy(
+            vastaus = Some(ykVastaus.vastaus)
+          )
+        )
+      }
+      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id} not found")
     }
   }
 }

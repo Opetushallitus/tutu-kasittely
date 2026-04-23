@@ -78,22 +78,6 @@ class HakemusRepository extends BaseResultHandlers {
       )
     )
 
-  implicit val getYkViestiListItemResult: GetResult[YkViesti] =
-    GetResult(r =>
-      YkViesti(
-        id = r.nextObject().asInstanceOf[UUID],
-        parentId = Option(r.nextObject().asInstanceOf[UUID]),
-        hakemusOid = HakemusOid(r.nextString()),
-        asiatunnus = Option(r.nextString()),
-        lahettajaOid = Option(r.nextString()),
-        vastaanottajaOid = Option(r.nextString()),
-        luotu = Some(r.nextTimestamp().toLocalDateTime),
-        luettu = r.nextTimestampOption().map(_.toLocalDateTime),
-        viesti = Option(r.nextString()),
-        hakija = r.nextString()
-      )
-    )
-
   /**
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
    *

@@ -1,4 +1,10 @@
-import { Box, Button, AccordionDetails, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  AccordionDetails,
+  useTheme,
+  Typography,
+} from '@mui/material';
 import {
   OphTypography,
   OphInputFormField,
@@ -7,6 +13,8 @@ import React from 'react';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { Esittelija } from '@/src/lib/types/esittelija';
+import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
 interface KasittelyDetailsProps {
@@ -14,16 +22,37 @@ interface KasittelyDetailsProps {
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
+  esittelijat: Esittelija[];
+  user: User | null;
 }
+
+const vastaamatonKysymysMinulle = (
+  user: User | null,
+  kasittely: YhteinenKasittely,
+) => {
+  if (!user) {
+    return false;
+  }
+  return !kasittely.vastaus && user.userOid === kasittely.vastaanottaja;
+};
 
 export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   kasittely,
   answers,
   handleChange,
   handleSend,
+  esittelijat,
+  user,
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
+
+  const vastaaja = esittelijat.find(
+    (e) => e.esittelijaOid === kasittely.vastaanottaja,
+  );
+  const vastaajaNimi = vastaaja
+    ? `${vastaaja.sukunimi}, ${vastaaja.etunimi}`
+    : kasittely.vastaanottaja;
 
   return (
     <AccordionDetails>
@@ -42,22 +71,33 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           {t('hakemus.yhteinenkasittely.tyopari')}
         </OphTypography>
         <OphTypography variant="body1" sx={{ marginBottom: theme.spacing(4) }}>
-          {kasittely.vastaanottaja}
+          {vastaajaNimi}
         </OphTypography>
-        <OphInputFormField
-          label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
-          fullWidth
-          multiline
-          minRows={4}
-          value={kasittely.vastaus ?? answers[kasittely.id!] ?? ''}
-          disabled={Boolean(kasittely.vastaus)}
-          onChange={(e) => handleChange(kasittely.id!, e.target.value)}
-          sx={{ width: '90%' }}
-        />
+        {vastaamatonKysymysMinulle(user, kasittely) ? (
+          <OphInputFormField
+            label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
+            fullWidth
+            multiline
+            minRows={4}
+            value={answers[kasittely.id!] ?? ''}
+            disabled={Boolean(kasittely.vastaus)}
+            onChange={(e) => handleChange(kasittely.id!, e.target.value)}
+            sx={{ width: '90%' }}
+          />
+        ) : (
+          <Typography>{kasittely.vastaus ?? ''}</Typography>
+        )}
+
         <Box sx={{ marginTop: theme.spacing(4) }}>
-          <Button variant="contained" onClick={() => handleSend(kasittely.id!)}>
-            {t('hakemus.yhteinenkasittely.lahetaVastaus')}
-          </Button>
+          {vastaamatonKysymysMinulle(user, kasittely) ? (
+            <Button
+              variant="contained"
+              disabled={!answers[kasittely.id!]}
+              onClick={() => handleSend(kasittely.id!)}
+            >
+              {t('hakemus.yhteinenkasittely.lahetaVastaus')}
+            </Button>
+          ) : null}
         </Box>
       </Box>
 

@@ -61,10 +61,15 @@ case class DbYkViesti(
   )
   luettu: Option[LocalDateTime],
   @(Schema @field)(
-    example = "Viestin sisältö",
+    example = "Viestin alkuperäinen kysymys",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  viesti: Option[String]
+  kysymys: Option[String],
+  @(Schema @field)(
+    example = "Työparin vastaus",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  vastaus: Option[String]
 )
 
 case class YkViesti(
@@ -76,7 +81,8 @@ case class YkViesti(
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
-  viesti: Option[String] = None,
+  kysymys: Option[String] = None,
+  vastaus: Option[String] = None,
   hakija: String
 )
 
@@ -91,10 +97,16 @@ case class YkViestiListItem(
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
-  viesti: Option[String] = None
+  kysymys: Option[String] = None,
+  vastaus: Option[String] = None
+)
+
+case class YkKysymysDTO(
+  kysymys: String,
+  vastaanottaja: String
 )
 
 case class YkVastausDTO(
   id: String,
-  vastaus: Option[String]
+  vastaus: String
 )

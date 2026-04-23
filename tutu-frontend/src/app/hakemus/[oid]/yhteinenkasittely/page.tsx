@@ -11,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
@@ -22,6 +24,7 @@ import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 import { KasittelyList } from './components/KasittelyList';
+import { UusiKasittelyModal } from './components/UusiKasittelyModal';
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -66,6 +69,18 @@ export default function YhteinenKasittelyPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [tyopari, setTyopari] = useState<string | undefined>();
+  const [kysymys, setKysymys] = useState<string>('');
+
+  const user = useAuthorizedUser();
+
+  const {
+    data: esittelijat,
+    isLoading: esittelijatIsLoading,
+    error: esittelijatError,
+  } = useEsittelijat();
+
   const {
     kasittelyt,
     isKasittelytLoading,
@@ -82,14 +97,20 @@ export default function YhteinenKasittelyPage() {
       'virhe.yhteisenkasittelynLataus',
       t,
     );
+    handleFetchError(
+      addToast,
+      esittelijatError,
+      'virhe.yhteisenkasittelynLataus',
+      t,
+    );
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
-  }, [kasittelyError, updateError, addToast, t]);
+  }, [kasittelyError, esittelijatError, updateError, addToast, t]);
 
   if (kasittelyError) {
     return null;
   }
 
-  if (isKasittelytLoading) {
+  if (isKasittelytLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
 
@@ -107,8 +128,12 @@ export default function YhteinenKasittelyPage() {
 
   const handleCreateNewKasittely = async () => {
     try {
-      const kasittely: YhteinenKasittely = {};
+      const kasittely: YhteinenKasittely = {
+        kysymys: kysymys,
+        vastaanottaja: tyopari,
+      };
       luoUusiKasittely(kasittely);
+      setModalOpen(false);
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynUusi', t);
     }
@@ -129,81 +154,98 @@ export default function YhteinenKasittelyPage() {
   };
 
   return (
-    <Box sx={{ width: '100%', marginRight: theme.spacing(3) }}>
-      <Stack direction="row">
-        <Box sx={{ width: '100%' }}>
-          <OphTypography variant="h2" data-testid="yhteinenkasittely-otsikko">
-            {t('hakemus.yhteinenkasittely.otsikko')}
-          </OphTypography>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginBottom: theme.spacing(3), marginTop: theme.spacing(3) }}
-            onClick={handleCreateNewKasittely}
-            data-testid="uusi-yhteinen-kasittely-btn"
-          >
-            {t('hakemus.yhteinenkasittely.uusiYhteinenKasittely')}
-          </Button>
+    <>
+      <Box sx={{ width: '100%', marginRight: theme.spacing(3) }}>
+        <Stack direction="row">
+          <Box sx={{ width: '100%' }}>
+            <OphTypography variant="h2" data-testid="yhteinenkasittely-otsikko">
+              {t('hakemus.yhteinenkasittely.otsikko')}
+            </OphTypography>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                marginBottom: theme.spacing(3),
+                marginTop: theme.spacing(3),
+              }}
+              onClick={() => setModalOpen(true)}
+              data-testid="uusi-yhteinen-kasittely-btn"
+            >
+              {t('hakemus.yhteinenkasittely.uusiYhteinenKasittely')}
+            </Button>
 
-          {!kasittelyt?.length ? (
-            <EmptyList t={t} theme={theme} />
-          ) : (
-            <Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  borderBottom: DEFAULT_BOX_BORDER,
-                }}
-              >
-                <OphTypography
-                  variant="body1"
+            {!kasittelyt?.length ? (
+              <EmptyList t={t} theme={theme} />
+            ) : (
+              <Box>
+                <Box
                   sx={{
-                    flex: 3,
-                    fontWeight: 600,
-                    paddingLeft: theme.spacing(1.5),
-                    userSelect: 'none',
+                    display: 'flex',
+                    borderBottom: DEFAULT_BOX_BORDER,
                   }}
                 >
-                  {t('hakemus.yhteinenkasittely.kysymys')}
-                </OphTypography>
-                <Stack direction="row" sx={{ flex: 1 }}>
-                  <Button
-                    onClick={handleSort}
-                    aria-label={t('hakemus.yhteinenkasittely.kysymysLahetetty')}
-                    endIcon={
-                      sortKey === 'asc' ? (
-                        <ExpandMoreIcon
-                          fontSize="small"
-                          sx={{ color: ophColors.black }}
-                        />
-                      ) : (
-                        <ExpandLessIcon
-                          fontSize="small"
-                          sx={{ color: ophColors.black }}
-                        />
-                      )
-                    }
-                    sx={{ paddingLeft: 0 }}
+                  <OphTypography
+                    variant="body1"
+                    sx={{
+                      flex: 3,
+                      fontWeight: 600,
+                      paddingLeft: theme.spacing(1.5),
+                      userSelect: 'none',
+                    }}
                   >
-                    <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-                      {t('hakemus.yhteinenkasittely.kysymysLahetetty')}
-                    </OphTypography>
-                  </Button>
-                </Stack>
-              </Box>
+                    {t('hakemus.yhteinenkasittely.kysymys')}
+                  </OphTypography>
+                  <Stack direction="row" sx={{ flex: 1 }}>
+                    <Button
+                      onClick={handleSort}
+                      aria-label={t(
+                        'hakemus.yhteinenkasittely.kysymysLahetetty',
+                      )}
+                      endIcon={
+                        sortKey === 'asc' ? (
+                          <ExpandMoreIcon
+                            fontSize="small"
+                            sx={{ color: ophColors.black }}
+                          />
+                        ) : (
+                          <ExpandLessIcon
+                            fontSize="small"
+                            sx={{ color: ophColors.black }}
+                          />
+                        )
+                      }
+                      sx={{ paddingLeft: 0 }}
+                    >
+                      <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+                        {t('hakemus.yhteinenkasittely.kysymysLahetetty')}
+                      </OphTypography>
+                    </Button>
+                  </Stack>
+                </Box>
 
-              <Box>
-                <KasittelyList
-                  kasittelyt={kasittelyt}
-                  answers={answers}
-                  handleChange={handleChange}
-                  handleSend={handleSendAnswer}
-                />
+                <Box>
+                  <KasittelyList
+                    kasittelyt={kasittelyt}
+                    answers={answers}
+                    handleChange={handleChange}
+                    handleSend={handleSendAnswer}
+                    esittelijat={esittelijat}
+                    user={user}
+                  />
+                </Box>
               </Box>
-            </Box>
-          )}
-        </Box>
-      </Stack>
-    </Box>
+            )}
+          </Box>
+        </Stack>
+      </Box>
+      <UusiKasittelyModal
+        esittelijat={esittelijat}
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
+        handleSend={handleCreateNewKasittely}
+        setTyopari={setTyopari}
+        setKysymys={setKysymys}
+      />
+    </>
   );
 }
