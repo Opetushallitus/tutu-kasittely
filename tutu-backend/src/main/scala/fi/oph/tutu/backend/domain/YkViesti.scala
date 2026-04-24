@@ -79,6 +79,7 @@ case class YkViesti(
   asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
+  vastaanottaja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
@@ -103,7 +104,7 @@ case class YkViestiListItem(
 
 case class YkKysymysDTO(
   kysymys: String,
-  vastaanottaja: String
+  vastaanottajaOid: String
 )
 
 case class YkVastausDTO(

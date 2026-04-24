@@ -4,7 +4,6 @@ import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { formatHelsinki } from '@/src/lib/dateUtils';
-import { Esittelija } from '@/src/lib/types/esittelija';
 import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
@@ -15,7 +14,6 @@ interface KasittelyListProps {
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
-  esittelijat: Esittelija[];
   user: User | null;
 }
 
@@ -24,7 +22,6 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
   answers,
   handleChange,
   handleSend,
-  esittelijat,
   user,
 }) => {
   return (
@@ -73,7 +70,6 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
             answers={answers}
             handleChange={handleChange}
             handleSend={handleSend}
-            esittelijat={esittelijat}
             user={user}
           />
         </Accordion>

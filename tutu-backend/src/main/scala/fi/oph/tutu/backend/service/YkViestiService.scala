@@ -13,7 +13,8 @@ import scala.math.Ordering
 @Component
 @Service
 class YkViestiService(
-  ykViestiRepository: YkViestiRepository
+  ykViestiRepository: YkViestiRepository,
+  onrService: OnrService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
 
@@ -156,10 +157,16 @@ class YkViestiService(
     hakemusOid: String,
     user: User
   ): Seq[YkViesti] = {
-    ykViestiRepository.haeHakemuksenYkViestit(
-      hakemusOid,
-      user.userOid
-    )
+    ykViestiRepository
+      .haeHakemuksenYkViestit(
+        hakemusOid,
+        user.userOid
+      )
+      .map(ykViesti =>
+        ykViesti.copy(
+          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
+        )
+      )
   }
 
   def luoHakemuksenYkViesti(
@@ -173,7 +180,7 @@ class YkViestiService(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some(user.userOid),
-        vastaanottajaOid = Some(ykKysymys.vastaanottaja),
+        vastaanottajaOid = Some(ykKysymys.vastaanottajaOid),
         kysymys = Option(ykKysymys.kysymys),
         hakija = null
       )

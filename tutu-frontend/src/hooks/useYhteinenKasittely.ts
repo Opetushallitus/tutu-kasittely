@@ -27,8 +27,9 @@ const getYhteinenKasittely = async (
     parentId: ykDto.parentId,
     kysymys: ykDto.kysymys,
     vastaus: ykDto.vastaus,
-    lahettaja: ykDto.lahettajaOid,
-    vastaanottaja: ykDto.vastaanottajaOid,
+    lahettajaOid: ykDto.lahettajaOid,
+    vastaanottajaOid: ykDto.vastaanottajaOid,
+    vastaanottaja: ykDto.vastaanottaja,
     luotu: ykDto.luotu,
     jatkoKasittelyt: [],
   }));

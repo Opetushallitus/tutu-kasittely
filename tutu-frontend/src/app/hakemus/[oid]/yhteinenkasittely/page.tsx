@@ -229,7 +229,6 @@ export default function YhteinenKasittelyPage() {
                     answers={answers}
                     handleChange={handleChange}
                     handleSend={handleSendAnswer}
-                    esittelijat={esittelijat}
                     user={user}
                   />
                 </Box>

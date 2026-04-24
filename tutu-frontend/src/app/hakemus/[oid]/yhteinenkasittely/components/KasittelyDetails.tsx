@@ -13,7 +13,6 @@ import React from 'react';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
-import { Esittelija } from '@/src/lib/types/esittelija';
 import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
@@ -22,7 +21,6 @@ interface KasittelyDetailsProps {
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
-  esittelijat: Esittelija[];
   user: User | null;
 }
 
@@ -33,7 +31,7 @@ const vastaamatonKysymysMinulle = (
   if (!user) {
     return false;
   }
-  return !kasittely.vastaus && user.userOid === kasittely.vastaanottaja;
+  return !kasittely.vastaus && user.userOid === kasittely.vastaanottajaOid;
 };
 
 export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
@@ -41,18 +39,10 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   answers,
   handleChange,
   handleSend,
-  esittelijat,
   user,
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
-
-  const vastaaja = esittelijat.find(
-    (e) => e.esittelijaOid === kasittely.vastaanottaja,
-  );
-  const vastaajaNimi = vastaaja
-    ? `${vastaaja.sukunimi}, ${vastaaja.etunimi}`
-    : kasittely.vastaanottaja;
 
   return (
     <AccordionDetails>
@@ -71,7 +61,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           {t('hakemus.yhteinenkasittely.tyopari')}
         </OphTypography>
         <OphTypography variant="body1" sx={{ marginBottom: theme.spacing(4) }}>
-          {vastaajaNimi}
+          {kasittely.vastaanottaja}
         </OphTypography>
         {vastaamatonKysymysMinulle(user, kasittely) ? (
           <OphInputFormField

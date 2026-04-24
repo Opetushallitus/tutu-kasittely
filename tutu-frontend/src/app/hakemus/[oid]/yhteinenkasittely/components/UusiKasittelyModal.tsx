@@ -70,14 +70,16 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
             }))}
           />
           <OphInputFormField
+            multiline
+            minRows={4}
             label={t(
               'hakemus.yhteinenkasittely.uusiKasittely.kysymysTyoparille',
             )}
             onChange={(e) => setKysymys(e.target.value)}
           />
-          <Stack direction="row" gap={2}>
+          <Stack justifyContent="flex-end" direction="row" gap={2}>
             <OphButton onClick={handleClose}>{t('yleiset.peruuta')}</OphButton>
-            <OphButton onClick={handleSend}>
+            <OphButton variant="contained" onClick={handleSend}>
               {t('hakemus.yhteinenkasittely.uusiKasittely.laheta')}
             </OphButton>
           </Stack>
