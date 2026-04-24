@@ -46,6 +46,9 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
       open={open}
       onClose={handleClose}
       data-testid="vahvistettu-viesti-modal"
+      aria-labelledby="hakemus.yhteinenkasittely.uusiKasittely.title"
+      aria-describedby="hakemus.yhteinenkasittely.uusiKasittely.body"
+      role="dialog"
     >
       <Box sx={modalStyle}>
         <Stack
@@ -54,10 +57,16 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
           gap={2}
           justifyContent="space-between"
         >
-          <OphTypography variant="h2">
+          <OphTypography
+            id="hakemus.yhteinenkasittely.uusiKasittely.title"
+            variant="h2"
+          >
             {t('hakemus.yhteinenkasittely.uusiKasittely.title')}
           </OphTypography>
-          <OphTypography variant="body1">
+          <OphTypography
+            id="hakemus.yhteinenkasittely.uusiKasittely.body"
+            variant="body1"
+          >
             {t('hakemus.yhteinenkasittely.uusiKasittely.body')}
           </OphTypography>
           <OphSelectFormField

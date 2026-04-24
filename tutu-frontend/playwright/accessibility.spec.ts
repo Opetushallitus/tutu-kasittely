@@ -126,6 +126,10 @@ test('Saavutettavuus yhteinen käsittely ok', async ({ page }) => {
   );
 
   await expectPageAccessibilityOk(page);
+
+  await page.getByTestId('uusi-yhteinen-kasittely-btn').click();
+
+  await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus valitustiedot ok', async ({ page }) => {
