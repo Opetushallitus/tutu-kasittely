@@ -130,7 +130,7 @@ export default function YhteinenKasittelyPage() {
     try {
       const kasittely: YhteinenKasittely = {
         kysymys: kysymys,
-        vastaanottaja: tyopari,
+        vastaanottajaOid: tyopari,
       };
       luoUusiKasittely(kasittely);
       setModalOpen(false);

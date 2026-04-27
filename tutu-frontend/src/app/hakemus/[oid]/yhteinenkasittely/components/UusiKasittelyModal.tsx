@@ -73,9 +73,10 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
             label={t('hakemus.yhteinenkasittely.uusiKasittely.tyopari')}
             placeholder={t('yleiset.valitse')}
             onChange={(e) => setTyopari(e.target.value)}
+            data-testid="yhteinenkasittely-uusiKasittely-tyopari"
             options={esittelijat.map((esittelija) => ({
               value: esittelija.esittelijaOid,
-              label: `${esittelija.sukunimi}, ${esittelija.etunimi}`,
+              label: `${esittelija.etunimi} ${esittelija.sukunimi}`.trim(),
             }))}
           />
           <OphInputFormField
@@ -85,10 +86,15 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
               'hakemus.yhteinenkasittely.uusiKasittely.kysymysTyoparille',
             )}
             onChange={(e) => setKysymys(e.target.value)}
+            data-testid="yhteinenkasittely-uusiKasittely-kysymys"
           />
           <Stack justifyContent="flex-end" direction="row" gap={2}>
             <OphButton onClick={handleClose}>{t('yleiset.peruuta')}</OphButton>
-            <OphButton variant="contained" onClick={handleSend}>
+            <OphButton
+              variant="contained"
+              onClick={handleSend}
+              data-testid="yhteinenkasittely-uusiKasittely-laheta"
+            >
               {t('hakemus.yhteinenkasittely.uusiKasittely.laheta')}
             </OphButton>
           </Stack>
