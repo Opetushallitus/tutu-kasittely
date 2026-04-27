@@ -187,7 +187,7 @@ class YkViestiController(
         }
 
         if (ykKysymys.vastaanottajaOid == null || ykKysymys.kysymys == null) {
-          LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit", e)
+          LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit")
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
@@ -247,7 +247,7 @@ class YkViestiController(
         }
 
         if (ykVastaus.id == null || ykVastaus.vastaus == null) {
-          LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit", e)
+          LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
