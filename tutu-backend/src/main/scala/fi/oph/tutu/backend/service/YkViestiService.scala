@@ -180,7 +180,7 @@ class YkViestiService(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some(user.userOid),
-        vastaanottajaOid = Some(ykKysymys.vastaanottajaOid),
+        vastaanottajaOid = Option(ykKysymys.vastaanottajaOid),
         kysymys = Option(ykKysymys.kysymys),
         hakija = null
       )
@@ -196,7 +196,7 @@ class YkViestiService(
       case Some(ykViesti) => {
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
-            vastaus = Some(ykVastaus.vastaus)
+            vastaus = Option(ykVastaus.vastaus)
           )
         )
       }
