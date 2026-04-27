@@ -103,11 +103,11 @@ case class YkViestiListItem(
 )
 
 case class YkKysymysDTO(
-  kysymys: String,
-  vastaanottajaOid: String
+  kysymys: Option[String] = None,
+  vastaanottajaOid: Option[String] = None
 )
 
 case class YkVastausDTO(
-  id: String,
-  vastaus: String
+  id: Option[String] = None,
+  vastaus: Option[String] = None
 )

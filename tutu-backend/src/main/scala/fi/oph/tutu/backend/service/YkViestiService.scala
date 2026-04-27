@@ -180,8 +180,8 @@ class YkViestiService(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some(user.userOid),
-        vastaanottajaOid = Option(ykKysymys.vastaanottajaOid),
-        kysymys = Option(ykKysymys.kysymys),
+        vastaanottajaOid = ykKysymys.vastaanottajaOid,
+        kysymys = ykKysymys.kysymys,
         hakija = null
       )
     )
@@ -192,15 +192,19 @@ class YkViestiService(
     user: User,
     ykVastaus: YkVastausDTO
   ): Unit = {
-    val ykViesti = ykViestiRepository.haeYkViesti(ykVastaus.id) match {
+    if (ykVastaus.id.isEmpty) {
+      throw NotFoundException(s"Yhteiskäsittelyn viesti id is null")
+    }
+
+    val ykViesti = ykViestiRepository.haeYkViesti(ykVastaus.id.get) match {
       case Some(ykViesti) => {
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
-            vastaus = Option(ykVastaus.vastaus)
+            vastaus = ykVastaus.vastaus
           )
         )
       }
-      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id} not found")
+      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id.get} not found")
     }
   }
 }

@@ -186,7 +186,7 @@ class YkViestiController(
             )
         }
 
-        if (ykKysymys.vastaanottajaOid == null || ykKysymys.kysymys == null) {
+        if (ykKysymys.vastaanottajaOid.isEmpty || ykKysymys.kysymys.isEmpty) {
           LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit")
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
@@ -246,7 +246,7 @@ class YkViestiController(
             )
         }
 
-        if (ykVastaus.id == null || ykVastaus.vastaus == null) {
+        if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
           LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
