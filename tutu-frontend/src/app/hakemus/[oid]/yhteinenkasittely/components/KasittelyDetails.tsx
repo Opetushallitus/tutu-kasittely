@@ -19,6 +19,7 @@ import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 interface KasittelyDetailsProps {
   kasittely: YhteinenKasittely;
   answers: Record<string, string>;
+  handleOpenModal: (parent?: YhteinenKasittely) => void;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
   user: User | null;
@@ -37,6 +38,7 @@ const vastaamatonKysymysMinulle = (
 export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   kasittely,
   answers,
+  handleOpenModal,
   handleChange,
   handleSend,
   user,
@@ -119,23 +121,33 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           >
             {jatkoKasittely.vastaanottaja}
           </OphTypography>
-          <OphInputFormField
-            label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
-            fullWidth
-            multiline
-            minRows={4}
-            value={jatkoKasittely.vastaus ?? answers[jatkoKasittely.id!] ?? ''}
-            disabled={Boolean(jatkoKasittely.vastaus)}
-            onChange={(e) => handleChange(jatkoKasittely.id!, e.target.value)}
-            sx={{ width: '90%' }}
-          />
+          {vastaamatonKysymysMinulle(user, jatkoKasittely) ? (
+            <OphInputFormField
+              label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
+              fullWidth
+              multiline
+              minRows={4}
+              value={
+                jatkoKasittely.vastaus ?? answers[jatkoKasittely.id!] ?? ''
+              }
+              disabled={Boolean(jatkoKasittely.vastaus)}
+              onChange={(e) => handleChange(jatkoKasittely.id!, e.target.value)}
+              sx={{ width: '90%' }}
+            />
+          ) : (
+            <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
+          )}
+
           <Box sx={{ marginTop: theme.spacing(4) }}>
-            <Button
-              variant="contained"
-              onClick={() => handleSend(jatkoKasittely.id!)}
-            >
-              {t('hakemus.yhteinenkasittely.lahetaVastaus')}
-            </Button>
+            {vastaamatonKysymysMinulle(user, jatkoKasittely) ? (
+              <Button
+                variant="contained"
+                disabled={!answers[jatkoKasittely.id!]}
+                onClick={() => handleSend(jatkoKasittely.id!)}
+              >
+                {t('hakemus.yhteinenkasittely.lahetaVastaus')}
+              </Button>
+            ) : null}
           </Box>
         </Box>
       ))}
@@ -148,10 +160,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           paddingLeft: theme.spacing(0.5),
         }}
       >
-        <Button
-          variant="outlined"
-          onClick={() => console.log('Kysy toiselta työparilta')}
-        >
+        <Button variant="outlined" onClick={() => handleOpenModal(kasittely)}>
           {t('hakemus.yhteinenkasittely.kysyToiseltaTyoparilta')}
         </Button>
       </Box>

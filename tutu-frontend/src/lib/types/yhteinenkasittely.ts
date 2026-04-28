@@ -22,4 +22,5 @@ export type YhteinenKasittelyDTO = {
   kysymys: string;
   vastaus?: string;
   hakija: string;
+  jatkoKasittelyt?: YhteinenKasittely[];
 };

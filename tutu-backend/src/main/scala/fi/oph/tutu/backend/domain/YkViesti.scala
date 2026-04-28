@@ -84,7 +84,8 @@ case class YkViesti(
   luettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
   vastaus: Option[String] = None,
-  hakija: String
+  hakija: String,
+  jatkoKasittelyt: Seq[YkViesti] = Seq.empty
 )
 
 case class YkViestiListItem(
@@ -103,6 +104,7 @@ case class YkViestiListItem(
 )
 
 case class YkKysymysDTO(
+  parentId: Option[String] = None,
   kysymys: Option[String] = None,
   vastaanottajaOid: Option[String] = None
 )

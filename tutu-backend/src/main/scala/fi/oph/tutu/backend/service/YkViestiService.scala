@@ -9,6 +9,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import scala.math.Ordering
+import java.util.UUID
 
 @Component
 @Service
@@ -157,7 +158,7 @@ class YkViestiService(
     hakemusOid: String,
     user: User
   ): Seq[YkViesti] = {
-    ykViestiRepository
+    val ykViestit = ykViestiRepository
       .haeHakemuksenYkViestit(
         hakemusOid,
         user.userOid
@@ -165,6 +166,18 @@ class YkViestiService(
       .map(ykViesti =>
         ykViesti.copy(
           vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
+        )
+      )
+
+    val ketjunEnsimmaiset = ykViestit.filter(viesti => viesti.parentId.isEmpty)
+
+    ketjunEnsimmaiset
+      .map(viesti =>
+        val jatkoKasittelyt = ykViestit
+          .filter(jatkoKasittely => jatkoKasittely.parentId.exists(_.equals(viesti.id)))
+          .reverse
+        viesti.copy(
+          jatkoKasittelyt = jatkoKasittelyt
         )
       )
   }
@@ -178,6 +191,7 @@ class YkViestiService(
     ykViestiRepository.luoHakemuksenYkViesti(
       YkViesti(
         id = null,
+        parentId = ykKysymys.parentId.map(UUID.fromString),
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some(user.userOid),
         vastaanottajaOid = ykKysymys.vastaanottajaOid,
