@@ -44,3 +44,36 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
 
   await expect(textbox).toHaveValue('Testivastaus');
 });
+
+test('Yhteisen käsittelyn luominen', async ({ page }) => {
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
+  );
+
+  const uusiKasittely = page.getByTestId('uusi-yhteinen-kasittely-btn');
+  await uusiKasittely.click();
+
+  const tyopariSelect = page.getByTestId(
+    'yhteinenkasittely-uusiKasittely-tyopari',
+  );
+  await tyopariSelect.click();
+  const tyopariOption = page.locator(
+    "xpath=//li[@data-value='1.2.246.562.24.999999999999']",
+  );
+  await tyopariOption.click();
+
+  const kysymysInput = page
+    .getByTestId('yhteinenkasittely-uusiKasittely-kysymys')
+    .locator('textarea')
+    .first();
+  await kysymysInput.fill('Kysymys content');
+
+  const sendButton = page.getByTestId('yhteinenkasittely-uusiKasittely-laheta');
+  await sendButton.click();
+
+  // Verify
+  const uusiKasittelyRivi = page
+    .locator("xpath=//p[text()='Kysymys content']")
+    .first();
+  await expect(uusiKasittelyRivi).toBeVisible();
+});

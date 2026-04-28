@@ -5,20 +5,34 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { doApiFetch, doApiPatch, doApiPost } from '@/src/lib/tutu-backend/api';
 
 import { SortOrder } from '../app/(root)/components/types';
-import { YhteinenKasittely } from '../lib/types/yhteinenkasittely';
+import {
+  YhteinenKasittely,
+  YhteinenKasittelyDTO,
+} from '../lib/types/yhteinenkasittely';
 
 const getYhteinenKasittely = async (
   hakemusOid: string,
   sortParam: SortOrder,
 ): Promise<YhteinenKasittely[]> => {
   const query = `?sort=${sortParam}`;
-  return doApiFetch(
+  const yhteiskasittelyt = await doApiFetch(
     `hakemus/${hakemusOid}/yhteinenkasittely`,
     {
       queryParams: query,
     },
     'no-store',
   );
+  return yhteiskasittelyt.map((ykDto: YhteinenKasittelyDTO) => ({
+    id: ykDto.id,
+    parentId: ykDto.parentId,
+    kysymys: ykDto.kysymys,
+    vastaus: ykDto.vastaus,
+    lahettajaOid: ykDto.lahettajaOid,
+    vastaanottajaOid: ykDto.vastaanottajaOid,
+    vastaanottaja: ykDto.vastaanottaja,
+    luotu: ykDto.luotu,
+    jatkoKasittelyt: [],
+  }));
 };
 
 const postYhteinenKasittely = async (

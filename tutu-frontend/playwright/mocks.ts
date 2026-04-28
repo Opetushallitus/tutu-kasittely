@@ -13,6 +13,7 @@ import { Hakemus } from '@/src/lib/types/hakemus';
 import { Paatosteksti } from '@/src/lib/types/paatosteksti';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { VahvistettuViestiListItem, Viesti } from '@/src/lib/types/viesti';
+import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
 import { _sisalto } from './fixtures/hakemus1/_sisalto';
 
@@ -501,47 +502,94 @@ export const mockTutkinnot = async (page: Page) => {
 };
 
 export const mockYhteinenKasittely = async (page: Page) => {
+  const yhteinenkasittelydata: YhteinenKasittely[] = [
+    {
+      id: 'q1',
+      vastaanottaja: 'Testi esittelijä',
+      vastaanottajaOid: '1.2.246.562.24.999999999999',
+      kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
+      luotu: '2026-02-04T09:12:00.000Z',
+    },
+    {
+      id: 'q2',
+      vastaanottaja: 'Kalle Päätalo',
+      vastaanottajaOid: '1.2.246.562.24.999999999998',
+      kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
+      luotu: '2026-02-03T14:30:00.000Z',
+    },
+    {
+      id: 'q3',
+      vastaanottaja: 'Otto Kehittäjä',
+      vastaanottajaOid: '1.2.246.562.24.999999999997',
+      kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
+      luotu: '2026-02-01T08:05:00.000Z',
+      jatkoKasittelyt: [
+        {
+          id: 'q4',
+          vastaanottaja: 'Toinen Tyyppi',
+          vastaanottajaOid: '1.2.246.562.24.999999999996',
+          kysymys: 'Tarvitaanko lisätietoja ???',
+          luotu: '2026-02-01T08:05:00.000Z',
+        },
+        {
+          id: 'q5',
+          vastaanottaja: 'Vastaaja Esittelijä',
+          vastaanottajaOid: '1.2.246.562.24.999999999995',
+          kysymys: 'Tarvitaanko lisätietoja ???',
+          luotu: '2026-02-01T08:05:00.000Z',
+        },
+      ],
+    },
+  ];
+
+  const nextId = (() => {
+    let id = 1;
+    return () => id++;
+  })();
+
   await page.route(
     '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
     async (route: Route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: 'q1',
-            vastaanottaja: 'Testi esittelijä',
-            kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
-            luotu: '2026-02-04T09:12:00.000Z',
-          },
-          {
-            id: 'q2',
-            vastaanottaja: 'Kalle Päätalo',
-            kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
-            luotu: '2026-02-03T14:30:00.000Z',
-          },
-          {
-            id: 'q3',
-            vastaanottaja: 'Otto Kehittäjä',
-            kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
-            luotu: '2026-02-01T08:05:00.000Z',
-            jatkoKasittelyt: [
-              {
-                id: 'q4',
-                vastaanottaja: 'Toinen Tyyppi',
-                kysymys: 'Tarvitaanko lisätietoja ???',
-                luotu: '2026-02-01T08:05:00.000Z',
-              },
-              {
-                id: 'q5',
-                vastaanottaja: 'Vastaaja Esittelijä',
-                kysymys: 'Tarvitaanko lisätietoja ???',
-                luotu: '2026-02-01T08:05:00.000Z',
-              },
-            ],
-          },
-        ]),
-      });
+      if (route.request().method() === 'POST') {
+        const data = route.request().postDataJSON() as YhteinenKasittely;
+        yhteinenkasittelydata.push({
+          id: `${nextId()}`,
+          vastaanottaja: data.vastaanottajaOid,
+          vastaanottajaOid: data.vastaanottajaOid,
+          kysymys: data.kysymys,
+          luotu: new Date().toISOString(),
+        });
+
+        await route.fulfill({
+          status: 204,
+          contentType: 'application/json',
+          body: JSON.stringify(yhteinenkasittelydata),
+        });
+      }
+      if (route.request().method() === 'PUT') {
+        const data = route.request().postDataJSON() as {
+          id: string;
+          vastaus?: string;
+        };
+        const item = yhteinenkasittelydata.find((i) => i.id === data.id);
+
+        if (item) {
+          item.vastaus = data.vastaus;
+        }
+
+        await route.fulfill({
+          status: 204,
+          contentType: 'application/json',
+          body: JSON.stringify(yhteinenkasittelydata),
+        });
+      }
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(yhteinenkasittelydata),
+        });
+      }
     },
   );
 };

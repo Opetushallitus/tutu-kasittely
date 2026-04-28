@@ -7,7 +7,7 @@ export type YhteisenKasittelynViesti = {
   vastaanottajaOid?: string | null;
   vastaanottaja?: string | null;
   hakija: string;
-  viesti: string;
+  kysymys: string;
   vastaus?: string | null;
   luettu?: string | null;
   status?: string | null;
