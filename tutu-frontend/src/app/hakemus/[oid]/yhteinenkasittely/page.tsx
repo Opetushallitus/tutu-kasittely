@@ -24,7 +24,7 @@ import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 import { KasittelyList } from './components/KasittelyList';
-import { UusiKasittelyModal } from './components/UusiKasittelyModal';
+import { KasittelyModal } from './components/KasittelyModal';
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -69,6 +69,9 @@ export default function YhteinenKasittelyPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
+  const [modalParent, setModalParent] = useState<
+    YhteinenKasittely | undefined
+  >();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tyopari, setTyopari] = useState<string | undefined>();
   const [kysymys, setKysymys] = useState<string>('');
@@ -126,14 +129,25 @@ export default function YhteinenKasittelyPage() {
     setAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleCreateNewKasittely = async () => {
+  const handleOpenModal = (parent?: YhteinenKasittely) => {
+    setModalParent(parent);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalParent(undefined);
+    setModalOpen(false);
+  };
+
+  const handleCreateKasittely = async () => {
     try {
       const kasittely: YhteinenKasittely = {
+        parentId: modalParent?.id,
         kysymys: kysymys,
         vastaanottajaOid: tyopari,
       };
       luoUusiKasittely(kasittely);
-      setModalOpen(false);
+      handleModalClose();
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynUusi', t);
     }
@@ -168,7 +182,7 @@ export default function YhteinenKasittelyPage() {
                 marginBottom: theme.spacing(3),
                 marginTop: theme.spacing(3),
               }}
-              onClick={() => setModalOpen(true)}
+              onClick={() => handleOpenModal()}
               data-testid="uusi-yhteinen-kasittely-btn"
             >
               {t('hakemus.yhteinenkasittely.uusiYhteinenKasittely')}
@@ -227,6 +241,7 @@ export default function YhteinenKasittelyPage() {
                   <KasittelyList
                     kasittelyt={kasittelyt}
                     answers={answers}
+                    handleOpenModal={handleOpenModal}
                     handleChange={handleChange}
                     handleSend={handleSendAnswer}
                     user={user}
@@ -237,11 +252,12 @@ export default function YhteinenKasittelyPage() {
           </Box>
         </Stack>
       </Box>
-      <UusiKasittelyModal
+      <KasittelyModal
         esittelijat={esittelijat}
         open={modalOpen}
-        handleClose={() => setModalOpen(false)}
-        handleSend={handleCreateNewKasittely}
+        parentKasittely={modalParent}
+        handleClose={() => handleModalClose()}
+        handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
       />

@@ -12,6 +12,7 @@ import { KasittelyDetails } from './KasittelyDetails';
 interface KasittelyListProps {
   kasittelyt: YhteinenKasittely[];
   answers: Record<string, string>;
+  handleOpenModal: (parent?: YhteinenKasittely) => void;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
   user: User | null;
@@ -20,6 +21,7 @@ interface KasittelyListProps {
 export const KasittelyList: React.FC<KasittelyListProps> = ({
   kasittelyt,
   answers,
+  handleOpenModal,
   handleChange,
   handleSend,
   user,
@@ -68,6 +70,7 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
           <KasittelyDetails
             kasittely={kasittely}
             answers={answers}
+            handleOpenModal={handleOpenModal}
             handleChange={handleChange}
             handleSend={handleSend}
             user={user}
