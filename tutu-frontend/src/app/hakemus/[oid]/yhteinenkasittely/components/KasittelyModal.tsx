@@ -105,8 +105,6 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
   );
 };
 
-/* ------- */
-
 interface JatkoKasittelyModalProps {
   parentKasittely: YhteinenKasittely;
   esittelijat: Esittelija[];
@@ -203,8 +201,6 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
     </Modal>
   );
 };
-
-/* ------- */
 
 interface KasittelyModalProps {
   parentKasittely?: YhteinenKasittely;
