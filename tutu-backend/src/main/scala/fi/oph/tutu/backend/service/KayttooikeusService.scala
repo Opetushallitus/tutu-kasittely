@@ -2,14 +2,12 @@ package fi.oph.tutu.backend.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
-import fi.oph.tutu.backend.domain.{Kayttajatiedot, UserOid}
+import fi.oph.tutu.backend.domain.Kayttajatiedot
 import fi.oph.tutu.backend.repository.EsittelijaRepository
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.cache.CacheManager
-import org.springframework.cache.annotation.{CacheEvict, CachePut}
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.{Component, Service}
 
 import scala.jdk.CollectionConverters.*

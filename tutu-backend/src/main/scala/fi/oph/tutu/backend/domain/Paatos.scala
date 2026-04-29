@@ -44,6 +44,7 @@ case class PaatosTieto(
   tutkintoTaso: Option[TutkintoTaso] = None,
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
   kelpoisuudet: Seq[Kelpoisuus] = Seq(),
+  esittelijanHuomioitaToimenpiteista: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None

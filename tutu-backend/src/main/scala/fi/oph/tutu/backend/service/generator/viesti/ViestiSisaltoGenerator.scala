@@ -1,14 +1,14 @@
 package fi.oph.tutu.backend.service.generator.viesti
 
-import fi.oph.tutu.backend.domain.{Esittelija, Kieli, PyydettavaAsiakirja, ViestiHakemusInfo}
+import fi.oph.tutu.backend.domain.{Kieli, PyydettavaAsiakirja, ViestiHakemusInfo}
 import fi.oph.tutu.backend.service.TranslationService
 import fi.oph.tutu.backend.utils.Constants.TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
 
 @Component
 @Service

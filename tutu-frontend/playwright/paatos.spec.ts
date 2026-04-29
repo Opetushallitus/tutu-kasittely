@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
+test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
   const seutCheckbox = page.getByTestId('paatos-seut');
@@ -70,7 +70,7 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää POST-kuts
   }
 });
 
-test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää POST-kutsun backendille', async ({
+test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');

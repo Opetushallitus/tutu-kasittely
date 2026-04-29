@@ -290,26 +290,7 @@ export const mockHakemus = async (
 };
 
 export const mockLopullisenPaatoksenHakemus = async (page: Page) => {
-  let hakemusData = getLopullinenHakemus();
-  await page.route(`**/tutu-backend/api/hakemus/*`, async (route) => {
-    if (route.request().method() === 'PUT') {
-      const putData = route.request().postDataJSON() as Record<string, unknown>;
-      hakemusData = { ...hakemusData, ...unwrapData(putData) };
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(hakemusData),
-      });
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ...hakemusData,
-        }),
-      });
-    }
-  });
+  mockGetAndPut(page, `**/tutu-backend/api/hakemus/*`, getLopullinenHakemus());
 };
 
 export const mockLiitteet = async (page: Page) => {
@@ -425,27 +406,31 @@ export const mockPerustelu = async (page: Page) => {
   });
 };
 
-export const mockPaatos = async (page: Page) => {
-  let paatosData = getPaatos();
-  await page.route(`**/paatos/1.2.246.562.10.00000000001`, async (route) => {
+export const mockGetAndPut = async (
+  page: Page,
+  url: string,
+  data: Record<string, unknown>,
+) => {
+  await page.route(url, async (route: Route) => {
     if (route.request().method() === 'PUT') {
       const putData = route.request().postDataJSON() as Record<string, unknown>;
-      paatosData = { ...paatosData, ...unwrapData(putData) };
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(paatosData),
+        body: JSON.stringify({ ...data, ...unwrapData(putData) }),
       });
     } else {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          ...paatosData,
-        }),
+        body: JSON.stringify(data),
       });
     }
   });
+};
+
+export const mockPaatos = async (page: Page) => {
+  mockGetAndPut(page, `**/paatos/1.2.246.562.10.00000000001`, getPaatos());
 };
 
 export const mockTutkinnot = async (page: Page) => {

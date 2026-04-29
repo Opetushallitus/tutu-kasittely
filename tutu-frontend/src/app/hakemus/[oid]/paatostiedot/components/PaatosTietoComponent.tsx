@@ -10,9 +10,9 @@ import React, { useEffect, useState } from 'react';
 import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
+import { SovellettuLakiComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/SovellettuLakiComponent';
 import {
   paatostyyppiOptions,
-  sovellettuLakiOptions,
   tutkinnonTasoOptions,
   tutkintoOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
@@ -108,19 +108,10 @@ export const PaatosTietoComponent = ({
         data-testid={'paatos-paatostyyppi-dropdown'}
         inputProps={{ 'aria-label': t('hakemus.paatos.paatostyyppi.otsikko') }}
       />
-      <OphSelectFormField
-        placeholder={t('yleiset.valitse')}
-        label={t('hakemus.paatos.sovellettuLaki.otsikko')}
-        options={sovellettuLakiOptions(
-          currentPaatosTieto.paatosTyyppi as Paatostyyppi,
-          t,
-        )}
-        value={currentPaatosTieto.sovellettuLaki || ''}
-        onChange={(event) => handleSovellettuLakiChange(event.target.value)}
-        data-testid={'paatos-sovellettulaki-dropdown'}
-        inputProps={{
-          'aria-label': t('hakemus.paatos.sovellettuLaki.otsikko'),
-        }}
+      <SovellettuLakiComponent
+        t={t}
+        paatostieto={currentPaatosTieto}
+        handleChange={handleSovellettuLakiChange}
       />
       {currentPaatosTieto.sovellettuLaki &&
         (currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' ||

@@ -49,11 +49,12 @@ export type PaatosTieto = {
   tutkintoTaso?: TutkintoTaso;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   kelpoisuudet: Kelpoisuus[];
+  esittelijanHuomioitaToimenpiteista?: string;
 } & Omit<MyonteinenTaiKielteinenPaatos, 'myonteisenPaatoksenLisavaatimukset'>;
 
 export type Paatos = {
   id?: string;
-  ratkaisutyyppi?: Ratkaisutyyppi;
+  ratkaisutyyppi?: Ratkaisutyyppi | null;
   seutArviointi: boolean;
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
   paatosTiedot?: PaatosTieto[];
@@ -170,3 +171,8 @@ export type Kelpoisuus = {
   kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso;
   direktiivitasoLisatiedot?: string;
 } & MyonteinenTaiKielteinenPaatos;
+
+export type KorvaavaToimenpideDto = {
+  suoritusTila?: 'myonteinen' | 'kielteinen' | 'peruttu' | 'nollattu';
+  esittelijanHuomioita?: string;
+};

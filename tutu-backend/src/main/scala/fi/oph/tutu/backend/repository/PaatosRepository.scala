@@ -1,14 +1,13 @@
 package fi.oph.tutu.backend.repository
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.utils.Constants.TUTU_SERVICE
 import org.json4s.jackson.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.dbio.DBIO
-import slick.jdbc.{GetResult, SQLActionBuilder}
 import slick.jdbc.PostgresProfile.api.*
+import slick.jdbc.{GetResult, SQLActionBuilder}
 
 import java.util.UUID
 import scala.concurrent.duration.DurationInt
@@ -51,6 +50,7 @@ class PaatosRepository extends BaseResultHandlers {
       myonteinenPaatos = r.nextBooleanOption(),
       kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString())),
       tutkintoTaso = TutkintoTaso.optionFromString(r.nextString()),
+      esittelijanHuomioitaToimenpiteista = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
@@ -291,7 +291,7 @@ class PaatosRepository extends BaseResultHandlers {
       s"""
         RETURNING id, paatos_id, paatostyyppi, sovellettulaki, tutkinto_id, lisaa_tutkinto_paatostekstiin,
           myonteinen_paatos, kielteisen_paatoksen_perustelut,
-          tutkintotaso, luotu, luoja, null
+          tutkintotaso, esittelijan_huomioita_toimenpiteista, luotu, luoja, null
       """
     } else {
       ""
@@ -307,6 +307,7 @@ class PaatosRepository extends BaseResultHandlers {
               myonteinen_paatos,
               kielteisen_paatoksen_perustelut,
               tutkintotaso,
+              esittelijan_huomioita_toimenpiteista,
               luoja
             )
             VALUES (
@@ -318,6 +319,7 @@ class PaatosRepository extends BaseResultHandlers {
               ${paatosTieto.myonteinenPaatos}::boolean,
               ${Serialization.write(paatosTieto.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
               ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+              ${paatosTieto.esittelijanHuomioitaToimenpiteista.orNull}::text,
               $luoja)
               #$resultClause"""
   }
@@ -354,6 +356,7 @@ class PaatosRepository extends BaseResultHandlers {
         paatosTieto.kielteisenPaatoksenPerustelut.orNull
       )}::jsonb,
           tutkintotaso = ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
+          esittelijan_huomioita_toimenpiteista = ${paatosTieto.esittelijanHuomioitaToimenpiteista.orNull}::text,
           muokkaaja = $muokkaaja
         WHERE id = ${paatosTieto.id.get.toString}::uuid
       """
@@ -364,7 +367,7 @@ class PaatosRepository extends BaseResultHandlers {
         sql"""
           SELECT id, paatos_id, paatostyyppi, sovellettulaki, tutkinto_id, lisaa_tutkinto_paatostekstiin,
             myonteinen_paatos, kielteisen_paatoksen_perustelut,
-            tutkintotaso, luotu, luoja, muokkaaja
+            tutkintotaso, esittelijan_huomioita_toimenpiteista, luotu, luoja, muokkaaja
           FROM paatostieto
           WHERE paatos_id = ${paatosId.toString}::uuid
           ORDER BY luotu

@@ -45,7 +45,8 @@ object HakemusModifyOperationResolver {
       currentPaatosTieto.kielteisenPaatoksenPerustelut != toBePaatosTieto.kielteisenPaatoksenPerustelut ||
       currentPaatosTieto.tutkintoTaso != toBePaatosTieto.tutkintoTaso ||
       currentPaatosTieto.rinnastettavatTutkinnotTaiOpinnot != toBePaatosTieto.rinnastettavatTutkinnotTaiOpinnot ||
-      currentPaatosTieto.kelpoisuudet != toBePaatosTieto.kelpoisuudet)
+      currentPaatosTieto.kelpoisuudet != toBePaatosTieto.kelpoisuudet ||
+      currentPaatosTieto.esittelijanHuomioitaToimenpiteista != toBePaatosTieto.esittelijanHuomioitaToimenpiteista)
 
   def resolvePyydettavatAsiakirjatModifyOperations(
     currentAsiakirjat: Seq[PyydettavaAsiakirja],
