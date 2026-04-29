@@ -11,16 +11,16 @@ import {
 import { LexicalEditor } from 'lexical';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Editor } from '@/src/app/hakemus/[oid]/editori/components/Editor';
-import {
-  exportHtml,
-  exportMarkdown,
-  importHtml,
-} from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
 import { KieliSelect } from '@/src/app/hakemus/[oid]/editori/viesti/components/KieliSelect';
 import { VahvistettuList } from '@/src/app/hakemus/[oid]/editori/viesti/components/VahvistettuList';
 import { ViestityyppiComponent } from '@/src/app/hakemus/[oid]/editori/viesti/components/Viestityyppi';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { Editor } from '@/src/components/editor/Editor';
+import {
+  exportHtml,
+  exportMarkdown,
+  importHtml,
+} from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';

@@ -39,9 +39,9 @@ import { Box, styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
 import { RefObject, useState } from 'react';
 
-import { validateUrl } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
-import { ExtendedTextNode } from '@/src/app/hakemus/[oid]/editori/components/ExtendedTextNode';
-import FloatingLinkEditorPlugin from '@/src/app/hakemus/[oid]/editori/components/FloatingLinkEditorPlugin';
+import { validateUrl } from '@/src/components/editor/editor-utils';
+import { ExtendedTextNode } from '@/src/components/editor/ExtendedTextNode';
+import FloatingLinkEditorPlugin from '@/src/components/editor/FloatingLinkEditorPlugin';
 
 import { Toolbar } from './Toolbar';
 

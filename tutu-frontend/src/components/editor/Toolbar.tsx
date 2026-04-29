@@ -48,16 +48,13 @@ import {
 } from 'lexical';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  ColorPicker,
-  FontColor,
-} from '@/src/app/hakemus/[oid]/editori/components/ColorPicker';
+import { ColorPicker, FontColor } from '@/src/components/editor/ColorPicker';
 import {
   formatBulletList,
   formatNumberedList,
   getSelectedNode,
   sanitizeUrl,
-} from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
+} from '@/src/components/editor/editor-utils';
 
 const ToolbarContainer = styled(Stack)({
   width: '100%',

@@ -7,13 +7,13 @@ import { LexicalEditor } from 'lexical';
 import { useParams } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Editor } from '@/src/app/hakemus/[oid]/editori/components/Editor';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { Editor } from '@/src/components/editor/Editor';
 import {
   exportHtml,
   exportMarkdown,
   importHtml,
-} from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
-import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+} from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
