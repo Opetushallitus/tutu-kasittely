@@ -3,8 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.YkViestiRepository
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import org.json4s.*
-import org.json4s.jackson.JsonMethods.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 

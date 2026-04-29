@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
 import java.time.LocalDateTime

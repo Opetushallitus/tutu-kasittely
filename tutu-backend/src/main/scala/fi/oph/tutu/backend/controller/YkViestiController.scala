@@ -3,8 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.{UserService, YkViestiService}
-import fi.oph.tutu.backend.utils.AuditOperation.*
-import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
+import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{
@@ -18,9 +17,6 @@ import org.springframework.web.bind.annotation.{
   RestController
 }
 
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.regex.Pattern
 import scala.util.{Failure, Success, Try}
 
 @RestController
