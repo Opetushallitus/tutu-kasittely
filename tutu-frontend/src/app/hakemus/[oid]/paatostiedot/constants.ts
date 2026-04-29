@@ -21,6 +21,14 @@ export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Siirto', label: t('hakemus.paatos.ratkaisutyyppi.siirto') },
 ];
 
+export const ratkaisutyyppiOptionsForLopullinenPaatos = (t: TFunction) => [
+  { value: 'Paatos', label: t('hakemus.paatos.paatostyyppi.lopullinenPaatos') },
+  {
+    value: 'PeruutusTaiRaukeaminen',
+    label: t('hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen'),
+  },
+];
+
 export const paatostyyppiOptions = (t: TFunction) => [
   {
     value: 'Taso',
@@ -80,10 +88,6 @@ export const sovellettuLakiOptions = (
         {
           value: 'ap',
           label: t('hakemus.paatos.sovellettuLaki.ap'),
-        },
-        {
-          value: 'ap_seut',
-          label: t('hakemus.paatos.sovellettuLaki.ap_seut'),
         },
         {
           value: 'uo',

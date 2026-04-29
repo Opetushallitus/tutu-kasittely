@@ -13,6 +13,9 @@ import {
   ErotKoulutuksessa,
   KelpoisuudenLisavaatimukset,
   KorvaavaToimenpide,
+  KorvaavaToimenpideDto,
+  Paatos,
+  PaatosTieto,
   PaatosTietoOption,
 } from '@/src/lib/types/paatos';
 
@@ -198,3 +201,47 @@ export const yleinenKoulutusEroTranslation = (
       )
     : undefined;
 };
+
+export const korvaavaToimenpide2Paatostiedot = (
+  korvaavaToimenpideDto: KorvaavaToimenpideDto,
+): [Partial<Paatos>, Partial<PaatosTieto> | null] => {
+  if (korvaavaToimenpideDto.esittelijanHuomioita) {
+    return [
+      {},
+      {
+        esittelijanHuomioitaToimenpiteista:
+          korvaavaToimenpideDto.esittelijanHuomioita,
+      },
+    ];
+  } else if (korvaavaToimenpideDto.suoritusTila) {
+    switch (korvaavaToimenpideDto.suoritusTila) {
+      case 'myonteinen':
+        return [
+          { ratkaisutyyppi: 'Paatos' },
+          { paatosTyyppi: 'LopullinenPaatos', myonteinenPaatos: true },
+        ];
+      case 'kielteinen':
+        return [
+          { ratkaisutyyppi: 'Paatos' },
+          { paatosTyyppi: 'LopullinenPaatos', myonteinenPaatos: false },
+        ];
+      case 'peruttu':
+        return [
+          { ratkaisutyyppi: 'PeruutusTaiRaukeaminen' },
+          { paatosTyyppi: 'LopullinenPaatos' },
+        ];
+      default:
+        return [{ ratkaisutyyppi: null }, null];
+    }
+  }
+  return [{}, {}];
+};
+
+export const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
+  id: undefined,
+  paatosId: paatosId,
+  paatosTyyppi: undefined,
+  kielteisenPaatoksenPerustelut: undefined,
+  rinnastettavatTutkinnotTaiOpinnot: [],
+  kelpoisuudet: [],
+});
