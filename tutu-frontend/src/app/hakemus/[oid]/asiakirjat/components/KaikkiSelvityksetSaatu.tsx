@@ -29,7 +29,7 @@ export const KaikkiSelvityksetSaatu = ({
   );
 
   const [viimeinenAsiakirjaHakijalta, setViimeinenAsiakirjaHakijalta] =
-    useState<Date | null>(new Date());
+    useState<Date | null>(null);
 
   useEffect(() => {
     setSelvityksetSaatu(asiakirjaTieto.selvityksetSaatu);
