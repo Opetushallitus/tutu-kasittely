@@ -7,7 +7,8 @@ import { Box, Button, Stack, useTheme, Theme } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useQueryState } from 'nuqs';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -80,6 +81,8 @@ export default function YhteinenKasittelyPage() {
 
   const user = useAuthorizedUser();
 
+  const [viestiId] = useQueryState('viestiId');
+
   const {
     data: esittelijat,
     isLoading: esittelijatIsLoading,
@@ -112,35 +115,35 @@ export default function YhteinenKasittelyPage() {
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [kasittelyError, esittelijatError, updateError, addToast, t]);
 
-  if (kasittelyError) {
-    return null;
-  }
+  const merkitseLuetuksi = useCallback(
+    (panelId?: string) => {
+      const kasittely = kasittelyt?.find(
+        (kasittely) => kasittely.id === panelId,
+      );
+      if (kasittely) {
+        const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
+        const viestiIdt: string[] = [
+          kasittely.id,
+          ...jatkoKasittelyt.map(({ id }) => id),
+        ].filter(Boolean) as string[];
 
-  if (isKasittelytLoading || esittelijatIsLoading) {
-    return <FullSpinner />;
-  }
+        viestiIdt.forEach((viestiId) => viestiLuettu(viestiId));
+      }
+    },
+    [kasittelyt, viestiLuettu],
+  );
 
-  const merkitseLueuksi = (panelId?: string) => {
-    const kasittely = kasittelyt?.find((kasittely) => kasittely.id === panelId);
-    if (kasittely) {
-      const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
-      const viestiIdt: string[] = [
-        kasittely.id,
-        ...jatkoKasittelyt.map(({ id }) => id),
-      ].filter(Boolean) as string[];
+  const handleOpenPanel = useCallback(
+    (panelId?: string) => {
+      if (panelId) {
+        const newExpandedPanels = [...expandedPanels, panelId];
+        setExpandedPanels(newExpandedPanels);
 
-      viestiIdt.forEach((viestiId) => viestiLuettu(viestiId));
-    }
-  };
-
-  const handleOpenPanel = (panelId?: string) => {
-    if (panelId) {
-      const newExpandedPanels = [...expandedPanels, panelId];
-      setExpandedPanels(newExpandedPanels);
-
-      merkitseLueuksi(panelId);
-    }
-  };
+        merkitseLuetuksi(panelId);
+      }
+    },
+    [expandedPanels, merkitseLuetuksi],
+  );
 
   const handleClosePanel = (panelId?: string) => {
     if (panelId) {
@@ -148,6 +151,20 @@ export default function YhteinenKasittelyPage() {
       setExpandedPanels(newExpandedPanels);
     }
   };
+
+  useEffect(() => {
+    if (!!viestiId && !!kasittelyt) {
+      handleOpenPanel(viestiId);
+    }
+  }, [kasittelyt, viestiId, handleOpenPanel]);
+
+  if (kasittelyError) {
+    return null;
+  }
+
+  if (isKasittelytLoading || esittelijatIsLoading) {
+    return <FullSpinner />;
+  }
 
   const handleSort = () => {
     const newSort = sortKey === 'desc' ? 'asc' : 'desc';

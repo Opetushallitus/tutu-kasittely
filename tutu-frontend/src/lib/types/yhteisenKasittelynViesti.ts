@@ -1,4 +1,5 @@
 export type YhteisenKasittelynViesti = {
+  id: string;
   hakemusOid: string;
   asiatunnus?: string | null;
   luotu?: string | null;
