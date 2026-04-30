@@ -96,9 +96,6 @@ export const useYhteinenKasittely = (
   const messagesReadMutation = useMutation({
     mutationFn: (viestiId: string) =>
       patchYhteinenKasittelyLuettu(hakemusOid, viestiId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey });
-    },
   });
 
   return {
