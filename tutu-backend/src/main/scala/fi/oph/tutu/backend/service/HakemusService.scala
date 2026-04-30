@@ -231,35 +231,23 @@ class HakemusService(
     }
 
     val ataruHakija    = ataruHakemusParser.parseHakija(ataruHakemus)
-    val hakija: Hakija = onrService.haeHenkilo(ataruHakija.henkiloOid) match {
-      case Right(henkilo) =>
-        henkilo.hetu match {
-          case Some(hetu) =>
-            Hakija(
-              henkiloOid = henkilo.oidHenkilo,
-              etunimet = ataruHakija.etunimet,
-              kutsumanimi = ataruHakija.kutsumanimi,
-              sukunimi = ataruHakija.sukunimi,
-              kansalaisuus = henkilo.kansalaisuus match {
-                case koodit =>
-                  koodit.flatMap(koodi => ataruHakemusParser.countryCode2Name(Some(koodi.kansalaisuusKoodi)))
-                case null => ataruHakija.kansalaisuus
-              },
-              hetu = henkilo.hetu,
-              syntymaaika = ataruHakija.syntymaaika,
-              matkapuhelin = ataruHakija.matkapuhelin,
-              asuinmaa = ataruHakija.asuinmaa,
-              katuosoite = ataruHakija.katuosoite,
-              postinumero = ataruHakija.postinumero,
-              postitoimipaikka = ataruHakija.postitoimipaikka,
-              kotikunta = ataruHakija.kotikunta,
-              sahkopostiosoite = ataruHakija.sahkopostiosoite,
-              yksiloityVTJ = true
-            )
-          case _ => ataruHakija
-        }
-      case _ => ataruHakija
-    }
+    val hakija: Hakija = Hakija(
+      henkiloOid = ataruHakija.henkiloOid,
+      etunimet = ataruHakija.etunimet,
+      kutsumanimi = ataruHakija.kutsumanimi,
+      sukunimi = ataruHakija.sukunimi,
+      kansalaisuus = ataruHakija.kansalaisuus,
+      hetu = ataruHakija.hetu,
+      syntymaaika = ataruHakija.syntymaaika,
+      matkapuhelin = ataruHakija.matkapuhelin,
+      asuinmaa = ataruHakija.asuinmaa,
+      katuosoite = ataruHakija.katuosoite,
+      postinumero = ataruHakija.postinumero,
+      postitoimipaikka = ataruHakija.postitoimipaikka,
+      kotikunta = ataruHakija.kotikunta,
+      sahkopostiosoite = ataruHakija.sahkopostiosoite,
+      yksiloityVTJ = ataruHakija.yksiloityVTJ
+    )
 
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus) =>
