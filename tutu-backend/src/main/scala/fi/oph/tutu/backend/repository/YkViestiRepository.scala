@@ -28,7 +28,8 @@ class YkViestiRepository extends BaseResultHandlers {
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
-        luettu = r.nextTimestampOption().map(_.toLocalDateTime),
+        kysymysLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
+        vastausLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
         kysymys = Option(r.nextString()),
         vastaus = Option(r.nextString()),
         hakija = r.nextString()
@@ -47,7 +48,8 @@ class YkViestiRepository extends BaseResultHandlers {
             v.lahettaja_oid,
             v.vastaanottaja_oid,
             v.luotu,
-            v.luettu,
+            v.kysymys_luettu,
+            v.vastaus_luettu,
             v.kysymys,
             v.vastaus,
             COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
@@ -79,7 +81,8 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
-          v.luettu,
+          v.kysymys_luettu,
+          v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
@@ -99,7 +102,7 @@ class YkViestiRepository extends BaseResultHandlers {
         )
     }
 
-  def haeYkViesti(id: String): Option[YkViesti] = {
+  def haeYkViesti(hakemusOid: String, id: String): Option[YkViesti] = {
     try {
       db.run(
         sql"""
@@ -111,7 +114,8 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
-          v.luettu,
+          v.kysymys_luettu,
+          v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
@@ -119,7 +123,7 @@ class YkViestiRepository extends BaseResultHandlers {
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         WHERE
-          v.id = $id::uuid
+          v.id = $id::uuid AND v.hakemus_oid = $hakemusOid
         """.as[YkViesti].headOption,
         "hae_ykviesti"
       )
@@ -178,11 +182,13 @@ class YkViestiRepository extends BaseResultHandlers {
         sql"""
             UPDATE yk_viesti
             SET
-              vastaus = ${ykViesti.vastaus.map(_.toString).orNull}
+              vastaus = ${ykViesti.vastaus.map(_.toString).orNull},
+              vastaus_luettu = ${ykViesti.vastausLuettu.map(java.sql.Timestamp.valueOf).orNull},
+              kysymys_luettu = ${ykViesti.kysymysLuettu.map(java.sql.Timestamp.valueOf).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
           """.as[UUID].head,
-        "lisaa_yk_viesti"
+        "muokkaa_yk_viestia"
       )
     } catch {
       case e: Exception =>
@@ -209,7 +215,8 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
-          v.luettu,
+          v.kysymys_luettu,
+          v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')

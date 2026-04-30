@@ -15,6 +15,9 @@ interface KasittelyListProps {
   handleOpenModal: (parent?: YhteinenKasittely) => void;
   handleChange: (id: string, value: string) => void;
   handleSend: (id: string) => void;
+  expandedPanels: string[];
+  handleOpenPanel: (panelId?: string) => void;
+  handleClosePanel: (panelId?: string) => void;
   user: User | null;
 }
 
@@ -24,12 +27,30 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
   handleOpenModal,
   handleChange,
   handleSend,
+  expandedPanels,
+  handleOpenPanel,
+  handleClosePanel,
   user,
 }) => {
+  const handleAccordionChange =
+    (panelId?: string) => (_event: React.SyntheticEvent, expanded: boolean) => {
+      if (expanded) {
+        handleOpenPanel(panelId);
+      } else {
+        handleClosePanel(panelId);
+      }
+    };
+
   return (
     <>
       {kasittelyt.map((kasittely) => (
-        <Accordion key={kasittely.id}>
+        <Accordion
+          key={kasittely.id}
+          expanded={
+            kasittely.id ? expandedPanels.includes(kasittely.id) : false
+          }
+          onChange={handleAccordionChange(kasittely.id)}
+        >
           <AccordionSummary
             expandIcon={
               <ExpandMoreIcon

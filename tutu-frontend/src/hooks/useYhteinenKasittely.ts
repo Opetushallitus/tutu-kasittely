@@ -52,6 +52,16 @@ const patchYhteinenKasittelyVastaus = async (
   );
 };
 
+const patchYhteinenKasittelyLuettu = async (
+  hakemusOid: string,
+  viestiId: string,
+): Promise<unknown> => {
+  return doApiPatch(
+    `hakemus/${hakemusOid}/yhteinenkasittely/${viestiId}/luettu`,
+    {},
+  );
+};
+
 export const useYhteinenKasittely = (
   hakemusOid: string,
   sortParam: SortOrder,
@@ -83,6 +93,14 @@ export const useYhteinenKasittely = (
     },
   });
 
+  const messagesReadMutation = useMutation({
+    mutationFn: (viestiId: string) =>
+      patchYhteinenKasittelyLuettu(hakemusOid, viestiId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
   return {
     ...query,
     kasittelyt: query.data,
@@ -90,6 +108,7 @@ export const useYhteinenKasittely = (
     luoUusiKasittely: (k: YhteinenKasittely) => createMutation.mutate(k),
     vastaaKasittelyyn: (p: { id: string; vastaus?: string }) =>
       answerMutation.mutate(p),
+    viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error || answerMutation.error,
   };
 };

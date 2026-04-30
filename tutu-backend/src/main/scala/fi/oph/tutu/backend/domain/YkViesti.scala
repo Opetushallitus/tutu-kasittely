@@ -59,7 +59,13 @@ case class DbYkViesti(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  luettu: Option[LocalDateTime],
+  kysymys_luettu: Option[LocalDateTime],
+  @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  vastaus_luettu: Option[LocalDateTime],
   @(Schema @field)(
     example = "Viestin alkuperäinen kysymys",
     requiredMode = RequiredMode.NOT_REQUIRED
@@ -81,7 +87,8 @@ case class YkViesti(
   vastaanottajaOid: Option[String] = None,
   vastaanottaja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
-  luettu: Option[LocalDateTime] = None,
+  kysymysLuettu: Option[LocalDateTime] = None,
+  vastausLuettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
   vastaus: Option[String] = None,
   hakija: String,
@@ -98,7 +105,8 @@ case class YkViestiListItem(
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
-  luettu: Option[LocalDateTime] = None,
+  kysymysLuettu: Option[LocalDateTime] = None,
+  vastausLuettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
   vastaus: Option[String] = None
 )

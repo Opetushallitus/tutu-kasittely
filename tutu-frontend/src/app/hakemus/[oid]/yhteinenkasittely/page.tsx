@@ -69,6 +69,8 @@ export default function YhteinenKasittelyPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
+  const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
+
   const [modalParent, setModalParent] = useState<
     YhteinenKasittely | undefined
   >();
@@ -89,6 +91,7 @@ export default function YhteinenKasittelyPage() {
     isKasittelytLoading,
     luoUusiKasittely,
     vastaaKasittelyyn,
+    viestiLuettu,
     error: kasittelyError,
     updateError,
   } = useYhteinenKasittely(hakemusOid, sortKey);
@@ -116,6 +119,35 @@ export default function YhteinenKasittelyPage() {
   if (isKasittelytLoading || esittelijatIsLoading) {
     return <FullSpinner />;
   }
+
+  const merkitseLueuksi = (panelId?: string) => {
+    const kasittely = kasittelyt?.find((kasittely) => kasittely.id === panelId);
+    if (kasittely) {
+      const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
+      const viestiIdt: string[] = [
+        kasittely.id,
+        ...jatkoKasittelyt.map(({ id }) => id),
+      ].filter(Boolean) as string[];
+
+      viestiIdt.forEach((viestiId) => viestiLuettu(viestiId));
+    }
+  };
+
+  const handleOpenPanel = (panelId?: string) => {
+    if (panelId) {
+      const newExpandedPanels = [...expandedPanels, panelId];
+      setExpandedPanels(newExpandedPanels);
+
+      merkitseLueuksi(panelId);
+    }
+  };
+
+  const handleClosePanel = (panelId?: string) => {
+    if (panelId) {
+      const newExpandedPanels = expandedPanels.filter((id) => id !== panelId);
+      setExpandedPanels(newExpandedPanels);
+    }
+  };
 
   const handleSort = () => {
     const newSort = sortKey === 'desc' ? 'asc' : 'desc';
@@ -244,6 +276,9 @@ export default function YhteinenKasittelyPage() {
                     handleOpenModal={handleOpenModal}
                     handleChange={handleChange}
                     handleSend={handleSendAnswer}
+                    expandedPanels={expandedPanels}
+                    handleOpenPanel={handleOpenPanel}
+                    handleClosePanel={handleClosePanel}
                     user={user}
                   />
                 </Box>
