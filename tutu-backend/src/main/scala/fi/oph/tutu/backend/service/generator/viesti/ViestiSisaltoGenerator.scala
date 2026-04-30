@@ -100,18 +100,24 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
     }
   }
 
-  def generateTaydennyspyyntoSisalto(viestiHakemusInfo: ViestiHakemusInfo): String = {
-    val kieli = viestiHakemusInfo.kieli
-    s"""${otsikko(kieli, "hakemus.viesti.taydennyspyynto.ylaOtsikko")}
+  private def ylaKappale(viestiHakemusInfo: ViestiHakemusInfo, otsikkoTransKey: String): String =
+    s"""${otsikko(viestiHakemusInfo.kieli, otsikkoTransKey)}
        |${kappale(
-        kieli,
+        viestiHakemusInfo.kieli,
         Array("hakemus.viesti.sisalto.maaraaika", "hakemus.viesti.sisalto.asiatunnus"),
         Map(
           "date"       -> maaraAika(viestiHakemusInfo.requestTimezone),
           "asiatunnus" -> viestiHakemusInfo.asiatunnus.map(at => s"($at)").getOrElse("")
         )
       )}
-       |${kappaleet(kieli, Seq("hakemus.viesti.sisalto.tervehdys", "hakemus.viesti.sisalto.tietoaHakemuksesta"))}
+       |${kappaleet(
+        viestiHakemusInfo.kieli,
+        Seq("hakemus.viesti.sisalto.tervehdys", "hakemus.viesti.sisalto.tietoaHakemuksesta")
+      )}""".stripMargin
+
+  def generateTaydennyspyyntoSisalto(viestiHakemusInfo: ViestiHakemusInfo): String = {
+    val kieli = viestiHakemusInfo.kieli
+    s"""${ylaKappale(viestiHakemusInfo, "hakemus.viesti.taydennyspyynto.ylaOtsikko")}
        |${otsikko(kieli, "hakemus.viesti.taydennyspyynto")}
        |${kappaleet(
         kieli,
@@ -129,6 +135,19 @@ class ViestiSisaltoGenerator(translationService: TranslationService) extends Tut
        |${pyydettavatAsiakirjat(viestiHakemusInfo)}
        |${otsikko(kieli, "hakemus.viesti.taydennyspyynto.kasittelyAika.otsikko")}
        |${kappale(kieli, "hakemus.viesti.taydennyspyynto.kasittelyAika.info")}
+       |<br>${kappale(kieli, "hakemus.viesti.sisalto.lisatietoInfo")}
+       |${generateAllekirjoitus(viestiHakemusInfo)}
+       |""".stripMargin
+  }
+
+  def generateEnnakkotietoSisalto(viestiHakemusInfo: ViestiHakemusInfo): String = {
+    val kieli = viestiHakemusInfo.kieli
+    s"""${ylaKappale(viestiHakemusInfo, "hakemus.viesti.ennakkotieto.ylaOtsikko")}
+       |${otsikko(kieli, "hakemus.viesti.ennakkotieto.maksullisuus.otsikko")}
+       |${kappale(kieli, "hakemus.viesti.ennakkotieto.maksullisuus.info")}
+       |${otsikko(kieli, "hakemus.viesti.ennakkotieto.lait.otsikko")}
+       |${kappale(kieli, "hakemus.viesti.ennakkotieto.lait.patevyydenTunnustaminen")}
+       |${kappale(kieli, "hakemus.viesti.ennakkotieto.lait.virkakelpoisuus")}
        |<br>${kappale(kieli, "hakemus.viesti.sisalto.lisatietoInfo")}
        |${generateAllekirjoitus(viestiHakemusInfo)}
        |""".stripMargin
