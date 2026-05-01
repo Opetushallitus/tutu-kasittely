@@ -99,12 +99,12 @@ class YkViestiService(
     val ykViestiList = lahetetytViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastattu      = viesti.vastaus
-        val vastausLuettu = viesti.vastausLuettu
+        val vastattu      = viesti.vastaus.nonEmpty
+        val vastausLuettu = viesti.vastausLuettu.nonEmpty
 
         val status: ViestinTila =
-          if (vastattu.nonEmpty && vastausLuettu.isEmpty) ViestinTila.uusiVastaus
-          else if (vastattu.nonEmpty) ViestinTila.vastattu
+          if (vastattu && !vastausLuettu) ViestinTila.uusiVastaus
+          else if (vastattu) ViestinTila.vastattu
           else ViestinTila.vastaamatta
 
         Some(
