@@ -21,11 +21,34 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
+
+const kayttajaLukenutViestin =
+  (user: User | null) => (kasittely: YhteinenKasittely) => {
+    if (!user) {
+      return false;
+    }
+    const kayttajaOnKysyja = user.userOid === kasittely.lahettajaOid;
+    const kayttajaOnVastaaja = user.userOid === kasittely.vastaanottajaOid;
+    const vastausAnnettu = !!kasittely.vastaus;
+    const kysymysLuettu = !!kasittely.kysymysLuettu;
+    const vastausLuettu = !!kasittely.vastausLuettu;
+
+    const kayttajaOnKysyjaJaLukenutVastauksen =
+      kayttajaOnKysyja && vastausAnnettu && vastausLuettu;
+    const kayttajaOnVastaajaJaLukenutKysymyksen =
+      kayttajaOnVastaaja && kysymysLuettu;
+
+    return (
+      kayttajaOnKysyjaJaLukenutVastauksen ||
+      kayttajaOnVastaajaJaLukenutKysymyksen
+    );
+  };
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -119,10 +142,10 @@ export default function YhteinenKasittelyPage() {
     const kasittely = kasittelyt?.find((kasittely) => kasittely.id === panelId);
     if (kasittely) {
       const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
-      const viestiIdt: string[] = [
-        kasittely.id,
-        ...jatkoKasittelyt.map(({ id }) => id),
-      ].filter(Boolean) as string[];
+      const viestiIdt: string[] = [kasittely, ...jatkoKasittelyt]
+        .filter(kayttajaLukenutViestin(user))
+        .map(({ id }) => id)
+        .filter(Boolean) as string[];
 
       viestiIdt.forEach((viestiId) => viestiLuettu(viestiId));
     }
