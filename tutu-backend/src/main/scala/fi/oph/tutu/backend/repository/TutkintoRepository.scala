@@ -9,7 +9,6 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
 
 @Component
@@ -18,8 +17,7 @@ class TutkintoRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusRepository])
 
   implicit val getTutkintoResult: GetResult[Tutkinto] =
     GetResult(r =>

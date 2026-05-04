@@ -1,6 +1,5 @@
 package fi.oph.tutu.backend.utils.migration
 
-import org.slf4j.{Logger, LoggerFactory}
 import scala.util.Try
 import javax.xml.stream.{XMLInputFactory, XMLStreamConstants, XMLStreamReader}
 import javax.xml.transform.stream.StreamSource

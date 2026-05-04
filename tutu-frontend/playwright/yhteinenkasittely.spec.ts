@@ -31,7 +31,7 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
 
   await page.getByTestId('kysymys-q1').click();
 
-  const textbox = page.getByRole('textbox');
+  const textbox = page.getByTestId('kasittely-details-q1').getByRole('textbox');
   await expect(textbox).toBeVisible();
   await textbox.fill('Testivastaus');
 

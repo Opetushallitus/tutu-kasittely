@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
-import scala.concurrent.duration.DurationInt
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -17,8 +16,7 @@ class YkViestiRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusRepository])
 
   implicit val getYkViestiListItemResult: GetResult[YkViesti] =
     GetResult(r =>

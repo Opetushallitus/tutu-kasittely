@@ -180,8 +180,7 @@ def haeTutkintokohtaisetTiedot(
   hakemusMaybe: Option[Hakemus],
   tutkinnot: Seq[Tutkinto]
 ): Option[String] = {
-  val lomakkeenKieli                  = hakemusMaybe.map(_.lomakkeenKieli)
-  val koulutusalat: Seq[KoodistoItem] = koodistoService.getKoodisto("kansallinenkoulutusluokitus2016koulutusalataso1")
+  val lomakkeenKieli = hakemusMaybe.map(_.lomakkeenKieli)
 
   tutkinnot
     .filter((tutkinto: Tutkinto) => tutkinto.jarjestys != "MUU")
@@ -197,13 +196,6 @@ def haeTutkintokohtaisetTiedot(
               case _          => koodi.fi
             }
           )
-
-      val koulutusala: Option[String] = tutkinto.koulutusalaKoodiUri
-        .map(koulutusalaKoodiUri => koulutusalat.find(item => item.koodiUri == koulutusalaKoodiUri))
-        .flatMap {
-          case None       => None
-          case Some(item) => item.nimi.get(Kieli.fi)
-        }
 
       Seq[String](
         tutkinto.todistusOtsikko.getOrElse("-"),

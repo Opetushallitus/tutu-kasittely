@@ -21,7 +21,6 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 
 @Component
@@ -30,8 +29,7 @@ class AsiakirjaRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[AsiakirjaRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[AsiakirjaRepository])
 
   implicit val getAsiakirjaResult: GetResult[DbAsiakirja] =
     GetResult(r =>

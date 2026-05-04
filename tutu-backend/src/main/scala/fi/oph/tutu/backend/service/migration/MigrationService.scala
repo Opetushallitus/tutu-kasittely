@@ -156,20 +156,6 @@ class MigrationService(
     }
   }
 
-  private def storeChunk(chunk: XmlChunk): Unit = {
-    vanhaTutuMigrationRepository.createChunk(
-      chunk.chunkIndex,
-      chunk.totalChunks,
-      chunk.xmlChunk
-    ) match {
-      case scala.util.Success(chunkId) =>
-        LOG.debug(s"Tallennettu pala ${chunk.chunkIndex}/${chunk.totalChunks} id:llä: $chunkId")
-      case scala.util.Failure(exception) =>
-        LOG.error(s"Palan ${chunk.chunkIndex} tallennus epäonnistui", exception)
-        throw exception
-    }
-  }
-
   private def storeChunk(chunkIndex: Int, totalChunks: Int, xmlChunk: String): Unit = {
     vanhaTutuMigrationRepository.createChunk(chunkIndex, totalChunks, xmlChunk) match {
       case scala.util.Success(chunkId) =>

@@ -47,7 +47,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   const { t } = useTranslations();
 
   return (
-    <AccordionDetails>
+    <AccordionDetails data-testid={`kasittely-details-${kasittely.id}`}>
       <Box sx={{ paddingLeft: theme.spacing(0.5) }}>
         <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
           {t('hakemus.yhteinenkasittely.kysymysTyoparille')}

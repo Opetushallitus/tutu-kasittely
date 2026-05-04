@@ -8,16 +8,14 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 
 @Component
 @Repository
 class HallintoOikeusRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[HallintoOikeusRepository])
 
-  final val DB_TIMEOUT = 30.seconds
+  val LOG: Logger = LoggerFactory.getLogger(classOf[HallintoOikeusRepository])
 
   implicit val getHallintoOikeusResult: GetResult[HallintoOikeus] = GetResult(r =>
     HallintoOikeus(

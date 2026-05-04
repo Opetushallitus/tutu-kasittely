@@ -9,7 +9,6 @@ import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Try}
 
 /**
@@ -24,8 +23,7 @@ class VanhaTutuMigrationRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final private val DB_TIMEOUT = 30.seconds
-  val LOG: Logger              = LoggerFactory.getLogger(classOf[VanhaTutuMigrationRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[VanhaTutuMigrationRepository])
 
   implicit val getVanhaTutuMigrationChunkResult: GetResult[VanhaTutuMigrationChunk] = GetResult(r =>
     VanhaTutuMigrationChunk(
