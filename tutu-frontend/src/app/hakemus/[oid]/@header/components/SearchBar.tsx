@@ -89,6 +89,7 @@ export const SearchBar = () => {
           sx={{ flex: 1 }}
           data-testid={'hakunakyma'}
           onChange={(event: SelectChangeEvent) => setNakyma(event.target.value)}
+          inputProps={{ 'aria-label': t('haku.nakymaValinta') }}
         />
         <OphButton variant="contained" type="submit">
           {t('haku.hae')}
