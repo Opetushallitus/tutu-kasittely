@@ -143,7 +143,7 @@ class ViestiService(
                   )
                 )
               case OletusSisaltoTyyppi.ennakkotieto =>
-                Some(viestiSisaltoGenerator.generateAllekirjoitus(hakemusInfo))
+                Some(viestiSisaltoGenerator.generateEnnakkotietoSisalto(hakemusInfo))
               case OletusSisaltoTyyppi.muuViesti =>
                 Some(viestiSisaltoGenerator.generateAllekirjoitus(hakemusInfo))
               case _ => Some("") // Oletuksena tyhjä sisältö, jos tyyppiä ei tunnisteta
