@@ -87,6 +87,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
       Some(esittelija.get.esittelijaId)
     )
     initAtaruHakemusRequests()
+    when(ataruHakemusParser.onkoApHakemus(any())).thenReturn(Some(false))
     hakemusService.tallennaAtaruHakemus(
       UusiAtaruHakemus(hakemusOid, 1)
     )

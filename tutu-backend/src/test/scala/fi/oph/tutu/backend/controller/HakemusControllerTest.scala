@@ -232,6 +232,11 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               }], "totalCount": 4, "page": 1, "pageSize": 20, "totalPages": 1}"""
 
+    when(ataruHakemusParser.onkoApHakemus(any()))
+      .thenReturn(None)
+      .thenReturn(Some(false))
+      .thenReturn(Some(false))
+      .thenReturn(None)
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006665"), 0))
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1))
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006667"), 1))

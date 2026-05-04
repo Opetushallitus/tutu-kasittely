@@ -7,9 +7,11 @@ object Constants {
   val ATARU_SERVICE = "Hakemuspalvelu"
   val TUTU_SERVICE  = "Tutu"
 
-  val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS = 5
+  val HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN = 1
+  val HAKEMUS_KOSKEE_LOPULLINEN_PAATOS    = 5
 
   val HAKEMUKSEN_PERUUTUS_VAHVISTETTU = 0
+  val ON_AP_HAKEMUS                   = 0
 
   val TAYDENNYSPYYNTO_VASTAUSAIKA_PAIVIA = 14
 
@@ -77,6 +79,9 @@ object Constants {
     AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "lopullinen-paatos-suoritusmaa")
   val ATARU_LOPULLINEN_PAATOS_VASTAAVA_EHDOLLINEN: AtaruKysymysId =
     AtaruKysymysId("ea25df4f-52a8-4540-83b7-19dffdd353f7", "lopullinen-paatos-vastaava-ehdollinen")
+
+  val ATARU_AP_KYSYMYS: AtaruKysymysId =
+    AtaruKysymysId("1d4bb273-0889-401e-aae1-5134a12cf238", "tutu-ap-application")
 
   // Lomakkeen avaimet
   val ATARU_LOMAKE_KELPOISUUS_AMMATTIIN_OPETUSALA_OPTIONS: AtaruKysymysId =
