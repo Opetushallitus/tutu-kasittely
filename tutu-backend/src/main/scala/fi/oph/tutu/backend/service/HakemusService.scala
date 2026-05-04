@@ -55,7 +55,7 @@ class HakemusService(
     // Rakennetaan transaktio, joka sisältää kaikki tietokantaoperaatiot
     val transactionalAction = for {
       asiakirjaId <- asiakirjaRepository.tallennaUudetAsiakirjatiedotAction(
-        Asiakirja(),
+        Asiakirja(apHakemus = ataruHakemusParser.onkoApHakemus(ataruHakemus)),
         ATARU_SERVICE
       )
       hakemusId <- hakemusRepository.tallennaHakemusAction(

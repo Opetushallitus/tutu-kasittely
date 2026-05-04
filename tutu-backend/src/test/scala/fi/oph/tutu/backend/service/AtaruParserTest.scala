@@ -732,4 +732,18 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
       liitteidenTilat.find(_.attachment == "5b179002-91a4-449d-8c4a-d024637a516d").orNull
     )
   }
+
+  @Test
+  def parseIsApHakemusForKelpoisuusAmmattiinHakemus(): Unit = {
+    val kelpoisuusAmmattiinHakemus = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+    val isApHakemus                = ataruHakemusParser.onkoApHakemus(kelpoisuusAmmattiinHakemus)
+    assertEquals(true, isApHakemus.get)
+  }
+
+  @Test
+  def parseIsApHakemusForNonKelpoisuusAmmattiinHakemus(): Unit = {
+    val nonKelpoisuusAmmattiinHakemus = JsonMethods.parse(loadJson("ataruHakemus6668.json")).extract[AtaruHakemus]
+    val isApHakemus                   = ataruHakemusParser.onkoApHakemus(nonKelpoisuusAmmattiinHakemus)
+    assertEquals(false, isApHakemus.isDefined)
+  }
 }
