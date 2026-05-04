@@ -344,8 +344,8 @@ class HakemusController(
     Try {
       require(page >= 1, "page must be >= 1")
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
-
-      hakemusService.haeHakemuksetHaulla(haku, nakyma, page, pagesize)
+      val hakuNakyma = HakemusNakyma.fromString(nakyma)
+      hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, page, pagesize)
     } match {
       case Success(hakemuslista) =>
         auditLog.logRead(

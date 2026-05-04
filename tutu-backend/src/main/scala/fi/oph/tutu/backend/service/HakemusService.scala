@@ -353,7 +353,7 @@ class HakemusService(
 
   def haeHakemuksetHaulla(
     haku: String,
-    nakyma: String,
+    nakyma: HakemusNakyma,
     page: Int,
     pageSize: Int
   ): HakemusListResult = {

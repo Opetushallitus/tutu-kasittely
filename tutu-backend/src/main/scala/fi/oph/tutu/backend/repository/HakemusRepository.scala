@@ -419,24 +419,23 @@ class HakemusRepository extends BaseResultHandlers {
     Seq(sql"""SELECT hakemus_id AS id FROM paatosteksti
               WHERE sisalto ILIKE $wordPat""")
 
-  // Näkymänimet: hakuNakymaValintaOptions
   private def buildNakymaCandidateBranches(
     word: String,
     wordPat: String,
-    nakyma: String
+    nakyma: HakemusNakyma
   ): Seq[SQLActionBuilder] =
     nakyma match {
-      case "perustiedot"       => perustiedotBranches(word, wordPat)
-      case "asiakirjat"        => asiakirjatBranches(word, wordPat)
-      case "tutkinnot"         => tutkinnotBranches(word, wordPat)
-      case "perustelu-yleiset" => yleisetPerusteluBranches(word, wordPat)
-      case "perustelu-uoro"    => uoRoPerusteluBranches(word, wordPat)
-      case "perustelu-ap"      => apPerusteluBranches(word, wordPat)
-      case "paatostiedot"      => paatostiedotBranches(word, wordPat)
-      case "yhteinenkasittely" => yhteinenKasittelyBranches(word, wordPat)
-      case "viestit"           => viestitBranches(word, wordPat)
-      case "paatosteksti"      => paatostekstiBranches(word, wordPat)
-      case "kaikki"            =>
+      case HakemusNakyma.Perustiedot       => perustiedotBranches(word, wordPat)
+      case HakemusNakyma.Asiakirjat        => asiakirjatBranches(word, wordPat)
+      case HakemusNakyma.Tutkinnot         => tutkinnotBranches(word, wordPat)
+      case HakemusNakyma.PerusteluYleiset  => yleisetPerusteluBranches(word, wordPat)
+      case HakemusNakyma.PerusteluUoRo     => uoRoPerusteluBranches(word, wordPat)
+      case HakemusNakyma.PerusteluAp       => apPerusteluBranches(word, wordPat)
+      case HakemusNakyma.Paatostiedot      => paatostiedotBranches(word, wordPat)
+      case HakemusNakyma.YhteinenKasittely => yhteinenKasittelyBranches(word, wordPat)
+      case HakemusNakyma.Viestit           => viestitBranches(word, wordPat)
+      case HakemusNakyma.Paatosteksti      => paatostekstiBranches(word, wordPat)
+      case HakemusNakyma.Kaikki            =>
         perustiedotBranches(word, wordPat) ++
           asiakirjatBranches(word, wordPat) ++
           tutkinnotBranches(word, wordPat) ++
@@ -447,7 +446,6 @@ class HakemusRepository extends BaseResultHandlers {
           yhteinenKasittelyBranches(word, wordPat) ++
           viestitBranches(word, wordPat) ++
           paatostekstiBranches(word, wordPat)
-      case _ => throw new IllegalArgumentException(s"Tuntematon haku-näkymä: $nakyma")
     }
 
   // ---------------------------------------------------------------------------
@@ -585,19 +583,19 @@ class HakemusRepository extends BaseResultHandlers {
       WHERE pkt.hakemus_id = h.id
     ), 0.0)"""
 
-  private def buildWordScore(word: String, wordPat: String, nakyma: String): SQLActionBuilder =
+  private def buildWordScore(word: String, wordPat: String, nakyma: HakemusNakyma): SQLActionBuilder =
     nakyma match {
-      case "perustiedot"       => scorePerustiedot(word, wordPat)
-      case "asiakirjat"        => scoreAsiakirjat(word)
-      case "tutkinnot"         => scoreTutkinnot(word)
-      case "perustelu-yleiset" => scoreYleisetPerustelu(word)
-      case "perustelu-uoro"    => scoreUoRoPerustelu(word)
-      case "perustelu-ap"      => scoreApPerustelu(word)
-      case "paatostiedot"      => scorePaatostiedot(word)
-      case "yhteinenkasittely" => scoreYhteinenKasittely(word)
-      case "viestit"           => scoreViestit(word)
-      case "paatosteksti"      => scorePaatosteksti(word)
-      case "kaikki"            =>
+      case HakemusNakyma.Perustiedot       => scorePerustiedot(word, wordPat)
+      case HakemusNakyma.Asiakirjat        => scoreAsiakirjat(word)
+      case HakemusNakyma.Tutkinnot         => scoreTutkinnot(word)
+      case HakemusNakyma.PerusteluYleiset  => scoreYleisetPerustelu(word)
+      case HakemusNakyma.PerusteluUoRo     => scoreUoRoPerustelu(word)
+      case HakemusNakyma.PerusteluAp       => scoreApPerustelu(word)
+      case HakemusNakyma.Paatostiedot      => scorePaatostiedot(word)
+      case HakemusNakyma.YhteinenKasittely => scoreYhteinenKasittely(word)
+      case HakemusNakyma.Viestit           => scoreViestit(word)
+      case HakemusNakyma.Paatosteksti      => scorePaatosteksti(word)
+      case HakemusNakyma.Kaikki            =>
         sql"(" ++
           scorePerustiedot(word, wordPat) ++ sql" + " ++
           scoreAsiakirjat(word) ++ sql" + " ++
@@ -610,12 +608,11 @@ class HakemusRepository extends BaseResultHandlers {
           scoreViestit(word) ++ sql" + " ++
           scorePaatosteksti(word) ++
           sql")"
-      case _ => throw new IllegalArgumentException(s"Tuntematon haku-näkymä (score): $nakyma")
     }
 
   def haeHakemuksetHaulla(
     haku: String,
-    nakyma: String,
+    nakyma: HakemusNakyma,
     page: Int,
     pageSize: Int
   ): (Seq[HakemusListItem], Int) = {
