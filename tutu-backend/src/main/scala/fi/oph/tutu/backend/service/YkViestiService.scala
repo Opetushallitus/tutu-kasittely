@@ -224,10 +224,6 @@ class YkViestiService(
     viestiId: String,
     user: User
   ): Unit = {
-    if (viestiId == "" || viestiId == null || hakemusOid == "" || hakemusOid == null) {
-      throw NotFoundException(s"Virheelliset parametrit")
-    }
-
     val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
       case Some(ykViesti) => {
         val vastausLuettavissa = ykViesti.vastaus.nonEmpty
