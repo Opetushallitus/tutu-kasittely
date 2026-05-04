@@ -201,6 +201,8 @@ class TutuIntegrationTest extends IntegrationTestBase {
       )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6666.json")))
+    when(ataruHakemusParser.onkoApHakemus(any()))
+      .thenReturn(Some(false))
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     val requestJson =
       """{
@@ -248,6 +250,8 @@ class TutuIntegrationTest extends IntegrationTestBase {
       )
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6665.json")))
+    when(ataruHakemusParser.onkoApHakemus(any()))
+      .thenReturn(None)
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_752"))
 
     val requestJson =
