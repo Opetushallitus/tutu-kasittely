@@ -20,7 +20,10 @@ class HakemusSearchRepository extends BaseResultHandlers {
   implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
     GetResult(r =>
       HakemusListItem(
-        hakija = r.nextStringOption().getOrElse(""),
+        hakija = HakijaListItem(
+          etunimet = r.nextStringOption().getOrElse(""),
+          sukunimi = r.nextStringOption().getOrElse("")
+        ),
         saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         hakemusOid = r.nextString(),
         hakemusKoskee = r.nextInt(),
@@ -108,7 +111,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
           OFFSET $offset
         )
         SELECT
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          h.hakija_etunimet,
+          h.hakija_sukunimi,
           h.saapumis_pvm,
           h.hakemus_oid,
           h.hakemus_koskee,
@@ -529,7 +533,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
             LIMIT 200
         )
         SELECT
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          h.hakija_etunimet,
+          h.hakija_sukunimi,
           h.saapumis_pvm,
           h.hakemus_oid,
           h.hakemus_koskee,

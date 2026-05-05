@@ -17,6 +17,11 @@ export type Hakija = {
   yksiloityVTJ: boolean;
 };
 
+export type HakijaListItem = {
+  etunimet: string;
+  sukunimi: string;
+};
+
 export const HAKIJA_FIELDS_WO_SAHKOPOSTI = [
   'etunimet',
   'kutsumanimi',

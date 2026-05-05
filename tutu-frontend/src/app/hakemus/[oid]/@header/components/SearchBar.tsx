@@ -14,10 +14,12 @@ import {
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
+import { usePathname } from 'next/dist/client/components/navigation';
 import { parseAsString, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { hakuNakymaValintaOptions } from '@/src/constants/dropdownOptions';
+import { useSearchRibbon } from '@/src/context/SearchRibbonContext';
 import { useHakemuksetHaku } from '@/src/hooks/useHakemuksetHaku';
 import { useToaster } from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -28,6 +30,16 @@ export const SearchBar = () => {
   const { addToast } = useToaster();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
+  const {
+    setSearchResults,
+    setSelectedOid,
+    currentPage,
+    setCurrentPage,
+    setTotalPages,
+    ribbonVisible,
+    setRibbonVisible,
+    registerOnClose,
+  } = useSearchRibbon();
 
   const nakymaOptions = hakuNakymaValintaOptions.map((opt) => ({
     ...opt,
@@ -35,26 +47,71 @@ export const SearchBar = () => {
   }));
 
   const [haku, setHaku] = useQueryState('haku', parseAsString.withDefault(''));
-
   const [nakyma, setNakyma] = useQueryState(
     'nakyma',
     parseAsString.withDefault('kaikki'),
   );
 
-  const { data: hakemukset, error: hakemuksetError } = useHakemuksetHaku(
-    haku,
-    nakyma,
-  );
+  // Päivitä parametrit vasta hae-napilla
+  const [inputHaku, setInputHaku] = useState(haku);
+  const [inputNakyma, setInputNakyma] = useState(nakyma);
 
-  console.log(hakemukset); // TODO
+  const {
+    data: hakemukset,
+    error: hakemuksetError,
+    isLoading,
+    isEnabled,
+  } = useHakemuksetHaku(haku, nakyma, currentPage);
+
+  // Avaa nauha automaattisesti jos URL:iin on asetettu hakuparametrejä.
+  // Mount-only: ei saa reagoida kirjoittamiseen.
+  useEffect(() => {
+    if (isEnabled) {
+      setRibbonVisible(true);
+    }
+    registerOnClose(() => {
+      setHaku('');
+      setNakyma('kaikki');
+      setInputHaku('');
+      setInputNakyma('kaikki');
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (isLoading && ribbonVisible) {
+      setSearchResults(null);
+    }
+  }, [isLoading, ribbonVisible, setSearchResults]);
+
+  useEffect(() => {
+    if (hakemukset && ribbonVisible) {
+      setSearchResults(hakemukset.items);
+      setTotalPages(hakemukset.totalPages);
+    }
+  }, [hakemukset, ribbonVisible, setSearchResults, setTotalPages]);
 
   useEffect(() => {
     handleFetchError(addToast, hakemuksetError, 'virhe.hakemuksenLataus', t);
   }, [hakemuksetError, addToast, t]);
 
   const handleHae = () => {
-    queryClient.invalidateQueries({ queryKey: ['getHakemuksetHaulla'] });
+    if (!inputHaku.trim()) {
+      return;
+    }
+    setHaku(inputHaku);
+    setNakyma(inputNakyma);
+    setCurrentPage(1);
+    setSelectedOid(null);
+    setRibbonVisible(true);
+    queryClient.removeQueries({ queryKey: ['getHakemuksetHaulla'] });
   };
+
+  // Älä näytä hakuja editorissa
+  const pathname = usePathname();
+  if (pathname.includes('/editori/')) {
+    return null;
+  }
 
   return (
     <Stack direction="row" alignItems="center" gap={theme.spacing(3)} flex={1}>
@@ -72,9 +129,9 @@ export const SearchBar = () => {
         <OphInputFormField
           placeholder={t('haku.haeKaikistahakemuksista')}
           sx={{ flex: 3 }}
-          value={haku}
+          value={inputHaku}
           onChange={(event) => {
-            setHaku(event.target.value);
+            setInputHaku(event.target.value);
           }}
           endAdornment={
             <InputAdornment position="end">
@@ -85,10 +142,12 @@ export const SearchBar = () => {
         />
         <OphSelectFormField
           options={nakymaOptions}
-          value={nakyma}
+          value={inputNakyma}
           sx={{ flex: 1 }}
           data-testid={'hakunakyma'}
-          onChange={(event: SelectChangeEvent) => setNakyma(event.target.value)}
+          onChange={(event: SelectChangeEvent) =>
+            setInputNakyma(event.target.value)
+          }
           inputProps={{ 'aria-label': t('haku.nakymaValinta') }}
         />
         <OphButton variant="contained" type="submit">

@@ -11,6 +11,7 @@ import { Paatos } from '@/src/components/sidebar/Paatos';
 import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
 import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
+import { useHakemus } from '@/src/context/HakemusContext';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const MailOutlineIconBlue = styled(MailOutlineIcon)({
@@ -43,14 +44,14 @@ const SidebarInfoStack = styled(Stack)(({ theme }) => ({
   padding: theme.spacing(1, 1),
 }));
 
-export type SideBarProps = {
-  hakemusOid: string;
-};
-
-export const SideBar = ({ hakemusOid }: SideBarProps) => {
+export const SideBar = () => {
   const theme = useTheme();
   const { t } = useTranslations();
   const pathName = usePathname();
+  const {
+    hakemusState: { editedData: hakemus },
+  } = useHakemus();
+  const hakemusOid = hakemus?.hakemusOid;
 
   return (
     <Stack
@@ -68,7 +69,7 @@ export const SideBar = ({ hakemusOid }: SideBarProps) => {
       <KasittelyVaihe showExtended={showExtendedKasittelyvaihe(pathName)} />
       <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
         <HakemusKoskee />
-        <Paatos hakemusOid={hakemusOid} />
+        <Paatos />
       </SidebarInfoStack>
       {showTaydennyspyynto(pathName) && (
         <SidebarInfoStack direction="column" gap={theme.spacing(2)}>

@@ -3,6 +3,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { StyledLink } from '@/src/components/StyledLink';
+import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import {
   TFunction,
@@ -82,10 +83,13 @@ const AikaisempiPaatos = ({
   );
 };
 
-export const Paatos = ({ hakemusOid }: { hakemusOid: string }) => {
+export const Paatos = () => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const { paatos } = usePaatos(hakemusOid);
+  const {
+    hakemusState: { editedData: hakemus },
+  } = useHakemus();
+  const { paatos } = usePaatos(hakemus?.hakemusOid);
 
   return (
     <Stack direction="column" gap={theme.spacing(2)}>

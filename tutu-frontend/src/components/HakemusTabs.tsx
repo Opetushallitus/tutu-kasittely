@@ -4,7 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, styled, Tab, Tabs, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import Link, { LinkProps } from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useRef, useEffect } from 'react';
 import { omit } from 'remeda';
 
@@ -93,7 +93,9 @@ const LinkedTab = (props: TabLinkProps) => {
     expandable,
   } = props;
   const pagePath = (targetPage || value!).replace(/\./g, '/');
-  const href = `/hakemus/${hakemusOid}/${pagePath}`;
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  const href = `/hakemus/${hakemusOid}/${pagePath}${search ? `?${search}` : ''}`;
   const subTabSx = { marginLeft: theme.spacing(3), ...SMALL_FONT };
   const sx = {
     whiteSpace: wrapText ? 'normal' : 'nowrap',
@@ -147,6 +149,8 @@ export const HakemusTabs = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const activeTab = useActiveTabFromPath();
   const [selectedTabName, setSelectedTabName] = React.useState(activeTab);
 
@@ -199,6 +203,21 @@ export const HakemusTabs = ({
     .filter(Boolean)
     .map((prop) => ({ ...prop, hakemusOid: hakemusOid })) as TabLinkProps[];
 
+  // Defaulttaa perustietoihin jos lopullisella päätöksellä ei ole tabia haku-vertailussa
+  const displayTabName = selectedTabName
+    ? (tabProps.find((t) => t.value === selectedTabName)?.value ??
+      'perustiedot')
+    : false;
+
+  useEffect(() => {
+    if (displayTabName && selectedTabName !== displayTabName) {
+      const search = searchParams.toString();
+      router.push(
+        `/hakemus/${hakemusOid}/${displayTabName}${search ? `?${search}` : ''}`,
+      );
+    }
+  }, [selectedTabName, displayTabName, hakemusOid, router, searchParams]);
+
   return (
     <InnerBoxWrapper
       sx={{
@@ -208,7 +227,7 @@ export const HakemusTabs = ({
       }}
     >
       <Tabs
-        value={selectedTabName ?? false}
+        value={displayTabName}
         onChange={handleChange}
         orientation="vertical"
         aria-label={t('hakemusTabs.navigaatio')}

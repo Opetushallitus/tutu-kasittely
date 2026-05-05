@@ -1,20 +1,20 @@
 import { HakemusKoskee } from './hakemus';
+import { HakijaListItem } from './hakija';
 
 export type HakemusListItem = {
   asiatunnus: string;
-  hakija: string;
-  vaihe: string;
+  hakija: HakijaListItem;
   saapumisPvm: string;
-  viimeinenAsiakirjaHakijalta?: string;
   hakemusOid: string;
   hakemusKoskee: HakemusKoskee;
-  esittelijaOid: string;
-  esittelijaKutsumanimi: string;
-  esittelijaSukunimi: string;
+  esittelijaOid: string | null;
+  esittelijaKutsumanimi: string | null;
+  esittelijaSukunimi: string | null;
   kasittelyVaihe: string;
-  muokattu: string;
-  taydennyspyyntoLahetetty?: string;
-  ataruHakemustaMuokattu?: string;
-  apHakemus?: boolean;
-  onkoPeruutettu?: boolean;
+  muokattu: string | null;
+  taydennyspyyntoLahetetty?: string | null;
+  ataruHakemustaMuokattu?: string | null;
+  apHakemus?: boolean | null;
+  viimeinenAsiakirjaHakijalta?: string | null;
+  onkoPeruutettu?: boolean | null;
 };
