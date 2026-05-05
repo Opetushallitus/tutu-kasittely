@@ -59,6 +59,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
         sql"""
               SELECT id, nimi, luotu, luoja, muokattu, muokkaaja
               FROM viestipohja_kategoria
+              ORDER BY luotu ASC
                """.as[ViestipohjaKategoria],
         "hae_viestipohja_kategoriat"
       )
@@ -129,7 +130,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
               SET
                 nimi = ${viestipohjaKategoria.nimi},
                 muokkaaja = $muokkaaja,
-                muokattu = now()
               WHERE id = ${viestipohjaKategoriaId.toString}::uuid
               RETURNING
                 id,
@@ -159,6 +159,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
                     kategoria_id,
                     nimi
                   FROM viestipohja
+                  ORDER BY luotu ASC
                    """.as[ViestipohjaListItem],
         "hae_viestipohjalista"
       )
@@ -254,7 +255,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
                 nimi = ${viestipohja.nimi},
                 otsikko = ${viestipohja.otsikko},
                 sisalto = $sisaltoJson::jsonb,
-                muokattu = now(),
                 muokkaaja = $muokkaaja
               WHERE id = ${viestipohjaId.toString}::uuid
               RETURNING

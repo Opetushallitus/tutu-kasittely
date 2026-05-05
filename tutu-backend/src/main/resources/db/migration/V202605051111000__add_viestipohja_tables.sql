@@ -1,4 +1,4 @@
-CREATE TABLE viestipohja_kategoria (
+CREATE TABLE IF NOT EXISTS viestipohja_kategoria (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     nimi TEXT NOT NULL UNIQUE,
     luotu TIMESTAMPTZ DEFAULT now(),
@@ -6,6 +6,11 @@ CREATE TABLE viestipohja_kategoria (
     muokattu TIMESTAMPTZ,
     muokkaaja VARCHAR(255)
 );
+
+CREATE OR REPLACE TRIGGER trg_viestipohja_kategoria_update_muokattu_timestamp
+BEFORE UPDATE ON viestipohja_kategoria
+                  FOR EACH ROW
+                  EXECUTE FUNCTION update_muokattu_timestamp();
 
 COMMENT ON TABLE viestipohja_kategoria IS 'Viestipohjien kategoriat';
 COMMENT ON COLUMN viestipohja_kategoria.id IS 'Taulun rivin id';
@@ -15,7 +20,7 @@ COMMENT ON COLUMN viestipohja_kategoria.luoja IS 'Rivin luojan oid';
 COMMENT ON COLUMN viestipohja_kategoria.muokattu IS 'Rivin viimeisin muokkausaika';
 COMMENT ON COLUMN viestipohja_kategoria.muokkaaja IS 'Rivin viimeisimmän muokkaajan oid';
 
-CREATE TABLE viestipohja (
+CREATE TABLE IF NOT EXISTS viestipohja (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     kategoria_id uuid NOT NULL,
     nimi TEXT NOT NULL,
@@ -27,6 +32,11 @@ CREATE TABLE viestipohja (
     muokkaaja VARCHAR(255),
     CONSTRAINT fk_viestipohja_kategoria FOREIGN KEY (kategoria_id) REFERENCES viestipohja_kategoria (id)
 );
+
+CREATE OR REPLACE TRIGGER trg_viestipohja_update_muokattu_timestamp
+BEFORE UPDATE ON viestipohja
+                  FOR EACH ROW
+                  EXECUTE FUNCTION update_muokattu_timestamp();
 
 COMMENT ON TABLE viestipohja IS 'Viestipohjat';
 COMMENT ON COLUMN viestipohja.id IS 'Taulun rivin id';

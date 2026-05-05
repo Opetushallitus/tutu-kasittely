@@ -27,7 +27,7 @@ export type VahvistettuViestiListItem = {
 };
 
 export type Viestipohja = {
-  id: string;
+  id?: string;
   sisalto: TranslatedName;
   nimi: string;
   kategoriaId: string;
@@ -44,6 +44,6 @@ export type ViestipohjaListItem = {
 };
 
 export type ViestipohjaKategoria = {
-  id: string;
+  id?: string;
   nimi: string;
 };
