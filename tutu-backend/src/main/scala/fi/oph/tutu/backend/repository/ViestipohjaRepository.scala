@@ -129,7 +129,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
         sql"""UPDATE viestipohja_kategoria
               SET
                 nimi = ${viestipohjaKategoria.nimi},
-                muokkaaja = $muokkaaja,
+                muokkaaja = $muokkaaja
               WHERE id = ${viestipohjaKategoriaId.toString}::uuid
               RETURNING
                 id,

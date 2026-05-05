@@ -6,5 +6,5 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 export default function HeaderPage() {
   const { t } = useTranslations();
 
-  return <PageHeaderRow header={t('hakemus.otsikko')} />;
+  return <PageHeaderRow header={t('hakemus.otsikko')} showSearchBar={true} />;
 }

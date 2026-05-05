@@ -22,7 +22,11 @@ export const PageHeaderRow = ({
     >
       <HomeIcon href={`/`} />
       <HomeStyledChevron />
-      <OphTypography variant={'h2'} component={'h1'}>
+      <OphTypography
+        variant={'h2'}
+        component={'h1'}
+        sx={showSearchBar ? { paddingRight: '88px' } : undefined}
+      >
         {header}
       </OphTypography>
       {showSearchBar && <SearchBar />}
