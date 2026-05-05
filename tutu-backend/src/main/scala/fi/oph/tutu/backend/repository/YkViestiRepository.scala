@@ -224,7 +224,7 @@ class YkViestiRepository extends BaseResultHandlers {
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         WHERE
-          (v.vastaanottaja_oid = $userOid OR v.lahettaja_oid = $userOid)
+          v.hakemus_oid = $hakemusOid
         ORDER BY v.luotu DESC
         """.as[YkViesti],
         "hae_yk_viestit"

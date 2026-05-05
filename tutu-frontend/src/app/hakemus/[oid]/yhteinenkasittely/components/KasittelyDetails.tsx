@@ -75,6 +75,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
             disabled={Boolean(kasittely.vastaus)}
             onChange={(e) => handleChange(kasittely.id!, e.target.value)}
             sx={{ width: '90%' }}
+            data-testid={`kysymys-details-${kasittely.id}__vastaus-field`}
           />
         ) : (
           <Typography>{kasittely.vastaus ?? ''}</Typography>
@@ -86,6 +87,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
               variant="contained"
               disabled={!answers[kasittely.id!]}
               onClick={() => handleSend(kasittely.id!)}
+              data-testid={`kysymys-details-${kasittely.id}__vastaus-send`}
             >
               {t('hakemus.yhteinenkasittely.lahetaVastaus')}
             </Button>
@@ -109,6 +111,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           <OphTypography
             variant="body1"
             sx={{ marginBottom: theme.spacing(4) }}
+            data-testid={`kysymys-details-${jatkoKasittely.id}`}
           >
             {jatkoKasittely.kysymys}
           </OphTypography>
@@ -133,6 +136,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
               disabled={Boolean(jatkoKasittely.vastaus)}
               onChange={(e) => handleChange(jatkoKasittely.id!, e.target.value)}
               sx={{ width: '90%' }}
+              data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-field`}
             />
           ) : (
             <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
@@ -144,6 +148,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
                 variant="contained"
                 disabled={!answers[jatkoKasittely.id!]}
                 onClick={() => handleSend(jatkoKasittely.id!)}
+                data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-send`}
               >
                 {t('hakemus.yhteinenkasittely.lahetaVastaus')}
               </Button>
