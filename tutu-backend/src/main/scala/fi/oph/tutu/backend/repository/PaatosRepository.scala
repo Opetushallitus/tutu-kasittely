@@ -10,7 +10,6 @@ import slick.jdbc.PostgresProfile.api.*
 import slick.jdbc.{GetResult, SQLActionBuilder}
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 
 @Component
@@ -19,8 +18,6 @@ class PaatosRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
   val LOG: Logger      = LoggerFactory.getLogger(classOf[PaatosRepository])
-
-  final val DB_TIMEOUT = 30.seconds
 
   implicit val getPaatosResult: GetResult[Paatos] = GetResult(r =>
     Paatos(

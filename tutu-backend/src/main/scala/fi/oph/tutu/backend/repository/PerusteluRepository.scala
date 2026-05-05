@@ -12,7 +12,6 @@ import slick.jdbc.PostgresProfile.api.*
 implicit val jsonFormats: Formats = DefaultFormats
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 
 @Component
@@ -21,8 +20,7 @@ class PerusteluRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[PerusteluRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluRepository])
 
   implicit val getPerusteluResult: GetResult[Perustelu] = {
     GetResult(r =>

@@ -330,6 +330,40 @@ class HakemusController(
     }
   }
 
+  @GetMapping(
+    path = Array("hakemus/haku"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeHakemuksetHaulla(
+    @RequestParam haku: String,
+    @RequestParam(required = false, defaultValue = "kaikki") nakyma: String,
+    @RequestParam(required = false, defaultValue = "1") page: Int,
+    @RequestParam(required = false, defaultValue = "20") pagesize: Int,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      require(page >= 1, "page must be >= 1")
+      require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
+      val hakuNakyma = HakemusNakyma.fromString(nakyma)
+      hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, page, pagesize)
+    } match {
+      case Success(hakemuslista) =>
+        auditLog.logRead(
+          "hakemus/haku",
+          mapper.writeValueAsString(Map("haku" -> haku, "nakyma" -> nakyma)),
+          ReadHakemukset,
+          request
+        )
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(hakemuslista))
+      case Failure(exception: IllegalArgumentException) =>
+        LOG.error(s"Virheellinen hakuparametri:", exception)
+        errorMessageMapper.mapPlainErrorMessage(exception.getMessage, HttpStatus.BAD_REQUEST)
+      case Failure(exception) =>
+        LOG.error(s"Hakemushaku epäonnistui, haku: $haku, nakyma: $nakyma, exception: $exception")
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
   @PutMapping(
     path = Array("hakemus/{hakemusOid}"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),

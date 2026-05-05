@@ -7,13 +7,10 @@ import org.springframework.stereotype.{Component, Repository}
 import slick.dbio.DBIO
 import slick.jdbc.GetResult
 import slick.jdbc.PostgresProfile.api.*
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.time.LocalDateTime
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
-import slick.jdbc.SQLActionBuilder
 
 @Component
 @Repository
@@ -21,8 +18,7 @@ class HakemusRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusRepository])
 
   implicit val getHakemusOidResult: GetResult[HakemusOid] =
     GetResult(r => HakemusOid(r.nextString()))
@@ -54,27 +50,6 @@ class HakemusRepository extends BaseResultHandlers {
         hakijaEtunimet = r.nextStringOption(),
         hakijaSukunimi = r.nextStringOption(),
         esittelyPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
-      )
-    )
-
-  implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
-    GetResult(r =>
-      HakemusListItem(
-        hakija = r.nextStringOption().getOrElse(""),
-        saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        hakemusOid = r.nextString(),
-        hakemusKoskee = r.nextInt(),
-        esittelijaOid = r.nextStringOption(),
-        asiatunnus = r.nextStringOption(),
-        esittelijaKutsumanimi = r.nextStringOption().orNull,
-        esittelijaSukunimi = r.nextStringOption().orNull,
-        kasittelyVaihe = KasittelyVaihe.fromString(r.nextString()),
-        muokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        taydennyspyyntoLahetetty = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        ataruHakemustaMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        apHakemus = Option(r.nextBoolean()),
-        viimeinenAsiakirjaHakijalta = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        onkoPeruutettu = Option(r.nextBoolean())
       )
     )
 
@@ -166,140 +141,6 @@ class HakemusRepository extends BaseResultHandlers {
           s"Hakemuksen tallennus epäonnistui: ${e.getMessage}",
           e
         )
-    }
-
-  def haeHakemusLista(
-    userOids: Seq[String],
-    haku: Option[String],
-    hakemusKoskee: Seq[Int],
-    vaiheet: Seq[String],
-    apHakemus: Boolean,
-    sortParam: Option[ListSortParam],
-    page: Int,
-    pageSize: Int
-  ): (Seq[HakemusListItem], Long) = {
-    try {
-      val whereClauses = Seq.newBuilder[SQLActionBuilder]
-
-      if (haku.nonEmpty) {
-        val qs = s"%${haku.get}%"
-        whereClauses += sql"""(COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '') ILIKE $qs
-                                OR h.asiatunnus ILIKE $qs)"""
-      }
-
-      // Yhdistetään ehdot sillä jos ap_hakemus, niin kannassa on hakemus_koskee=1
-      if (hakemusKoskee.nonEmpty || apHakemus) {
-        val ehdot = List(
-          Option.when(hakemusKoskee.nonEmpty)(sql"h.hakemus_koskee = ANY($hakemusKoskee)"),
-          Option.when(apHakemus)(sql"a.ap_hakemus IS TRUE")
-        ).flatten
-          .reduce(_ ++ sql" OR " ++ _)
-
-        whereClauses += sql"(" ++ ehdot ++ sql")"
-      }
-
-      if (vaiheet.nonEmpty) {
-        whereClauses += sql"h.kasittely_vaihe = ANY($vaiheet)"
-      }
-
-      if (userOids.nonEmpty) {
-        whereClauses += sql"e.esittelija_oid = ANY($userOids)"
-      }
-
-      val whereClause = {
-        val clauses = whereClauses.result()
-        if (clauses.isEmpty) sql""
-        else sql" WHERE " ++ clauses.reduce(_ ++ sql" AND " ++ _)
-      }
-
-      val orderBy = buildOrderBy(sortParam)
-      val offset  = (page - 1) * pageSize
-
-      val countAction = (sql"""
-          SELECT COUNT(*)
-          FROM hakemus h
-          LEFT JOIN esittelija e ON e.id = h.esittelija_id
-          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id"""
-        ++ whereClause).as[Long].head
-
-      val dataAction = (sql"""
-        WITH hakemus_ids AS (
-          SELECT h.id
-          FROM hakemus h
-          LEFT JOIN esittelija e ON e.id = h.esittelija_id
-          LEFT JOIN asiakirja a ON a.id = h.asiakirja_id"""
-        ++ whereClause ++
-        sql"""
-          ORDER BY #$orderBy
-          LIMIT $pageSize
-          OFFSET $offset
-        )
-        SELECT
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
-          h.saapumis_pvm,
-          h.hakemus_oid,
-          h.hakemus_koskee,
-          e.esittelija_oid,
-          h.asiatunnus,
-          e.kutsumanimi,
-          e.sukunimi,
-          h.kasittely_vaihe,
-          h.muokattu,
-          h.viimeisin_taydennyspyynto_paiva,
-          h.ataru_hakemus_muokattu,
-          a.ap_hakemus,
-          a.viimeinen_asiakirja_hakijalta,
-          h.onko_peruutettu
-        FROM hakemus h
-        LEFT JOIN esittelija e ON e.id = h.esittelija_id
-        LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
-        WHERE h.id IN (SELECT id FROM hakemus_ids)
-        ORDER BY #$orderBy
-      """).as[HakemusListItem]
-
-      val transactionalAction = for {
-        totalCount <- countAction
-        items      <- dataAction
-      } yield (items, totalCount)
-
-      db.runTransactionally(transactionalAction, "hae_hakemus_lista").get
-    } catch {
-      case e: Exception =>
-        throw new RuntimeException(
-          s"Hakemuksien listaus epäonnistui: ${e.getMessage}",
-          e
-        )
-    }
-  }
-
-  private def buildOrderBy(sortParam: Option[ListSortParam]): String =
-    sortParam match {
-      case None                                => "h.saapumis_pvm DESC NULLS LAST"
-      case Some(ListSortParam(param, sortDef)) =>
-        val dir = SortDef.toSql(sortDef)
-        param match {
-          case "saapumisPvm"    => s"h.saapumis_pvm $dir"
-          case "hakija"         => s"h.hakija_etunimet $dir, h.hakija_sukunimi $dir"
-          case "asiatunnus"     => s"h.asiatunnus $dir"
-          case "esittelija"     => s"e.kutsumanimi $dir, e.sukunimi $dir"
-          case "kasittelyvaihe" => s"h.kasittely_vaihe $dir"
-          case "hakemusKoskee"  =>
-            // Map hakemus_koskee integers to label keys for ordering.
-            s"""CASE
-               |  WHEN h.hakemus_koskee = 0 THEN 'tutkinnonTasonRinnastaminen'
-               |  WHEN h.hakemus_koskee = 1 AND a.ap_hakemus IS TRUE THEN 'kelpoisuusAmmattiinAPHakemus'
-               |  WHEN h.hakemus_koskee = 1 THEN 'kelpoisuusAmmattiin'
-               |  WHEN h.hakemus_koskee = 2 THEN 'tutkintoSuoritusRinnastaminen'
-               |  WHEN h.hakemus_koskee = 3 THEN 'riittavatOpinnot'
-               |  WHEN h.hakemus_koskee = 4 THEN 'kelpoisuusAmmattiinAPHakemus'
-               |  WHEN h.hakemus_koskee = 5 THEN 'lopullinenPaatos'
-               |  ELSE h.hakemus_koskee::text
-               | END $dir""".stripMargin
-          case "kokonaisaika" => s"h.saapumis_pvm $dir"
-          case "hakijanaika"  => s"a.viimeinen_asiakirja_hakijalta $dir"
-          case unknown        =>
-            throw new IllegalArgumentException(s"Tuntematon sort-parametri: $unknown")
-        }
     }
 
   /**

@@ -9,7 +9,6 @@ import slick.jdbc.PostgresProfile.api.*
 import slick.dbio.DBIO
 
 import java.util.UUID
-import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,8 +18,7 @@ class EsittelijaRepository {
   @Autowired
   val db: TutuDatabase = null
 
-  final val DB_TIMEOUT = 30.seconds
-  val LOG: Logger      = LoggerFactory.getLogger(classOf[EsittelijaRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[EsittelijaRepository])
 
   implicit val getEsittelijaResult: GetResult[DbEsittelija] =
     GetResult(r =>

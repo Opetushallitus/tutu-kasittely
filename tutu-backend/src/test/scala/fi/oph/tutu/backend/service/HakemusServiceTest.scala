@@ -21,6 +21,8 @@ class HakemusServiceTest extends UnitTestBase {
   @Mock
   var hakemusRepository: HakemusRepository = _
   @Mock
+  var hakemusSearchRepository: HakemusSearchRepository = _
+  @Mock
   var asiakirjaRepository: AsiakirjaRepository = _
   @Mock
   var perusteluRepository: PerusteluRepository = _
@@ -156,6 +158,7 @@ class HakemusServiceTest extends UnitTestBase {
     MockitoAnnotations.openMocks(this)
     hakemusService = new HakemusService(
       hakemusRepository = hakemusRepository,
+      hakemusSearchRepository = hakemusSearchRepository,
       esittelijaRepository = esittelijaRepository,
       asiakirjaRepository = asiakirjaRepository,
       perusteluRepository = perusteluRepository,

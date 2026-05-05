@@ -48,7 +48,6 @@ class VanhaTutuController(
     @RequestParam("key") key: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    val user      = userService.getEnrichedUserDetails(true)
     val auditUser = auditLog.getUser(request)
     migrationService.orchestrateMigration(key) match {
       case Success(_) =>

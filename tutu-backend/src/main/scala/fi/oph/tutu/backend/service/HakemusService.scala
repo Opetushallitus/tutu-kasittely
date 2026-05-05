@@ -7,6 +7,7 @@ import fi.oph.tutu.backend.repository.{
   AsiakirjaRepository,
   EsittelijaRepository,
   HakemusRepository,
+  HakemusSearchRepository,
   PaatosRepository,
   PerusteluRepository,
   TutkintoRepository,
@@ -31,6 +32,7 @@ import scala.util.{Failure, Success, Try}
 @Service
 class HakemusService(
   hakemusRepository: HakemusRepository,
+  hakemusSearchRepository: HakemusSearchRepository,
   esittelijaRepository: EsittelijaRepository,
   asiakirjaRepository: AsiakirjaRepository,
   perusteluRepository: PerusteluRepository,
@@ -327,7 +329,7 @@ class HakemusService(
     val hakemusKoskeeQueryParams = hakemusKoskeeParams.filter(param => param != 4)
     val apHakemusQueryParam      = hakemusKoskeeParams.contains(4)
 
-    val (items, totalCount) = hakemusRepository.haeHakemusLista(
+    val (items, totalCount) = hakemusSearchRepository.haeHakemusLista(
       userOids,
       haku,
       hakemusKoskeeQueryParams,
@@ -341,6 +343,24 @@ class HakemusService(
     val totalPages =
       if (totalCount == 0) 1
       else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
+
+    HakemusListResult(
+      items = items,
+      totalCount = totalCount,
+      page = page,
+      pageSize = pageSize,
+      totalPages = totalPages
+    )
+  }
+
+  def haeHakemuksetHaulla(
+    haku: String,
+    nakyma: HakemusNakyma,
+    page: Int,
+    pageSize: Int
+  ): HakemusListResult = {
+    val (items, totalCount) = hakemusSearchRepository.haeHakemuksetHaulla(haku, nakyma, page, pageSize)
+    val totalPages          = if (totalCount == 0) 1 else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
 
     HakemusListResult(
       items = items,
