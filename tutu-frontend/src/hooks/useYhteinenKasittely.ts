@@ -27,6 +27,8 @@ const getYhteinenKasittely = async (
     parentId: ykDto.parentId,
     kysymys: ykDto.kysymys,
     vastaus: ykDto.vastaus,
+    kysymysLuettu: ykDto.kysymysLuettu,
+    vastausLuettu: ykDto.vastausLuettu,
     lahettajaOid: ykDto.lahettajaOid,
     vastaanottajaOid: ykDto.vastaanottajaOid,
     vastaanottaja: ykDto.vastaanottaja,
@@ -49,6 +51,16 @@ const patchYhteinenKasittelyVastaus = async (
   return doApiPatch(
     `hakemus/${hakemusOid}/yhteinenkasittely/${payload.id}`,
     payload,
+  );
+};
+
+const patchYhteinenKasittelyLuettu = async (
+  hakemusOid: string,
+  viestiId: string,
+): Promise<unknown> => {
+  return doApiPatch(
+    `hakemus/${hakemusOid}/yhteinenkasittely/${viestiId}/luettu`,
+    {},
   );
 };
 
@@ -83,6 +95,11 @@ export const useYhteinenKasittely = (
     },
   });
 
+  const messagesReadMutation = useMutation({
+    mutationFn: (viestiId: string) =>
+      patchYhteinenKasittelyLuettu(hakemusOid, viestiId),
+  });
+
   return {
     ...query,
     kasittelyt: query.data,
@@ -90,6 +107,7 @@ export const useYhteinenKasittely = (
     luoUusiKasittely: (k: YhteinenKasittely) => createMutation.mutate(k),
     vastaaKasittelyyn: (p: { id: string; vastaus?: string }) =>
       answerMutation.mutate(p),
+    viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error || answerMutation.error,
   };
 };

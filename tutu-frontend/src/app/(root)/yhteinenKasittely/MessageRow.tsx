@@ -33,7 +33,7 @@ export default function MessageRow({
   message: YhteisenKasittelynViesti;
 }) {
   const { t } = useTranslations();
-  const { luotu, asiatunnus, hakija, hakemusOid, status } = message;
+  const { id, luotu, asiatunnus, hakija, hakemusOid, status } = message;
 
   const TagVastaamatta = () => (
     <>
@@ -94,7 +94,7 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <StyledLink
-          href={`/hakemus/${hakemusOid}/yhteinenkasittely`}
+          href={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
           data-testid={'hakijan-nimi'}
           sx={{ fontWeight: 'normal' }}
         >

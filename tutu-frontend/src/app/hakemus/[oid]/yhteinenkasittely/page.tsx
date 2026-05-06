@@ -7,6 +7,7 @@ import { Box, Button, Stack, useTheme, Theme } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
+import { useQueryState } from 'nuqs';
 import React, { useEffect, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
@@ -20,11 +21,34 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
+import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
+
+const kayttajaLukenutViestin =
+  (user: User | null) => (kasittely: YhteinenKasittely) => {
+    if (!user) {
+      return false;
+    }
+    const kayttajaOnKysyja = user.userOid === kasittely.lahettajaOid;
+    const kayttajaOnVastaaja = user.userOid === kasittely.vastaanottajaOid;
+    const vastausAnnettu = !!kasittely.vastaus;
+    const kysymysLuettu = !!kasittely.kysymysLuettu;
+    const vastausLuettu = !!kasittely.vastausLuettu;
+
+    const kayttajaOnKysyjaJaLukenutVastauksen =
+      kayttajaOnKysyja && vastausAnnettu && vastausLuettu;
+    const kayttajaOnVastaajaJaLukenutKysymyksen =
+      kayttajaOnVastaaja && kysymysLuettu;
+
+    return (
+      kayttajaOnKysyjaJaLukenutVastauksen ||
+      kayttajaOnVastaajaJaLukenutKysymyksen
+    );
+  };
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -69,6 +93,8 @@ export default function YhteinenKasittelyPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
+  const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
+
   const [modalParent, setModalParent] = useState<
     YhteinenKasittely | undefined
   >();
@@ -77,6 +103,8 @@ export default function YhteinenKasittelyPage() {
   const [kysymys, setKysymys] = useState<string>('');
 
   const user = useAuthorizedUser();
+
+  const [viestiId] = useQueryState('viestiId');
 
   const {
     data: esittelijat,
@@ -89,6 +117,7 @@ export default function YhteinenKasittelyPage() {
     isKasittelytLoading,
     luoUusiKasittely,
     vastaaKasittelyyn,
+    viestiLuettu,
     error: kasittelyError,
     updateError,
   } = useYhteinenKasittely(hakemusOid, sortKey);
@@ -108,6 +137,41 @@ export default function YhteinenKasittelyPage() {
     );
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [kasittelyError, esittelijatError, updateError, addToast, t]);
+
+  const merkitseLuetuksi = (panelId?: string) => {
+    const kasittely = kasittelyt?.find((kasittely) => kasittely.id === panelId);
+    if (kasittely) {
+      const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
+      const viestiIdt: string[] = [kasittely, ...jatkoKasittelyt]
+        .filter(kayttajaLukenutViestin(user))
+        .map(({ id }) => id)
+        .filter(Boolean) as string[];
+
+      viestiIdt.forEach((viestiId) => viestiLuettu(viestiId));
+    }
+  };
+
+  const handleOpenPanel = (panelId?: string) => {
+    if (panelId) {
+      const newExpandedPanels = [...expandedPanels, panelId];
+      setExpandedPanels(newExpandedPanels);
+
+      merkitseLuetuksi(panelId);
+    }
+  };
+
+  const handleClosePanel = (panelId?: string) => {
+    if (panelId) {
+      const newExpandedPanels = expandedPanels.filter((id) => id !== panelId);
+      setExpandedPanels(newExpandedPanels);
+    }
+  };
+
+  useEffect(() => {
+    if (!!viestiId && !!kasittelyt) {
+      handleOpenPanel(viestiId);
+    }
+  }, [kasittelyt, viestiId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (kasittelyError) {
     return null;
@@ -244,6 +308,9 @@ export default function YhteinenKasittelyPage() {
                     handleOpenModal={handleOpenModal}
                     handleChange={handleChange}
                     handleSend={handleSendAnswer}
+                    expandedPanels={expandedPanels}
+                    handleOpenPanel={handleOpenPanel}
+                    handleClosePanel={handleClosePanel}
                     user={user}
                   />
                 </Box>

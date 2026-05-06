@@ -7,6 +7,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import scala.math.Ordering
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -21,13 +22,14 @@ class YkViestiService(
     userOid: String
   ): Boolean = {
     val saapuneet = ykViestiRepository.haeYkSaapuneetViestit(userOid)
+    val lahetetyt = ykViestiRepository.haeYkLahetetytViestit(userOid)
 
     // Suodatetaan uudet saapuneet viestit
-    val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
+    val uudetViestit = saapuneet.count(viesti => viesti.kysymysLuettu.isEmpty)
 
     // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    val vastaukset      = saapuneet.filter(viesti => viesti.parentId.isDefined)
-    val uudetVastaukset = vastaukset.count(viesti => viesti.luettu.isEmpty)
+    val uudetVastaukset = lahetetyt
+      .count(viesti => viesti.vastaus.nonEmpty && viesti.vastausLuettu.isEmpty)
 
     uudetViestit > 0 || uudetVastaukset > 0
   }
@@ -37,14 +39,12 @@ class YkViestiService(
     sortParam: Option[ListSortParam]
   ): Seq[YkViestiListItem] = {
     val saapuneetViestit = ykViestiRepository.haeYkSaapuneetViestit(userOid)
-    val lahetetytViestit = ykViestiRepository.haeYkLahetetytViestit(userOid)
 
     val ykViestiList = saapuneetViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastaukset          = lahetetytViestit.filter(vastaus => vastaus.parentId.contains(viesti.id))
         val status: ViestinTila =
-          if (vastaukset.isEmpty) ViestinTila.vastaamatta
+          if (viesti.vastaus.isEmpty) ViestinTila.vastaamatta
           else ViestinTila.vastattu
         Some(
           YkViestiListItem(
@@ -56,7 +56,8 @@ class YkViestiService(
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
-            luettu = viesti.luettu,
+            kysymysLuettu = viesti.kysymysLuettu,
+            vastausLuettu = viesti.vastausLuettu,
             kysymys = viesti.kysymys,
             vastaus = viesti.vastaus,
             status = status
@@ -94,21 +95,18 @@ class YkViestiService(
     sortParam: Option[ListSortParam]
   ): Seq[YkViestiListItem] = {
     val lahetetytViestit = ykViestiRepository.haeYkLahetetytViestit(userOid)
-    val saapuneetViestit = ykViestiRepository.haeYkSaapuneetViestit(userOid)
 
     val ykViestiList = lahetetytViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastaukset      = saapuneetViestit.filter(vastaus => vastaus.parentId.contains(viesti.id))
-        val uudetVastaukset =
-          vastaukset.filter(vastaus => vastaus.luettu.isEmpty)
-        val luetutVastaukset =
-          vastaukset.filter(vastaus => vastaus.luettu.isDefined)
+        val vastattu      = viesti.vastaus.nonEmpty
+        val vastausLuettu = viesti.vastausLuettu.nonEmpty
 
         val status: ViestinTila =
-          if (uudetVastaukset.nonEmpty) ViestinTila.uusiVastaus
-          else if (luetutVastaukset.nonEmpty) ViestinTila.vastattu
+          if (vastattu && !vastausLuettu) ViestinTila.uusiVastaus
+          else if (vastattu) ViestinTila.vastattu
           else ViestinTila.vastaamatta
+
         Some(
           YkViestiListItem(
             id = viesti.id,
@@ -119,7 +117,8 @@ class YkViestiService(
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
-            luettu = viesti.luettu,
+            kysymysLuettu = viesti.kysymysLuettu,
+            vastausLuettu = viesti.vastausLuettu,
             kysymys = viesti.kysymys,
             vastaus = viesti.vastaus,
             status = status
@@ -208,7 +207,7 @@ class YkViestiService(
       throw NotFoundException(s"Yhteiskäsittelyn viesti id is null")
     }
 
-    val ykViesti = ykViestiRepository.haeYkViesti(ykVastaus.id.get) match {
+    val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
       case Some(ykViesti) => {
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
@@ -217,6 +216,43 @@ class YkViestiService(
         )
       }
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id.get} not found")
+    }
+  }
+
+  def merkitseYkViestiLuetuksi(
+    hakemusOid: String,
+    viestiId: String,
+    user: User
+  ): Unit = {
+    val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
+      case Some(ykViesti) => {
+        val vastausLuettavissa = ykViesti.vastaus.nonEmpty
+        val vastaustaEiLuettu  = ykViesti.vastausLuettu.isEmpty
+        val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
+
+        val kysymysLuettavissa    = ykViesti.kysymys.nonEmpty
+        val kysymystaEiLuettu     = ykViesti.kysymysLuettu.isEmpty
+        val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
+
+        val newViestiMaybe = if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) {
+          Some(
+            ykViesti.copy(
+              vastausLuettu = Some(LocalDateTime.now())
+            )
+          )
+        } else if (kysymystaEiLuettu && kysymysLuettavissa && vastaanottajaLukijana) {
+          Some(
+            ykViesti.copy(
+              kysymysLuettu = Some(LocalDateTime.now())
+            )
+          )
+        } else {
+          None
+        }
+
+        newViestiMaybe.map(ykViestiRepository.muokkaaHakemuksenYkViestia)
+      }
+      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${viestiId} not found")
     }
   }
 }

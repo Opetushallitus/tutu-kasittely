@@ -270,4 +270,44 @@ class YkViestiController(
         errorMessageMapper.mapErrorMessage(e)
     }
   }
+
+  @PatchMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely/{viestiId}/luettu"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def merkitseYkViestiLuetuksi(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("viestiId") viestiId: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        Try {
+          ykViestiService.merkitseYkViestiLuetuksi(
+            hakemusOid,
+            viestiId,
+            user
+          )
+        } match {
+          case Success(_) =>
+            ResponseEntity.noContent().build()
+          case Failure(exception) =>
+            LOG.error("Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui", exception)
+            errorMessageMapper.mapErrorMessage(exception)
+        }
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
 }

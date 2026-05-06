@@ -3,6 +3,8 @@ export type YhteinenKasittely = {
   parentId?: string;
   kysymys?: string;
   vastaus?: string;
+  kysymysLuettu?: string | null;
+  vastausLuettu?: string | null;
   lahettajaOid?: string;
   vastaanottajaOid?: string;
   vastaanottaja?: string;
@@ -18,7 +20,8 @@ export type YhteinenKasittelyDTO = {
   vastaanottajaOid?: string;
   vastaanottaja?: string;
   luotu: string;
-  luettu?: string;
+  kysymysLuettu?: string | null;
+  vastausLuettu?: string | null;
   kysymys: string;
   vastaus?: string;
   hakija: string;
