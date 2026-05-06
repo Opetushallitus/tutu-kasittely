@@ -28,6 +28,7 @@ class YkViestiRepository extends BaseResultHandlers {
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
+        vastattu = r.nextTimestampOption().map(_.toLocalDateTime),
         kysymysLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
         vastausLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
         kysymys = Option(r.nextString()),
@@ -48,6 +49,7 @@ class YkViestiRepository extends BaseResultHandlers {
             v.lahettaja_oid,
             v.vastaanottaja_oid,
             v.luotu,
+            v.vastattu,
             v.kysymys_luettu,
             v.vastaus_luettu,
             v.kysymys,
@@ -81,6 +83,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
+          v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,
@@ -114,6 +117,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
+          v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,
@@ -183,6 +187,7 @@ class YkViestiRepository extends BaseResultHandlers {
             UPDATE yk_viesti
             SET
               vastaus = ${ykViesti.vastaus.map(_.toString).orNull},
+              vastattu = ${ykViesti.vastattu.map(java.sql.Timestamp.valueOf).orNull},
               vastaus_luettu = ${ykViesti.vastausLuettu.map(java.sql.Timestamp.valueOf).orNull},
               kysymys_luettu = ${ykViesti.kysymysLuettu.map(java.sql.Timestamp.valueOf).orNull}
             WHERE
@@ -201,8 +206,7 @@ class YkViestiRepository extends BaseResultHandlers {
   }
 
   def haeHakemuksenYkViestit(
-    hakemusOid: String,
-    userOid: String
+    hakemusOid: String
   ): Seq[YkViesti] = {
     try {
       db.run(
@@ -215,6 +219,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.lahettaja_oid,
           v.vastaanottaja_oid,
           v.luotu,
+          v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,

@@ -1,9 +1,11 @@
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   Box,
   Button,
   AccordionDetails,
   useTheme,
   Typography,
+  Stack,
 } from '@mui/material';
 import {
   OphTypography,
@@ -11,6 +13,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
@@ -78,7 +81,23 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
             data-testid={`kysymys-details-${kasittely.id}__vastaus-field`}
           />
         ) : (
-          <Typography>{kasittely.vastaus ?? ''}</Typography>
+          <>
+            <Typography>{kasittely.vastaus ?? ''}</Typography>
+            <Stack direction="row" sx={{ mt: 2 }}>
+              <InfoOutlinedIcon sx={{ mr: 1 }} />
+              <Typography sx={{ mr: 1 }}>
+                {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
+              </Typography>
+              <Typography
+                sx={{ mr: 1 }}
+              >{`${kasittely.vastaanottaja},`}</Typography>
+              <Typography sx={{ mr: 1 }}>
+                {kasittely.vastattu
+                  ? formatHelsinki(kasittely.vastattu, 'd.M.yyyy HH:mm')
+                  : ''}
+              </Typography>
+            </Stack>
+          </>
         )}
 
         <Box sx={{ marginTop: theme.spacing(4) }}>
@@ -139,7 +158,23 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
               data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-field`}
             />
           ) : (
-            <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
+            <>
+              <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
+              <Stack direction="row" sx={{ mt: 2 }}>
+                <InfoOutlinedIcon sx={{ mr: 1 }} />
+                <Typography sx={{ mr: 1 }}>
+                  {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
+                </Typography>
+                <Typography
+                  sx={{ mr: 1 }}
+                >{`${jatkoKasittely.vastaanottaja},`}</Typography>
+                <Typography sx={{ mr: 1 }}>
+                  {jatkoKasittely.vastattu
+                    ? formatHelsinki(jatkoKasittely.vastattu, 'd.M.yyyy HH:mm')
+                    : ''}
+                </Typography>
+              </Stack>
+            </>
           )}
 
           <Box sx={{ marginTop: theme.spacing(4) }}>

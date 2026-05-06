@@ -151,15 +151,9 @@ class YkViestiService(
     }
   }
 
-  def haeHakemuksenYkViestit(
-    hakemusOid: String,
-    user: User
-  ): Seq[YkViesti] = {
+  def haeHakemuksenYkViestit(hakemusOid: String): Seq[YkViesti] = {
     val ykViestit = ykViestiRepository
-      .haeHakemuksenYkViestit(
-        hakemusOid,
-        user.userOid
-      )
+      .haeHakemuksenYkViestit(hakemusOid)
       .map(ykViesti =>
         ykViesti.copy(
           vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
@@ -211,7 +205,8 @@ class YkViestiService(
       case Some(ykViesti) => {
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
-            vastaus = ykVastaus.vastaus
+            vastaus = ykVastaus.vastaus,
+            vastattu = Some(LocalDateTime.now())
           )
         )
       }

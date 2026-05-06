@@ -33,6 +33,7 @@ const getYhteinenKasittely = async (
     vastaanottajaOid: ykDto.vastaanottajaOid,
     vastaanottaja: ykDto.vastaanottaja,
     luotu: ykDto.luotu,
+    vastattu: ykDto.vastattu,
     jatkoKasittelyt: ykDto.jatkoKasittelyt,
   }));
 };
