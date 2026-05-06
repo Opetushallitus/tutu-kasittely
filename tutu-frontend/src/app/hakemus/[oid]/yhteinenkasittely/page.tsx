@@ -211,6 +211,12 @@ export default function YhteinenKasittelyPage() {
         vastaanottajaOid: tyopari,
       };
       luoUusiKasittely(kasittely);
+      addToast({
+        key: 'hakemus.yhteinenkasittely.kysymys.toaster',
+        message: t('hakemus.yhteinenkasittely.kysymysToast'),
+        type: 'success',
+        timeMs: 2500,
+      });
       handleModalClose();
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynUusi', t);
