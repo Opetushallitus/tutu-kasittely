@@ -142,7 +142,7 @@ class YkViestiRepository extends BaseResultHandlers {
 
   def luoHakemuksenYkViesti(
     ykViesti: YkViesti
-  ): Unit = {
+  ): UUID = {
     try {
       db.run(
         sql"""
