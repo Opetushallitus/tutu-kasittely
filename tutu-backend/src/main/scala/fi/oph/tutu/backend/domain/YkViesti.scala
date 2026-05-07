@@ -120,5 +120,6 @@ case class YkKysymysDTO(
 
 case class YkVastausDTO(
   id: Option[String] = None,
-  vastaus: Option[String] = None
+  vastaus: Option[String] = None,
+  laheta: Option[Boolean] = None
 )

@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { SortOrder } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
@@ -28,6 +29,28 @@ import { handleFetchError } from '@/src/lib/utils';
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
 
+const answersHasChanges: (
+  kasittelyt: YhteinenKasittely[],
+  answers: Record<string, string>,
+) => boolean = (() => {
+  const flattenKasittelyt: (
+    kasittelyt: YhteinenKasittely[],
+  ) => YhteinenKasittely[] = (kasittelyt: YhteinenKasittely[]) => {
+    return kasittelyt.flatMap((kasittely: YhteinenKasittely) => {
+      return [kasittely, ...flattenKasittelyt(kasittely.jatkoKasittelyt ?? [])];
+    });
+  };
+  return (kasittelyt: YhteinenKasittely[], answers: Record<string, string>) => {
+    const flatKasittelyt = flattenKasittelyt(kasittelyt);
+    return flatKasittelyt.some((kasittely: YhteinenKasittely) => {
+      return (
+        answers[kasittely.id!] !== undefined &&
+        answers[kasittely.id!] !== kasittely.vastaus
+      );
+    });
+  };
+})();
+
 const kayttajaLukenutViestin =
   (user: User | null) => (kasittely: YhteinenKasittely) => {
     if (!user) {
@@ -35,7 +58,7 @@ const kayttajaLukenutViestin =
     }
     const kayttajaOnKysyja = user.userOid === kasittely.lahettajaOid;
     const kayttajaOnVastaaja = user.userOid === kasittely.vastaanottajaOid;
-    const vastausAnnettu = !!kasittely.vastaus;
+    const vastausAnnettu = !!kasittely.vastattu;
     const kysymysLuettu = !!kasittely.kysymysLuettu;
     const vastausLuettu = !!kasittely.vastausLuettu;
 
@@ -120,6 +143,7 @@ export default function YhteinenKasittelyPage() {
     viestiLuettu,
     error: kasittelyError,
     updateError,
+    answerIsPending,
   } = useYhteinenKasittely(hakemusOid, sortKey);
 
   useEffect(() => {
@@ -223,9 +247,9 @@ export default function YhteinenKasittelyPage() {
     }
   };
 
-  const handleSendAnswer = async (id: string) => {
+  const handleSendAnswer = async (id: string, laheta: boolean = false) => {
     try {
-      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '' });
+      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '', laheta });
       addToast({
         key: 'hakemus.yhteinenkasittely.vastattu.toaster',
         message: t('hakemus.yhteinenkasittely.vastattuToast'),
@@ -333,6 +357,13 @@ export default function YhteinenKasittelyPage() {
         handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
+      />
+      <SaveRibbon
+        onSave={() => {
+          Object.keys(answers).forEach((id) => handleSendAnswer(id));
+        }}
+        isSaving={answerIsPending}
+        hasChanges={answersHasChanges(kasittelyt ?? [], answers)}
       />
     </>
   );

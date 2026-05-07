@@ -151,12 +151,18 @@ class YkViestiService(
     }
   }
 
-  def haeHakemuksenYkViestit(hakemusOid: String): Seq[YkViesti] = {
+  def haeHakemuksenYkViestit(
+    hakemusOid: String,
+    user: User
+  ): Seq[YkViesti] = {
     val ykViestit = ykViestiRepository
       .haeHakemuksenYkViestit(hakemusOid)
       .map(ykViesti =>
         ykViesti.copy(
-          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
+          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid),
+          vastaus =
+            if ykViesti.vastattu.nonEmpty || ykViesti.vastaanottajaOid.contains(user.userOid) then ykViesti.vastaus
+            else None
         )
       )
 
@@ -203,10 +209,11 @@ class YkViestiService(
 
     val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
       case Some(ykViesti) => {
+        val vastattu = if ykVastaus.laheta.getOrElse(false) then Some(LocalDateTime.now()) else ykViesti.vastattu
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
             vastaus = ykVastaus.vastaus,
-            vastattu = Some(LocalDateTime.now())
+            vastattu = vastattu
           )
         )
       }
@@ -221,7 +228,7 @@ class YkViestiService(
   ): Unit = {
     val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
       case Some(ykViesti) => {
-        val vastausLuettavissa = ykViesti.vastaus.nonEmpty
+        val vastausLuettavissa = ykViesti.vastattu.nonEmpty
         val vastaustaEiLuettu  = ykViesti.vastausLuettu.isEmpty
         val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
 
