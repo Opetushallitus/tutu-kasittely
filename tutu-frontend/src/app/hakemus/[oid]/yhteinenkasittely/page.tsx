@@ -8,14 +8,16 @@ import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useQueryState } from 'nuqs';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
   TFunction,
@@ -28,28 +30,6 @@ import { handleFetchError } from '@/src/lib/utils';
 
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
-
-const answersHasChanges: (
-  kasittelyt: YhteinenKasittely[],
-  answers: Record<string, string>,
-) => boolean = (() => {
-  const flattenKasittelyt: (
-    kasittelyt: YhteinenKasittely[],
-  ) => YhteinenKasittely[] = (kasittelyt: YhteinenKasittely[]) => {
-    return kasittelyt.flatMap((kasittely: YhteinenKasittely) => {
-      return [kasittely, ...flattenKasittelyt(kasittely.jatkoKasittelyt ?? [])];
-    });
-  };
-  return (kasittelyt: YhteinenKasittely[], answers: Record<string, string>) => {
-    const flatKasittelyt = flattenKasittelyt(kasittelyt);
-    return flatKasittelyt.some((kasittely: YhteinenKasittely) => {
-      return (
-        answers[kasittely.id!] !== undefined &&
-        answers[kasittely.id!] !== kasittely.vastaus
-      );
-    });
-  };
-})();
 
 const kayttajaLukenutViestin =
   (user: User | null) => (kasittely: YhteinenKasittely) => {
@@ -113,7 +93,6 @@ export default function YhteinenKasittelyPage() {
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
 
-  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
   const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
@@ -145,6 +124,27 @@ export default function YhteinenKasittelyPage() {
     updateError,
     answerIsPending,
   } = useYhteinenKasittely(hakemusOid, sortKey);
+
+  const answersFromServer = useMemo(() => {
+    return (kasittelyt ?? []).reduce(
+      (acc: Record<string, string>, kasittely: YhteinenKasittely) => {
+        acc[kasittely.id!] = kasittely.vastaus ?? '';
+        return acc;
+      },
+      {},
+    );
+  }, [kasittelyt]);
+
+  const {
+    editedData: answers = {} as Record<string, string>,
+    hasChanges: answersHasChanges,
+    updateLocal: setAnswers,
+    save,
+    discard,
+  } = useEditableState(answersFromServer, (answers: Record<string, string>) => {
+    Object.keys(answers).forEach((id) => handleSendAnswer(id));
+  });
+  useUnsavedChanges(answersHasChanges, discard);
 
   useEffect(() => {
     handleFetchError(
@@ -214,7 +214,7 @@ export default function YhteinenKasittelyPage() {
   };
 
   const handleChange = (id: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [id]: value }));
+    setAnswers({ ...answers, [id]: value });
   };
 
   const handleOpenModal = (parent?: YhteinenKasittely) => {
@@ -359,11 +359,9 @@ export default function YhteinenKasittelyPage() {
         setKysymys={setKysymys}
       />
       <SaveRibbon
-        onSave={() => {
-          Object.keys(answers).forEach((id) => handleSendAnswer(id));
-        }}
+        onSave={save}
         isSaving={answerIsPending}
-        hasChanges={answersHasChanges(kasittelyt ?? [], answers)}
+        hasChanges={answersHasChanges}
       />
     </>
   );
