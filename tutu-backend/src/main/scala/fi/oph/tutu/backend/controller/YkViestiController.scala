@@ -132,10 +132,7 @@ class YkViestiController(
         )
       } else {
         Try {
-          ykViestiService.haeHakemuksenYkViestit(
-            hakemusOid,
-            user
-          )
+          ykViestiService.haeHakemuksenYkViestit(hakemusOid, user)
         } match {
           case Success(ykViestit) =>
             val response = mapper.writeValueAsString(ykViestit)

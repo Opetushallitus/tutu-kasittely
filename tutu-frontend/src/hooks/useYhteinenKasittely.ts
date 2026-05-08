@@ -33,6 +33,7 @@ const getYhteinenKasittely = async (
     vastaanottajaOid: ykDto.vastaanottajaOid,
     vastaanottaja: ykDto.vastaanottaja,
     luotu: ykDto.luotu,
+    vastattu: ykDto.vastattu,
     jatkoKasittelyt: ykDto.jatkoKasittelyt,
   }));
 };
@@ -46,7 +47,7 @@ const postYhteinenKasittely = async (
 
 const patchYhteinenKasittelyVastaus = async (
   hakemusOid: string,
-  payload: { id: string; vastaus?: string },
+  payload: { id: string; vastaus?: string; laheta?: boolean },
 ): Promise<unknown> => {
   return doApiPatch(
     `hakemus/${hakemusOid}/yhteinenkasittely/${payload.id}`,
@@ -88,7 +89,7 @@ export const useYhteinenKasittely = (
   });
 
   const answerMutation = useMutation({
-    mutationFn: (payload: { id: string; vastaus?: string }) =>
+    mutationFn: (payload: { id: string; vastaus?: string; laheta?: boolean }) =>
       patchYhteinenKasittelyVastaus(hakemusOid, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey });
@@ -105,9 +106,13 @@ export const useYhteinenKasittely = (
     kasittelyt: query.data,
     isKasittelytLoading: query.isLoading,
     luoUusiKasittely: (k: YhteinenKasittely) => createMutation.mutate(k),
-    vastaaKasittelyyn: (p: { id: string; vastaus?: string }) =>
-      answerMutation.mutate(p),
+    vastaaKasittelyyn: (p: {
+      id: string;
+      vastaus?: string;
+      laheta?: boolean;
+    }) => answerMutation.mutate(p),
     viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error || answerMutation.error,
+    answerIsPending: answerMutation.isPending,
   };
 };

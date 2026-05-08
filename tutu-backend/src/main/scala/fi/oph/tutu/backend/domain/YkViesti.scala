@@ -87,6 +87,7 @@ case class YkViesti(
   vastaanottajaOid: Option[String] = None,
   vastaanottaja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
+  vastattu: Option[LocalDateTime] = None,
   kysymysLuettu: Option[LocalDateTime] = None,
   vastausLuettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
@@ -119,5 +120,6 @@ case class YkKysymysDTO(
 
 case class YkVastausDTO(
   id: Option[String] = None,
-  vastaus: Option[String] = None
+  vastaus: Option[String] = None,
+  laheta: Option[Boolean] = None
 )

@@ -11,7 +11,8 @@ import fi.oph.tutu.backend.repository.{
   PaatosRepository,
   PerusteluRepository,
   TutkintoRepository,
-  ViestiRepository
+  ViestiRepository,
+  YkViestiRepository
 }
 import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, KayttooikeusService}
 import org.flywaydb.core.Flyway
@@ -98,6 +99,9 @@ class IntegrationTestBase {
 
   @Autowired
   var viestiRepository: ViestiRepository = _
+
+  @Autowired
+  var ykViestiRepository: YkViestiRepository = _
 
   val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 

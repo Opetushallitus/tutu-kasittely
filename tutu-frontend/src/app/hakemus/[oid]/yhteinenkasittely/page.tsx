@@ -8,13 +8,16 @@ import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useQueryState } from 'nuqs';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { SortOrder } from '@/src/app/(root)/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
   TFunction,
@@ -35,7 +38,7 @@ const kayttajaLukenutViestin =
     }
     const kayttajaOnKysyja = user.userOid === kasittely.lahettajaOid;
     const kayttajaOnVastaaja = user.userOid === kasittely.vastaanottajaOid;
-    const vastausAnnettu = !!kasittely.vastaus;
+    const vastausAnnettu = !!kasittely.vastattu;
     const kysymysLuettu = !!kasittely.kysymysLuettu;
     const vastausLuettu = !!kasittely.vastausLuettu;
 
@@ -90,7 +93,6 @@ export default function YhteinenKasittelyPage() {
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
 
-  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sortKey, setSortKey] = useState<SortOrder>('desc');
 
   const [expandedPanels, setExpandedPanels] = useState<string[]>([]);
@@ -120,7 +122,29 @@ export default function YhteinenKasittelyPage() {
     viestiLuettu,
     error: kasittelyError,
     updateError,
+    answerIsPending,
   } = useYhteinenKasittely(hakemusOid, sortKey);
+
+  const answersFromServer = useMemo(() => {
+    return (kasittelyt ?? []).reduce(
+      (acc: Record<string, string>, kasittely: YhteinenKasittely) => {
+        acc[kasittely.id!] = kasittely.vastaus ?? '';
+        return acc;
+      },
+      {},
+    );
+  }, [kasittelyt]);
+
+  const {
+    editedData: answers = {} as Record<string, string>,
+    hasChanges: answersHasChanges,
+    updateLocal: setAnswers,
+    save,
+    discard,
+  } = useEditableState(answersFromServer, (answers: Record<string, string>) => {
+    Object.keys(answers).forEach((id) => handleSendAnswer(id));
+  });
+  useUnsavedChanges(answersHasChanges, discard);
 
   useEffect(() => {
     handleFetchError(
@@ -190,7 +214,7 @@ export default function YhteinenKasittelyPage() {
   };
 
   const handleChange = (id: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [id]: value }));
+    setAnswers({ ...answers, [id]: value });
   };
 
   const handleOpenModal = (parent?: YhteinenKasittely) => {
@@ -211,15 +235,21 @@ export default function YhteinenKasittelyPage() {
         vastaanottajaOid: tyopari,
       };
       luoUusiKasittely(kasittely);
+      addToast({
+        key: 'hakemus.yhteinenkasittely.kysymys.toaster',
+        message: t('hakemus.yhteinenkasittely.kysymysToast'),
+        type: 'success',
+        timeMs: 2500,
+      });
       handleModalClose();
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynUusi', t);
     }
   };
 
-  const handleSendAnswer = async (id: string) => {
+  const handleSendAnswer = async (id: string, laheta: boolean = false) => {
     try {
-      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '' });
+      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '', laheta });
       addToast({
         key: 'hakemus.yhteinenkasittely.vastattu.toaster',
         message: t('hakemus.yhteinenkasittely.vastattuToast'),
@@ -327,6 +357,11 @@ export default function YhteinenKasittelyPage() {
         handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
+      />
+      <SaveRibbon
+        onSave={save}
+        isSaving={answerIsPending}
+        hasChanges={answersHasChanges}
       />
     </>
   );
