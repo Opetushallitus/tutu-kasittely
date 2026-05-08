@@ -529,7 +529,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
             SELECT h.id, (""" ++ totalScoreExpr ++ sql""") AS relevance_score
             FROM hakemus h
             JOIN filtered f ON f.id = h.id
-            ORDER BY relevance_score DESC
+            ORDER BY relevance_score DESC, h.saapumis_pvm DESC NULLS LAST
             LIMIT 200
         )
         SELECT
@@ -554,7 +554,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
         JOIN ranked ON ranked.id = h.id
         LEFT JOIN esittelija e ON e.id = h.esittelija_id
         LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
-        ORDER BY ranked.relevance_score DESC
+        ORDER BY ranked.relevance_score DESC, h.saapumis_pvm DESC NULLS LAST
         LIMIT $pageSize
         OFFSET $offset
       """).as[(HakemusListItem, Int)]

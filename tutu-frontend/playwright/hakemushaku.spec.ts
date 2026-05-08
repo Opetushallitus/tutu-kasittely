@@ -110,6 +110,65 @@ const mockHakemus = async (page: Page) => {
       });
     },
   );
+
+  await page.route(
+    `**/tutu-backend/api/hakemus/${RESULT_OID_2}`,
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          hakemusOid: RESULT_OID_2,
+          hakija: {
+            etunimet: 'Arvo',
+            kutsumanimi: 'Arvo',
+            sukunimi: 'Aaltonen',
+            kansalaisuus: [],
+            syntymaaika: '1990-01-01',
+            asuinmaa: { fi: 'Suomi', sv: 'Finland', en: 'Finland' },
+            katuosoite: '',
+            postinumero: '',
+            postitoimipaikka: '',
+            kotikunta: { fi: 'Helsinki', sv: 'Helsingfors', en: 'Helsinki' },
+            yksiloityVTJ: false,
+          },
+          hakemusKoskee: 1,
+          asiatunnus: 'OPH-002-2025',
+          saapumisPvm: '2025-04-14T10:59:04.597Z',
+          esittelyPvm: null,
+          paatosPvm: null,
+          esittelijaOid: null,
+          ataruHakemuksenTila: 'KasittelyMaksettu',
+          kasittelyVaihe: 'AlkukasittelyKesken',
+          muutosHistoria: [],
+          taydennyspyyntoLahetetty: null,
+          yhteistutkinto: false,
+          sisalto: [],
+          liitteidenTilat: [],
+          asiakirja: { apHakemus: false },
+          lomakeOid: '',
+          lomakeId: 0,
+          lomakkeenKieli: 'fi',
+        }),
+      });
+    },
+  );
+};
+
+const searchButtonClick = async (page: Page) => {
+  const haeButton = page.getByRole('button', {
+    name: await translate(page, 'haku.hae'),
+  });
+
+  await haeButton.click();
+};
+
+const closeButtonClick = async (page: Page) => {
+  const suljeButton = page.getByRole('button', {
+    name: await translate(page, 'haku.suljeJaPalaaHakemukseesi'),
+  });
+
+  await suljeButton.click();
 };
 
 test.beforeEach(mockAll);
@@ -118,11 +177,7 @@ test('Tyhjän haun tekeminen ei avaa hakutulosnauhaa', async ({ page }) => {
   await mockHakemusHaku(page);
   await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
-
-  await haeButton.click();
+  await searchButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeHidden();
 });
@@ -135,11 +190,7 @@ test('Hakutulos-nauhassa näkyy korteissa hakijoiden nimet ja asiatunnukset', as
 
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
-
-  await haeButton.click();
+  await searchButtonClick(page);
 
   const ribbonCards = page.getByTestId('ribbon-card');
   // Originaali + 2 hakutulosta
@@ -159,16 +210,17 @@ test('Tuloskortin klikkaaminen lataa sen hakemuksen tiedot näkymään', async (
   await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
+  await searchButtonClick(page);
 
-  await haeButton.click();
-
-  await page.getByText('Aalto, Aino').click();
-
+  // Näytetään ensimmäinen tulos heti
   await expect(page.getByTestId('hakemusotsikko-hakija')).toHaveText(
     'Aalto, Aino',
+  );
+
+  await page.getByText('Aaltonen, Arvo').click();
+
+  await expect(page.getByTestId('hakemusotsikko-hakija')).toHaveText(
+    'Aaltonen, Arvo',
   );
 });
 
@@ -180,20 +232,12 @@ test('Nauhan sulkeminen piilottaa nauhan ja poistaa URL-parametrit', async ({
 
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
-
-  await haeButton.click();
+  await searchButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
   await expect(page).toHaveURL(/[?&]haku=/);
 
-  const suljeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.suljeJaPalaaHakemukseesi'),
-  });
-
-  await suljeButton.click();
+  await closeButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeHidden();
   await expect(page).not.toHaveURL(/[?&]haku=/);
@@ -215,11 +259,7 @@ test('Sivutus: Seuraava-nappi lähettää pyynnön sivulle 2', async ({ page }) 
 
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
-
-  await haeButton.click();
+  await searchButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
 
@@ -254,11 +294,7 @@ test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async
 
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
 
-  const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
-  });
-
-  await haeButton.click();
+  await searchButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
   await page.getByText('Aalto, Aino').click();
@@ -267,11 +303,7 @@ test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async
     'Aalto, Aino',
   );
 
-  const suljeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.suljeJaPalaaHakemukseesi'),
-  });
-
-  await suljeButton.click();
+  await closeButtonClick(page);
 
   // Alkuperäinen hakemus näkyy ja aktiivisena on edelleen "Tutkinnot"-välilehti
   await expect(page.getByTestId('hakemusotsikko-hakija')).toHaveText(

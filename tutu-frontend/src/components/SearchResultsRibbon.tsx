@@ -1,10 +1,11 @@
 'use client';
 
 import FirstPageIcon from '@mui/icons-material/FirstPage';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Stack, useTheme } from '@mui/material';
+import { Box, Stack, Theme, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -13,11 +14,47 @@ import { PageContent } from '@/src/components/PageLayout';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useHakemusOriginal } from '@/src/context/HakemusContext';
 import { useSearchRibbon } from '@/src/context/SearchRibbonContext';
-import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, ophColors } from '@/src/lib/theme';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
 import { FullSpinner } from './FullSpinner';
+
+const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: theme.spacing(0.5),
+        position: 'absolute',
+        inset: 2,
+      }}
+    >
+      <Box
+        data-testid="search-results-empty-icon"
+        sx={{
+          height: 40,
+          width: 40,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: ophColors.grey50,
+          borderRadius: '50%',
+        }}
+      >
+        <FolderOutlinedIcon sx={{ color: ophColors.grey700 }} />
+      </Box>
+      <OphTypography variant="body1">{t('haku.eiTuloksia')}</OphTypography>
+    </Box>
+  );
+};
 
 const ScrollArrow = ({
   direction,
@@ -91,6 +128,7 @@ const RibbonCard = ({
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
+        marginBottom: '12px',
       }}
     >
       <OphTypography variant="label">{name}</OphTypography>
@@ -116,8 +154,7 @@ export const SearchResultsRibbon = () => {
     closeRibbon,
   } = useSearchRibbon();
 
-  const { data: originalHakemus, isLoading: isOriginalHakemusLoading } =
-    useHakemusOriginal();
+  const { data: originalHakemus } = useHakemusOriginal();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -176,7 +213,7 @@ export const SearchResultsRibbon = () => {
       <Stack
         direction="column"
         gap={theme.spacing(0.5)}
-        sx={{ paddingY: theme.spacing(1) }}
+        sx={{ paddingY: '8px' }}
       >
         <Stack direction="row" alignItems="center">
           <Box sx={{ width: 247, flexShrink: 0, marginRight: 2 }}>
@@ -197,7 +234,7 @@ export const SearchResultsRibbon = () => {
                 {t('haku.hakutuloksesi')}
               </OphTypography>
 
-              {searchResults && (
+              {Boolean(searchResults?.length || currentPage !== 1) && (
                 <>
                   <OphTypography variant="body1" sx={{ mx: theme.spacing(1) }}>
                     {currentPage} / {totalPages}
@@ -251,68 +288,94 @@ export const SearchResultsRibbon = () => {
           </Stack>
         </Stack>
 
-        <Stack direction="row" alignItems="stretch">
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'stretch',
+            minHeight: 130,
+          }}
+        >
           {/* Alkuperäinen hakemus */}
           <Box
-            sx={{ width: 247, flexShrink: 0, marginRight: 2, display: 'flex' }}
+            sx={{
+              width: 247,
+              flexShrink: 0,
+              marginRight: 2,
+              display: 'flex',
+              zIndex: 1,
+            }}
           >
-            {isOriginalHakemusLoading ? (
-              <FullSpinner minHeight={130} />
-            ) : (
-              originalHakemus && (
-                <RibbonCard
-                  name={`${originalHakemus.hakija.sukunimi}, ${originalHakemus.hakija.etunimet}`}
-                  asiatunnus={originalHakemus.asiatunnus}
-                  hakemusKoskeeLabel={translateHakemusKoskee(
-                    originalHakemus.hakemusKoskee,
-                    originalHakemus.asiakirja.apHakemus,
-                  )}
-                  isSelected={selectedOid === null}
-                  onClick={() => setSelectedOid(null)}
-                />
-              )
+            {originalHakemus && (
+              <RibbonCard
+                name={`${originalHakemus.hakija.sukunimi}, ${originalHakemus.hakija.etunimet}`}
+                asiatunnus={originalHakemus.asiatunnus}
+                hakemusKoskeeLabel={translateHakemusKoskee(
+                  originalHakemus.hakemusKoskee,
+                  originalHakemus.asiakirja.apHakemus,
+                )}
+                isSelected={selectedOid === null}
+                onClick={() => setSelectedOid(null)}
+              />
             )}
           </Box>
 
           {/* Hakutulokset */}
-          <Box sx={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
-            {!searchResults ? (
-              <FullSpinner minHeight={130} />
-            ) : (
-              <>
-                <Box
-                  ref={scrollRef}
-                  sx={{
-                    display: 'flex',
-                    gap: theme.spacing(1),
-                    overflowX: 'auto',
-                    scrollbarWidth: 'none',
-                  }}
-                >
-                  {searchResults.map((result) => (
-                    <RibbonCard
-                      key={result.hakemusOid}
-                      name={`${result.hakija.sukunimi}, ${result.hakija.etunimet}`}
-                      asiatunnus={result.asiatunnus}
-                      hakemusKoskeeLabel={translateHakemusKoskee(
-                        result.hakemusKoskee,
-                        result.apHakemus,
-                      )}
-                      isSelected={selectedOid === result.hakemusOid}
-                      onClick={() => setSelectedOid(result.hakemusOid)}
-                    />
-                  ))}
-                </Box>
-                {showLeftArrow && (
-                  <ScrollArrow direction="left" scrollRef={scrollRef} />
-                )}
-                {showRightArrow && (
-                  <ScrollArrow direction="right" scrollRef={scrollRef} />
-                )}
-              </>
-            )}
-          </Box>
-        </Stack>
+          {!searchResults ? (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FullSpinner />
+            </Box>
+          ) : !searchResults.length ? (
+            <EmptyList t={t} theme={theme} />
+          ) : (
+            <Box
+              sx={{
+                position: 'relative',
+                flex: 1,
+                overflow: 'hidden',
+                minHeight: 130,
+              }}
+            >
+              <Box
+                ref={scrollRef}
+                sx={{
+                  display: 'flex',
+                  gap: theme.spacing(1),
+                  overflowX: 'auto',
+                  scrollbarWidth: 'none',
+                }}
+              >
+                {searchResults.map((result) => (
+                  <RibbonCard
+                    key={result.hakemusOid}
+                    name={`${result.hakija.sukunimi}, ${result.hakija.etunimet}`}
+                    asiatunnus={result.asiatunnus}
+                    hakemusKoskeeLabel={translateHakemusKoskee(
+                      result.hakemusKoskee,
+                      result.apHakemus,
+                    )}
+                    isSelected={selectedOid === result.hakemusOid}
+                    onClick={() => setSelectedOid(result.hakemusOid)}
+                  />
+                ))}
+              </Box>
+              {showLeftArrow && (
+                <ScrollArrow direction="left" scrollRef={scrollRef} />
+              )}
+              {showRightArrow && (
+                <ScrollArrow direction="right" scrollRef={scrollRef} />
+              )}
+            </Box>
+          )}
+        </Box>
       </Stack>
     </PageContent>
   );

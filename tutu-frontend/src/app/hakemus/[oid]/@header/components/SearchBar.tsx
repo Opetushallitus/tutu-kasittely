@@ -1,5 +1,6 @@
 'use client';
 
+import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -88,8 +89,15 @@ export const SearchBar = () => {
     if (hakemukset && ribbonVisible) {
       setSearchResults(hakemukset.items);
       setTotalPages(hakemukset.totalPages);
+      setSelectedOid(hakemukset.items[0]?.hakemusOid ?? null);
     }
-  }, [hakemukset, ribbonVisible, setSearchResults, setTotalPages]);
+  }, [
+    hakemukset,
+    ribbonVisible,
+    setSearchResults,
+    setTotalPages,
+    setSelectedOid,
+  ]);
 
   useEffect(() => {
     handleFetchError(addToast, hakemuksetError, 'virhe.hakemuksenLataus', t);
@@ -135,6 +143,12 @@ export const SearchBar = () => {
           }}
           endAdornment={
             <InputAdornment position="end">
+              {inputHaku && (
+                <CloseIcon
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => setInputHaku('')}
+                />
+              )}
               <SearchIcon sx={{ opacity: 0.2 }} />
             </InputAdornment>
           }
