@@ -20,9 +20,9 @@ import scala.util.boundary
 import scala.util.boundary.break
 
 def ataruAnswerToBoolean(value: String): Option[Boolean] = {
-  if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "1") {
+  if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "0") {
     Some(true)
-  } else if (value == "Ei" || value == "No" || value == "Nej" || value == "0") {
+  } else if (value == "Ei" || value == "No" || value == "Nej" || value == "1") {
     Some(false)
   } else {
     None
