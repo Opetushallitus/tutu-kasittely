@@ -58,7 +58,7 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
       case Right(response: String) =>
         parse(response) match {
           case JArray(values) =>
-            values.map(item => extract[KoodistoItem](item))
+            values.map(item => extract[KoodistoItem](item)).filter(_.isValid())
           case _ => throw new MappingException(s"Cannot deserialize koodisto response")
         }
     }

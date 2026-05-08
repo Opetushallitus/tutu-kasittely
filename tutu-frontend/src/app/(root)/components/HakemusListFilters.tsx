@@ -240,6 +240,7 @@ export default function HakemusListFilters() {
                       value: option.value,
                     }))}
                     value={esittelija}
+                    sx={{ width: '100%' }}
                     onChange={(event) => {
                       setPage(1);
                       setQueryStateAndLocalStorage(

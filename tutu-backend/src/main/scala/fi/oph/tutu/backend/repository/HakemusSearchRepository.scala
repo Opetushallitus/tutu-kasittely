@@ -488,33 +488,63 @@ class HakemusSearchRepository extends BaseResultHandlers {
   def haeHakemuksetHaulla(
     haku: String,
     nakyma: HakemusNakyma,
+    filters: HakemusSearchFilters,
     page: Int,
     pageSize: Int
   ): (Seq[HakemusListItem], Int) = {
     try {
-      val words = haku.trim().split(" ").filter(_.nonEmpty)
-      if (words.isEmpty) {
+      val words      = haku.trim().split(" ").filter(_.nonEmpty)
+      val hasFilters = filters.hasAny
+
+      if (words.isEmpty && !hasFilters) {
         return (Seq.empty[HakemusListItem], 0)
       }
 
       // Per-sana/näkymä kandidaattijoukot yhdistetään UNION:lla, useampi sana INTERSECT:llä.
       // Kaikkien sanojen pitää löytyä jostakin näkymästä.
-      val candidateSet: SQLActionBuilder = words
-        .map { word =>
-          val wordPat  = s"%$word%"
-          val branches = buildNakymaCandidateBranches(word, wordPat, nakyma)
-          sql"(" ++ branches.reduce(_ ++ sql" UNION " ++ _) ++ sql")"
-        }
-        .reduce(_ ++ sql" INTERSECT " ++ _)
+      val wordCandidates: Option[SQLActionBuilder] = Option.when(words.nonEmpty) {
+        words
+          .map { word =>
+            val wordPat  = s"%$word%"
+            val branches = buildNakymaCandidateBranches(word, wordPat, nakyma)
+            sql"(" ++ branches.reduce(_ ++ sql" UNION " ++ _) ++ sql")"
+          }
+          .reduce(_ ++ sql" INTERSECT " ++ _)
+      }
 
-      // Summataan word_similarity-pisteet kaikille sanoille
-      val totalScoreExpr: SQLActionBuilder =
+      // Tarkka haku filtterit yhdistetään kandidaatteihin
+      val tutkintoFilter: Option[SQLActionBuilder] = {
+        val clauses = Seq.newBuilder[SQLActionBuilder]
+        filters.suoritusmaa.foreach(v => clauses += sql"t.maakoodiuri = $v")
+        filters.paattymisVuosi.foreach(v => clauses += sql"t.paattymis_vuosi = $v")
+        filters.todistusVuosi.foreach(v => clauses += sql"t.todistuksen_paivamaara) LIKE ${s"$v%"}")
+        filters.oppilaitos.foreach(v => clauses += sql"t.oppilaitos %> $v")
+        filters.tutkinnonNimi.foreach(v => clauses += sql"t.nimi %> $v")
+        filters.paaAine.foreach(v => clauses += sql"t.paaaine_tai_erikoisala %> $v")
+        val list = clauses.result()
+        Option.when(list.nonEmpty)(
+          sql"""SELECT hakemus_id AS id
+                FROM tutkinto t
+                WHERE """ ++ list.reduce(_ ++ sql" AND " ++ _)
+        )
+      }
+
+      val candidateSet = Seq(wordCandidates, tutkintoFilter).flatten.reduce { (acc, sub) =>
+        sql"(" ++ acc ++ sql") INTERSECT (" ++ sub ++ sql")"
+      }
+
+      // Summataan word_similarity-pisteet kaikille sanoille.
+      // Pelkillä suodattimilla käytetään vakioarvoa (järjestys saapumispvm:n mukaan).
+      val totalScoreExpr: SQLActionBuilder = if (words.nonEmpty) {
         words
           .map { word =>
             val wordPat = s"%$word%"
             buildWordScore(word, wordPat, nakyma)
           }
           .reduce(_ ++ sql" + " ++ _)
+      } else {
+        sql"0.0"
+      }
 
       val offset = (page - 1) * pageSize
 

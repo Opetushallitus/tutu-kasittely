@@ -4,12 +4,27 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { Paginated } from '@/src/lib/types/paginated';
 
+export type HakemuksetFilters = {
+  suoritusmaa: string;
+  paattymisVuosi: string;
+  todistusVuosi: string;
+  oppilaitos: string;
+  tutkinnonNimi: string;
+  paaAine: string;
+};
+
 const getHakemuksetHaulla = async (
   haku: string,
   nakyma: string,
   page: number,
+  filters: HakemuksetFilters,
 ): Promise<Paginated<HakemusListItem>> => {
   const params = new URLSearchParams({ haku, nakyma, page: String(page) });
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) {
+      params.set(key, value);
+    }
+  }
 
   return await doApiFetch(
     `hakemus/haku?${params.toString()}`,
@@ -22,11 +37,13 @@ export const useHakemuksetHaku = (
   haku: string,
   nakyma: string,
   page: number,
+  filters: HakemuksetFilters,
 ) => {
-  const enabled = haku.trim().length > 0;
+  const enabled =
+    haku.trim().length > 0 || Object.values(filters).some(Boolean);
   return useQuery({
-    queryKey: ['getHakemuksetHaulla', haku, nakyma, page],
-    queryFn: () => getHakemuksetHaulla(haku, nakyma, page),
+    queryKey: ['getHakemuksetHaulla', haku, nakyma, page, filters],
+    queryFn: () => getHakemuksetHaulla(haku, nakyma, page, filters),
     enabled,
     throwOnError: false,
   });
