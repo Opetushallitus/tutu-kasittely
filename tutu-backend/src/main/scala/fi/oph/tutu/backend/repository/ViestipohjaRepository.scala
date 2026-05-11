@@ -23,7 +23,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
         id = Some(r.nextObject().asInstanceOf[UUID]),
         kategoriaId = r.nextObject().asInstanceOf[UUID],
         nimi = r.nextString(),
-        otsikko = r.nextString(),
         sisalto = parseKielistetty(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
         luoja = Some(r.nextString()),
@@ -181,7 +180,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
                       id,
                       kategoria_id,
                       nimi,
-                      otsikko,
                       sisalto,
                       luotu,
                       luoja,
@@ -211,14 +209,12 @@ class ViestipohjaRepository extends BaseResultHandlers {
         sql"""INSERT INTO viestipohja (
                 kategoria_id,
                 nimi,
-                otsikko,
                 sisalto,
                 luoja
               )
               VALUES (
                 ${viestipohja.kategoriaId.toString}::uuid,
                 ${viestipohja.nimi},
-                ${viestipohja.otsikko},
                 $sisaltoJson::jsonb,
                 $luoja
               )
@@ -226,7 +222,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
                 id,
                 kategoria_id,
                 nimi,
-                otsikko,
                 sisalto,
                 luotu,
                 luoja,
@@ -253,7 +248,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
               SET
                 kategoria_id = ${viestipohja.kategoriaId.toString}::uuid,
                 nimi = ${viestipohja.nimi},
-                otsikko = ${viestipohja.otsikko},
                 sisalto = $sisaltoJson::jsonb,
                 muokkaaja = $muokkaaja
               WHERE id = ${viestipohjaId.toString}::uuid
@@ -261,7 +255,6 @@ class ViestipohjaRepository extends BaseResultHandlers {
                 id,
                 kategoria_id,
                 nimi,
-                otsikko,
                 sisalto,
                 luotu,
                 luoja,

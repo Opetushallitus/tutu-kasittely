@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS viestipohja (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     kategoria_id uuid NOT NULL,
     nimi TEXT NOT NULL,
-    otsikko TEXT NOT NULL,
     sisalto JSONB DEFAULT '{}'::jsonb NOT NULL,
     luotu TIMESTAMPTZ DEFAULT now(),
     luoja VARCHAR(255) NOT NULL,
@@ -42,7 +41,6 @@ COMMENT ON TABLE viestipohja IS 'Viestipohjat';
 COMMENT ON COLUMN viestipohja.id IS 'Taulun rivin id';
 COMMENT ON COLUMN viestipohja.kategoria_id IS 'Viestipohjan kategoria';
 COMMENT ON COLUMN viestipohja.nimi IS 'Viestipohjan nimi';
-COMMENT ON COLUMN viestipohja.otsikko IS 'Viestipohjan otsikko';
 COMMENT ON COLUMN viestipohja.sisalto IS 'Viestipohjan sisältö fi/sv/en käännöksineen JSON-muodossa';
 COMMENT ON COLUMN viestipohja.luotu IS 'Rivin luontiaika';
 COMMENT ON COLUMN viestipohja.luoja IS 'Rivin luojan oid';

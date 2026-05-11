@@ -7,7 +7,6 @@ case class Viestipohja(
   id: Option[UUID],
   nimi: String,
   kategoriaId: UUID,
-  otsikko: String,
   sisalto: Kielistetty,
   luotu: Option[LocalDateTime],
   luoja: Option[String],

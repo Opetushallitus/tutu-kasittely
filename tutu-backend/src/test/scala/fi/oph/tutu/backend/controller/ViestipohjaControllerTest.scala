@@ -163,7 +163,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   def tallennaUusiViestipohjaPohjaPalauttaa200(): Unit = {
     val kategoriaId = testKategoriaId.get
     val json        =
-      s"""{"nimi": "Testipohja", "kategoriaId": "${kategoriaId.toString}", "otsikko": "Testiaihe", "sisalto": {"fi": "Sisältö suomeksi"}}"""
+      s"""{"nimi": "Testipohja", "kategoriaId": "${kategoriaId.toString}", "sisalto": {"fi": "Sisältö suomeksi"}}"""
     mvc
       .perform(
         put("/api/viestipohja")
@@ -173,7 +173,6 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.nimi").value("Testipohja"))
-      .andExpect(jsonPath("$.otsikko").value("Testiaihe"))
       .andExpect(jsonPath("$.id").isNotEmpty)
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreateViestipohja), any())
   }
@@ -188,7 +187,6 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
         id = None,
         nimi = "Päivitettävä pohja",
         kategoriaId = kategoriaId,
-        otsikko = "Vanha aihe",
         sisalto = Map(Kieli.fi -> "Vanha sisältö"),
         luotu = None,
         luoja = None,
@@ -199,7 +197,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
     )
     val viestipohjaId = viestipohja.id.get
     val json          =
-      s"""{"id": "$viestipohjaId", "nimi": "Päivitetty pohja", "kategoriaId": "$kategoriaId", "otsikko": "Uusi aihe", "sisalto": {"fi": "Uusi sisältö"}}"""
+      s"""{"id": "$viestipohjaId", "nimi": "Päivitetty pohja", "kategoriaId": "$kategoriaId", "sisalto": {"fi": "Uusi sisältö"}}"""
     mvc
       .perform(
         put("/api/viestipohja")
@@ -210,7 +208,6 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").value(viestipohjaId.toString))
       .andExpect(jsonPath("$.nimi").value("Päivitetty pohja"))
-      .andExpect(jsonPath("$.otsikko").value("Uusi aihe"))
     verify(auditLog, times(1)).logChanges(any(), any(), eqTo(AuditOperation.UpdateViestipohja), any())
   }
 
@@ -221,7 +218,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
     val kategoriaId   = testKategoriaId.get
     val nonExistentId = UUID.randomUUID()
     val json          =
-      s"""{"id": "$nonExistentId", "nimi": "Ei löydy", "kategoriaId": "$kategoriaId", "otsikko": "Aihe", "sisalto": {"fi": "Sisältö"}}"""
+      s"""{"id": "$nonExistentId", "nimi": "Ei löydy", "kategoriaId": "$kategoriaId", "sisalto": {"fi": "Sisältö"}}"""
     mvc
       .perform(
         put("/api/viestipohja")

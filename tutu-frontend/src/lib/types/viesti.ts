@@ -31,8 +31,8 @@ export type Viestipohja = {
   sisalto: TranslatedName;
   nimi: string;
   kategoriaId: string;
-  luotu: string | null;
-  luoja: string | null;
+  luotu?: string | null;
+  luoja?: string | null;
   muokattu?: string | null;
   muokkaaja?: string | null;
 };

@@ -17,9 +17,9 @@ import { ViestityyppiComponent } from '@/src/app/hakemus/[oid]/editori/viesti/co
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { Editor } from '@/src/components/editor/Editor';
 import {
-  exportHtml,
   exportMarkdown,
   importHtml,
+  normalizedEditorContent,
 } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
@@ -31,7 +31,7 @@ import { useViestiAll } from '@/src/hooks/useViestiAll';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
-import { handleFetchError, anyRealContentInHtml } from '@/src/lib/utils';
+import { handleFetchError } from '@/src/lib/utils';
 
 export default function ViestiPage() {
   const { addToast } = useToaster();
@@ -93,14 +93,6 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     viestiState.discard,
   );
 
-  const normalizedEditorContent = useCallback(
-    (editor: LexicalEditor | null) => {
-      const editorContent = editor ? exportHtml(editor) : '';
-      return anyRealContentInHtml(editorContent) ? editorContent : '';
-    },
-    [],
-  );
-
   useEffect(() => {
     const toBeSisalto = currentViesti?.viesti || oletusSisalto;
     importHtml(editorRef.current, toBeSisalto || '');
@@ -118,7 +110,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
       };
     }
     return currentViesti!;
-  }, [currentViesti, editorHasChanges, normalizedEditorContent]);
+  }, [currentViesti, editorHasChanges]);
 
   const onSave = () => {
     updateViesti(viestiToBeSaved());

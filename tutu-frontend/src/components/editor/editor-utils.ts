@@ -27,6 +27,8 @@ import {
   TextNode,
 } from 'lexical';
 
+import { anyRealContentInHtml } from '@/src/lib/utils';
+
 const MARKDOWN_TRANSFORMERS = [ORDERED_LIST, UNORDERED_LIST, LINK, BOLD_STAR];
 
 export const importHtml = (editor: LexicalEditor | null, html: string) => {
@@ -202,4 +204,9 @@ export const convertHtmlToMarkdown = (html: string) => {
   const editor = createHeadlessEditor({ namespace: 'html-to-md' });
   importHtml(editor, html);
   return exportMarkdown(editor);
+};
+
+export const normalizedEditorContent = (editor: LexicalEditor | null) => {
+  const editorContent = editor ? exportHtml(editor) : '';
+  return anyRealContentInHtml(editorContent) ? editorContent : '';
 };
