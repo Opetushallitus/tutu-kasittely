@@ -84,15 +84,13 @@ def haeSuostumusSahkoiseenAsiointiin(
 
 def haeHakijanNimi(translationService: TranslationService, hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => {
-    val label = translationService.getTranslation(FI, "perustelumuistio.hakijanNimi.label")
-    s"$label ${hakemus.hakija.kutsumanimi} ${hakemus.hakija.sukunimi}".trim
+    s"${hakemus.hakija.kutsumanimi} ${hakemus.hakija.sukunimi}".trim
   })
 }
 
 def haeHakijanSyntymaaika(translationService: TranslationService, hakemusMaybe: Option[Hakemus]): Option[String] = {
   hakemusMaybe.map(hakemus => {
-    val label = translationService.getTranslation(FI, "perustelumuistio.hakijanSyntymaaika.label")
-    s"$label ${hakemus.hakija.syntymaaika}".trim
+    s"${hakemus.hakija.syntymaaika}".trim
   })
 }
 
@@ -1297,8 +1295,6 @@ def haeKasittelyajat(translationService: TranslationService, hakemusMaybe: Optio
   val viimeisinAsiakirjaPvmMaybe: Option[LocalDateTime] = hakemusMaybe
     .flatMap(_.asiakirja)
     .flatMap(_.viimeinenAsiakirjaHakijalta)
-  val paatosPvmMaybe: Option[LocalDateTime] = hakemusMaybe
-    .flatMap(_.paatosPvm)
   val saapumisPvmMaybe: Option[LocalDateTime] = hakemusMaybe
     .flatMap(_.saapumisPvm)
   val esittelyPvmMaybe: Option[LocalDateTime] = hakemusMaybe
@@ -1309,9 +1305,9 @@ def haeKasittelyajat(translationService: TranslationService, hakemusMaybe: Optio
       Some(DAYS.between(saapumisPvm, esittelyPvm)).map(days => Utility.toPrecision(days / 30.0, 1))
     case (_, _) => None
   }
-  val aikaAsiakirjastaPaatokseenMonths: Option[Double] = (viimeisinAsiakirjaPvmMaybe, paatosPvmMaybe) match {
-    case (Some(viimeisinAsiakirjaPvm), Some(paatosPvm)) =>
-      Some(DAYS.between(viimeisinAsiakirjaPvm, paatosPvm)).map(days => Utility.toPrecision(days / 30.0, 1))
+  val aikaAsiakirjastaEsittelyynMonths: Option[Double] = (viimeisinAsiakirjaPvmMaybe, esittelyPvmMaybe) match {
+    case (Some(viimeisinAsiakirjaPvm), Some(esittelyPvm)) =>
+      Some(DAYS.between(viimeisinAsiakirjaPvm, esittelyPvm)).map(days => Utility.toPrecision(days / 30.0, 1))
     case (_, _) => None
   }
 
@@ -1322,7 +1318,7 @@ def haeKasittelyajat(translationService: TranslationService, hakemusMaybe: Optio
       val unit = translationService.getTranslation(FI, "perustelumuistio.kasittelyajat.yksikko.kuukautta")
       s"$label ${months} $unit"
     ),
-    aikaAsiakirjastaPaatokseenMonths.map(months =>
+    aikaAsiakirjastaEsittelyynMonths.map(months =>
       val label =
         translationService.getTranslation(FI, "perustelumuistio.kasittelyajat.asiakirjastaRatkaisuun.label")
       val unit = translationService.getTranslation(FI, "perustelumuistio.kasittelyajat.yksikko.kuukautta")
