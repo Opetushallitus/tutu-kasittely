@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "hakija": "Heikki Heittotähti",
+      "hakija": { "etunimet": "Heikki", "sukunimi": "Heittotähti" },
       "saapumisPvm": "2025-04-14T10:59:04.597Z",
       "hakemusOid": "1.2.246.562.11.00000000001",
       "hakemusKoskee": "2",
@@ -12,7 +12,7 @@
       "apHakemus": null
     },
     {
-      "hakija": "Kalle Katana",
+      "hakija": { "etunimet": "Kalle", "sukunimi": "Katana" },
       "saapumisPvm": "2025-05-14T10:59:04.597Z",
       "hakemusOid": "1.2.246.562.11.00000000002",
       "hakemusKoskee": "2",
@@ -23,7 +23,7 @@
       "apHakemus": null
     },
     {
-      "hakija": "Simo Samurai",
+      "hakija": { "etunimet": "Simo", "sukunimi": "Samurai" },
       "saapumisPvm": "2025-06-14T10:59:04.597Z",
       "hakemusOid": "1.2.246.562.11.00000000003",
       "hakemusKoskee": "2",
@@ -35,7 +35,7 @@
       "onkoPeruutettu": true
     },
     {
-      "hakija": "Seppuku Seppo",
+      "hakija": { "etunimet": "Seppo", "sukunimi": "Seppuku" },
       "saapumisPvm": "2025-07-14T10:59:04.597Z",
       "hakemusOid": "1.2.246.562.11.00000000004",
       "hakemusKoskee": "1",

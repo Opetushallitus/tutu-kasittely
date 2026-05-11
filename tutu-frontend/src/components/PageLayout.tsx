@@ -23,9 +23,11 @@ export const PageContent = styled(Box)(({ theme }) => ({
 
 export const PageLayout = ({
   header,
+  ribbon,
   children,
 }: {
   header: ReactNode;
+  ribbon?: ReactNode;
   children: ReactNode;
 }) => {
   const theme = useTheme();
@@ -40,6 +42,7 @@ export const PageLayout = ({
       <HeaderWrapper>
         <PageContent>{header}</PageContent>
       </HeaderWrapper>
+      {ribbon}
       <PageContent>{children}</PageContent>
     </Stack>
   );

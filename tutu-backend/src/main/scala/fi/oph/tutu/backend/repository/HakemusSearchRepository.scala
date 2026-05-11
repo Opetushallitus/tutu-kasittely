@@ -20,7 +20,10 @@ class HakemusSearchRepository extends BaseResultHandlers {
   implicit val getHakemusListItemResult: GetResult[HakemusListItem] =
     GetResult(r =>
       HakemusListItem(
-        hakija = r.nextStringOption().getOrElse(""),
+        hakija = HakijaListItem(
+          etunimet = r.nextStringOption().getOrElse(""),
+          sukunimi = r.nextStringOption().getOrElse("")
+        ),
         saapumisPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         hakemusOid = r.nextString(),
         hakemusKoskee = r.nextInt(),
@@ -108,7 +111,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
           OFFSET $offset
         )
         SELECT
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          h.hakija_etunimet,
+          h.hakija_sukunimi,
           h.saapumis_pvm,
           h.hakemus_oid,
           h.hakemus_koskee,
@@ -525,11 +529,12 @@ class HakemusSearchRepository extends BaseResultHandlers {
             SELECT h.id, (""" ++ totalScoreExpr ++ sql""") AS relevance_score
             FROM hakemus h
             JOIN filtered f ON f.id = h.id
-            ORDER BY relevance_score DESC
+            ORDER BY relevance_score DESC, h.saapumis_pvm DESC NULLS LAST
             LIMIT 200
         )
         SELECT
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          h.hakija_etunimet,
+          h.hakija_sukunimi,
           h.saapumis_pvm,
           h.hakemus_oid,
           h.hakemus_koskee,
@@ -549,7 +554,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
         JOIN ranked ON ranked.id = h.id
         LEFT JOIN esittelija e ON e.id = h.esittelija_id
         LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
-        ORDER BY ranked.relevance_score DESC
+        ORDER BY ranked.relevance_score DESC, h.saapumis_pvm DESC NULLS LAST
         LIMIT $pageSize
         OFFSET $offset
       """).as[(HakemusListItem, Int)]

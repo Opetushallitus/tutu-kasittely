@@ -8,6 +8,8 @@ import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Hakemus, HakemusUpdateRequest } from '@/src/lib/types/hakemus';
 import { buildHakemusUpdateRequest } from '@/src/lib/utils';
 
+import { SearchRibbonContext } from './SearchRibbonContext';
+
 type HakemusContextValue = {
   hakemusState: EditableState<Hakemus>;
   isLoading: boolean;
@@ -35,6 +37,18 @@ export const useHakemus = () => {
   return ctx;
 };
 
+// Käytä alkuperäistä hakemusta kun ribbon ylikirjoittaa hakemusOid:n
+export const useHakemusOriginal = () => {
+  const ribbon = useContext(SearchRibbonContext);
+  const originalOid = ribbon?.originalOid;
+  return useQuery<Hakemus>({
+    queryKey: ['getHakemus', originalOid],
+    queryFn: () => getHakemus(originalOid!),
+    enabled: !!originalOid,
+    throwOnError: false,
+  });
+};
+
 export const HakemusProvider = ({
   hakemusOid,
   children,
@@ -42,6 +56,8 @@ export const HakemusProvider = ({
   hakemusOid: string;
   children: React.ReactNode;
 }) => {
+  const ribbon = useContext(SearchRibbonContext);
+  const effectiveOid = ribbon?.selectedOid ?? hakemusOid;
   const queryClient = useQueryClient();
   const {
     data: hakemus,
@@ -49,9 +65,9 @@ export const HakemusProvider = ({
     error,
     isError: isQueryError,
   } = useQuery({
-    queryKey: ['getHakemus', hakemusOid],
-    queryFn: () => getHakemus(hakemusOid),
-    enabled: !!hakemusOid,
+    queryKey: ['getHakemus', effectiveOid],
+    queryFn: () => getHakemus(effectiveOid),
+    enabled: !!effectiveOid,
     throwOnError: false,
   });
 

@@ -192,7 +192,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     val saapumisPvmStr6665 = "2025-05-14T11:06:38.273Z"
     val expectedResult     = s"""{"items": [{
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Neljäs Hakija",
+                                "hakija" : {"etunimet": "Testi Neljäs", "sukunimi": "Hakija"},
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 0,
@@ -202,7 +202,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Hakija",
+                                "hakija" : {"etunimet": "Testi", "sukunimi": "Hakija"},
                                 "saapumisPvm" : "$saapumisPvmStr6665",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
@@ -212,7 +212,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Toka Hakija",
+                                "hakija" : {"etunimet": "Testi Toka", "sukunimi": "Hakija"},
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
@@ -222,7 +222,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "kasittelyVaihe": "AlkukasittelyKesken"
                               }, {
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Kolmas Hakija",
+                                "hakija" : {"etunimet": "Testi Kolmas", "sukunimi": "Hakija"},
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
@@ -365,7 +365,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val expectedResult = s"""{"items": [{
                                 "asiatunnus" : null,
-                                "hakija" : "Testi Kolmas Hakija",
+                                "hakija" : {"etunimet": "Testi Kolmas", "sukunimi": "Hakija"},
                                 "saapumisPvm" : "2025-05-14T10:59:47.597Z",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,

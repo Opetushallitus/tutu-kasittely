@@ -7,11 +7,9 @@ import { Paginated } from '@/src/lib/types/paginated';
 const getHakemuksetHaulla = async (
   haku: string,
   nakyma: string,
+  page: number,
 ): Promise<Paginated<HakemusListItem>> => {
-  const params = new URLSearchParams({ haku });
-  if (nakyma !== 'kaikki') {
-    params.set('nakyma', nakyma);
-  }
+  const params = new URLSearchParams({ haku, nakyma, page: String(page) });
 
   return await doApiFetch(
     `hakemus/haku?${params.toString()}`,
@@ -20,10 +18,16 @@ const getHakemuksetHaulla = async (
   );
 };
 
-export const useHakemuksetHaku = (haku: string, nakyma: string) =>
-  useQuery({
-    queryKey: ['getHakemuksetHaulla'],
-    queryFn: () => getHakemuksetHaulla(haku, nakyma),
-    enabled: haku.trim().length > 0,
+export const useHakemuksetHaku = (
+  haku: string,
+  nakyma: string,
+  page: number,
+) => {
+  const enabled = haku.trim().length > 0;
+  return useQuery({
+    queryKey: ['getHakemuksetHaulla', haku, nakyma, page],
+    queryFn: () => getHakemuksetHaulla(haku, nakyma, page),
+    enabled,
     throwOnError: false,
   });
+};

@@ -17,3 +17,8 @@ case class Hakija(
   sahkopostiosoite: Option[String],
   yksiloityVTJ: Boolean
 )
+
+case class HakijaListItem(
+  etunimet: String,
+  sukunimi: String
+)

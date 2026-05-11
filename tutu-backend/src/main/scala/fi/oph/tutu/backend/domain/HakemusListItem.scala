@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.domain
 import java.time.LocalDateTime
 
 case class HakemusListItem(
-  hakija: String,
+  hakija: HakijaListItem,
   saapumisPvm: Option[LocalDateTime],
   hakemusOid: String,
   hakemusKoskee: Int,

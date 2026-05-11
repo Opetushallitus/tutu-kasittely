@@ -104,7 +104,7 @@ export default function HakemusRow({
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
         <Link href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
-          {hakemus.hakija}
+          {hakemus.hakija.etunimet} {hakemus.hakija.sukunimi}
         </Link>
       </StyledTableCell>
       <StyledTableCell>
