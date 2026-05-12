@@ -8,7 +8,9 @@ import fi.oph.tutu.backend.utils.Constants.{
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE,
-  ON_AP_HAKEMUS
+  ON_AP_HAKEMUS,
+  TUTKINTO_EI_SISALLA_OPINNAYTETYOTA,
+  TUTKINTO_SISALTAA_OPINNAYTETYON
 }
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
@@ -21,9 +23,9 @@ import scala.util.boundary.break
 
 def ataruAnswerToBoolean(value: String): Option[Boolean] = {
   if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "0") {
-    Some(true)
+    Some(TUTKINTO_SISALTAA_OPINNAYTETYON)
   } else if (value == "Ei" || value == "No" || value == "Nej" || value == "1") {
-    Some(false)
+    Some(TUTKINTO_EI_SISALLA_OPINNAYTETYOTA)
   } else {
     None
   }
