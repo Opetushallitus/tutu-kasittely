@@ -55,11 +55,11 @@ export const KategoriaEditori = ({
         <Stack direction="column" gap={6}>
           <OphTypography variant="h1">
             {kategoria
-              ? t('tekstipohjat.viestipohjat.kategoriat.muokkaa')
-              : t('tekstipohjat.viestipohjat.kategoriat.lisaa')}
+              ? t('tekstipohjat.kategoriat.muokkaa')
+              : t('tekstipohjat.kategoriat.lisaa')}
           </OphTypography>
           <OphInputFormField
-            label={t('tekstipohjat.viestipohjat.kategoriat.nimi')}
+            label={t('tekstipohjat.kategoriat.nimi')}
             value={nimi}
             onChange={(event) => setNimi(event.target.value)}
           ></OphInputFormField>

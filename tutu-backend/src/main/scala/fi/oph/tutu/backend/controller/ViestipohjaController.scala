@@ -337,7 +337,7 @@ class ViestipohjaController(
     Try {
       viestipohjaService.poistaViestipohja(UUID.fromString(viestipohjaId))
     } match {
-      case Success(1) =>
+      case Success(_) =>
         auditLog.logChanges(
           auditLog.getUser(request),
           Map("viestipohjaId" -> viestipohjaId),

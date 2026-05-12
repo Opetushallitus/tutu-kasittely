@@ -1,6 +1,6 @@
 'use client';
 
-import { ListAlt } from '@mui/icons-material';
+import { DeleteOutline, ListAlt } from '@mui/icons-material';
 import { Box, Stack } from '@mui/material';
 import {
   OphButton,
@@ -178,8 +178,9 @@ const ValittuViestipohja = ({
           }
         }}
         sx={{ marginLeft: 'auto' }}
+        startIcon={viestipohja?.id ? <DeleteOutline /> : undefined}
       >
-        {t(viestipohja?.id ? 'viestipohjat.poista' : 'viestipohjat.peruuta')}
+        {t(viestipohja?.id ? 'viestipohjat.poista' : 'yleiset.peruuta')}
       </OphButton>
       <SaveRibbon
         onSave={onSave}
