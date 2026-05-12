@@ -28,6 +28,8 @@ import org.springframework.web.context.WebApplicationContext
 
 import java.util.UUID
 
+// Claude Codea käytetty testipohjan generoimiseen
+
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
