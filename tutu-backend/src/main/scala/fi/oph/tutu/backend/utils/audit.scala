@@ -169,6 +169,10 @@ object AuditOperation {
     val name = "PAATOKSEN_LUONTI"
   }
 
+  case object CreatePaatosteksti extends AuditOperation {
+    val name = "PAATOSTEKSTIN_LUONTI"
+  }
+
   // Päivitys operaatiot
 
   case object UpdateHakemus extends AuditOperation {
@@ -215,6 +219,10 @@ object AuditOperation {
     val name = "TUTKINTOJEN_TALLENNUS"
   }
 
+  case object UpdatePaatosteksti extends AuditOperation {
+    val name = "PAATOSTEKSTIN_PAIVITYS"
+  }
+
   // Luku operaatiot
 
   case object ReadLiitteenTiedot extends AuditOperation {
@@ -257,16 +265,8 @@ object AuditOperation {
     val name = "PAATOKSEN_ESIKATSELUN_LUKU"
   }
 
-  case object CreatePaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
-  }
-
   case object ReadPaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
-  }
-
-  case object UpdatePaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
+    val name = "PAATOSTEKSTIN_LUKU"
   }
 
   case object ReadTutkinnot extends AuditOperation {

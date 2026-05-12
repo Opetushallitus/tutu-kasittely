@@ -158,11 +158,10 @@ const ValittuViestipohja = ({
             key={`viestipohja-editor-${lang}`}
             editorRef={editorRefs[lang]}
             onChange={(editor) => {
-              console.log(normalizedEditorContent(editor));
               viestipohjaState.updateLocal({
                 sisalto: {
                   ...currentViestipohja.sisalto,
-                  [language]: normalizedEditorContent(editor),
+                  [lang]: normalizedEditorContent(editor),
                 },
               });
             }}

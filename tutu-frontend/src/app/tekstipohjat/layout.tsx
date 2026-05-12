@@ -15,8 +15,8 @@ export default function TekstipohjatLayout(props: {
       <BoxWrapper>
         <Tabs
           buttons={[
-            { tabName: 'viestipohjat', linkPath: '/viestipohjat' },
-            { tabName: 'paatospohjat' },
+            { tabName: 'viestipohjat', linkPath: '/tekstipohjat/viestipohjat' },
+            { tabName: 'paatospohjat', linkPath: '/tekstipohjat/paatospohjat' },
           ]}
           tPrefix={'tekstipohjat'}
         />

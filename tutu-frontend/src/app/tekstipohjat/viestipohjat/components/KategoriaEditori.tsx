@@ -48,7 +48,6 @@ export const KategoriaEditori = ({
           transform: 'translate(-50%, -50%)',
           minWidth: 800,
           bgcolor: ophColors.white,
-          border: `00px solid ${ophColors.white}`,
           boxShadow: 24,
           p: 3,
         }}
@@ -56,8 +55,8 @@ export const KategoriaEditori = ({
         <Stack direction="column" gap={6}>
           <OphTypography variant="h1">
             {kategoria
-              ? t('tekstipohjat.viestipohjat.kategoriat.lisaa')
-              : t('tekstipohjat.viestipohjat.kategoriat.muokkaa')}
+              ? t('tekstipohjat.viestipohjat.kategoriat.muokkaa')
+              : t('tekstipohjat.viestipohjat.kategoriat.lisaa')}
           </OphTypography>
           <OphInputFormField
             label={t('tekstipohjat.viestipohjat.kategoriat.nimi')}

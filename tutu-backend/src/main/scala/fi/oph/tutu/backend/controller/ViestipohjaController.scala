@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{Viestipohja, ViestipohjaKategoria}
-import fi.oph.tutu.backend.service.{NotFoundException, UserService, ViestipohjaService}
+import fi.oph.tutu.backend.service.{UserService, ViestipohjaService}
 import fi.oph.tutu.backend.utils.AuditOperation.{
   CreateViestipohja,
   CreateViestipohjaKategoria,
@@ -10,7 +10,6 @@ import fi.oph.tutu.backend.utils.AuditOperation.{
   ReadViestipohja,
   ReadViestipohjaKategoriat,
   ReadViestipohjat,
-  UpdateViesti,
   UpdateViestipohja,
   UpdateViestipohjaKategoria
 }
@@ -204,8 +203,8 @@ class ViestipohjaController(
               Map("viestipohjaKategoriaId" -> id.toString),
               UpdateViestipohjaKategoria,
               AuditUtil.getChanges(
-                Some(mapper.writeValueAsString(oldKategoria)),
-                Some(mapper.writeValueAsString(updatedKategoria))
+                oldKategoria.map(mapper.writeValueAsString),
+                updatedKategoria.map(mapper.writeValueAsString)
               )
             )
             updatedKategoria
@@ -268,8 +267,8 @@ class ViestipohjaController(
       val viestipohja = mapper.readValue(viestipohjaBytes, classOf[Viestipohja])
       viestipohja.id match {
         case Some(id) =>
-          val currentViestipohja = viestipohjaService.haeViestipohja(id)
-          if (currentViestipohja.isEmpty) {
+          val oldViestipohja = viestipohjaService.haeViestipohja(id)
+          if (oldViestipohja.isEmpty) {
             None
           } else {
             val updatedViestipohja = viestipohjaService.paivitaViestipohja(id, viestipohja, user.userOid)
@@ -278,8 +277,8 @@ class ViestipohjaController(
               Map("viestipohjaId" -> id.toString),
               UpdateViestipohja,
               AuditUtil.getChanges(
-                Some(mapper.writeValueAsString(currentViestipohja)),
-                Some(mapper.writeValueAsString(updatedViestipohja))
+                oldViestipohja.map(mapper.writeValueAsString),
+                updatedViestipohja.map(mapper.writeValueAsString)
               )
             )
             updatedViestipohja

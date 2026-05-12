@@ -31,8 +31,6 @@ export default function ViestipohjaLista({
     ViestipohjaKategoria | undefined
   >();
 
-  useState(false);
-
   return (
     <>
       <Stack
@@ -53,6 +51,7 @@ export default function ViestipohjaLista({
             variant={'outlined'}
             startIcon={<Add />}
             onClick={() => {
+              setSelectedKategoria(undefined);
               setKategoriaModalOpen(true);
             }}
           >
@@ -130,6 +129,7 @@ export default function ViestipohjaLista({
         <KategoriaEditori
           handleClose={() => {
             setKategoriaModalOpen(false);
+            setSelectedKategoria(undefined);
           }}
           handleSubmit={tallennaKategoria}
           kategoria={selectedKategoria}

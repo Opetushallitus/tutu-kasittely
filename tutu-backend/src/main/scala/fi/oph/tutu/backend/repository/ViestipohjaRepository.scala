@@ -82,9 +82,9 @@ class ViestipohjaRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Viestipohja kategorian tallentaminen epäonnistui: $e")
+        LOG.error(s"Viestipohja kategorian haku epäonnistui: $e")
         throw new RuntimeException(
-          s"Viestipohja kategorian tallentaminen epäonnistui: ${e.getMessage}",
+          s"Viestipohja kategorian haku epäonnistui: ${e.getMessage}",
           e
         )
     }
