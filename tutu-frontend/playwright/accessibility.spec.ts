@@ -138,3 +138,19 @@ test('Saavutettavuus valitustiedot ok', async ({ page }) => {
   await expect(page.getByTestId('valitustiedot-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
+
+test('Saavutettavuus viestipohjat ok', async ({ page }) => {
+  await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
+  const otsikko = await translate(page, 'tekstipohjat.viestipohjat.muokkaus');
+  await expect(page.locator('h2')).toHaveText(otsikko);
+
+  await expectPageAccessibilityOk(page);
+
+  const lisaaKategoriaText = await translate(
+    page,
+    'tekstipohjat.viestipohjat.kategoriat.lisaa',
+  );
+  await page.getByRole('button', { name: lisaaKategoriaText }).click();
+
+  await expectPageAccessibilityOk(page);
+});

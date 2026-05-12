@@ -1,7 +1,7 @@
 'use client';
 
 import { Add, Edit } from '@mui/icons-material';
-import { Box, List, ListItem, Stack } from '@mui/material';
+import { List, ListItem, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 
@@ -70,7 +70,7 @@ export default function ViestipohjaLista({
         {kategoriat.map((kategoria, index) => (
           <List
             subheader={
-              <Box
+              <ListItem
                 sx={{
                   width: '100%',
                   display: 'flex',
@@ -91,7 +91,7 @@ export default function ViestipohjaLista({
                   {`${index + 1}. ${kategoria.nimi}`}
                 </OphTypography>
                 <Edit sx={{ marginRight: '12px', display: 'none' }} />
-              </Box>
+              </ListItem>
             }
             key={kategoria.id}
           >

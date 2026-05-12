@@ -56,11 +56,15 @@ test('Uuden kategorian luominen onnistuu', async ({ page }) => {
   ]);
 
   expect(request.postDataJSON()).toMatchObject({ nimi: 'Uusi kategoria' });
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'success',
+
+  const successText = await translate(
+    page,
+    'viestipohjat.kategoriat.tallennusOnnistui',
   );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
 });
 
 test('Uuden kategorian luominen epäonnistuu', async ({ page }) => {
@@ -93,11 +97,14 @@ test('Uuden kategorian luominen epäonnistuu', async ({ page }) => {
   await page.getByLabel(nimiLabel).fill('Uusi kategoria');
   await page.getByTestId('modal-confirm-button').click();
 
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'error',
+  const toastText = await translate(
+    page,
+    'virhe.viestipohjaKategoriatTallennus',
   );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
 });
 
 test('Olemassaolevan kategorian muokkaus onnistuu', async ({ page }) => {
@@ -128,11 +135,15 @@ test('Olemassaolevan kategorian muokkaus onnistuu', async ({ page }) => {
     id: '1',
     nimi: 'Muokattu kategoria',
   });
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'success',
+
+  const successText = await translate(
+    page,
+    'viestipohjat.kategoriat.tallennusOnnistui',
   );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
 });
 
 test('Olemassaolevan kategorian muokkaus epäonnistuu', async ({ page }) => {
@@ -161,11 +172,55 @@ test('Olemassaolevan kategorian muokkaus epäonnistuu', async ({ page }) => {
   await page.getByLabel(nimiLabel).fill('Muokattu kategoria');
   await page.getByTestId('modal-confirm-button').click();
 
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'error',
+  const toastText = await translate(
+    page,
+    'virhe.viestipohjaKategoriatTallennus',
   );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+});
+
+test('Viestipohjien latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await page.route('**/tutu-backend/api/viestipohja', async (route: Route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'Latausvirhe' }),
+    });
+  });
+  await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
+
+  const toastText = await translate(page, 'virhe.viestipohjatLataus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+});
+
+test('Kategorioiden latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await page.route(
+    '**/tutu-backend/api/viestipohja/kategoria',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Latausvirhe' }),
+      });
+    },
+  );
+  await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
+
+  const toastText = await translate(page, 'virhe.viestipohjaKategoriatLataus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
 });
 
 test('Modaalin peruutus sulkee modaalin', async ({ page }) => {

@@ -31,7 +31,8 @@ export const KategoriaEditori = ({
     <Modal
       open={true}
       onClose={handleClose}
-      aria-labelledby="modal-component-header"
+      role={'dialog'}
+      aria-labelledby="kategoria-editor-header"
       data-testid="modal-component"
       sx={{
         zIndex: 100, // SaveRibbon + 1
@@ -53,7 +54,7 @@ export const KategoriaEditori = ({
         }}
       >
         <Stack direction="column" gap={6}>
-          <OphTypography variant="h1">
+          <OphTypography variant="h1" id={'kategoria-editor-header'}>
             {kategoria
               ? t('tekstipohjat.kategoriat.muokkaa')
               : t('tekstipohjat.kategoriat.lisaa')}

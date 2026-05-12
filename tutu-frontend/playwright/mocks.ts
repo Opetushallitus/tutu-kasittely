@@ -38,6 +38,8 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockFilemakerList(page),
     mockFilemakerHakemus(page),
     mockYhteinenKasittely(page),
+    mockViestipohjaLista(page),
+    mockViestipohjaKategoriat(page),
   ]);
 };
 

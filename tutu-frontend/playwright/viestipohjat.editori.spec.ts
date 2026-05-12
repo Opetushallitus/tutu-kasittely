@@ -45,11 +45,11 @@ test('Viestipohjaan latauksen epäonnistuessa näytetään virheteksti', async (
 
   await page.getByText('Viestipohja 1').first().click();
 
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'error',
-  );
+  const toastText = await translate(page, 'virhe.viestipohjaLataus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
 });
 
 test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
@@ -70,6 +70,15 @@ test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
       nimi: 'Uusi nimi',
     },
   );
+
+  const successText = await translate(
+    page,
+    'viestipohjat.viestipohjaTallennus.success',
+  );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
 });
 
 test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', async ({
@@ -95,11 +104,11 @@ test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', asyn
   await expect(saveButton).toBeVisible();
   await saveButton.click();
 
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'error',
-  );
+  const toastText = await translate(page, 'virhe.viestipohjaTallennus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
 });
 
 test('Viestipohjaan poisto onnistuu', async ({ page }) => {
@@ -110,23 +119,29 @@ test('Viestipohjaan poisto onnistuu', async ({ page }) => {
   await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 
   const poistaText = await translate(page, 'viestipohjat.poista');
+  await page.getByRole('button', { name: poistaText }).click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
         req.url().includes('/tutu-backend/api/viestipohja/') &&
         req.method() === 'DELETE',
     ),
-    page.getByRole('button', { name: poistaText }).click(),
+    page.getByTestId('modal-confirm-button').click(),
   ]);
 
   expect(request.method()).toBe('DELETE');
   const valitseText = await translate(page, 'tekstipohjat.valitseViestipohja');
   await expect(page.getByText(valitseText)).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'success',
+
+  const successText = await translate(
+    page,
+    'viestipohjat.viestipohjaPoisto.success',
   );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
 });
 
 test('Viestipohjaan poiston epäonnistuessa näytetään virheteksti', async ({
@@ -158,10 +173,12 @@ test('Viestipohjaan poiston epäonnistuessa näytetään virheteksti', async ({
 
   const poistaText = await translate(page, 'viestipohjat.poista');
   await page.getByRole('button', { name: poistaText }).click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+  await page.getByTestId('modal-confirm-button').click();
 
-  await expect(page.getByTestId('toast-alert')).toBeVisible();
-  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
-    'data-severity',
-    'error',
-  );
+  const toastText = await translate(page, 'virhe.viestipohjaPoisto');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
 });

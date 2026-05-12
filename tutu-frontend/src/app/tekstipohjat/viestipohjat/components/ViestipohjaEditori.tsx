@@ -13,6 +13,7 @@ import { LexicalEditor } from 'lexical';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Tabs } from '@/src/app/(root)/components/Tabs';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { Editor } from '@/src/components/editor/Editor';
 import {
   importHtml,
@@ -50,6 +51,7 @@ const ValittuViestipohja = ({
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   const {
     viestipohja,
@@ -172,7 +174,16 @@ const ValittuViestipohja = ({
         variant={viestipohja?.id ? 'text' : 'outlined'}
         onClick={() => {
           if (viestipohja?.id) {
-            poistaViestipohja(() => setValittuViestipohja(null));
+            showConfirmation({
+              confirmButtonText: t('viestipohjat.poista'),
+              content: t('viestipohjat.poista.content', {
+                nimi: viestipohja!.nimi,
+              }),
+              handleConfirmAction: () => {
+                poistaViestipohja(() => setValittuViestipohja(null));
+              },
+              header: t('viestipohjat.poista.header'),
+            });
           } else {
             setValittuViestipohja(null);
           }
