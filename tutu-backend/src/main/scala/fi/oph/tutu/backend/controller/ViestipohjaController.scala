@@ -337,6 +337,9 @@ class ViestipohjaController(
     Try {
       viestipohjaService.poistaViestipohja(UUID.fromString(viestipohjaId))
     } match {
+      case Success(0) =>
+        LOG.error(s"Viestipohjaa ei löytynyt")
+        ResponseEntity.status(NOT_FOUND).body("")
       case Success(_) =>
         auditLog.logChanges(
           auditLog.getUser(request),
@@ -345,9 +348,6 @@ class ViestipohjaController(
           AuditUtil.getChanges(None, None)
         )
         ResponseEntity.status(NO_CONTENT).body("")
-      case Success(0) =>
-        LOG.error(s"Viestipohjaa ei löytynyt")
-        ResponseEntity.status(NOT_FOUND).body("")
       case Failure(exception) =>
         LOG.error(s"Viestipohjan poistaminen epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)

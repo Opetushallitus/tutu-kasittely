@@ -160,7 +160,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(6)
-  def tallennaUusiViestipohjaPohjaPalauttaa200(): Unit = {
+  def tallennaUusiViestipohjaPalauttaa200(): Unit = {
     val kategoriaId = testKategoriaId.get
     val json        =
       s"""{"nimi": "Testipohja", "kategoriaId": "${kategoriaId.toString}", "sisalto": {"fi": "Sisältö suomeksi"}}"""
@@ -180,7 +180,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
-  def tallennaOlemassaolevaViestipohjaPohjaPalauttaa200(): Unit = {
+  def tallennaOlemassaolevaViestipohjaPalauttaa200(): Unit = {
     val kategoriaId = testKategoriaId.get
     val viestipohja = viestipohjaRepository.lisaaViestipohja(
       Viestipohja(
@@ -214,7 +214,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(8)
-  def tallennaViestipohjaPohjaTuntemattomallaTunnisteellaPalauttaa404(): Unit = {
+  def tallennaViestipohjaTuntemattomallaTunnisteellaPalauttaa404(): Unit = {
     val kategoriaId   = testKategoriaId.get
     val nonExistentId = UUID.randomUUID()
     val json          =
@@ -234,7 +234,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(9)
-  def haeYksittainenViestipohjaPohjaPalauttaaOlemassaolevanPohjan(): Unit = {
+  def haeYksittainenViestipohjaPalauttaaOlemassaolevanPohjan(): Unit = {
     val viestipohjat  = viestipohjaRepository.haeViestipohjaLista()
     val viestipohjaId = viestipohjat.head.id.get
     mvc
@@ -247,7 +247,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(10)
-  def haeYksittainenViestipohjaPohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
+  def haeYksittainenViestipohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
     val nonExistentId = UUID.randomUUID()
     mvc
       .perform(get(s"/api/viestipohja/$nonExistentId"))
@@ -259,7 +259,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(11)
-  def poistaViestipohjaPohjaPalauttaa204(): Unit = {
+  def poistaViestipohjaPalauttaa204(): Unit = {
     val viestipohjat  = viestipohjaRepository.haeViestipohjaLista()
     val viestipohjaId = viestipohjat.head.id.get.toString
     mvc
@@ -275,7 +275,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(12)
-  def poistaViestipohjaPohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
+  def poistaViestipohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
     val nonExistentId = UUID.randomUUID().toString
     mvc
       .perform(
