@@ -360,19 +360,21 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def onkoHakemusPeruutettu(hakemus: AtaruHakemus): Boolean = {
-    val answers    = hakemus.content.answers
-    val peruutettu = findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
-      .map(_.toString)
-    ataruAnswerToBoolean(peruutettu.get).get
+    val answers = hakemus.content.answers
+    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
+      .flatMap(ataruAnswerToBoolean)
+      .getOrElse(false)
   }
 
   def onkoApHakemus(hakemus: AtaruHakemus): Option[Boolean] = {
     parseHakemusKoskee(hakemus) match {
       case HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN =>
-        val answers    = hakemus.content.answers
-        val ap_hakemus = findAnswerByAtaruKysymysId(Constants.ATARU_AP_KYSYMYS, answers)
-          .map(_.toString)
-        ataruAnswerToBoolean(ap_hakemus.get)
+        val answers = hakemus.content.answers
+        Some(
+          findAnswerByAtaruKysymysId(Constants.ATARU_AP_KYSYMYS, answers)
+            .flatMap(ataruAnswerToBoolean)
+            .getOrElse(false)
+        )
       case _ => None
     }
   }
