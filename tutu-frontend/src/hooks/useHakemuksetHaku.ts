@@ -5,12 +5,27 @@ import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { Paginated } from '@/src/lib/types/paginated';
 
 export type HakemuksetFilters = {
+  // Tutkinto
   suoritusmaa: string;
   paattymisVuosi: string;
   todistusVuosi: string;
   oppilaitos: string;
   tutkinnonNimi: string;
   paaAine: string;
+  // Kelpoisuus
+  kelpoisuus: string;
+  opetettavatAineet: string;
+  // Päätös
+  ratkaisutyyppi: string;
+  paatostyyppi: string;
+  sovellettuLaki: string;
+  tutkinnonTaso: string;
+  kielteinen: string;
+  myonteinen: string;
+  // Hakija/esittelijä
+  esittelijaOid: string;
+  hakijanNimi: string;
+  asiatunnus: string;
 };
 
 const getHakemuksetHaulla = async (

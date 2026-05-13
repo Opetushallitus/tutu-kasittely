@@ -345,6 +345,17 @@ class HakemusController(
     @RequestParam(required = false) oppilaitos: String,
     @RequestParam(required = false) tutkinnonNimi: String,
     @RequestParam(required = false) paaAine: String,
+    @RequestParam(required = false) kelpoisuus: String,
+    @RequestParam(required = false) opetettavatAineet: String,
+    @RequestParam(required = false) ratkaisutyyppi: String,
+    @RequestParam(required = false) paatostyyppi: String,
+    @RequestParam(required = false) sovellettuLaki: String,
+    @RequestParam(required = false) tutkinnonTaso: String,
+    @RequestParam(required = false) kielteinen: String,
+    @RequestParam(required = false) myonteinen: String,
+    @RequestParam(required = false) esittelijaOid: String,
+    @RequestParam(required = false) hakijanNimi: String,
+    @RequestParam(required = false) asiatunnus: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -357,7 +368,18 @@ class HakemusController(
         todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty),
         oppilaitos = Option(oppilaitos).filter(_.nonEmpty),
         tutkinnonNimi = Option(tutkinnonNimi).filter(_.nonEmpty),
-        paaAine = Option(paaAine).filter(_.nonEmpty)
+        paaAine = Option(paaAine).filter(_.nonEmpty),
+        kelpoisuus = Option(kelpoisuus).filter(_.nonEmpty),
+        opetettavatAineet = Option(opetettavatAineet).filter(_.nonEmpty),
+        ratkaisutyyppi = Option(ratkaisutyyppi).filter(_.nonEmpty),
+        paatostyyppi = Option(paatostyyppi).filter(_.nonEmpty),
+        sovellettuLaki = Option(sovellettuLaki).filter(_.nonEmpty),
+        tutkinnonTaso = Option(tutkinnonTaso).filter(_.nonEmpty),
+        kielteinen = Option(kielteinen).filter(_.nonEmpty),
+        myonteinen = Option(myonteinen).filter(_.nonEmpty),
+        esittelijaOid = Option(esittelijaOid).filter(_.nonEmpty),
+        hakijanNimi = Option(hakijanNimi).filter(_.nonEmpty),
+        asiatunnus = Option(asiatunnus).filter(_.nonEmpty)
       )
       hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, filters, page, pagesize)
     } match {

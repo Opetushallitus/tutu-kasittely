@@ -512,24 +512,131 @@ class HakemusSearchRepository extends BaseResultHandlers {
           .reduce(_ ++ sql" INTERSECT " ++ _)
       }
 
-      // Tarkka haku filtterit yhdistetään kandidaatteihin
-      val tutkintoFilter: Option[SQLActionBuilder] = {
+      // Tutkinto-filtteri: kun kelpoisuus-filtteri annetaan samanaikaisesti, korreloituu
+      // tutkintoon päätöstiedon kautta jotta varmistetaan oikea tutkinto-kelpoisuus-pari.
+      val tClauses: Seq[SQLActionBuilder] = {
+        val c = Seq.newBuilder[SQLActionBuilder]
+        filters.suoritusmaa.foreach(v => c += sql"t.maakoodiuri = $v")
+        filters.paattymisVuosi.foreach(v => c += sql"t.paattymis_vuosi = $v")
+        filters.todistusVuosi.foreach(v => c += sql"t.todistuksen_paivamaara ILIKE ${s"%$v%"}")
+        filters.oppilaitos.foreach(v => c += sql"t.oppilaitos %> $v")
+        filters.tutkinnonNimi.foreach(v => c += sql"t.nimi %> $v")
+        filters.paaAine.foreach(v => c += sql"t.paaaine_tai_erikoisala %> $v")
+        c.result()
+      }
+
+      val kClauses: Seq[SQLActionBuilder] = {
+        val c = Seq.newBuilder[SQLActionBuilder]
+        filters.kelpoisuus.foreach(v => c += sql"k.kelpoisuus = $v")
+        filters.opetettavatAineet.foreach(v => c += sql"k.opetettava_aine ILIKE ${s"%$v%"}")
+        c.result()
+      }
+
+      val tutkintoKelpoisuusFilter: Option[SQLActionBuilder] =
+        (tClauses.nonEmpty, kClauses.nonEmpty) match {
+          case (false, false) => None
+          case (true, false)  =>
+            Some(
+              sql"""SELECT hakemus_id AS id
+                    FROM tutkinto t
+                    WHERE """ ++ tClauses.reduce(_ ++ sql" AND " ++ _)
+            )
+          case (false, true) =>
+            Some(
+              sql"""SELECT p.hakemus_id AS id
+                    FROM paatos p
+                    JOIN paatostieto pt ON pt.paatos_id = p.id
+                    JOIN kelpoisuus k ON k.paatostieto_id = pt.id
+                    WHERE """ ++ kClauses.reduce(_ ++ sql" AND " ++ _)
+            )
+          case (true, true) =>
+            // Kelpoisuus korreloituu tutkintoon päätöstiedon kautta
+            Some(
+              sql"""SELECT p.hakemus_id AS id
+                    FROM paatos p
+                    JOIN paatostieto pt ON pt.paatos_id = p.id
+                    JOIN kelpoisuus k ON k.paatostieto_id = pt.id
+                    JOIN tutkinto t ON t.id = pt.tutkinto_id
+                    WHERE """ ++ (kClauses ++ tClauses).reduce(_ ++ sql" AND " ++ _)
+            )
+        }
+
+      // Päätös/päätöstieto-filtterit
+      val paatostiedotFilter: Option[SQLActionBuilder] = {
         val clauses = Seq.newBuilder[SQLActionBuilder]
-        filters.suoritusmaa.foreach(v => clauses += sql"t.maakoodiuri = $v")
-        filters.paattymisVuosi.foreach(v => clauses += sql"t.paattymis_vuosi = $v")
-        filters.todistusVuosi.foreach(v => clauses += sql"t.todistuksen_paivamaara) LIKE ${s"$v%"}")
-        filters.oppilaitos.foreach(v => clauses += sql"t.oppilaitos %> $v")
-        filters.tutkinnonNimi.foreach(v => clauses += sql"t.nimi %> $v")
-        filters.paaAine.foreach(v => clauses += sql"t.paaaine_tai_erikoisala %> $v")
+        filters.ratkaisutyyppi.foreach(v => clauses += sql"p.ratkaisutyyppi = ${v}::ratkaisutyyppi")
+        filters.paatostyyppi.foreach(v => clauses += sql"pt.paatostyyppi = ${v}::paatostyyppi")
+        filters.sovellettuLaki.foreach(v => clauses += sql"pt.sovellettulaki = ${v}::sovellettulaki")
+        filters.tutkinnonTaso.foreach(v => clauses += sql"pt.tutkintotaso = ${v}::tutkintotaso")
         val list = clauses.result()
         Option.when(list.nonEmpty)(
-          sql"""SELECT hakemus_id AS id
-                FROM tutkinto t
+          sql"""SELECT p.hakemus_id AS id
+                FROM paatos p
+                JOIN paatostieto pt ON pt.paatos_id = p.id
                 WHERE """ ++ list.reduce(_ ++ sql" AND " ++ _)
         )
       }
 
-      val candidateSet = Seq(wordCandidates, tutkintoFilter).flatten.reduce { (acc, sub) =>
+      // Päätöksen myönteinen/kielteinen-filtteri (tarkistaa sekä paatostieto että kelpoisuus)
+      val myonteinenPaatosFilter: Option[SQLActionBuilder] = {
+        val hasKielteinen = filters.kielteinen.contains("true")
+        val hasMyonteinen = filters.myonteinen.contains("true")
+        (hasKielteinen, hasMyonteinen) match {
+          case (false, false) => None
+          case (true, true)   =>
+            // Molemmat valittu → hakemukset joilla on jokin päätös
+            Some(sql"""SELECT p.hakemus_id AS id
+                       FROM paatos p
+                       JOIN paatostieto pt ON pt.paatos_id = p.id
+                       WHERE pt.myonteinen_paatos IS NOT NULL""")
+          case (_, _) =>
+            val boolVal = hasMyonteinen
+            Some(
+              sql"""SELECT p.hakemus_id AS id
+                    FROM paatos p
+                    JOIN paatostieto pt ON pt.paatos_id = p.id
+                    WHERE pt.myonteinen_paatos = $boolVal
+                    UNION
+                    SELECT p.hakemus_id AS id
+                    FROM paatos p
+                    JOIN paatostieto pt ON pt.paatos_id = p.id
+                    JOIN kelpoisuus k ON k.paatostieto_id = pt.id
+                    WHERE k.myonteinen_paatos = $boolVal"""
+            )
+        }
+      }
+
+      // Esittelijä-filtteri
+      val esittelijaFilter: Option[SQLActionBuilder] = filters.esittelijaOid.map { v =>
+        sql"""SELECT h.id AS id
+              FROM hakemus h
+              JOIN esittelija e ON e.id = h.esittelija_id
+              WHERE e.esittelija_oid = $v"""
+      }
+
+      // Hakija/asiatunnus-filtterit
+      val hakijaFilter: Option[SQLActionBuilder] = {
+        val clauses = Seq.newBuilder[SQLActionBuilder]
+        filters.hakijanNimi.foreach(v =>
+          clauses += sql"(COALESCE(hakija_etunimet, '') || ' ' || COALESCE(hakija_sukunimi, '')) ILIKE ${s"%$v%"}"
+        )
+        filters.asiatunnus.foreach(v => clauses += sql"asiatunnus ILIKE ${s"%$v%"}")
+        val list = clauses.result()
+        Option.when(list.nonEmpty)(
+          sql"""SELECT id AS id
+                FROM hakemus
+                WHERE """ ++ list.reduce(_ ++ sql" AND " ++ _)
+        )
+      }
+
+      val candidateSet = Seq(
+        wordCandidates,
+        tutkintoKelpoisuusFilter,
+        paatostiedotFilter,
+        myonteinenPaatosFilter,
+        esittelijaFilter,
+        hakijaFilter
+      ).flatten.reduce { (acc, sub) =>
         sql"(" ++ acc ++ sql") INTERSECT (" ++ sub ++ sql")"
       }
 
