@@ -30,7 +30,7 @@ export type Viestipohja = {
   id?: string;
   sisalto: TranslatedName;
   nimi: string;
-  kategoriaId: string;
+  kategoriaId?: string;
   luotu?: string | null;
   luoja?: string | null;
   muokattu?: string | null;
@@ -39,7 +39,7 @@ export type Viestipohja = {
 
 export type ViestipohjaListItem = {
   id: string;
-  kategoriaId: string;
+  kategoriaId?: string;
   nimi: string;
 };
 

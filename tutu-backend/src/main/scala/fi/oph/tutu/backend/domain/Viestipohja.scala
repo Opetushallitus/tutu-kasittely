@@ -6,7 +6,7 @@ import java.util.UUID
 case class Viestipohja(
   id: Option[UUID],
   nimi: String,
-  kategoriaId: UUID,
+  kategoriaId: Option[UUID],
   sisalto: Kielistetty,
   luotu: Option[LocalDateTime],
   luoja: Option[String],
@@ -17,7 +17,7 @@ case class Viestipohja(
 case class ViestipohjaListItem(
   id: Option[UUID],
   nimi: String,
-  kategoriaId: UUID
+  kategoriaId: Option[UUID]
 )
 
 case class ViestipohjaKategoria(

@@ -21,7 +21,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
     GetResult(r =>
       Viestipohja(
         id = Some(r.nextObject().asInstanceOf[UUID]),
-        kategoriaId = r.nextObject().asInstanceOf[UUID],
+        kategoriaId = r.nextObjectOption().map(_.asInstanceOf[UUID]),
         nimi = r.nextString(),
         sisalto = parseKielistetty(r.nextString()),
         luotu = Some(r.nextTimestamp().toLocalDateTime),
@@ -35,7 +35,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
     GetResult(r =>
       ViestipohjaListItem(
         id = Some(r.nextObject().asInstanceOf[UUID]),
-        kategoriaId = r.nextObject().asInstanceOf[UUID],
+        kategoriaId = r.nextObjectOption().map(_.asInstanceOf[UUID]),
         nimi = r.nextString()
       )
     )
@@ -213,7 +213,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
                 luoja
               )
               VALUES (
-                ${viestipohja.kategoriaId.toString}::uuid,
+                ${viestipohja.kategoriaId.map(_.toString).orNull}::uuid,
                 ${viestipohja.nimi},
                 $sisaltoJson::jsonb,
                 $luoja
@@ -246,7 +246,7 @@ class ViestipohjaRepository extends BaseResultHandlers {
       db.run(
         sql"""UPDATE viestipohja
               SET
-                kategoria_id = ${viestipohja.kategoriaId.toString}::uuid,
+                kategoria_id = ${viestipohja.kategoriaId.map(_.toString).orNull}::uuid,
                 nimi = ${viestipohja.nimi},
                 sisalto = $sisaltoJson::jsonb,
                 muokkaaja = $muokkaaja

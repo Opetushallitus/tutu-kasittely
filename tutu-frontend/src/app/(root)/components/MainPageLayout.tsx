@@ -63,7 +63,7 @@ export default function MainPageLayout({
                 <OphButton href="/maajako" variant="text">
                   {t('maajako.otsikko')}
                 </OphButton>
-              </Stack>{' '}
+              </Stack>
             </Box>
           </BoxWrapper>
 

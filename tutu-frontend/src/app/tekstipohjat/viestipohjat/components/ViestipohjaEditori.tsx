@@ -78,16 +78,16 @@ const ValittuViestipohja = ({
   };
 
   useEffect(() => {
-    importHtml(editorRefs.fi.current, currentViestipohja?.sisalto.fi ?? '');
-  }, [currentViestipohja?.sisalto.fi, editorRefs.fi]);
+    importHtml(editorRefs.fi.current, viestipohja?.sisalto.fi ?? '');
+  }, [viestipohja?.sisalto.fi, editorRefs.fi]);
 
   useEffect(() => {
-    importHtml(editorRefs.sv.current, currentViestipohja?.sisalto.sv ?? '');
-  }, [currentViestipohja?.sisalto.sv, editorRefs.sv]);
+    importHtml(editorRefs.sv.current, viestipohja?.sisalto.sv ?? '');
+  }, [viestipohja?.sisalto.sv, editorRefs.sv]);
 
   useEffect(() => {
-    importHtml(editorRefs.en.current, currentViestipohja?.sisalto.en ?? '');
-  }, [currentViestipohja?.sisalto.en, editorRefs.en]);
+    importHtml(editorRefs.en.current, viestipohja?.sisalto.en ?? '');
+  }, [viestipohja?.sisalto.en, editorRefs.en]);
 
   const languages: Array<LanguageCode> = ['fi', 'sv', 'en'];
   const [language, setLanguage] = useState<LanguageCode>('fi');
@@ -127,7 +127,7 @@ const ValittuViestipohja = ({
   return (
     <>
       <OphInputFormField
-        label={t('viestipohjat.nimi')}
+        label={`${t('viestipohjat.nimi')} *`}
         value={currentViestipohja.nimi}
         onChange={(e) => {
           viestipohjaState.updateLocal({ nimi: e.target.value });
@@ -135,8 +135,11 @@ const ValittuViestipohja = ({
       ></OphInputFormField>
       <OphSelectFormField
         label={t('viestipohjat.kategoria')}
-        value={currentViestipohja.kategoriaId}
-        options={kategoriat.map((k) => ({ value: k.id, label: k.nimi }))}
+        value={currentViestipohja.kategoriaId ?? ''}
+        options={[
+          { label: t('tekstipohjat.viestipohjat.eiKategoriaa'), value: '' },
+          ...kategoriat.map((k) => ({ value: k.id, label: k.nimi })),
+        ]}
         onChange={(e) => {
           viestipohjaState.updateLocal({
             kategoriaId: e.target.value,

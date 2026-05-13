@@ -1,7 +1,7 @@
 'use client';
 
 import { Add, Edit } from '@mui/icons-material';
-import { List, ListItem, Stack } from '@mui/material';
+import { Box, List, ListItemButton, ListSubheader, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 
@@ -12,6 +12,37 @@ import {
   ViestipohjaKategoria,
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
+
+const ViestipohjaListItemButton = ({
+  viestipohja,
+  onClick,
+}: {
+  viestipohja: ViestipohjaListItem;
+  onClick: () => void;
+}) => {
+  return (
+    <ListItemButton
+      onClick={onClick}
+      sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: ophColors.grey50,
+        margin: '4px',
+        fontWeight: 500,
+        '&:hover *': {
+          color: ophColors.blue2,
+        },
+        '&:hover .MuiSvgIcon-root': {
+          display: 'block',
+        },
+      }}
+    >
+      <OphTypography variant={'body1'}>{viestipohja.nimi}</OphTypography>
+      <Edit sx={{ display: 'none' }} />
+    </ListItemButton>
+  );
+};
 
 export default function ViestipohjaLista({
   kategoriat,
@@ -30,6 +61,8 @@ export default function ViestipohjaLista({
   const [selectedKategoria, setSelectedKategoria] = useState<
     ViestipohjaKategoria | undefined
   >();
+
+  const eiKategoriaa = viestipohjat.filter((vp) => !vp.kategoriaId);
 
   return (
     <>
@@ -67,63 +100,84 @@ export default function ViestipohjaLista({
             {t('tekstipohjat.viestipohjat.lisaa')}
           </OphButton>
         </Stack>
-        {kategoriat.map((kategoria, index) => (
-          <List
-            subheader={
-              <ListItem
-                sx={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  '&:hover *': {
-                    color: ophColors.blue2,
-                  },
-                  '&:hover .MuiSvgIcon-root': {
-                    display: 'block',
-                  },
-                }}
-                onClick={() => {
-                  setKategoriaModalOpen(true);
-                  setSelectedKategoria(kategoria);
-                }}
-              >
-                <OphTypography variant={'label'}>
-                  {`${index + 1}. ${kategoria.nimi}`}
-                </OphTypography>
-                <Edit sx={{ marginRight: '12px', display: 'none' }} />
-              </ListItem>
-            }
-            key={kategoria.id}
-          >
-            {viestipohjat
-              .filter((vp) => vp.kategoriaId === kategoria.id)
-              .map((vp) => (
-                <ListItem
-                  key={vp.id}
-                  onClick={() => {
-                    setValittuViestipohjaId(vp.id);
-                  }}
+        <Box
+          sx={{
+            '& ul': {
+              padding: 0,
+            },
+          }}
+        >
+          {kategoriat.map((kategoria, index) => (
+            <List
+              subheader={
+                <ListSubheader
                   sx={{
                     width: '100%',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    backgroundColor: ophColors.grey50,
-                    margin: '4px',
-                    fontWeight: 500,
                     '&:hover *': {
                       color: ophColors.blue2,
                     },
-                    '&:hover .MuiSvgIcon-root': {
+                    '&:hover button': {
                       display: 'block',
                     },
                   }}
                 >
-                  <OphTypography variant={'body1'}>{vp.nimi}</OphTypography>
-                  <Edit sx={{ display: 'none' }} />
-                </ListItem>
+                  <OphTypography variant={'label'}>
+                    {`${index + 1}. ${kategoria.nimi}`}
+                  </OphTypography>
+                  <OphButton
+                    sx={{
+                      marginRight: '12px',
+                      display: 'none',
+                      height: '24px',
+                    }}
+                    startIcon={<Edit />}
+                    onClick={() => {
+                      setKategoriaModalOpen(true);
+                      setSelectedKategoria(kategoria);
+                    }}
+                  ></OphButton>
+                </ListSubheader>
+              }
+              key={kategoria.id}
+            >
+              {viestipohjat
+                .filter((vp) => vp.kategoriaId === kategoria.id)
+                .map((vp) => (
+                  <ViestipohjaListItemButton
+                    key={vp.id}
+                    viestipohja={vp}
+                    onClick={() => setValittuViestipohjaId(vp.id)}
+                  />
+                ))}
+            </List>
+          ))}
+          {eiKategoriaa.length > 0 && (
+            <List
+              subheader={
+                <ListSubheader
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                  }}
+                >
+                  <OphTypography variant={'label'}>
+                    {t('tekstipohjat.viestipohjat.eiKategoriaa')}
+                  </OphTypography>
+                </ListSubheader>
+              }
+            >
+              {eiKategoriaa.map((vp) => (
+                <ViestipohjaListItemButton
+                  key={vp.id}
+                  viestipohja={vp}
+                  onClick={() => setValittuViestipohjaId(vp.id)}
+                />
               ))}
-          </List>
-        ))}
+            </List>
+          )}
+        </Box>
       </Stack>
       {kategoriaModalOpen && (
         <KategoriaEditori

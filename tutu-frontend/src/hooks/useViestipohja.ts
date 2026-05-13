@@ -45,8 +45,8 @@ export const useViestipohja = (viestipohjaId?: string) => {
   } = useMutation({
     mutationFn: (viestipohja: Viestipohja) => putViestipohja(viestipohja),
     onSuccess: async (response) => {
-      const paivitettyViesti = await response.json();
-      queryClient.setQueryData(queryKey, paivitettyViesti);
+      const paivitettyViestipohja = await response.json();
+      queryClient.setQueryData(queryKey, paivitettyViestipohja);
       await queryClient.invalidateQueries({
         queryKey: viestipohjaListaQueryKey,
       });

@@ -76,7 +76,7 @@ export const KategoriaEditori = ({
               data-testid="modal-confirm-button"
               variant={'contained'}
               onClick={() => {
-                handleSubmit({ ...kategoria, nimi });
+                handleSubmit({ id: kategoria?.id, nimi });
               }}
             >
               {t('yleiset.tallenna')}

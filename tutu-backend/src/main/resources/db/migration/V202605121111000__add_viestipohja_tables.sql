@@ -22,7 +22,7 @@ COMMENT ON COLUMN viestipohja_kategoria.muokkaaja IS 'Rivin viimeisimmän muokka
 
 CREATE TABLE IF NOT EXISTS viestipohja (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    kategoria_id uuid NOT NULL,
+    kategoria_id uuid,
     nimi TEXT NOT NULL,
     sisalto JSONB DEFAULT '{}'::jsonb NOT NULL,
     luotu TIMESTAMPTZ DEFAULT now(),
