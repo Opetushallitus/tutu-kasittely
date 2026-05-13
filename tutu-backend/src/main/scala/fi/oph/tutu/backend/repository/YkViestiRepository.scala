@@ -27,13 +27,16 @@ class YkViestiRepository extends BaseResultHandlers {
         asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
-        luotu = Some(r.nextTimestamp().toLocalDateTime),
         vastattu = r.nextTimestampOption().map(_.toLocalDateTime),
         kysymysLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
         vastausLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
         kysymys = Option(r.nextString()),
         vastaus = Option(r.nextString()),
-        hakija = r.nextString()
+        hakija = r.nextString(),
+        luoja = r.nextStringOption(),
+        luotu = r.nextTimestampOption().map(_.toLocalDateTime),
+        muokkaaja = r.nextStringOption(),
+        muokattu = r.nextTimestampOption().map(_.toLocalDateTime)
       )
     )
 
@@ -48,13 +51,16 @@ class YkViestiRepository extends BaseResultHandlers {
             h.asiatunnus,
             v.lahettaja_oid,
             v.vastaanottaja_oid,
-            v.luotu,
             v.vastattu,
             v.kysymys_luettu,
             v.vastaus_luettu,
             v.kysymys,
             v.vastaus,
-            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+            COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+            v.luoja,
+            v.luotu,
+            v.muokkaaja,
+            v.muokattu
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -82,13 +88,16 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.luotu,
           v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          v.luoja,
+          v.luotu,
+          v.muokkaaja,
+          v.muokattu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -116,13 +125,16 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.luotu,
           v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          v.luoja,
+          v.luotu,
+          v.muokkaaja,
+          v.muokattu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -151,18 +163,18 @@ class YkViestiRepository extends BaseResultHandlers {
               hakemus_oid,
               lahettaja_oid,
               vastaanottaja_oid,
-              luotu,
               kysymys,
-              vastaus
+              vastaus,
+              luoja
             )
             VALUES (
               ${ykViesti.parentId.map(_.toString).orNull}::uuid,
               ${ykViesti.hakemusOid.toString},
               ${ykViesti.lahettajaOid.map(_.toString).orNull},
               ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
-              now(),
               ${ykViesti.kysymys.map(_.toString).orNull},
-              ${ykViesti.vastaus.map(_.toString).orNull}
+              ${ykViesti.vastaus.map(_.toString).orNull},
+              ${ykViesti.luoja.map(_.toString).orNull}
             )
             RETURNING id
           """.as[UUID].head,
@@ -189,7 +201,8 @@ class YkViestiRepository extends BaseResultHandlers {
               vastaus = ${ykViesti.vastaus.map(_.toString).orNull},
               vastattu = ${ykViesti.vastattu.map(java.sql.Timestamp.valueOf).orNull},
               vastaus_luettu = ${ykViesti.vastausLuettu.map(java.sql.Timestamp.valueOf).orNull},
-              kysymys_luettu = ${ykViesti.kysymysLuettu.map(java.sql.Timestamp.valueOf).orNull}
+              kysymys_luettu = ${ykViesti.kysymysLuettu.map(java.sql.Timestamp.valueOf).orNull},
+              muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
           """.as[UUID].head,
@@ -218,13 +231,16 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.luotu,
           v.vastattu,
           v.kysymys_luettu,
           v.vastaus_luettu,
           v.kysymys,
           v.vastaus,
-          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, '')
+          COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
+          v.luoja,
+          v.luotu,
+          v.muokkaaja,
+          v.muokattu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid

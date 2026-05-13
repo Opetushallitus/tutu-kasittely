@@ -193,7 +193,8 @@ class YkViestiService(
         lahettajaOid = Some(user.userOid),
         vastaanottajaOid = ykKysymys.vastaanottajaOid,
         kysymys = ykKysymys.kysymys,
-        hakija = null
+        hakija = null,
+        luoja = Some(user.userOid)
       )
     )
   }
@@ -213,7 +214,8 @@ class YkViestiService(
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
             vastaus = ykVastaus.vastaus,
-            vastattu = vastattu
+            vastattu = vastattu,
+            muokkaaja = Some(user.userOid)
           )
         )
       }
@@ -239,13 +241,15 @@ class YkViestiService(
         val newViestiMaybe = if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) {
           Some(
             ykViesti.copy(
-              vastausLuettu = Some(LocalDateTime.now())
+              vastausLuettu = Some(LocalDateTime.now()),
+              muokkaaja = Some(user.userOid)
             )
           )
         } else if (kysymystaEiLuettu && kysymysLuettavissa && vastaanottajaLukijana) {
           Some(
             ykViesti.copy(
-              kysymysLuettu = Some(LocalDateTime.now())
+              kysymysLuettu = Some(LocalDateTime.now()),
+              muokkaaja = Some(user.userOid)
             )
           )
         } else {
