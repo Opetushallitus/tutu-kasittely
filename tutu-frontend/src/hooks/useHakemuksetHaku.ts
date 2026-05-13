@@ -5,12 +5,27 @@ import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { Paginated } from '@/src/lib/types/paginated';
 
 export type HakemuksetFilters = {
-  suoritusmaa: string;
+  // Tutkinto
+  suoritusmaa: string[];
   paattymisVuosi: string;
   todistusVuosi: string;
   oppilaitos: string;
   tutkinnonNimi: string;
   paaAine: string;
+  // Kelpoisuus
+  kelpoisuus: string;
+  opetettavatAineet: string[];
+  // Päätös
+  ratkaisutyyppi: string;
+  paatostyyppi: string;
+  sovellettuLaki: string;
+  tutkinnonTaso: string;
+  kielteinen: string;
+  myonteinen: string;
+  // Hakija/esittelijä
+  esittelijaOid: string;
+  hakijanNimi: string;
+  asiatunnus: string;
 };
 
 const getHakemuksetHaulla = async (
@@ -21,7 +36,9 @@ const getHakemuksetHaulla = async (
 ): Promise<Paginated<HakemusListItem>> => {
   const params = new URLSearchParams({ haku, nakyma, page: String(page) });
   for (const [key, value] of Object.entries(filters)) {
-    if (value) {
+    if (Array.isArray(value)) {
+      value.forEach((v) => v && params.append(key, v));
+    } else if (value) {
       params.set(key, value);
     }
   }
@@ -40,7 +57,10 @@ export const useHakemuksetHaku = (
   filters: HakemuksetFilters,
 ) => {
   const enabled =
-    haku.trim().length > 0 || Object.values(filters).some(Boolean);
+    haku.trim().length > 0 ||
+    Object.values(filters).some((v) =>
+      Array.isArray(v) ? v.length > 0 : Boolean(v),
+    );
   return useQuery({
     queryKey: ['getHakemuksetHaulla', haku, nakyma, page, filters],
     queryFn: () => getHakemuksetHaulla(haku, nakyma, page, filters),

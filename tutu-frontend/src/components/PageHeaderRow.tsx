@@ -15,20 +15,22 @@ export const PageHeaderRow = ({
   const theme = useTheme();
 
   return (
-    <Stack
-      direction="row"
-      spacing={theme.spacing(0, 1)}
-      sx={{ alignItems: 'center' }}
-    >
-      <HomeIcon href={`/`} />
-      <HomeStyledChevron />
-      <OphTypography
-        variant={'h2'}
-        component={'h1'}
-        sx={showSearchBar ? { paddingRight: '88px' } : undefined}
+    <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
+      <Stack
+        direction="row"
+        spacing={theme.spacing(0, 1)}
+        sx={{ alignItems: 'center' }}
       >
-        {header}
-      </OphTypography>
+        <HomeIcon href={`/`} />
+        <HomeStyledChevron />
+        <OphTypography
+          variant={'h2'}
+          component={'h1'}
+          sx={showSearchBar ? { paddingRight: '88px' } : undefined}
+        >
+          {header}
+        </OphTypography>
+      </Stack>
       {showSearchBar && <SearchBar />}
     </Stack>
   );

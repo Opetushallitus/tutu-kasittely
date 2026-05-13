@@ -361,7 +361,10 @@ class HakemusService(
     pageSize: Int
   ): HakemusListResult = {
     val (items, totalCount) = hakemusSearchRepository.haeHakemuksetHaulla(haku, nakyma, filters, page, pageSize)
-    val totalPages          = if (totalCount == 0) 1 else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
+
+    val totalPages =
+      if (totalCount == 0) 1
+      else math.ceil(totalCount.toDouble / pageSize.max(1)).toInt
 
     HakemusListResult(
       items = items,

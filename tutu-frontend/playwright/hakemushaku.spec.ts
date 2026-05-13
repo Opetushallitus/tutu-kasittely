@@ -301,6 +301,35 @@ test('Tarkat hakuehdot: oppilaitos-suodatin lähettää parametrin pyyntöön', 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
 });
 
+test('Tarkat hakuehdot: kelpoisuus-suodatin lähettää parametrin pyyntöön', async ({
+  page,
+}) => {
+  await mockHakemusHaku(page);
+  await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
+
+  await page.getByTestId('tarkat-hakuehdot').click();
+
+  await page.getByTestId('haku-kelpoisuus').click();
+
+  const luokanopettajaText = await translate(
+    page,
+    'haku.kelpoisuus.luokanopettaja',
+  );
+  await page
+    .getByRole('option', { name: luokanopettajaText, exact: true })
+    .click();
+
+  const [request] = await Promise.all([
+    page.waitForRequest((req) => req.url().includes('hakemus/haku')),
+    searchButtonClick(page),
+  ]);
+
+  expect(new URL(request.url()).searchParams.get('kelpoisuus')).toBe(
+    'Opetusalan ammatit_Luokanopettaja',
+  );
+  await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
+});
+
 test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async ({
   page,
 }) => {

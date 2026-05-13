@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.{
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.regex.Pattern
+import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -339,12 +340,23 @@ class HakemusController(
     @RequestParam(required = false, defaultValue = "kaikki") nakyma: String,
     @RequestParam(required = false, defaultValue = "1") page: Int,
     @RequestParam(required = false, defaultValue = "20") pagesize: Int,
-    @RequestParam(required = false) suoritusmaa: String,
+    @RequestParam(required = false) suoritusmaa: java.util.List[String],
     @RequestParam(required = false) paattymisVuosi: String,
     @RequestParam(required = false) todistusVuosi: String,
     @RequestParam(required = false) oppilaitos: String,
     @RequestParam(required = false) tutkinnonNimi: String,
     @RequestParam(required = false) paaAine: String,
+    @RequestParam(required = false) kelpoisuus: String,
+    @RequestParam(required = false) opetettavatAineet: java.util.List[String],
+    @RequestParam(required = false) ratkaisutyyppi: String,
+    @RequestParam(required = false) paatostyyppi: String,
+    @RequestParam(required = false) sovellettuLaki: String,
+    @RequestParam(required = false) tutkinnonTaso: String,
+    @RequestParam(required = false) kielteinen: String,
+    @RequestParam(required = false) myonteinen: String,
+    @RequestParam(required = false) esittelijaOid: String,
+    @RequestParam(required = false) hakijanNimi: String,
+    @RequestParam(required = false) asiatunnus: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -352,12 +364,23 @@ class HakemusController(
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
       val hakuNakyma = HakemusNakyma.fromString(nakyma)
       val filters    = HakemusSearchFilters(
-        suoritusmaa = Option(suoritusmaa).filter(_.nonEmpty),
+        suoritusmaa = Option(suoritusmaa).fold(Seq.empty[String])(_.asScala.filter(_.nonEmpty).toSeq),
         paattymisVuosi = Option(paattymisVuosi).filter(_.nonEmpty).flatMap(_.toIntOption),
         todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty),
         oppilaitos = Option(oppilaitos).filter(_.nonEmpty),
         tutkinnonNimi = Option(tutkinnonNimi).filter(_.nonEmpty),
-        paaAine = Option(paaAine).filter(_.nonEmpty)
+        paaAine = Option(paaAine).filter(_.nonEmpty),
+        kelpoisuus = Option(kelpoisuus).filter(_.nonEmpty),
+        opetettavatAineet = Option(opetettavatAineet).fold(Seq.empty[String])(_.asScala.filter(_.nonEmpty).toSeq),
+        ratkaisutyyppi = Option(ratkaisutyyppi).filter(_.nonEmpty),
+        paatostyyppi = Option(paatostyyppi).filter(_.nonEmpty),
+        sovellettuLaki = Option(sovellettuLaki).filter(_.nonEmpty),
+        tutkinnonTaso = Option(tutkinnonTaso).filter(_.nonEmpty),
+        kielteinen = Option(kielteinen).filter(_.nonEmpty),
+        myonteinen = Option(myonteinen).filter(_.nonEmpty),
+        esittelijaOid = Option(esittelijaOid).filter(_.nonEmpty),
+        hakijanNimi = Option(hakijanNimi).filter(_.nonEmpty),
+        asiatunnus = Option(asiatunnus).filter(_.nonEmpty)
       )
       hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, filters, page, pagesize)
     } match {

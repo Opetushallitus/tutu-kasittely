@@ -1,5 +1,6 @@
 import { isObject } from '@/src/lib/common';
 
+import { TFunction } from './hooks/useTranslations';
 import { Language, TranslatedName } from './localizationTypes';
 
 export function translateName(
@@ -25,4 +26,29 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
       typeof value?.sv === 'string' ||
       typeof value?.en === 'string')
   );
+}
+
+export type TranslationNode = {
+  tKey: string;
+  value: string;
+  children?: TranslationNode[];
+};
+
+export type TreeOption<T = string> = {
+  label: T;
+  value: T;
+  children?: TreeOption<T>[];
+};
+
+export function buildTreeOptions(
+  items: TranslationNode[],
+  t: TFunction,
+): TreeOption[] {
+  return items.map(({ tKey, value, children }) => ({
+    label: t(tKey),
+    value,
+    ...(children && children.length > 0
+      ? { children: buildTreeOptions(children, t) }
+      : {}),
+  }));
 }

@@ -5,10 +5,10 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { PaatosTietoDropdownOption } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { TreeOption } from '@/src/lib/localization/translationUtils';
 
 const renderOptionsRecursively = (
-  options: PaatosTietoDropdownOption[],
+  options: TreeOption[],
   level: number = 1,
 ): React.ReactNode[] => {
   return options.flatMap((option) => {
@@ -51,7 +51,7 @@ export const PaatosTietoDropdown = ({
 }: {
   label: string;
   value?: string;
-  options: PaatosTietoDropdownOption[];
+  options: TreeOption[];
   dataTestId?: string;
   updateAction: (newValue: string) => void;
 }) => {

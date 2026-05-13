@@ -21,12 +21,13 @@ import {
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { ophColors } from '@/src/lib/theme';
 import {
   KelpoisuudenLisavaatimukset,
   Kelpoisuus,
   KelpoisuusUpdateCallback,
-  PaatosTietoOption,
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
 
@@ -40,7 +41,7 @@ type kelpoisuusComponentProps = {
     index: number,
   ) => void;
   deleteKelpoisuusAction: (id?: string) => void;
-  kelpoisuusOptions: PaatosTietoOption[];
+  kelpoisuusOptions: TreeOption<TranslatedName>[];
 };
 
 const KelpoisuusDirektiiviLiitannaisComponent = ({

@@ -58,7 +58,12 @@ class KoodistoService(httpService: HttpService, maakoodiService: MaakoodiService
       case Right(response: String) =>
         parse(response) match {
           case JArray(values) =>
-            values.map(item => extract[KoodistoItem](item)).filter(_.isValid())
+            values
+              .map(item => extract[KoodistoItem](item))
+              .filter(k => k.koodiArvo != "907")
+          // TODO: Poistetaan duplikaatti Kosovo: tarpeeton jos poistetaan koodistosta
+          // isValid poistaisi vanhentuneet koodit mutta palautetaan kaikki esim. Entinen Neuvostoliitto, joka on myös lomakkeella käytössä.
+          // .filter(_.isValid())
           case _ => throw new MappingException(s"Cannot deserialize koodisto response")
         }
     }
