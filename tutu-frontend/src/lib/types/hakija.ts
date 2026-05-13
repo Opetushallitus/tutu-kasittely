@@ -22,7 +22,7 @@ export type HakijaListItem = {
   sukunimi: string;
 };
 
-export const HAKIJA_FIELDS_WO_SAHKOPOSTI = [
+export const HAKIJA_FIELDS = [
   'etunimet',
   'kutsumanimi',
   'sukunimi',
@@ -35,4 +35,5 @@ export const HAKIJA_FIELDS_WO_SAHKOPOSTI = [
   'postinumero',
   'postitoimipaikka',
   'kotikunta',
+  'sahkopostiosoite',
 ];
