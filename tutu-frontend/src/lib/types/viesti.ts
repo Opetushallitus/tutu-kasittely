@@ -1,4 +1,7 @@
-import { Language } from '@/src/lib/localization/localizationTypes';
+import {
+  Language,
+  TranslatedName,
+} from '@/src/lib/localization/localizationTypes';
 
 export type Viestityyppi = 'taydennyspyynto' | 'ennakkotieto' | 'muu';
 
@@ -21,4 +24,26 @@ export type VahvistettuViestiListItem = {
   tyyppi: Viestityyppi;
   otsikko: string;
   vahvistettu: string;
+};
+
+export type Viestipohja = {
+  id?: string;
+  sisalto: TranslatedName;
+  nimi: string;
+  kategoriaId?: string;
+  luotu?: string | null;
+  luoja?: string | null;
+  muokattu?: string | null;
+  muokkaaja?: string | null;
+};
+
+export type ViestipohjaListItem = {
+  id: string;
+  kategoriaId?: string;
+  nimi: string;
+};
+
+export type ViestipohjaKategoria = {
+  id?: string;
+  nimi: string;
 };

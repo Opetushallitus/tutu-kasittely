@@ -103,8 +103,7 @@ object KielistettySerializer
             val svEntry = fields.collectFirst { case ("sv", JString(value)) => Some((Kieli.sv, value)) }.flatten
             val enEntry = fields.collectFirst { case ("en", JString(value)) => Some((Kieli.en, value)) }.flatten
 
-            val map = Seq(fiEntry, svEntry, enEntry)
-              .flatten()
+            val map = Seq(fiEntry, svEntry, enEntry).flatten
               .foldLeft(
                 Map[Kieli, String]()
               )((current, entry) => current.++(Map(entry(0) -> entry(1))))
@@ -124,8 +123,7 @@ object KielistettySerializer
             val enEntry =
               typedMap.collectFirst { case (Kieli.en, value) => Some(("en", JString(value))) }.flatten
 
-            val obj = Seq(fiEntry, svEntry, enEntry)
-              .flatten()
+            val obj = Seq(fiEntry, svEntry, enEntry).flatten
               .foldLeft(
                 JObject()
               )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))

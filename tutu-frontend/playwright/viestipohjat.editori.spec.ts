@@ -1,0 +1,200 @@
+import { expect, Route, test } from '@playwright/test';
+
+import { expectRequestData } from '@/playwright/helpers/testUtils';
+import { translate } from '@/playwright/helpers/translate';
+import {
+  MOCK_VIESTIPOHJA,
+  mockInit,
+  mockUser,
+  mockViestipohja,
+  mockViestipohjaKategoriat,
+  mockViestipohjaLista,
+} from '@/playwright/mocks';
+
+// Claude Codea käytetty testipohjan generoimiseen
+
+test.beforeEach(async ({ page }) => {
+  await mockInit(page);
+  await mockUser(page);
+  await mockViestipohjaKategoriat(page);
+  await mockViestipohjaLista(page);
+  await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
+});
+
+test('Olemassaolevan viestipohjaan lataus onnistuu', async ({ page }) => {
+  await mockViestipohja(page);
+  await page.getByText('Viestipohja 1').first().click();
+
+  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+});
+
+test('Viestipohjaan latauksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await page.route(
+    '**/tutu-backend/api/viestipohja/1',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Latausvirhe' }),
+      });
+    },
+  );
+
+  await page.getByText('Viestipohja 1').first().click();
+
+  const toastText = await translate(page, 'virhe.viestipohjaLataus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+});
+
+test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
+  page,
+}) => {
+  await mockViestipohja(page);
+  await page.getByText('Viestipohja 1').first().click();
+
+  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiInput = page.getByLabel(nimiLabel);
+  await expect(nimiInput).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+
+  const fiEditor = page.getByTestId('editor-content-editable').nth(0);
+  await fiEditor.click();
+  await page.keyboard.type('FI sisältö');
+
+  await page.getByTestId('hakemuslista-tab--sv').click();
+  const svEditor = page.getByTestId('editor-content-editable').nth(1);
+  await svEditor.click();
+  await page.keyboard.type('SV sisältö');
+
+  await page.getByTestId('hakemuslista-tab--fi').click();
+  await expect(fiEditor).toContainText('FI sisältö');
+
+  await expectRequestData(
+    page,
+    '/api/viestipohja',
+    nimiInput.fill('Uusi nimi'),
+    {
+      nimi: 'Uusi nimi',
+      sisalto: {
+        fi: expect.stringContaining('FI sisältö'),
+        sv: expect.stringContaining('SV sisältö'),
+      },
+    },
+  );
+
+  const successText = await translate(
+    page,
+    'viestipohjat.viestipohjaTallennus.success',
+  );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
+});
+
+test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await mockViestipohja(page);
+  await page.getByText('Viestipohja 1').first().click();
+
+  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiInput = page.getByLabel(nimiLabel);
+  await expect(nimiInput).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+
+  await page.route('**/tutu-backend/api/viestipohja', async (route: Route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'Tallennusvirhe' }),
+    });
+  });
+
+  await nimiInput.fill('Uusi nimi');
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
+
+  const toastText = await translate(page, 'virhe.viestipohjaTallennus');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+});
+
+test('Viestipohjaan poisto onnistuu', async ({ page }) => {
+  await mockViestipohja(page);
+  await page.getByText('Viestipohja 1').first().click();
+
+  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+
+  const poistaText = await translate(page, 'viestipohjat.poista');
+  await page.getByRole('button', { name: poistaText }).click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req.url().includes('/tutu-backend/api/viestipohja/') &&
+        req.method() === 'DELETE',
+    ),
+    page.getByTestId('modal-confirm-button').click(),
+  ]);
+
+  expect(request.method()).toBe('DELETE');
+  const valitseText = await translate(page, 'tekstipohjat.valitseViestipohja');
+  await expect(page.getByText(valitseText)).toBeVisible();
+
+  const successText = await translate(
+    page,
+    'viestipohjat.viestipohjaPoisto.success',
+  );
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'success');
+  await expect(toast.getByTestId('toast-message')).toHaveText(successText);
+});
+
+test('Viestipohjaan poiston epäonnistuessa näytetään virheteksti', async ({
+  page,
+}) => {
+  await mockViestipohja(page);
+  await page.route(
+    '**/tutu-backend/api/viestipohja/1',
+    async (route: Route) => {
+      if (route.request().method() === 'DELETE') {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Poistovirhe' }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ ...MOCK_VIESTIPOHJA, id: '1' }),
+        });
+      }
+    },
+  );
+  await page.getByText('Viestipohja 1').first().click();
+
+  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+
+  const poistaText = await translate(page, 'viestipohjat.poista');
+  await page.getByRole('button', { name: poistaText }).click();
+  await expect(page.getByTestId('modal-component')).toBeVisible();
+  await page.getByTestId('modal-confirm-button').click();
+
+  const toastText = await translate(page, 'virhe.viestipohjaPoisto');
+  const toast = page.getByTestId('toast-alert');
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveAttribute('data-severity', 'error');
+  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+});

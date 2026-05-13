@@ -16,7 +16,6 @@ import React, { useEffect, useState } from 'react';
 
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
 import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { HeaderWrapper, PageContent } from '@/src/components/PageLayout';
 import { useFilemakerHakemus } from '@/src/hooks/useFilemakerHakemus';
@@ -24,9 +23,9 @@ import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, THIN_BOX_BORDER } from '@/src/lib/theme';
 import { handleFetchError } from '@/src/lib/utils';
+import { getters } from '@/src/lib/utils/filemakerDataUtils';
 
 import FilemakerHeader from './components/FilemakerHeader';
-import { getters } from '../../../lib/utils/filemakerDataUtils';
 
 const InnerBoxWrapper = styled(Box)(() => ({
   border: DEFAULT_BOX_BORDER,
@@ -98,13 +97,7 @@ export default function FilemakerHakemus() {
     >
       <HeaderWrapper>
         <PageContent>
-          <PageHeaderRow>
-            <HomeIcon href={`/`} />
-            <HomeStyledChevron />
-            <OphTypography variant={'h2'} component={'h1'}>
-              {t('hakemus.otsikko')}
-            </OphTypography>
-          </PageHeaderRow>
+          <PageHeaderRow header={t('hakemus.otsikko')} />
         </PageContent>
       </HeaderWrapper>
       <PageContent>

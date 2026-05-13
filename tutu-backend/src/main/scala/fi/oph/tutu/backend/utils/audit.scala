@@ -156,6 +156,23 @@ object AuditOperation {
   case object CreateViesti extends AuditOperation {
     val name = "VIESTIN_LUONTI"
   }
+
+  case object CreateViestipohja extends AuditOperation {
+    val name = "VIESTIPOHJAN_LUONTI"
+  }
+
+  case object CreateViestipohjaKategoria extends AuditOperation {
+    val name = "VIESTIPOHJA_KATEGORIAN_LUONTI"
+  }
+
+  case object CreatePaatos extends AuditOperation {
+    val name = "PAATOKSEN_LUONTI"
+  }
+
+  case object CreatePaatosteksti extends AuditOperation {
+    val name = "PAATOSTEKSTIN_LUONTI"
+  }
+
   // Päivitys operaatiot
 
   case object UpdateHakemus extends AuditOperation {
@@ -168,6 +185,42 @@ object AuditOperation {
 
   case object UpdateViesti extends AuditOperation {
     val name = "VIESTIN_PAIVITYS"
+  }
+
+  case object UpdateViestipohja extends AuditOperation {
+    val name = "VIESTIPOHJAN_PAIVITYS"
+  }
+
+  case object UpdateViestipohjaKategoria extends AuditOperation {
+    val name = "VIESTIPOHJA_KATEGORIAN_PAIVITYS"
+  }
+
+  case object UpdatePerustelu extends AuditOperation {
+    val name = "PERUSTELUN_PAIVITYS"
+  }
+
+  case object UpdatePaatos extends AuditOperation {
+    val name = "PAATOKSEN_PAIVITYS"
+  }
+
+  case object UpdateAsiatunnus extends AuditOperation {
+    val name = "ASIATUNNUKSEN_PAIVITYS"
+  }
+
+  case object UpdateEsittelyPvm extends AuditOperation {
+    val name = "ESITTELYPAIVAN_PAIVITYS"
+  }
+
+  case object UpdateTutkinto extends AuditOperation {
+    val name = "TUTKINNON_PAIVITYS"
+  }
+
+  case object TallennaTutkinnot extends AuditOperation {
+    val name = "TUTKINTOJEN_TALLENNUS"
+  }
+
+  case object UpdatePaatosteksti extends AuditOperation {
+    val name = "PAATOSTEKSTIN_PAIVITYS"
   }
 
   // Luku operaatiot
@@ -204,18 +257,6 @@ object AuditOperation {
     val name = "VANHA_TUTU_LUKU"
   }
 
-  case object UpdatePerustelu extends AuditOperation {
-    val name = "PERUSTELUN_PAIVITYS"
-  }
-
-  case object CreatePaatos extends AuditOperation {
-    val name = "PAATOKSEN_LUONTI"
-  }
-
-  case object UpdatePaatos extends AuditOperation {
-    val name = "PAATOKSEN_MUOKKAUS"
-  }
-
   case object ReadPaatos extends AuditOperation {
     val name = "PAATOKSEN_LUKU"
   }
@@ -224,40 +265,12 @@ object AuditOperation {
     val name = "PAATOKSEN_ESIKATSELUN_LUKU"
   }
 
-  case object CreatePaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
-  }
-
   case object ReadPaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
-  }
-
-  case object UpdatePaatosteksti extends AuditOperation {
-    val name = "PAATOKSEN_ESIKATSELUN_LUKU"
-  }
-
-  case object UpdateAsiatunnus extends AuditOperation {
-    val name = "ASIATUNNUKSEN_MUOKKAUS"
-  }
-
-  case object UpdateEsittelyPvm extends AuditOperation {
-    val name = "ESITTELYPAIVAN_MUOKKAUS"
+    val name = "PAATOSTEKSTIN_LUKU"
   }
 
   case object ReadTutkinnot extends AuditOperation {
     val name = "TUTKINTOJEN_LUKU"
-  }
-
-  case object DeleteTutkinto extends AuditOperation {
-    val name = "TUTKINNON_POISTO"
-  }
-
-  case object UpdateTutkinto extends AuditOperation {
-    val name = "TUTKINNON_PAIVITYS"
-  }
-
-  case object TallennaTutkinnot extends AuditOperation {
-    val name = "TUTKINTOJEN_TALLENNUS"
   }
 
   case object ReadViestit extends AuditOperation {
@@ -268,8 +281,30 @@ object AuditOperation {
     val name = "VIESTIN_LUKU"
   }
 
+  case object ReadViestipohja extends AuditOperation {
+    val name = "VIESTIPOHJAN_LUKU"
+  }
+
+  case object ReadViestipohjat extends AuditOperation {
+    val name = "VIESTIPOHJAT_LUKU"
+  }
+
+  case object ReadViestipohjaKategoriat extends AuditOperation {
+    val name = "VIESTIPOHJA_KATEGORIAT_LUKU"
+  }
+
+  // Poisto operaatiot
+
   case object DeleteViesti extends AuditOperation {
     val name = "VIESTIN_POISTO"
+  }
+
+  case object DeleteViestiPohja extends AuditOperation {
+    val name = "VIESTIPOHJAN_POISTO"
+  }
+
+  case object DeleteTutkinto extends AuditOperation {
+    val name = "TUTKINNON_POISTO"
   }
 }
 

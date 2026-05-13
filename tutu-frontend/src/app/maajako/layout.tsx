@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { PageLayout } from '@/src/components/PageLayout';
 
 export default function MaajakoLayout(props: {

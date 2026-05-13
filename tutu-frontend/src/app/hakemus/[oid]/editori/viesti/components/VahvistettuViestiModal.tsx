@@ -11,7 +11,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
-import { convertHtmlToMarkdown } from '@/src/app/hakemus/[oid]/editori/components/editor-utils';
+import { convertHtmlToMarkdown } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster, { AddToastCallback } from '@/src/hooks/useToaster';
 import { useVahvistettuViesti } from '@/src/hooks/useVahvistetutViestit';

@@ -1,8 +1,7 @@
 'use client';
 
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import Link from 'next/link';
 
 import SivuValinta, {
   SelectedPage,
@@ -57,9 +56,14 @@ export default function MainPageLayout({
                 active={SelectedPage.Hakemukset}
                 showNotification={hasNewMessages}
               />
-              <Link href="/maajako" style={{ textDecoration: 'none' }}>
-                <OphButton variant="text">{t('maajako.otsikko')}</OphButton>
-              </Link>
+              <Stack direction={'row'}>
+                <OphButton href="/tekstipohjat/viestipohjat" variant="text">
+                  {t('tekstipohjat.muokkausOtsikko')}
+                </OphButton>
+                <OphButton href="/maajako" variant="text">
+                  {t('maajako.otsikko')}
+                </OphButton>
+              </Stack>
             </Box>
           </BoxWrapper>
 
