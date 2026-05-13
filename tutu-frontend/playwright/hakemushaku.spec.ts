@@ -264,12 +264,7 @@ test('Sivutus: Seuraava-nappi lähettää pyynnön sivulle 2', async ({ page }) 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
 
   const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req.url().includes('hakemus/haku') &&
-        req.url().includes('page=2') &&
-        req.url().includes('haku=Aalt'),
-    ),
+    page.waitForRequest((req) => req.url().includes('hakemus/haku')),
     page
       .getByRole('button', {
         name: await translate(page, 'hakemuslista.seuraava'),
@@ -277,7 +272,33 @@ test('Sivutus: Seuraava-nappi lähettää pyynnön sivulle 2', async ({ page }) 
       .click(),
   ]);
 
-  expect(new URL(request.url()).searchParams.get('page')).toBe('2');
+  const url = new URL(request.url());
+  expect(url.searchParams.get('page')).toBe('2');
+  expect(url.searchParams.get('haku')).toBe('Aalt');
+});
+
+test('Tarkat hakuehdot: oppilaitos-suodatin lähettää parametrin pyyntöön', async ({
+  page,
+}) => {
+  await mockHakemusHaku(page);
+  await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
+
+  await page.getByTestId('tarkat-hakuehdot').click();
+
+  await page
+    .getByTestId('haku-oppilaitos')
+    .locator('input')
+    .fill('Butan Amattikoulu');
+
+  const [request] = await Promise.all([
+    page.waitForRequest((req) => req.url().includes('hakemus/haku')),
+    searchButtonClick(page),
+  ]);
+
+  expect(new URL(request.url()).searchParams.get('oppilaitos')).toBe(
+    'Butan Amattikoulu',
+  );
+  await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
 });
 
 test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async ({

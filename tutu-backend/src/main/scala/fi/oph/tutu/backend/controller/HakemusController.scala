@@ -335,17 +335,31 @@ class HakemusController(
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def haeHakemuksetHaulla(
-    @RequestParam haku: String,
+    @RequestParam(required = false, defaultValue = "") haku: String,
     @RequestParam(required = false, defaultValue = "kaikki") nakyma: String,
     @RequestParam(required = false, defaultValue = "1") page: Int,
     @RequestParam(required = false, defaultValue = "20") pagesize: Int,
+    @RequestParam(required = false) suoritusmaa: String,
+    @RequestParam(required = false) paattymisVuosi: String,
+    @RequestParam(required = false) todistusVuosi: String,
+    @RequestParam(required = false) oppilaitos: String,
+    @RequestParam(required = false) tutkinnonNimi: String,
+    @RequestParam(required = false) paaAine: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
       require(page >= 1, "page must be >= 1")
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
       val hakuNakyma = HakemusNakyma.fromString(nakyma)
-      hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, page, pagesize)
+      val filters    = HakemusSearchFilters(
+        suoritusmaa = Option(suoritusmaa).filter(_.nonEmpty),
+        paattymisVuosi = Option(paattymisVuosi).filter(_.nonEmpty).flatMap(_.toIntOption),
+        todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty),
+        oppilaitos = Option(oppilaitos).filter(_.nonEmpty),
+        tutkinnonNimi = Option(tutkinnonNimi).filter(_.nonEmpty),
+        paaAine = Option(paaAine).filter(_.nonEmpty)
+      )
+      hakemusService.haeHakemuksetHaulla(haku, hakuNakyma, filters, page, pagesize)
     } match {
       case Success(hakemuslista) =>
         auditLog.logRead(

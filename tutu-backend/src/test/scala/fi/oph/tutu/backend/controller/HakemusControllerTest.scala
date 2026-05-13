@@ -802,6 +802,30 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
+  @Order(15)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetHaullaTutkintoFilterLoytyy(): Unit = {
+    // Kaikille hakemuksille on luotu tutkinnot, joilla oppilaitos = "Butan Amattikoulu".
+    mockMvc
+      .perform(get("/api/hakemus/haku?oppilaitos=Butan"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(4))
+
+    // Yhdistetty: hakusana + oppilaitos-suodatin
+    mockMvc
+      .perform(get("/api/hakemus/haku?haku=Toka&oppilaitos=Butan"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
+
+    // Olematon oppilaitos ei tuota tuloksia
+    mockMvc
+      .perform(get("/api/hakemus/haku?oppilaitos=EiOleOppilaitos"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+  }
+
+  @Test
   @Order(14)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTyhjaHakuPalauttaaTyhjanTuloksen(): Unit = {
@@ -813,7 +837,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(15)
+  @Order(16)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaNakymaMaaritteleeHakualueen(): Unit = {
     mockMvc
