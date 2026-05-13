@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Olemassaolevan viestipohjaan lataus onnistuu', async ({ page }) => {
-  await mockViestipohja(page, '1', { ...MOCK_VIESTIPOHJA, id: '1' });
+  await mockViestipohja(page);
   await page.getByText('Viestipohja 1').first().click();
 
   const nimiLabel = await translate(page, 'viestipohjat.nimi');
@@ -55,12 +55,24 @@ test('Viestipohjaan latauksen epäonnistuessa näytetään virheteksti', async (
 test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
-  await mockViestipohja(page, '1', { ...MOCK_VIESTIPOHJA, id: '1' });
+  await mockViestipohja(page);
   await page.getByText('Viestipohja 1').first().click();
 
   const nimiLabel = await translate(page, 'viestipohjat.nimi');
   const nimiInput = page.getByLabel(nimiLabel);
   await expect(nimiInput).toHaveValue(MOCK_VIESTIPOHJA.nimi);
+
+  const fiEditor = page.getByTestId('editor-content-editable').nth(0);
+  await fiEditor.click();
+  await page.keyboard.type('FI sisältö');
+
+  await page.getByTestId('hakemuslista-tab--sv').click();
+  const svEditor = page.getByTestId('editor-content-editable').nth(1);
+  await svEditor.click();
+  await page.keyboard.type('SV sisältö');
+
+  await page.getByTestId('hakemuslista-tab--fi').click();
+  await expect(fiEditor).toContainText('FI sisältö');
 
   await expectRequestData(
     page,
@@ -68,6 +80,10 @@ test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
     nimiInput.fill('Uusi nimi'),
     {
       nimi: 'Uusi nimi',
+      sisalto: {
+        fi: expect.stringContaining('FI sisältö'),
+        sv: expect.stringContaining('SV sisältö'),
+      },
     },
   );
 
@@ -84,7 +100,7 @@ test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
 test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  await mockViestipohja(page, '1', { ...MOCK_VIESTIPOHJA, id: '1' });
+  await mockViestipohja(page);
   await page.getByText('Viestipohja 1').first().click();
 
   const nimiLabel = await translate(page, 'viestipohjat.nimi');
@@ -112,7 +128,7 @@ test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', asyn
 });
 
 test('Viestipohjaan poisto onnistuu', async ({ page }) => {
-  await mockViestipohja(page, '1', { ...MOCK_VIESTIPOHJA, id: '1' });
+  await mockViestipohja(page);
   await page.getByText('Viestipohja 1').first().click();
 
   const nimiLabel = await translate(page, 'viestipohjat.nimi');
@@ -147,7 +163,7 @@ test('Viestipohjaan poisto onnistuu', async ({ page }) => {
 test('Viestipohjaan poiston epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  await mockViestipohja(page, '1', { ...MOCK_VIESTIPOHJA, id: '1' });
+  await mockViestipohja(page);
   await page.route(
     '**/tutu-backend/api/viestipohja/1',
     async (route: Route) => {

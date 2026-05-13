@@ -1,7 +1,14 @@
 'use client';
 
 import { Add, Edit } from '@mui/icons-material';
-import { Box, List, ListItemButton, ListSubheader, Stack } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListSubheader,
+  Stack,
+} from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 
@@ -13,7 +20,7 @@ import {
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
 
-const ViestipohjaListItemButton = ({
+const ViestipohjaListItemComponent = ({
   viestipohja,
   onClick,
 }: {
@@ -21,8 +28,7 @@ const ViestipohjaListItemButton = ({
   onClick: () => void;
 }) => {
   return (
-    <ListItemButton
-      onClick={onClick}
+    <ListItem
       sx={{
         width: '100%',
         display: 'flex',
@@ -38,9 +44,11 @@ const ViestipohjaListItemButton = ({
         },
       }}
     >
-      <OphTypography variant={'body1'}>{viestipohja.nimi}</OphTypography>
-      <Edit sx={{ display: 'none' }} />
-    </ListItemButton>
+      <ListItemButton onClick={onClick}>
+        <OphTypography variant={'body1'}>{viestipohja.nimi}</OphTypography>
+        <Edit sx={{ display: 'none' }} />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
@@ -145,7 +153,7 @@ export default function ViestipohjaLista({
               {viestipohjat
                 .filter((vp) => vp.kategoriaId === kategoria.id)
                 .map((vp) => (
-                  <ViestipohjaListItemButton
+                  <ViestipohjaListItemComponent
                     key={vp.id}
                     viestipohja={vp}
                     onClick={() => setValittuViestipohjaId(vp.id)}
@@ -169,7 +177,7 @@ export default function ViestipohjaLista({
               }
             >
               {eiKategoriaa.map((vp) => (
-                <ViestipohjaListItemButton
+                <ViestipohjaListItemComponent
                   key={vp.id}
                   viestipohja={vp}
                   onClick={() => setValittuViestipohjaId(vp.id)}

@@ -757,7 +757,7 @@ export const mockViestipohjaLista = (page: Page) => {
 };
 
 export const MOCK_VIESTIPOHJA: Viestipohja = {
-  id: 'viestipohja-mock-id',
+  id: '1',
   nimi: 'Viestipohja 1',
   kategoriaId: '1',
   sisalto: { fi: '', sv: '', en: '' },
@@ -765,7 +765,7 @@ export const MOCK_VIESTIPOHJA: Viestipohja = {
 
 export const mockViestipohja = (
   page: Page,
-  id: string = 'viestipohja-mock-id',
+  id: string = '1',
   viestipohja: Viestipohja = MOCK_VIESTIPOHJA,
 ) => {
   return page.route(

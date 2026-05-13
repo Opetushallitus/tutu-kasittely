@@ -108,7 +108,9 @@ test('Uuden kategorian luominen epäonnistuu', async ({ page }) => {
 });
 
 test('Olemassaolevan kategorian muokkaus onnistuu', async ({ page }) => {
-  await page.getByText('1. Testi kategoria 1').click();
+  const kategoria = page.getByText('1. Testi kategoria 1');
+  await kategoria.hover();
+  await kategoria.locator('//following-sibling::button').click();
 
   await expect(page.getByTestId('modal-component')).toBeVisible();
   const muokkaaOtsikkoText = await translate(
@@ -166,7 +168,9 @@ test('Olemassaolevan kategorian muokkaus epäonnistuu', async ({ page }) => {
     },
   );
 
-  await page.getByText('1. Testi kategoria 1').click();
+  const kategoria = page.getByText('1. Testi kategoria 1');
+  await kategoria.hover();
+  await kategoria.locator('//following-sibling::button').click();
 
   const nimiLabel = await translate(page, 'tekstipohjat.kategoriat.nimi');
   await page.getByLabel(nimiLabel).fill('Muokattu kategoria');
