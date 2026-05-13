@@ -1,7 +1,7 @@
 import { Stack, useTheme } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { Grid } from '@mui/system';
-import { OphInput, OphTypography } from '@opetushallitus/oph-design-system';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 import { ReactNode } from 'react';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -12,7 +12,7 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
-import { Hakija, HAKIJA_FIELDS_WO_SAHKOPOSTI } from '@/src/lib/types/hakija';
+import { Hakija, HAKIJA_FIELDS } from '@/src/lib/types/hakija';
 
 const HenkilotietoGrid = ({
   theme,
@@ -101,7 +101,7 @@ export const Henkilotiedot = ({
         <InfoBox infoText={t('hakemus.perustiedot.henkilotiedot.huomautus')} />
       )}
       <HenkilotietoGrid theme={theme}>
-        {R.map(Object.values(HAKIJA_FIELDS_WO_SAHKOPOSTI), (fieldKey) => (
+        {R.map(Object.values(HAKIJA_FIELDS), (fieldKey) => (
           <HenkilotietoRivi
             key={fieldKey}
             t={t}
@@ -110,21 +110,6 @@ export const Henkilotiedot = ({
           ></HenkilotietoRivi>
         ))}
       </HenkilotietoGrid>
-      <Stack>
-        <OphTypography variant={'label'}>
-          {t('hakemus.perustiedot.henkilotiedot.sahkopostiosoite')}
-        </OphTypography>
-        <OphInput
-          inputProps={{
-            'data-testid': 'sahkopostiosoite',
-            'aria-label': t(
-              'hakemus.perustiedot.henkilotiedot.sahkopostiosoite',
-            ),
-          }}
-          readOnly={true}
-          value={hakija.sahkopostiosoite || ''}
-        ></OphInput>
-      </Stack>
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.henkilotiedot.kielet')}
       </OphTypography>
