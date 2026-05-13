@@ -3,12 +3,10 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
-  HAKEMUKSEN_PERUUTUS_VAHVISTETTU,
   HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN,
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
-  KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE,
-  ON_AP_HAKEMUS
+  KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
@@ -362,21 +360,19 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   }
 
   def onkoHakemusPeruutettu(hakemus: AtaruHakemus): Boolean = {
-    val answers = hakemus.content.answers
-    findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
-      .map(_.toInt)
-      .contains(HAKEMUKSEN_PERUUTUS_VAHVISTETTU)
+    val answers    = hakemus.content.answers
+    val peruutettu = findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
+      .map(_.toString)
+    ataruAnswerToBoolean(peruutettu.get).get
   }
 
   def onkoApHakemus(hakemus: AtaruHakemus): Option[Boolean] = {
     parseHakemusKoskee(hakemus) match {
       case HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN =>
-        val answers = hakemus.content.answers
-        Some(
-          findAnswerByAtaruKysymysId(Constants.ATARU_AP_KYSYMYS, answers)
-            .map(_.toInt)
-            .contains(ON_AP_HAKEMUS)
-        )
+        val answers    = hakemus.content.answers
+        val ap_hakemus = findAnswerByAtaruKysymysId(Constants.ATARU_AP_KYSYMYS, answers)
+          .map(_.toString)
+        ataruAnswerToBoolean(ap_hakemus.get)
       case _ => None
     }
   }
