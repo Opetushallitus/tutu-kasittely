@@ -3,12 +3,10 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.Constants
 import fi.oph.tutu.backend.utils.Constants.{
-  HAKEMUKSEN_PERUUTUS_VAHVISTETTU,
   HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN,
   HAKEMUS_KOSKEE_LOPULLINEN_PAATOS,
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
-  KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE,
-  ON_AP_HAKEMUS
+  KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
@@ -20,9 +18,9 @@ import scala.util.boundary
 import scala.util.boundary.break
 
 def ataruAnswerToBoolean(value: String): Option[Boolean] = {
-  if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "1") {
+  if (value == "Kyllä" || value == "Yes" || value == "Ja" || value == "0") {
     Some(true)
-  } else if (value == "Ei" || value == "No" || value == "Nej" || value == "0") {
+  } else if (value == "Ei" || value == "No" || value == "Nej" || value == "1") {
     Some(false)
   } else {
     None
@@ -364,8 +362,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
   def onkoHakemusPeruutettu(hakemus: AtaruHakemus): Boolean = {
     val answers = hakemus.content.answers
     findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
-      .map(_.toInt)
-      .contains(HAKEMUKSEN_PERUUTUS_VAHVISTETTU)
+      .flatMap(ataruAnswerToBoolean)
+      .getOrElse(false)
   }
 
   def onkoApHakemus(hakemus: AtaruHakemus): Option[Boolean] = {
@@ -374,8 +372,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         val answers = hakemus.content.answers
         Some(
           findAnswerByAtaruKysymysId(Constants.ATARU_AP_KYSYMYS, answers)
-            .map(_.toInt)
-            .contains(ON_AP_HAKEMUS)
+            .flatMap(ataruAnswerToBoolean)
+            .getOrElse(false)
         )
       case _ => None
     }
