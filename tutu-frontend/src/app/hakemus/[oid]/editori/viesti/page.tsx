@@ -20,10 +20,13 @@ import {
   exportMarkdown,
   importHtml,
   normalizedEditorContent,
+  pasteHtml,
 } from '@/src/components/editor/editor-utils';
+import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
+import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
@@ -87,6 +90,8 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   const currentViesti = viestiState.editedData;
   const [editorHasChanges, setEditorHasChanges] = useState(false);
   const [editorEmpty, setEditorEmpty] = useState(!viesti?.viesti);
+  const { showTekstipohjaLista, setShowTekstipohjaLista } =
+    useShowTekstipohjat();
 
   useUnsavedChanges(
     viestiState.hasChanges || editorHasChanges,
@@ -155,140 +160,178 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
       gap={theme.spacing(3)}
       sx={{
         flexGrow: 1,
-        marginRight: theme.spacing(3),
+        marginRight: showTekstipohjaLista ? theme.spacing(0) : theme.spacing(3),
       }}
     >
-      <OphTypography variant={'h2'} data-testid={'viesti-otsikko'}>
-        {t('hakemus.viesti.sivunOtsikko')}
-      </OphTypography>
-      <KieliSelect
-        oletusKieli={currentViesti?.kieli || 'fi'}
-        updateKieli={(kieli) => updateViestiPartially({ kieli: kieli })}
-        t={t}
-        theme={theme}
-      />
-      <ViestityyppiComponent
-        viestityyppi={currentViesti?.tyyppi}
-        updateViestityyppi={(tyyppi: Viestityyppi) => {
-          updateViestiPartially({ tyyppi: tyyppi });
-        }}
-        t={t}
-      />
-      <OphInputFormField
-        label={t('hakemus.viesti.otsikko')}
-        value={currentViesti?.otsikko || ''}
-        onChange={(event) =>
-          updateViestiPartially({
-            otsikko: event.target.value,
-          })
-        }
-        data-testid={'viesti-otsikko-input'}
-      />
-      <Editor editorRef={editorRef} onChange={updateEditorChanges}></Editor>
-      <Stack
-        direction="row"
-        sx={{ marginLeft: theme.spacing(2) }}
-        justifyContent="space-between"
-      >
-        <OphButton
-          data-testid={`viesti-tyhjenna-button`}
-          variant="text"
-          startIcon={<DeleteOutline />}
-          onClick={() =>
-            showConfirmation({
-              header: t(`hakemus.viesti.tyhjenna.modal.otsikko`),
-              content: t(`hakemus.viesti.tyhjenna.modal.teksti`),
-              confirmButtonText: t(
-                `hakemus.viesti.tyhjenna.modal.tyhjennaKentat`,
-              ),
-              handleConfirmAction: () => {
-                if (currentViesti?.id) {
-                  updateViestiPartially(
-                    {
-                      tyyppi: null,
-                      otsikko: null,
-                      viesti: null,
-                    },
-                    true,
-                  );
-                } else {
-                  viestiState.discard();
-                  addToast({
-                    key: 'hakemus.viesti.tyhjenna.toaster',
-                    message: t('hakemus.viesti.tyhjennettyToast'),
-                    type: 'success',
-                    timeMs: 2500,
-                  });
-                }
-              },
-            })
-          }
+      <Stack direction={'row'} gap={theme.spacing(2)}>
+        <Stack
+          gap={theme.spacing(2)}
+          direction={'column'}
+          sx={{ width: showTekstipohjaLista ? '50%' : '100%' }}
         >
-          {t(`hakemus.viesti.tyhjenna`)}
-        </OphButton>
-        <OphButton
-          data-testid={`viesti-vahvista-button`}
-          disabled={isViestiEmpty}
-          variant="contained"
-          onClick={() =>
-            showConfirmation({
-              header: t(`hakemus.viesti.vahvista.modal.otsikko`),
-              content: t(`hakemus.viesti.vahvista.modal.teksti`),
-              confirmButtonText: t(
-                `hakemus.viesti.vahvista.modal.vahvistaViesti`,
-              ),
-              handleConfirmAction: () => {
-                navigator.clipboard.writeText(
-                  exportMarkdown(editorRef.current),
-                );
-                vahvistaViesti(viestiToBeSaved(), () => {
-                  paivitaVahvistettuLista();
+          <OphTypography variant={'h2'} data-testid={'viesti-otsikko'}>
+            {t('hakemus.viesti.sivunOtsikko')}
+          </OphTypography>
+          <KieliSelect
+            oletusKieli={currentViesti?.kieli || 'fi'}
+            updateKieli={(kieli) => updateViestiPartially({ kieli: kieli })}
+            t={t}
+            theme={theme}
+          />
+          <ViestityyppiComponent
+            viestityyppi={currentViesti?.tyyppi}
+            updateViestityyppi={(tyyppi: Viestityyppi) => {
+              updateViestiPartially({ tyyppi: tyyppi });
+            }}
+            t={t}
+          />
+          <OphInputFormField
+            label={t('hakemus.viesti.otsikko')}
+            value={currentViesti?.otsikko || ''}
+            onChange={(event) =>
+              updateViestiPartially({
+                otsikko: event.target.value,
+              })
+            }
+            data-testid={'viesti-otsikko-input'}
+          />
+          <Editor
+            editorRef={editorRef}
+            onChange={updateEditorChanges}
+            valitsePohjaProps={{
+              showButton: !showTekstipohjaLista,
+              buttonText: t(`tekstipohjat.viestipohjat.valitse`),
+              onValitsePohja: () => setShowTekstipohjaLista(true),
+            }}
+          ></Editor>
+          <Stack
+            direction="row"
+            sx={{ marginLeft: theme.spacing(2) }}
+            justifyContent="space-between"
+          >
+            <OphButton
+              data-testid={`viesti-tyhjenna-button`}
+              variant="text"
+              startIcon={<DeleteOutline />}
+              onClick={() =>
+                showConfirmation({
+                  header: t(`hakemus.viesti.tyhjenna.modal.otsikko`),
+                  content: t(`hakemus.viesti.tyhjenna.modal.teksti`),
+                  confirmButtonText: t(
+                    `hakemus.viesti.tyhjenna.modal.tyhjennaKentat`,
+                  ),
+                  handleConfirmAction: () => {
+                    if (currentViesti?.id) {
+                      updateViestiPartially(
+                        {
+                          tyyppi: null,
+                          otsikko: null,
+                          viesti: null,
+                        },
+                        true,
+                      );
+                    } else {
+                      viestiState.discard();
+                      addToast({
+                        key: 'hakemus.viesti.tyhjenna.toaster',
+                        message: t('hakemus.viesti.tyhjennettyToast'),
+                        type: 'success',
+                        timeMs: 2500,
+                      });
+                    }
+                  },
+                })
+              }
+            >
+              {t(`hakemus.viesti.tyhjenna`)}
+            </OphButton>
+            <OphButton
+              data-testid={`viesti-vahvista-button`}
+              disabled={isViestiEmpty}
+              variant="contained"
+              onClick={() =>
+                showConfirmation({
+                  header: t(`hakemus.viesti.vahvista.modal.otsikko`),
+                  content: t(`hakemus.viesti.vahvista.modal.teksti`),
+                  confirmButtonText: t(
+                    `hakemus.viesti.vahvista.modal.vahvistaViesti`,
+                  ),
+                  handleConfirmAction: () => {
+                    navigator.clipboard.writeText(
+                      exportMarkdown(editorRef.current),
+                    );
+                    vahvistaViesti(viestiToBeSaved(), () => {
+                      paivitaVahvistettuLista();
+                    });
+                    if (viestiState.hasChanges) {
+                      // Vahvistettaessa viesti myös tallennetaan
+                      // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
+                      // joten discardataan mahdolliset muutokset
+                      viestiState.discard();
+                      setEditorHasChanges(false);
+                      setEditorEmpty(true);
+                    }
+                  },
+                })
+              }
+            >
+              {t(`hakemus.viesti.vahvistaJaKopioi`)}
+            </OphButton>
+          </Stack>
+          <VahvistettuList
+            t={t}
+            theme={theme}
+            viestiLista={viestiLista || []}
+            paivitaVahvistetut={paivitaVahvistettuLista}
+            lisaaEditoriin={(html: string) => {
+              importHtml(
+                editorRef.current,
+                `${currentViesti?.viesti || ''}${html}`,
+              );
+            }}
+            poistaViesti={(viestiId) =>
+              showConfirmation({
+                header: t(`hakemus.viesti.poista.modal.otsikko`),
+                content: t(`hakemus.viesti.poista.modal.teksti`),
+                confirmButtonText: t(
+                  `hakemus.viesti.poista.modal.poistaViesti`,
+                ),
+                handleConfirmAction: () =>
+                  poistaViesti(viestiId, () => {
+                    paivitaVahvistettuLista();
+                  }),
+              })
+            }
+          />
+          <SaveRibbon
+            onSave={onSave}
+            isSaving={updateOngoing}
+            hasChanges={viestiState.hasChanges || editorHasChanges}
+            lastSaved={currentViesti?.muokattu}
+            modifier={currentViesti?.muokkaaja}
+          />
+        </Stack>
+        {showTekstipohjaLista && (
+          <TekstipohjaLista
+            headerText={t('tekstipohjat.viestipohjat.valitse')}
+            close={() => setShowTekstipohjaLista(false)}
+            selectPohja={(pohja) => {
+              const kielistettyTeksti = currentViesti?.kieli
+                ? pohja.sisalto[currentViesti?.kieli]
+                : '';
+              if (kielistettyTeksti) {
+                pasteHtml(editorRef.current, kielistettyTeksti);
+                addToast({
+                  key: 'tekstipohjat.viestipohjat.valittu',
+                  message: t('tekstipohjat.viestipohjat.valittu'),
+                  type: 'success',
+                  timeMs: 2500,
                 });
-                if (viestiState.hasChanges) {
-                  // Vahvistettaessa viesti myös tallennetaan
-                  // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
-                  // joten discardataan mahdolliset muutokset
-                  viestiState.discard();
-                  setEditorHasChanges(false);
-                  setEditorEmpty(true);
-                }
-              },
-            })
-          }
-        >
-          {t(`hakemus.viesti.vahvistaJaKopioi`)}
-        </OphButton>
+              }
+            }}
+          />
+        )}
       </Stack>
-      <VahvistettuList
-        t={t}
-        theme={theme}
-        viestiLista={viestiLista || []}
-        paivitaVahvistetut={paivitaVahvistettuLista}
-        lisaaEditoriin={(html: string) => {
-          importHtml(
-            editorRef.current,
-            `${currentViesti?.viesti || ''}${html}`,
-          );
-        }}
-        poistaViesti={(viestiId) =>
-          showConfirmation({
-            header: t(`hakemus.viesti.poista.modal.otsikko`),
-            content: t(`hakemus.viesti.poista.modal.teksti`),
-            confirmButtonText: t(`hakemus.viesti.poista.modal.poistaViesti`),
-            handleConfirmAction: () =>
-              poistaViesti(viestiId, () => {
-                paivitaVahvistettuLista();
-              }),
-          })
-        }
-      />
-      <SaveRibbon
-        onSave={onSave}
-        isSaving={updateOngoing}
-        hasChanges={viestiState.hasChanges || editorHasChanges}
-        lastSaved={currentViesti?.muokattu}
-        modifier={currentViesti?.muokkaaja}
-      />
     </Stack>
   );
 };

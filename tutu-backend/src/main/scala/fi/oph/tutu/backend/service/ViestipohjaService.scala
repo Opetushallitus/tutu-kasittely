@@ -1,6 +1,14 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Viestipohja, ViestipohjaKategoria, ViestipohjaListItem}
+import fi.oph.tutu.backend.domain.{
+  KategorianTekstipohjat,
+  ListSortParam,
+  SortDef,
+  TekstipohjaItem,
+  Viestipohja,
+  ViestipohjaKategoria,
+  ViestipohjaListItem
+}
 import fi.oph.tutu.backend.repository.ViestipohjaRepository
 import org.springframework.stereotype.{Component, Service}
 
@@ -15,6 +23,20 @@ class ViestipohjaService(viestipohjaRepository: ViestipohjaRepository) {
 
   def haeViestipohja(viestipohjaId: UUID): Option[Viestipohja] = {
     viestipohjaRepository.haeViestipohja(viestipohjaId)
+  }
+
+  def haeViestipohjatKategorioittain(): Seq[KategorianTekstipohjat] = {
+    val kaikkiKategoriat   = viestipohjaRepository.haeViestipohjaKategoriat(ListSortParam("nimi", SortDef.Asc))
+    val kaikkiViestipohjat =
+      viestipohjaRepository.haeViestipohjaLista(ListSortParam("nimi", SortDef.Asc)).groupBy(_.kategoriaId)
+
+    kaikkiKategoriat.map(kategoria =>
+      KategorianTekstipohjat(
+        kategoriaNimi = kategoria.nimi,
+        pohjat =
+          kaikkiViestipohjat.getOrElse(kategoria.id.get, Seq()).map(pohja => TekstipohjaItem(pohja.id.get, pohja.nimi))
+      )
+    )
   }
 
   def lisaaViestipohja(viestipohja: Viestipohja, luoja: String): Viestipohja = {

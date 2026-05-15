@@ -8,6 +8,7 @@ import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
+import { mockViestipohjatKategorioittain } from '@/playwright/fixtures/viestipohjat';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Paatosteksti } from '@/src/lib/types/paatosteksti';
@@ -808,6 +809,44 @@ export const mockViestipohjaKategoriat = (page: Page) => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(MOCK_KATEGORIAT),
+        });
+      }
+    },
+  );
+};
+
+export const mockViestipohjanValinta = (
+  page: Page,
+  listaFails: boolean = false,
+  sisaltoFails: boolean = false,
+) => {
+  return page.route(
+    '**/tutu-backend/api/viestipohja/**',
+    async (route: Route) => {
+      if (route.request().url().endsWith('kategorioittain')) {
+        await route.fulfill({
+          status: listaFails ? 500 : 200,
+          contentType: 'application/json',
+          body: JSON.stringify(
+            listaFails
+              ? { message: 'ei onnaa' }
+              : mockViestipohjatKategorioittain(),
+          ),
+        });
+      } else {
+        const viestipohja: Viestipohja = {
+          ...MOCK_VIESTIPOHJA,
+          sisalto: {
+            fi: 'Suomi pohjassa',
+            sv: 'Finland pohjassa',
+          },
+        };
+        await route.fulfill({
+          status: sisaltoFails ? 500 : 200,
+          contentType: 'application/json',
+          body: JSON.stringify(
+            sisaltoFails ? { message: 'ei onnaa' } : viestipohja,
+          ),
         });
       }
     },

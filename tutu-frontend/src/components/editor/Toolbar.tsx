@@ -19,6 +19,7 @@ import {
   mergeRegister,
 } from '@lexical/utils';
 import {
+  Add,
   FormatBold,
   FormatClear,
   FormatListBulleted,
@@ -55,13 +56,16 @@ import {
   getSelectedNode,
   sanitizeUrl,
 } from '@/src/components/editor/editor-utils';
+import ValitsePohjaProps from '@/src/components/editor/ValitsePohjaProps';
 
-const ToolbarContainer = styled(Stack)({
+const ToolbarRow = styled(Stack)({
   width: '100%',
   height: '36px',
   borderBottom: '1px solid',
   borderColor: 'black',
 });
+
+const ToolbarContainer = styled(Stack)({});
 
 const ToolbarInnerContainer = styled(Stack)({
   padding: '0',
@@ -124,8 +128,10 @@ function $findTopLevelElement(node: LexicalNode) {
 
 export function Toolbar({
   setIsLinkEditMode,
+  valitsePohjaProps,
 }: {
   setIsLinkEditMode: (isLinkEditMode: boolean) => void;
+  valitsePohjaProps?: ValitsePohjaProps;
 }) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
@@ -264,120 +270,134 @@ export function Toolbar({
   }, [editor, toolbarState.isLink, setIsLinkEditMode]);
 
   return (
-    <ToolbarContainer
-      direction={'row'}
-      ref={toolbarRef}
-      divider={<Divider orientation={'vertical'} flexItem />}
-      alignContent={'center'}
-    >
-      <ToolbarInnerContainer direction={'row'}>
+    <ToolbarRow direction={'row'} justifyContent="space-between">
+      <ToolbarContainer
+        direction={'row'}
+        ref={toolbarRef}
+        divider={<Divider orientation={'vertical'} flexItem />}
+        alignContent={'center'}
+      >
+        <ToolbarInnerContainer direction={'row'}>
+          <OphButton
+            disabled={!toolbarState.canUndo}
+            onClick={() => {
+              editor.dispatchCommand(UNDO_COMMAND, undefined);
+            }}
+            aria-label="Undo"
+            sx={buttonStyle(false)}
+            startIcon={
+              <Undo
+                sx={{
+                  fontSize: '24px',
+                  color: toolbarState.canUndo
+                    ? ophColors.grey900
+                    : ophColors.grey400,
+                }}
+              />
+            }
+          />
+          <OphButton
+            disabled={!toolbarState.canRedo}
+            onClick={() => {
+              editor.dispatchCommand(REDO_COMMAND, undefined);
+            }}
+            aria-label="Redo"
+            sx={buttonStyle(false)}
+            startIcon={
+              <Redo
+                sx={{
+                  fontSize: '24px',
+                  color: toolbarState.canRedo
+                    ? ophColors.grey900
+                    : ophColors.grey400,
+                }}
+              />
+            }
+          />
+        </ToolbarInnerContainer>
+        <ToolbarInnerContainer direction={'row'}>
+          <OphButton
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
+            }}
+            aria-label="Format Bold"
+            sx={buttonStyle(toolbarState.isBold)}
+            startIcon={<FormatBold sx={iconStyle(toolbarState.isBold)} />}
+          />
+          <OphButton
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight');
+            }}
+            aria-label="Format highlight"
+            sx={buttonStyle(toolbarState.isHighlighted)}
+            startIcon={
+              <HighlightOutlined sx={iconStyle(toolbarState.isHighlighted)} />
+            }
+          />
+          <OphButton
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
+            }}
+            aria-label="Format strikethrough"
+            sx={buttonStyle(toolbarState.isStrikethrough)}
+            startIcon={
+              <StrikethroughS sx={iconStyle(toolbarState.isStrikethrough)} />
+            }
+          />
+          <ColorPicker
+            changeFontColor={changeFontColor}
+            selectedColor={toolbarState.fontColor}
+          />
+          <OphButton
+            onClick={clearFormatting}
+            aria-label="Clear formatting"
+            sx={buttonStyle(false)}
+            startIcon={<FormatClear sx={iconStyle(false)} />}
+          />
+        </ToolbarInnerContainer>
+        <ToolbarInnerContainer direction={'row'}>
+          <OphButton
+            onClick={() => formatBulletList(editor, toolbarState.blockType)}
+            aria-label="List Bulleted"
+            sx={buttonStyle(toolbarState.blockType === 'bullet')}
+            startIcon={
+              <FormatListBulleted
+                sx={iconStyle(toolbarState.blockType === 'bullet')}
+              />
+            }
+          />
+          <OphButton
+            onClick={() => formatNumberedList(editor, toolbarState.blockType)}
+            aria-label="List Numbered"
+            sx={buttonStyle(toolbarState.blockType === 'number')}
+            startIcon={
+              <FormatListNumbered
+                sx={iconStyle(toolbarState.blockType === 'number')}
+              />
+            }
+          />
+        </ToolbarInnerContainer>
+        <ToolbarInnerContainer direction={'row'}>
+          <OphButton
+            onClick={insertLink}
+            aria-label="Add link"
+            sx={buttonStyle(toolbarState.isLink)}
+            startIcon={<LinkOutlined sx={iconStyle(toolbarState.isLink)} />}
+          />
+        </ToolbarInnerContainer>
+      </ToolbarContainer>
+      {valitsePohjaProps && valitsePohjaProps.showButton && (
         <OphButton
-          disabled={!toolbarState.canUndo}
+          variant="text"
+          data-testid={'add-tekstipohja-button'}
+          startIcon={<Add />}
           onClick={() => {
-            editor.dispatchCommand(UNDO_COMMAND, undefined);
+            valitsePohjaProps.onValitsePohja();
           }}
-          aria-label="Undo"
-          sx={buttonStyle(false)}
-          startIcon={
-            <Undo
-              sx={{
-                fontSize: '24px',
-                color: toolbarState.canUndo
-                  ? ophColors.grey900
-                  : ophColors.grey400,
-              }}
-            />
-          }
-        />
-        <OphButton
-          disabled={!toolbarState.canRedo}
-          onClick={() => {
-            editor.dispatchCommand(REDO_COMMAND, undefined);
-          }}
-          aria-label="Redo"
-          sx={buttonStyle(false)}
-          startIcon={
-            <Redo
-              sx={{
-                fontSize: '24px',
-                color: toolbarState.canRedo
-                  ? ophColors.grey900
-                  : ophColors.grey400,
-              }}
-            />
-          }
-        />
-      </ToolbarInnerContainer>
-      <ToolbarInnerContainer direction={'row'}>
-        <OphButton
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
-          }}
-          aria-label="Format Bold"
-          sx={buttonStyle(toolbarState.isBold)}
-          startIcon={<FormatBold sx={iconStyle(toolbarState.isBold)} />}
-        />
-        <OphButton
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight');
-          }}
-          aria-label="Format highlight"
-          sx={buttonStyle(toolbarState.isHighlighted)}
-          startIcon={
-            <HighlightOutlined sx={iconStyle(toolbarState.isHighlighted)} />
-          }
-        />
-        <OphButton
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
-          }}
-          aria-label="Format strikethrough"
-          sx={buttonStyle(toolbarState.isStrikethrough)}
-          startIcon={
-            <StrikethroughS sx={iconStyle(toolbarState.isStrikethrough)} />
-          }
-        />
-        <ColorPicker
-          changeFontColor={changeFontColor}
-          selectedColor={toolbarState.fontColor}
-        />
-        <OphButton
-          onClick={clearFormatting}
-          aria-label="Clear formatting"
-          sx={buttonStyle(false)}
-          startIcon={<FormatClear sx={iconStyle(false)} />}
-        />
-      </ToolbarInnerContainer>
-      <ToolbarInnerContainer direction={'row'}>
-        <OphButton
-          onClick={() => formatBulletList(editor, toolbarState.blockType)}
-          aria-label="List Bulleted"
-          sx={buttonStyle(toolbarState.blockType === 'bullet')}
-          startIcon={
-            <FormatListBulleted
-              sx={iconStyle(toolbarState.blockType === 'bullet')}
-            />
-          }
-        />
-        <OphButton
-          onClick={() => formatNumberedList(editor, toolbarState.blockType)}
-          aria-label="List Numbered"
-          sx={buttonStyle(toolbarState.blockType === 'number')}
-          startIcon={
-            <FormatListNumbered
-              sx={iconStyle(toolbarState.blockType === 'number')}
-            />
-          }
-        />
-      </ToolbarInnerContainer>
-      <ToolbarInnerContainer direction={'row'}>
-        <OphButton
-          onClick={insertLink}
-          aria-label="Add link"
-          sx={buttonStyle(toolbarState.isLink)}
-          startIcon={<LinkOutlined sx={iconStyle(toolbarState.isLink)} />}
-        />
-      </ToolbarInnerContainer>
-    </ToolbarContainer>
+        >
+          {valitsePohjaProps.buttonText}
+        </OphButton>
+      )}
+    </ToolbarRow>
   );
 }

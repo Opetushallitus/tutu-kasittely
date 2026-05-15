@@ -16,6 +16,7 @@ import {
 } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
@@ -29,6 +30,9 @@ export default function PaatosEditorPage() {
   const { paatosteksti, savePaatosteksti, updateOngoing, error, updateError } =
     usePaatosteksti(oid);
   const [hasChanges, setHasChanges] = useState(false);
+  const { showTekstipohjaLista, setShowTekstipohjaLista } =
+    useShowTekstipohjat();
+
   useUnsavedChanges(hasChanges);
 
   const { showConfirmation } = useGlobalConfirmationModal();
@@ -74,7 +78,15 @@ export default function PaatosEditorPage() {
         <OphTypography variant={'h2'}>
           {t('hakemus.editori.paatos.otsikko')}
         </OphTypography>
-        <Editor editorRef={editorRef} onChange={updateHasChanges}></Editor>
+        <Editor
+          editorRef={editorRef}
+          onChange={updateHasChanges}
+          valitsePohjaProps={{
+            showButton: !showTekstipohjaLista,
+            buttonText: t(`tekstipohjat.paatospohjat.valitse`),
+            onValitsePohja: () => setShowTekstipohjaLista(true),
+          }}
+        ></Editor>
         <OphButton
           sx={{ alignSelf: 'flex-end' }}
           variant={'contained'}
