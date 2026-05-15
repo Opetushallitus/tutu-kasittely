@@ -169,16 +169,14 @@ class ViestipohjaRepository extends BaseResultHandlers {
     if (!sortableViestipohjaFields.contains(sortParam.param)) {
       throw RuntimeException(s"Tuntematon sort kenttä: ${sortParam.param}")
     }
-    val sqlWithSort = sql"""
-                  SELECT
-                    id,
-                    kategoria_id,
-                    nimi
-                  FROM viestipohja
-                   """.concat(sql" ORDER BY #${sortParam.param} #${SortDef.toSql(sortParam.sortDef)}")
     try {
       db.run(
-        sqlWithSort.as[ViestipohjaListItem],
+        sql"""SELECT
+                id,
+                kategoria_id,
+                nimi
+              FROM viestipohja
+              ORDER BY #${sortParam.param} #${SortDef.toSql(sortParam.sortDef)}""".as[ViestipohjaListItem],
         "hae_viestipohjalista"
       )
     } catch {

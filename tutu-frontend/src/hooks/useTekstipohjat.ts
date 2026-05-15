@@ -24,30 +24,22 @@ export const useTekstipohjat = () => {
 export const useTekstipohjaSelect = (
   selectCb: (viestipohja: Viestipohja) => void,
 ) => {
-  const [queryKey, setQueryKey] = useState(['viestipohja', undefined]);
+  const [pohjaId, setPohjaId] = useState<string | undefined>(undefined);
 
   const query = useQuery({
-    queryKey,
-    queryFn: async ({ queryKey }): Promise<Viestipohja | undefined> => {
-      const pohjaId = queryKey.length == 2 && queryKey[1] ? queryKey[1] : null;
-      if (pohjaId) {
-        return await doApiFetch(
-          `viestipohja/${pohjaId}`,
-          undefined,
-          'no-store',
-        ).then((viestipohja: Viestipohja) => {
+    queryKey: ['viestipohja', pohjaId],
+    queryFn: async (): Promise<Viestipohja | undefined> =>
+      await doApiFetch(`viestipohja/${pohjaId}`, undefined, 'no-store').then(
+        (viestipohja: Viestipohja) => {
           selectCb(viestipohja);
           return viestipohja;
-        });
-      }
-      return Promise.resolve(undefined);
-    },
-    enabled: queryKey.length == 2 && queryKey[1] !== undefined,
+        },
+      ),
+    enabled: !!pohjaId,
     throwOnError: false,
   });
   return {
-    selectTekstipohja: (pohjaId: string) =>
-      setQueryKey(['viestipohja', pohjaId]),
+    selectTekstipohja: (pohjaId: string) => setPohjaId(pohjaId),
     isLoadingPohja: query.isLoading,
     pohjaLoadError: query.error,
   };
