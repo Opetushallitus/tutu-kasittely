@@ -214,34 +214,4 @@ class YkViestiControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$", hasSize(2)))
       .andExpect(jsonPath("$[1]", hasKey("vastausLuettu")))
   }
-
-  // haeHakemuksenYkViestit
-  // luoHakemuksenYkViesti
-  // vastaaHakemuksenYkViestiin
-  //
-
-  // @Test
-  // @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  // def tallennaPerusteluPalauttaa200JaKantaanTallennetunDatan(): Unit = {
-  //   val perusteluJSON = perustelu2Json(perustelu, "id", "luotu", "muokattu", "muokkaaja")
-
-  //   when(
-  //     userService.getEnrichedUserDetails(any)
-  //   ).thenReturn(
-  //     User(
-  //       userOid = "test user",
-  //       authorities = List()
-  //     )
-  //   )
-  //   when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
-
-  //   mvc
-  //     .perform(
-  //       put(s"/api/perustelu/${hakemusOid}")
-  //         .`with`(csrf())
-  //         .contentType(MediaType.APPLICATION_JSON)
-  //         .content(perusteluJSON)
-  //     )
-  //     .andExpect(status().isOk)
-  // }
 }

@@ -86,14 +86,17 @@ case class YkViesti(
   lahettajaOid: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   vastaanottaja: Option[String] = None,
-  luotu: Option[LocalDateTime] = None,
   vastattu: Option[LocalDateTime] = None,
   kysymysLuettu: Option[LocalDateTime] = None,
   vastausLuettu: Option[LocalDateTime] = None,
   kysymys: Option[String] = None,
   vastaus: Option[String] = None,
   hakija: String,
-  jatkoKasittelyt: Seq[YkViesti] = Seq.empty
+  jatkoKasittelyt: Seq[YkViesti] = Seq.empty,
+  luoja: Option[String] = None,
+  luotu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None,
+  muokattu: Option[LocalDateTime] = None
 )
 
 case class YkViestiListItem(
