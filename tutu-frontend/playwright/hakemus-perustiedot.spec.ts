@@ -35,7 +35,7 @@ test('Henkilötiedot näkyvät oletuskielellä', async ({ page }) => {
   await expect(page.getByTestId('postinumero')).toHaveText('00100');
   await expect(page.getByTestId('postitoimipaikka')).toHaveText('Helsinki');
   await expect(page.getByTestId('kotikunta')).toHaveText('Helsinki');
-  await expect(page.getByTestId('sahkopostiosoite')).toHaveValue(
+  await expect(page.getByTestId('sahkopostiosoite')).toHaveText(
     'hessu@hemuli.com',
   );
   await expect(page.getByTestId('paatoskieli')).toHaveText('suomeksi');
