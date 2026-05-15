@@ -112,15 +112,23 @@ def haeHakemusKoskeeRivit(
       haeHakemusKoskeeRivit(translationService, kieli, Option(child), level + 1)
     })
 
-    val valueMaybe = item.flatMap(_.value.head.label.get(kieli))
-    val fieldType  = item.map(_.fieldType).getOrElse("-")
+    val label     = item.filter(_.fieldType != "dropdown").flatMap(_.label.get(kieli)).getOrElse("")
+    val values    = item.map(_.value.map(_.label.get(kieli).getOrElse(""))).getOrElse(Seq.empty)
+    val fieldType = item.map(_.fieldType).getOrElse("-")
 
-    valueMaybe match {
-      case Some(value) =>
-        val rivi = s"$value"
+    val uudetRivit = values.size match {
+      case 0 => alirivit
+      case 1 =>
+        val value = values.head
+        val rivi  = s"$label $value"
         (level, rivi, fieldType) +: alirivit
-      case _ => alirivit
+      case _ =>
+        val labelRivi = (level, label, fieldType)
+        val rivit     = values.map(value => (level + 1, value, fieldType))
+        (labelRivi +: rivit) ++ alirivit
     }
+
+    uudetRivit.filter(r => r._2.nonEmpty)
   }
 }
 
