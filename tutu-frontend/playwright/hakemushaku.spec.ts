@@ -318,7 +318,6 @@ test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async
   await searchButtonClick(page);
 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
-  await page.getByText('Aalto, Aino').click();
 
   await expect(page.getByTestId('hakemusotsikko-hakija')).toHaveText(
     'Aalto, Aino',
