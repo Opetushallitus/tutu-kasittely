@@ -1,6 +1,14 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{Kielistetty, Viestipohja, ViestipohjaKategoria, ViestipohjaListItem}
+import fi.oph.tutu.backend.domain.SortDef.Asc
+import fi.oph.tutu.backend.domain.{
+  Kielistetty,
+  ListSortParam,
+  SortDef,
+  Viestipohja,
+  ViestipohjaKategoria,
+  ViestipohjaListItem
+}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.{Component, Repository}
 import org.slf4j.{Logger, LoggerFactory}
@@ -52,14 +60,20 @@ class ViestipohjaRepository extends BaseResultHandlers {
       )
     )
 
-  def haeViestipohjaKategoriat(): Seq[ViestipohjaKategoria] = {
+  private val sortableKategoriaFields = Set("luotu", "nimi")
+
+  def haeViestipohjaKategoriat(sortParam: ListSortParam = ListSortParam("luotu", Asc)): Seq[ViestipohjaKategoria] = {
+    if (!sortableKategoriaFields.contains(sortParam.param)) {
+      throw RuntimeException(s"Tuntematon sort kenttä: ${sortParam.param}")
+    }
+    val sqlWithSort =
+      sql"""
+            SELECT id, nimi, luotu, luoja, muokattu, muokkaaja
+            FROM viestipohja_kategoria
+             """.concat(sql" ORDER BY #${sortParam.param} #${SortDef.toSql(sortParam.sortDef)}")
     try {
       db.run(
-        sql"""
-              SELECT id, nimi, luotu, luoja, muokattu, muokkaaja
-              FROM viestipohja_kategoria
-              ORDER BY luotu ASC
-               """.as[ViestipohjaKategoria],
+        sqlWithSort.as[ViestipohjaKategoria],
         "hae_viestipohja_kategoriat"
       )
     } catch {
@@ -149,17 +163,20 @@ class ViestipohjaRepository extends BaseResultHandlers {
     }
   }
 
-  def haeViestipohjaLista(): Seq[ViestipohjaListItem] = {
+  private val sortableViestipohjaFields = Set("luotu", "nimi")
+
+  def haeViestipohjaLista(sortParam: ListSortParam = ListSortParam("luotu", Asc)): Seq[ViestipohjaListItem] = {
+    if (!sortableViestipohjaFields.contains(sortParam.param)) {
+      throw RuntimeException(s"Tuntematon sort kenttä: ${sortParam.param}")
+    }
     try {
       db.run(
-        sql"""
-                  SELECT
-                    id,
-                    kategoria_id,
-                    nimi
-                  FROM viestipohja
-                  ORDER BY luotu ASC
-                   """.as[ViestipohjaListItem],
+        sql"""SELECT
+                id,
+                kategoria_id,
+                nimi
+              FROM viestipohja
+              ORDER BY #${sortParam.param} #${SortDef.toSql(sortParam.sortDef)}""".as[ViestipohjaListItem],
         "hae_viestipohjalista"
       )
     } catch {

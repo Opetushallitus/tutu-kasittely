@@ -9,6 +9,7 @@ import { HakemusTabs } from '@/src/components/HakemusTabs';
 import { SideBar } from '@/src/components/sidebar/SideBar';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
+import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
@@ -24,6 +25,8 @@ export const HakemusDetailLayout = ({
   const { t } = useTranslations();
   const { addToast } = useToaster();
   const { showPaatosTekstiPreview } = useShowPreview();
+  const { showTekstipohjaLista } = useShowTekstipohjat();
+
   const {
     isLoading,
     hakemusState: { editedData: hakemus },
@@ -58,7 +61,7 @@ export const HakemusDetailLayout = ({
             sx={{ paddingTop: 2 }}
           >
             {children}
-            {!showPaatosTekstiPreview && <SideBar />}
+            {!showPaatosTekstiPreview && !showTekstipohjaLista && <SideBar />}
           </Stack>
         </BoxWrapper>
       </Stack>

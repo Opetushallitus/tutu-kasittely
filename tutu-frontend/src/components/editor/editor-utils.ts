@@ -20,6 +20,7 @@ import {
   $getRoot,
   $getSelection,
   $insertNodes,
+  $isRangeSelection,
   ElementNode,
   LexicalEditor,
   RangeSelection,
@@ -128,6 +129,19 @@ export function getSelectedNode(
     return $isAtNodeEnd(focus) ? anchorNode : focusNode;
   } else {
     return $isAtNodeEnd(anchor) ? anchorNode : focusNode;
+  }
+}
+
+export function pasteHtml(editor: LexicalEditor | null, html: string) {
+  if (editor) {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const dom = new DOMParser().parseFromString(html, 'text/html');
+        const nodes = $generateNodesFromDOM(editor, dom);
+        $insertNodes(nodes);
+      }
+    });
   }
 }
 

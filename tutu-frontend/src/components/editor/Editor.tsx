@@ -42,6 +42,7 @@ import { RefObject, useState } from 'react';
 import { validateUrl } from '@/src/components/editor/editor-utils';
 import { ExtendedTextNode } from '@/src/components/editor/ExtendedTextNode';
 import FloatingLinkEditorPlugin from '@/src/components/editor/FloatingLinkEditorPlugin';
+import ValitsePohjaProps from '@/src/components/editor/ValitsePohjaProps';
 
 import { Toolbar } from './Toolbar';
 
@@ -91,13 +92,17 @@ const MATCHERS = [
   }),
 ];
 
+export interface EditorProps {
+  editorRef: RefObject<LexicalEditor | null>;
+  onChange: (editor: LexicalEditor) => void;
+  valitsePohjaProps?: ValitsePohjaProps;
+}
+
 export function Editor({
   editorRef,
   onChange,
-}: {
-  editorRef: RefObject<LexicalEditor | null>;
-  onChange: (editor: LexicalEditor) => void;
-}) {
+  valitsePohjaProps,
+}: EditorProps) {
   const theme = useTheme();
 
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
@@ -113,7 +118,10 @@ export function Editor({
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <EditorContainer>
-        <Toolbar setIsLinkEditMode={setIsLinkEditMode} />
+        <Toolbar
+          setIsLinkEditMode={setIsLinkEditMode}
+          valitsePohjaProps={valitsePohjaProps}
+        />
         <EditorInnerContainer>
           <RichTextPlugin
             contentEditable={

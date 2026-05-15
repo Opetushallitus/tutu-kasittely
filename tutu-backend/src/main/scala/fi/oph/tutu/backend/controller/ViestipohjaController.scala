@@ -81,6 +81,41 @@ class ViestipohjaController(
   }
 
   @GetMapping(
+    path = Array("viestipohja/kategorioittain"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Hae viestipohjat kategorioittain",
+    description = "GET endpoint joka palauttaa viestipohjat kategorioittain",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def haeViestipohjatKategorioittain(request: jakarta.servlet.http.HttpServletRequest): ResponseEntity[Any] = {
+    Try {
+      viestipohjaService.haeViestipohjatKategorioittain()
+    } match {
+      case Success(result) =>
+        auditLog.logRead("viestipohjat", "", ReadViestipohjat, request)
+        ResponseEntity.status(OK).body(mapper.writeValueAsString(result))
+      case Failure(exception) =>
+        LOG.error(s"Viestipohjien haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  @GetMapping(
     path = Array("viestipohja/{viestipohjaId}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )

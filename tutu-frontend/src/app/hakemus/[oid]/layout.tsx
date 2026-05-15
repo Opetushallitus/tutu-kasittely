@@ -4,6 +4,7 @@ import { SearchResultsRibbon } from '@/src/components/SearchResultsRibbon';
 import { HakemusProvider } from '@/src/context/HakemusContext';
 import { SearchRibbonProvider } from '@/src/context/SearchRibbonContext';
 import { ShowPreviewProvider } from '@/src/context/ShowPreviewContext';
+import { ShowTekstipohjaContextProvider } from '@/src/context/TekstipohjaContext';
 
 export default async function HakemusLayout(props: {
   children: React.ReactNode;
@@ -17,11 +18,13 @@ export default async function HakemusLayout(props: {
     <SearchRibbonProvider originalOid={params.oid}>
       <HakemusProvider hakemusOid={params.oid}>
         <ShowPreviewProvider>
-          <PageLayout header={header} ribbon={<SearchResultsRibbon />}>
-            <HakemusDetailLayout hakemusOid={params.oid}>
-              {children}
-            </HakemusDetailLayout>
-          </PageLayout>
+          <ShowTekstipohjaContextProvider>
+            <PageLayout header={header} ribbon={<SearchResultsRibbon />}>
+              <HakemusDetailLayout hakemusOid={params.oid}>
+                {children}
+              </HakemusDetailLayout>
+            </PageLayout>
+          </ShowTekstipohjaContextProvider>
         </ShowPreviewProvider>
       </HakemusProvider>
     </SearchRibbonProvider>

@@ -47,3 +47,13 @@ export type ViestipohjaKategoria = {
   id?: string;
   nimi: string;
 };
+
+export type TekstipohjaItem = {
+  id: string;
+  nimi: string;
+};
+
+export type KategorianTekstipohjat = {
+  kategoriaNimi: string;
+  pohjat: TekstipohjaItem[];
+};

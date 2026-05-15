@@ -51,16 +51,11 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
 
   var testKategoriaId: Option[UUID] = None
 
-  @BeforeAll
-  def setup(): Unit = {
-    val configurer: MockMvcConfigurer       = SecurityMockMvcConfigurers.springSecurity()
-    val intermediate: DefaultMockMvcBuilder = MockMvcBuilders.webAppContextSetup(context).apply(configurer)
-    mvc = intermediate.build()
-
+  def lisaaKategoria(nimi: String): UUID = {
     val kategoria = viestipohjaRepository.lisaaViestipohjaKategoria(
       ViestipohjaKategoria(
         id = None,
-        nimi = "Peruskategoria",
+        nimi = nimi,
         luotu = None,
         luoja = None,
         muokattu = None,
@@ -68,7 +63,33 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
       ),
       "test-user"
     )
-    testKategoriaId = kategoria.id
+    kategoria.id.get
+  }
+
+  def lisaaViestipohja(nimi: String, kategoriaId: UUID): UUID = {
+    val viestipohja = viestipohjaRepository.lisaaViestipohja(
+      Viestipohja(
+        id = None,
+        nimi = nimi,
+        kategoriaId = Some(kategoriaId),
+        sisalto = Map(Kieli.fi -> "Sisältö suomeksi"),
+        luotu = None,
+        luoja = None,
+        muokattu = None,
+        muokkaaja = None
+      ),
+      "test-user"
+    )
+    viestipohja.id.get
+  }
+
+  @BeforeAll
+  def setup(): Unit = {
+    val configurer: MockMvcConfigurer       = SecurityMockMvcConfigurers.springSecurity()
+    val intermediate: DefaultMockMvcBuilder = MockMvcBuilders.webAppContextSetup(context).apply(configurer)
+    mvc = intermediate.build()
+
+    testKategoriaId = Some(lisaaKategoria("Peruskategoria"))
   }
 
   @BeforeEach
@@ -306,5 +327,41 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
           .`with`(csrf())
       )
       .andExpect(status().isNotFound)
+  }
+
+  // --- GET /api/viestipohja/kategorioittain ---
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(13)
+  def haeViestipohjatKategorioittainPalauttaa200(): Unit = {
+    val kategoria1 = lisaaKategoria("Aalla alkava kategoria")
+    val kategoria2 = lisaaKategoria("Veellä alkava kategoria")
+    val kategoria3 = lisaaKategoria("Eellä alkava kategoria")
+    lisaaViestipohja("Beellä alkava pohja", kategoria1)
+    lisaaViestipohja("Aalla alkava pohja", kategoria1)
+    lisaaViestipohja("Hoolla alkava pohja", kategoria3)
+    lisaaViestipohja("Jiillä alkava pohja", kategoria2)
+    lisaaViestipohja("Weellä alkava pohja", kategoria3)
+    lisaaViestipohja("Oolla alkava pohja", testKategoriaId.get)
+
+    val result = mvc
+      .perform(get("/api/viestipohja/kategorioittain"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$[0].kategoriaNimi").value("Aalla alkava kategoria"))
+      .andExpect(jsonPath("$[0].pohjat[0].nimi").value("Aalla alkava pohja"))
+      .andExpect(jsonPath("$[0].pohjat[1].nimi").value("Beellä alkava pohja"))
+      .andExpect(jsonPath("$[1].kategoriaNimi").value("Eellä alkava kategoria"))
+      .andExpect(jsonPath("$[1].pohjat[0].nimi").value("Hoolla alkava pohja"))
+      .andExpect(jsonPath("$[1].pohjat[1].nimi").value("Weellä alkava pohja"))
+      .andExpect(jsonPath("$[2].kategoriaNimi").value("Päivitetty nimi"))
+      .andExpect(jsonPath("$[2].pohjat[0].nimi").value("Oolla alkava pohja"))
+      .andExpect(jsonPath("$[2].pohjat[1].nimi").value("Päivitetty pohja"))
+      .andExpect(jsonPath("$[3].kategoriaNimi").value("Uusi kategoria"))
+      .andExpect(jsonPath("$[3].pohjat").isEmpty)
+      .andExpect(jsonPath("$[4].kategoriaNimi").value("Veellä alkava kategoria"))
+      .andExpect(jsonPath("$[4].pohjat[0].nimi").value("Jiillä alkava pohja"))
+      .andReturn()
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadViestipohjat), any())
   }
 }
