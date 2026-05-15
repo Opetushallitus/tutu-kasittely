@@ -28,3 +28,13 @@ case class ViestipohjaKategoria(
   muokattu: Option[LocalDateTime],
   muokkaaja: Option[String]
 )
+
+case class TekstipohjaItem(
+  id: UUID,
+  nimi: String
+)
+
+case class KategorianTekstipohjat(
+  kategoriaNimi: String,
+  pohjat: Seq[TekstipohjaItem]
+)
