@@ -71,8 +71,7 @@ class ViestipohjaControllerTest extends IntegrationTestBase {
       Viestipohja(
         id = None,
         nimi = nimi,
-        kategoriaId = kategoriaId,
-        otsikko = "Testiaihe",
+        kategoriaId = Some(kategoriaId),
         sisalto = Map(Kieli.fi -> "Sisältö suomeksi"),
         luotu = None,
         luoja = None,

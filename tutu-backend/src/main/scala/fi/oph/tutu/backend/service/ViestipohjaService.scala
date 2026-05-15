@@ -28,7 +28,10 @@ class ViestipohjaService(viestipohjaRepository: ViestipohjaRepository) {
   def haeViestipohjatKategorioittain(): Seq[KategorianTekstipohjat] = {
     val kaikkiKategoriat   = viestipohjaRepository.haeViestipohjaKategoriat(ListSortParam("nimi", SortDef.Asc))
     val kaikkiViestipohjat =
-      viestipohjaRepository.haeViestipohjaLista(ListSortParam("nimi", SortDef.Asc)).groupBy(_.kategoriaId)
+      viestipohjaRepository
+        .haeViestipohjaLista(ListSortParam("nimi", SortDef.Asc))
+        .filter(_.kategoriaId.isDefined)
+        .groupBy(_.kategoriaId.get)
 
     kaikkiKategoriat.map(kategoria =>
       KategorianTekstipohjat(
