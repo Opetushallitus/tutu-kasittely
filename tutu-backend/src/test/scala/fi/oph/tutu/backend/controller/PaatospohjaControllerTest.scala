@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.domain.{Tekstipohja, TekstipohjaKategoria, TekstipohjaListItem}
-import fi.oph.tutu.backend.repository.{PaatospohjaRepository, ViestipohjaRepository}
+import fi.oph.tutu.backend.repository.PaatospohjaRepository
 import fi.oph.tutu.backend.utils.AuditOperation
 import org.springframework.beans.factory.annotation.Autowired
 

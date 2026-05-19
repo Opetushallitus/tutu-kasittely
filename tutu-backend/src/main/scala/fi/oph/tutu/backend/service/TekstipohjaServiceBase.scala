@@ -1,14 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{
-  KategorianTekstipohjat,
-  ListSortParam,
-  SortDef,
-  Tekstipohja,
-  TekstipohjaItem,
-  TekstipohjaKategoria,
-  TekstipohjaListItem
-}
+import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.TekstipohjaRepositoryBase
 
 import java.util.UUID

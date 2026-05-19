@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.service.{PaatospohjaService, UserService, ViestipohjaService}
+import fi.oph.tutu.backend.service.{PaatospohjaService, UserService}
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.AuditUtil.NO_CHANGES
