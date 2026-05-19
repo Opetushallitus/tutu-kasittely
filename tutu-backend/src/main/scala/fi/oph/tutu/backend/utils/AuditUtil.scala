@@ -7,6 +7,8 @@ import scala.jdk.CollectionConverters._
 object AuditUtil {
   private val mapper = new ObjectMapper()
 
+  val NO_CHANGES: Changes = new Changes.Builder().build()
+
   /**
    * Compares two JSON strings and creates a Changes object containing:
    * - Added: new key-value pairs in the after JSON
