@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.domain
 import java.time.LocalDateTime
 import java.util.UUID
 
-case class Viestipohja(
+case class Tekstipohja(
   id: Option[UUID],
   nimi: String,
   kategoriaId: Option[UUID],
@@ -14,13 +14,13 @@ case class Viestipohja(
   muokkaaja: Option[String]
 )
 
-case class ViestipohjaListItem(
+case class TekstipohjaListItem(
   id: Option[UUID],
   nimi: String,
   kategoriaId: Option[UUID]
 )
 
-case class ViestipohjaKategoria(
+case class TekstipohjaKategoria(
   id: Option[UUID],
   nimi: String,
   luotu: Option[LocalDateTime],

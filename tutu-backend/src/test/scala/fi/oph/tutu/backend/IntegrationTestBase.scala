@@ -31,7 +31,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer
 
 import java.io.FileNotFoundException
 import java.sql.DriverManager
-import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source

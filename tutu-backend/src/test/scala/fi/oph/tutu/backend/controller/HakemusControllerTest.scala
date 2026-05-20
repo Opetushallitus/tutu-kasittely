@@ -6,7 +6,10 @@ import fi.oph.tutu.backend.fixture.createTutkinnotFixture
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Constants.ATARU_SERVICE
+import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import org.hamcrest.CustomMatcher
+import org.hamcrest.Matchers.hasItems
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
@@ -26,12 +29,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
-import org.hamcrest.Matchers.hasItems
-import org.hamcrest.CustomMatcher
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZonedDateTime}
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
+import java.time.LocalDateTime
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"

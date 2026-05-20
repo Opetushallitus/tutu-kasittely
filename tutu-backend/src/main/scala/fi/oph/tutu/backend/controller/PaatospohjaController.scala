@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.service.{UserService, ViestipohjaService}
+import fi.oph.tutu.backend.service.{PaatospohjaService, UserService}
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.AuditUtil.NO_CHANGES
@@ -14,75 +14,75 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = Array("api"))
-class ViestipohjaController(
-  viestipohjaService: ViestipohjaService,
+class PaatospohjaController(
+  paatospohjaService: PaatospohjaService,
   userService: UserService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
-) extends TekstipohjaControllerBase(viestipohjaService, userService, auditLog, mapper) {
+) extends TekstipohjaControllerBase(paatospohjaService, userService, auditLog, mapper) {
 
-  def singlePohjaDescGenitiveCase     = "viestipohjan"
-  def singleKategoriaDescGenitiveCase = "viestipohjakategorian"
+  def singlePohjaDescGenitiveCase     = "paatospohjan"
+  def singleKategoriaDescGenitiveCase = "paatospohjakategorian"
 
-  def pohjaListDescGenitiveCase     = "viestipohjien"
-  def kategoriaListDescGenitiveCase = "viestipohjakategorioiden"
+  def pohjaListDescGenitiveCase     = "paatospohjien"
+  def kategoriaListDescGenitiveCase = "paatospohjakategorioiden"
 
   override def auditlogPohjaCreate(user: User, pohjaId: String, newData: String): Unit =
     auditLog.logCreate(
       user,
-      Map("viestipohjaId" -> pohjaId),
-      CreateViestipohja,
+      Map("paatospohjaId" -> pohjaId),
+      CreatePaatospohja,
       newData
     )
 
   override def auditlogPohjaUpdate(user: User, pohjaId: String, changes: Changes): Unit =
     auditLog.logChanges(
       user,
-      Map("viestipohjaId" -> pohjaId),
-      UpdateViestipohja,
+      Map("paatospohjaId" -> pohjaId),
+      UpdatePaatospohja,
       changes
     )
 
   override def auditlogPohjaDelete(user: User, pohjaId: String): Unit = auditLog.logChanges(
     user,
-    Map("viestipohjaId" -> pohjaId),
-    DeleteViestiPohja,
+    Map("paatospohjaId" -> pohjaId),
+    DeletePaatospohja,
     NO_CHANGES
   )
 
   override def auditlogPohjaListRead(request: HttpServletRequest): Unit =
-    auditLog.logRead("viestipohjat", "", ReadViestipohjat, request)
+    auditLog.logRead("paatospohjat", "", ReadPaatospohjat, request)
 
   override def auditlogPohjaRead(request: HttpServletRequest, pohjaId: String): Unit =
-    auditLog.logRead("viestipohja", pohjaId, ReadViestipohja, request)
+    auditLog.logRead("paatospohja", pohjaId, ReadPaatospohja, request)
 
   override def auditlogKategoriaCreate(user: User, kategoriaId: String, newData: String): Unit =
     auditLog.logCreate(
       user,
-      Map("viestipohjaKategoriaId" -> kategoriaId),
-      CreateViestipohjaKategoria,
+      Map("paatospohjaKategoriaId" -> kategoriaId),
+      CreatePaatospohjaKategoria,
       newData
     )
 
   override def auditlogKategoriaUpdate(user: User, kategoriaId: String, changes: Changes): Unit =
     auditLog.logChanges(
       user,
-      Map("viestipohjaKategoriaId" -> kategoriaId),
-      UpdateViestipohjaKategoria,
+      Map("paatospohjaKategoriaId" -> kategoriaId),
+      UpdatePaatospohjaKategoria,
       changes
     )
 
   override def auditlogKategoriaListRead(
     request: HttpServletRequest
-  ): Unit = auditLog.logRead("viestipohjaKategoriat", "", ReadViestipohjaKategoriat, request)
+  ): Unit = auditLog.logRead("paatospohjaKategoriat", "", ReadPaatospohjaKategoriat, request)
 
   @GetMapping(
-    path = Array("viestipohja"),
+    path = Array("paatospohja"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Hae viestipohjalista",
-    description = "GET endpoint viestipohjalistan hakemiseen",
+    summary = "Hae paatospohjalista",
+    description = "GET endpoint paatospohjalistan hakemiseen",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -98,16 +98,16 @@ class ViestipohjaController(
       )
     )
   )
-  def haeViestipohjaLista(request: HttpServletRequest): ResponseEntity[Any] =
+  def haePaatospohjaLista(request: HttpServletRequest): ResponseEntity[Any] =
     haeTekstipohjaLista(request)
 
   @GetMapping(
-    path = Array("viestipohja/kategorioittain"),
+    path = Array("paatospohja/kategorioittain"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Hae viestipohjat kategorioittain",
-    description = "GET endpoint joka palauttaa viestipohjat kategorioittain",
+    summary = "Hae paatospohjat kategorioittain",
+    description = "GET endpoint joka palauttaa paatospohjat kategorioittain",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -123,16 +123,16 @@ class ViestipohjaController(
       )
     )
   )
-  def haeViestipohjatKategorioittain(request: HttpServletRequest): ResponseEntity[Any] =
+  def haePaatospohjatKategorioittain(request: HttpServletRequest): ResponseEntity[Any] =
     haeTekstipohjatKategorioittain(request)
 
   @GetMapping(
-    path = Array("viestipohja/{viestipohjaId}"),
+    path = Array("paatospohja/{paatospohjaId}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Hae viestipohja",
-    description = "GET endpoint yksittäisen viestipohjan hakemiseen.",
+    summary = "Hae paatospohja",
+    description = "GET endpoint yksittäisen paatospohjan hakemiseen.",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -148,18 +148,18 @@ class ViestipohjaController(
       )
     )
   )
-  def haeViestipohja(
-    @PathVariable viestipohjaId: String,
+  def haePaatospohja(
+    @PathVariable paatospohjaId: String,
     request: HttpServletRequest
-  ): ResponseEntity[Any] = haeTekstipohja(viestipohjaId, request)
+  ): ResponseEntity[Any] = haeTekstipohja(paatospohjaId, request)
 
   @GetMapping(
-    path = Array("viestipohja/kategoria"),
+    path = Array("paatospohja/kategoria"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Hae viestipohja kategoriat",
-    description = "GET endpoint viestipohja kategorioiden hakemiseen.",
+    summary = "Hae paatospohja kategoriat",
+    description = "GET endpoint paatospohja kategorioiden hakemiseen.",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -175,16 +175,16 @@ class ViestipohjaController(
       )
     )
   )
-  def haeViestipohjaKategoriat(request: HttpServletRequest): ResponseEntity[Any] = haeTekstipohjaKategoriat(request)
+  def haePaatospohjaKategoriat(request: HttpServletRequest): ResponseEntity[Any] = haeTekstipohjaKategoriat(request)
 
   @PutMapping(
-    path = Array("viestipohja/kategoria"),
+    path = Array("paatospohja/kategoria"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Tallenna viestipohja kategoria",
-    description = "PUT endpoint viestipohja kategorian luomiseen tai olemassaolevan päivittämiseen.",
+    summary = "Tallenna paatospohja kategoria",
+    description = "PUT endpoint paatospohja kategorian luomiseen tai olemassaolevan päivittämiseen.",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -204,19 +204,19 @@ class ViestipohjaController(
       )
     )
   )
-  def tallennaViestipohjaKategoria(
-    @RequestBody viestipohjaKategoriaBytes: Array[Byte],
+  def tallennaPaatospohjaKategoria(
+    @RequestBody paatospohjaKategoriaBytes: Array[Byte],
     request: HttpServletRequest
-  ): ResponseEntity[Any] = tallennaTekstipohjaKategoria(viestipohjaKategoriaBytes, request)
+  ): ResponseEntity[Any] = tallennaTekstipohjaKategoria(paatospohjaKategoriaBytes, request)
 
   @PutMapping(
-    path = Array("viestipohja"),
+    path = Array("paatospohja"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Tallenna viestipohja",
-    description = "PUT endpoint viestipohjan luomiseen tai olemassaolevan päivittämiseen.",
+    summary = "Tallenna paatospohja",
+    description = "PUT endpoint paatospohjan luomiseen tai olemassaolevan päivittämiseen.",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -236,17 +236,17 @@ class ViestipohjaController(
       )
     )
   )
-  def tallennaViestipohja(
-    @RequestBody viestipohjaBytes: Array[Byte],
+  def tallennaPaatospohja(
+    @RequestBody paatospohjaBytes: Array[Byte],
     request: HttpServletRequest
-  ): ResponseEntity[Any] = tallennaTekstipohja(viestipohjaBytes, request)
+  ): ResponseEntity[Any] = tallennaTekstipohja(paatospohjaBytes, request)
 
   @DeleteMapping(
-    path = Array("viestipohja/{viestipohjaId}")
+    path = Array("paatospohja/{paatospohjaId}")
   )
   @Operation(
-    summary = "Poista viestipohja",
-    description = "DELETE endpoint viestipohjan poistamiselle.",
+    summary = "Poista paatospohja",
+    description = "DELETE endpoint paatospohjan poistamiselle.",
     responses = Array(
       new ApiResponse(
         responseCode = "204",
@@ -266,8 +266,8 @@ class ViestipohjaController(
       )
     )
   )
-  def poistaViestipohja(
-    @PathVariable("viestipohjaId") viestipohjaId: String,
+  def poistaPaatospohja(
+    @PathVariable("paatospohjaId") paatospohjaId: String,
     request: HttpServletRequest
-  ): ResponseEntity[Any] = poistaTekstipohja(viestipohjaId, request)
+  ): ResponseEntity[Any] = poistaTekstipohja(paatospohjaId, request)
 }
