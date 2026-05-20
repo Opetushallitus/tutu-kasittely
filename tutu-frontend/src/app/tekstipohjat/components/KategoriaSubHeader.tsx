@@ -1,4 +1,4 @@
-import { Edit } from '@mui/icons-material';
+import { EditOutlined } from '@mui/icons-material';
 import { ListSubheader } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 
@@ -23,18 +23,17 @@ export const KategoriaSubHeader = ({
           color: ophColors.blue2,
         },
         '&:hover button': {
-          display: 'block',
+          display: 'flex',
         },
       }}
     >
       <OphTypography variant={'label'}>{`${index + 1}. ${nimi}`}</OphTypography>
       <OphButton
         sx={{
-          marginRight: '12px',
           display: 'none',
           height: '24px',
         }}
-        startIcon={<Edit />}
+        startIcon={<EditOutlined />}
         onClick={onClick}
       ></OphButton>
     </ListSubheader>

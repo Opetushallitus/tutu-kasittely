@@ -1,4 +1,4 @@
-import { Edit } from '@mui/icons-material';
+import { EditOutlined } from '@mui/icons-material';
 import { ListItem } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 
@@ -20,13 +20,13 @@ export const TekstipohjaListItem = ({
         display: 'flex',
         justifyContent: 'space-between',
         backgroundColor: ophColors.grey50,
-        margin: '4px',
+        margin: '4px 0',
         fontWeight: 500,
         '&:hover *': {
           color: ophColors.blue2,
         },
         '&:hover button': {
-          display: 'block',
+          display: 'flex',
         },
       }}
     >
@@ -35,13 +35,11 @@ export const TekstipohjaListItem = ({
       </OphTypography>
       <OphButton
         sx={{
-          marginRight: '12px',
           display: 'none',
           height: '24px',
-          padding: 0,
         }}
         aria-labelledby={`list-item-${id}`}
-        startIcon={<Edit sx={{ top: '-8px' }} />}
+        startIcon={<EditOutlined />}
         onClick={onClick}
       ></OphButton>
     </ListItem>

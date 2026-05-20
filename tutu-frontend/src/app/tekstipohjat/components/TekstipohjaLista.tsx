@@ -126,7 +126,7 @@ export default function TekstipohjaLista<
                   }}
                 >
                   <OphTypography variant={'label'}>
-                    {t(`${tPrefix}.eiKategoriaa`)}
+                    {t('tekstipohjat.eiKategoriaa')}
                   </OphTypography>
                 </ListSubheader>
               }

@@ -1,33 +1,113 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { paatospohjaListaQueryKey } from '@/src/hooks/usePaatospohjat';
+import useToaster from '@/src/hooks/useToaster';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Paatospohja } from '@/src/lib/types/paatosteksti';
+import { handleSuccessMessage } from '@/src/lib/utils';
+
+const getPaatospohja = async (paatospohjaId?: string): Promise<Paatospohja> => {
+  const url = `paatospohja/${paatospohjaId}`;
+  return await doApiFetch(url, undefined, 'no-store');
+};
+
+const putPaatospohja = async (paatospohja: Paatospohja) => {
+  const url = `paatospohja`;
+  return await doApiPut(url, paatospohja);
+};
+
+const deletePaatospohja = async (paatospohjaId?: string) => {
+  const url = `paatospohja/${paatospohjaId}`;
+  return await doApiDelete(url, undefined);
+};
 
 export const usePaatospohja = (paatospohjaId?: string) => {
-  const paatospohja: Paatospohja = {
-    nimi: '',
-    kategoriaId: '',
-    sisalto: {
-      fi: '',
-      sv: '',
-    },
-  };
   const queryKey = ['paatospohja', paatospohjaId];
+  const queryClient = useQueryClient();
+
+  const { addToast } = useToaster();
+  const { t } = useTranslations();
 
   const query = useQuery({
     queryKey,
-    queryFn: () => Promise.resolve(paatospohja),
+    queryFn: () => getPaatospohja(paatospohjaId),
     enabled: !!paatospohjaId,
     throwOnError: false,
   });
 
+  const {
+    mutate: updatePaatospohjaMutation,
+    isPending: paatospohjaUpdateOngoing,
+    isSuccess: paatospohjaUpdateSuccess,
+    error: paatospohjaUpdateError,
+    reset: paatospohjaUpdateReset,
+  } = useMutation({
+    mutationFn: (paatospohja: Paatospohja) => putPaatospohja(paatospohja),
+    onSuccess: async (response) => {
+      const paivitettyPaatospohja = await response.json();
+      queryClient.setQueryData(queryKey, paivitettyPaatospohja);
+      await queryClient.invalidateQueries({
+        queryKey: paatospohjaListaQueryKey,
+      });
+      handleSuccessMessage(
+        true,
+        addToast,
+        'tekstipohjat.paatospohjat.paatospohjaTallennus.success',
+        t,
+      );
+    },
+  });
+
+  const {
+    mutate: poistaPaatospohjaMutation,
+    isPending: poistoOngoing,
+    isSuccess: poistoSuccess,
+    error: poistoError,
+    reset: paatospohjaPoistoReset,
+  } = useMutation({
+    mutationFn: () => deletePaatospohja(paatospohjaId),
+  });
+
+  const resetMutationStatuses = () => {
+    paatospohjaUpdateReset();
+    paatospohjaPoistoReset();
+  };
+
+  const updatePaatospohja = (paatospohja: Paatospohja) => {
+    resetMutationStatuses();
+    updatePaatospohjaMutation(paatospohja);
+  };
+
+  const poistaPaatospohja = (successCallback?: () => void) => {
+    resetMutationStatuses();
+    poistaPaatospohjaMutation(undefined, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: paatospohjaListaQueryKey,
+        });
+        handleSuccessMessage(
+          true,
+          addToast,
+          'tekstipohjat.paatospohjat.paatospohjaPoisto.success',
+          t,
+        );
+        if (successCallback) successCallback();
+      },
+    });
+  };
+
   return {
+    updatePaatospohja: updatePaatospohja,
+    poistaPaatospohja: poistaPaatospohja,
     paatospohja: query.data,
-    updatePaatospohja: (paatospohja: Paatospohja) => {
-      console.log('Tallenna paatospohja', paatospohja);
-    },
-    poistaPaatospohja: () => {
-      console.log(`Poistetaan paatospohja ${paatospohjaId}`);
-    },
-    isPaatospohjaLoading: false,
+    isPaatospohjaLoading: query.isLoading,
+    paatospohjaLoadingError: query.error,
+    updateOngoing: paatospohjaUpdateOngoing,
+    poistoOngoing,
+    paatospohjaUpdateSuccess,
+    paatospohjaUpdateError,
+    poistoSuccess,
+    poistoError,
   };
 };

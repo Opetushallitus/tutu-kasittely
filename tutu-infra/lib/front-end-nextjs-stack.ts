@@ -5,7 +5,7 @@ import { IHostedZone } from 'aws-cdk-lib/aws-route53'
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront'
 import * as logs from 'aws-cdk-lib/aws-logs'
-import { Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Runtime, FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda'
 
 interface FrontendNextjsStackProps extends StackProps {
   nextjsPath: string
@@ -68,6 +68,11 @@ export class FrontendNextjsStack extends Stack {
           hostedZone: props.hostedZone
         },
         overrides: {
+          nextjs: {
+            nextjsDistributionProps: {
+              functionUrlAuthType: FunctionUrlAuthType.AWS_IAM
+            }
+          },
           nextjsDistribution: {
             imageBehaviorOptions: {
               // We don't need image optimization, so doesn't matter what cache policy we use

@@ -216,8 +216,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
   def tallennaUusiTekstipohjaIlmanKategoriaaPalauttaa200(): Unit = {
-    val kategoriaId = testKategoriaId.get
-    val json        =
+    val json =
       s"""{"nimi": "Testipohja", "sisalto": {"fi": "Sisältö suomeksi"}}"""
     mvc
       .perform(
@@ -355,7 +354,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
     lisaaTekstipohja("Kuudes pohja", kategoria3)
     lisaaTekstipohja("Seitsemäs pohja", testKategoriaId.get)
 
-    val result = mvc
+    mvc
       .perform(get(pohjaListKategorioittainPath))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$[0].kategoriaNimi").value("Päivitetty nimi"))

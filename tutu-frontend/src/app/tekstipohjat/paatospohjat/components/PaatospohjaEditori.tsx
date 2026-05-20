@@ -11,6 +11,7 @@ import { importHtml } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePaatospohja } from '@/src/hooks/usePaatospohja';
+import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { LanguageCode } from '@/src/lib/types/common';
@@ -18,6 +19,7 @@ import {
   Paatospohja,
   PaatospohjaKategoria,
 } from '@/src/lib/types/paatosteksti';
+import { handleFetchError } from '@/src/lib/utils';
 
 const emptyPaatospohja: Paatospohja = {
   nimi: '',
@@ -37,11 +39,17 @@ const ValittuPaatospohja = ({
   kategoriat: Array<PaatospohjaKategoria>;
   setValittuPaatospohja: (valittuPaatospohjaId?: string | null) => void;
 }) => {
+  const { addToast } = useToaster();
+  const { t } = useTranslations();
+
   const {
     paatospohja,
     updatePaatospohja,
     poistaPaatospohja,
     isPaatospohjaLoading,
+    paatospohjaLoadingError,
+    paatospohjaUpdateError,
+    poistoError,
   } = usePaatospohja(paatospohjaId);
 
   const paatospohjaState = useEditableState(
@@ -66,27 +74,27 @@ const ValittuPaatospohja = ({
 
   const languages: Array<LanguageCode> = ['fi', 'sv'] as const;
 
-  // useEffect(() => {
-  //   handleFetchError(
-  //     addToast,
-  //     viestipohjaLoadingError,
-  //     'virhe.viestipohjaLataus',
-  //     t,
-  //   );
-  //   handleFetchError(
-  //     addToast,
-  //     viestipohjaUpdateError,
-  //     'virhe.viestipohjaTallennus',
-  //     t,
-  //   );
-  //   handleFetchError(addToast, poistoError, 'virhe.viestipohjaPoisto', t);
-  // }, [
-  //   viestipohjaLoadingError,
-  //   viestipohjaUpdateError,
-  //   poistoError,
-  //   addToast,
-  //   t,
-  // ]);
+  useEffect(() => {
+    handleFetchError(
+      addToast,
+      paatospohjaLoadingError,
+      'virhe.paatospohjaLataus',
+      t,
+    );
+    handleFetchError(
+      addToast,
+      paatospohjaUpdateError,
+      'virhe.paatospohjaTallennus',
+      t,
+    );
+    handleFetchError(addToast, poistoError, 'virhe.paatospohjaPoisto', t);
+  }, [
+    paatospohjaLoadingError,
+    paatospohjaUpdateError,
+    poistoError,
+    addToast,
+    t,
+  ]);
 
   const onSave = () => {
     if (currentPaatospohja) {
