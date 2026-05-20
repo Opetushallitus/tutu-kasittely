@@ -141,14 +141,14 @@ test('Saavutettavuus valitustiedot ok', async ({ page }) => {
 
 test('Saavutettavuus viestipohjat ok', async ({ page }) => {
   await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
-  const otsikko = await translate(page, 'tekstipohjat.viestipohjat.muokkaus');
+  const otsikko = await translate(page, 'tekstipohjat.viestipohjat');
   await expect(page.locator('h2')).toHaveText(otsikko);
 
   await expectPageAccessibilityOk(page);
 
   const lisaaKategoriaText = await translate(
     page,
-    'tekstipohjat.viestipohjat.kategoriat.lisaa',
+    'tekstipohjat.kategoriat.lisaa',
   );
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
 

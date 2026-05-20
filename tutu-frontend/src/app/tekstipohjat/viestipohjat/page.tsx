@@ -10,7 +10,7 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
 import ViestipohjaEditori from './components/ViestipohjaEditori';
-import ViestipohjaLista from './components/ViestipohjaLista';
+import TekstipohjaLista from '../components/TekstipohjaLista';
 
 export default function ViestipohjatPage() {
   const {
@@ -67,11 +67,12 @@ export default function ViestipohjatPage() {
         valittuViestipohjaId={valittuViestipohjaId}
         setValittuViestipohjaId={setValittuViestipohjaId}
       />
-      <ViestipohjaLista
-        viestipohjat={viestipohjat ?? []}
+      <TekstipohjaLista
+        pohjat={viestipohjat ?? []}
         kategoriat={kategoriat ?? []}
-        setValittuViestipohjaId={setValittuViestipohjaId}
+        setValittuId={setValittuViestipohjaId}
         tallennaKategoria={tallennaKategoria}
+        tPrefix={'tekstipohjat.viestipohjat'}
       />
     </Stack>
   );

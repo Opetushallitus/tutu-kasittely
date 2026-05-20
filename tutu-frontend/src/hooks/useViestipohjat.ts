@@ -78,7 +78,7 @@ export const useViestipohjat = () => {
 
       addToast({
         key: 'viestipohjat.kategoriat.tallenna.toast',
-        message: t('viestipohjat.kategoriat.tallennusOnnistui'),
+        message: t('tekstipohjat.viestipohjat.kategoriat.tallennusOnnistui'),
         type: 'success',
       });
     },

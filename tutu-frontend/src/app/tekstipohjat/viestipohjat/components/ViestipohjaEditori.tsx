@@ -1,26 +1,14 @@
 'use client';
 
-import { DeleteOutline, ListAlt } from '@mui/icons-material';
+import { ListAlt } from '@mui/icons-material';
 import { Box, Stack } from '@mui/material';
-import {
-  OphButton,
-  ophColors,
-  OphInputFormField,
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { LexicalEditor } from 'lexical';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
-import { Tabs } from '@/src/app/(root)/components/Tabs';
-import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
-import { Editor } from '@/src/components/editor/Editor';
-import {
-  importHtml,
-  normalizedEditorContent,
-} from '@/src/components/editor/editor-utils';
+import { TekstipohjaEditori } from '@/src/app/tekstipohjat/components/TekstipohjaEditori';
+import { importHtml } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
@@ -51,7 +39,6 @@ const ValittuViestipohja = ({
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
-  const { showConfirmation } = useGlobalConfirmationModal();
 
   const {
     viestipohja,
@@ -89,8 +76,7 @@ const ValittuViestipohja = ({
     importHtml(editorRefs.en.current, viestipohja?.sisalto.en ?? '');
   }, [viestipohja?.sisalto.en, editorRefs.en]);
 
-  const languages: Array<LanguageCode> = ['fi', 'sv', 'en'];
-  const [language, setLanguage] = useState<LanguageCode>('fi');
+  const languages: Array<LanguageCode> = ['fi', 'sv', 'en'] as const;
 
   useEffect(() => {
     handleFetchError(
@@ -125,85 +111,19 @@ const ValittuViestipohja = ({
   }
 
   return (
-    <>
-      <OphInputFormField
-        label={`${t('viestipohjat.nimi')} *`}
-        value={currentViestipohja.nimi}
-        onChange={(e) => {
-          viestipohjaState.updateLocal({ nimi: e.target.value });
-        }}
-      ></OphInputFormField>
-      <OphSelectFormField
-        label={t('viestipohjat.kategoria')}
-        value={currentViestipohja.kategoriaId ?? ''}
-        options={[
-          { label: t('tekstipohjat.viestipohjat.eiKategoriaa'), value: '' },
-          ...kategoriat.map((k) => ({ value: k.id, label: k.nimi })),
-        ]}
-        onChange={(e) => {
-          viestipohjaState.updateLocal({
-            kategoriaId: e.target.value,
-          });
-        }}
-      />
-      <Tabs
-        buttons={languages.map((lang) => ({
-          tabName: lang,
-          onClick: () => setLanguage(lang),
-          active: language === lang,
-        }))}
-        tPrefix={'viestipohjat.kieli'}
-      ></Tabs>
-      {languages.map((lang) => (
-        <div
-          style={{ display: language === lang ? 'block' : 'none' }}
-          key={lang}
-        >
-          <Editor
-            key={`viestipohja-editor-${lang}`}
-            editorRef={editorRefs[lang]}
-            onChange={(editor) => {
-              viestipohjaState.updateLocal({
-                sisalto: {
-                  ...currentViestipohja.sisalto,
-                  [lang]: normalizedEditorContent(editor),
-                },
-              });
-            }}
-          />
-        </div>
-      ))}
-      <OphButton
-        variant={viestipohja?.id ? 'text' : 'outlined'}
-        onClick={() => {
-          if (viestipohja?.id) {
-            showConfirmation({
-              confirmButtonText: t('viestipohjat.poista'),
-              content: t('viestipohjat.poista.content', {
-                nimi: viestipohja!.nimi,
-              }),
-              handleConfirmAction: () => {
-                poistaViestipohja(() => setValittuViestipohja(null));
-              },
-              header: t('viestipohjat.poista.header'),
-            });
-          } else {
-            setValittuViestipohja(null);
-          }
-        }}
-        sx={{ marginLeft: 'auto' }}
-        startIcon={viestipohja?.id ? <DeleteOutline /> : undefined}
-      >
-        {t(viestipohja?.id ? 'viestipohjat.poista' : 'yleiset.peruuta')}
-      </OphButton>
-      <SaveRibbon
-        onSave={onSave}
-        isSaving={updateOngoing}
-        hasChanges={viestipohjaState.hasChanges}
-        lastSaved={viestipohja?.muokattu}
-        modifier={viestipohja?.muokkaaja}
-      />
-    </>
+    <TekstipohjaEditori
+      id={viestipohja?.id}
+      setValittuId={setValittuViestipohja}
+      kategoriat={kategoriat}
+      currentPohja={currentViestipohja}
+      languages={languages}
+      onSave={onSave}
+      updateLocal={viestipohjaState.updateLocal}
+      hasChanges={viestipohjaState.hasChanges}
+      updateOngoing={updateOngoing}
+      poistaPohja={() => poistaViestipohja(() => setValittuViestipohja(null))}
+      editorRefs={editorRefs}
+    />
   );
 };
 
@@ -218,11 +138,19 @@ export default function ViestipohjaEditori({
 }) {
   const { t } = useTranslations();
 
+  const headerText = useMemo(() => {
+    if (valittuViestipohjaId === null) {
+      return t('tekstipohjat.viestipohjat');
+    } else if (valittuViestipohjaId === undefined) {
+      return t('tekstipohjat.viestipohjat.lisaa');
+    } else {
+      return t('tekstipohjat.viestipohjat.muokkaus');
+    }
+  }, [valittuViestipohjaId, t]);
+
   return (
     <Stack direction={'column'} gap={2} sx={{ marginTop: 4, width: '65%' }}>
-      <OphTypography variant={'h2'}>
-        {t('tekstipohjat.viestipohjat.muokkaus')}
-      </OphTypography>
+      <OphTypography variant={'h2'}>{headerText}</OphTypography>
       {valittuViestipohjaId !== null ? (
         <ValittuViestipohja
           viestipohjaId={valittuViestipohjaId}
