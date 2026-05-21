@@ -343,7 +343,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(13)
+  @Order(14)
   def haeTekstipohjatKategorioittainPalauttaa200(): Unit = {
     val kategoria1 = lisaaKategoria("Toinen kategoria")
     val kategoria2 = lisaaKategoria("Kolmas kategoria")
