@@ -11,7 +11,6 @@ import React, { useMemo } from 'react';
 import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
 import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
-import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
 import {
   findOptionByValue,
   getKelpoisuusMuuAmmattiDropdownOption,
@@ -19,6 +18,7 @@ import {
   getPaatosTietoDropdownOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
@@ -260,21 +260,21 @@ export const KelpoisuusComponent = ({
         padding={theme.spacing(2)}
         gap={theme.spacing(2)}
       >
-        <PaatosTietoDropdown
+        <SelectTreeDropdown
           label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.otsikko`)}
           value={kelpoisuus.kelpoisuus}
           options={topLevelOptions}
-          updateAction={(val) => updateKelpoisuus({ kelpoisuus: val })}
-          dataTestId="kelpoisuus-select"
+          onChange={(val) => updateKelpoisuus({ kelpoisuus: val })}
+          data-testid="kelpoisuus-select"
         />
         {availableOpetettavaAineOptions.length > 0 &&
           kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) && (
-            <PaatosTietoDropdown
+            <SelectTreeDropdown
               label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
               value={kelpoisuus.opetettavaAine}
               options={availableOpetettavaAineOptions}
-              updateAction={(val) => updateKelpoisuus({ opetettavaAine: val })}
-              dataTestId="opetettavaAine-select"
+              onChange={(val) => updateKelpoisuus({ opetettavaAine: val })}
+              data-testid="opetettavaAine-select"
             />
           )}
         {showDirektiivitasoFields && (

@@ -49,6 +49,7 @@ const renderOptionsRecursively = (
       return [
         <ListSubheader
           key={`header-${option.value}`}
+          disableSticky
           sx={{ paddingLeft: level }}
         >
           <OphTypography sx={{ paddingLeft: level + 1 }} variant="h5">
@@ -86,9 +87,15 @@ const flattenToLeaves = (
 const SELECT_MENU_PROPS = {
   anchorOrigin: { vertical: 'bottom' as const, horizontal: 'left' as const },
   transformOrigin: { vertical: 'top' as const, horizontal: 'left' as const },
+  marginThreshold: 90, // Prevent hiding under Save Ribbon
   PaperProps: {
     sx: {
-      maxHeight: 'min(480px, calc(60vh - 100px))',
+      overflow: 'hidden', // Fixes with below overflowY revealing items under on bounce
+    },
+  },
+  MenuListProps: {
+    sx: {
+      maxHeight: '300px',
       overflowY: 'auto',
     },
   },
@@ -97,11 +104,9 @@ const SELECT_MENU_PROPS = {
 const SELECT_SX = {
   width: '100%',
   // Match OphSelectMultiple focus border style
-  '& .MuiSelect-select:focus-visible': { outline: 'none', outlineOffset: 0 },
-  '&:has(.MuiSelect-select:focus-visible)': {
+  '&.Mui-focused': {
     outline: '2px solid #000000',
     outlineOffset: '1px',
-    zIndex: 9999,
   },
 };
 
@@ -141,58 +146,67 @@ export const SelectTreeDropdown = (props: SingleProps | MultiProps) => {
       <OphFormFieldWrapper
         label={label}
         sx={{ width: '100%' }}
-        renderInput={() => {
-          const clearIndicatorSlotProps = {
-            sx: {
-              color: ophColors.black,
-              visibility: selectedOptions.length > 0 ? 'visible' : 'hidden',
-              '& svg': { fontSize: '1.5rem' },
-            },
-          };
-
-          return (
-            <Autocomplete<FlatOption, true>
-              multiple
-              disableCloseOnSelect
-              options={flat}
-              getOptionLabel={(o) => o.label}
-              isOptionEqualToValue={(o, v) => o.value === v.value}
-              value={selectedOptions}
-              onChange={(_, newValues) =>
-                props.onChange(newValues.map((o) => o.value))
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={
-                    selectedOptions.length === 0 ? placeholder : undefined
-                  }
-                />
-              )}
-              renderTags={(tagValues, getTagProps) =>
-                tagValues.map((option, index) => {
-                  const { key, ...tagProps } = getTagProps({ index });
-                  return (
-                    <Chip
-                      key={key}
-                      {...tagProps}
-                      label={option.label}
-                      size="small"
-                      deleteIcon={<Close />}
-                      sx={{
-                        borderRadius: 0,
-                        backgroundColor: ophColors.grey200,
-                        '& .MuiChip-deleteIcon': { color: ophColors.black },
-                      }}
-                    />
-                  );
-                })
-              }
-              data-testid={dataTestId}
-              slotProps={{ clearIndicator: clearIndicatorSlotProps }}
-            />
-          );
-        }}
+        renderInput={() => (
+          <Autocomplete<FlatOption, true>
+            multiple
+            disableCloseOnSelect
+            options={flat}
+            getOptionLabel={(o) => o.label}
+            isOptionEqualToValue={(o, v) => o.value === v.value}
+            value={selectedOptions}
+            onChange={(_, newValues) =>
+              props.onChange(newValues.map((o) => o.value))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={
+                  selectedOptions.length === 0 ? placeholder : undefined
+                }
+              />
+            )}
+            renderTags={(tagValues, getTagProps) =>
+              tagValues.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return (
+                  <Chip
+                    key={key}
+                    {...tagProps}
+                    label={option.label}
+                    size="small"
+                    deleteIcon={<Close />}
+                    sx={{
+                      borderRadius: 0,
+                      backgroundColor: ophColors.grey200,
+                      '& .MuiChip-deleteIcon': { color: ophColors.black },
+                    }}
+                  />
+                );
+              })
+            }
+            data-testid={dataTestId}
+            slotProps={{
+              listbox: {
+                sx: {
+                  // Match Select's selected values colors
+                  '& .MuiAutocomplete-option[aria-selected="true"]': {
+                    backgroundColor: `${ophColors.grey50} !important`,
+                  },
+                  '& .MuiAutocomplete-option[aria-selected="true"]:hover': {
+                    backgroundColor: `${ophColors.grey50} !important`,
+                  },
+                },
+              },
+              clearIndicator: {
+                sx: {
+                  color: ophColors.black,
+                  visibility: selectedOptions.length > 0 ? 'visible' : 'hidden',
+                  '& svg': { fontSize: '1.5rem' },
+                },
+              },
+            }}
+          />
+        )}
       />
     );
   }

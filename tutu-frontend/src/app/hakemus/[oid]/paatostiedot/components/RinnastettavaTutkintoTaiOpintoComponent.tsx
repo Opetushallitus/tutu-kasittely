@@ -10,9 +10,9 @@ import React from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
-import { PaatosTietoDropdown } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoDropdown';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -121,14 +121,14 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           </OphButton>
         )}{' '}
       </Stack>
-      <PaatosTietoDropdown
+      <SelectTreeDropdown
         label={t(
           `hakemus.paatos.paatostyyppi.${paatosTyyppi}.rinnastettavaTutkintoTaiOpinnot`,
         )}
         options={rinnastettavaTutkintoTaiOpinnotOptions}
-        updateAction={updateTutkintoTaiOpintoFieldAction}
+        onChange={updateTutkintoTaiOpintoFieldAction}
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
-        dataTestId={'rinnastettava-tutkinto-tai-opinto-select'}
+        data-testid={'rinnastettava-tutkinto-tai-opinto-select'}
       />
       {tyyppi === 'riittavatOpinnot' && (
         <OphInputFormField
