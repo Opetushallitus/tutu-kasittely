@@ -3,56 +3,55 @@
 import { Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import TekstipohjaLista from '@/src/app/tekstipohjat/components/TekstipohjaLista';
+import PaatospohjaEditori from '@/src/app/tekstipohjat/paatospohjat/components/PaatospohjaEditori';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { usePaatospohjat } from '@/src/hooks/usePaatospohjat';
 import useToaster from '@/src/hooks/useToaster';
-import { useViestipohjat } from '@/src/hooks/useViestipohjat';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
-import ViestipohjaEditori from './components/ViestipohjaEditori';
-import TekstipohjaLista from '../components/TekstipohjaLista';
-
-export default function ViestipohjatPage() {
+export default function PaatospohjatPage() {
   const {
-    viestipohjat,
+    paatospohjat,
     kategoriat,
     tallennaKategoria,
-    viestipohjatError,
-    tallennaKategoriaError,
+    paatospohjatError,
     kategoriatError,
-    viestipohjatLoading,
+    tallennaKategoriaError,
     kategoriatLoading,
+    paatospohjatLoading,
     tallennaKategoriaPending,
-  } = useViestipohjat();
+  } = usePaatospohjat();
   const { addToast } = useToaster();
   const { t } = useTranslations();
 
-  const [valittuViestipohjaId, setValittuViestipohjaId] = useState<
+  const [valittuPaatospohjaId, setValittuPaatospohjaId] = useState<
     string | null | undefined
   >(null);
 
   useEffect(() => {
     handleFetchError(
       addToast,
-      viestipohjatError,
-      'virhe.viestipohjatLataus',
+      paatospohjatError,
+      'virhe.paatospohjatLataus',
       t,
     );
     handleFetchError(
       addToast,
       kategoriatError,
-      'virhe.viestipohjaKategoriatLataus',
+      'virhe.paatospohjaKategoriatLataus',
       t,
     );
     handleFetchError(
       addToast,
       tallennaKategoriaError,
-      'virhe.viestipohjaKategoriatTallennus',
+      'virhe.paatospohjaKategoriatTallennus',
       t,
     );
-  }, [viestipohjatError, kategoriatError, tallennaKategoriaError, addToast, t]);
+  }, [paatospohjatError, kategoriatError, tallennaKategoriaError, addToast, t]);
 
-  if (viestipohjatLoading || kategoriatLoading || tallennaKategoriaPending) {
+  if (paatospohjatLoading || kategoriatLoading || tallennaKategoriaPending) {
     return <FullSpinner />;
   }
 
@@ -62,17 +61,17 @@ export default function ViestipohjatPage() {
       sx={{ minHeight: '1200px' }}
       justifyContent={'space-between'}
     >
-      <ViestipohjaEditori
+      <PaatospohjaEditori
         kategoriat={kategoriat ?? []}
-        valittuViestipohjaId={valittuViestipohjaId}
-        setValittuViestipohjaId={setValittuViestipohjaId}
+        valittuPaatospohjaId={valittuPaatospohjaId}
+        setValittuPaatospohjaId={setValittuPaatospohjaId}
       />
       <TekstipohjaLista
-        pohjat={viestipohjat ?? []}
+        pohjat={paatospohjat ?? []}
         kategoriat={kategoriat ?? []}
-        setValittuId={setValittuViestipohjaId}
+        setValittuId={setValittuPaatospohjaId}
         tallennaKategoria={tallennaKategoria}
-        tPrefix={'tekstipohjat.viestipohjat'}
+        tPrefix={'tekstipohjat.paatospohjat'}
       />
     </Stack>
   );

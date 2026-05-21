@@ -4,33 +4,33 @@ import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import {
-  ViestipohjaListItem,
-  ViestipohjaKategoria,
-} from '@/src/lib/types/viesti';
+  PaatospohjaKategoria,
+  PaatospohjaListItem,
+} from '@/src/lib/types/paatosteksti';
 
-const getViestipohjaLista = async (): Promise<Array<ViestipohjaListItem>> => {
-  const url = `viestipohja`;
+const getPaatospohjaLista = async (): Promise<Array<PaatospohjaListItem>> => {
+  const url = `paatospohja`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-const getViestipohjaKategoriat = async (): Promise<
-  Array<ViestipohjaKategoria>
+const getPaatospohjaKategoriat = async (): Promise<
+  Array<PaatospohjaKategoria>
 > => {
-  const url = `viestipohja/kategoria`;
+  const url = `paatospohja/kategoria`;
   return await doApiFetch(url, undefined, 'no-store');
 };
 
-const putViestipohjaKategoria = async (
-  viestipohjaKategoria: ViestipohjaKategoria,
+const putPaatospohjaKategoria = async (
+  paatospohjaKategoria: PaatospohjaKategoria,
 ) => {
-  const url = `viestipohja/kategoria`;
-  return await doApiPut(url, viestipohjaKategoria);
+  const url = `paatospohja/kategoria`;
+  return await doApiPut(url, paatospohjaKategoria);
 };
 
-export const viestipohjaListaQueryKey = ['viestipohjat'];
+export const paatospohjaListaQueryKey = ['paatospohjat'];
 
-export const useViestipohjat = () => {
-  const viestipohjaKategoriaQueryKey = ['viestipohjaKategoriat'];
+export const usePaatospohjat = () => {
+  const paatospohjaKategoriaQueryKey = ['paatospohjaKategoriat'];
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
   const { t } = useTranslations();
@@ -40,14 +40,14 @@ export const useViestipohjat = () => {
     error: kategoriatError,
     isLoading: kategoriatLoading,
   } = useQuery({
-    queryKey: viestipohjaKategoriaQueryKey,
-    queryFn: () => getViestipohjaKategoriat(),
+    queryKey: paatospohjaKategoriaQueryKey,
+    queryFn: () => getPaatospohjaKategoriat(),
     throwOnError: false,
   });
 
-  const viestipohjaQuery = useQuery({
-    queryKey: viestipohjaListaQueryKey,
-    queryFn: () => getViestipohjaLista(),
+  const paatospohjaQuery = useQuery({
+    queryKey: paatospohjaListaQueryKey,
+    queryFn: () => getPaatospohjaLista(),
     throwOnError: false,
   });
 
@@ -58,9 +58,9 @@ export const useViestipohjat = () => {
     isSuccess: tallennaKategoriaSuccess,
     reset: tallennaKategoriaReset,
   } = useMutation({
-    mutationFn: putViestipohjaKategoria,
+    mutationFn: putPaatospohjaKategoria,
     onSuccess: async (response, variables) => {
-      const data = (await response.json()) as ViestipohjaKategoria;
+      const data = (await response.json()) as PaatospohjaKategoria;
       const oldKategoriat = kategoriat ?? [];
       const newKategoriat = variables.id
         ? oldKategoriat.map((kategoria) => {
@@ -72,28 +72,28 @@ export const useViestipohjat = () => {
         : [...(kategoriat ?? []), data];
 
       await queryClient.setQueryData(
-        viestipohjaKategoriaQueryKey,
+        paatospohjaKategoriaQueryKey,
         newKategoriat,
       );
 
       addToast({
-        key: 'viestipohjat.kategoriat.tallenna.toast',
-        message: t('tekstipohjat.viestipohjat.kategoriat.tallennusOnnistui'),
+        key: 'paatospohjat.kategoriat.tallenna.toast',
+        message: t('tekstipohjat.paatospohjat.kategoriat.tallennusOnnistui'),
         type: 'success',
       });
     },
   });
 
-  const tallennaKategoria = (viestipohjaKategoria: ViestipohjaKategoria) => {
+  const tallennaKategoria = (paatospohjaKategoria: PaatospohjaKategoria) => {
     tallennaKategoriaReset();
-    tallennaKategoriaMutation(viestipohjaKategoria);
+    tallennaKategoriaMutation(paatospohjaKategoria);
   };
 
   return {
-    viestipohjat: viestipohjaQuery.data,
+    paatospohjat: paatospohjaQuery.data,
     kategoriat,
-    viestipohjatLoading: viestipohjaQuery.isLoading,
-    viestipohjatError: viestipohjaQuery.error,
+    paatospohjatLoading: paatospohjaQuery.isLoading,
+    paatospohjatError: paatospohjaQuery.error,
     kategoriatLoading,
     kategoriatError,
     tallennaKategoria,

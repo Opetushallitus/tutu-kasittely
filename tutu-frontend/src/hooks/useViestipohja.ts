@@ -53,7 +53,7 @@ export const useViestipohja = (viestipohjaId?: string) => {
       handleSuccessMessage(
         true,
         addToast,
-        'viestipohjat.viestipohjaTallennus.success',
+        'tekstipohjat.viestipohjat.viestipohjaTallennus.success',
         t,
       );
     },
@@ -89,7 +89,7 @@ export const useViestipohja = (viestipohjaId?: string) => {
         handleSuccessMessage(
           true,
           addToast,
-          'viestipohjat.viestipohjaPoisto.success',
+          'tekstipohjat.viestipohjat.viestipohjaPoisto.success',
           t,
         );
         if (successCallback) successCallback();

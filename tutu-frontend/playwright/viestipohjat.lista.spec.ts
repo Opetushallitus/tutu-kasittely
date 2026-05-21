@@ -34,7 +34,7 @@ test('Kategorialista näkyy oikein', async ({ page }) => {
 test('Uuden kategorian luominen onnistuu', async ({ page }) => {
   const lisaaKategoriaText = await translate(
     page,
-    'tekstipohjat.viestipohjat.kategoriat.lisaa',
+    'tekstipohjat.kategoriat.lisaa',
   );
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
 
@@ -59,7 +59,7 @@ test('Uuden kategorian luominen onnistuu', async ({ page }) => {
 
   const successText = await translate(
     page,
-    'viestipohjat.kategoriat.tallennusOnnistui',
+    'tekstipohjat.viestipohjat.kategoriat.tallennusOnnistui',
   );
   const toast = page.getByTestId('toast-alert');
   await expect(toast).toBeVisible();
@@ -89,7 +89,7 @@ test('Uuden kategorian luominen epäonnistuu', async ({ page }) => {
 
   const lisaaKategoriaText = await translate(
     page,
-    'tekstipohjat.viestipohjat.kategoriat.lisaa',
+    'tekstipohjat.kategoriat.lisaa',
   );
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
 
@@ -140,7 +140,7 @@ test('Olemassaolevan kategorian muokkaus onnistuu', async ({ page }) => {
 
   const successText = await translate(
     page,
-    'viestipohjat.kategoriat.tallennusOnnistui',
+    'tekstipohjat.viestipohjat.kategoriat.tallennusOnnistui',
   );
   const toast = page.getByTestId('toast-alert');
   await expect(toast).toBeVisible();
@@ -230,7 +230,7 @@ test('Kategorioiden latauksen epäonnistuessa näytetään virheteksti', async (
 test('Modaalin peruutus sulkee modaalin', async ({ page }) => {
   const lisaaKategoriaText = await translate(
     page,
-    'tekstipohjat.viestipohjat.kategoriat.lisaa',
+    'tekstipohjat.kategoriat.lisaa',
   );
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();

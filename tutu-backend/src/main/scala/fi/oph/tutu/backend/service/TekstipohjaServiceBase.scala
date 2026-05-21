@@ -5,13 +5,19 @@ import fi.oph.tutu.backend.repository.TekstipohjaRepositoryBase
 
 import java.util.UUID
 
-trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase) {
+trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase, onrService: OnrService) {
   def haeTekstipohjaLista(): Seq[TekstipohjaListItem] = {
     repository.haeTekstipohjaLista()
   }
 
   def haeTekstipohja(tekstipohjaId: UUID): Option[Tekstipohja] = {
-    repository.haeTekstipohja(tekstipohjaId)
+    val tekstipohjaOption = repository.haeTekstipohja(tekstipohjaId)
+    tekstipohjaOption.map(tp =>
+      tp.copy(
+        luoja = onrService.haeNimiOption(tp.luoja),
+        muokkaaja = onrService.haeNimiOption(tp.muokkaaja)
+      )
+    )
   }
 
   def haeTekstipohjatKategorioittain(): Seq[KategorianTekstipohjat] = {
@@ -32,11 +38,21 @@ trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase) {
   }
 
   def lisaaTekstipohja(tekstipohja: Tekstipohja, luoja: String): Tekstipohja = {
-    repository.lisaaTekstipohja(tekstipohja, luoja)
+    repository
+      .lisaaTekstipohja(tekstipohja, luoja)
+      .copy(
+        luoja = onrService.haeNimiOption(Some(luoja))
+      )
   }
 
   def paivitaTekstipohja(tekstipohjaId: UUID, tekstipohja: Tekstipohja, muokkaaja: String): Option[Tekstipohja] = {
-    repository.paivitaTekstipohja(tekstipohjaId, tekstipohja, muokkaaja)
+    val tekstipohjaOption = repository.paivitaTekstipohja(tekstipohjaId, tekstipohja, muokkaaja)
+    tekstipohjaOption.map(tp =>
+      tp.copy(
+        luoja = onrService.haeNimiOption(tp.luoja),
+        muokkaaja = onrService.haeNimiOption(tp.muokkaaja)
+      )
+    )
   }
 
   def poistaTekstipohja(viestipohjaId: UUID): Int = {

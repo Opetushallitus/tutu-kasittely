@@ -12,16 +12,21 @@ import {
 import React, { useState } from 'react';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { PaatospohjaKategoria } from '@/src/lib/types/paatosteksti';
 import { ViestipohjaKategoria } from '@/src/lib/types/viesti';
 
-export const KategoriaEditori = ({
+export const KategoriaEditori = <
+  T extends ViestipohjaKategoria | PaatospohjaKategoria,
+>({
   handleClose,
   kategoria,
   handleSubmit,
 }: {
   handleClose: () => void;
-  kategoria?: ViestipohjaKategoria;
-  handleSubmit: (kategoria: ViestipohjaKategoria) => void;
+  kategoria?: T;
+  handleSubmit: (
+    kategoria: ViestipohjaKategoria | PaatospohjaKategoria,
+  ) => void;
 }) => {
   const { t } = useTranslations();
 

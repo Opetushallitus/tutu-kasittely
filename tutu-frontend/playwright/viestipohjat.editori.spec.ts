@@ -23,9 +23,11 @@ test.beforeEach(async ({ page }) => {
 
 test('Olemassaolevan viestipohjaan lataus onnistuu', async ({ page }) => {
   await mockViestipohja(page);
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
-  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
   await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 });
 
@@ -43,7 +45,9 @@ test('Viestipohjaan latauksen epäonnistuessa näytetään virheteksti', async (
     },
   );
 
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
   const toastText = await translate(page, 'virhe.viestipohjaLataus');
   const toast = page.getByTestId('toast-alert');
@@ -56,9 +60,11 @@ test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
   await mockViestipohja(page);
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
-  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
   const nimiInput = page.getByLabel(nimiLabel);
   await expect(nimiInput).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 
@@ -89,7 +95,7 @@ test('Viestipohjaan muokkaus lähettää PUT-kutsun backendille', async ({
 
   const successText = await translate(
     page,
-    'viestipohjat.viestipohjaTallennus.success',
+    'tekstipohjat.viestipohjat.viestipohjaTallennus.success',
   );
   const toast = page.getByTestId('toast-alert');
   await expect(toast).toBeVisible();
@@ -101,9 +107,11 @@ test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', asyn
   page,
 }) => {
   await mockViestipohja(page);
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
-  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
   const nimiInput = page.getByLabel(nimiLabel);
   await expect(nimiInput).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 
@@ -129,12 +137,14 @@ test('Viestipohjaan tallennuksen epäonnistuessa näytetään virheteksti', asyn
 
 test('Viestipohjaan poisto onnistuu', async ({ page }) => {
   await mockViestipohja(page);
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
-  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
   await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 
-  const poistaText = await translate(page, 'viestipohjat.poista');
+  const poistaText = await translate(page, 'tekstipohjat.viestipohjat.poista');
   await page.getByRole('button', { name: poistaText }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
   const [request] = await Promise.all([
@@ -152,7 +162,7 @@ test('Viestipohjaan poisto onnistuu', async ({ page }) => {
 
   const successText = await translate(
     page,
-    'viestipohjat.viestipohjaPoisto.success',
+    'tekstipohjat.viestipohjat.viestipohjaPoisto.success',
   );
   const toast = page.getByTestId('toast-alert');
   await expect(toast).toBeVisible();
@@ -182,12 +192,14 @@ test('Viestipohjaan poiston epäonnistuessa näytetään virheteksti', async ({
       }
     },
   );
-  await page.getByText('Viestipohja 1').first().click();
+  const viestipohja = page.getByText('Viestipohja 1').first();
+  await viestipohja.hover();
+  await viestipohja.locator('//following-sibling::button').click();
 
-  const nimiLabel = await translate(page, 'viestipohjat.nimi');
+  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
   await expect(page.getByLabel(nimiLabel)).toHaveValue(MOCK_VIESTIPOHJA.nimi);
 
-  const poistaText = await translate(page, 'viestipohjat.poista');
+  const poistaText = await translate(page, 'tekstipohjat.viestipohjat.poista');
   await page.getByRole('button', { name: poistaText }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
   await page.getByTestId('modal-confirm-button').click();
