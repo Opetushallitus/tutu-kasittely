@@ -363,3 +363,48 @@ test('Aktiivinen välilehti säilyy palatessa alkuperäiseen hakemukseen', async
     /Mui-selected/,
   );
 });
+
+test('Kelpoisuus-hakuehto: chipin X poistaa valinnan avaamatta dropdownia, kentän tyhjennys-nappi toimii', async ({
+  page,
+}) => {
+  await mockHakemusHaku(page);
+  await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
+
+  await page.getByTestId('tarkat-hakuehdot').click();
+
+  const kelpoisuusSelect = page.getByTestId('haku-kelpoisuus');
+  const chip = kelpoisuusSelect.locator('.MuiChip-root');
+  const luokanopettajaText = await translate(
+    page,
+    'haku.kelpoisuus.luokanopettaja',
+  );
+
+  // Valitaan kelpoisuus
+  await kelpoisuusSelect.click();
+  await page
+    .getByRole('option', { name: luokanopettajaText, exact: true })
+    .click();
+  await expect(chip).toBeVisible();
+  // Wait for the dropdown to fully close before interacting with the chip
+  await expect(page.getByRole('listbox')).toBeHidden();
+
+  // Chipin X poistaa valinnan eikä avaa dropdownia uudelleen
+  await kelpoisuusSelect.getByTestId('chip-delete-icon').click();
+  await expect(chip).toBeHidden();
+  await expect(page.getByRole('listbox')).toBeHidden();
+
+  // Valitaan uudelleen kentän tyhjennys-nappia varten
+  await kelpoisuusSelect.click();
+  await page
+    .getByRole('option', { name: luokanopettajaText, exact: true })
+    .click();
+  await expect(chip).toBeVisible();
+  await expect(page.getByRole('listbox')).toBeHidden();
+
+  // Kentän tyhjennys-nappi poistaa valinnan
+  await kelpoisuusSelect
+    .locator('xpath=..')
+    .getByRole('button', { name: 'clear' })
+    .click();
+  await expect(chip).toBeHidden();
+});

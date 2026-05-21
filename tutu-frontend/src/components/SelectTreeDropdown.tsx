@@ -103,6 +103,9 @@ const SELECT_MENU_PROPS = {
 
 const SELECT_SX = {
   width: '100%',
+  '& .MuiSelect-select': {
+    paddingRight: '60px !important', // Extra space so chip delete icon doesn't overlap the clear button
+  },
   // Match OphSelectMultiple focus border style
   '&.Mui-focused': {
     outline: '2px solid #000000',
@@ -228,7 +231,7 @@ export const SelectTreeDropdown = (props: SingleProps | MultiProps) => {
             key={val}
             label={parseValueLabel(val)}
             size="small"
-            deleteIcon={<Close />}
+            deleteIcon={<Close data-testid="chip-delete-icon" />}
             onDelete={() => {
               if (multiple) {
                 props.onChange((props.value ?? []).filter((v) => v !== val));
@@ -236,7 +239,11 @@ export const SelectTreeDropdown = (props: SingleProps | MultiProps) => {
                 (props as SingleProps).onChange('');
               }
             }}
-            onMouseDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => {
+              if ((e.target as Element).closest('.MuiChip-deleteIcon')) {
+                e.stopPropagation();
+              }
+            }}
           />
         ))}
       </Box>
@@ -246,7 +253,8 @@ export const SelectTreeDropdown = (props: SingleProps | MultiProps) => {
   const selectValue = multiple
     ? ((props as MultiProps).value ?? [])
     : ((props as SingleProps).value ?? '');
-  const hasValues = ([] as string[]).concat(props.value ?? []).length > 0;
+  const hasValues =
+    ([] as string[]).concat(props.value ?? []).filter(Boolean).length > 0;
 
   const handleClearAll = () => {
     if (multiple) {
@@ -266,7 +274,7 @@ export const SelectTreeDropdown = (props: SingleProps | MultiProps) => {
             multiple={multiple}
             displayEmpty
             data-testid={dataTestId}
-            value={selectValue as never}
+            value={selectValue}
             onChange={(e) => {
               if (multiple) {
                 (props as MultiProps).onChange(e.target.value as string[]);
