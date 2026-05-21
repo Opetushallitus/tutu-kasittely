@@ -919,6 +919,12 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(12))
 
+    // Lista maita
+    mockMvc
+      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&suoritusmaa=maatjavaltiot2_762"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(12))
+
     // Tuntematon suoritusmaa -> 0 tulosta
     mockMvc
       .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000"))
@@ -999,6 +1005,19 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    // Molemmat valittu
+    mockMvc
+      .perform(
+        get("/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali&opetettavatAineet=vieras kieli_englanti")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(2))
+      .andExpect(
+        jsonPath("$.items[*].hakemusOid").value(
+          hasItems("1.2.246.562.11.00000000000000006666", "1.2.246.562.11.00000000000000006665")
+        )
+      )
   }
 
   @Test

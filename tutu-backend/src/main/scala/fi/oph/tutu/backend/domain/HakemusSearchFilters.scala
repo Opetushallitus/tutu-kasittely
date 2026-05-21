@@ -2,26 +2,26 @@ package fi.oph.tutu.backend.domain
 
 case class HakemusSearchFilters(
   // Tutkinto-filtterit
-  suoritusmaa: Seq[String] = Seq.empty,
-  paattymisVuosi: Option[Int] = None,
-  todistusVuosi: Option[String] = None,
-  oppilaitos: Option[String] = None,
-  tutkinnonNimi: Option[String] = None,
-  paaAine: Option[String] = None,
+  suoritusmaa: Option[Seq[String]],
+  paattymisVuosi: Option[Int],
+  todistusVuosi: Option[String],
+  oppilaitos: Option[String],
+  tutkinnonNimi: Option[String],
+  paaAine: Option[String],
   // Kelpoisuus-filtterit (korreloituu tutkintoon kun molemmat annettu)
-  kelpoisuus: Option[String] = None,
-  opetettavatAineet: Seq[String] = Seq.empty,
+  kelpoisuus: Option[String],
+  opetettavatAineet: Option[Seq[String]],
   // Päätösfiltterit (korreloituu tutkintoon)
-  ratkaisutyyppi: Option[String] = None,
-  paatostyyppi: Option[String] = None,
-  sovellettuLaki: Option[String] = None,
-  tutkinnonTaso: Option[String] = None,
-  kielteinen: Option[String] = None,
-  myonteinen: Option[String] = None,
+  ratkaisutyyppi: Option[String],
+  paatostyyppi: Option[String],
+  sovellettuLaki: Option[String],
+  tutkinnonTaso: Option[String],
+  kielteinen: Option[String],
+  myonteinen: Option[String],
   // Hakija/esittelijä-filtterit
-  esittelijaOid: Option[String] = None,
-  hakijanNimi: Option[String] = None,
-  asiatunnus: Option[String] = None
+  esittelijaOid: Option[String],
+  hakijanNimi: Option[String],
+  asiatunnus: Option[String]
 ) {
   def hasAny: Boolean =
     suoritusmaa.nonEmpty || paattymisVuosi.nonEmpty || todistusVuosi.nonEmpty ||

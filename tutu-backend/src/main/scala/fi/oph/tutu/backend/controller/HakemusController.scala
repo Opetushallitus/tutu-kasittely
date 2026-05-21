@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.{
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.regex.Pattern
-import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -340,14 +339,14 @@ class HakemusController(
     @RequestParam(required = false, defaultValue = "kaikki") nakyma: String,
     @RequestParam(required = false, defaultValue = "1") page: Int,
     @RequestParam(required = false, defaultValue = "20") pagesize: Int,
-    @RequestParam(required = false) suoritusmaa: java.util.List[String],
+    @RequestParam(required = false) suoritusmaa: Array[String],
     @RequestParam(required = false) paattymisVuosi: String,
     @RequestParam(required = false) todistusVuosi: String,
     @RequestParam(required = false) oppilaitos: String,
     @RequestParam(required = false) tutkinnonNimi: String,
     @RequestParam(required = false) paaAine: String,
     @RequestParam(required = false) kelpoisuus: String,
-    @RequestParam(required = false) opetettavatAineet: java.util.List[String],
+    @RequestParam(required = false) opetettavatAineet: Array[String],
     @RequestParam(required = false) ratkaisutyyppi: String,
     @RequestParam(required = false) paatostyyppi: String,
     @RequestParam(required = false) sovellettuLaki: String,
@@ -364,14 +363,14 @@ class HakemusController(
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
       val hakuNakyma = HakemusNakyma.fromString(nakyma)
       val filters    = HakemusSearchFilters(
-        suoritusmaa = Option(suoritusmaa).fold(Seq.empty[String])(_.asScala.filter(_.nonEmpty).toSeq),
+        suoritusmaa = Option(suoritusmaa).filter(_.nonEmpty).map(_.toSeq),
         paattymisVuosi = Option(paattymisVuosi).filter(_.nonEmpty).flatMap(_.toIntOption),
         todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty),
         oppilaitos = Option(oppilaitos).filter(_.nonEmpty),
         tutkinnonNimi = Option(tutkinnonNimi).filter(_.nonEmpty),
         paaAine = Option(paaAine).filter(_.nonEmpty),
         kelpoisuus = Option(kelpoisuus).filter(_.nonEmpty),
-        opetettavatAineet = Option(opetettavatAineet).fold(Seq.empty[String])(_.asScala.filter(_.nonEmpty).toSeq),
+        opetettavatAineet = Option(opetettavatAineet).filter(_.nonEmpty).map(_.toSeq),
         ratkaisutyyppi = Option(ratkaisutyyppi).filter(_.nonEmpty),
         paatostyyppi = Option(paatostyyppi).filter(_.nonEmpty),
         sovellettuLaki = Option(sovellettuLaki).filter(_.nonEmpty),
