@@ -83,6 +83,7 @@ type SearchFiltersProps = {
   setHakijanNimi: (v: string) => void;
   setAsiatunnus: (v: string) => void;
   onClearAll: () => void;
+  onSubmit: () => void;
 };
 
 export const SearchFilters = ({
@@ -105,8 +106,16 @@ export const SearchFilters = ({
   setHakijanNimi,
   setAsiatunnus,
   onClearAll,
+  onSubmit,
 }: SearchFiltersProps) => {
   const { t } = useTranslations();
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onSubmit();
+    }
+  };
+
   const { maatJaValtiotOptions } = useKoodistoOptions();
   const { options: esittelijaOptions } = useEsittelijat();
 
@@ -160,6 +169,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('haku.paattymisVuosi')}
           value={values.paattymisVuosi}
           onChange={(e) => setPaattymisVuosi(e.target.value.replace(/\D/g, ''))}
@@ -173,6 +183,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('haku.todistusVuosi')}
           value={values.todistusVuosi}
           onChange={(e) => setTodistusVuosi(e.target.value.replace(/\D/g, ''))}
@@ -186,6 +197,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('haku.oppilaitos')}
           value={values.oppilaitos}
           onChange={(e) => setOppilaitos(e.target.value)}
@@ -199,6 +211,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('haku.tutkinnonNimi')}
           value={values.tutkinnonNimi}
           onChange={(e) => setTutkinnonNimi(e.target.value)}
@@ -212,6 +225,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('haku.paaAine')}
           value={values.paaAine}
           onChange={(e) => setPaaAine(e.target.value)}
@@ -421,6 +435,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('hakemuslista.hakija')}
           value={values.hakijanNimi}
           onChange={(e) => setHakijanNimi(e.target.value)}
@@ -434,6 +449,7 @@ export const SearchFilters = ({
       </Grid>
       <Grid size={4}>
         <OphInputFormField
+          onKeyDown={handleKeyDown}
           label={t('hakemuslista.asiatunnus')}
           value={values.asiatunnus}
           onChange={(e) => setAsiatunnus(e.target.value)}

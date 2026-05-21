@@ -71,8 +71,9 @@ const ScrollArrow = ({
         position: 'absolute',
         [direction]: 0,
         top: 0,
+        bottom: 0,
         width: 30,
-        background: ophColors.white,
+        background: 'rgba(255, 255, 255, 0.8)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -84,6 +85,8 @@ const ScrollArrow = ({
           color: ophColors.blue2,
           pointerEvents: 'auto',
           cursor: 'pointer',
+          fontSize: 32,
+          display: 'block',
         }}
         onClick={() => {
           const el = scrollRef.current;
@@ -129,6 +132,7 @@ const RibbonCard = ({
         flexDirection: 'column',
         flexShrink: 0,
         marginBottom: '12px',
+        cursor: 'pointer',
       }}
     >
       <OphTypography variant="label">{name}</OphTypography>

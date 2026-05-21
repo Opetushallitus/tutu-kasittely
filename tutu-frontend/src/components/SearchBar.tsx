@@ -399,6 +399,7 @@ export const SearchBar = () => {
           setEsittelijaOid={setEsittelijaOid}
           setHakijanNimi={setHakijanNimi}
           setAsiatunnus={setAsiatunnus}
+          onSubmit={handleHae}
           onClearAll={() => {
             setSuoritusmaa(null);
             setPaattymisVuosi('');
