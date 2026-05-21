@@ -850,4 +850,210 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
+
+  private var paatostiedotInitialized = false
+
+  private def ensurePaatostiedotData(): Unit = {
+    if (!paatostiedotInitialized) {
+      // Hakemus 6666: paatostieto tutkintoId:llä + kelpoisuus myönteinen
+      val hakemus6666   = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006666")).get
+      val paatos6666    = paatosRepository.haePaatos(hakemus6666.id).get
+      val tutkinnot6666 =
+        tutkintoRepository.haeTutkinnotHakemusOidilla(HakemusOid("1.2.246.562.11.00000000000000006666"))
+      val tutkintoId6666 =
+        tutkinnot6666.find(_.maakoodiUri.contains("maatjavaltiot2_762")).flatMap(_.id).get
+      paatosRepository.suoritaPaatosTietojenModifiointi(
+        paatos6666.id.get,
+        PaatosTietoModifyData(uudet =
+          Seq(
+            PaatosTieto(
+              tutkintoId = Some(tutkintoId6666),
+              kelpoisuudet = Seq(
+                Kelpoisuus(
+                  kelpoisuus = Some("Opetusalan ammatit_Aineenopettaja perusopetuksessa"),
+                  opetettavaAine = Some("Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_portugali"),
+                  myonteinenPaatos = Some(true)
+                )
+              )
+            )
+          )
+        ),
+        esittelijaOidString
+      )
+
+      // Hakemus 6665: paatostieto ilman tutkintoId:tä + kelpoisuus kielteinen
+      val hakemus6665 = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006665")).get
+      val paatos6665  = paatosRepository.haePaatos(hakemus6665.id).get
+      paatosRepository.suoritaPaatosTietojenModifiointi(
+        paatos6665.id.get,
+        PaatosTietoModifyData(uudet =
+          Seq(
+            PaatosTieto(
+              kelpoisuudet = Seq(
+                Kelpoisuus(
+                  kelpoisuus = Some("Opetusalan ammatit_Aineenopettaja lukiossa"),
+                  opetettavaAine = Some("Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_englanti"),
+                  myonteinenPaatos = Some(false)
+                )
+              )
+            )
+          )
+        ),
+        esittelijaOidString
+      )
+
+      paatostiedotInitialized = true
+    }
+  }
+
+  @Test
+  @Order(17)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetSuoritusmaaFilter(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+
+    // Kaikilla hakemuksilla on tutkinnot joilla maakoodiuri = "maatjavaltiot2_762"
+    mockMvc
+      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(12))
+
+    // Lista maita
+    mockMvc
+      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&suoritusmaa=maatjavaltiot2_762"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(12))
+
+    // Tuntematon suoritusmaa -> 0 tulosta
+    mockMvc
+      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+  }
+
+  @Test
+  @Order(18)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetMyonteinenJaKielteinenPaatosFilter(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+    ensurePaatostiedotData()
+
+    // Myönteinen päätös -> vain hakemus 6666 (kelpoisuuden myonteinenPaatos=true)
+    mockMvc
+      .perform(get("/api/hakemus/haku?myonteinen=true"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
+
+    // Kielteinen päätös -> vain hakemus 6665 (kelpoisuuden myonteinenPaatos=false)
+    mockMvc
+      .perform(get("/api/hakemus/haku?kielteinen=true"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    // Molemmat valittu -> hakemukset joilla on jokin päätös (6665 ja 6666)
+    mockMvc
+      .perform(get("/api/hakemus/haku?myonteinen=true&kielteinen=true"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(2))
+      .andExpect(
+        jsonPath("$.items[*].hakemusOid").value(
+          hasItems("1.2.246.562.11.00000000000000006666", "1.2.246.562.11.00000000000000006665")
+        )
+      )
+  }
+
+  @Test
+  @Order(19)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetKelpoisuusJaOpetettavatAineetFilter(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+    ensurePaatostiedotData()
+
+    // Kelpoisuushaku
+    mockMvc
+      .perform(get("/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
+
+    mockMvc
+      .perform(get("/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    // Tuntematon kelpoisuus -> 0 tulosta
+    mockMvc
+      .perform(get("/api/hakemus/haku?kelpoisuus=tuntematonKelpoisuus"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+
+    // Opetettava aine -haku
+    mockMvc
+      .perform(get("/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
+
+    mockMvc
+      .perform(get("/api/hakemus/haku?opetettavatAineet=vieras kieli_englanti"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    // Molemmat valittu
+    mockMvc
+      .perform(
+        get("/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali&opetettavatAineet=vieras kieli_englanti")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(2))
+      .andExpect(
+        jsonPath("$.items[*].hakemusOid").value(
+          hasItems("1.2.246.562.11.00000000000000006666", "1.2.246.562.11.00000000000000006665")
+        )
+      )
+  }
+
+  @Test
+  @Order(20)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetSuoritusmaaJaKelpoisuusKorreloidutFilter(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+    ensurePaatostiedotData()
+
+    mockMvc
+      .perform(
+        get(
+          "/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
+        )
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
+
+    // Hakemus 6665: mutta paatostiedolla ei tutkintoId
+    mockMvc
+      .perform(
+        get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+
+    // Väärä suoritusmaa + oikea kelpoisuus -> 0 tulosta
+    mockMvc
+      .perform(
+        get(
+          "/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
+        )
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(0))
+  }
 }

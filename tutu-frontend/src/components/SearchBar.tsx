@@ -18,7 +18,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/dist/client/components/navigation';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
 
 import { hakuNakymaValintaOptions } from '@/src/constants/dropdownOptions';
@@ -39,16 +39,30 @@ type CommittedSearch = {
   filters: HakemuksetFilters;
 };
 
+const hasFilterValue = (v: string | string[]) =>
+  Array.isArray(v) ? v.length > 0 : Boolean(v);
+
 const EMPTY_COMMITTED: CommittedSearch = {
   haku: '',
   nakyma: 'kaikki',
   filters: {
-    suoritusmaa: '',
+    suoritusmaa: [],
     paattymisVuosi: '',
     todistusVuosi: '',
     oppilaitos: '',
     tutkinnonNimi: '',
     paaAine: '',
+    kelpoisuus: '',
+    opetettavatAineet: [],
+    ratkaisutyyppi: '',
+    paatostyyppi: '',
+    sovellettuLaki: '',
+    tutkinnonTaso: '',
+    kielteinen: '',
+    myonteinen: '',
+    esittelijaOid: '',
+    hakijanNimi: '',
+    asiatunnus: '',
   },
 };
 
@@ -80,7 +94,7 @@ export const SearchBar = () => {
   );
   const [suoritusmaa, setSuoritusmaa] = useQueryState(
     'suoritusmaa',
-    parseAsString.withDefault(''),
+    parseAsArrayOf(parseAsString).withDefault([]),
   );
   const [paattymisVuosi, setPaattymisVuosi] = useQueryState(
     'paattymisVuosi',
@@ -98,8 +112,52 @@ export const SearchBar = () => {
     'tutkinnonNimi',
     parseAsString.withDefault(''),
   );
-  const [paaAine, setPaaaine] = useQueryState(
+  const [paaAine, setPaaAine] = useQueryState(
     'paaAine',
+    parseAsString.withDefault(''),
+  );
+  const [kelpoisuus, setKelpoisuus] = useQueryState(
+    'kelpoisuus',
+    parseAsString.withDefault(''),
+  );
+  const [opetettavatAineet, setOpetettavatAineet] = useQueryState(
+    'opetettavatAineet',
+    parseAsArrayOf(parseAsString).withDefault([]),
+  );
+  const [ratkaisutyyppi, setRatkaisutyyppi] = useQueryState(
+    'ratkaisutyyppi',
+    parseAsString.withDefault(''),
+  );
+  const [paatostyyppi, setPaatostyyppi] = useQueryState(
+    'paatostyyppi',
+    parseAsString.withDefault(''),
+  );
+  const [sovellettuLaki, setSovellettuLaki] = useQueryState(
+    'sovellettuLaki',
+    parseAsString.withDefault(''),
+  );
+  const [tutkinnonTaso, setTutkinnonTaso] = useQueryState(
+    'tutkinnonTaso',
+    parseAsString.withDefault(''),
+  );
+  const [kielteinen, setKielteinen] = useQueryState(
+    'kielteinen',
+    parseAsString.withDefault(''),
+  );
+  const [myonteinen, setMyonteinen] = useQueryState(
+    'myonteinen',
+    parseAsString.withDefault(''),
+  );
+  const [esittelijaOid, setEsittelijaOid] = useQueryState(
+    'esittelijaOid',
+    parseAsString.withDefault(''),
+  );
+  const [hakijanNimi, setHakijanNimi] = useQueryState(
+    'hakijanNimi',
+    parseAsString.withDefault(''),
+  );
+  const [asiatunnus, setAsiatunnus] = useQueryState(
+    'asiatunnus',
     parseAsString.withDefault(''),
   );
 
@@ -113,11 +171,22 @@ export const SearchBar = () => {
       oppilaitos,
       tutkinnonNimi,
       paaAine,
+      kelpoisuus,
+      opetettavatAineet,
+      ratkaisutyyppi,
+      paatostyyppi,
+      sovellettuLaki,
+      tutkinnonTaso,
+      kielteinen,
+      myonteinen,
+      esittelijaOid,
+      hakijanNimi,
+      asiatunnus,
     },
   }));
 
   const [filtersOpen, setFiltersOpen] = useState(() =>
-    Object.values(committed.filters).some(Boolean),
+    Object.values(committed.filters).some(hasFilterValue),
   );
 
   const {
@@ -141,12 +210,23 @@ export const SearchBar = () => {
     registerOnClose(() => {
       setHaku('');
       setNakyma('kaikki');
-      setSuoritusmaa('');
+      setSuoritusmaa(null);
       setPaattymisVuosi('');
       setTodistusVuosi('');
       setOppilaitos('');
       setTutkinnonNimi('');
-      setPaaaine('');
+      setPaaAine('');
+      setKelpoisuus('');
+      setOpetettavatAineet(null);
+      setRatkaisutyyppi('');
+      setPaatostyyppi('');
+      setSovellettuLaki('');
+      setTutkinnonTaso('');
+      setKielteinen('');
+      setMyonteinen('');
+      setEsittelijaOid('');
+      setHakijanNimi('');
+      setAsiatunnus('');
       setCommitted(EMPTY_COMMITTED);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,9 +264,20 @@ export const SearchBar = () => {
       oppilaitos,
       tutkinnonNimi,
       paaAine,
+      kelpoisuus,
+      opetettavatAineet,
+      ratkaisutyyppi,
+      paatostyyppi,
+      sovellettuLaki,
+      tutkinnonTaso,
+      kielteinen,
+      myonteinen,
+      esittelijaOid,
+      hakijanNimi,
+      asiatunnus,
     };
 
-    if (!haku.trim() && !Object.values(newFilters).some(Boolean)) {
+    if (!haku.trim() && !Object.values(newFilters).some(hasFilterValue)) {
       return;
     }
 
@@ -279,13 +370,55 @@ export const SearchBar = () => {
             oppilaitos,
             tutkinnonNimi,
             paaAine,
+            kelpoisuus,
+            opetettavatAineet,
+            ratkaisutyyppi,
+            paatostyyppi,
+            sovellettuLaki,
+            tutkinnonTaso,
+            kielteinen,
+            myonteinen,
+            esittelijaOid,
+            hakijanNimi,
+            asiatunnus,
           }}
           setSuoritusmaa={setSuoritusmaa}
           setPaattymisVuosi={setPaattymisVuosi}
           setTodistusVuosi={setTodistusVuosi}
           setOppilaitos={setOppilaitos}
           setTutkinnonNimi={setTutkinnonNimi}
-          setPaaaine={setPaaaine}
+          setPaaAine={setPaaAine}
+          setKelpoisuus={setKelpoisuus}
+          setOpetettavatAineet={setOpetettavatAineet}
+          setRatkaisutyyppi={setRatkaisutyyppi}
+          setPaatostyyppi={setPaatostyyppi}
+          setSovellettuLaki={setSovellettuLaki}
+          setTutkinnonTaso={setTutkinnonTaso}
+          setKielteinen={setKielteinen}
+          setMyonteinen={setMyonteinen}
+          setEsittelijaOid={setEsittelijaOid}
+          setHakijanNimi={setHakijanNimi}
+          setAsiatunnus={setAsiatunnus}
+          onSubmit={handleHae}
+          onClearAll={() => {
+            setSuoritusmaa(null);
+            setPaattymisVuosi('');
+            setTodistusVuosi('');
+            setOppilaitos('');
+            setTutkinnonNimi('');
+            setPaaAine('');
+            setKelpoisuus('');
+            setOpetettavatAineet(null);
+            setRatkaisutyyppi('');
+            setPaatostyyppi('');
+            setSovellettuLaki('');
+            setTutkinnonTaso('');
+            setKielteinen('');
+            setMyonteinen('');
+            setEsittelijaOid('');
+            setHakijanNimi('');
+            setAsiatunnus('');
+          }}
         />
       </Collapse>
     </Stack>

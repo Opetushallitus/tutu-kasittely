@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 
 import { KelpoisuusComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusComponent';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  Kelpoisuus,
-  PaatosTieto,
-  PaatosTietoOption,
-} from '@/src/lib/types/paatos';
+import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { TreeOption } from '@/src/lib/localization/translationUtils';
+import { Kelpoisuus, PaatosTieto } from '@/src/lib/types/paatos';
 
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,
@@ -24,7 +22,7 @@ type KelpoisuusListProps = {
     updatedPaatosTieto: PaatosTieto,
     immediateSave?: boolean,
   ) => void;
-  kelpoisuusOptions: PaatosTietoOption[];
+  kelpoisuusOptions: TreeOption<TranslatedName>[];
 };
 
 export const KelpoisuusList = ({

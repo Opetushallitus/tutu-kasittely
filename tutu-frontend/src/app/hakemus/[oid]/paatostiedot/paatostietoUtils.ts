@@ -7,7 +7,11 @@ import {
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { Language } from '@/src/lib/localization/localizationTypes';
+import {
+  Language,
+  TranslatedName,
+} from '@/src/lib/localization/localizationTypes';
+import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { NamedBoolean } from '@/src/lib/types/common';
 import {
   ErotKoulutuksessa,
@@ -16,23 +20,17 @@ import {
   KorvaavaToimenpideDto,
   Paatos,
   PaatosTieto,
-  PaatosTietoOption,
 } from '@/src/lib/types/paatos';
-
-export type PaatosTietoDropdownOption = {
-  label: string;
-  value: string;
-  children?: PaatosTietoDropdownOption[];
-};
 
 export const getPaatosTietoDropdownOptions = (
   lang: Language,
-  paatostietoOptions: PaatosTietoOption[],
+  paatostietoOptions: TreeOption<TranslatedName>[],
   maxHierarkiaSyvyys: number = Infinity,
   currentHierarkiaLevel: number = 0,
-): PaatosTietoDropdownOption[] => {
+): TreeOption[] => {
   return paatostietoOptions.map((option) => {
-    const keyOption: PaatosTietoDropdownOption = {
+    console.info(option.label['en']);
+    const keyOption: TreeOption = {
       label: option.label[lang]!,
       value: option.value[lang]!,
     };
@@ -58,9 +56,9 @@ export const getPaatosTietoDropdownOptions = (
 
 export const findOptionByValue = (
   lang: Language,
-  options: PaatosTietoOption[],
+  options: TreeOption<TranslatedName>[],
   value: string,
-): PaatosTietoOption | null => {
+): TreeOption<TranslatedName> | null => {
   for (const option of options) {
     if (option.value[lang] === value) {
       return option;
@@ -80,10 +78,10 @@ export const getKelpoisuusMuuAmmattiDropdownValue = (t: TFunction): string =>
 
 export const getKelpoisuusMuuAmmattiDropdownOption = (
   t: TFunction,
-): PaatosTietoDropdownOption => {
+): TreeOption => {
   const muuAmmattiTranslated = getKelpoisuusMuuAmmattiDropdownValue(t);
 
-  const muuAmmattiOption: PaatosTietoDropdownOption = {
+  const muuAmmattiOption: TreeOption = {
     label: muuAmmattiTranslated,
     value: muuAmmattiTranslated,
   };

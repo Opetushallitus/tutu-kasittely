@@ -14,7 +14,7 @@ import TableSortLabel from '../components/TableSortLabel';
 const FIELD_KEYS = {
   lahetetty: 'lahetetty',
   tila: 'tila',
-  hakijanNimi: 'hakija',
+  hakija: 'hakija',
   asiatunnus: 'asiatunnus',
 };
 

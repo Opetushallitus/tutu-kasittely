@@ -308,7 +308,7 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
   {
     id: 'ammattikoulunOpettajaYhteiset',
     kelpoisuusKey:
-      'Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa ',
+      'Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa',
     lyhytNimiKaannosAvain:
       'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ammattikoulunOpettajaYhteiset.lyhytNimi',
     kelpoisuusKohtainenEroLkm: 4,

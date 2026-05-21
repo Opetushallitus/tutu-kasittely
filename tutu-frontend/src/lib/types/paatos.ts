@@ -1,4 +1,5 @@
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
+import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { NamedBoolean } from '@/src/lib/types/common';
 
 export type Ratkaisutyyppi =
@@ -139,15 +140,9 @@ export type KielteisenPaatoksenPerustelut = {
 };
 
 export type PaatosTietoOptionGroup = {
-  kelpoisuusOptions: PaatosTietoOption[];
-  riittavatOpinnotOptions: PaatosTietoOption[];
-  tiettyTutkintoTaiOpinnotOptions: PaatosTietoOption[];
-};
-
-export type PaatosTietoOption = {
-  label: TranslatedName;
-  value: TranslatedName;
-  children?: PaatosTietoOption[];
+  kelpoisuusOptions: TreeOption<TranslatedName>[];
+  riittavatOpinnotOptions: TreeOption<TranslatedName>[];
+  tiettyTutkintoTaiOpinnotOptions: TreeOption<TranslatedName>[];
 };
 
 export type Direktiivitaso =
