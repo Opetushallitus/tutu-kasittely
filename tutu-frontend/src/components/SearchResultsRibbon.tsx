@@ -149,18 +149,20 @@ export const SearchResultsRibbon = () => {
   const { t } = useTranslations();
   const {
     searchResults,
-    selectedOid,
     setSelectedOid,
-    currentPage,
-    setCurrentPage,
-    totalPages,
+    selectedIndex,
+    setSelectedIndex,
+    totalCount,
+    pageSize,
     ribbonVisible,
     closeRibbon,
+    fetchPage,
   } = useSearchRibbon();
-
   const { data: originalHakemus } = useHakemusOriginal();
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastSelectedRef = useRef<number | null>(null);
+  const selectionOriginRef = useRef<'user' | 'nav' | null>(null);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
 
@@ -182,10 +184,89 @@ export const SearchResultsRibbon = () => {
     };
   }, [searchResults]);
 
-  // Nollaa scroll kun sivu tai tulokset vaihtuvat
+  // Observe placeholders: fetch their page when they appear.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ left: 0 });
-  }, [currentPage, searchResults]);
+    const el = scrollRef.current;
+    if (!el || !fetchPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const page = Number(
+            (entry.target as HTMLElement).dataset.placeholderPage,
+          );
+          if (page) {
+            fetchPage(page);
+          }
+        }
+      },
+      { root: el },
+    );
+    const placeholders = el.querySelectorAll<HTMLElement>(
+      '[data-placeholder-page]',
+    );
+    placeholders.forEach((p) => observer.observe(p));
+    return () => observer.disconnect();
+  }, [searchResults, fetchPage]);
+
+  // When selectedIndex changes, ensure currentPage and selectedOid stay in sync
+  useEffect(() => {
+    if (selectedIndex == null || selectedIndex === -1 || !totalCount) return;
+    if (searchResults && searchResults.length) {
+      const item = searchResults[selectedIndex];
+      if (item) {
+        setSelectedOid(item.hakemusOid);
+      }
+    }
+  }, [selectedIndex, pageSize, searchResults, setSelectedOid, totalCount]);
+
+  // Scroll the selected card into view when it's on the currently loaded page.
+  // Only auto-scroll when the selection originated from navigation controls.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (selectedIndex == null || !searchResults || !pageSize || !el) {
+      return;
+    }
+
+    const cards = el.querySelectorAll('[data-testid="ribbon-card"]');
+    const target = cards[selectedIndex] as HTMLElement | undefined;
+    if (!target) return;
+
+    if (selectionOriginRef.current !== 'nav') {
+      // Don't scroll when user clicks a card directly.
+      selectionOriginRef.current = null;
+      lastSelectedRef.current = selectedIndex;
+      return;
+    }
+
+    const last = lastSelectedRef.current;
+    const forward = last == null ? true : selectedIndex > last;
+
+    const overlayWidth = 30; // ScrollArrow width
+    let desiredLeft = 0;
+    if (forward) {
+      desiredLeft =
+        target.offsetLeft - (target.offsetLeft > 1 ? overlayWidth : 0);
+    } else {
+      desiredLeft =
+        target.offsetLeft > 1 ? target.offsetLeft - overlayWidth : 0;
+    }
+
+    desiredLeft = Math.max(
+      0,
+      Math.min(desiredLeft, el.scrollWidth - el.clientWidth),
+    );
+    el.scrollTo({ left: desiredLeft, behavior: 'instant' });
+    lastSelectedRef.current = selectedIndex;
+    selectionOriginRef.current = null;
+  }, [
+    selectedIndex,
+    searchResults,
+    pageSize,
+    showLeftArrow,
+    showRightArrow,
+    fetchPage,
+  ]);
 
   const pathname = usePathname();
   if (!ribbonVisible || pathname.includes('/editori/')) {
@@ -238,24 +319,34 @@ export const SearchResultsRibbon = () => {
                 {t('haku.hakutuloksesi')}
               </OphTypography>
 
-              {Boolean(searchResults?.length || currentPage !== 1) && (
+              {Boolean(searchResults?.length) && (
                 <>
                   <OphTypography variant="body1" sx={{ mx: theme.spacing(1) }}>
-                    {currentPage} / {totalPages}
+                    {`${selectedIndex! + 1} / ${totalCount}`}
                   </OphTypography>
 
                   <OphButton
                     variant="text"
-                    disabled={currentPage <= 1}
-                    onClick={() => setCurrentPage(1)}
+                    disabled={!totalCount}
+                    onClick={() => {
+                      // First item
+                      selectionOriginRef.current = 'nav';
+                      setSelectedIndex(0);
+                    }}
                     aria-label={t('yleiset.ensimmainenSivu')}
                     startIcon={<FirstPageIcon />}
                     sx={{ px: 0 }}
                   />
                   <OphButton
                     variant="text"
-                    disabled={currentPage <= 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={!totalCount}
+                    onClick={() => {
+                      // Previous item
+                      if (selectedIndex == null) return;
+                      const newAbs = Math.max(0, selectedIndex - 1);
+                      selectionOriginRef.current = 'nav';
+                      setSelectedIndex(newAbs);
+                    }}
                     sx={{ marginRight: theme.spacing(1), px: 0 }}
                   >
                     <NavigateBeforeIcon />
@@ -263,8 +354,17 @@ export const SearchResultsRibbon = () => {
                   </OphButton>
                   <OphButton
                     variant="text"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={!totalCount}
+                    onClick={() => {
+                      // Next item
+                      if (selectedIndex == null) return;
+                      const newAbs = Math.min(
+                        totalCount - 1,
+                        selectedIndex + 1,
+                      );
+                      selectionOriginRef.current = 'nav';
+                      setSelectedIndex(newAbs);
+                    }}
                     sx={{ marginLeft: theme.spacing(1), px: 0 }}
                   >
                     {t('hakemuslista.seuraava')}
@@ -272,8 +372,13 @@ export const SearchResultsRibbon = () => {
                   </OphButton>
                   <OphButton
                     variant="text"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={!totalCount}
+                    onClick={() => {
+                      // Last item
+                      const lastAbs = Math.max(0, totalCount - 1);
+                      selectionOriginRef.current = 'nav';
+                      setSelectedIndex(lastAbs);
+                    }}
                     aria-label={t('yleiset.viimeinenSivu')}
                     startIcon={<LastPageIcon />}
                     sx={{ px: 0 }}
@@ -318,27 +423,34 @@ export const SearchResultsRibbon = () => {
                   originalHakemus.hakemusKoskee,
                   originalHakemus.asiakirja.apHakemus,
                 )}
-                isSelected={selectedOid === null}
-                onClick={() => setSelectedOid(null)}
+                isSelected={selectedIndex === -1}
+                onClick={() => {
+                  selectionOriginRef.current = 'user';
+                  setSelectedOid(null);
+                  setSelectedIndex(-1);
+                }}
               />
             )}
           </Box>
 
           {/* Hakutulokset */}
-          {!searchResults ? (
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <FullSpinner />
-            </Box>
-          ) : !searchResults.length ? (
-            <EmptyList t={t} theme={theme} />
+          {totalCount === 0 ? (
+            // No results known yet
+            searchResults === null ? (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FullSpinner />
+              </Box>
+            ) : (
+              <EmptyList t={t} theme={theme} />
+            )
           ) : (
             <Box
               sx={{
@@ -357,19 +469,63 @@ export const SearchResultsRibbon = () => {
                   scrollbarWidth: 'none',
                 }}
               >
-                {searchResults.map((result) => (
-                  <RibbonCard
-                    key={result.hakemusOid}
-                    name={`${result.hakija.sukunimi}, ${result.hakija.etunimet}`}
-                    asiatunnus={result.asiatunnus}
-                    hakemusKoskeeLabel={translateHakemusKoskee(
-                      result.hakemusKoskee,
-                      result.apHakemus,
-                    )}
-                    isSelected={selectedOid === result.hakemusOid}
-                    onClick={() => setSelectedOid(result.hakemusOid)}
-                  />
-                ))}
+                {Array.from({ length: totalCount }).map((_, absIndex) => {
+                  const item = searchResults?.[absIndex];
+                  if (item) {
+                    return (
+                      <RibbonCard
+                        key={item.hakemusOid}
+                        name={`${item.hakija.sukunimi}, ${item.hakija.etunimet}`}
+                        asiatunnus={item.asiatunnus}
+                        hakemusKoskeeLabel={translateHakemusKoskee(
+                          item.hakemusKoskee,
+                          item.apHakemus,
+                        )}
+                        isSelected={selectedIndex === absIndex}
+                        onClick={() => {
+                          selectionOriginRef.current = 'user';
+                          setSelectedIndex(absIndex);
+                        }}
+                      />
+                    );
+                  }
+                  // Placeholder for not yet loaded item
+                  const isSelected = selectedIndex === absIndex;
+                  const placeholderBorder = isSelected
+                    ? `2px solid ${ophColors.grey700}`
+                    : `1px dashed ${ophColors.grey300}`;
+
+                  return (
+                    <Box
+                      key={`placeholder-${absIndex}`}
+                      data-testid={`ribbon-card`}
+                      data-placeholder-page={
+                        Math.floor(absIndex / pageSize) + 1
+                      }
+                      onClick={() => {
+                        selectionOriginRef.current = 'user';
+                        setSelectedIndex(absIndex);
+                      }}
+                      sx={{
+                        width: 247,
+                        minHeight: 130,
+                        padding: '4px 8px',
+                        border: placeholderBorder,
+                        borderRadius: '4px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexShrink: 0,
+                        marginBottom: '12px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: ophColors.grey500,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <FullSpinner />
+                    </Box>
+                  );
+                })}
               </Box>
               {showLeftArrow && (
                 <ScrollArrow direction="left" scrollRef={scrollRef} />

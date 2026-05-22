@@ -28,7 +28,7 @@ export type HakemuksetFilters = {
   asiatunnus: string;
 };
 
-const getHakemuksetHaulla = async (
+export const getHakemuksetHaulla = async (
   haku: string,
   nakyma: string,
   page: number,
