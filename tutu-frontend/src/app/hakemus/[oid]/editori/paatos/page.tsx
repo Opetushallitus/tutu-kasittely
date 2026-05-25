@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyAllOutlined } from '@mui/icons-material';
-import { Stack } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { LexicalEditor } from 'lexical';
 import { useParams } from 'next/navigation';
@@ -14,6 +14,7 @@ import {
   exportMarkdown,
   importHtml,
 } from '@/src/components/editor/editor-utils';
+import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
@@ -32,6 +33,7 @@ export default function PaatosEditorPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
+  const theme = useTheme();
 
   useUnsavedChanges(hasChanges);
 
