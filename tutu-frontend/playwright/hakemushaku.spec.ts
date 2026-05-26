@@ -48,12 +48,6 @@ const searchResultsPage1: Paginated<HakemusListItem> = {
   totalPages: 1,
 };
 
-const searchResultsMultiPage = {
-  ...searchResultsPage1,
-  totalCount: 25,
-  totalPages: 2,
-};
-
 const mockHakemusHaku = async (
   page: Page,
   body: object = searchResultsPage1,
@@ -253,8 +247,11 @@ test('URL-parametri ?haku= avaa nauhan automaattisesti', async ({ page }) => {
   await expect(page.getByText('Aalto, Aino')).toBeVisible();
 });
 
-test('Sivutus: Seuraava-nappi lähettää pyynnön sivulle 2', async ({ page }) => {
-  await mockHakemusHaku(page, searchResultsMultiPage);
+test('Sivutus: Seuraava-nappi näyttää seuraavan hakemuksen', async ({
+  page,
+}) => {
+  await mockHakemusHaku(page);
+  await mockHakemus(page);
   await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
 
   await page.getByTestId('hakukentta').locator('input').fill('Aalt');
@@ -263,18 +260,15 @@ test('Sivutus: Seuraava-nappi lähettää pyynnön sivulle 2', async ({ page }) 
 
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
 
-  const [request] = await Promise.all([
-    page.waitForRequest((req) => req.url().includes('hakemus/haku')),
-    page
-      .getByRole('button', {
-        name: await translate(page, 'hakemuslista.seuraava'),
-      })
-      .click(),
-  ]);
+  await page
+    .getByRole('button', {
+      name: await translate(page, 'hakemuslista.seuraava'),
+    })
+    .click();
 
-  const url = new URL(request.url());
-  expect(url.searchParams.get('page')).toBe('2');
-  expect(url.searchParams.get('haku')).toBe('Aalt');
+  await expect(page.getByTestId('hakemusotsikko-hakija')).toHaveText(
+    'Aaltonen, Arvo',
+  );
 });
 
 test('Tarkat hakuehdot: oppilaitos-suodatin lähettää parametrin pyyntöön', async ({

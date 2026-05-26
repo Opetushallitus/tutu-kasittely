@@ -32,9 +32,9 @@ const app = new cdk.App()
 
 // Load up configuration for the environment
 const environmentName: string = app.node.tryGetContext('environment')
-const envEU = { region: 'eu-west-1' }
-const envEUAccount = { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'eu-west-1' }
-const envUS = { region: 'us-east-1' }
+const account = process.env.CDK_DEFAULT_ACCOUNT
+const envEU = { account, region: 'eu-west-1' }
+const envUS = { account, region: 'us-east-1' }
 
 // Allow any in this case, since we don't want to explicitely type json data
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -75,7 +75,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   })
 
   const Monitor = new MonitorStack(app, 'MonitorStack', {
-    env: envEUAccount,
+    env: envEU,
     slackChannelName: `valvonta-tutu-${environmentName}`,
     environment: environmentName
   })

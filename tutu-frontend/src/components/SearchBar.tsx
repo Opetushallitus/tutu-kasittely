@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react';
 import { hakuNakymaValintaOptions } from '@/src/constants/dropdownOptions';
 import { useSearchRibbon } from '@/src/context/SearchRibbonContext';
 import {
+  getHakemuksetHaulla,
   HakemuksetFilters,
   useHakemuksetHaku,
 } from '@/src/hooks/useHakemuksetHaku';
@@ -72,15 +73,21 @@ export const SearchBar = () => {
   const { t } = useTranslations();
   const queryClient = useQueryClient();
   const {
-    setSearchResults,
+    setPageResults,
+    clearResults,
     setSelectedOid,
+    setSelectedIndex,
     currentPage,
     setCurrentPage,
     setTotalPages,
+    setTotalCount,
+    setPageSize,
     ribbonVisible,
     setRibbonVisible,
     registerOnClose,
+    registerFetchPage,
   } = useSearchRibbon();
+  const { selectedIndex, pageSize } = useSearchRibbon();
 
   const nakymaOptions = hakuNakymaValintaOptions.map((opt) => ({
     ...opt,
@@ -192,7 +199,6 @@ export const SearchBar = () => {
   const {
     data: hakemukset,
     error: hakemuksetError,
-    isLoading,
     isEnabled,
   } = useHakemuksetHaku(
     committed.haku,
@@ -229,27 +235,82 @@ export const SearchBar = () => {
       setAsiatunnus('');
       setCommitted(EMPTY_COMMITTED);
     });
+    if (registerFetchPage) {
+      registerFetchPage((page: number) => {
+        const key = [
+          'getHakemuksetHaulla',
+          committed.haku,
+          committed.nakyma,
+          page,
+          committed.filters,
+        ];
+        // Already fetching/cached
+        if (queryClient.getQueryState(key)?.status) {
+          return;
+        }
+        queryClient
+          .fetchQuery({
+            queryKey: key,
+            queryFn: () =>
+              getHakemuksetHaulla(
+                committed.haku,
+                committed.nakyma,
+                page,
+                committed.filters,
+              ),
+          })
+          .then((res) => {
+            if (res?.items) {
+              setPageResults(page, res.items);
+            }
+          })
+          .catch((error) => {
+            handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
+          });
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (isLoading && ribbonVisible) {
-      setSearchResults(null);
-    }
-  }, [isLoading, ribbonVisible, setSearchResults]);
-
-  useEffect(() => {
     if (hakemukset && ribbonVisible) {
-      setSearchResults(hakemukset.items);
+      setPageResults(hakemukset.page, hakemukset.items);
       setTotalPages(hakemukset.totalPages);
-      setSelectedOid(hakemukset.items[0]?.hakemusOid ?? null);
+      setTotalCount(hakemukset.totalCount);
+      setPageSize(hakemukset.pageSize);
+
+      const pageStartAbs = (hakemukset.page - 1) * hakemukset.pageSize;
+
+      // If there's no selection yet, pick the first item of this page.
+      // Otherwise, if the current selection falls into this page, sync its OID from the incoming items.
+      if (selectedIndex == null) {
+        if (hakemukset.items.length) {
+          setSelectedIndex(pageStartAbs);
+          setSelectedOid(hakemukset.items[0]?.hakemusOid ?? null);
+        } else {
+          setSelectedIndex(null);
+          setSelectedOid(null);
+        }
+      } else {
+        const indexInPage = selectedIndex - pageStartAbs;
+        if (indexInPage >= 0 && indexInPage < hakemukset.items.length) {
+          setSelectedOid(hakemukset.items[indexInPage]?.hakemusOid ?? null);
+        }
+      }
     }
   }, [
     hakemukset,
     ribbonVisible,
-    setSearchResults,
+    setPageResults,
     setTotalPages,
     setSelectedOid,
+    setTotalCount,
+    setPageSize,
+    committed,
+    queryClient,
+    pageSize,
+    selectedIndex,
+    setSelectedIndex,
   ]);
 
   useEffect(() => {
@@ -282,6 +343,8 @@ export const SearchBar = () => {
     }
 
     setCurrentPage(1);
+    clearResults();
+    setSelectedIndex(null);
     setSelectedOid(null);
     setRibbonVisible(true);
     setCommitted({
