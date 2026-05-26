@@ -96,6 +96,7 @@ const Tabs = ({ buttons, tPrefix }: TabsParams) => {
         width: '100%',
         borderBottom: DEFAULT_BOX_BORDER,
         height: TAB_BUTTON_HEIGHT,
+        marginBottom: '16px',
       }}
       aria-label={t(`${tPrefix}.tabs`)}
     >
