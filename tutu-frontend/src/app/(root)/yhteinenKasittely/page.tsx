@@ -36,7 +36,7 @@ export default function YkPage() {
     >
       {hasTutuUserRights ? (
         <>
-          <BoxWrapper sx={{ borderBottom: 'none' }}>
+          <BoxWrapper sx={{ borderBottom: 'none', p: 0 }}>
             <Box
               sx={{
                 display: 'flex',

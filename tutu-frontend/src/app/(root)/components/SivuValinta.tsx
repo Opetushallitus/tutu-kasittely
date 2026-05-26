@@ -1,6 +1,6 @@
 import ErrorIcon from '@mui/icons-material/Error';
-import { Box, Button, Stack } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { Stack } from '@mui/material';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { usePathname } from 'next/navigation';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -13,37 +13,51 @@ export enum SelectedPage {
   YhteinenKasittely,
 }
 
-const ActiveInfoIcon = styled(ErrorIcon)({
-  color: ophColors.orange3,
-  position: 'absolute',
-  left: '23.1%',
-});
-
-const InactiveInfoIcon = styled(ErrorIcon)({
-  color: ophColors.orange3,
-  position: 'absolute',
-  left: '94%',
-});
-
-const InactiveButton = styled(Button)({
+const InactiveButton = styled(OphButton)({
   borderRadius: 0,
   fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
-  color: 'black',
-  padding: '10px',
+  color: ophColors.blue2,
   textDecoration: 'none',
-  borderColor: ophColors.blue2,
+  borderColor: 'transparent',
+  backgroundColor: 'transparent',
+  transition: 'border-color 150ms, background-color 150ms',
+  '&:hover': {
+    borderColor: ophColors.blue2,
+  },
 });
 
-const ActiveButton = styled(Box)({
+const ActiveButton = styled(OphButton)({
   borderRadius: 0,
   fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
   color: ophColors.white,
-  padding: '10px',
+  // ensure oph-design-system CSS variables used by OphButton keep text white
+  '--variant-containedColor': ophColors.white,
   textDecoration: 'none',
   borderColor: ophColors.blue2,
   backgroundColor: ophColors.blue2,
+  transition: 'background-color 150ms',
+  '&:hover': {
+    backgroundColor: ophColors.blue3,
+    // reinforce text color on hover (OphButton may override via CSS vars)
+    color: ophColors.white,
+    '--variant-containedColor': ophColors.white,
+  },
+});
+
+const InfoBadge = styled(ErrorIcon)({
+  position: 'absolute',
+  left: '93%',
+  top: '5%',
+  width: 25,
+  height: 25,
+  color: `${ophColors.orange3} `,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  // This places a white circle right behind the transparent "!"
+  background: 'radial-gradient(circle, #ffffff 40%, transparent 40%)',
 });
 
 const useActiveHakuTabName = () => {
@@ -72,19 +86,17 @@ const TabButton = ({
 
   const isActive = active || activeTabName === tabName;
 
-  const InfoIcon = isActive ? ActiveInfoIcon : InactiveInfoIcon;
-
   return (
     <>
       {isActive ? (
         <ActiveButton {...rest}>
           {t(tabName)}
-          {showNotification && <InfoIcon />}
+          {showNotification && <InfoBadge />}
         </ActiveButton>
       ) : (
         <InactiveButton href={linkPath || ''}>
           {t(tabName)}
-          {showNotification && <InfoIcon />}
+          {showNotification && <InfoBadge />}
         </InactiveButton>
       )}
     </>
@@ -106,6 +118,8 @@ export default function SivuValinta({
         justifyContent: 'flex-start',
         borderBottom: DEFAULT_BOX_BORDER,
         height: TAB_BUTTON_HEIGHT,
+        p: 0,
+        m: 0,
       }}
     >
       <TabButton
