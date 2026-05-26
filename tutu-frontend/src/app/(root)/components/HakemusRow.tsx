@@ -143,7 +143,7 @@ export default function HakemusRow({
             <>
               <OphTypography>{asiatunnus}</OphTypography>
               <EditOutlined
-                sx={{ color: 'primary.main' }}
+                sx={{ color: 'primary.main', cursor: 'pointer' }}
                 onClick={() => setShowEditAsiatunnus(true)}
               ></EditOutlined>
             </>

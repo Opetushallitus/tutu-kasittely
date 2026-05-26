@@ -12,6 +12,7 @@ import {
   OphSelectMultiple,
   OphSelect,
   OphTypography,
+  ophColors,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
@@ -113,12 +114,25 @@ export default function HakemusListFilters() {
 
   return (
     <Grid container spacing={theme.spacing(2)}>
-      <Grid container spacing={theme.spacing(2)} size={12}>
-        <Grid size={2}>
+      <Grid container spacing={theme.spacing(3)} size={12}>
+        <Grid size="auto">
           <OphFormFieldWrapper
+            sx={{
+              height: '64px',
+            }}
             renderInput={() => {
               return (
-                <ToggleButtonGroup>
+                <ToggleButtonGroup
+                  sx={{
+                    height: '100%',
+                    '& .MuiToggleButton-root': {
+                      fontWeight: 400,
+                      textWrapMode: 'nowrap',
+                      borderColor: ophColors.grey400,
+                      borderWidth: '1px',
+                    },
+                  }}
+                >
                   <ToggleButton
                     selected={!naytaKaikki}
                     value={'omat'}
@@ -154,7 +168,7 @@ export default function HakemusListFilters() {
             label={t('hakemuslista.nayta')}
           ></OphFormFieldWrapper>
         </Grid>
-        <Grid size={10}>
+        <Grid sx={{ flex: 1 }}>
           <OphInputFormField
             label={t('hakemuslista.haeHakemuksia')}
             sx={{ width: '100%' }}
@@ -167,7 +181,7 @@ export default function HakemusListFilters() {
           ></OphInputFormField>
         </Grid>
       </Grid>
-      <Grid container spacing={theme.spacing(2)} size={12}>
+      <Grid container spacing={theme.spacing(3)} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
           <OphFormFieldWrapper
             label={t('hakemuslista.kasittelyvaihe')}
