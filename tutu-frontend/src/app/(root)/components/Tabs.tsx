@@ -7,23 +7,27 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
 
-const TAB_BUTTON_HEIGHT = '48px';
+const TAB_BUTTON_HEIGHT = '32px';
 
 const InactiveButton = styled(OphButton)({
   borderRadius: 0,
   fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
   color: 'black',
+  padding: '4px 8px',
+  marginRight: '10px',
 });
 
 const ActiveButton = styled(OphButton)({
   borderRadius: 0,
-  fontWeight: 'bold',
+  fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
   borderColor: ophColors.blue2,
   borderWidth: 0,
   borderBottomWidth: 2,
   cursor: 'default',
+  padding: '4px 8px',
+  marginRight: '10px',
 });
 
 const useActiveHakuTabName = () => {
