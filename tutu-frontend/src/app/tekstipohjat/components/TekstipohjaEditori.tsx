@@ -35,6 +35,7 @@ export const TekstipohjaEditori = <
   updateOngoing,
   poistaPohja,
   editorRefs,
+  translationKeyPrefix,
 }: {
   id?: string;
   setValittuId: (id?: string | null) => void;
@@ -47,6 +48,7 @@ export const TekstipohjaEditori = <
   updateOngoing: boolean;
   poistaPohja: () => void;
   editorRefs: Partial<Record<LanguageCode, RefObject<LexicalEditor | null>>>;
+  translationKeyPrefix: string;
 }) => {
   const { t } = useTranslations();
   const { showConfirmation } = useGlobalConfirmationModal();
@@ -90,7 +92,7 @@ export const TekstipohjaEditori = <
         >
           {editorRefs[lang] && (
             <Editor
-              key={`viestipohja-editor-${lang}`}
+              key={`tekstipohja-editor-${lang}`}
               editorRef={editorRefs[lang]}
               onChange={(editor) => {
                 updateLocal({
@@ -109,12 +111,12 @@ export const TekstipohjaEditori = <
         onClick={() => {
           if (id) {
             showConfirmation({
-              confirmButtonText: t('tekstipohjat.viestipohjat.poista'),
-              content: t('tekstipohjat.viestipohjat.poista.content', {
+              confirmButtonText: t(`${translationKeyPrefix}.poista`),
+              content: t(`${translationKeyPrefix}.poista.content`, {
                 nimi: currentPohja!.nimi,
               }),
               handleConfirmAction: poistaPohja,
-              header: t('tekstipohjat.viestipohjat.poista.header'),
+              header: t(`${translationKeyPrefix}.poista.header`),
             });
           } else {
             setValittuId(null);
@@ -123,7 +125,7 @@ export const TekstipohjaEditori = <
         sx={{ marginLeft: 'auto' }}
         startIcon={id ? <DeleteOutline /> : undefined}
       >
-        {t(id ? 'tekstipohjat.viestipohjat.poista' : 'yleiset.peruuta')}
+        {t(id ? `${translationKeyPrefix}.poista` : 'yleiset.peruuta')}
       </OphButton>
       <SaveRibbon
         onSave={onSave}

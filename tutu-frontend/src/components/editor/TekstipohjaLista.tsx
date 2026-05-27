@@ -45,7 +45,7 @@ export const TekstipohjaLista = ({
       'virhe.viestipohjaListanLataus',
       t,
     );
-    handleFetchError(addToast, pohjaLoadError, 'virhe.viestipohjanLataus', t);
+    handleFetchError(addToast, pohjaLoadError, 'virhe.viestipohjaLataus', t);
   }, [addToast, pohjatLoadError, pohjaLoadError, t]);
 
   return (

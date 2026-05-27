@@ -128,3 +128,6 @@ export const updateTutkintoJarjestys = (
 
 export const anyRealContentInHtml = (html: string) =>
   /[^\s<>]/.test(html.replace(/<[^>]*>/g, ''));
+
+export const removeInvisibleCharacters = (original: string) =>
+  original.replace(/[\u200B-\u200D\uFEFF\u200E\u200F]/g, '');

@@ -78,3 +78,9 @@ export const selectOption = async (
     .locator(`text=${optionText}`);
   await option.last().click();
 };
+
+export const clickSaveButton = async (page: Page) => {
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
+};

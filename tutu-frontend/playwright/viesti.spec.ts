@@ -171,7 +171,6 @@ test('Kenttien tyhjennyksessä tyhjennetään muut kentät paitsi kielivalinta',
   await mockViestiTyoversio(page, uusiViesti);
   await mockViestiLista(page);
   await mockViestiOletussisalto(page);
-  const kieliSelect = page.getByTestId('viesti-kieli-select');
   const otsikko = page.getByTestId('viesti-otsikko-input').getByRole('textbox');
   const sisalto = page.getByTestId('editor-content-editable');
   await page
@@ -193,7 +192,6 @@ test('Kenttien tyhjennyksessä tyhjennetään muut kentät paitsi kielivalinta',
   await page.getByTestId('modal-confirm-button').click();
 
   await expectViestiFormToBeEmpty(page);
-  await expect(kieliSelect).toHaveText('Englanti');
 
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(

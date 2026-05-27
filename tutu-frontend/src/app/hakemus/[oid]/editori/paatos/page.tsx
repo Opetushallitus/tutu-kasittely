@@ -51,10 +51,14 @@ export default function PaatosEditorPage() {
 
   const onSave = useCallback(() => {
     if (paatosteksti) {
-      savePaatosteksti({
-        ...paatosteksti,
-        sisalto: exportHtml(editorRef.current),
-      });
+      savePaatosteksti(
+        {
+          ...paatosteksti,
+          sisalto: exportHtml(editorRef.current),
+        },
+        false,
+        () => setHasChanges(false),
+      );
     }
   }, [paatosteksti, savePaatosteksti]);
 
@@ -105,6 +109,7 @@ export default function PaatosEditorPage() {
                     sisalto: exportHtml(editorRef.current),
                   },
                   true,
+                  () => setHasChanges(false),
                 );
                 navigator.clipboard
                   .writeText(exportMarkdown(editorRef.current))

@@ -99,9 +99,9 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   );
 
   useEffect(() => {
-    const toBeSisalto = currentViesti?.viesti || oletusSisalto;
-    importHtml(editorRef.current, toBeSisalto || '');
-  }, [editorRef, currentViesti?.viesti, oletusSisalto]);
+    const toBeSisalto = viesti?.viesti || oletusSisalto || '';
+    importHtml(editorRef.current, toBeSisalto);
+  }, [editorRef, viesti?.viesti, oletusSisalto]);
 
   useEffect(() => {
     setViestityyppiForOletussisalto(currentViesti?.tyyppi || null);
@@ -232,6 +232,8 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                       );
                     } else {
                       viestiState.discard();
+                      setEditorEmpty(true);
+                      setEditorHasChanges(false);
                       addToast({
                         key: 'hakemus.viesti.tyhjenna.toaster',
                         message: t('hakemus.viesti.tyhjennettyToast'),

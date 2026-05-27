@@ -43,7 +43,7 @@ export const importHtml = (editor: LexicalEditor | null, html: string) => {
         $getRoot().clear();
         $insertNodes(nodes);
       },
-      { discrete: true },
+      { discrete: true, tag: 'silent' },
     );
   }
 };

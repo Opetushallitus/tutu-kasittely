@@ -21,6 +21,7 @@ import {
   Paatos,
   PaatosTieto,
 } from '@/src/lib/types/paatos';
+import { removeInvisibleCharacters } from '@/src/lib/utils';
 
 export const getPaatosTietoDropdownOptions = (
   lang: Language,
@@ -74,7 +75,11 @@ export const findOptionByValue = (
 };
 
 export const getKelpoisuusMuuAmmattiDropdownValue = (t: TFunction): string =>
-  t('hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti');
+  removeInvisibleCharacters(
+    t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti',
+    ),
+  );
 
 export const getKelpoisuusMuuAmmattiDropdownOption = (
   t: TFunction,
