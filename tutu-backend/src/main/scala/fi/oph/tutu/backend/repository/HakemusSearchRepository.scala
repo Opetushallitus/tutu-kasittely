@@ -528,7 +528,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
         filters.kelpoisuus.foreach(v => c += sql"k.kelpoisuus = $v")
         filters.opetettavatAineet.foreach(aineet => {
           val aineClauses = aineet
-            .map(aine => sql"k.opetettava_aine ILIKE ${s"%$aine%"}")
+            .map(aine => sql"""k.opetettava_aine ILIKE ${s"%$aine%"}
+                                OR tto.tutkinto_tai_opinto ILIKE ${s"%$aine%"}""")
             .reduce(_ ++ sql" OR " ++ _)
           c += sql"(" ++ aineClauses ++ sql")"
         })
