@@ -275,13 +275,8 @@ def bindExtractPaatos(
 ): (Paatos) => Option[String] = {
   def next(node: Paatos): Option[String] = {
     val ratkaisutyyppi: Option[String] = haeRatkaisutyyppi(translationService, node)
-    val seutArviointi: Option[String]  = if (node.seutArviointi) {
-      Some(
-        translationService.getTranslation(FI, "perustelumuistio.SEUTArviointi")
-      )
-    } else {
-      None
-    }
+    val seutArviointi: Option[String]  =
+      Option.when(node.seutArviointi)(translationService.getTranslation(FI, "perustelumuistio.SEUTArviointi"))
 
     val label  = translationService.getTranslation(FI, "perustelumuistio.paatosEsitys.label")
     val result = Seq(
@@ -433,24 +428,24 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
 ): (MyonteisenPaatoksenLisavaatimukset) => Option[String] = {
   def next(node: MyonteisenPaatoksenLisavaatimukset): Option[String] = {
     val result = Seq(
-      if (node.taydentavatOpinnot)
+      Option.when(node.taydentavatOpinnot)(
         Some(
           translationService
             .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.taydentavatOpinnot")
         )
-      else None,
-      if (node.kelpoisuuskoe)
+      ),
+      Option.when(node.kelpoisuuskoe)(
         Some(
           translationService
             .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe")
         )
-      else None,
-      if (node.sopeutumisaika)
+      ),
+      Option.when(node.sopeutumisaika)(
         Some(
           translationService
             .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika")
         )
-      else None
+      )
     ).flatten
 
     if (result.nonEmpty) {
@@ -505,17 +500,17 @@ def bindExtractKorvaavaToimenpide(
 ): (KorvaavaToimenpide) => Option[String] = {
   def next(node: KorvaavaToimenpide): Option[String] = {
     val kelpoisuuskoe =
-      if node.kelpoisuuskoe then haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeSisalto) else None
+      Option.when(node.kelpoisuuskoe)(haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeSisalto))
     val sopeutumisaika =
-      if node.sopeutumisaika then haeSopeutumisaika(translationService, node.sopeutumiusaikaKestoKk) else None
+      Option.when(node.sopeutumisaika)(haeSopeutumisaika(translationService, node.sopeutumiusaikaKestoKk))
     val yhdistettyKelpoisuuskoe =
-      if node.kelpoisuuskoeJaSopeutumisaika then
+      Option.when(node.kelpoisuuskoeJaSopeutumisaika)(
         haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeJaSopeutumisaikaSisalto)
-      else None
+      )
     val yhdistettySopeutumisaika =
-      if node.kelpoisuuskoeJaSopeutumisaika then
+      Option.when(node.kelpoisuuskoeJaSopeutumisaika)(
         haeSopeutumisaika(translationService, node.kelpoisuuskoeJaSopeutumisaikaKestoKk)
-      else None
+      )
 
     val resultList = Seq(
       kelpoisuuskoe,
@@ -632,22 +627,22 @@ def bindExtractKielteisenPaatoksenPerustelut(
 ): (KielteisenPaatoksenPerustelut) => Option[String] = {
   def next(node: KielteisenPaatoksenPerustelut): Option[String] = {
     val epavirallinenKorkeakoulu =
-      if node.epavirallinenKorkeakoulu then
+      Option.when(node.epavirallinenKorkeakoulu)(
         Some(
           translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu")
         )
-      else None
+      )
     val epavirallinenTutkinto =
-      if node.epavirallinenTutkinto then
+      Option.when(node.epavirallinenTutkinto)(
         Some(translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto"))
-      else None
+      )
     val eiVastaaSuomessaSuoritettavaaTutkintoa =
-      if node.eiVastaaSuomessaSuoritettavaaTutkintoa then
+      Option.when(node.eiVastaaSuomessaSuoritettavaaTutkintoa)(
         Some(
           translationService
             .getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista")
         )
-      else None
+      )
     val muuPerustelu = if (node.muuPerustelu) {
       node.muuPerusteluKuvaus
         .map(kuvaus =>
@@ -804,21 +799,21 @@ def haeKelpoisuuskoeSisalto(
 ): Option[String] = {
   sisaltoMaybe.flatMap(sisalto => {
     val result = Seq(
-      if (sisalto.aihealue1)
+      Option.when(sisalto.aihealue1)(
         Some(
           translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue1")
         )
-      else None,
-      if (sisalto.aihealue2)
+      ),
+      Option.when(sisalto.aihealue2)(
         Some(
           translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue2")
         )
-      else None,
-      if (sisalto.aihealue3)
+      ),
+      Option.when(sisalto.aihealue3)(
         Some(
           translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue3")
         )
-      else None
+      )
     ).flatten
 
     if (result.nonEmpty) {
