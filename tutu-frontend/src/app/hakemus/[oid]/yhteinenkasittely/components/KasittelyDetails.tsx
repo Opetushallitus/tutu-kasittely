@@ -49,12 +49,70 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   const theme = useTheme();
   const { t } = useTranslations();
 
+  return (
+    <AccordionDetails data-testid={`kasittely-details-${kasittely.id}`}>
+      <KysymysJaVastaus
+        kasittely={kasittely}
+        answers={answers}
+        handleChange={handleChange}
+        handleSend={handleSend}
+        user={user}
+      />
+      {kasittely.jatkoKasittelyt?.map((jatkoKasittely) => (
+        <KysymysJaVastaus
+          key={jatkoKasittely.id}
+          kasittely={jatkoKasittely}
+          answers={answers}
+          handleChange={handleChange}
+          handleSend={handleSend}
+          user={user}
+        />
+      ))}
+      <Box
+        sx={{
+          marginBottom: theme.spacing(2),
+          paddingTop: theme.spacing(4),
+          paddingLeft: theme.spacing(0.5),
+        }}
+      >
+        <Button variant="outlined" onClick={() => handleOpenModal(kasittely)}>
+          {t('hakemus.yhteinenkasittely.kysyToiseltaTyoparilta')}
+        </Button>
+      </Box>
+    </AccordionDetails>
+  );
+};
+
+interface KysymysJaVastausProps {
+  kasittely: YhteinenKasittely;
+  answers: Record<string, string>;
+  handleChange: (id: string, value: string) => void;
+  handleSend: (id: string, laheta?: boolean) => void;
+  user: User | null;
+}
+
+const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
+  kasittely,
+  answers,
+  handleChange,
+  handleSend,
+  user,
+}) => {
+  const theme = useTheme();
+  const { t } = useTranslations();
+
   const vastausToShow: string | undefined =
     answers[kasittely.id!] ?? kasittely.vastaus;
 
   return (
-    <AccordionDetails data-testid={`kasittely-details-${kasittely.id}`}>
-      <Box sx={{ paddingLeft: theme.spacing(0.5) }}>
+    <React.Fragment key={kasittely.id}>
+      <Box
+        sx={{
+          borderBottom: DEFAULT_BOX_BORDER,
+          paddingBottom: theme.spacing(4),
+          paddingLeft: theme.spacing(0.5),
+        }}
+      >
         <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
           {t('hakemus.yhteinenkasittely.kysymysTyoparille')}
         </OphTypography>
@@ -68,9 +126,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
         <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
           {t('hakemus.yhteinenkasittely.tyopari')}
         </OphTypography>
-        <OphTypography variant="body1" sx={{ marginBottom: theme.spacing(4) }}>
-          {kasittely.vastaanottaja}
-        </OphTypography>
+        <OphTypography variant="body1">{kasittely.vastaanottaja}</OphTypography>
         {vastaamatonKysymysMinulle(user, kasittely) ? (
           <OphInputFormField
             label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
@@ -79,13 +135,15 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
             minRows={4}
             value={vastausToShow ?? ''}
             onChange={(e) => handleChange(kasittely.id!, e.target.value)}
-            sx={{ width: '90%' }}
+            sx={{ width: '90%', marginTop: theme.spacing(4) }}
             data-testid={`kysymys-details-${kasittely.id}__vastaus-field`}
           />
         ) : (
           kasittely.vastattu && (
             <>
-              <Typography>{kasittely.vastaus ?? ''}</Typography>
+              <Typography sx={{ marginTop: theme.spacing(4) }}>
+                {kasittely.vastaus ?? ''}
+              </Typography>
               <Stack direction="row" sx={{ mt: 2 }}>
                 <InfoOutlinedIcon sx={{ mr: 1 }} />
                 <Typography sx={{ mr: 1 }}>
@@ -104,8 +162,8 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
           )
         )}
 
-        <Box sx={{ marginTop: theme.spacing(4) }}>
-          {vastaamatonKysymysMinulle(user, kasittely) ? (
+        {vastaamatonKysymysMinulle(user, kasittely) ? (
+          <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"
               disabled={!vastausToShow}
@@ -114,109 +172,9 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
             >
               {t('hakemus.yhteinenkasittely.lahetaVastaus')}
             </Button>
-          ) : null}
-        </Box>
-      </Box>
-
-      {kasittely.jatkoKasittelyt?.map((jatkoKasittely) => {
-        const jatkokasittelyVastausToShow: string | undefined =
-          answers[jatkoKasittely.id!] ?? jatkoKasittely.vastaus;
-
-        return (
-          <Box
-            key={jatkoKasittely.id}
-            sx={{
-              borderTop: DEFAULT_BOX_BORDER,
-              marginTop: theme.spacing(4),
-              paddingTop: theme.spacing(4),
-              paddingLeft: theme.spacing(0.5),
-            }}
-          >
-            <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-              {t('hakemus.yhteinenkasittely.kysymysTyoparille')}
-            </OphTypography>
-            <OphTypography
-              variant="body1"
-              sx={{ marginBottom: theme.spacing(4) }}
-              data-testid={`kysymys-details-${jatkoKasittely.id}`}
-            >
-              {jatkoKasittely.kysymys}
-            </OphTypography>
-            <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-              {t('hakemus.yhteinenkasittely.tyopari')}
-            </OphTypography>
-            <OphTypography
-              variant="body1"
-              sx={{ marginBottom: theme.spacing(4) }}
-            >
-              {jatkoKasittely.vastaanottaja}
-            </OphTypography>
-            {vastaamatonKysymysMinulle(user, jatkoKasittely) ? (
-              <OphInputFormField
-                label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
-                fullWidth
-                multiline
-                minRows={4}
-                value={jatkokasittelyVastausToShow ?? ''}
-                onChange={(e) =>
-                  handleChange(jatkoKasittely.id!, e.target.value)
-                }
-                sx={{ width: '90%' }}
-                data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-field`}
-              />
-            ) : (
-              jatkoKasittely.vastattu && (
-                <>
-                  <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
-                  <Stack direction="row" sx={{ mt: 2 }}>
-                    <InfoOutlinedIcon sx={{ mr: 1 }} />
-                    <Typography sx={{ mr: 1 }}>
-                      {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
-                    </Typography>
-                    <Typography
-                      sx={{ mr: 1 }}
-                    >{`${jatkoKasittely.vastaanottaja},`}</Typography>
-                    <Typography sx={{ mr: 1 }}>
-                      {jatkoKasittely.vastattu
-                        ? formatHelsinki(
-                            jatkoKasittely.vastattu,
-                            'd.M.yyyy HH:mm',
-                          )
-                        : ''}
-                    </Typography>
-                  </Stack>
-                </>
-              )
-            )}
-
-            <Box sx={{ marginTop: theme.spacing(4) }}>
-              {vastaamatonKysymysMinulle(user, jatkoKasittely) ? (
-                <Button
-                  variant="contained"
-                  disabled={!jatkokasittelyVastausToShow}
-                  onClick={() => handleSend(jatkoKasittely.id!, true)}
-                  data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-send`}
-                >
-                  {t('hakemus.yhteinenkasittely.lahetaVastaus')}
-                </Button>
-              ) : null}
-            </Box>
           </Box>
-        );
-      })}
-      <Box
-        sx={{
-          borderTop: DEFAULT_BOX_BORDER,
-          marginTop: theme.spacing(4),
-          marginBottom: theme.spacing(2),
-          paddingTop: theme.spacing(4),
-          paddingLeft: theme.spacing(0.5),
-        }}
-      >
-        <Button variant="outlined" onClick={() => handleOpenModal(kasittely)}>
-          {t('hakemus.yhteinenkasittely.kysyToiseltaTyoparilta')}
-        </Button>
+        ) : null}
       </Box>
-    </AccordionDetails>
+    </React.Fragment>
   );
 };
