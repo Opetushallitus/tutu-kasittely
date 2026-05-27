@@ -21,7 +21,6 @@ const InactiveButton = styled(OphButton)({
   textDecoration: 'none',
   borderColor: 'transparent',
   backgroundColor: 'transparent',
-  transition: 'border-color 150ms, background-color 150ms',
   '&:hover': {
     borderColor: ophColors.blue2,
   },
@@ -32,17 +31,12 @@ const ActiveButton = styled(OphButton)({
   fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
   color: ophColors.white,
-  // ensure oph-design-system CSS variables used by OphButton keep text white
-  '--variant-containedColor': ophColors.white,
   textDecoration: 'none',
   borderColor: ophColors.blue2,
   backgroundColor: ophColors.blue2,
-  transition: 'background-color 150ms',
   '&:hover': {
     backgroundColor: ophColors.blue3,
-    // reinforce text color on hover (OphButton may override via CSS vars)
     color: ophColors.white,
-    '--variant-containedColor': ophColors.white,
   },
 });
 

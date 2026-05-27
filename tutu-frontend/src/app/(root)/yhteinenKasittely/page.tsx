@@ -2,7 +2,6 @@
 
 import { Box } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import Link from 'next/link';
 
 import SivuValinta, {
   SelectedPage,
@@ -48,9 +47,13 @@ export default function YkPage() {
                 active={SelectedPage.YhteinenKasittely}
                 showNotification={hasMessages}
               />
-              <Link href="/maajako" style={{ textDecoration: 'none' }}>
-                <OphButton variant="text">{t('maajako.otsikko')}</OphButton>
-              </Link>
+              <OphButton
+                href="/maajako"
+                variant="text"
+                sx={{ fontWeight: 400 }}
+              >
+                {t('maajako.otsikko')}
+              </OphButton>
             </Box>
           </BoxWrapper>
           <YkMainPage />
