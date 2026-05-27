@@ -4,7 +4,7 @@ import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { usePathname } from 'next/navigation';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
+import { styled } from '@/src/lib/theme';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -116,7 +116,6 @@ export default function SivuValinta({
       direction="row"
       sx={{
         justifyContent: 'flex-start',
-        borderBottom: DEFAULT_BOX_BORDER,
         height: TAB_BUTTON_HEIGHT,
         p: 0,
         m: 0,
