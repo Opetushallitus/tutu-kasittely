@@ -83,23 +83,25 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
             data-testid={`kysymys-details-${kasittely.id}__vastaus-field`}
           />
         ) : (
-          <>
-            <Typography>{kasittely.vastaus ?? ''}</Typography>
-            <Stack direction="row" sx={{ mt: 2 }}>
-              <InfoOutlinedIcon sx={{ mr: 1 }} />
-              <Typography sx={{ mr: 1 }}>
-                {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
-              </Typography>
-              <Typography
-                sx={{ mr: 1 }}
-              >{`${kasittely.vastaanottaja},`}</Typography>
-              <Typography sx={{ mr: 1 }}>
-                {kasittely.vastattu
-                  ? formatHelsinki(kasittely.vastattu, 'd.M.yyyy HH:mm')
-                  : ''}
-              </Typography>
-            </Stack>
-          </>
+          kasittely.vastattu && (
+            <>
+              <Typography>{kasittely.vastaus ?? ''}</Typography>
+              <Stack direction="row" sx={{ mt: 2 }}>
+                <InfoOutlinedIcon sx={{ mr: 1 }} />
+                <Typography sx={{ mr: 1 }}>
+                  {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
+                </Typography>
+                <Typography
+                  sx={{ mr: 1 }}
+                >{`${kasittely.vastaanottaja},`}</Typography>
+                <Typography sx={{ mr: 1 }}>
+                  {kasittely.vastattu
+                    ? formatHelsinki(kasittely.vastattu, 'd.M.yyyy HH:mm')
+                    : ''}
+                </Typography>
+              </Stack>
+            </>
+          )
         )}
 
         <Box sx={{ marginTop: theme.spacing(4) }}>
@@ -163,26 +165,28 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
                 data-testid={`kysymys-details-${jatkoKasittely.id}__vastaus-field`}
               />
             ) : (
-              <>
-                <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
-                <Stack direction="row" sx={{ mt: 2 }}>
-                  <InfoOutlinedIcon sx={{ mr: 1 }} />
-                  <Typography sx={{ mr: 1 }}>
-                    {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
-                  </Typography>
-                  <Typography
-                    sx={{ mr: 1 }}
-                  >{`${jatkoKasittely.vastaanottaja},`}</Typography>
-                  <Typography sx={{ mr: 1 }}>
-                    {jatkoKasittely.vastattu
-                      ? formatHelsinki(
-                          jatkoKasittely.vastattu,
-                          'd.M.yyyy HH:mm',
-                        )
-                      : ''}
-                  </Typography>
-                </Stack>
-              </>
+              jatkoKasittely.vastattu && (
+                <>
+                  <Typography>{jatkoKasittely.vastaus ?? ''}</Typography>
+                  <Stack direction="row" sx={{ mt: 2 }}>
+                    <InfoOutlinedIcon sx={{ mr: 1 }} />
+                    <Typography sx={{ mr: 1 }}>
+                      {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
+                    </Typography>
+                    <Typography
+                      sx={{ mr: 1 }}
+                    >{`${jatkoKasittely.vastaanottaja},`}</Typography>
+                    <Typography sx={{ mr: 1 }}>
+                      {jatkoKasittely.vastattu
+                        ? formatHelsinki(
+                            jatkoKasittely.vastattu,
+                            'd.M.yyyy HH:mm',
+                          )
+                        : ''}
+                    </Typography>
+                  </Stack>
+                </>
+              )
             )}
 
             <Box sx={{ marginTop: theme.spacing(4) }}>
