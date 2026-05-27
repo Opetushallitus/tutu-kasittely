@@ -1,7 +1,7 @@
-import { OphSelectFormField } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { direktiivitasoOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Direktiivitaso } from '@/src/lib/types/paatos';
 
@@ -16,7 +16,7 @@ export type DirektiivitasoProps = {
 export const DirektiivitasoComponent = (props: DirektiivitasoProps) => {
   const { t, label, direktiivitaso, updateDirektiivitaso, dataTestId } = props;
   return (
-    <OphSelectFormField
+    <OphSelectFormFieldPatched
       placeholder={t('yleiset.valitse')}
       label={label}
       sx={{ width: '100%' }}

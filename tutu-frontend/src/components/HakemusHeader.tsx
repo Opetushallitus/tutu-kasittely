@@ -1,10 +1,7 @@
 'use client';
 
 import { Divider, SelectChangeEvent, Stack, useTheme } from '@mui/material';
-import {
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -14,6 +11,7 @@ import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKa
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 import { PeruutettuBadge } from './Badges';
+import { OphSelectFormFieldPatched } from './OphSelectFormFieldPatched';
 
 export const HakemusHeader = () => {
   const {
@@ -76,7 +74,7 @@ export const HakemusHeader = () => {
             }}
           >
             {t('hakemusotsikko.esittelija')}{' '}
-            <OphSelectFormField
+            <OphSelectFormFieldPatched
               placeholder={t('yleiset.valitse')}
               options={esittelijaOptions}
               value={

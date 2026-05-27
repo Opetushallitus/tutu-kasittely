@@ -3,11 +3,11 @@ import {
   OphTypography,
   OphInputFormField,
   OphButton,
-  OphSelectFormField,
   ophColors,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Esittelija } from '@/src/lib/types/esittelija';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
@@ -70,7 +70,7 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
           >
             {t('hakemus.yhteinenkasittely.uusiKasittely.body')}
           </OphTypography>
-          <OphSelectFormField
+          <OphSelectFormFieldPatched
             label={t('hakemus.yhteinenkasittely.uusiKasittely.tyopari')}
             placeholder={t('yleiset.valitse')}
             onChange={(e) => setTyopari(e.target.value)}
@@ -159,7 +159,7 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
           >
             {t('hakemus.yhteinenkasittely.jatkoKasittely.body')}
           </OphTypography>
-          <OphSelectFormField
+          <OphSelectFormFieldPatched
             label={t('hakemus.yhteinenkasittely.uusiKasittely.tyopari')}
             placeholder={t('yleiset.valitse')}
             onChange={(e) => setTyopari(e.target.value)}

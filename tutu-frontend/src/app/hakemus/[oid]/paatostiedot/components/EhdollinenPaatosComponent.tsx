@@ -1,17 +1,14 @@
 import { Add } from '@mui/icons-material';
 import { Divider } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import {
-  OphButton,
-  OphCheckbox,
-  OphSelectFormField,
-} from '@opetushallitus/oph-design-system';
+import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
 import { PaatosTietoList } from '@/src/app/hakemus/[oid]/paatostiedot/components/PaatosTietoList';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import { emptyPaatosTieto } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -103,7 +100,7 @@ export const EhdollinenPaatosComponent = ({
         }}
         data-testid={'paatos-seut'}
       />
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
         data-testid={'paatos-ratkaisutyyppi'}

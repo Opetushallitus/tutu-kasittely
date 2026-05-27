@@ -1,5 +1,4 @@
 import { Theme } from '@mui/material/styles';
-import { OphSelectFormField } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { KorvaavatToimenpiteet } from '@/src/app/hakemus/[oid]/paatostiedot/components/KorvaavatToimenpiteet';
@@ -9,6 +8,7 @@ import {
   emptyPaatosTieto,
   korvaavaToimenpide2Paatostiedot,
 } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   KorvaavaToimenpideDto,
@@ -56,7 +56,7 @@ export const LopullinenPaatosComponent = ({
           updatePaatosField(toBePaatos);
         }}
       />
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
         data-testid={'paatos-ratkaisutyyppi'}

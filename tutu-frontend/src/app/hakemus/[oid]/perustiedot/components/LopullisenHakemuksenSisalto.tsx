@@ -1,12 +1,10 @@
 import { Divider, Stack } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import {
-  OphInputFormField,
-  OphSelectFormField,
-} from '@opetushallitus/oph-design-system';
+import { OphInputFormField } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Sisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/Sisalto';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { lopullinenPaatosSuoritukset } from '@/src/constants/hakemuspalveluSisalto';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import {
@@ -73,7 +71,7 @@ export const LopullisenHakemuksenSisalto = ({
           'data-testid': `vastaavaEhdollinenPaatos-input`,
         }}
       />
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.perustiedot.lopullinenPaatos.suoritusmaa')}
         sx={{ width: '50%' }}

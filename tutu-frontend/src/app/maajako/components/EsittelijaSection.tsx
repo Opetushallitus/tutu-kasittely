@@ -1,10 +1,8 @@
 import { Box, Chip } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import {
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { Esittelija } from '@/src/lib/types/esittelija';
 
 import { TFunction } from '../../../lib/localization/hooks/useTranslations';
@@ -107,7 +105,7 @@ export const EditEsittelijaSection = ({
       <OphTypography variant={'h4'}>
         {esittelija.etunimi} {esittelija.sukunimi}
       </OphTypography>
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder="yleiset.valitse"
         label={t('maajako.tutkinnonsuoritusmaat')}
         multiple
@@ -135,7 +133,7 @@ export const EditEsittelijaSection = ({
                 ))}
           </Box>
         )}
-      ></OphSelectFormField>
+      />
     </>
   );
 };
