@@ -429,22 +429,13 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
   def next(node: MyonteisenPaatoksenLisavaatimukset): Option[String] = {
     val result = Seq(
       Option.when(node.taydentavatOpinnot)(
-        Some(
-          translationService
-            .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.taydentavatOpinnot")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.taydentavatOpinnot")
       ),
       Option.when(node.kelpoisuuskoe)(
-        Some(
-          translationService
-            .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe")
       ),
       Option.when(node.sopeutumisaika)(
-        Some(
-          translationService
-            .getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika")
       )
     ).flatten
 
@@ -499,18 +490,18 @@ def bindExtractKorvaavaToimenpide(
   tutkinnot: Seq[Tutkinto]
 ): (KorvaavaToimenpide) => Option[String] = {
   def next(node: KorvaavaToimenpide): Option[String] = {
-    val kelpoisuuskoe =
-      Option.when(node.kelpoisuuskoe)(haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeSisalto))
-    val sopeutumisaika =
-      Option.when(node.sopeutumisaika)(haeSopeutumisaika(translationService, node.sopeutumiusaikaKestoKk))
-    val yhdistettyKelpoisuuskoe =
-      Option.when(node.kelpoisuuskoeJaSopeutumisaika)(
-        haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeJaSopeutumisaikaSisalto)
-      )
-    val yhdistettySopeutumisaika =
-      Option.when(node.kelpoisuuskoeJaSopeutumisaika)(
-        haeSopeutumisaika(translationService, node.kelpoisuuskoeJaSopeutumisaikaKestoKk)
-      )
+    val kelpoisuuskoe = if (node.kelpoisuuskoe) {
+      haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeSisalto)
+    } else None
+    val sopeutumisaika = if (node.sopeutumisaika) {
+      haeSopeutumisaika(translationService, node.sopeutumiusaikaKestoKk)
+    } else None
+    val yhdistettyKelpoisuuskoe = if (node.kelpoisuuskoeJaSopeutumisaika) {
+      haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeJaSopeutumisaikaSisalto)
+    } else None
+    val yhdistettySopeutumisaika = if (node.kelpoisuuskoeJaSopeutumisaika) {
+      haeSopeutumisaika(translationService, node.kelpoisuuskoeJaSopeutumisaikaKestoKk)
+    } else None
 
     val resultList = Seq(
       kelpoisuuskoe,
@@ -628,19 +619,17 @@ def bindExtractKielteisenPaatoksenPerustelut(
   def next(node: KielteisenPaatoksenPerustelut): Option[String] = {
     val epavirallinenKorkeakoulu =
       Option.when(node.epavirallinenKorkeakoulu)(
-        Some(
-          translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu")
       )
     val epavirallinenTutkinto =
       Option.when(node.epavirallinenTutkinto)(
-        Some(translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto"))
+        translationService.getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto")
       )
     val eiVastaaSuomessaSuoritettavaaTutkintoa =
       Option.when(node.eiVastaaSuomessaSuoritettavaaTutkintoa)(
-        Some(
-          translationService
-            .getTranslation(FI, "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista")
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista"
         )
       )
     val muuPerustelu = if (node.muuPerustelu) {
@@ -800,19 +789,13 @@ def haeKelpoisuuskoeSisalto(
   sisaltoMaybe.flatMap(sisalto => {
     val result = Seq(
       Option.when(sisalto.aihealue1)(
-        Some(
-          translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue1")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue1")
       ),
       Option.when(sisalto.aihealue2)(
-        Some(
-          translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue2")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue2")
       ),
       Option.when(sisalto.aihealue3)(
-        Some(
-          translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue3")
-        )
+        translationService.getTranslation(FI, "perustelumuistio.kelpoisuuskoe.sisalto.aihealue3")
       )
     ).flatten
 
