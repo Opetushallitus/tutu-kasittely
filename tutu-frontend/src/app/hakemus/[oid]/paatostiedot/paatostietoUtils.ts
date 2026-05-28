@@ -3,6 +3,7 @@ import {
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
   erotKoulutuksessaOptions,
+  MUU_AMMATTI_KEY,
   oletusKoulutusErot,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
@@ -21,7 +22,6 @@ import {
   Paatos,
   PaatosTieto,
 } from '@/src/lib/types/paatos';
-import { removeInvisibleCharacters } from '@/src/lib/utils';
 
 export const getPaatosTietoDropdownOptions = (
   lang: Language,
@@ -75,11 +75,7 @@ export const findOptionByValue = (
 };
 
 export const getKelpoisuusMuuAmmattiDropdownValue = (t: TFunction): string =>
-  removeInvisibleCharacters(
-    t(
-      'hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti',
-    ),
-  );
+  t('hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti');
 
 export const getKelpoisuusMuuAmmattiDropdownOption = (
   t: TFunction,
@@ -88,7 +84,7 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
 
   const muuAmmattiOption: TreeOption = {
     label: muuAmmattiTranslated,
-    value: muuAmmattiTranslated,
+    value: MUU_AMMATTI_KEY,
   };
 
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };
