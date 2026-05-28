@@ -53,7 +53,10 @@ export const TableHeaderCell = memo(function TableHeaderCell({
   const { orderBy, direction } = getSortParts(sort, colId);
 
   return (
-    <StyledHeaderCell sx={style} sortDirection={direction}>
+    <StyledHeaderCell
+      sx={{ padding: '8px 10px', ...style }}
+      sortDirection={direction}
+    >
       {setSort && sortable ? (
         <Button
           sx={{

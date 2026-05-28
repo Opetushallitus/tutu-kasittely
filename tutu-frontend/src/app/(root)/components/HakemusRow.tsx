@@ -3,10 +3,10 @@ import { Stack, TableRow } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
+  OphLink,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
@@ -103,9 +103,9 @@ export default function HakemusRow({
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
-        <Link href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
+        <OphLink href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
           {hakemus.hakija.etunimet} {hakemus.hakija.sukunimi}
-        </Link>
+        </OphLink>
       </StyledTableCell>
       <StyledTableCell>
         <Stack
@@ -143,7 +143,7 @@ export default function HakemusRow({
             <>
               <OphTypography>{asiatunnus}</OphTypography>
               <EditOutlined
-                sx={{ color: 'primary.main' }}
+                sx={{ color: 'primary.main', cursor: 'pointer' }}
                 onClick={() => setShowEditAsiatunnus(true)}
               ></EditOutlined>
             </>

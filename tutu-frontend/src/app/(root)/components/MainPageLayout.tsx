@@ -44,7 +44,7 @@ export default function MainPageLayout({
     >
       {hasTutuUserRights ? (
         <>
-          <BoxWrapper sx={{ borderBottom: 'none' }}>
+          <BoxWrapper sx={{ borderBottom: 'none', p: 0 }}>
             <Box
               sx={{
                 display: 'flex',
@@ -57,10 +57,18 @@ export default function MainPageLayout({
                 showNotification={hasNewMessages}
               />
               <Stack direction={'row'}>
-                <OphButton href="/tekstipohjat/viestipohjat" variant="text">
+                <OphButton
+                  href="/tekstipohjat/viestipohjat"
+                  variant="text"
+                  sx={{ fontWeight: 400 }}
+                >
                   {t('tekstipohjat.muokkausOtsikko')}
                 </OphButton>
-                <OphButton href="/maajako" variant="text">
+                <OphButton
+                  href="/maajako"
+                  variant="text"
+                  sx={{ fontWeight: 400 }}
+                >
                   {t('maajako.otsikko')}
                 </OphButton>
               </Stack>

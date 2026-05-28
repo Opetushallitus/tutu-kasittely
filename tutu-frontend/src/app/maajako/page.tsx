@@ -2,11 +2,7 @@
 
 import { Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import {
-  OphButton,
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -17,6 +13,7 @@ import { SelectedMaakoodiInfo } from '@/src/app/maajako/components/SelectedMaako
 import { AlertBox } from '@/src/components/AlertBox';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
@@ -161,7 +158,7 @@ export default function MaajakoPage() {
           <OphTypography variant={'h3'}>
             {t('maajako.kenellevalittu')}
           </OphTypography>
-          <OphSelectFormField
+          <OphSelectFormFieldPatched
             placeholder={t('yleiset.valitse')}
             label={t('maajako.suoritusmaa')}
             sx={{ width: '50%', marginBottom: theme.spacing(1) }}
@@ -171,7 +168,7 @@ export default function MaajakoPage() {
               setSelectedMaakoodi(event.target.value)
             }
             data-testid={'suoritusmaa'}
-          ></OphSelectFormField>
+          />
 
           <SelectedMaakoodiInfo
             maakoodit={sortedMaakoodit}

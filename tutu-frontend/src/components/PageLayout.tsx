@@ -37,7 +37,7 @@ export const PageLayout = ({
         width: '100%',
         alignItems: 'stretch',
       }}
-      gap={theme.spacing(2)}
+      gap={theme.spacing(4)}
     >
       <HeaderWrapper>
         <PageContent>{header}</PageContent>

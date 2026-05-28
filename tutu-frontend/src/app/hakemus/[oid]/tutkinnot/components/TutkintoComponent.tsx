@@ -5,12 +5,12 @@ import { Divider, Stack, Box } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
-  OphSelectFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OphSelectOption } from '@/src/lib/types/common';
@@ -129,7 +129,7 @@ export const TutkintoComponent = ({
           </OphButton>
         )}
       </Stack>
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko')}
         options={resolveTutkintoTodistusOtsikkoOptions()}
@@ -226,7 +226,7 @@ export const TutkintoComponent = ({
         </Box>
       </Stack>
       <Stack direction="column" gap={0.5}>
-        <OphSelectFormField
+        <OphSelectFormFieldPatched
           placeholder={t('yleiset.valitse')}
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
           sx={{ width: '50%' }}
@@ -306,7 +306,7 @@ export const TutkintoComponent = ({
         }}
       />
       {tutkinto.jarjestys === '1' && (
-        <OphSelectFormField
+        <OphSelectFormFieldPatched
           placeholder={t('yleiset.valitse')}
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonKoulutusala')}
           sx={{ width: '25%' }}

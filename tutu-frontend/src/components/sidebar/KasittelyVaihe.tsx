@@ -1,11 +1,7 @@
 'use client';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Stack, styled, useTheme } from '@mui/material';
-import {
-  ophColors,
-  OphSelectFormField,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import * as R from 'remeda';
 
@@ -15,6 +11,8 @@ import { StyledLink } from '@/src/components/StyledLink';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+
+import { OphSelectFormFieldPatched } from '../OphSelectFormFieldPatched';
 
 const OpenInNewIconBlue = styled(OpenInNewIcon)({
   color: ophColors.blue2,
@@ -42,14 +40,14 @@ export const KasittelyVaihe = ({ showExtended }: { showExtended: boolean }) => {
           {t('hakemus.sivupalkki.kasittelyvaihe')}
         </OphTypography>
         {showExtended ? (
-          <OphSelectFormField
+          <OphSelectFormFieldPatched
             placeholder={t('yleiset.valitse')}
             options={R.map(kasittelyVaiheet, (vaihe) => ({
               label: t(`hakemus.kasittelyvaihe.${vaihe.toLowerCase()}`),
               value: vaihe,
             }))}
             defaultValue={kasittelyVaiheet[0]}
-          ></OphSelectFormField>
+          />
         ) : (
           <OphTypography
             variant={'body1'}

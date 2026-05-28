@@ -1,10 +1,7 @@
 'use client';
 
 import { Stack } from '@mui/material';
-import {
-  OphCheckbox,
-  OphSelectFormField,
-} from '@opetushallitus/oph-design-system';
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 
 import { KelpoisuusList } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/KelpoisuusList';
@@ -16,6 +13,7 @@ import {
   tutkinnonTasoOptions,
   tutkintoOptions,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   PaatosTieto,
@@ -97,7 +95,7 @@ export const PaatosTietoComponent = ({
 
   return (
     <Stack direction={'column'} gap={2}>
-      <OphSelectFormField
+      <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.paatostyyppi.otsikko')}
         options={paatostyyppiOptions(t)}
@@ -117,7 +115,7 @@ export const PaatosTietoComponent = ({
         (currentPaatosTieto.paatosTyyppi === 'Kelpoisuus' ||
           currentPaatosTieto.paatosTyyppi === 'Taso') && (
           <>
-            <OphSelectFormField
+            <OphSelectFormFieldPatched
               placeholder={t('yleiset.valitse')}
               label={t('hakemus.paatos.tutkinto.nimi')}
               options={tutkintoOptions(t, tutkinnot)}
@@ -166,7 +164,7 @@ export const PaatosTietoComponent = ({
                   t={t}
                 />
                 {currentPaatosTieto.myonteinenPaatos && (
-                  <OphSelectFormField
+                  <OphSelectFormFieldPatched
                     placeholder={t('yleiset.valitse')}
                     label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
                     options={tutkinnonTasoOptions(t)}

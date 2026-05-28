@@ -10,8 +10,8 @@ import {
 
 const opetettavaAineItems: TranslationNode[] = [
   {
-    tKey: 'haku.opetettavatAineet.opetusalanAmmatit',
-    value: 'Opetusalan ammatit',
+    tKey: 'haku.opetettavatAineet.opetettavatAineet',
+    value: 'Opetettavat aineet',
     children: [
       {
         tKey: 'haku.opetettavatAineet.aidinkieliJaKirjallisuus',
@@ -150,19 +150,46 @@ const opetettavaAineItems: TranslationNode[] = [
       },
     ],
   },
+  // Yhdistetty tiettyTutkintoTaiOpinnotOptions
   {
-    tKey: 'haku.opetettavatAineet.varhaiskasvatuksenTehtavat',
-    value: 'Varhaiskasvatuksen tehtävät',
-    children: [
-      {
-        tKey: 'haku.opetettavatAineet.paivakodinJohtaja',
-        value: 'Päiväkodin johtaja',
-      },
-      {
-        tKey: 'haku.opetettavatAineet.steinerpedagoginenHenkilosto',
-        value: 'Steinerpedagogisen henkilöstön tehtävät',
-      },
-    ],
+    tKey: 'haku.opetettavatAineet.paivakodinJohtaja',
+    value: 'Päiväkodin johtaja',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.steinerpedagoginenHenkilosto',
+    value: 'Steinerpedagogisen henkilöstön tehtävät',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.rinnastaminenOikeustieteenMaisterinTutkintoon',
+    value: 'Rinnastaminen oikeustieteen maisterin tutkintoon',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.opettajanPedagogisetOpinnot',
+    value: 'Opettajan pedagogiset opinnot',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.erityisopetuksenTehtaviinAmmatillisiaValmiuksiaAntavatOpinnot',
+    value: 'Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.oppilaanohjauksenJaOpintoOhjauksenTehtaviinAmmatillisiaValmiuksiaAntavatOpinnot',
+    value:
+      'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.kasvatustieteellisenAlanKorkeakoulututkinto',
+    value:
+      'Kasvatustieteellisen alan korkeakoulututkinto (kasvatustieteen kandidaatti, kasvatustieteen maisteri, kasvatustieteen lisensiaatti tai kasvatustieteen tohtori)',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.sosiaaliJaTerveysalanAmmattikorkeakoulututkinto',
+    value:
+      'Sosiaali- ja terveysalan ammattikorkeakoulututkinto tai ylempi ammattikorkeakoulututkinto (sosionomi (AMK) tai sosionomi (ylempi AMK))',
+  },
+  {
+    tKey: 'haku.opetettavatAineet.muuOpetustehtavaTaiVarhaiskasvatuksenOpintosuoritus',
+    value:
+      'Muu opetustehtävään tai varhaiskasvatuksen tehtävään vaadittava korkeakoulun opintosuoritus',
   },
 ];
 

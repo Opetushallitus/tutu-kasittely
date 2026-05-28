@@ -11,9 +11,8 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { ophColors, OphLink } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import Link from 'next/link';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
@@ -116,14 +115,14 @@ const HakemusRow = ({ hakemus }: { hakemus: any }) => {
   return (
     <TableRow data-testid={'filemaker-hakemus-row'}>
       <StyledTableCell>
-        <Link href={`/filemaker-hakemus/${hakemus.id}`}>
+        <OphLink href={`/filemaker-hakemus/${hakemus.id}`}>
           {kokonimi ? kokonimi : '-'}
-        </Link>
+        </OphLink>
       </StyledTableCell>
       <StyledTableCell>
-        <Link href={`/filemaker-hakemus/${hakemus.id}`}>
+        <OphLink href={`/filemaker-hakemus/${hakemus.id}`}>
           {asiatunnus ? asiatunnus : '-'}
-        </Link>
+        </OphLink>
       </StyledTableCell>
     </TableRow>
   );

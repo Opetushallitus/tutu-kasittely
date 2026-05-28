@@ -10,7 +10,7 @@ export type NamedBoolean = {
   value: boolean;
 };
 
-export type OphSelectOption = {
-  label: string;
-  value: string;
+export type OphSelectOption<T = string> = {
+  label: T;
+  value: T;
 };
