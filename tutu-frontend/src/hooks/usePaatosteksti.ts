@@ -12,14 +12,16 @@ const getPaatosteksti = async (hakemusOid: string): Promise<Paatosteksti> => {
   return await doApiFetch(url);
 };
 
-const putPaatosteksti = (
-  hakemusOid: string,
-  paatosteksti: Paatosteksti,
-  vahvista?: boolean,
-) => {
-  const url = `paatos/${hakemusOid}/paatosteksti/${paatosteksti.id}${vahvista ? `/vahvista` : ''}`;
+type MutateParameters = {
+  paatosteksti: Paatosteksti;
+  vahvista?: boolean;
+  successCallback?: () => void;
+};
 
-  return doApiPut(url, paatosteksti);
+const putPaatosteksti = (hakemusOid: string, params: MutateParameters) => {
+  const url = `paatos/${hakemusOid}/paatosteksti/${params.paatosteksti.id}${params.vahvista ? `/vahvista` : ''}`;
+
+  return doApiPut(url, params.paatosteksti);
 };
 
 export const usePaatosteksti = (hakemusOid: string) => {
@@ -42,14 +44,9 @@ export const usePaatosteksti = (hakemusOid: string) => {
     isSuccess,
     error: updateError,
   } = useMutation({
-    mutationFn: ({
-      paatosteksti,
-      vahvista,
-    }: {
-      paatosteksti: Paatosteksti;
-      vahvista?: boolean;
-    }) => putPaatosteksti(hakemusOid!, paatosteksti, vahvista),
-    onSuccess: async (response, { vahvista }) => {
+    mutationFn: (parameters: MutateParameters) =>
+      putPaatosteksti(hakemusOid!, parameters),
+    onSuccess: async (response, { vahvista, successCallback }) => {
       const paivitettyPaatosteksti = await response.json();
       queryClient.setQueryData(queryKey, paivitettyPaatosteksti);
       if (vahvista) {
@@ -71,11 +68,16 @@ export const usePaatosteksti = (hakemusOid: string) => {
           : 'hakemus.editori.paatos.paatostekstiTallennus.success',
         t,
       );
+      successCallback?.();
     },
   });
 
-  const savePaatosteksti = (paatosteksti: Paatosteksti, vahvista?: boolean) => {
-    mutate({ paatosteksti, vahvista });
+  const savePaatosteksti = (
+    paatosteksti: Paatosteksti,
+    vahvista?: boolean,
+    successCallback?: () => void,
+  ) => {
+    mutate({ paatosteksti, vahvista, successCallback });
   };
 
   return {

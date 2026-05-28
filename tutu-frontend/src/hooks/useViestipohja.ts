@@ -44,19 +44,6 @@ export const useViestipohja = (viestipohjaId?: string) => {
     reset: viestipohjaUpdateReset,
   } = useMutation({
     mutationFn: (viestipohja: Viestipohja) => putViestipohja(viestipohja),
-    onSuccess: async (response) => {
-      const paivitettyViestipohja = await response.json();
-      queryClient.setQueryData(queryKey, paivitettyViestipohja);
-      await queryClient.invalidateQueries({
-        queryKey: viestipohjaListaQueryKey,
-      });
-      handleSuccessMessage(
-        true,
-        addToast,
-        'tekstipohjat.viestipohjat.viestipohjaTallennus.success',
-        t,
-      );
-    },
   });
 
   const {
@@ -74,9 +61,25 @@ export const useViestipohja = (viestipohjaId?: string) => {
     viestipohjaPoistoReset();
   };
 
-  const updateViestipohja = (viestipohja: Viestipohja) => {
+  const updateViestipohja = (
+    viestipohja: Viestipohja,
+    successCallback?: () => void,
+  ) => {
     resetMutationStatuses();
-    updateViestipohjaMutation(viestipohja);
+    updateViestipohjaMutation(viestipohja, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: viestipohjaListaQueryKey,
+        });
+        handleSuccessMessage(
+          true,
+          addToast,
+          'tekstipohjat.viestipohjat.viestipohjaTallennus.success',
+          t,
+        );
+        successCallback?.();
+      },
+    });
   };
 
   const poistaViestipohja = (successCallback?: () => void) => {

@@ -3,6 +3,7 @@ import {
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
   erotKoulutuksessaOptions,
+  MUU_AMMATTI_KEY,
   oletusKoulutusErot,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
@@ -83,7 +84,7 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
 
   const muuAmmattiOption: TreeOption = {
     label: muuAmmattiTranslated,
-    value: muuAmmattiTranslated,
+    value: MUU_AMMATTI_KEY,
   };
 
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };

@@ -440,3 +440,5 @@ export const emptyAmmattikokemusJaElinikainenOppiminen =
       acc[key] = false;
       return acc;
     }, {} as AmmattikokemusJaElinikainenOppiminen);
+
+export const MUU_AMMATTI_KEY = 'Muu ammatti';

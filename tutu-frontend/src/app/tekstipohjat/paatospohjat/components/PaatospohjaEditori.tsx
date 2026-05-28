@@ -98,14 +98,13 @@ const ValittuPaatospohja = ({
 
   const onSave = () => {
     if (currentPaatospohja) {
-      updatePaatospohja(currentPaatospohja);
+      updatePaatospohja(currentPaatospohja, () => setValittuPaatospohja(null));
     }
   };
 
   if (isPaatospohjaLoading || !currentPaatospohja) {
     return <FullSpinner />;
   }
-
   return (
     <TekstipohjaEditori
       id={paatospohja?.id}
@@ -117,8 +116,9 @@ const ValittuPaatospohja = ({
       updateLocal={paatospohjaState.updateLocal}
       hasChanges={paatospohjaState.hasChanges}
       updateOngoing={false}
-      poistaPohja={poistaPaatospohja}
+      poistaPohja={() => poistaPaatospohja(() => setValittuPaatospohja(null))}
       editorRefs={editorRefs}
+      translationKeyPrefix={'tekstipohjat.paatospohjat'}
     />
   );
 };

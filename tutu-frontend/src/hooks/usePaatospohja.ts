@@ -44,19 +44,6 @@ export const usePaatospohja = (paatospohjaId?: string) => {
     reset: paatospohjaUpdateReset,
   } = useMutation({
     mutationFn: (paatospohja: Paatospohja) => putPaatospohja(paatospohja),
-    onSuccess: async (response) => {
-      const paivitettyPaatospohja = await response.json();
-      queryClient.setQueryData(queryKey, paivitettyPaatospohja);
-      await queryClient.invalidateQueries({
-        queryKey: paatospohjaListaQueryKey,
-      });
-      handleSuccessMessage(
-        true,
-        addToast,
-        'tekstipohjat.paatospohjat.paatospohjaTallennus.success',
-        t,
-      );
-    },
   });
 
   const {
@@ -74,9 +61,25 @@ export const usePaatospohja = (paatospohjaId?: string) => {
     paatospohjaPoistoReset();
   };
 
-  const updatePaatospohja = (paatospohja: Paatospohja) => {
+  const updatePaatospohja = (
+    paatospohja: Paatospohja,
+    successCallback?: () => void,
+  ) => {
     resetMutationStatuses();
-    updatePaatospohjaMutation(paatospohja);
+    updatePaatospohjaMutation(paatospohja, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: paatospohjaListaQueryKey,
+        });
+        handleSuccessMessage(
+          true,
+          addToast,
+          'tekstipohjat.paatospohjat.paatospohjaTallennus.success',
+          t,
+        );
+        successCallback?.();
+      },
+    });
   };
 
   const poistaPaatospohja = (successCallback?: () => void) => {
@@ -92,7 +95,7 @@ export const usePaatospohja = (paatospohjaId?: string) => {
           'tekstipohjat.paatospohjat.paatospohjaPoisto.success',
           t,
         );
-        if (successCallback) successCallback();
+        successCallback?.();
       },
     });
   };

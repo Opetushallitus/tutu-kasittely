@@ -102,7 +102,7 @@ const ValittuViestipohja = ({
 
   const onSave = () => {
     if (currentViestipohja) {
-      updateViestipohja(currentViestipohja);
+      updateViestipohja(currentViestipohja, () => setValittuViestipohja(null));
     }
   };
 
@@ -123,6 +123,7 @@ const ValittuViestipohja = ({
       updateOngoing={updateOngoing}
       poistaPohja={() => poistaViestipohja(() => setValittuViestipohja(null))}
       editorRefs={editorRefs}
+      translationKeyPrefix={'tekstipohjat.viestipohjat'}
     />
   );
 };

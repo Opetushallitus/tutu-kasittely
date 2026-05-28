@@ -172,8 +172,10 @@ export function Editor({
         ]}
       />
       <OnChangePlugin
-        onChange={(_state, editor) => {
-          onChange(editor);
+        onChange={(_state, editor, tags) => {
+          if (!tags.has('silent')) {
+            onChange(editor);
+          }
         }}
       />
       <>

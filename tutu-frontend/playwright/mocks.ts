@@ -11,7 +11,11 @@ import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
 import { mockViestipohjatKategorioittain } from '@/playwright/fixtures/viestipohjat';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
-import { Paatosteksti } from '@/src/lib/types/paatosteksti';
+import {
+  Paatospohja,
+  PaatospohjaListItem,
+  Paatosteksti,
+} from '@/src/lib/types/paatosteksti';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import {
   VahvistettuViestiListItem,
@@ -39,8 +43,8 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockFilemakerList(page),
     mockFilemakerHakemus(page),
     mockYhteinenKasittely(page),
-    mockViestipohjaLista(page),
-    mockViestipohjaKategoriat(page),
+    mockTekstipohjaLista(page, 'viestipohja'),
+    mockTekstipohjaKategoriat(page, 'viestipohja'),
   ]);
 };
 
@@ -729,48 +733,58 @@ export const mockViestiOletussisalto = (page: Page) => {
   );
 };
 
-export const mockViestipohjaLista = (page: Page) => {
-  const viestipohjat: Array<ViestipohjaListItem> = [
-    { id: '1', nimi: 'Viestipohja 1', kategoriaId: '1' },
-    { id: '2', nimi: 'Viestipohja 2', kategoriaId: '2' },
-    { id: '3', nimi: 'Viestipohja 3', kategoriaId: '2' },
-    { id: '4', nimi: 'Viestipohja 4', kategoriaId: '3' },
-    { id: '5', nimi: 'Viestipohja 5', kategoriaId: '3' },
-    { id: '6', nimi: 'Viestipohja 6', kategoriaId: '3' },
+export const mockTekstipohjaLista = (
+  page: Page,
+  pohjatyyppi: 'viestipohja' | 'paatospohja',
+) => {
+  const tekstipohjat: Array<ViestipohjaListItem | PaatospohjaListItem> = [
+    { id: '1', nimi: 'Tekstipohja 1', kategoriaId: '1' },
+    { id: '2', nimi: 'Tekstipohja 2', kategoriaId: '2' },
+    { id: '3', nimi: 'Tekstipohja 3', kategoriaId: '2' },
+    { id: '4', nimi: 'Tekstipohja 4', kategoriaId: '3' },
+    { id: '5', nimi: 'Tekstipohja 5', kategoriaId: '3' },
+    { id: '6', nimi: 'Tekstipohja 6', kategoriaId: '3' },
   ];
 
-  return page.route('**/tutu-backend/api/viestipohja', async (route: Route) => {
-    if (route.request().method() === 'PUT') {
-      const putData = route.request().postDataJSON() as Viestipohja;
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(putData),
-      });
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(viestipohjat),
-      });
-    }
-  });
+  return page.route(
+    `**/tutu-backend/api/${pohjatyyppi}`,
+    async (route: Route) => {
+      if (route.request().method() === 'PUT') {
+        const putData =
+          pohjatyyppi === 'viestipohja'
+            ? (route.request().postDataJSON() as Viestipohja)
+            : (route.request().postDataJSON() as Paatospohja);
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(putData),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(tekstipohjat),
+        });
+      }
+    },
+  );
 };
 
-export const MOCK_VIESTIPOHJA: Viestipohja = {
+export const MOCK_TEKSTIPOHJA: Viestipohja | Paatospohja = {
   id: '1',
-  nimi: 'Viestipohja 1',
+  nimi: 'Tekstipohja 1',
   kategoriaId: '1',
   sisalto: { fi: '', sv: '', en: '' },
 };
 
-export const mockViestipohja = (
+export const mockTekstipohja = (
   page: Page,
+  pohjatyyppi: 'viestipohja' | 'paatospohja',
   id: string = '1',
-  viestipohja: Viestipohja = MOCK_VIESTIPOHJA,
+  tekstipohja: Viestipohja | Paatospohja = MOCK_TEKSTIPOHJA,
 ) => {
   return page.route(
-    `**/tutu-backend/api/viestipohja/${id}`,
+    `**/tutu-backend/api/${pohjatyyppi}/${id}`,
     async (route: Route) => {
       if (route.request().method() === 'DELETE') {
         await route.fulfill({ status: 204 });
@@ -778,7 +792,7 @@ export const mockViestipohja = (
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(viestipohja),
+          body: JSON.stringify(tekstipohja),
         });
       }
     },
@@ -791,9 +805,12 @@ export const MOCK_KATEGORIAT: Array<ViestipohjaKategoria> = [
   { id: '3', nimi: 'Testi kategoria 3' },
 ];
 
-export const mockViestipohjaKategoriat = (page: Page) => {
+export const mockTekstipohjaKategoriat = (
+  page: Page,
+  pohjatyyppi: 'viestipohja' | 'paatospohja',
+) => {
   return page.route(
-    '**/tutu-backend/api/viestipohja/kategoria',
+    `**/tutu-backend/api/${pohjatyyppi}/kategoria`,
     async (route: Route) => {
       if (route.request().method() === 'PUT') {
         const putData = route.request().postDataJSON() as ViestipohjaKategoria;
@@ -835,7 +852,7 @@ export const mockViestipohjanValinta = (
         });
       } else {
         const viestipohja: Viestipohja = {
-          ...MOCK_VIESTIPOHJA,
+          ...MOCK_TEKSTIPOHJA,
           sisalto: {
             fi: 'Suomi pohjassa',
             sv: 'Finland pohjassa',
