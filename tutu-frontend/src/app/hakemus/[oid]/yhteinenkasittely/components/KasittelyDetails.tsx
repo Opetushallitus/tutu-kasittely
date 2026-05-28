@@ -1,12 +1,5 @@
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {
-  Box,
-  Button,
-  AccordionDetails,
-  useTheme,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { Box, Button, AccordionDetails, useTheme, Stack } from '@mui/material';
 import {
   OphTypography,
   OphInputFormField,
@@ -141,22 +134,22 @@ const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
         ) : (
           kasittely.vastattu && (
             <>
-              <Typography sx={{ marginTop: theme.spacing(4) }}>
+              <OphTypography sx={{ marginTop: theme.spacing(4) }}>
                 {kasittely.vastaus ?? ''}
-              </Typography>
+              </OphTypography>
               <Stack direction="row" sx={{ mt: 2 }}>
                 <InfoOutlinedIcon sx={{ mr: 1 }} />
-                <Typography sx={{ mr: 1 }}>
+                <OphTypography sx={{ mr: 1 }}>
                   {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
-                </Typography>
-                <Typography
+                </OphTypography>
+                <OphTypography
                   sx={{ mr: 1 }}
-                >{`${kasittely.vastaanottaja},`}</Typography>
-                <Typography sx={{ mr: 1 }}>
+                >{`${kasittely.vastaanottaja},`}</OphTypography>
+                <OphTypography sx={{ mr: 1 }}>
                   {kasittely.vastattu
                     ? formatHelsinki(kasittely.vastattu, 'd.M.yyyy HH:mm')
                     : ''}
-                </Typography>
+                </OphTypography>
               </Stack>
             </>
           )
