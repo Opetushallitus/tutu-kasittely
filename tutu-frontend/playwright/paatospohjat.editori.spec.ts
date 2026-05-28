@@ -37,7 +37,7 @@ test('Olemassaolevan paatospohjan lataus onnistuu', async ({ page }) => {
   await mockTekstipohja(page, 'paatospohja');
   await clickPohjaOrKategoria(page, 'Tekstipohja 1');
 
-  expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
+  await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 });
 
 test('Paatospohjan latauksen epäonnistuessa näytetään virheteksti', async ({
@@ -55,11 +55,11 @@ test('Paatospohjan muokkaus lähettää PUT-kutsun backendille', async ({
   await mockTekstipohja(page, 'paatospohja');
   await clickPohjaOrKategoria(page, 'Tekstipohja 1');
 
-  expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
+  await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
   await saveAndExpectNewTekstipohja(page, '/api/paatospohja', false);
 
-  expectSuccessToast(
+  await expectSuccessToast(
     page,
     'tekstipohjat.paatospohjat.paatospohjaTallennus.success',
   );
@@ -71,7 +71,7 @@ test('Paatospohjan tallennuksen epäonnistuessa näytetään virheteksti', async
   await mockTekstipohja(page, 'paatospohja');
   await clickPohjaOrKategoria(page, 'Tekstipohja 1');
 
-  expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
+  await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
   await mockRemoteVirhe(page, '**/tutu-backend/api/paatospohja');
 
@@ -85,7 +85,7 @@ test('Paatospohjan poisto onnistuu', async ({ page }) => {
   await mockTekstipohja(page, 'paatospohja');
   await clickPohjaOrKategoria(page, 'Tekstipohja 1');
 
-  expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
+  await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
   await expectDelete(
     page,
@@ -96,7 +96,7 @@ test('Paatospohjan poisto onnistuu', async ({ page }) => {
   const valitseText = await translate(page, 'tekstipohjat.valitsePaatospohja');
   await expect(page.getByText(valitseText)).toBeVisible();
 
-  expectSuccessToast(
+  await expectSuccessToast(
     page,
     'tekstipohjat.paatospohjat.paatospohjaPoisto.success',
   );
@@ -109,9 +109,9 @@ test('Paatospohjan poiston epäonnistuessa näytetään virheteksti', async ({
   await mockDeleteVirhe(page, '**/tutu-backend/api/paatospohja/1');
   await clickPohjaOrKategoria(page, 'Tekstipohja 1');
 
-  expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
+  await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
-  confirmDelete(page, 'tekstipohjat.paatospohjat.poista');
+  await confirmDelete(page, 'tekstipohjat.paatospohjat.poista');
 
   await expectErrorToast(page, 'virhe.paatospohjaPoisto');
 });
