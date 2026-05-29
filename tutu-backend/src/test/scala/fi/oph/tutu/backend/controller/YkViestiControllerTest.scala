@@ -73,7 +73,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         parentId = None,
         hakemusOid = HakemusOid("hakemus-333"),
         lahettajaOid = Some("lahettaja-oid"),
-        vastaanottajaOid = None,
+        vastaanottajaOid = Some("vastaanottaja-oid"),
         kysymys = Some("Kysymys body"),
         hakija = null
       )
@@ -144,6 +144,62 @@ class YkViestiControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "vastaanottaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(3)
+  def ykViestiOnkoViestejaPalauttaaTruen(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "vastaanottaja-oid",
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/api/ykViestiOnkoViesteja")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().string("true"))
+  }
+
+  @Test
+  @WithMockUser(value = "vastaanottaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(4)
+  def haeYkSaapuneetViestitPalauttaaViestit(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "vastaanottaja-oid",
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/api/ykSaapuneetViestit?sort=tila:asc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          s"""[{"hakemusOid":"hakemus-333",
+                "status" : "vastaamatta",
+                "lahettajaOid":"lahettaja-oid",
+                "vastaanottajaOid":"vastaanottaja-oid",
+                "kysymys":"Kysymys body",
+                "vastaus": null },
+               {"hakemusOid":"hakemus-333",
+                "status" : "vastaamatta",
+                "lahettajaOid":"lahettaja-oid",
+                "vastaanottajaOid":"vastaanottaja-oid",
+                "kysymys":"Toinen kyssäri"}]"""
+        )
+      )
+  }
+
+  @Test
+  @WithMockUser(value = "vastaanottaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(5)
   def vastaaHakemuksenYkViestiiniPalauttaa204(): Unit = {
     when(
       userService.getEnrichedUserDetails(any)
@@ -182,7 +238,44 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "lahettaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(4)
+  @Order(6)
+  def haeYkLahetetytViestitPalauttaaViestit(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "lahettaja-oid",
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/api/ykLahetetytViestit")
+      )
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          s"""[{"hakemusOid":"hakemus-333",
+                "status" : "vastaamatta",
+                "lahettajaOid":"lahettaja-oid",
+                "vastaanottajaOid":"vastaanottaja-oid",
+                "kysymys":"Toinen kyssäri",
+                "vastaus": null },
+               {"id":"${ykViestiId}",
+                "hakemusOid":"hakemus-333",
+                "status" : "uusiVastaus",
+                "lahettajaOid":"lahettaja-oid",
+                "vastaanottajaOid":"vastaanottaja-oid",
+                "kysymys":"Kysymys body",
+                "vastaus": "Hyvä on :+1:" }]"""
+        )
+      )
+  }
+
+  @Test
+  @WithMockUser(value = "lahettaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(7)
   def merkitseYkViestiLuetuksiPalauttaa204(): Unit = {
     when(
       userService.getEnrichedUserDetails(any)
