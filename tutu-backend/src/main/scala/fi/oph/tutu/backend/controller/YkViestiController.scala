@@ -61,7 +61,7 @@ class YkViestiController(
     @RequestParam(required = false) lahetetty: String,
     @RequestParam(required = false) hakija: String,
     @RequestParam(required = false) asiatunnus: String,
-    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    @RequestParam(required = false, defaultValue = "") sort: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -91,7 +91,7 @@ class YkViestiController(
     @RequestParam(required = false) lahetetty: String,
     @RequestParam(required = false) hakija: String,
     @RequestParam(required = false) asiatunnus: String,
-    @RequestParam(required = false) sort: String = SortDef.Undefined.toString,
+    @RequestParam(required = false, defaultValue = "") sort: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
