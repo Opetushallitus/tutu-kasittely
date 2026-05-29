@@ -6,6 +6,7 @@ mkdir -p tutu-frontend/certificates
 cd tutu-frontend/certificates || exit
 
 mkcert localhost
+mkcert -install
 
 # Step 2: Navigate back to project root
 echo "Returning to project root..."
