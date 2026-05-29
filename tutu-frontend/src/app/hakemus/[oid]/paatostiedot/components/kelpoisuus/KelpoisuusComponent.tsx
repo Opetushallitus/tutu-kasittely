@@ -11,6 +11,7 @@ import React, { useMemo } from 'react';
 import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
 import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import { MUU_AMMATTI_KEY } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import {
   findOptionByValue,
   getKelpoisuusMuuAmmattiDropdownOption,
@@ -66,7 +67,7 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   };
   return (
     <>
-      {kelpoisuus.kelpoisuus === getKelpoisuusMuuAmmattiDropdownValue(t) && (
+      {kelpoisuus.kelpoisuus === MUU_AMMATTI_KEY && (
         <Stack gap={theme.spacing(2)}>
           <OphTypography variant={'label'}>
             {t('hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmatti')}
