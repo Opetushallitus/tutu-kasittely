@@ -31,14 +31,9 @@ import { handleFetchError } from '@/src/lib/utils';
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
 
-const not =
-  (
-    predicate: (...args: any[]) => boolean, // eslint-disable-line @typescript-eslint/no-explicit-any
-  ) =>
-  (
-    ...args: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
-  ) =>
-    !predicate(...args);
+function not<T>(predicate: (arg: T) => boolean) {
+  return (arg: T) => !predicate(arg);
+}
 
 const kayttajaLukenutViestin =
   (user: User | null) => (kasittely: YhteinenKasittely) => {
