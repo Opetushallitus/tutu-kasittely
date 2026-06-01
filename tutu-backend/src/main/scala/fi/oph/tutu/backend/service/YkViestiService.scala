@@ -44,7 +44,7 @@ class YkViestiService(
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
         val status: ViestinTila =
-          if (viesti.vastaus.isEmpty) ViestinTila.vastaamatta
+          if (viesti.vastattu.isEmpty) ViestinTila.vastaamatta
           else ViestinTila.vastattu
         Some(
           YkViestiListItem(
@@ -99,7 +99,7 @@ class YkViestiService(
     val ykViestiList = lahetetytViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastattu      = viesti.vastaus.nonEmpty
+        val vastattu      = viesti.vastattu.nonEmpty
         val vastausLuettu = viesti.vastausLuettu.nonEmpty
 
         val status: ViestinTila =
@@ -238,25 +238,20 @@ class YkViestiService(
         val kysymystaEiLuettu     = ykViesti.kysymysLuettu.isEmpty
         val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
 
-        val newViestiMaybe = if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) {
-          Some(
-            ykViesti.copy(
-              vastausLuettu = Some(LocalDateTime.now()),
-              muokkaaja = Some(user.userOid)
-            )
-          )
-        } else if (kysymystaEiLuettu && kysymysLuettavissa && vastaanottajaLukijana) {
-          Some(
-            ykViesti.copy(
-              kysymysLuettu = Some(LocalDateTime.now()),
-              muokkaaja = Some(user.userOid)
-            )
-          )
-        } else {
-          None
-        }
+        val vastausLuettuMaybe =
+          if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) Some(LocalDateTime.now()) else None
+        val kysymysLuettuMaybe =
+          if (kysymystaEiLuettu && kysymysLuettavissa && vastaanottajaLukijana) Some(LocalDateTime.now()) else None
 
-        newViestiMaybe.map(ykViestiRepository.muokkaaHakemuksenYkViestia)
+        if (vastausLuettuMaybe.nonEmpty || kysymysLuettuMaybe.nonEmpty) {
+          ykViestiRepository.muokkaaHakemuksenYkViestia(
+            ykViesti.copy(
+              vastausLuettu = vastausLuettuMaybe,
+              kysymysLuettu = kysymysLuettuMaybe,
+              muokkaaja = Some(user.userOid)
+            )
+          )
+        }
       }
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${viestiId} not found")
     }

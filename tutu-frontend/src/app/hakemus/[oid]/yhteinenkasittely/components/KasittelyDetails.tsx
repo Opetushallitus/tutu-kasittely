@@ -160,7 +160,7 @@ const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
             <Button
               variant="contained"
               disabled={!vastausToShow}
-              onClick={() => handleSend(kasittely.id!)}
+              onClick={() => handleSend(kasittely.id!, true)}
               data-testid={`kysymys-details-${kasittely.id}__vastaus-send`}
             >
               {t('hakemus.yhteinenkasittely.lahetaVastaus')}
