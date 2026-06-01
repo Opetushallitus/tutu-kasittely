@@ -31,6 +31,10 @@ import { handleFetchError } from '@/src/lib/utils';
 import { KasittelyList } from './components/KasittelyList';
 import { KasittelyModal } from './components/KasittelyModal';
 
+function not<T>(predicate: (arg: T) => boolean) {
+  return (arg: T) => !predicate(arg);
+}
+
 const kayttajaLukenutViestin =
   (user: User | null) => (kasittely: YhteinenKasittely) => {
     if (!user) {
@@ -167,7 +171,7 @@ export default function YhteinenKasittelyPage() {
     if (kasittely) {
       const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
       const viestiIdt: string[] = [kasittely, ...jatkoKasittelyt]
-        .filter(kayttajaLukenutViestin(user))
+        .filter(not(kayttajaLukenutViestin(user)))
         .map(({ id }) => id)
         .filter(Boolean) as string[];
 
@@ -250,12 +254,21 @@ export default function YhteinenKasittelyPage() {
   const handleSendAnswer = async (id: string, laheta: boolean = false) => {
     try {
       vastaaKasittelyyn({ id, vastaus: answers[id] ?? '', laheta });
-      addToast({
-        key: 'hakemus.yhteinenkasittely.vastattu.toaster',
-        message: t('hakemus.yhteinenkasittely.vastattuToast'),
-        type: 'success',
-        timeMs: 2500,
-      });
+      if (laheta) {
+        addToast({
+          key: 'hakemus.yhteinenkasittely.vastattu.toaster',
+          message: t('hakemus.yhteinenkasittely.vastattuToast'),
+          type: 'success',
+          timeMs: 2500,
+        });
+      } else {
+        addToast({
+          key: 'hakemus.yhteinenkasittely.tallennettu.toaster',
+          message: t('hakemus.yhteinenkasittely.vastausTallennettu'),
+          type: 'success',
+          timeMs: 2500,
+        });
+      }
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.yhteisenkasittelynLaheta', t);
     }
