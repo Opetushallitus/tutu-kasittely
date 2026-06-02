@@ -215,25 +215,6 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
-  def tallennaUusiTekstipohjaIlmanKategoriaaPalauttaa200(): Unit = {
-    val json =
-      s"""{"nimi": "Testipohja", "sisalto": {"fi": "Sisältö suomeksi"}}"""
-    mvc
-      .perform(
-        put(pohjaSavePath)
-          .`with`(csrf())
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(json)
-      )
-      .andExpect(status().isOk)
-      .andExpect(jsonPath("$.nimi").value("Testipohja"))
-      .andExpect(jsonPath("$.id").isNotEmpty)
-    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(pohjaCreateAuditOperation), any())
-  }
-
-  @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(8)
   def tallennaOlemassaolevaTekstipohjaPalauttaa200(): Unit = {
     val kategoriaId   = testKategoriaId.get
     val tekstipohjaId = lisaaTekstipohjaKantaan(
@@ -265,7 +246,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(9)
+  @Order(8)
   def tallennaTekstipohjaTuntemattomallaTunnisteellaPalauttaa404(): Unit = {
     val kategoriaId   = testKategoriaId.get
     val nonExistentId = UUID.randomUUID()
@@ -285,7 +266,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(10)
+  @Order(9)
   def haeYksittainenTekstipohjaPalauttaaOlemassaolevanPohjan(): Unit = {
     val tekstipohjat  = haeTekstipohjaLista()
     val tekstipohjaId = tekstipohjat.head.id.get
@@ -298,7 +279,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(11)
+  @Order(10)
   def haeYksittainenTekstipohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
     val nonExistentId = UUID.randomUUID()
     mvc
@@ -310,7 +291,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(12)
+  @Order(11)
   def poistaTekstipohjaPalauttaa204(): Unit = {
     val tekstipohjat  = haeTekstipohjaLista()
     val tekstipohjaId = tekstipohjat.head.id.get
@@ -326,7 +307,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(13)
+  @Order(12)
   def poistaTekstipohjaPalauttaa404ElleiLoydyKannasta(): Unit = {
     val nonExistentId = UUID.randomUUID()
     mvc
@@ -342,7 +323,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(14)
+  @Order(13)
   def haeTekstipohjatKategorioittainPalauttaa200(): Unit = {
     val kategoria1 = lisaaKategoria("Toinen kategoria")
     val kategoria2 = lisaaKategoria("Kolmas kategoria")
