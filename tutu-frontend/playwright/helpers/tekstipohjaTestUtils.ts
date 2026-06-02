@@ -48,29 +48,35 @@ export const expectTekstipohjaNimi = async (page: Page, nimi: string) => {
   await expect(nimiInput).toHaveValue(nimi);
 };
 
+export const fillSisalto = async (
+  page: Page,
+  tabIndex: number,
+  sisalto: string,
+) => {
+  const editor = page.getByTestId('editor-content-editable').nth(tabIndex);
+  await editor.click();
+  await page.keyboard.type(sisalto);
+};
+
 export const saveAndExpectNewTekstipohja = async (
   page: Page,
   saveUrl: string,
   englishIncluded: boolean,
 ) => {
-  const fiEditor = page.getByTestId('editor-content-editable').nth(0);
-  await fiEditor.click();
-  await page.keyboard.type('FI sisältö');
+  await fillSisalto(page, 0, 'FI sisältö');
 
   await page.getByTestId('hakemuslista-tab--sv').click();
-  const svEditor = page.getByTestId('editor-content-editable').nth(1);
-  await svEditor.click();
-  await page.keyboard.type('SV sisältö');
+  await fillSisalto(page, 1, 'SV sisältö');
 
   if (englishIncluded) {
     await page.getByTestId('hakemuslista-tab--en').click();
-    const enEditor = page.getByTestId('editor-content-editable').nth(2);
-    await enEditor.click();
-    await page.keyboard.type('EN sisältö');
+    await fillSisalto(page, 2, 'EN sisältö');
   }
 
   await page.getByTestId('hakemuslista-tab--fi').click();
-  await expect(fiEditor).toContainText('FI sisältö');
+  await expect(
+    page.getByTestId('editor-content-editable').nth(0),
+  ).toContainText('FI sisältö');
 
   const baseSisalto = {
     fi: expect.stringContaining('FI sisältö'),
@@ -222,4 +228,37 @@ export const mockKategorianTallennusvirhe = async (page: Page, url: string) => {
       });
     }
   });
+};
+
+export const clickLisaapohja = async (
+  page: Page,
+  pohjatyyppi: 'viestipohjat' | 'paatospohjat',
+) => {
+  const lisaaPohjaText = await translate(
+    page,
+    `tekstipohjat.${pohjatyyppi}.lisaa`,
+  );
+  await page.getByRole('button', { name: lisaaPohjaText }).click();
+};
+
+export const expectRequiredDataMissing = async (
+  page: Page,
+  nbrOfMessages: number,
+) => {
+  const requiredFieldMsg = await translate(
+    page,
+    'virhe.validaatio.pakollinenTietoPuuttuu',
+  );
+  await expect(page.getByText(requiredFieldMsg)).toHaveCount(nbrOfMessages);
+};
+
+export const valitseKategoria = async (page: Page, kategoria: string) => {
+  const kategoriaButton = page.getByTestId('kategoria-select');
+  await kategoriaButton.click();
+  await expect(kategoriaButton).toBeVisible();
+  await page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator(`text=${kategoria}`)
+    .last()
+    .click();
 };

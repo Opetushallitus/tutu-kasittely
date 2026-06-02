@@ -1,7 +1,7 @@
 'use client';
 
 import { Add } from '@mui/icons-material';
-import { Box, List, ListSubheader, Stack } from '@mui/material';
+import { Box, List, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 
@@ -44,8 +44,6 @@ export default function TekstipohjaLista<
   const [selectedKategoria, setSelectedKategoria] = useState<
     ViestipohjaKategoria | undefined
   >();
-
-  const eiKategoriaa = pohjat.filter((vp) => !vp.kategoriaId);
 
   return (
     <>
@@ -116,31 +114,6 @@ export default function TekstipohjaLista<
                 ))}
             </List>
           ))}
-          {eiKategoriaa.length > 0 && (
-            <List
-              subheader={
-                <ListSubheader
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                  }}
-                >
-                  <OphTypography variant={'label'}>
-                    {t('tekstipohjat.eiKategoriaa')}
-                  </OphTypography>
-                </ListSubheader>
-              }
-            >
-              {eiKategoriaa.map((pohja) => (
-                <TekstipohjaListItem
-                  key={pohja.id}
-                  id={pohja.id}
-                  nimi={pohja.nimi}
-                  onClick={() => setValittuId(pohja.id)}
-                />
-              ))}
-            </List>
-          )}
         </Box>
       </Stack>
       {kategoriaModalOpen && (

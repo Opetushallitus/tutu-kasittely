@@ -1,18 +1,25 @@
 import { expect, test } from '@playwright/test';
 
 import {
+  clickLisaapohja,
   clickPohjaOrKategoria,
   confirmDelete,
   expectDelete,
   expectErrorToast,
+  expectRequiredDataMissing,
   expectSuccessToast,
   expectTekstipohjaNimi,
+  fillSisalto,
   getTekstipohjaNimiLocator,
   mockDeleteVirhe,
   mockRemoteVirhe,
   saveAndExpectNewTekstipohja,
+  valitseKategoria,
 } from '@/playwright/helpers/tekstipohjaTestUtils';
-import { clickSaveButton } from '@/playwright/helpers/testUtils';
+import {
+  clickSaveButton,
+  expectRequestData,
+} from '@/playwright/helpers/testUtils';
 import { translate } from '@/playwright/helpers/translate';
 import {
   MOCK_TEKSTIPOHJA,
@@ -59,6 +66,45 @@ test('Paatospohjan muokkaus lähettää PUT-kutsun backendille', async ({
 
   await saveAndExpectNewTekstipohja(page, '/api/paatospohja', false);
 
+  await expectSuccessToast(
+    page,
+    'tekstipohjat.paatospohjat.paatospohjaTallennus.success',
+  );
+});
+
+test('Uuden paatospohjan luonti ei onnistu ilman pakollisia tietoja', async ({
+  page,
+}) => {
+  const apiRequests: string[] = [];
+  page.on('request', (request) => {
+    if (['xhr', 'fetch'].includes(request.resourceType())) {
+      apiRequests.push(request.url());
+    }
+  });
+
+  await clickLisaapohja(page, 'paatospohjat');
+
+  await fillSisalto(page, 0, 'FI sisältö');
+
+  apiRequests.length = 0;
+  await clickSaveButton(page);
+  await expectRequiredDataMissing(page, 2);
+  expect(apiRequests).toEqual([]);
+
+  await valitseKategoria(page, 'Testi kategoria 1');
+  await clickSaveButton(page);
+  await expectRequiredDataMissing(page, 1);
+  expect(apiRequests).toEqual([]);
+
+  await expectRequestData(
+    page,
+    '/api/paatospohja',
+    (await getTekstipohjaNimiLocator(page)).fill('Uusi nimi'),
+    {
+      nimi: 'Uusi nimi',
+      sisalto: { fi: expect.stringContaining('FI sisältö') },
+    },
+  );
   await expectSuccessToast(
     page,
     'tekstipohjat.paatospohjat.paatospohjaTallennus.success',

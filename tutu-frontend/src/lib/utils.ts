@@ -128,3 +128,25 @@ export const updateTutkintoJarjestys = (
 
 export const anyRealContentInHtml = (html: string) =>
   /[^\s<>]/.test(html.replace(/<[^>]*>/g, ''));
+
+export const flattenObject = (
+  object: Record<string, unknown>,
+  hierarchyPrefix?: string,
+) => {
+  const result: Record<string, unknown> = {};
+
+  for (const key in object) {
+    const value = object[key];
+    const newKey = hierarchyPrefix ? `${hierarchyPrefix}.${key}` : key;
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      Object.assign(
+        result,
+        flattenObject(value as Record<string, unknown>, newKey),
+      );
+    } else {
+      result[newKey] = value;
+    }
+  }
+
+  return result;
+};
