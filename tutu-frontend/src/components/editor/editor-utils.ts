@@ -81,6 +81,17 @@ export const exportMarkdown = (editor: LexicalEditor | null) => {
   return '';
 };
 
+export const clearEditor = (editor: LexicalEditor | null) => {
+  if (editor) {
+    editor.update(
+      () => {
+        $getRoot().clear();
+      },
+      { tag: 'silent' },
+    );
+  }
+};
+
 export const formatParagraph = (editor: LexicalEditor) => {
   editor.update(() => {
     $addUpdateTag(SKIP_SELECTION_FOCUS_TAG);

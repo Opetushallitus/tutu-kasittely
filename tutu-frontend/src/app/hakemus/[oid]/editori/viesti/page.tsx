@@ -9,7 +9,7 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import { LexicalEditor } from 'lexical';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { KieliSelect } from '@/src/app/hakemus/[oid]/editori/viesti/components/KieliSelect';
 import { VahvistettuList } from '@/src/app/hakemus/[oid]/editori/viesti/components/VahvistettuList';
@@ -17,6 +17,7 @@ import { ViestityyppiComponent } from '@/src/app/hakemus/[oid]/editori/viesti/co
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { Editor } from '@/src/components/editor/Editor';
 import {
+  clearEditor,
   exportMarkdown,
   importHtml,
   normalizedEditorContent,
@@ -88,13 +89,11 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   );
 
   const currentViesti = viestiState.editedData;
-  const [editorHasChanges, setEditorHasChanges] = useState(false);
-  const [editorEmpty, setEditorEmpty] = useState(!viesti?.viesti);
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
 
   useUnsavedChanges(
-    viestiState.hasChanges || editorHasChanges,
+    viestiState.hasChanges, // || editorHasChanges,
     viestiState.discard,
   );
 
@@ -107,30 +106,8 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     setViestityyppiForOletussisalto(currentViesti?.tyyppi || null);
   }, [currentViesti?.tyyppi, setViestityyppiForOletussisalto]);
 
-  const viestiToBeSaved = useCallback(() => {
-    if (editorHasChanges) {
-      return {
-        ...currentViesti!,
-        viesti: normalizedEditorContent(editorRef.current),
-      };
-    }
-    return currentViesti!;
-  }, [currentViesti, editorHasChanges]);
-
-  const onSave = () => {
-    updateViesti(viestiToBeSaved());
-    setEditorHasChanges(false);
-  };
-
-  const updateEditorChanges = (editor: LexicalEditor) => {
-    const normalizedContent = normalizedEditorContent(editor);
-    const savedContent = currentViesti?.viesti || '';
-    setEditorHasChanges(savedContent !== normalizedContent);
-    setEditorEmpty(!normalizedContent);
-  };
-
   const isViestiEmpty =
-    !currentViesti?.tyyppi && !currentViesti?.otsikko && editorEmpty;
+    !currentViesti?.tyyppi && !currentViesti?.otsikko && !currentViesti?.viesti;
 
   const updateViestiPartially = (
     updatedViesti: Partial<Viesti>,
@@ -197,7 +174,11 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
           />
           <Editor
             editorRef={editorRef}
-            onChange={updateEditorChanges}
+            onChange={(editor) =>
+              updateViestiPartially({
+                viesti: normalizedEditorContent(editor),
+              })
+            }
             valitsePohjaProps={{
               showButton: !showTekstipohjaLista,
               buttonText: t(`tekstipohjat.viestipohjat.valitse`),
@@ -221,6 +202,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                     `hakemus.viesti.tyhjenna.modal.tyhjennaKentat`,
                   ),
                   handleConfirmAction: () => {
+                    clearEditor(editorRef.current);
                     if (currentViesti?.id) {
                       updateViestiPartially(
                         {
@@ -232,8 +214,8 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                       );
                     } else {
                       viestiState.discard();
-                      setEditorEmpty(true);
-                      setEditorHasChanges(false);
+                      //setEditorEmpty(true);
+                      //setEditorHasChanges(false);
                       addToast({
                         key: 'hakemus.viesti.tyhjenna.toaster',
                         message: t('hakemus.viesti.tyhjennettyToast'),
@@ -262,7 +244,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                     navigator.clipboard.writeText(
                       exportMarkdown(editorRef.current),
                     );
-                    vahvistaViesti(viestiToBeSaved(), () => {
+                    vahvistaViesti(currentViesti!, () => {
                       paivitaVahvistettuLista();
                     });
                     if (viestiState.hasChanges) {
@@ -270,8 +252,8 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                       // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
                       // joten discardataan mahdolliset muutokset
                       viestiState.discard();
-                      setEditorHasChanges(false);
-                      setEditorEmpty(true);
+                      //setEditorHasChanges(false);
+                      //setEditorEmpty(true);
                     }
                   },
                 })
@@ -306,9 +288,9 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
             }
           />
           <SaveRibbon
-            onSave={onSave}
+            onSave={() => updateViesti(currentViesti!)}
             isSaving={updateOngoing}
-            hasChanges={viestiState.hasChanges || editorHasChanges}
+            hasChanges={viestiState.hasChanges}
             lastSaved={currentViesti?.muokattu}
             modifier={currentViesti?.muokkaaja}
           />

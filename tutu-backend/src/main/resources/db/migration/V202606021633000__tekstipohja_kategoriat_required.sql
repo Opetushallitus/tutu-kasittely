@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS paatospohja ALTER COLUMN kategoria_id SET NOT NULL;
+ALTER TABLE IF EXISTS viestipohja ALTER COLUMN kategoria_id SET NOT NULL;

@@ -24,7 +24,7 @@ export const ToimintoLinkki = ({
   return (
     <LinkBox>
       <OphButton
-        sx={{ flexGrow: 1, justifyContent: 'flex-start' }}
+        sx={{ flexGrow: 1, justifyContent: 'flex-start', whiteSpace: 'nowrap' }}
         href={href}
         onClick={onClick}
       >

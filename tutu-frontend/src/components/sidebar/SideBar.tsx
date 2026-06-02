@@ -59,7 +59,7 @@ export const SideBar = () => {
       direction="column"
       gap={theme.spacing(1)}
       sx={{
-        maxWidth: '20%',
+        width: '250px',
         position: 'sticky',
         top: theme.spacing(2),
         alignSelf: 'flex-start',
