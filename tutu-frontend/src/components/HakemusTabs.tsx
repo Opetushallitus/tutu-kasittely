@@ -96,13 +96,15 @@ const LinkedTab = (props: TabLinkProps) => {
   const searchParams = useSearchParams();
   const search = searchParams.toString();
   const href = `/hakemus/${hakemusOid}/${pagePath}${search ? `?${search}` : ''}`;
-  const subTabSx = { marginLeft: theme.spacing(3), ...SMALL_FONT };
+  const subTabSx = { marginLeft: theme.spacing(2), ...SMALL_FONT };
   const sx = {
     whiteSpace: wrapText ? 'normal' : 'nowrap',
     textAlign: 'left',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     pointerEvents: expanded ? 'none' : 'auto',
+    fontWeight: 400,
+    color: ophColors.grey900,
     minHeight: 'unset',
     ...(isSubTab ? subTabSx : {}),
   };
@@ -233,9 +235,11 @@ export const HakemusTabs = ({
         aria-label={t('hakemusTabs.navigaatio')}
         role="navigation"
         sx={{
+          width: '280px',
           '.MuiTabs-indicator': {
             left: 0,
             right: 'auto',
+            width: '3px',
           },
           '& .MuiTab-root:not(:last-child)': {
             borderBottom: THIN_BOX_BORDER,
