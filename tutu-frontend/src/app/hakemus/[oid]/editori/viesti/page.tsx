@@ -92,10 +92,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
 
-  useUnsavedChanges(
-    viestiState.hasChanges, // || editorHasChanges,
-    viestiState.discard,
-  );
+  useUnsavedChanges(viestiState.hasChanges, viestiState.discard);
 
   useEffect(() => {
     const toBeSisalto = viesti?.viesti || oletusSisalto || '';
