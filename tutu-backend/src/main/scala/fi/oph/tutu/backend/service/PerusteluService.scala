@@ -9,6 +9,7 @@ import org.springframework.stereotype.{Component, Service}
 
 import java.time.LocalDateTime
 import java.util.UUID
+import org.springframework.scheduling.annotation.Async
 
 @Component
 @Service
@@ -144,6 +145,7 @@ class PerusteluService(
     Some(perusteluMuistio)
   }
 
+  @Async
   def paivitaPerustelumuistio(
     hakemusOid: HakemusOid,
     muokkaaja: String

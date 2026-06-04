@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.{ApplicationArguments, ApplicationRunner, SpringApplication}
 import org.springframework.context.annotation.Bean
+import org.springframework.scheduling.annotation.EnableAsync
 
 object TutuBackendApplication {
   val CALLER_ID = "1.2.246.562.10.00000000001.tutu-virkailija"
@@ -14,6 +15,7 @@ object TutuBackendApplication {
 }
 
 @SpringBootApplication
+@EnableAsync
 @EnableConfigurationProperties
 class TutuBackendApplication {
 
