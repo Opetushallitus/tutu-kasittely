@@ -143,4 +143,16 @@ class PerusteluService(
 
     Some(perusteluMuistio)
   }
+
+  def paivitaPerustelumuistio(
+    hakemusOid: HakemusOid,
+    muokkaaja: String
+  ): Unit = {
+    haePerusteluMuistio(hakemusOid).map(sisalto => {
+      perusteluRepository.haePerustelumuistio(hakemusOid) match {
+        case None    => perusteluRepository.lisaaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
+        case Some(_) => perusteluRepository.paivitaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
+      }
+    })
+  }
 }
