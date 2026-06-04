@@ -214,8 +214,6 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                       );
                     } else {
                       viestiState.discard();
-                      //setEditorEmpty(true);
-                      //setEditorHasChanges(false);
                       addToast({
                         key: 'hakemus.viesti.tyhjenna.toaster',
                         message: t('hakemus.viesti.tyhjennettyToast'),
@@ -252,8 +250,6 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                       // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
                       // joten discardataan mahdolliset muutokset
                       viestiState.discard();
-                      //setEditorHasChanges(false);
-                      //setEditorEmpty(true);
                     }
                   },
                 })
