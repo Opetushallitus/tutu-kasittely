@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyAllOutlined } from '@mui/icons-material';
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { LexicalEditor } from 'lexical';
 import { useParams } from 'next/navigation';
@@ -13,6 +13,7 @@ import {
   exportHtml,
   exportMarkdown,
   importHtml,
+  pasteHtml,
 } from '@/src/components/editor/editor-utils';
 import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -33,7 +34,6 @@ export default function PaatosEditorPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
-  const theme = useTheme();
 
   useUnsavedChanges(hasChanges);
 
@@ -130,6 +130,38 @@ export default function PaatosEditorPage() {
         lastSaved={paatosteksti.muokattu}
         modifier={paatosteksti.muokkaaja}
       />
+      {showTekstipohjaLista && (
+        <TekstipohjaLista
+          url="paatospohja"
+          headerText={t('tekstipohjat.paatospohjat.valitse')}
+          close={() => setShowTekstipohjaLista(false)}
+          selectPohja={(pohja) => {
+            let kielistettyTeksti = '';
+            if (typeof pohja.sisalto === 'string') {
+              kielistettyTeksti = pohja.sisalto;
+            } else if (paatosteksti) {
+              const pt = paatosteksti as unknown as {
+                kieli?: string;
+                kielikoodi?: string;
+              };
+              const lang = pt?.kieli || pt?.kielikoodi || 'fi';
+              const sisaltoObj: Record<string, string> | undefined =
+                pohja.sisalto as unknown as Record<string, string> | undefined;
+              kielistettyTeksti = sisaltoObj?.[lang] ?? '';
+            }
+
+            if (kielistettyTeksti) {
+              pasteHtml(editorRef.current, kielistettyTeksti);
+              addToast({
+                key: 'tekstipohjat.viestipohjat.valittu',
+                message: t('tekstipohjat.viestipohjat.valittu'),
+                type: 'success',
+                timeMs: 2500,
+              });
+            }
+          }}
+        ></TekstipohjaLista>
+      )}
     </>
   );
 }
