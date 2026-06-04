@@ -21,21 +21,24 @@ import { KategorianTekstipohjat, Viestipohja } from '@/src/lib/types/viesti';
 import { handleFetchError } from '@/src/lib/utils';
 
 interface TekstipohjaListaProps {
+  url: string;
   headerText: string;
   close: () => void;
   selectPohja: (pohja: Viestipohja) => void;
 }
 
 export const TekstipohjaLista = ({
+  url,
   headerText,
   close,
   selectPohja,
 }: TekstipohjaListaProps) => {
   const { t } = useTranslations();
   const theme = useTheme();
-  const { tekstipohjat, isLoadingPohjat, pohjatLoadError } = useTekstipohjat();
+  const { tekstipohjat, isLoadingPohjat, pohjatLoadError } =
+    useTekstipohjat(url);
   const { selectTekstipohja, isLoadingPohja, pohjaLoadError } =
-    useTekstipohjaSelect(selectPohja);
+    useTekstipohjaSelect(selectPohja, url);
   const { addToast } = useToaster();
 
   useEffect(() => {
