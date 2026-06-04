@@ -84,7 +84,7 @@ export const HakemusHeader = () => {
                   ? hakemus.esittelijaOid
                   : ''
               }
-              sx={{ width: '50%', paddingLeft: theme.spacing(2) }}
+              sx={{ width: '100%', paddingLeft: theme.spacing(2) }}
               data-testid={'hakemusotsikko-esittelija'}
               onChange={(event: SelectChangeEvent) =>
                 updateHakemusLocal({ esittelijaOid: event.target.value })
