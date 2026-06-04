@@ -290,6 +290,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         </Stack>
         {showTekstipohjaLista && (
           <TekstipohjaLista
+            url="viestipohja"
             headerText={t('tekstipohjat.viestipohjat.valitse')}
             close={() => setShowTekstipohjaLista(false)}
             selectPohja={(pohja) => {
