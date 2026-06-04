@@ -328,4 +328,17 @@ class HakemusRepository extends BaseResultHandlers {
           e
         )
     }
+
+  def hakemusIdToOid(hakemusId: UUID): Option[HakemusOid] = {
+    try {
+      db.run(
+        sql"""
+          SELECT hakemus_oid FROM hakemus WHERE  id = ${hakemusId.toString}::uuid
+        """.as[HakemusOid].headOption,
+        "hakemus_id_to_oid"
+      )
+    } catch {
+      case e: Exception => None
+    }
+  }
 }

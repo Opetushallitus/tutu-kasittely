@@ -155,4 +155,11 @@ class PerusteluService(
       }
     })
   }
+
+  def paivitaPerustelumuistio(
+    hakemusId: UUID,
+    muokkaaja: String
+  ): Unit = {
+    hakemusService.hakemusIdToOid(hakemusId).map(hakemusOid => paivitaPerustelumuistio(hakemusOid, muokkaaja))
+  }
 }
