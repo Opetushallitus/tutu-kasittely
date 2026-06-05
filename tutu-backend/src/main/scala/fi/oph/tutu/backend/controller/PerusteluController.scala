@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Perustelu}
-import fi.oph.tutu.backend.service.{PerusteluService, UserService}
+import fi.oph.tutu.backend.service.{PerusteluServiceInterface, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPerustelu, UpdatePerustelu}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -24,7 +24,7 @@ import scala.util.{Failure, Success, Try}
 @RestController
 @RequestMapping(path = Array("api"))
 class PerusteluController(
-  perusteluService: PerusteluService,
+  perusteluService: PerusteluServiceInterface,
   userService: UserService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
