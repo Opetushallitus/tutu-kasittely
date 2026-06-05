@@ -9,6 +9,29 @@ import org.springframework.stereotype.{Component, Service}
 
 import java.time.LocalDateTime
 import java.util.UUID
+import org.springframework.scheduling.annotation.Async
+
+trait PerusteluServiceInterface {
+  def haePerustelu(
+    hakemusOid: HakemusOid
+  ): Option[Perustelu]
+  def tallennaPerustelu(
+    hakemusOid: HakemusOid,
+    perustelu: Perustelu,
+    luojaTaiMuokkaaja: String
+  ): (Option[Perustelu], Option[Perustelu])
+  def haePerusteluMuistio(
+    hakemusOid: HakemusOid
+  ): Option[String]
+  def paivitaPerustelumuistio(
+    hakemusOid: HakemusOid,
+    muokkaaja: String
+  ): Unit
+  def paivitaPerustelumuistio(
+    hakemusId: UUID,
+    muokkaaja: String
+  ): Unit
+}
 
 @Component
 @Service
@@ -25,7 +48,8 @@ class PerusteluService(
   koodistoService: KoodistoService,
   onrService: OnrService,
   translationService: TranslationService
-) extends TutuJsonFormats {
+) extends TutuJsonFormats
+    with PerusteluServiceInterface {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
   def haePerustelu(
@@ -142,5 +166,25 @@ class PerusteluService(
     )
 
     Some(perusteluMuistio)
+  }
+
+  @Async
+  def paivitaPerustelumuistio(
+    hakemusOid: HakemusOid,
+    muokkaaja: String
+  ): Unit = {
+    haePerusteluMuistio(hakemusOid).map(sisalto => {
+      perusteluRepository.haePerustelumuistio(hakemusOid) match {
+        case None    => perusteluRepository.lisaaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
+        case Some(_) => perusteluRepository.paivitaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
+      }
+    })
+  }
+
+  def paivitaPerustelumuistio(
+    hakemusId: UUID,
+    muokkaaja: String
+  ): Unit = {
+    hakemusService.hakemusIdToOid(hakemusId).map(hakemusOid => paivitaPerustelumuistio(hakemusOid, muokkaaja))
   }
 }

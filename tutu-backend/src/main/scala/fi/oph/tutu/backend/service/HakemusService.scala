@@ -596,4 +596,8 @@ class HakemusService(
         LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")
     }
   }
+
+  def hakemusIdToOid(hakemusId: UUID): Option[HakemusOid] = {
+    hakemusRepository.hakemusIdToOid(hakemusId)
+  }
 }

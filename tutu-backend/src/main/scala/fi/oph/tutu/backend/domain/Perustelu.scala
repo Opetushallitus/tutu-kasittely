@@ -128,3 +128,13 @@ case class APSisalto(
   muutAPPerustelut: Option[String] = None,
   SEUTArviointi: Option[String] = None
 )
+
+case class Perustelumuistio(
+  id: UUID,
+  hakemusId: UUID,
+  sisalto: String,
+  luotu: LocalDateTime,
+  luoja: String,
+  muokattu: Option[LocalDateTime] = None,
+  muokkaaja: Option[String] = None
+)

@@ -66,6 +66,20 @@ class PerusteluRepository extends BaseResultHandlers {
     )
   }
 
+  implicit val getPerustelumuistioResult: GetResult[Perustelumuistio] = {
+    GetResult(r =>
+      Perustelumuistio(
+        id = UUID.fromString(r.nextString()),
+        hakemusId = UUID.fromString(r.nextString()),
+        sisalto = r.nextString(),
+        luotu = r.nextTimestamp().toLocalDateTime,
+        luoja = r.nextString(),
+        muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
+        muokkaaja = r.nextStringOption()
+      )
+    )
+  }
+
   /**
    * Tallentaa uuden perustelun (palauttaa DBIO-actionin transaktioita varten)
    *
@@ -365,4 +379,100 @@ class PerusteluRepository extends BaseResultHandlers {
       DELETE FROM lausuntopyynto
       WHERE id = ${id.toString}::uuid
     """
+
+  def haePerustelumuistio(hakemusOid: HakemusOid): Option[Perustelumuistio] = {
+    try {
+      db.run(
+        sql"""
+          SELECT
+            id,
+            hakemus_id,
+            sisalto,
+            luotu,
+            luoja,
+            muokattu,
+            muokkaaja
+          FROM
+            perustelumuistio
+          WHERE hakemus_id IN
+            (SELECT id FROM hakemus where hakemus_oid = ${hakemusOid.toString})
+        """.as[Perustelumuistio].headOption,
+        "hae_perustelu"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.toString}): $e")
+        throw new RuntimeException(
+          s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.toString}): ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  def lisaaPerustelumuistio(
+    hakemusOid: HakemusOid,
+    sisalto: String,
+    luoja: String
+  ): Perustelumuistio = {
+    try {
+      db.run(
+        sql"""
+          INSERT INTO perustelumuistio (
+            hakemus_id
+            sisalto
+            luoja
+          )
+          VALUES (
+            SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString},
+            $sisalto,
+            $luoja
+          )
+          RETURNING
+            id,
+            hakemus_id,
+            sisalto,
+            luotu,
+            luoja,
+            muokattu,
+            muokkaaja
+        """.as[Perustelumuistio].head,
+        "lisaa_perustelumuistio"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Virhe perustelumuistion lisäämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe perustelumuistion lisäämisessä: ${e.getMessage}", e)
+    }
+  }
+
+  def paivitaPerustelumuistio(
+    hakemusOid: HakemusOid,
+    sisalto: String,
+    muokkaaja: String
+  ): Perustelumuistio = {
+    try {
+      db.run(
+        sql"""
+          UPDATE perustelumuistio
+          SET
+            sisalto = $sisalto,
+            muokkaaja = $muokkaaja
+          WHERE hakemus_id IN (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
+          RETURNING
+            id,
+            hakemus_id,
+            sisalto,
+            luotu,
+            luoja,
+            muokattu,
+            muokkaaja
+        """.as[Perustelumuistio].head,
+        "paivita_perustelumuistio"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Virhe perustelumuistion päivittämisessä: ${e.getMessage}", e)
+        throw new RuntimeException(s"Virhe perustelumuistion päivittämisessä: ${e.getMessage}", e)
+    }
+  }
 }
