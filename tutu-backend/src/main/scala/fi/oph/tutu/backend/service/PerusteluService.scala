@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import org.springframework.scheduling.annotation.Async
 
-trait PerusteluServiceInterface {
+trait IPerusteluService {
   def haePerustelu(
     hakemusOid: HakemusOid
   ): Option[Perustelu]
@@ -49,7 +49,7 @@ class PerusteluService(
   onrService: OnrService,
   translationService: TranslationService
 ) extends TutuJsonFormats
-    with PerusteluServiceInterface {
+    with IPerusteluService {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
   def haePerustelu(
