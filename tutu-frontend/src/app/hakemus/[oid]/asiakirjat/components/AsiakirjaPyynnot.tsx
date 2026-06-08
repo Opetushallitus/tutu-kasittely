@@ -258,7 +258,7 @@ export const AsiakirjaPyynnot = ({
       <OphButton
         data-testid="pyyda-asiakirja-button"
         variant="outlined"
-        sx={{ width: '15%' }}
+        sx={{ height: '40px', width: '160px', whiteSpace: 'nowrap' }}
         onClick={() => setShowEmptyAsiakirjaPyyntoDropdown(true)}
       >
         {t('hakemus.asiakirjat.asiakirjapyynnot.pyyda')}
