@@ -3,7 +3,9 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.fixture.KayttooikeusFixture.*
 import fi.oph.tutu.backend.repository.EsittelijaRepository
+import fi.oph.tutu.backend.service.oauth.Oauth2Client
 import fi.vm.sade.javautils.nio.cas.CasClient
+import org.asynchttpclient.RequestBuilder
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.{any, contains}
@@ -12,16 +14,19 @@ import org.mockito.Mockito.{mock, times, verify, when}
 
 class KayttooikeusServiceTest extends UnitTestBase {
 
+  private var oauth2Client: Oauth2Client                 = _
   private var httpService: HttpService                   = _
   private var esittelijaRepository: EsittelijaRepository = _
   private var kayttooikeusService: KayttooikeusService   = _
 
   @BeforeEach
   def setUp(): Unit = {
+    oauth2Client = mock(classOf[Oauth2Client])
     httpService = mock(classOf[HttpService])
     esittelijaRepository = mock(classOf[EsittelijaRepository])
 
     kayttooikeusService = new KayttooikeusService(
+      oauth2Client,
       httpService,
       esittelijaRepository,
       mapper
@@ -31,25 +36,25 @@ class KayttooikeusServiceTest extends UnitTestBase {
   }
 
   private def setupDefaultMocks(): Unit = {
-    when(httpService.post(any[CasClient], contains("ryhmasByKayttooikeus"), any[String]))
+    when(httpService.post(any[Oauth2Client], contains("ryhmasByKayttooikeus"), any[String]))
       .thenReturn(Right(kayttooikeusRyhmatJson))
 
-    when(httpService.get(any[CasClient], contains(s"henkilo/$virkailija1Oid/kayttajatiedot")))
+    when(httpService.get(any[Oauth2Client], contains(s"henkilo/$virkailija1Oid/kayttajatiedot")))
       .thenReturn(Right(virkailija1Json))
 
-    when(httpService.get(any[CasClient], contains(s"henkilo/$virkailija2Oid/kayttajatiedot")))
+    when(httpService.get(any[Oauth2Client], contains(s"henkilo/$virkailija2Oid/kayttajatiedot")))
       .thenReturn(Right(virkailija2Json))
 
-    when(httpService.get(any[CasClient], contains(s"henkilo/$palveluAtaruOid/kayttajatiedot")))
+    when(httpService.get(any[Oauth2Client], contains(s"henkilo/$palveluAtaruOid/kayttajatiedot")))
       .thenReturn(Right(palveluAtaruJson))
 
-    when(httpService.get(any[CasClient], contains(s"henkilo/$palveluServiceProviderOid/kayttajatiedot")))
+    when(httpService.get(any[Oauth2Client], contains(s"henkilo/$palveluServiceProviderOid/kayttajatiedot")))
       .thenReturn(Right(palveluServiceProviderJson))
   }
 
   @Test
   def testSuodattaaPalvelukayttajat(): Unit = {
-    when(httpService.get(any[CasClient], contains("kayttooikeusryhma/1/henkilot")))
+    when(httpService.get(any[Oauth2Client], contains("kayttooikeusryhma/1/henkilot")))
       .thenReturn(Right(henkilotJson(virkailija1Oid, palveluAtaruOid, virkailija2Oid, palveluServiceProviderOid)))
 
     val result = kayttooikeusService.haeEsittelijat
@@ -69,7 +74,7 @@ class KayttooikeusServiceTest extends UnitTestBase {
 
   @Test
   def testPoistaaDuplikaatitJaSuodattaaPalvelukäyttäjät(): Unit = {
-    when(httpService.get(any[CasClient], contains("kayttooikeusryhma/1/henkilot")))
+    when(httpService.get(any[Oauth2Client], contains("kayttooikeusryhma/1/henkilot")))
       .thenReturn(Right(henkilotJson(virkailija1Oid, palveluAtaruOid, virkailija1Oid, palveluAtaruOid)))
 
     val result = kayttooikeusService.haeEsittelijat
@@ -83,10 +88,10 @@ class KayttooikeusServiceTest extends UnitTestBase {
 
   @Test
   def testKasitteleeKayttajatietojenHakuVirhe(): Unit = {
-    when(httpService.get(any[CasClient], contains("kayttooikeusryhma/1/henkilot")))
+    when(httpService.get(any[Oauth2Client], contains("kayttooikeusryhma/1/henkilot")))
       .thenReturn(Right(henkilotJson(virkailija1Oid, virheellinenOid)))
 
-    when(httpService.get(any[CasClient], contains(s"henkilo/$virheellinenOid/kayttajatiedot")))
+    when(httpService.get(any[Oauth2Client], contains(s"henkilo/$virheellinenOid/kayttajatiedot")))
       .thenReturn(Left(new RuntimeException("404 Not Found")))
 
     val result = kayttooikeusService.haeEsittelijat
@@ -104,7 +109,7 @@ class KayttooikeusServiceTest extends UnitTestBase {
 
   @Test
   def testTyhjaListaJosKaikkiPalveluja(): Unit = {
-    when(httpService.get(any[CasClient], contains("kayttooikeusryhma/1/henkilot")))
+    when(httpService.get(any[Oauth2Client], contains("kayttooikeusryhma/1/henkilot")))
       .thenReturn(Right(henkilotJson(palveluAtaruOid, palveluServiceProviderOid)))
 
     val result = kayttooikeusService.haeEsittelijat

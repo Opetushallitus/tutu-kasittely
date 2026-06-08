@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.Kieli
+import fi.oph.tutu.backend.service.oauth.Oauth2Client
 import fi.vm.sade.javautils.nio.cas.CasClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
@@ -10,6 +11,9 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 
 class KoodistoServiceTest extends UnitTestBase {
+  @Mock
+  var oauth2Client: Oauth2Client = _
+
   @Mock
   var httpService: HttpService = _
 
@@ -21,12 +25,12 @@ class KoodistoServiceTest extends UnitTestBase {
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-    koodistoService = new KoodistoService(httpService, maakoodiService)
+    koodistoService = new KoodistoService(oauth2Client, httpService, maakoodiService)
   }
 
   @Test
   def testGetKoodisto(): Unit = {
-    when(httpService.get(any[CasClient], any[String])).thenReturn(Right(loadJson("maatJaValtiotKoodisto.json")))
+    when(httpService.get(any[Oauth2Client], any[String])).thenReturn(Right(loadJson("maatJaValtiotKoodisto.json")))
     val maatJaValtiot = koodistoService.getKoodisto("maatJaValtiot2").toList
     assertEquals(maatJaValtiot.size, 3)
 
