@@ -50,6 +50,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
   return (
     <Stack gap={theme.spacing(3)}>
       <OphRadioGroupWithClear
+        labelVariant="label"
         labelId="myonteinenPaatos-radio-group-label"
         label={t('hakemus.paatos.myonteinenTaiKielteinenPaatos')}
         data-testid="myonteinenPaatos-radio-group"
