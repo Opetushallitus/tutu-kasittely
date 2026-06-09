@@ -27,6 +27,11 @@ tutu.ui.url=https://localhost:3123
 tutu.backend.url=https://localhost:8444/tutu-backend
 tutu.backend.cas.username=<CAS-KAYTTAJATUNNUS>
 tutu.backend.cas.password=<CAS-SALASANA>
+
+oauth2.issuer.url=https://<dev / qa / prod>.otuva.opintopolku.fi/kayttooikeus-service
+tutu.backend.oauth2.client=<OAUTH2-tunniste>
+tutu.backend.oauth2.secret=<OAUTH2-salasana>
+
 # Untuvan käyttöoikeusryhmät
 tutu.backend.esittelija.kayttooikeusryhma.ids=71713274,71713307
 #logging.level.org.springframework.cache=TRACE

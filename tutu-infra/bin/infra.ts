@@ -212,12 +212,13 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     env_vars: {
       ...environmentConfig.services.web_backend.env_vars,
       ...{
+        ENVIRONMENT: environmentName,
         POSTGRESQL_HOST: WebBackendAurora.cluster.clusterEndpoint.hostname,
         POSTGRESQL_PORT: WebBackendAurora.cluster.clusterEndpoint.port,
         AWS_REGION: envEU.region
       }
     },
-    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS', 'CAS_USER', 'AWS_BUCKET_NAME'],
+    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS', 'CAS_USER', 'AWS_BUCKET_NAME', 'OAUTH2_CLIENT', 'OAUTH2_SECRET'],
     secrets_manager_secrets: [Secrets.secrets.PG_PASS, Secrets.secrets.SESSION_SECRET],
     ecrAccountId: utilityConfig.accountId,
     listener: Alb.albListener,
