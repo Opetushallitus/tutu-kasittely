@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Divider, Stack, styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { Theme } from '@mui/material/styles';
 import {
   OphButton,
   ophColors,
@@ -34,6 +33,8 @@ const style = {
 
 const ViestiContent = styled(Box)({
   whiteSpace: 'pre-line',
+  flex: 1,
+  maxHeight: '80vh',
   overflowY: 'auto',
 });
 
@@ -44,7 +45,6 @@ export type ViestiMetadata = {
 
 export type VahvistettuViestiModalProps = {
   t: TFunction;
-  theme: Theme;
   open: boolean;
   viestiMetadata?: ViestiMetadata;
   handleClose: () => void;
@@ -65,7 +65,6 @@ const handleCopy = (html: string, t: TFunction, addToast: AddToastCallback) => {
 
 export const VahvistettuViestiModal = ({
   t,
-  theme,
   open,
   viestiMetadata,
   handleClose,
@@ -86,7 +85,7 @@ export const VahvistettuViestiModal = ({
   const content = isLoading ? (
     <FullSpinner />
   ) : (
-    <Stack gap={theme.spacing(2)}>
+    <Stack gap={2}>
       <OphTypography data-testid="viesti-otsikko" variant={'h2'}>
         {viesti?.otsikko}
       </OphTypography>

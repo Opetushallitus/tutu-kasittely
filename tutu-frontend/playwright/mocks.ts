@@ -613,6 +613,11 @@ export const mockPaatosteksti = (
           string,
           unknown
         >;
+        if (route.request().url().includes('/vahvista')) {
+          putData.vahvistettu = new Date().toISOString();
+        } else {
+          putData.vahvistettu = undefined;
+        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',

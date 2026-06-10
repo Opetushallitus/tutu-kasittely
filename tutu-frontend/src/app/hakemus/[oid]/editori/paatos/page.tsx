@@ -18,13 +18,18 @@ import {
 import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
+import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatospohja } from '@/src/lib/types/paatosteksti';
 import { handleFetchError } from '@/src/lib/utils';
+
+const copy2Clipboard = (editor: LexicalEditor) =>
+  navigator.clipboard.writeText(exportMarkdown(editor)).finally(() => {});
 
 export default function PaatosEditorPage() {
   const { t } = useTranslations();
@@ -75,6 +80,34 @@ export default function PaatosEditorPage() {
     return <FullSpinner />;
   }
 
+  const painikeAction = () => {
+    if (paatosteksti.vahvistettu) {
+      copy2Clipboard(editorRef.current!);
+      return;
+    }
+
+    showConfirmation({
+      header: t(`hakemus.editori.paatos.vahvistus.modal.otsikko`),
+      content: t(`hakemus.editori.paatos.vahvistus.modal.teksti`),
+      confirmButtonText: t(`hakemus.editori.paatos.vahvistus.modal.vahvista`),
+      handleConfirmAction: () => {
+        savePaatosteksti(
+          {
+            ...paatosteksti,
+            sisalto: exportHtml(editorRef.current),
+          },
+          true,
+          () => setHasChanges(false),
+        );
+        copy2Clipboard(editorRef.current!);
+      },
+    });
+  };
+
+  const painikkeenTeksti = paatosteksti.vahvistettu
+    ? t('hakemus.editori.paatos.kopioi')
+    : t('hakemus.editori.paatos.vahvista');
+
   return (
     <>
       <Stack
@@ -94,35 +127,30 @@ export default function PaatosEditorPage() {
             onValitsePohja: () => setShowTekstipohjaLista(true),
           }}
         ></Editor>
-        <OphButton
-          sx={{ alignSelf: 'flex-end' }}
-          variant={'contained'}
-          startIcon={<CopyAllOutlined />}
-          onClick={() =>
-            showConfirmation({
-              header: t(`hakemus.editori.paatos.vahvistus.modal.otsikko`),
-              content: t(`hakemus.editori.paatos.vahvistus.modal.teksti`),
-              confirmButtonText: t(
-                `hakemus.editori.paatos.vahvistus.modal.vahvista`,
-              ),
-              handleConfirmAction: () => {
-                savePaatosteksti(
-                  {
-                    ...paatosteksti,
-                    sisalto: exportHtml(editorRef.current),
-                  },
-                  true,
-                  () => setHasChanges(false),
-                );
-                navigator.clipboard
-                  .writeText(exportMarkdown(editorRef.current))
-                  .finally(() => {});
-              },
-            })
-          }
-        >
-          {t('hakemus.editori.paatos.vahvista')}
-        </OphButton>
+        <Stack direction="row-reverse" gap={2} justifyContent="space-between">
+          <OphButton
+            sx={{ alignSelf: 'flex-end' }}
+            variant={'contained'}
+            startIcon={<CopyAllOutlined />}
+            onClick={painikeAction}
+            data-testid={'vahvista-kopioi-painike'}
+          >
+            {painikkeenTeksti}
+          </OphButton>
+          {paatosteksti.vahvistettu && (
+            <OphTypography
+              variant={'body1'}
+              data-testid="vahvistettu-aikaleima"
+            >
+              {t(`hakemus.editori.paatos.vahvistettu`, {
+                date: formatHelsinki(
+                  paatosteksti.vahvistettu,
+                  DATE_TIME_PLACEHOLDER,
+                ),
+              })}
+            </OphTypography>
+          )}
+        </Stack>
       </Stack>
       <SaveRibbon
         onSave={onSave}

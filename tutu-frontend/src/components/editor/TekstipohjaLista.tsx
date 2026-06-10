@@ -113,7 +113,7 @@ const ListaSisalto = ({
           <OphTypography variant="h3">
             {`${kategoriaIndex + 1}. ${kategoria.kategoriaNimi}`}
           </OphTypography>
-          {R.map(kategoria.pohjat, (pohja, pohjaIndex) => (
+          {R.map(kategoria.pohjat || [], (pohja, pohjaIndex) => (
             <OphButton
               key={`pohjaItem_${pohjaIndex}`}
               onClick={() => {
