@@ -153,8 +153,8 @@ export default function PaatosEditorPage() {
             if (kielistettyTeksti) {
               pasteHtml(editorRef.current, kielistettyTeksti);
               addToast({
-                key: 'tekstipohjat.viestipohjat.valittu',
-                message: t('tekstipohjat.viestipohjat.valittu'),
+                key: 'tekstipohjat.paatospohjat.valittu',
+                message: t('tekstipohjat.paatospohjat.valittu'),
                 type: 'success',
                 timeMs: 2500,
               });
