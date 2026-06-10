@@ -21,7 +21,7 @@ import { KategorianTekstipohjat, Viestipohja } from '@/src/lib/types/viesti';
 import { handleFetchError } from '@/src/lib/utils';
 
 interface TekstipohjaListaProps {
-  url: string;
+  url: 'paatospohja' | 'viestipohja';
   headerText: string;
   close: () => void;
   selectPohja: (pohja: Viestipohja) => void;
