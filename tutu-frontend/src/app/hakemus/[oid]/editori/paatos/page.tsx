@@ -13,7 +13,9 @@ import {
   exportHtml,
   exportMarkdown,
   importHtml,
+  pasteHtml,
 } from '@/src/components/editor/editor-utils';
+import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
@@ -21,6 +23,7 @@ import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Paatospohja } from '@/src/lib/types/paatosteksti';
 import { handleFetchError } from '@/src/lib/utils';
 
 export default function PaatosEditorPage() {
@@ -128,6 +131,34 @@ export default function PaatosEditorPage() {
         lastSaved={paatosteksti.muokattu}
         modifier={paatosteksti.muokkaaja}
       />
+      {showTekstipohjaLista && (
+        <TekstipohjaLista
+          url="paatospohja"
+          headerText={t('tekstipohjat.paatospohjat.valitse')}
+          close={() => setShowTekstipohjaLista(false)}
+          selectPohja={(pohja: Paatospohja) => {
+            const pt = paatosteksti as unknown as {
+              kieli?: string;
+              kielikoodi?: string;
+            };
+            const lang = pt?.kieli || pt?.kielikoodi || 'fi';
+            const sisaltoObj = pohja.sisalto as
+              | Record<string, string>
+              | undefined;
+            const kielistettyTeksti = sisaltoObj?.[lang] ?? '';
+
+            if (kielistettyTeksti && paatosteksti) {
+              pasteHtml(editorRef.current, kielistettyTeksti);
+              addToast({
+                key: 'tekstipohjat.paatospohjat.valittu',
+                message: t('tekstipohjat.paatospohjat.valittu'),
+                type: 'success',
+                timeMs: 2500,
+              });
+            }
+          }}
+        ></TekstipohjaLista>
+      )}
     </>
   );
 }

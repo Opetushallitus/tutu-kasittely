@@ -34,7 +34,7 @@ import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useViestiAll } from '@/src/hooks/useViestiAll';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
-import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
+import { Viesti, Viestipohja, Viestityyppi } from '@/src/lib/types/viesti';
 import { handleFetchError } from '@/src/lib/utils';
 
 export default function ViestiPage() {
@@ -290,9 +290,10 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         </Stack>
         {showTekstipohjaLista && (
           <TekstipohjaLista
+            url="viestipohja"
             headerText={t('tekstipohjat.viestipohjat.valitse')}
             close={() => setShowTekstipohjaLista(false)}
-            selectPohja={(pohja) => {
+            selectPohja={(pohja: Viestipohja) => {
               const kielistettyTeksti = currentViesti?.kieli
                 ? pohja.sisalto[currentViesti?.kieli]
                 : '';
