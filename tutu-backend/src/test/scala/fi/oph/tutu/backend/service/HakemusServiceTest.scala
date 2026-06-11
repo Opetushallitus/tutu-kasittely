@@ -13,6 +13,7 @@ import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
+import java.util.concurrent.CompletableFuture
 
 class HakemusServiceTest extends UnitTestBase {
 
@@ -40,6 +41,8 @@ class HakemusServiceTest extends UnitTestBase {
   var ataruHakemusParser: AtaruHakemusParser = _
   @Mock
   var userService: UserService = _
+  @Mock
+  var perustelumuistioService: IPerustelumuistioService = _
   @Mock
   var db: TutuDatabase = _
 
@@ -169,8 +172,13 @@ class HakemusServiceTest extends UnitTestBase {
       onrService = onrService,
       ataruHakemusParser = ataruHakemusParser,
       userService = userService,
+      perustelumuistioService = perustelumuistioService,
       db = db
     )
+    when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
+    when(perustelumuistioService.paivitaPerustelumuistio(any[UUID], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
   }
 
   @Nested

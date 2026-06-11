@@ -278,7 +278,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         "testi"
       )
     )
-    perustelu = perustelu.copy(hakemusId = Some(hakemusId.get))
+    perustelu = perustelu.copy(hakemusId = hakemusId)
     hakemusId2 = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOid2,
@@ -291,7 +291,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         "testi"
       )
     )
-    perustelu2 = perustelu2.copy(hakemusId = Some(hakemusId2.get))
+    perustelu2 = perustelu2.copy(hakemusId = hakemusId2)
     hakemusId3 = Some(
       hakemusRepository.tallennaHakemus(
         hakemusOid3,
@@ -304,7 +304,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         "testi"
       )
     )
-    perustelu3 = perustelu3.copy(hakemusId = Some(hakemusId3.get))
+    perustelu3 = perustelu3.copy(hakemusId = hakemusId3)
 
     setupHakemuspalveluMocks()
   }

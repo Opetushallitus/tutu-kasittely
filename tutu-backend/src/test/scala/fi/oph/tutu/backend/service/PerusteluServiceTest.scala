@@ -41,6 +41,8 @@ class PerusteluServiceTest extends UnitTestBase {
   var onrService: OnrService = _
   @Mock
   var translationService: TranslationService = _
+  @Mock
+  var perustelumuistioService: PerustelumuistioService = _
 
   var perusteluService: PerusteluService = _
 
@@ -78,17 +80,10 @@ class PerusteluServiceTest extends UnitTestBase {
     MockitoAnnotations.openMocks(this)
     perusteluService = new PerusteluService(
       hakemusService = hakemusService,
-      tutkintoService = tutkintoService,
       hakemusRepository = hakemusRepository,
       perusteluRepository = perusteluRepository,
-      asiakirjaRepository = asiakirjaRepository,
-      kasittelyVaiheService = kasittelyVaiheService,
-      hakemuspalveluService = hakemuspalveluService,
-      paatosService = paatosService,
-      maakoodiService = maakoodiService,
-      koodistoService = koodistoService,
       onrService = onrService,
-      translationService = translationService
+      perustelumuistioService = perustelumuistioService
     )
   }
 

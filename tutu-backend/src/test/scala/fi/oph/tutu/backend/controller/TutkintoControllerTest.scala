@@ -196,6 +196,11 @@ class TutkintoControllerTest extends IntegrationTestBase {
   @Order(3)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def poistaTutkintoValidRequestReturns204(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+      )
+
     val tutkinnot1  = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
     val poistettuId = tutkinnot1.head.id.get
 

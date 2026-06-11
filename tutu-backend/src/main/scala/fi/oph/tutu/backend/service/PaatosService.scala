@@ -23,6 +23,7 @@ class PaatosService(
   ataruLomakeParser: AtaruLomakeParser,
   maakoodiService: MaakoodiService,
   onrService: OnrService,
+  perustelumuistioService: IPerustelumuistioService,
   paatosTekstiGenerator: PaatosTekstiGenerator
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
@@ -148,6 +149,7 @@ class PaatosService(
         )
       case _ => None
     }
+    perustelumuistioService.paivitaPerustelumuistio(hakemusOid, luojaTaiMuokkaaja)
     (currentPaatos, updatedPaatos)
   }
 
