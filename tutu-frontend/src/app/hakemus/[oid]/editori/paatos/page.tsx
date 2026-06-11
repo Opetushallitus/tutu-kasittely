@@ -127,7 +127,7 @@ export default function PaatosEditorPage() {
             onValitsePohja: () => setShowTekstipohjaLista(true),
           }}
         ></Editor>
-        <Stack direction="row-reverse" gap={2} justifyContent="space-between">
+        <Stack direction="row-reverse" justifyContent="space-between">
           <OphButton
             sx={{ alignSelf: 'flex-end' }}
             variant={'contained'}
