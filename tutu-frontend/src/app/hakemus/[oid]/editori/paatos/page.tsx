@@ -23,6 +23,7 @@ import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Paatospohja } from '@/src/lib/types/paatosteksti';
 import { handleFetchError } from '@/src/lib/utils';
 
 export default function PaatosEditorPage() {
@@ -135,22 +136,18 @@ export default function PaatosEditorPage() {
           url="paatospohja"
           headerText={t('tekstipohjat.paatospohjat.valitse')}
           close={() => setShowTekstipohjaLista(false)}
-          selectPohja={(pohja) => {
-            let kielistettyTeksti = '';
-            if (typeof pohja.sisalto === 'string') {
-              kielistettyTeksti = pohja.sisalto;
-            } else if (paatosteksti) {
-              const pt = paatosteksti as unknown as {
-                kieli?: string;
-                kielikoodi?: string;
-              };
-              const lang = pt?.kieli || pt?.kielikoodi || 'fi';
-              const sisaltoObj: Record<string, string> | undefined =
-                pohja.sisalto as unknown as Record<string, string> | undefined;
-              kielistettyTeksti = sisaltoObj?.[lang] ?? '';
-            }
+          selectPohja={(pohja: Paatospohja) => {
+            const pt = paatosteksti as unknown as {
+              kieli?: string;
+              kielikoodi?: string;
+            };
+            const lang = pt?.kieli || pt?.kielikoodi || 'fi';
+            const sisaltoObj = pohja.sisalto as
+              | Record<string, string>
+              | undefined;
+            const kielistettyTeksti = sisaltoObj?.[lang] ?? '';
 
-            if (kielistettyTeksti) {
+            if (kielistettyTeksti && paatosteksti) {
               pasteHtml(editorRef.current, kielistettyTeksti);
               addToast({
                 key: 'tekstipohjat.paatospohjat.valittu',

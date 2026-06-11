@@ -17,6 +17,7 @@ import {
 } from '@/src/hooks/useTekstipohjat';
 import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Paatospohja } from '@/src/lib/types/paatosteksti';
 import { KategorianTekstipohjat, Viestipohja } from '@/src/lib/types/viesti';
 import { handleFetchError } from '@/src/lib/utils';
 
@@ -24,7 +25,7 @@ interface TekstipohjaListaProps {
   url: 'paatospohja' | 'viestipohja';
   headerText: string;
   close: () => void;
-  selectPohja: (pohja: Viestipohja) => void;
+  selectPohja: (pohja: Viestipohja | Paatospohja) => void;
 }
 
 export const TekstipohjaLista = ({
