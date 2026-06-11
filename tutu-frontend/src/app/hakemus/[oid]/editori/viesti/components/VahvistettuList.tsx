@@ -94,7 +94,6 @@ export const VahvistettuList = ({
       </OphTypography>
       <VahvistettuViestiModal
         t={t}
-        theme={theme}
         open={isModalOpen}
         viestiMetadata={viestiInModal}
         handleClose={closeModal}

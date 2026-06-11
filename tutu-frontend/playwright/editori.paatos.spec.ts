@@ -54,14 +54,19 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
 }) => {
   const saveButton = page.getByTestId('save-ribbon-button');
   await expect(saveButton).toBeHidden();
+  const vahvistettuAikaleima = page.getByTestId('vahvistettu-aikaleima');
+  const vahvistaButton = page.getByTestId('vahvista-kopioi-painike');
+  await expect(vahvistaButton).toHaveText(
+    await translate(page, 'hakemus.editori.paatos.vahvista'),
+  );
+
+  await expect(vahvistettuAikaleima).toBeHidden();
 
   await page
     .getByTestId('editor-content-editable')
     .fill('Muokattu vahvistettava päätösteksti');
 
-  await page
-    .getByText(await translate(page, 'hakemus.editori.paatos.vahvista'))
-    .click();
+  await vahvistaButton.click();
 
   const [request] = await Promise.all([
     page.waitForRequest(
@@ -76,6 +81,40 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
     sisalto:
       '<p><span style="white-space: pre-wrap;">Muokattu vahvistettava päätösteksti</span></p>',
   });
+
+  await expect(vahvistettuAikaleima).toBeVisible();
+  await expect(vahvistaButton).toHaveText(
+    await translate(page, 'hakemus.editori.paatos.kopioi'),
+  );
+});
+
+test('Vahvistetun päätöstekstin tallennus palauttaa tekstin vahvistamattomaksi', async ({
+  page,
+}) => {
+  const saveButton = page.getByTestId('save-ribbon-button');
+  const editori = page.getByTestId('editor-content-editable');
+  await expect(saveButton).toBeHidden();
+  const vahvistettuAikaleima = page.getByTestId('vahvistettu-aikaleima');
+  const vahvistaButton = page.getByTestId('vahvista-kopioi-painike');
+  await expect(vahvistaButton).toHaveText(
+    await translate(page, 'hakemus.editori.paatos.vahvista'),
+  );
+  await expect(vahvistettuAikaleima).toBeHidden();
+
+  await editori.fill('Vahvistettava päätösteksti');
+  await vahvistaButton.click();
+  await page.getByTestId('modal-confirm-button').click();
+  await expect(vahvistettuAikaleima).toBeVisible();
+  await expect(vahvistaButton).toHaveText(
+    await translate(page, 'hakemus.editori.paatos.kopioi'),
+  );
+
+  await editori.fill('Muokattu päätösteksti');
+  await saveButton.click();
+  await expect(vahvistaButton).toHaveText(
+    await translate(page, 'hakemus.editori.paatos.vahvista'),
+  );
+  await expect(vahvistettuAikaleima).toBeHidden();
 });
 
 test('Päätöstekstin tallennuksen epäonnistuessa näytetään virhetoast', async ({

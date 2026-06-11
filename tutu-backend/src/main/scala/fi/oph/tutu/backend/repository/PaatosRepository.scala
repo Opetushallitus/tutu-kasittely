@@ -633,7 +633,8 @@ class PaatosRepository extends BaseResultHandlers {
     sql"""UPDATE paatosteksti
         SET
           sisalto = ${paatosteksti.sisalto},
-          muokkaaja = $muokkaaja
+          muokkaaja = $muokkaaja,
+          vahvistettu = null
         WHERE id = ${paatostekstiId.toString}::uuid
         RETURNING
           id,
