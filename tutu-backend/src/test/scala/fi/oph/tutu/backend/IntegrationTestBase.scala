@@ -18,8 +18,8 @@ import fi.oph.tutu.backend.service.{AtaruHakemusParser, HakemuspalveluService, K
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api.{BeforeAll, TestInstance}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.*
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,6 +35,7 @@ import java.time.{Duration, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.io.Source
 import fi.oph.tutu.backend.config.JacksonConfig
+import fi.oph.tutu.backend.service.IPerustelumuistioService
 
 object IntegrationTestBase extends Object {
   private val postgresContainer = new PostgreSQLContainer("postgres:16.11")
@@ -119,6 +120,8 @@ class IntegrationTestBase {
   var hakemuspalveluService: HakemuspalveluService = _
   @MockitoBean
   var ataruHakemusParser: AtaruHakemusParser = _
+  @MockitoBean
+  var perustelumuistioService: IPerustelumuistioService = _
 
   val mapper = JacksonConfig.mapper
 

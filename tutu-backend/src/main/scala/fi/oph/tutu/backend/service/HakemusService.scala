@@ -27,6 +27,7 @@ import java.util.UUID
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
+import org.springframework.context.annotation.Lazy
 
 @Component
 @Service
@@ -43,6 +44,7 @@ class HakemusService(
   onrService: OnrService,
   ataruHakemusParser: AtaruHakemusParser,
   userService: UserService,
+  @Lazy perustelumuistioService: IPerustelumuistioService,
   db: TutuDatabase
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
@@ -165,7 +167,7 @@ class HakemusService(
   }
 
   private def luoKokonaishakemus[R](hakemusOid: HakemusOid, transactionalAction: DBIO[R]): R = {
-    db.runTransactionally(transactionalAction, "luo_kokonaishakemus") match {
+    val result = db.runTransactionally(transactionalAction, "luo_kokonaishakemus") match {
       case Success(result) =>
         LOG.info(s"Ataru-hakemuksen $hakemusOid kokonaisluonti onnistui")
         result
@@ -176,6 +178,8 @@ class HakemusService(
           e
         )
     }
+    perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
+    result
   }
 
   private def paivitaTutkinnotAtaruHakemukselta(
@@ -450,20 +454,28 @@ class HakemusService(
         if (!dbHakemus.onkoPeruutettu && hakemusUpdateRequest.onkoPeruutettu)
           paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, userOid.toString)
 
-        hakemusRepository.paivitaHakemus(
+        val result = hakemusRepository.paivitaHakemus(
           hakemusOid,
           modifiedHakemus,
           userOid.toString
         )
+
+        perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
+
+        result
     }
   }
 
   def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
-    hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
+    val result = hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
+    perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
+    result
   }
 
   def asetaEsittelypaiva(hakemusOid: HakemusOid, esittelyPvm: LocalDateTime, muokkaaja: String): Int = {
-    hakemusRepository.suoritaPaivitaEsittelyPvm(hakemusOid, esittelyPvm, muokkaaja)
+    val result = hakemusRepository.suoritaPaivitaEsittelyPvm(hakemusOid, esittelyPvm, muokkaaja)
+    perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE).get
+    result
   }
 
   def paivitaKasittelyVaiheSisaisesti(
@@ -525,6 +537,7 @@ class HakemusService(
         dbHakemus.copy(kasittelyVaihe = kasittelyVaihe),
         luojaTaiMuokkaaja
       )
+      perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
     }
   }
 
@@ -591,6 +604,7 @@ class HakemusService(
           )
           if (asetaPeruutetuksi)
             paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, ATARU_SERVICE)
+            perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
         }
       case _ =>
         LOG.warn(s"Vastaanotettiin päivitys hakemukselle ${hakemusOid.s} jota ei löydy TUTU -kannasta")

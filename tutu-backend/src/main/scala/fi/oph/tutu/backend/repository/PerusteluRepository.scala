@@ -395,15 +395,15 @@ class PerusteluRepository extends BaseResultHandlers {
           FROM
             perustelumuistio
           WHERE hakemus_id IN
-            (SELECT id FROM hakemus where hakemus_oid = ${hakemusOid.toString})
+            (SELECT id FROM hakemus where hakemus_oid = ${hakemusOid.s})
         """.as[Perustelumuistio].headOption,
         "hae_perustelu"
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.toString}): $e")
+        LOG.error(s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.s}): $e")
         throw new RuntimeException(
-          s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.toString}): ${e.getMessage}",
+          s"Perustelumuistion haku epäonnistui (hakemusOid: ${hakemusOid.s}): ${e.getMessage}",
           e
         )
     }
@@ -417,25 +417,26 @@ class PerusteluRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          INSERT INTO perustelumuistio (
-            hakemus_id
-            sisalto
-            luoja
-          )
-          VALUES (
-            SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString},
-            $sisalto,
-            $luoja
-          )
-          RETURNING
+        INSERT INTO perustelumuistio (
+          hakemus_id,
+          sisalto,
+          luoja
+        )
+        SELECT
             id,
-            hakemus_id,
-            sisalto,
-            luotu,
-            luoja,
-            muokattu,
-            muokkaaja
-        """.as[Perustelumuistio].head,
+            $sisalto as sisalto,
+            $luoja as luoja
+          FROM hakemus
+          WHERE hakemus_oid = ${hakemusOid.s}
+        RETURNING
+          id,
+          hakemus_id,
+          sisalto,
+          luotu,
+          luoja,
+          muokattu,
+          muokkaaja
+      """.as[Perustelumuistio].head,
         "lisaa_perustelumuistio"
       )
     } catch {
@@ -457,7 +458,7 @@ class PerusteluRepository extends BaseResultHandlers {
           SET
             sisalto = $sisalto,
             muokkaaja = $muokkaaja
-          WHERE hakemus_id IN (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.toString})
+          WHERE hakemus_id IN (SELECT id FROM hakemus WHERE hakemus_oid = ${hakemusOid.s})
           RETURNING
             id,
             hakemus_id,

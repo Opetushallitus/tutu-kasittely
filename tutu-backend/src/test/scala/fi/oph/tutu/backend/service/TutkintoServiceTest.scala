@@ -13,11 +13,14 @@ import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
+import java.util.concurrent.CompletableFuture
 
 class TutkintoServiceTest extends UnitTestBase {
 
   @Mock
   var tutkintoRepository: TutkintoRepository = _
+  @Mock
+  var perustelumuistioService: IPerustelumuistioService = _
   @Mock
   var onrService: OnrService = _
 
@@ -28,8 +31,13 @@ class TutkintoServiceTest extends UnitTestBase {
     MockitoAnnotations.openMocks(this)
     tutkintoService = new TutkintoService(
       tutkintoRepository = tutkintoRepository,
+      perustelumuistioService = perustelumuistioService,
       onrService = onrService
     )
+    when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
+    when(perustelumuistioService.paivitaPerustelumuistio(any[UUID], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
   }
 
   @Test

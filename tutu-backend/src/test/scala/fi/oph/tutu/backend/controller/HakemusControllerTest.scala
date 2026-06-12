@@ -31,6 +31,8 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
+import java.util.UUID
 
 object HakemusControllerTestConstants {
   final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
@@ -96,6 +98,11 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit = {
+    when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
+    when(perustelumuistioService.paivitaPerustelumuistio(any[UUID], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
+
     when(mockOnrService.haeAsiointikieli(any[String]))
       .thenReturn(Right("fi"))
 

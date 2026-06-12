@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Perustelu}
-import fi.oph.tutu.backend.service.{PerusteluServiceInterface, UserService}
+import fi.oph.tutu.backend.service.{PerusteluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPerustelu, UpdatePerustelu}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -24,7 +24,7 @@ import scala.util.{Failure, Success, Try}
 @RestController
 @RequestMapping(path = Array("api"))
 class PerusteluController(
-  perusteluService: PerusteluServiceInterface,
+  perusteluService: PerusteluService,
   userService: UserService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
@@ -105,7 +105,6 @@ class PerusteluController(
       val user                 = userService.getEnrichedUserDetails(true)
       val perustelu: Perustelu =
         mapper.readValue(perusteluBytes, classOf[Perustelu])
-
       perusteluService.tallennaPerustelu(
         HakemusOid(hakemusOid),
         perustelu,
@@ -149,7 +148,7 @@ class PerusteluController(
   )
   def haePerusteluMuistio(@PathVariable hakemusOid: String): ResponseEntity[Any] = {
     Try {
-      perusteluService.haePerusteluMuistio(HakemusOid(hakemusOid))
+      perusteluService.haePerustelumuistio(HakemusOid(hakemusOid))
     } match {
       case Success(perusteluMuistio) =>
         val response = mapper.writeValueAsString(perusteluMuistio)

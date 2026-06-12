@@ -254,7 +254,8 @@ class TutkintoController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      tutkintoService.poistaTutkinto(UUID.fromString(tutkintoId))
+      val user = userService.getEnrichedUserDetails(true)
+      tutkintoService.poistaTutkinto(UUID.fromString(tutkintoId), UserOid(user.userOid))
     } match {
       case Success(result) =>
         if (result == 0) {

@@ -121,11 +121,11 @@ class TutkintoRepository extends BaseResultHandlers {
 
   def suoritaTutkintojenModifiointi(
     modifyData: TutkintoModifyData,
-    luojaTaiMuokkaaja: UserOid
+    luojaTaiMuokkaaja: String
   ): Unit = {
     val actions = modifyData.poistetut.map(poistaTutkinto) ++
-      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaaja.toString)) ++
-      modifyData.uudet.map(t => lisaaTutkinto(t, luojaTaiMuokkaaja.toString))
+      modifyData.muutetut.map(t => paivitaTutkinto(t, luojaTaiMuokkaaja)) ++
+      modifyData.uudet.map(t => lisaaTutkinto(t, luojaTaiMuokkaaja))
     val combined = db.combineIntDBIOs(actions)
     db.runTransactionally(combined, "suorita_tutkintojen_modifiointi") match {
       case Success(_) => ()

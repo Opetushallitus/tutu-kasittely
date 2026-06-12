@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 import fi.oph.tutu.backend.service.generator.paatosteksti.PaatosTekstiGenerator
+import java.util.concurrent.CompletableFuture
 
 class PaatosServiceTest extends UnitTestBase {
 
@@ -36,6 +37,8 @@ class PaatosServiceTest extends UnitTestBase {
   var maakoodiService: MaakoodiService = _
   @Mock
   var onrService: OnrService = _
+  @Mock
+  var perustelumuistioService: IPerustelumuistioService = _
   @Mock
   var paatosTekstiGenerator: PaatosTekstiGenerator = _
 
@@ -83,8 +86,13 @@ class PaatosServiceTest extends UnitTestBase {
       ataruLomakeParser = ataruLomakeParser,
       maakoodiService = maakoodiService,
       onrService = onrService,
+      perustelumuistioService = perustelumuistioService,
       paatosTekstiGenerator = paatosTekstiGenerator
     )
+    when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
+    when(perustelumuistioService.paivitaPerustelumuistio(any[UUID], any[String]))
+      .thenReturn(CompletableFuture.completedFuture(None))
   }
 
   @Test

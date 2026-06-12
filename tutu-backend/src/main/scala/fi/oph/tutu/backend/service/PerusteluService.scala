@@ -1,55 +1,24 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.{AsiakirjaRepository, HakemusRepository, PerusteluRepository}
-import fi.oph.tutu.backend.service.generator.perustelumuistio.generate as generatePerusteluMuistio
+import fi.oph.tutu.backend.repository.{HakemusRepository, PerusteluRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import java.time.LocalDateTime
 import java.util.UUID
-import org.springframework.scheduling.annotation.Async
-
-trait PerusteluServiceInterface {
-  def haePerustelu(
-    hakemusOid: HakemusOid
-  ): Option[Perustelu]
-  def tallennaPerustelu(
-    hakemusOid: HakemusOid,
-    perustelu: Perustelu,
-    luojaTaiMuokkaaja: String
-  ): (Option[Perustelu], Option[Perustelu])
-  def haePerusteluMuistio(
-    hakemusOid: HakemusOid
-  ): Option[String]
-  def paivitaPerustelumuistio(
-    hakemusOid: HakemusOid,
-    muokkaaja: String
-  ): Unit
-  def paivitaPerustelumuistio(
-    hakemusId: UUID,
-    muokkaaja: String
-  ): Unit
-}
+import org.springframework.context.annotation.Lazy
 
 @Component
 @Service
 class PerusteluService(
-  hakemusService: HakemusService,
-  tutkintoService: TutkintoService,
+  @Lazy hakemusService: HakemusService,
   hakemusRepository: HakemusRepository,
   perusteluRepository: PerusteluRepository,
-  asiakirjaRepository: AsiakirjaRepository,
-  kasittelyVaiheService: KasittelyVaiheService,
-  hakemuspalveluService: HakemuspalveluService,
-  paatosService: PaatosService,
-  maakoodiService: MaakoodiService,
-  koodistoService: KoodistoService,
   onrService: OnrService,
-  translationService: TranslationService
-) extends TutuJsonFormats
-    with PerusteluServiceInterface {
+  @Lazy perustelumuistioService: IPerustelumuistioService
+) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
 
   def haePerustelu(
@@ -131,7 +100,6 @@ class PerusteluService(
 
         Some(
           latestSavedPerustelu.copy(
-            muokkaaja = onrService.haeNimiOption(latestSavedPerustelu.muokkaaja),
             lausuntopyynnot =
               if (newlySavedLausuntoPyynnot.nonEmpty)
                 newlySavedLausuntoPyynnot
@@ -141,50 +109,11 @@ class PerusteluService(
         )
       case _ => None
     }
+    perustelumuistioService.paivitaPerustelumuistio(hakemusOid, luojaTaiMuokkaaja)
     (currentPerustelu, newPerustelu)
   }
 
-  def haePerusteluMuistio(
-    hakemusOid: HakemusOid
-  ): Option[String] = {
-    val hakemusMaybe: Option[Hakemus]           = hakemusService.haeHakemus(hakemusOid)
-    val tutkinnot: Seq[Tutkinto]                = tutkintoService.haeTutkinnot(hakemusOid)
-    val ataruHakemusMaybe: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val perusteluMaybe: Option[Perustelu]       = haePerustelu(hakemusOid)
-    val paatosMaybe: Option[Paatos]             = paatosService.haePaatos(hakemusOid)
-
-    val perusteluMuistio = generatePerusteluMuistio(
-      koodistoService,
-      maakoodiService,
-      onrService,
-      translationService,
-      hakemusMaybe,
-      tutkinnot,
-      ataruHakemusMaybe,
-      perusteluMaybe,
-      paatosMaybe
-    )
-
-    Some(perusteluMuistio)
-  }
-
-  @Async
-  def paivitaPerustelumuistio(
-    hakemusOid: HakemusOid,
-    muokkaaja: String
-  ): Unit = {
-    haePerusteluMuistio(hakemusOid).map(sisalto => {
-      perusteluRepository.haePerustelumuistio(hakemusOid) match {
-        case None    => perusteluRepository.lisaaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
-        case Some(_) => perusteluRepository.paivitaPerustelumuistio(hakemusOid, sisalto, muokkaaja)
-      }
-    })
-  }
-
-  def paivitaPerustelumuistio(
-    hakemusId: UUID,
-    muokkaaja: String
-  ): Unit = {
-    hakemusService.hakemusIdToOid(hakemusId).map(hakemusOid => paivitaPerustelumuistio(hakemusOid, muokkaaja))
+  def haePerustelumuistio(hakemusOid: HakemusOid): Option[String] = {
+    perusteluRepository.haePerustelumuistio(hakemusOid).map(_.sisalto)
   }
 }
