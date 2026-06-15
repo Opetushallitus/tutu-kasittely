@@ -72,7 +72,7 @@ export default function HakemusListFilters() {
 
   const [nayta, setNayta] = useQueryState(
     'nayta',
-    parseAsStringLiteral(naytaQueryStates).withDefault('kaikki'),
+    parseAsStringLiteral(naytaQueryStates).withDefault('omat'),
   );
 
   const naytaKaikki = nayta === 'kaikki';

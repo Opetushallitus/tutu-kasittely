@@ -285,8 +285,8 @@ class HakemusController(
       val sortParam = resolveSortParams(sort)
       val user      = userService.getEnrichedUserDetails(true)
       val userOid   = nayta match {
-        case "omat" => Option(user.userOid)
-        case null   =>
+        case "omat" | null => Option(user.userOid)
+        case "kaikki"      =>
           esittelija match {
             case null => None
             case _    => Option(esittelija)
