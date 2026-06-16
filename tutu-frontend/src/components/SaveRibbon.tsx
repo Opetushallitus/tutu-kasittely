@@ -76,7 +76,7 @@ export const SaveRibbon = ({
         padding: 2,
         display: 'flex',
         justifyContent: 'center',
-        zIndex: 99999,
+        zIndex: 1000,
         boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
       }}
     >
