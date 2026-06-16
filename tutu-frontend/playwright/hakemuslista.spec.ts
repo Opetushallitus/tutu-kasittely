@@ -79,7 +79,9 @@ test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', a
   page,
 }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend?esittelija=1.2.246.562.24.999999999999');
+  await page.goto(
+    '/tutu-frontend?esittelija=1.2.246.562.24.999999999999&nayta=kaikki',
+  );
 
   const esittelija = page.getByTestId('esittelija').locator('input');
 
@@ -97,7 +99,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadg
   await page.addInitScript(() => {
     localStorage.setItem(
       'tutu-query-string',
-      'vaihe=AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999',
+      'vaihe=AlkukasittelyKesken,OdottaaVahvistusta,LoppukasittelyValmis&hakemuskoskee=1&esittelija=1.2.246.562.24.999999999999&nayta=kaikki',
     );
   });
 
