@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 
 import { DirektiivitasoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/DirektiivitasoComponent';
 import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
+import { MyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/[oid]/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatosUO';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { MUU_AMMATTI_KEY } from '@/src/app/hakemus/[oid]/paatostiedot/constants';
 import {
@@ -141,14 +142,22 @@ const KelpoisuusUOLiitannaisComponent = ({
   updateAction: KelpoisuusUpdateCallback;
 }) => {
   return (
-    <MyonteinenTaiKielteinenPaatosComponent
-      myonteinenPaatos={kelpoisuus.myonteinenPaatos}
-      kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
-      updatePaatosAction={(paatos) => {
-        updateAction({ ...kelpoisuus, ...paatos });
-      }}
-      t={t}
-    />
+    <>
+      <MyonteinenTaiKielteinenPaatosComponent
+        myonteinenPaatos={kelpoisuus.myonteinenPaatos}
+        kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
+        updatePaatosAction={(paatos) => {
+          updateAction({ ...kelpoisuus, ...paatos });
+        }}
+        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatosUO}
+        lisavaatimusComponentProps={{
+          kelpoisuusKey: kelpoisuus.kelpoisuus,
+          lisavaatimukset:
+            kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
+        }}
+        t={t}
+      />
+    </>
   );
 };
 

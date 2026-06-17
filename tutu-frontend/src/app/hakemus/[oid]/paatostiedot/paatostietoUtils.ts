@@ -30,7 +30,6 @@ export const getPaatosTietoDropdownOptions = (
   currentHierarkiaLevel: number = 0,
 ): TreeOption[] => {
   return paatostietoOptions.map((option) => {
-    console.info(option.label['en']);
     const keyOption: TreeOption = {
       label: option.label[lang]!,
       value: option.value[lang]!,
@@ -92,8 +91,9 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
 
 export const emptyErotKoulutuksessa = (
   kelpoisuusKey?: string,
+  sovellettuLaki?: string,
 ): ErotKoulutuksessa => {
-  const eroModel = koulutusEroModel(kelpoisuusKey);
+  const eroModel = koulutusEroModel(kelpoisuusKey, sovellettuLaki);
   const kelpoisuusKohtaiset: NamedBoolean[] = Array.from(
     {
       length: eroModel.kelpoisuusKohtainenEroLkm,
@@ -179,13 +179,51 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
   return tobe;
 };
 
-export const koulutusEroModel = (kelpoisuusKey?: string) => {
+export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
+  currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
+  updatedKelpoisuudenLisavaatimuket: Partial<KelpoisuudenLisavaatimukset>,
+  kelpoisuusKey?: string,
+): KelpoisuudenLisavaatimukset => {
+  const tobe = {
+    ...currentKelpoisuudenLisavaatimukset,
+    ...updatedKelpoisuudenLisavaatimuket,
+  };
+  tobe.erotKoulutuksessa =
+    tobe.erotKoulutuksessa || emptyErotKoulutuksessa(kelpoisuusKey, 'uo');
+  tobe.korvaavaToimenpide = initOrUpdateKorvaavaToimenpide(
+    tobe.korvaavaToimenpide,
+  );
+  tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
+    initOrUpdateKorvaavaToimenpide(
+      tobe.lahtokohtaisetOsaamisenTaydentamisenTavat,
+    );
+  tobe.olennaisiaEroja = undefined;
+  tobe.ammattikokemusJaElinikainenOppiminen = undefined;
+
+  return tobe;
+};
+
+export const koulutusEroModel = (
+  kelpoisuusKey?: string,
+  sovellettuLaki?: string,
+) => {
+  const key = sovellettuLaki
+    ? `${kelpoisuusKey}_${sovellettuLaki}`
+    : kelpoisuusKey;
   const option = kelpoisuusKey
-    ? erotKoulutuksessaOptions.find(
-        (option) => option.kelpoisuusKey === kelpoisuusKey,
-      )
+    ? erotKoulutuksessaOptions.find((option) => option.kelpoisuusKey === key)
     : null;
   return option || oletusKoulutusErot;
+};
+
+export const setKoulutusEroValues = (
+  current: NamedBoolean[],
+  ero: string,
+  val: boolean,
+): NamedBoolean[] => {
+  return current.map((named) =>
+    named.name === ero ? { name: ero, value: val } : named,
+  );
 };
 
 export const yleinenKoulutusEroTranslation = (
