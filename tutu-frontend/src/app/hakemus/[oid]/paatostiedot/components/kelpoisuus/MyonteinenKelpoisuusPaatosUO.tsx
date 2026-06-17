@@ -128,7 +128,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   );
 
   const erotKoulutuksessa = useMemo(() => {
-    const erotKoulutuksessa = emptyErotKoulutuksessa(kelpoisuusKey);
+    const erotKoulutuksessa = emptyErotKoulutuksessa(kelpoisuusKey, 'uo');
     if (lisavaatimukset?.erotKoulutuksessa) {
       const currentlySelectedErot =
         lisavaatimukset.erotKoulutuksessa.erot || [];
@@ -155,11 +155,13 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne`)}
         value={lisavaatimukset?.sovellettuTilanne || ''}
         onChange={(event) => {
-          updateLisavaatimukset({ sovellettuTilanne: event.target.value });
+          updateKelpoisuudenLisavaatimukset({
+            sovellettuTilanne: event.target.value,
+          });
         }}
         data-testid={`uo-sovellettuTilanne-select`}
       />
-      {erotKoulutuksessa && lisavaatimukset?.erotKoulutuksessa && (
+      {erotKoulutuksessa && (
         <OphFormFieldWrapper
           renderInput={({ labelId }) => (
             <FormGroup aria-labelledby={labelId}>
@@ -174,7 +176,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
                   onChange={(e) => {
                     updateKelpoisuudenLisavaatimukset({
                       erotKoulutuksessa: {
-                        ...lisavaatimukset.erotKoulutuksessa,
+                        ...erotKoulutuksessa,
                         erot: setKoulutusEroValues(
                           lisavaatimukset?.erotKoulutuksessa?.erot || [],
                           ero.name,

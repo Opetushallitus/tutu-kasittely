@@ -201,7 +201,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
           t={t}
           theme={theme}
           testIdPrefix={'lahtokohtainen'}
-          showkelpoisuuskoeJaSopeutumisaika
+          showKelpoisuuskoeJaSopeutumisaika
           showLisatieto
         />
       )}

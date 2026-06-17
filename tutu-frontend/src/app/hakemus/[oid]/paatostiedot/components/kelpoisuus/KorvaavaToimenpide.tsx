@@ -86,7 +86,7 @@ export type KorvaavaToimenpideProps = {
   theme: Theme;
   testIdPrefix: string;
   showTaydentavatOpinnot?: boolean;
-  showkelpoisuuskoeJaSopeutumisaika?: boolean;
+  showKelpoisuuskoeJaSopeutumisaika?: boolean;
   showLisatieto?: boolean;
   kelpoisuuskoeFieldLabelPrefix?: string;
 };
@@ -95,7 +95,7 @@ export const KorvaavaToimenpideComponent = ({
   korvaavaToimenpide,
   label,
   updateKorvaavaToimenpide,
-  showkelpoisuuskoeJaSopeutumisaika,
+  showKelpoisuuskoeJaSopeutumisaika,
   showTaydentavatOpinnot,
   showLisatieto,
   kelpoisuuskoeFieldLabelPrefix,
@@ -213,7 +213,7 @@ export const KorvaavaToimenpideComponent = ({
           )}
         </IndentedStack>
       )}
-      {showkelpoisuuskoeJaSopeutumisaika && (
+      {showKelpoisuuskoeJaSopeutumisaika && (
         <>
           <OphCheckbox
             data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika`}

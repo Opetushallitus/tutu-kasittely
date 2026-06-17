@@ -181,12 +181,12 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
 
 export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
   currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
-  updatedKelpoisuudenLisavaatimuket: Partial<KelpoisuudenLisavaatimukset>,
+  updatedKelpoisuudenLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
   kelpoisuusKey?: string,
 ): KelpoisuudenLisavaatimukset => {
   const tobe = {
     ...currentKelpoisuudenLisavaatimukset,
-    ...updatedKelpoisuudenLisavaatimuket,
+    ...updatedKelpoisuudenLisavaatimukset,
   };
   tobe.erotKoulutuksessa =
     tobe.erotKoulutuksessa || emptyErotKoulutuksessa(kelpoisuusKey, 'uo');

@@ -173,7 +173,7 @@ object AmmattikokemuksenHuomioiminenSerializer
           case JString(value) => AmmattikokemuksenHuomioiminen.fromString(value)
           case unexpected     =>
             throw new MappingException(
-              s"Cannot deserialize AmmattikokemusElinikainenOppiminenKorvaavuus from $unexpected"
+              s"Cannot deserialize AmmattikokemuksenHuomioiminen from $unexpected"
             )
         },
         { case korvaavuus: AmmattikokemuksenHuomioiminen =>
@@ -189,7 +189,7 @@ object SuomessaSuoritettujenOpintojenHuomioiminenSerializer
           case JString(value) => SuomessaSuoritettujenOpintojenHuomioiminen.fromString(value)
           case unexpected     =>
             throw new MappingException(
-              s"Cannot deserialize AmmattikokemusElinikainenOppiminenKorvaavuus from $unexpected"
+              s"Cannot deserialize SuomessaSuoritettujenOpintojenHuomioiminen from $unexpected"
             )
         },
         { case korvaavuus: SuomessaSuoritettujenOpintojenHuomioiminen =>
