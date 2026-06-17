@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
-import { KasittelyVaihe } from '@/src/components/sidebar/KasittelyVaihe';
 import { Paatos } from '@/src/components/sidebar/Paatos';
 import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
 import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
@@ -24,15 +23,10 @@ const CheckCircleIconBlue = styled(CheckCircleOutlineRoundedIcon)({
   paddingTop: '3px',
 });
 
-const SHOW_EXTENDED_KASITTELYVAIHE_PATHS: string[] | [] = [];
 const SHOW_TAYDENNYSPYYNTO_PATHS = ['/asiakirjat', '/tutkinnot'];
 
 const pathContainsOneOf = (options: string[], path: string) => {
   return options.some((opt) => path.includes(opt));
-};
-
-const showExtendedKasittelyvaihe = (pathName: string) => {
-  return pathContainsOneOf(SHOW_EXTENDED_KASITTELYVAIHE_PATHS, pathName);
 };
 
 const showTaydennyspyynto = (pathName: string) => {
@@ -66,7 +60,6 @@ export const SideBar = () => {
         flexShrink: 0,
       }}
     >
-      <KasittelyVaihe showExtended={showExtendedKasittelyvaihe(pathName)} />
       <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
         <HakemusKoskee />
         <Paatos />

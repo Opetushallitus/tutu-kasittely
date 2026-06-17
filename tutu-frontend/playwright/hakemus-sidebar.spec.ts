@@ -14,16 +14,6 @@ test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
   );
 
   await expect(page.getByTestId('hakemus-sidebar')).toBeVisible();
-
-  const ataruHakemuksenTila = page.getByTestId(
-    'hakemus-sidebar-ataruhakemus-tila',
-  );
-
-  await expect(ataruHakemuksenTila).toHaveText('Käsittely maksamatta');
-
-  const kasittelyVaihe = page.getByTestId('hakemus-sidebar-kasittelyvaihe');
-
-  await expect(kasittelyVaihe).toHaveText('Hakemusta täydennetty 28.07.2025');
 });
 
 test('HakemusKoskee näyttää oikean labelin ja AP-hakemus-badgen', async ({
