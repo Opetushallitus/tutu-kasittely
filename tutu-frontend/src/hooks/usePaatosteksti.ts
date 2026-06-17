@@ -19,7 +19,7 @@ type MutateParameters = {
 };
 
 const putPaatosteksti = (hakemusOid: string, params: MutateParameters) => {
-  const url = `paatos/${hakemusOid}/paatosteksti/${params.paatosteksti.id}${params.vahvista ? `/vahvista` : ''}`;
+  const url = `paatos/${hakemusOid}/paatosteksti${params.vahvista ? `/vahvista` : ''}`;
 
   return doApiPut(url, params.paatosteksti);
 };

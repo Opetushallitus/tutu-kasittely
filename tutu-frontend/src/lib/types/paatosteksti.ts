@@ -3,10 +3,11 @@ export type Paatosteksti = {
   hakemusId: string;
   vahvistettu?: string;
   sisalto: string;
-  luotu: string;
+  luotu?: string;
   muokattu?: string;
-  luoja: string;
+  luoja?: string;
   muokkaaja?: string;
+  kieli?: 'fi' | 'sv';
 };
 
 export type Paatospohja = {

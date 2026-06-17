@@ -155,72 +155,118 @@ class PaatosService(
 
   def generatePaatosTeksti(
     hakemusOid: HakemusOid
-  ): String = {
-    val hakemus: Hakemus                   = hakemusService.haeHakemus(hakemusOid).get
-    val tutkinnot: Seq[Tutkinto]           = tutkintoService.haeTutkinnot(hakemusOid)
-    val ataruHakemus: Option[AtaruHakemus] = hakemuspalveluService.haeJaParsiHakemus(hakemusOid).toOption
-    val paatos: Paatos                     = haePaatos(hakemusOid).get
-    val paatosKieli: Kieli                 = {
-      findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.get.content.answers)
-        .flatMap(Kieli.optionFromString(_))
-        .getOrElse(Kieli.fi)
+  ): (String, Kieli) = {
+    val ataruHakemus = hakemuspalveluService.haeJaParsiHakemus(hakemusOid) match {
+      case Right(ataruHakemus) => ataruHakemus
+      case Left(error)         =>
+        LOG.error(s"Ataru-hakemuksen $hakemusOid haku epäonnistui: ${error.getMessage}")
+        throw error
     }
-    val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.get.content.answers) match {
+    val hakemus: Hakemus         = hakemusService.haeHakemus(hakemusOid).get
+    val tutkinnot: Seq[Tutkinto] = tutkintoService.haeTutkinnot(hakemusOid)
+    val paatos: Paatos           = haePaatos(hakemusOid).get
+    val paatosKieli: Kieli       =
+      findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.content.answers)
+        .flatMap(Kieli.fiOrSvFromString)
+        .getOrElse(Kieli.fi)
+    val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.content.answers) match {
       case Some(kunta) => kunta
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
-
-    this.paatosTekstiGenerator.generatePaatosTeksti(
-      hakemus,
-      tutkinnot,
-      paatos,
-      paatosKieli,
-      hallintoOikeus,
-      maakoodiService
+    (
+      this.paatosTekstiGenerator.generatePaatosTeksti(
+        hakemus,
+        tutkinnot,
+        paatos,
+        paatosKieli,
+        hallintoOikeus,
+        maakoodiService
+      ),
+      paatosKieli
     )
   }
 
-  def haePaatosteksti(
+  private def haeHakemus(hakemusOid: HakemusOid): DbHakemus =
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case Some(dbHakemus) => dbHakemus
+      case _               => throw NotFoundException(s"Hakemusta $hakemusOid ei löydy")
+    }
+
+  private def haeAiempiPaatosteksti(hakemusId: UUID): Option[Paatosteksti] =
+    paatosRepository.haePaatosteksti(hakemusId) match {
+      case Some(paatosteksti) => Some(paatosteksti)
+      case None               => throw NotFoundException(s"Hakemukselle $hakemusId ei löydy aiempaa päätöstekstiä")
+    }
+
+  private def haeMuokkaajaNimi(paatosteksti: Paatosteksti): Paatosteksti = {
+    val muokkaajaNimi = onrService.haeNimi(paatosteksti.muokkaaja)
+    paatosteksti.copy(muokkaaja = Some(onrService.haeNimi(paatosteksti.muokkaaja)))
+  }
+
+  def haeTaiGeneroiPaatosteksti(
     hakemusOid: HakemusOid,
     luoja: String
-  ): (Paatosteksti, Boolean) = {
-    paatosRepository.haePaatosteksti(hakemusOid) match {
-      case Some(paatosteksti) =>
-        val muokkaajaNimi: String = onrService.haeNimi(paatosteksti.muokkaaja)
-        (paatosteksti.copy(muokkaaja = Some(muokkaajaNimi)), false)
-      case None =>
-        hakemusRepository.haeHakemus(hakemusOid) match {
-          case Some(hakemus) =>
-            (paatosRepository.tallennaUusiPaatosteksti(hakemus.id, generatePaatosTeksti(hakemusOid), luoja), true)
-          case None =>
-            throw NotFoundException(s"Hakemus $hakemusOid not found")
-        }
+  ): Paatosteksti = {
+    val dbHakemus = haeHakemus(hakemusOid)
+    paatosRepository.haePaatosteksti(dbHakemus.id) match {
+      case Some(paatosteksti) => haeMuokkaajaNimi(paatosteksti)
+      case None               =>
+        val paatosTekstiJaKieli = generatePaatosTeksti(hakemusOid)
+        Paatosteksti(
+          hakemusId = dbHakemus.id,
+          sisalto = paatosTekstiJaKieli._1,
+          kieli = Some(paatosTekstiJaKieli._2)
+        )
     }
   }
 
   def tallennaPaatosteksti(
     hakemusOid: HakemusOid,
-    paatostekstiId: UUID,
     paatosteksti: Paatosteksti,
     luojaTaiMuokkaaja: String
-  ): (Paatosteksti, Paatosteksti) = {
-    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
-    val uusiPaatosteksti       = paatosRepository.tallennaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
-    val muokkaajaNimi: String  = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
-    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
+  ): (Option[Paatosteksti], Paatosteksti) = {
+    val dbHakemus = haeHakemus(hakemusOid)
+    paatosteksti.id match {
+      case Some(id) =>
+        val uusiPaatosteksti = paatosRepository.tallennaPaatosteksti(id, paatosteksti, luojaTaiMuokkaaja)
+        (haeAiempiPaatosteksti(dbHakemus.id), haeMuokkaajaNimi(uusiPaatosteksti))
+
+      case _ =>
+        val uusiPaatosteksti =
+          paatosRepository.tallennaUusiPaatosteksti(
+            dbHakemus.id,
+            paatosteksti.sisalto,
+            paatosteksti.kieli,
+            luojaTaiMuokkaaja
+          )
+        (None, uusiPaatosteksti)
+    }
   }
 
   def vahvistaPaatosteksti(
     hakemusOid: HakemusOid,
-    paatostekstiId: UUID,
     paatosteksti: Paatosteksti,
     luojaTaiMuokkaaja: String
-  ): (Paatosteksti, Paatosteksti) = {
-    val (vanhaPaatosteksti, _) = haePaatosteksti(hakemusOid, luojaTaiMuokkaaja)
-    val uusiPaatosteksti       = paatosRepository.vahvistaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja)
+  ): (Option[Paatosteksti], Paatosteksti) = {
+    val dbHakemus                             = haeHakemus(hakemusOid)
+    val (vanhaPaatosteksti, uusiPaatosteksti) = paatosteksti.id match {
+      case Some(id) =>
+        val uusiPaatosteksti = paatosRepository.vahvistaPaatosteksti(id, paatosteksti, luojaTaiMuokkaaja)
+        (haeAiempiPaatosteksti(dbHakemus.id), haeMuokkaajaNimi(uusiPaatosteksti))
+
+      case _ =>
+        val uusiPaatosteksti =
+          paatosRepository.tallennaUusiPaatosteksti(
+            dbHakemus.id,
+            paatosteksti.sisalto,
+            paatosteksti.kieli,
+            luojaTaiMuokkaaja,
+            true
+          )
+        (None, uusiPaatosteksti)
+    }
     hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
-    val muokkaajaNimi: String = onrService.haeNimi(uusiPaatosteksti.muokkaaja)
-    (vanhaPaatosteksti, uusiPaatosteksti.copy(muokkaaja = Some(muokkaajaNimi)))
+    (vanhaPaatosteksti, uusiPaatosteksti)
   }
 }

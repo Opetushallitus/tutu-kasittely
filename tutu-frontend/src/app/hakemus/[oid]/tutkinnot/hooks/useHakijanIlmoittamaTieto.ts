@@ -44,6 +44,7 @@ export const useHakijanIlmoittamaTieto = (
 
     // MUU tutkinto käsitellään erikseen
     if (tutkintoJarjestys === 'MUU') {
+      console.log('!!!!!!!!!MUUUUUUUUU');
       return {
         muuTutkintoTieto: haeArvo(
           tutkintoTaiKoulutus,

@@ -165,17 +165,10 @@ export default function PaatosEditorPage() {
           headerText={t('tekstipohjat.paatospohjat.valitse')}
           close={() => setShowTekstipohjaLista(false)}
           selectPohja={(pohja: Paatospohja) => {
-            const pt = paatosteksti as unknown as {
-              kieli?: string;
-              kielikoodi?: string;
-            };
-            const lang = pt?.kieli || pt?.kielikoodi || 'fi';
-            const sisaltoObj = pohja.sisalto as
-              | Record<string, string>
-              | undefined;
-            const kielistettyTeksti = sisaltoObj?.[lang] ?? '';
+            const lang = paatosteksti.kieli;
+            const kielistettyTeksti = lang ? pohja.sisalto[lang] : '';
 
-            if (kielistettyTeksti && paatosteksti) {
+            if (kielistettyTeksti) {
               pasteHtml(editorRef.current, kielistettyTeksti);
               addToast({
                 key: 'tekstipohjat.paatospohjat.valittu',

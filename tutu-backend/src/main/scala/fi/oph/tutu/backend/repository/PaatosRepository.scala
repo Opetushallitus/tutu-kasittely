@@ -91,12 +91,13 @@ class PaatosRepository extends BaseResultHandlers {
 
   implicit val getPaatostekstiResult: GetResult[Paatosteksti] = GetResult(r =>
     Paatosteksti(
-      id = r.nextObject().asInstanceOf[UUID],
+      id = Some(r.nextObject().asInstanceOf[UUID]),
       hakemusId = r.nextObject().asInstanceOf[UUID],
       sisalto = r.nextString(),
+      kieli = Kieli.optionFromString(r.nextString()),
       vahvistettu = r.nextTimestampOption().map(_.toLocalDateTime),
-      luotu = r.nextTimestamp().toLocalDateTime,
-      luoja = r.nextString(),
+      luotu = Some(r.nextTimestamp().toLocalDateTime),
+      luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption(),
       muokattu = r.nextTimestampOption().map(_.toLocalDateTime)
     )
@@ -570,21 +571,21 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def haePaatosteksti(hakemusOid: HakemusOid): Option[Paatosteksti] = {
+  def haePaatosteksti(hakemusId: UUID): Option[Paatosteksti] = {
     try {
       db.run(
         sql"""SELECT
                 id,
                 hakemus_id,
                 sisalto,
+                kieli,
                 vahvistettu,
                 luotu,
                 luoja,
                 muokkaaja,
                 muokattu
               FROM paatosteksti
-              WHERE hakemus_id IN
-                (SELECT id FROM hakemus where hakemus_oid = ${hakemusOid.toString})
+              WHERE hakemus_id = ${hakemusId.toString}::uuid
         """.as[Paatosteksti].headOption,
         "hae_paatosteksti"
       )
@@ -598,20 +599,30 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  def tallennaUusiPaatosteksti(hakemusId: UUID, sisalto: String, luoja: String): Paatosteksti = {
+  def tallennaUusiPaatosteksti(
+    hakemusId: UUID,
+    sisalto: String,
+    kieli: Option[Kieli],
+    luoja: String,
+    asetaVahvistusAikaleima: Boolean = false
+  ): Paatosteksti = {
+    val vahvistusAikaleima = if (asetaVahvistusAikaleima) "now()" else "null"
     try {
       db.run(
         sql"""INSERT INTO paatosteksti
-             (hakemus_id, sisalto, luoja)
+             (hakemus_id, sisalto, kieli, luoja, vahvistettu)
            VALUES (
              ${hakemusId.toString}::uuid,
              $sisalto,
-             $luoja
+             ${kieli.map(_.toString).orNull}::kieli,
+             $luoja,
+             #$vahvistusAikaleima
            )
            RETURNING
              id,
              hakemus_id,
              sisalto,
+             kieli,
              vahvistettu,
              luotu,
              luoja,
@@ -629,30 +640,39 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def paivitaPaatosteksti(paatostekstiId: UUID, paatosteksti: Paatosteksti, muokkaaja: String) =
+  private def paivitaPaatosteksti(
+    paatostekstiId: UUID,
+    paatosteksti: Paatosteksti,
+    muokkaaja: String,
+    asetaVahvistusAikaleima: Boolean = false
+  ) = {
+    val vahvistusAikaleima = if (asetaVahvistusAikaleima) "now()" else "null"
     sql"""UPDATE paatosteksti
         SET
           sisalto = ${paatosteksti.sisalto},
+          kieli = ${paatosteksti.kieli.map(_.toString).orNull}::kieli,
           muokkaaja = $muokkaaja,
-          vahvistettu = null
+          vahvistettu = #$vahvistusAikaleima
         WHERE id = ${paatostekstiId.toString}::uuid
         RETURNING
           id,
           hakemus_id,
           sisalto,
+          kieli,
           vahvistettu,
           luotu,
           luoja,
           muokkaaja,
           muokattu""".as[Paatosteksti].head
+  }
 
   def tallennaPaatosteksti(
     paatostekstiId: UUID,
     paatosteksti: Paatosteksti,
-    luojaTaiMuokkaaja: String
+    muokkaaja: String
   ): Paatosteksti = {
     try {
-      db.run(paivitaPaatosteksti(paatostekstiId, paatosteksti, luojaTaiMuokkaaja), "paivita_paatosteksti")
+      db.run(paivitaPaatosteksti(paatostekstiId, paatosteksti, muokkaaja), "paivita_paatosteksti")
     } catch {
       case e: Exception =>
         LOG.error(s"Päätöstekstin päivitys epäonnistui: $e")
@@ -663,26 +683,9 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def vahvistaPaatostekstiQuery(paatostekstiId: UUID, paatosteksti: Paatosteksti, muokkaaja: String) =
-    sql"""UPDATE paatosteksti
-        SET
-          sisalto = ${paatosteksti.sisalto},
-          muokkaaja = $muokkaaja,
-          vahvistettu = now()
-        WHERE id = ${paatostekstiId.toString}::uuid
-        RETURNING
-          id,
-          hakemus_id,
-          sisalto,
-          vahvistettu,
-          luotu,
-          luoja,
-          muokkaaja,
-          muokattu""".as[Paatosteksti].head
-
   def vahvistaPaatosteksti(paatostekstiId: UUID, paatosteksti: Paatosteksti, muokkaaja: String): Paatosteksti = {
     try {
-      db.run(vahvistaPaatostekstiQuery(paatostekstiId, paatosteksti, muokkaaja), "vahvista_paatosteksti")
+      db.run(paivitaPaatosteksti(paatostekstiId, paatosteksti, muokkaaja, true), "vahvista_paatosteksti")
     } catch {
       case e: Exception =>
         LOG.error(s"Päätöstekstin vahvistaminen epäonnistui: $e")

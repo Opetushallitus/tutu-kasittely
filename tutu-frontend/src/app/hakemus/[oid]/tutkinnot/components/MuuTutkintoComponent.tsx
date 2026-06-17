@@ -35,6 +35,7 @@ export const MuuTutkintoComponent = ({
     'MUU',
     hakemus.lomakkeenKieli,
   );
+  console.log('!!!!!! läpi meni', tutkinto);
 
   const [currentTutkinto, setCurrentTutkinto] = React.useState<
     Tutkinto | undefined

@@ -2,15 +2,8 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Paatos, Paatosteksti}
-import fi.oph.tutu.backend.service.{PaatosService, UserService}
-import fi.oph.tutu.backend.utils.AuditOperation.{
-  CreatePaatosteksti,
-  ReadPaatos,
-  ReadPaatosPreview,
-  ReadPaatosteksti,
-  UpdatePaatos,
-  UpdatePaatosteksti
-}
+import fi.oph.tutu.backend.service.{NotFoundException, PaatosService, UserService}
+import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -18,7 +11,6 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.*
 
-import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
 @RestController
@@ -167,11 +159,11 @@ class PaatosController(
     Try {
       paatosService.generatePaatosTeksti(HakemusOid(hakemusOid))
     } match {
-      case Success(paatosTeksti) =>
+      case Success(paatosTekstiJaKieli) =>
         auditLog.logRead("päätös", hakemusOid, ReadPaatosPreview, request)
-        ResponseEntity.status(HttpStatus.OK).body(paatosTeksti)
+        ResponseEntity.status(HttpStatus.OK).body(paatosTekstiJaKieli._1)
       case Failure(exception) =>
-        LOG.error(s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        LOG.error(s"Päätöstekstin generointi epäonnistui, hakemusOid: $hakemusOid", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
   }
@@ -181,7 +173,7 @@ class PaatosController(
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Hakee päätöstekstin tai palauttaa ja tallentaa tietokantaan generoidun päätöstekstipohjan",
+    summary = "Generoi tai hakee olemassaolevan päätöstekstin",
     responses = Array(
       new ApiResponse(
         responseCode = "200",
@@ -199,19 +191,10 @@ class PaatosController(
   ): ResponseEntity[Any] = {
     Try {
       val user = userService.getEnrichedUserDetails(true)
-      paatosService.haePaatosteksti(HakemusOid(hakemusOid), user.userOid)
+      paatosService.haeTaiGeneroiPaatosteksti(HakemusOid(hakemusOid), user.userOid)
     } match {
-      case Success((paatosteksti, created)) =>
-        if (created) {
-          auditLog.logCreate(
-            auditLog.getUser(request),
-            Map("hakemusOid" -> hakemusOid),
-            CreatePaatosteksti,
-            paatosteksti
-          )
-        } else {
-          auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
-        }
+      case Success(paatosteksti) =>
+        auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
         ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosteksti))
       case Failure(exception) =>
         LOG.error(
@@ -223,7 +206,7 @@ class PaatosController(
   }
 
   @PutMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}"),
+    path = Array("paatos/{hakemusOid}/paatosteksti"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
@@ -235,6 +218,10 @@ class PaatosController(
         description = RESPONSE_200_DESCRIPTION
       ),
       new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
         responseCode = "500",
         description = RESPONSE_500_DESCRIPTION
       )
@@ -242,7 +229,6 @@ class PaatosController(
   )
   def tallennaPaatosteksti(
     @PathVariable hakemusOid: String,
-    @PathVariable paatostekstiId: String,
     @RequestBody paatosBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
@@ -251,25 +237,22 @@ class PaatosController(
     Try {
       paatosService.tallennaPaatosteksti(
         HakemusOid(hakemusOid),
-        UUID.fromString(paatostekstiId),
         paatosteksti,
         user.userOid
       )
     } match {
-      case Success((vanha, uusi)) =>
-        auditLog.logChanges(
-          auditLog.getUser(request),
-          Map("hakemusOid" -> hakemusOid),
-          UpdatePaatosteksti,
-          AuditUtil.getChanges(
-            Some(mapper.writeValueAsString(vanha)),
-            Some(mapper.writeValueAsString(uusi))
-          )
+      case Success(vanhaJaUusi) =>
+        auditLogTallennus(vanhaJaUusi, hakemusOid, request)
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(vanhaJaUusi._2))
+      case Failure(exception: NotFoundException) =>
+        LOG.error(
+          s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",
+          exception
         )
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
+        errorMessageMapper.mapErrorMessage(exception, HttpStatus.BAD_REQUEST)
       case Failure(exception) =>
         LOG.error(
-          s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
+          s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",
           exception
         )
         errorMessageMapper.mapErrorMessage(exception)
@@ -277,7 +260,7 @@ class PaatosController(
   }
 
   @PutMapping(
-    path = Array("paatos/{hakemusOid}/paatosteksti/{paatostekstiId}/vahvista"),
+    path = Array("paatos/{hakemusOid}/paatosteksti/vahvista"),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
@@ -289,6 +272,10 @@ class PaatosController(
         description = RESPONSE_200_DESCRIPTION
       ),
       new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
         responseCode = "500",
         description = RESPONSE_500_DESCRIPTION
       )
@@ -296,7 +283,6 @@ class PaatosController(
   )
   def vahvistaPaatosteksti(
     @PathVariable hakemusOid: String,
-    @PathVariable paatostekstiId: String,
     @RequestBody paatosBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
@@ -305,12 +291,35 @@ class PaatosController(
     Try {
       paatosService.vahvistaPaatosteksti(
         HakemusOid(hakemusOid),
-        UUID.fromString(paatostekstiId),
         paatosteksti,
         user.userOid
       )
     } match {
-      case Success((vanha, uusi)) =>
+      case Success(vanhaJaUusi) =>
+        auditLogTallennus(vanhaJaUusi, hakemusOid, request)
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(vanhaJaUusi._2))
+      case Failure(exception: NotFoundException) =>
+        LOG.error(
+          s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception, HttpStatus.BAD_REQUEST)
+      case Failure(exception) =>
+        LOG.error(
+          s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
+  private def auditLogTallennus(
+    vanhaJaUusi: (Option[Paatosteksti], Paatosteksti),
+    hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): Unit = {
+    vanhaJaUusi match {
+      case (Some(vanha), uusi) =>
         auditLog.logChanges(
           auditLog.getUser(request),
           Map("hakemusOid" -> hakemusOid),
@@ -320,13 +329,13 @@ class PaatosController(
             Some(mapper.writeValueAsString(uusi))
           )
         )
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(uusi))
-      case Failure(exception) =>
-        LOG.error(
-          s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid, paatostekstiId: $paatostekstiId",
-          exception
+      case _ =>
+        auditLog.logCreate(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          CreatePaatosteksti,
+          vanhaJaUusi._2
         )
-        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 }
