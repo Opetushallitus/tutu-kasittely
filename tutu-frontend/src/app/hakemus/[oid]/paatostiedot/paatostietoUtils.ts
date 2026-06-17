@@ -182,6 +182,7 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
 export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
   currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
   updatedKelpoisuudenLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
+  showOsaamisenTaydentamisenTavat: boolean,
   kelpoisuusKey?: string,
 ): KelpoisuudenLisavaatimukset => {
   const tobe = {
@@ -190,9 +191,9 @@ export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
   };
   tobe.erotKoulutuksessa =
     tobe.erotKoulutuksessa || emptyErotKoulutuksessa(kelpoisuusKey, 'uo');
-  tobe.korvaavaToimenpide = initOrUpdateKorvaavaToimenpide(
-    tobe.korvaavaToimenpide,
-  );
+  tobe.korvaavaToimenpide = showOsaamisenTaydentamisenTavat
+    ? initOrUpdateKorvaavaToimenpide(tobe.korvaavaToimenpide)
+    : undefined;
   tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
     initOrUpdateKorvaavaToimenpide(
       tobe.lahtokohtaisetOsaamisenTaydentamisenTavat,

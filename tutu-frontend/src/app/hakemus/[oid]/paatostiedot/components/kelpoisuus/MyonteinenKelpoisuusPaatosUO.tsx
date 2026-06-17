@@ -117,6 +117,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
     const tobeVaatimukset = initOrUpdateMyonteinenKelpoisuusPaatosUO(
       { ...lisavaatimukset },
       { ...updatedLisavaatimukset },
+      showOsaamisenTaydentamisenTavat,
       kelpoisuusKey,
     );
     updateLisavaatimukset(tobeVaatimukset);
@@ -178,7 +179,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
                       erotKoulutuksessa: {
                         ...erotKoulutuksessa,
                         erot: setKoulutusEroValues(
-                          lisavaatimukset?.erotKoulutuksessa?.erot || [],
+                          erotKoulutuksessa.erot!,
                           ero.name,
                           e.target.checked,
                         ),
