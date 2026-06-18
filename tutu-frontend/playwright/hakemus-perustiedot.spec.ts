@@ -51,8 +51,10 @@ test('Henkilötiedot näkyvät vaihtoehtoisella kielellä', async ({ page }) => 
   await expect(page.getByTestId('kansalaisuus')).toHaveText('Finland, Ruåtsi');
   await expect(page.getByTestId('asuinmaa')).toHaveText('Finland');
   await expect(page.getByTestId('kotikunta')).toHaveText('Helsingfors');
-  await expect(page.getByTestId('paatoskieli')).toHaveText('finska');
-  await expect(page.getByTestId('asiointikieli')).toHaveText('finska');
+
+  // Kielivalinnat aina suomeksi
+  await expect(page.getByTestId('paatoskieli')).toHaveText('suomeksi');
+  await expect(page.getByTestId('asiointikieli')).toHaveText('suomeksi');
 });
 
 test('Hakemuksen lataus epäonnistuu', async ({ page }) => {
