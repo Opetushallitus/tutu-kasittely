@@ -1,6 +1,6 @@
 import { KategorianTekstipohjat } from '@/src/lib/types/viesti';
 
-export const _viestipohjatKategorioittain: KategorianTekstipohjat[] = [
+export const _tekstipohjatKategorioittain: KategorianTekstipohjat[] = [
   {
     kategoriaNimi: 'Ennakkotiedot',
     pohjat: [

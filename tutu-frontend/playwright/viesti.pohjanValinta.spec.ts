@@ -7,7 +7,7 @@ import {
   mockUser,
   mockViestiLista,
   mockViestiOletussisalto,
-  mockViestipohjanValinta,
+  mockTekstipohjanValinta,
   mockViestiTyoversio,
   viestiTyoversio,
 } from '@/playwright/mocks';
@@ -28,7 +28,7 @@ test.beforeEach(async ({ page }) => {
 test('Viestipohjalista avautuu ja sulkeutuu onnistuneesti, olemassaolevat pohjat näkyvät listalla', async ({
   page,
 }) => {
-  await mockViestipohjanValinta(page);
+  await mockTekstipohjanValinta(page, 'viestipohja');
   const addPohjaButton = page.getByTestId('add-tekstipohja-button');
   await expect(addPohjaButton).toBeVisible();
   await addPohjaButton.click();
@@ -62,7 +62,7 @@ test('Viestipohjalista avautuu ja sulkeutuu onnistuneesti, olemassaolevat pohjat
 test('Viestipohjan valinnan yhteydessä sisältö liitetään editorissa näkyvään tekstiin', async ({
   page,
 }) => {
-  await mockViestipohjanValinta(page);
+  await mockTekstipohjanValinta(page, 'viestipohja');
   await page.getByTestId('add-tekstipohja-button').click();
   await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();
 
@@ -86,7 +86,7 @@ test('Viestipohjan valinnan yhteydessä sisältö liitetään editorissa näkyv�
 test('Viestipohjalistan latauksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  await mockViestipohjanValinta(page, true);
+  await mockTekstipohjanValinta(page, 'viestipohja', true);
   await page.getByTestId('add-tekstipohja-button').click();
 
   await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();
@@ -101,7 +101,7 @@ test('Viestipohjalistan latauksen epäonnistuessa näytetään virheteksti', asy
 test('Viestipohjan latauksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
-  await mockViestipohjanValinta(page, false, true);
+  await mockTekstipohjanValinta(page, 'viestipohja', false, true);
   await page.getByTestId('add-tekstipohja-button').click();
 
   await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();

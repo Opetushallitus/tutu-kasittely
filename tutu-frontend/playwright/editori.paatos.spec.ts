@@ -9,6 +9,7 @@ import {
   mockHakemus,
   mockPaatos,
   mockPaatosteksti,
+  mockTekstipohjanValinta,
 } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
@@ -39,7 +40,7 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
 
   await expectRequestData(
     page,
-    '/paatosteksti/paatosteksti-id',
+    '/paatosteksti',
     page.getByTestId('editor-content-editable').fill('Muokattu päätösteksti'),
     {
       sisalto:
@@ -71,8 +72,7 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
-        req.url().includes('/paatosteksti/paatosteksti-id/vahvista') &&
-        req.method() === 'PUT',
+        req.url().includes('/paatosteksti/vahvista') && req.method() === 'PUT',
     ),
     page.getByTestId('modal-confirm-button').click(),
   ]);
@@ -117,22 +117,34 @@ test('Vahvistetun päätöstekstin tallennus palauttaa tekstin vahvistamattomaks
   await expect(vahvistettuAikaleima).toBeHidden();
 });
 
+test('Päätöspohjan valinnan yhteydessä sisältö liitetään editorissa näkyvään tekstiin', async ({
+  page,
+}) => {
+  await mockTekstipohjanValinta(page, 'paatospohja');
+  await page.getByTestId('add-tekstipohja-button').click();
+  await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();
+
+  const sisaltoContainer = page.getByTestId('tekstipohja-lista-sisalto');
+  const firstPohjaButton = sisaltoContainer
+    .locator(':scope > *')
+    .nth(0)
+    .locator(':scope > *')
+    .nth(1);
+  await firstPohjaButton.click();
+  await expect(page.getByTestId('editor-content-editable')).toContainText(
+    'Suomi pohjassa',
+  );
+  await expect(page.getByTestId('toast-alert')).toBeVisible();
+  await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+    'data-severity',
+    'success',
+  );
+});
+
 test('Päätöstekstin tallennuksen epäonnistuessa näytetään virhetoast', async ({
   page,
 }) => {
-  await page.route(
-    '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti/paatosteksti-id**',
-    async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          message: 'tallennusvirhe',
-        }),
-      });
-    },
-  );
-
+  await mockPaatosteksti(page, undefined, true);
   await page
     .getByTestId('editor-content-editable')
     .fill('Muokattu paatosteksti');

@@ -113,7 +113,6 @@ class PerusteluService(
     (currentPerustelu, newPerustelu)
   }
 
-  def haePerustelumuistio(hakemusOid: HakemusOid): Option[String] = {
+  def haePerustelumuistio(hakemusOid: HakemusOid): Option[String] =
     perusteluRepository.haePerustelumuistio(hakemusOid).map(_.sisalto)
-  }
 }

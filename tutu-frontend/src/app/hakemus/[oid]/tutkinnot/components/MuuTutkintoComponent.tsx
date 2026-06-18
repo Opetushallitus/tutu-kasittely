@@ -35,7 +35,6 @@ export const MuuTutkintoComponent = ({
     'MUU',
     hakemus.lomakkeenKieli,
   );
-
   const [currentTutkinto, setCurrentTutkinto] = React.useState<
     Tutkinto | undefined
   >(tutkinto);

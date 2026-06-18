@@ -7,8 +7,8 @@ import { sortBy } from 'remeda';
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
+import { mockTekstipohjatKategorioittain } from '@/playwright/fixtures/tekstipohjat';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
-import { mockViestipohjatKategorioittain } from '@/playwright/fixtures/viestipohjat';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import {
@@ -599,11 +599,13 @@ const defaultPaatosteksti: Paatosteksti = {
   luoja: 'Lauri Luoja',
   sisalto:
     '<p><span style="white-space: pre-wrap;">Päätosteksti sisältö</span></p>',
+  kieli: 'fi',
 };
 
 export const mockPaatosteksti = (
   page: Page,
   paatosteksti?: Partial<Paatosteksti>,
+  modifyFails: boolean = false,
 ) => {
   return page.route(
     '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti**',
@@ -619,9 +621,9 @@ export const mockPaatosteksti = (
           putData.vahvistettu = undefined;
         }
         await route.fulfill({
-          status: 200,
+          status: modifyFails ? 500 : 200,
           contentType: 'application/json',
-          body: JSON.stringify(putData),
+          body: JSON.stringify(modifyFails ? { message: 'ei onnaa' } : putData),
         });
       } else {
         await route.fulfill({
@@ -837,13 +839,14 @@ export const mockTekstipohjaKategoriat = (
   );
 };
 
-export const mockViestipohjanValinta = (
+export const mockTekstipohjanValinta = (
   page: Page,
+  pohjatyyppi: 'viestipohja' | 'paatospohja',
   listaFails: boolean = false,
   sisaltoFails: boolean = false,
 ) => {
   return page.route(
-    '**/tutu-backend/api/viestipohja/**',
+    `**/tutu-backend/api/${pohjatyyppi}/**`,
     async (route: Route) => {
       if (route.request().url().endsWith('kategorioittain')) {
         await route.fulfill({
@@ -852,11 +855,11 @@ export const mockViestipohjanValinta = (
           body: JSON.stringify(
             listaFails
               ? { message: 'ei onnaa' }
-              : mockViestipohjatKategorioittain(),
+              : mockTekstipohjatKategorioittain(),
           ),
         });
       } else {
-        const viestipohja: Viestipohja = {
+        const tekstipohja: Viestipohja | Paatospohja = {
           ...MOCK_TEKSTIPOHJA,
           sisalto: {
             fi: 'Suomi pohjassa',
@@ -867,7 +870,7 @@ export const mockViestipohjanValinta = (
           status: sisaltoFails ? 500 : 200,
           contentType: 'application/json',
           body: JSON.stringify(
-            sisaltoFails ? { message: 'ei onnaa' } : viestipohja,
+            sisaltoFails ? { message: 'ei onnaa' } : tekstipohja,
           ),
         });
       }

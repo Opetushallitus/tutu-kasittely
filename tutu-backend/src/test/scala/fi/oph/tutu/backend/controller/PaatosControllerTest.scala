@@ -5,8 +5,16 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_1384_2015_patevyystaso_2}
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HallintoOikeusService, KoodistoService, MaakoodiService, OnrService, UserService}
+import fi.oph.tutu.backend.service.{
+  HallintoOikeusService,
+  KoodistoService,
+  MaakoodiService,
+  OnrService,
+  TranslationService,
+  UserService
+}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
+import fi.oph.tutu.backend.domain.Kieli.fi
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
@@ -59,6 +67,9 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @MockitoBean
   var auditLog: AuditLog = _
+
+  @MockitoBean
+  var translationService: TranslationService = _
 
   val lomakeId: Long         = 1527182
   val hakemusOid: HakemusOid = HakemusOid("1.2.246.562.11.00000000000000006666")
@@ -446,11 +457,20 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @BeforeEach
   def setupTest(): Unit = {
-    when(onrService.haeHenkilo("test user"))
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "1.2.246.562.24.00000000000000006666",
+        authorities = List()
+      )
+    )
+    initAtaruHakemusRequests()
+    when(onrService.haeHenkilo("1.2.246.562.24.00000000000000006666"))
       .thenReturn(
         Right(
           OnrUser(
-            oidHenkilo = "test user",
+            oidHenkilo = "1.2.246.562.24.00000000000000006666",
             kutsumanimi = "Esko",
             sukunimi = "Esittelijä",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
@@ -460,19 +480,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           )
         )
       )
-  }
-
-  @BeforeEach
-  def initMocks(): Unit = {
-    when(
-      userService.getEnrichedUserDetails(any)
-    ).thenReturn(
-      User(
-        userOid = "test user",
-        authorities = List()
-      )
-    )
-    initAtaruHakemusRequests()
+    when(onrService.haeNimi(Some("1.2.246.562.24.00000000000000006666"))).thenReturn("Esko Esittelijä")
   }
 
   @Test
@@ -500,7 +508,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
       paatos2Json(
-        paatos.copy(id = paatosId, luoja = Some("test user")),
+        paatos.copy(id = paatosId, luoja = Some("1.2.246.562.24.00000000000000006666")),
         "id",
         "luotu",
         "muokattu",
@@ -838,8 +846,8 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(13)
-  def haePaatosTekstiTallentaaJaPalauttaaGeneroidunPaatostekstinJosPaatostekstiaEiOle(): Unit = {
+  @Order(14)
+  def haePaatostekstiPalauttaaGeneroidunPaatostekstinJosEiLoydyKannasta(): Unit = {
     // Common mocks for generation
     when(onrService.haeHenkilo("1.2.246.562.24.00000000001"))
       .thenReturn(
@@ -907,40 +915,77 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
         )
       )
 
-    assert(paatosRepository.haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot).isEmpty)
+    assert(paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).isEmpty)
     val result = mvc
       .perform(get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.sisalto").value(startsWith("<p>")))
+      .andExpect(jsonPath("$.kieli").value("fi"))
       .andExpect(jsonPath("$.muokkaaja").isEmpty)
       .andExpect(jsonPath("$.muokattu").isEmpty)
       .andExpect(jsonPath("$.vahvistettu").isEmpty)
       .andReturn()
 
-    assert(paatosRepository.haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot).isDefined)
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosteksti), any())
+    reset(auditLog)
+  }
 
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(15)
+  def tallennaPaatostekstiLisaaUudenTekstinJosEiLoydyKannasta(): Unit = {
+    val paatostekstiJson = s"""{
+      "hakemusId": "${hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get}",
+      "sisalto": "<p>Uusi päätösteksti</p>",
+      "kieli": "sv"
+    }"""
+
+    mvc
+      .perform(
+        put(
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
+        )
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatostekstiJson)
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("<p>Uusi päätösteksti</p>"))
+      .andExpect(jsonPath("$.kieli").value("sv"))
+      .andExpect(jsonPath("$.luoja").isString)
+      .andExpect(jsonPath("$.luotu").isString)
+      .andExpect(jsonPath("$.muokkaaja").isEmpty)
+      .andExpect(jsonPath("$.muokattu").isEmpty)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
+      .andReturn()
+
+    assert(paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).isDefined)
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePaatosteksti), any())
     reset(auditLog)
   }
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(14)
-  def tallennaPaatosPaivittaaSisallon(): Unit = {
-    val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot)
-    val result       = mvc
+  @Order(16)
+  def tallennaPaatostekstiPaivittaaSisallonJosTekstiJoKannassa(): Unit = {
+    val paatosteksti =
+      paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)
+    mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/${paatosteksti.get.id}"
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
-          .content(mapper.writeValueAsString(paatosteksti.get.copy(sisalto = "Muokattu sisältö")))
+          .content(mapper.writeValueAsString(paatosteksti.get.copy(sisalto = "Muokattu sisältö", kieli = Some(fi))))
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.sisalto").value("Muokattu sisältö"))
+      .andExpect(jsonPath("$.kieli").value("fi"))
+      .andExpect(jsonPath("$.muokkaaja").isString)
       .andExpect(jsonPath("$.muokattu").isString)
       .andExpect(jsonPath("$.vahvistettu").isEmpty)
       .andReturn()
@@ -951,13 +996,67 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(15)
-  def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleiman(): Unit = {
-    val paatosteksti = paatosRepository.haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot)
-    val result       = mvc
+  @Order(17)
+  def haePaatostekstiPalauttaaKannassaOlevanJosLoytyy(): Unit = {
+    val result = mvc
+      .perform(get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("Muokattu sisältö"))
+      .andExpect(jsonPath("$.kieli").value("fi"))
+      .andExpect(jsonPath("$.muokkaaja").isString)
+      .andExpect(jsonPath("$.muokattu").isString)
+      .andExpect(jsonPath("$.vahvistettu").isEmpty)
+      .andReturn()
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosteksti), any())
+    reset(auditLog)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(18)
+  def vahvistaPaatosLuoUudenSisallonJaLisaaVahvistusAikaleimanJosEiLoydyKannasta(): Unit = {
+    val paatostekstiJson =
+      s"""{
+      "hakemusId": "${hakemusIdWithPaatosTiedotJaKelpoisuudet.get}",
+      "sisalto": "<p>Uusi vahvistettu päätösteksti</p>"
+    }"""
+
+    mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/${paatosteksti.get.id}/vahvista"
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/paatosteksti/vahvista"
+        )
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(paatostekstiJson)
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.sisalto").value("<p>Uusi vahvistettu päätösteksti</p>"))
+      .andExpect(jsonPath("$.luoja").isString)
+      .andExpect(jsonPath("$.luotu").isString)
+      .andExpect(jsonPath("$.muokkaaja").isEmpty)
+      .andExpect(jsonPath("$.muokattu").isEmpty)
+      .andExpect(jsonPath("$.vahvistettu").isString)
+      .andReturn()
+
+    assert(paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaKelpoisuudet.get).isDefined)
+    verify(auditLog, times(1)).logCreate(any(), any(), eqTo(AuditOperation.CreatePaatosteksti), any())
+    reset(auditLog)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @Order(19)
+  def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleimanJosTekstiJoKannassa(): Unit = {
+    val paatosteksti =
+      paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)
+    val result = mvc
+      .perform(
+        put(
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -976,15 +1075,15 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
-  @Order(16)
+  @Order(20)
   def haePaatosPalauttaaVahvistetunPaatoksen(): Unit = {
     val paatosteksti = paatosRepository
-      .haePaatosteksti(hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot)
+      .haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)
 
     mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/${paatosteksti.get.id}/vahvista"
+          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)

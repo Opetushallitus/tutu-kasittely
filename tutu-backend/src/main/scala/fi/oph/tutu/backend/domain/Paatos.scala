@@ -144,12 +144,13 @@ case class Kelpoisuus(
 )
 
 case class Paatosteksti(
-  id: UUID,
+  id: Option[UUID] = None,
   hakemusId: UUID,
   sisalto: String,
   vahvistettu: Option[LocalDateTime] = None,
-  luotu: LocalDateTime,
-  luoja: String,
+  luotu: Option[LocalDateTime] = None,
+  luoja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
-  muokkaaja: Option[String] = None
+  muokkaaja: Option[String] = None,
+  kieli: Option[Kieli] = None
 )
