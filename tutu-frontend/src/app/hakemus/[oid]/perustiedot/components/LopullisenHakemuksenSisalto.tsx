@@ -47,11 +47,11 @@ export const LopullisenHakemuksenSisalto = ({
     return sisaltoTopLevelItem
       ? buildLopullinenPaatosSuoritusItems(
           sisaltoTopLevelItem,
-          'fi',
+          hakemus.lomakkeenKieli,
           suoritusOtsikko,
         )
       : [];
-  }, [hakemus.sisalto, suoritusOtsikko]);
+  }, [hakemus.sisalto, hakemus.lomakkeenKieli, suoritusOtsikko]);
 
   return (
     <Stack gap={theme.spacing(2)}>
@@ -96,7 +96,7 @@ export const LopullisenHakemuksenSisalto = ({
           <Sisalto
             sisalto={[item]}
             osiot={[]}
-            lomakkeenKieli={'fi'}
+            lomakkeenKieli={hakemus.lomakkeenKieli}
             filterEmpty={true}
           />
           <Divider orientation={'horizontal'} />

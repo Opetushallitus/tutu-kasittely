@@ -23,12 +23,12 @@ export const EhdollisenHakemuksenSisalto = ({
       </OphTypography>
       <TranslatedHakemuskoskee
         hakemusKoskee={hakemus.hakemusKoskee}
-        kieli={'fi'}
+        kieli={hakemus.lomakkeenKieli}
       />
       <Sisalto
         osiot={perustietoOsiot}
         sisalto={hakemus.sisalto}
-        lomakkeenKieli={'fi'}
+        lomakkeenKieli={hakemus.lomakkeenKieli}
         filterEmpty={false}
       />
     </>
