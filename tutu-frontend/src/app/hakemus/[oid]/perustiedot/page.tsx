@@ -21,7 +21,6 @@ import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 import { handleFetchError } from '@/src/lib/utils';
 
@@ -60,13 +59,13 @@ export default function PerustietoPage() {
   const [, paatosKieliVal] = findSisaltoQuestionAndAnswer(
     hakemus.sisalto,
     [paatosJaAsiointikieli, paatosKieli],
-    hakemus.lomakkeenKieli as keyof TranslatedName,
+    'fi',
   );
 
   const [, asiointiKieliVal] = findSisaltoQuestionAndAnswer(
     hakemus.sisalto,
     [paatosJaAsiointikieli, asiointiKieli],
-    hakemus.lomakkeenKieli as keyof TranslatedName,
+    'fi',
   );
 
   return (
