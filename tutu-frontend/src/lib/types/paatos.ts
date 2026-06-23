@@ -79,7 +79,9 @@ export type TutkintoTaiOpinto = {
 export type MyonteisenPaatoksenLisavaatimukset = {
   taydentavatOpinnot: boolean;
   kelpoisuuskoe: boolean;
-  sopeutumisaika: boolean;
+  opettajuuttaTutkimassa: boolean;
+  suomalainenKoulu: boolean;
+  opetusNayte: boolean;
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
