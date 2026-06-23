@@ -92,7 +92,6 @@ test('Uuden paatospohjan luonti ei onnistu ilman pakollisia tietoja', async ({
   expect(apiRequests).toEqual([]);
 
   await valitseKategoria(page, 'Testi kategoria 1');
-  await clickSaveButton(page);
   await expectRequiredDataMissing(page, 1);
   expect(apiRequests).toEqual([]);
 

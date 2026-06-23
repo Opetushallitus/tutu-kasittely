@@ -16,6 +16,11 @@ export const useValidation = <T extends Record<string, unknown>>(
 
   const isValid = () => Object.keys(validationErrors).length === 0;
 
+  const clearValidationError = (key: string) => {
+    const { [key]: _, ...restErrors } = validationErrors;
+    setValidationErrors(restErrors);
+  };
+
   const validateAndSave = (onSave: () => void) => {
     const puuttuvaTietoMsg = t('virhe.validaatio.pakollinenTietoPuuttuu');
     const flattenedData = flattenObject(value);
@@ -35,5 +40,5 @@ export const useValidation = <T extends Record<string, unknown>>(
     }
   };
 
-  return { isValid, validationErrors, validateAndSave };
+  return { isValid, validationErrors, validateAndSave, clearValidationError };
 };

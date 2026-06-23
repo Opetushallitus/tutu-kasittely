@@ -67,6 +67,7 @@ export const TekstipohjaEditori = <
         errorMessage={validation.validationErrors['nimi']}
         value={currentPohja.nimi}
         onChange={(e) => {
+          validation.clearValidationError('nimi');
           updateLocal({ nimi: e.target.value });
         }}
       ></OphInputFormField>
@@ -78,6 +79,7 @@ export const TekstipohjaEditori = <
         value={currentPohja.kategoriaId ?? ''}
         options={kategoriat.map((k) => ({ value: k.id!, label: k.nimi }))}
         onChange={(e) => {
+          validation.clearValidationError('kategoriaId');
           updateLocal({
             kategoriaId: e.target.value,
           });
@@ -102,6 +104,7 @@ export const TekstipohjaEditori = <
               key={`tekstipohja-editor-${lang}`}
               editorRef={editorRefs[lang]}
               onChange={(editor) => {
+                validation.clearValidationError('sisalto');
                 updateLocal({
                   sisalto: {
                     ...currentPohja.sisalto,
@@ -137,7 +140,7 @@ export const TekstipohjaEditori = <
       <SaveRibbon
         onSave={() => validation.validateAndSave(onSave)}
         isSaving={updateOngoing}
-        hasChanges={hasChanges}
+        hasChanges={validation.isValid() && hasChanges}
         lastSaved={currentPohja?.muokattu}
         modifier={currentPohja?.muokkaaja}
       />
