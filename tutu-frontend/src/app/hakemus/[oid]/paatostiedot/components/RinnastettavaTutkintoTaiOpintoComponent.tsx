@@ -6,9 +6,10 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatosSteiner';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
@@ -48,6 +49,17 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
+  const [steiner, setSteiner] = useState(false);
+
+  useEffect(() => {
+    if (
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Steinerpedagogiikkaan')
+    ) {
+      setSteiner(true);
+    } else {
+      setSteiner(false);
+    }
+  }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
 
   const rinnastettavaTutkintoTaiOpinnotOptions =
     tyyppi === 'riittavatOpinnot'
@@ -147,7 +159,9 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         ></OphInputFormField>
       )}
       <MyonteinenTaiKielteinenPaatosComponent
-        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenPaatos}
+        MyonteisenPaatoksenLisavaatimusComponent={
+          steiner ? MyonteinenPaatosSteiner : MyonteinenPaatos
+        }
         lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={
