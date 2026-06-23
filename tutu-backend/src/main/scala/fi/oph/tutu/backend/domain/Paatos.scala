@@ -109,7 +109,11 @@ case class KelpoisuudenLisavaatimukset(
   olennaisiaEroja: Option[Boolean] = None,
   erotKoulutuksessa: Option[ErotKoulutuksessa] = None,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
-  ammattikokemusJaElinikainenOppiminen: Option[AmmattikomemusJaElinikainenOppiminen] = None
+  ammattikokemusJaElinikainenOppiminen: Option[AmmattikomemusJaElinikainenOppiminen] = None,
+  lahtokohtaisetOsaamisenTaydentamisenTavat: Option[KorvaavaToimenpide] = None,
+  sovellettuTilanne: Option[String] = None,
+  ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
+  suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None
 )
 
 case class KielteisenPaatoksenPerustelut(

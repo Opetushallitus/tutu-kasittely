@@ -11,8 +11,13 @@ trait TutuJsonFormats {
     DefaultFormats + FieldSerializer[AtaruHakemus](
       renameTo("latestVersionCreated", "created"),
       renameFrom("created", "latestVersionCreated")
-    ) + AnswerValueSerializer + KoodistoItemSerializer + KielistettySerializer + KasittelyVaiheSerializer + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
-
+    ) + AnswerValueSerializer
+      + KoodistoItemSerializer
+      + KielistettySerializer
+      + KasittelyVaiheSerializer
+      + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
+      + AmmattikokemuksenHuomioiminenSerializer
+      + SuomessaSuoritettujenOpintojenHuomioiminenSerializer
   }
 }
 
@@ -156,6 +161,38 @@ object AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
             )
         },
         { case korvaavuus: AmmattikokemusElinikainenOppiminenKorvaavuus =>
+          JString(korvaavuus.toString)
+        }
+      )
+    )
+
+object AmmattikokemuksenHuomioiminenSerializer
+    extends CustomSerializer[AmmattikokemuksenHuomioiminen](_ =>
+      (
+        {
+          case JString(value) => AmmattikokemuksenHuomioiminen.fromString(value)
+          case unexpected     =>
+            throw new MappingException(
+              s"Cannot deserialize AmmattikokemuksenHuomioiminen from $unexpected"
+            )
+        },
+        { case korvaavuus: AmmattikokemuksenHuomioiminen =>
+          JString(korvaavuus.toString)
+        }
+      )
+    )
+
+object SuomessaSuoritettujenOpintojenHuomioiminenSerializer
+    extends CustomSerializer[SuomessaSuoritettujenOpintojenHuomioiminen](_ =>
+      (
+        {
+          case JString(value) => SuomessaSuoritettujenOpintojenHuomioiminen.fromString(value)
+          case unexpected     =>
+            throw new MappingException(
+              s"Cannot deserialize SuomessaSuoritettujenOpintojenHuomioiminen from $unexpected"
+            )
+        },
+        { case korvaavuus: SuomessaSuoritettujenOpintojenHuomioiminen =>
           JString(korvaavuus.toString)
         }
       )

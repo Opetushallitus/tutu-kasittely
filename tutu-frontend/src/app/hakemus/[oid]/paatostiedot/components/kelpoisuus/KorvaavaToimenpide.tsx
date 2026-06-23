@@ -35,6 +35,7 @@ const Kelpoisuuskoe = ({
   updateKelpoisuuskoeAction,
   t,
   theme,
+  kelpoisuuskoeFieldLabelPrefix,
   testIdPrefix,
 }: {
   field: keyof KorvaavaToimenpide;
@@ -45,6 +46,7 @@ const Kelpoisuuskoe = ({
   ) => void;
   t: TFunction;
   theme: Theme;
+  kelpoisuuskoeFieldLabelPrefix?: string;
   testIdPrefix: string;
 }) => {
   return (
@@ -59,7 +61,7 @@ const Kelpoisuuskoe = ({
           key={key}
           data-testid={`${testIdPrefix}-kelpoisuuskoe-sisalto-${key}`}
           label={t(
-            `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.${key}`,
+            `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.${kelpoisuuskoeFieldLabelPrefix ? `${kelpoisuuskoeFieldLabelPrefix}.` : ''}${key}`,
           )}
           checked={sisalto?.[key] || false}
           onChange={(e) => {
@@ -83,12 +85,20 @@ export type KorvaavaToimenpideProps = {
   t: TFunction;
   theme: Theme;
   testIdPrefix: string;
+  showTaydentavatOpinnot?: boolean;
+  showKelpoisuuskoeJaSopeutumisaika?: boolean;
+  showLisatieto?: boolean;
+  kelpoisuuskoeFieldLabelPrefix?: string;
 };
 
 export const KorvaavaToimenpideComponent = ({
   korvaavaToimenpide,
   label,
   updateKorvaavaToimenpide,
+  showKelpoisuuskoeJaSopeutumisaika,
+  showTaydentavatOpinnot,
+  showLisatieto,
+  kelpoisuuskoeFieldLabelPrefix,
   t,
   theme,
   testIdPrefix,
@@ -114,6 +124,7 @@ export const KorvaavaToimenpideComponent = ({
       t={t}
       theme={theme}
       testIdPrefix={testIdPrefix}
+      kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
     />
   );
 
@@ -141,16 +152,31 @@ export const KorvaavaToimenpideComponent = ({
     <Stack gap={theme.spacing(1)}>
       <Stack gap={theme.spacing(1)}>
         <OphTypography variant="h5">{label}</OphTypography>
-        <OphTypography variant="body1">
-          {t(
-            'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.toimenpideLisatieto',
-          )}
-        </OphTypography>
+        {showLisatieto && (
+          <OphTypography variant="body1">
+            {t(
+              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.toimenpideLisatieto',
+            )}
+          </OphTypography>
+        )}
       </Stack>
+      {showTaydentavatOpinnot && (
+        <OphCheckbox
+          data-testid={`${testIdPrefix}-korvaavaToimenpide-taydentavatOpinnot`}
+          label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
+          checked={!!korvaavaToimenpide?.taydentavatOpinnot}
+          onChange={(e) => {
+            updateKorvaavaToimenpide({
+              ...korvaavaToimenpide,
+              taydentavatOpinnot: e.target.checked,
+            });
+          }}
+        />
+      )}
       <OphCheckbox
         data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoe`}
         label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
-        checked={korvaavaToimenpide?.kelpoisuuskoe}
+        checked={!!korvaavaToimenpide?.kelpoisuuskoe}
         onChange={(e) => {
           updateKorvaavaToimenpide({
             ...korvaavaToimenpide,
@@ -170,7 +196,7 @@ export const KorvaavaToimenpideComponent = ({
       <OphCheckbox
         data-testid={`${testIdPrefix}-korvaavaToimenpide-sopeutumisaika`}
         label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaika')}
-        checked={korvaavaToimenpide?.sopeutumisaika}
+        checked={!!korvaavaToimenpide?.sopeutumisaika}
         onChange={(e) => {
           updateKorvaavaToimenpide({
             ...korvaavaToimenpide,
@@ -187,34 +213,38 @@ export const KorvaavaToimenpideComponent = ({
           )}
         </IndentedStack>
       )}
-      <OphCheckbox
-        data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika`}
-        label={t(
-          'hakemus.paatos.myonteinenPaatos.kelpoisuuskoeJaSopeutumisaika',
-        )}
-        checked={korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika}
-        onChange={(e) => {
-          updateKorvaavaToimenpide({
-            ...korvaavaToimenpide,
-            kelpoisuuskoeJaSopeutumisaika: e.target.checked,
-          });
-        }}
-      />
-      {korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika && (
-        <IndentedStack theme={theme}>
-          {[
-            kelpoisuuskoeElement(
-              'kelpoisuuskoeJaSopeutumisaikaSisalto',
-              `${testIdPrefix}-dualChoice`,
-              korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaSisalto,
-            ),
-            sopeutumisaikaElement(
-              'kelpoisuuskoeJaSopeutumisaikaKestoKk',
-              `${testIdPrefix}-dualChoice`,
-              korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaKestoKk,
-            ),
-          ]}
-        </IndentedStack>
+      {showKelpoisuuskoeJaSopeutumisaika && (
+        <>
+          <OphCheckbox
+            data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoeJaSopeutumisaika`}
+            label={t(
+              'hakemus.paatos.myonteinenPaatos.kelpoisuuskoeJaSopeutumisaika',
+            )}
+            checked={!!korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika}
+            onChange={(e) => {
+              updateKorvaavaToimenpide({
+                ...korvaavaToimenpide,
+                kelpoisuuskoeJaSopeutumisaika: e.target.checked,
+              });
+            }}
+          />
+          {korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika && (
+            <IndentedStack theme={theme}>
+              {[
+                kelpoisuuskoeElement(
+                  'kelpoisuuskoeJaSopeutumisaikaSisalto',
+                  `${testIdPrefix}-dualChoice`,
+                  korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaSisalto,
+                ),
+                sopeutumisaikaElement(
+                  'kelpoisuuskoeJaSopeutumisaikaKestoKk',
+                  `${testIdPrefix}-dualChoice`,
+                  korvaavaToimenpide.kelpoisuuskoeJaSopeutumisaikaKestoKk,
+                ),
+              ]}
+            </IndentedStack>
+          )}
+        </>
       )}
     </Stack>
   );

@@ -93,6 +93,10 @@ export type KelpoisuudenLisavaatimukset = {
   erotKoulutuksessa?: ErotKoulutuksessa;
   korvaavaToimenpide?: KorvaavaToimenpide;
   ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen;
+  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide;
+  sovellettuTilanne?: string;
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen;
 };
 
 export type ErotKoulutuksessa = {
@@ -117,6 +121,18 @@ export type KorvaavaToimenpide = {
   kelpoisuuskoeJaSopeutumisaikaSisalto?: KelpoisuuskoeSisalto;
   kelpoisuuskoeJaSopeutumisaikaKestoKk?: string;
 };
+
+export type AmmattikokemuksenHuomioiminen =
+  | 'SuomessaHankittuKokonaan'
+  | 'SuomessaHankittuOsittain'
+  | 'UlkomaillaHankittuKokonaan'
+  | 'UlkomaillaHankittuOsittain'
+  | 'EiHuomioida';
+
+export type SuomessaSuoritettujenOpintojenHuomioiminen =
+  | 'EiHuomioida'
+  | 'KorvaavatOsittain'
+  | 'KorvaavatKokonaan';
 
 export type AmmattikokemusJaElinikainenOppiminenKorvaavuus =
   | 'Taysi'

@@ -14,6 +14,7 @@ import {
   emptyErotKoulutuksessa,
   initOrUpdateMyonteinenKelpoisuusPaatos,
   koulutusEroModel,
+  setKoulutusEroValues,
   yleinenKoulutusEroTranslation,
 } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
@@ -32,16 +33,6 @@ export type MyonteinenKelpoisuusPaatosProps = {
   kelpoisuusKey?: string;
   t: TFunction;
   theme: Theme;
-};
-
-const setKoulutusEroValues = (
-  current: NamedBoolean[],
-  ero: string,
-  val: boolean,
-): NamedBoolean[] => {
-  return current.map((named) =>
-    named.name === ero ? { name: ero, value: val } : named,
-  );
 };
 
 export const MyonteinenKelpoisuusPaatos: React.FC<
@@ -210,6 +201,8 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
           t={t}
           theme={theme}
           testIdPrefix={'lahtokohtainen'}
+          showKelpoisuuskoeJaSopeutumisaika
+          showLisatieto
         />
       )}
       {lisavaatimukset?.ammattikokemusJaElinikainenOppiminen && (

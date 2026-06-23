@@ -233,6 +233,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'luokanopettaja_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Luokanopettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.luokanopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'ap-ip_ohjaaja',
     kelpoisuusKey: 'Opetusalan ammatit_Aamu- ja iltapäivätoiminnan ohjaaja',
     lyhytNimiKaannosAvain:
