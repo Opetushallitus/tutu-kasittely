@@ -69,7 +69,10 @@ case class TutkintoTaiOpinto(
 case class MyonteisenPaatoksenLisavaatimukset(
   taydentavatOpinnot: Boolean = false,
   kelpoisuuskoe: Boolean = false,
-  sopeutumisaika: Boolean = false
+  sopeutumisaika: Boolean = false,
+  opettajuuttaTutkimassa: Boolean = false,
+  suomalainenKoulu: Boolean = false,
+  opetusNayte: Boolean = false
 )
 
 case class NamedBoolean(name: String, value: Boolean)
