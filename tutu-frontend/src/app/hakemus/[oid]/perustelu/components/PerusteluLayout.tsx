@@ -97,6 +97,10 @@ interface PerusteluYleisetLayoutProps {
   hakemusError: Error | null;
   perusteluError: Error | null;
   updatePerusteluError: Error | null;
+  tutkintoUpdateError?: Error | null;
+  isHakemusUpdateSuccess?: boolean;
+  isPerusteluUpdateSuccess?: boolean;
+  isTutkinnotUpdateSuccess?: boolean;
   children: ReactNode;
 }
 
@@ -110,6 +114,10 @@ export const PerusteluLayout = ({
   hakemusError,
   perusteluError,
   updatePerusteluError,
+  tutkintoUpdateError,
+  isHakemusUpdateSuccess,
+  isPerusteluUpdateSuccess,
+  isTutkinnotUpdateSuccess,
   children,
 }: PerusteluYleisetLayoutProps) => {
   const theme = useTheme();
@@ -119,7 +127,36 @@ export const PerusteluLayout = ({
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, perusteluError, 'virhe.perustelunLataus', t);
     handleFetchError(addToast, updatePerusteluError, 'virhe.tallennus', t);
-  }, [hakemusError, perusteluError, updatePerusteluError, addToast, t]);
+    handleFetchError(addToast, tutkintoUpdateError, 'virhe.tallennus', t);
+  }, [
+    hakemusError,
+    perusteluError,
+    updatePerusteluError,
+    tutkintoUpdateError,
+    addToast,
+    t,
+  ]);
+
+  useEffect(() => {
+    if (
+      isHakemusUpdateSuccess ||
+      isPerusteluUpdateSuccess ||
+      isTutkinnotUpdateSuccess
+    ) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [
+    isHakemusUpdateSuccess,
+    isPerusteluUpdateSuccess,
+    isTutkinnotUpdateSuccess,
+    addToast,
+    t,
+  ]);
 
   if (hakemusError) {
     return null;

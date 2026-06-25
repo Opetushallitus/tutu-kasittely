@@ -44,6 +44,7 @@ export default function Lausuntotiedot() {
     isPerusteluSaving,
     error: perusteluError,
     updatePerusteluError,
+    isUpdateSuccess: isPerusteluUpdateSuccess,
   } = usePerustelu(hakemus?.hakemusOid);
 
   const { korkeakouluOptions, isLoading: isKoodistoLoading } =
@@ -101,6 +102,7 @@ export default function Lausuntotiedot() {
       hakemusError={hakemusError}
       perusteluError={perusteluError}
       updatePerusteluError={updatePerusteluError}
+      isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
     >
       <Stack
         gap={theme.spacing(3)}

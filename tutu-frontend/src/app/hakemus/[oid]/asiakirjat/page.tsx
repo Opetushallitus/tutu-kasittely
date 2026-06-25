@@ -95,6 +95,7 @@ export default function AsiakirjaPage() {
     error: hakemusError,
     isSaving,
     updateError,
+    isUpdateSuccess,
   } = useHakemus();
 
   /* ----------------------------------------- */
@@ -103,6 +104,17 @@ export default function AsiakirjaPage() {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [hakemusError, updateError, addToast, t]);
+
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
 
   if (hakemusError) {
     return null;

@@ -33,6 +33,7 @@ export default function ApPage() {
     isPerusteluSaving,
     error: perusteluError,
     updatePerusteluError,
+    isUpdateSuccess: isPerusteluUpdateSuccess,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
@@ -78,6 +79,7 @@ export default function ApPage() {
         hakemusError={hakemusError}
         perusteluError={perusteluError}
         updatePerusteluError={updatePerusteluError}
+        isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
       >
         <OphFormFieldWrapper
           label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}

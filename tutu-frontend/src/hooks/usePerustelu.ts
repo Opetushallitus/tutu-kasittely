@@ -59,5 +59,6 @@ export const usePerustelu = (hakemusOid: string | undefined) => {
     isPerusteluLoading: query.isLoading,
     isPerusteluSaving: mutationTallenna.isPending,
     updatePerusteluError: mutationTallenna.error,
+    isUpdateSuccess: mutationTallenna.isSuccess,
   };
 };
