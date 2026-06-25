@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
+import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
 import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatosSteiner';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/[oid]/paatostiedot/paatostietoUtils';
@@ -36,6 +37,13 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
   tyyppi: string;
 }
 
+enum Opinnot {
+  Steiner,
+  Aineenopettaja,
+  Luokanopettaja,
+  Muu,
+}
+
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
   t,
   index,
@@ -49,15 +57,23 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
-  const [steiner, setSteiner] = useState(false);
+  const [opinnot, setOpinnot] = useState<Opinnot>(Opinnot.Muu);
 
   useEffect(() => {
     if (
       tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Steinerpedagogiikkaan')
     ) {
-      setSteiner(true);
+      setOpinnot(Opinnot.Steiner);
+    } else if (
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Aineenopettaja')
+    ) {
+      setOpinnot(Opinnot.Aineenopettaja);
+    } else if (
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Luokanopettaja')
+    ) {
+      setOpinnot(Opinnot.Luokanopettaja);
     } else {
-      setSteiner(false);
+      setOpinnot(Opinnot.Muu);
     }
   }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
 
@@ -160,7 +176,12 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       )}
       <MyonteinenTaiKielteinenPaatosComponent
         MyonteisenPaatoksenLisavaatimusComponent={
-          steiner ? MyonteinenPaatosSteiner : MyonteinenPaatos
+          opinnot === Opinnot.Steiner
+            ? MyonteinenPaatosSteiner
+            : opinnot === Opinnot.Aineenopettaja ||
+                opinnot === Opinnot.Luokanopettaja
+              ? MyonteinenPaatosLuokanopettajaTaiAineenopettaja
+              : MyonteinenPaatos
         }
         lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
