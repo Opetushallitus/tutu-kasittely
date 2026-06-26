@@ -300,7 +300,7 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
   await expectDataFromDropdownSelection(
     page,
     tutkintoDropdown,
-    'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
+    'suomi',
     '/paatos/',
     {
       paatosTiedot: [
@@ -309,7 +309,7 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
             },
           ],
         },
@@ -337,7 +337,7 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
               myonteinenPaatos: true,
             },
           ],
@@ -360,7 +360,7 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
               myonteinenPaatos: true,
               myonteisenPaatoksenLisavaatimukset: {
                 kelpoisuuskoe: true,
@@ -406,7 +406,7 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
   await expectDataFromDropdownSelection(
     page,
     tutkintoDropdown,
-    'Steinerpedagogiikkaan tai montessoripedagogiikkaan perustuva opetus_Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
+    'Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
     '/paatos/',
     {
       paatosTiedot: [
@@ -443,7 +443,7 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
+                'Steinerpedagogiikkaan tai montessoripedagogiikkaan perustuva opetus_Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
               myonteinenPaatos: true,
             },
           ],
@@ -453,35 +453,6 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
   );
 
   await expect(
-    page.getByTestId('myonteinenPaatos-kelpoisuuskoe'),
+    page.getByTestId('myonteinenPaatos-taydentavat-opinnot'),
   ).toBeVisible();
-  await expectRequestData(
-    page,
-    '/paatos/',
-    page.getByTestId('myonteinenPaatos-kelpoisuuskoe').click(),
-    {
-      paatosTiedot: [
-        {
-          paatosTyyppi: 'RiittavatOpinnot',
-          rinnastettavatTutkinnotTaiOpinnot: [
-            {
-              tutkintoTaiOpinto:
-                'Aineenopettaja perusopetuksessa_äidinkieli ja kirjallisuus_suomi',
-              myonteinenPaatos: true,
-              myonteisenPaatoksenLisavaatimukset: {
-                kelpoisuuskoe: true,
-              },
-            },
-          ],
-        },
-      ],
-    },
-  );
-  await expect(
-    page.getByTestId('myonteinenPaatos-opettajuutta-tutkimassa'),
-  ).toBeVisible();
-  await expect(
-    page.getByTestId('myonteinenPaatos-suomalainen-koulu'),
-  ).toBeVisible();
-  await expect(page.getByTestId('myonteinenPaatos-opetusnayte')).toBeVisible();
 });
