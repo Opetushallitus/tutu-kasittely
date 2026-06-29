@@ -158,7 +158,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         data-testid={'rinnastettava-tutkinto-tai-opinto-select'}
       />
-      {tyyppi === 'riittavatOpinnot' && (
+      {tyyppi === 'riittavatOpinnot' && opinnot !== Opinnot.Steiner && (
         <OphInputFormField
           label={t('hakemus.paatos.paatostyyppi.riittavatOpinnot.opetuskieli')}
           value={tutkintoTaiOpinto.opetuskieli ?? ''}
