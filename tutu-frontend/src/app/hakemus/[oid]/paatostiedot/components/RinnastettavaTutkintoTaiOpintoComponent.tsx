@@ -60,16 +60,18 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const [opinnot, setOpinnot] = useState<Opinnot>(Opinnot.Muu);
 
   useEffect(() => {
-    if (
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Steinerpedagogiikkaan')
-    ) {
+    if (tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Steiner')) {
       setOpinnot(Opinnot.Steiner);
     } else if (
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Aineenopettaja')
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Aineenopettaja') ||
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Ämneslärare') ||
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Subject teacher')
     ) {
       setOpinnot(Opinnot.Aineenopettaja);
     } else if (
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Luokanopettaja')
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Luokanopettaja') ||
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Klasslärare') ||
+      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Class teacher')
     ) {
       setOpinnot(Opinnot.Luokanopettaja);
     } else {
