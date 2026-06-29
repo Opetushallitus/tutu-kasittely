@@ -31,6 +31,7 @@ export default function PerustietoPage() {
 
   const {
     isLoading,
+    isUpdateSuccess,
     isSaving,
     hakemusState: {
       editedData: hakemus,
@@ -49,6 +50,17 @@ export default function PerustietoPage() {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [error, updateError, addToast, t]);
+
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
 
   if (error) {
     return <></>;

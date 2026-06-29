@@ -10,6 +10,14 @@ import { updateTutkintoJarjestys } from '@/src/lib/utils';
 
 import { normalize } from './useEditableState';
 
+export interface TutkintoState {
+  updateLocal: (tutkinnot?: Tutkinto[] | undefined) => void;
+  hasChanges: boolean;
+  save: () => void;
+  editedData: Tutkinto[] | undefined;
+  discard: () => void;
+}
+
 const getTutkinnot = async (hakemusOid?: string): Promise<Tutkinto[]> => {
   const url = `hakemus/${hakemusOid}/tutkinto/`;
   return await doApiFetch(url, undefined, 'no-store');
@@ -142,10 +150,11 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
       save,
       editedData: localTutkinnot,
       discard,
-    },
+    } as TutkintoState,
     poistaTutkinto,
     isPerusteluLoading: query.isLoading,
     isSaving: mutationTallenna.isPending || isDeleting,
+    isUpdateSuccess: mutationTallenna.isSuccess,
     updateError: mutationTallenna.error,
   };
 };

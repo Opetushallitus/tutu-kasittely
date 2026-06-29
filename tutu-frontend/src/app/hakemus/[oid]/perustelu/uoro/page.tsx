@@ -24,6 +24,7 @@ export default function UoroPage() {
     isPerusteluSaving,
     error: perusteluError,
     updatePerusteluError,
+    isUpdateSuccess: isPerusteluUpdateSuccess,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editable state hook for automatic change tracking and save handling
@@ -81,6 +82,7 @@ export default function UoroPage() {
         hakemusError={hakemusError}
         perusteluError={perusteluError}
         updatePerusteluError={updatePerusteluError}
+        isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
       >
         <Stack direction="column" spacing={2}>
           <Muistio

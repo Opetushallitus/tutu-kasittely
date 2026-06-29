@@ -31,6 +31,7 @@ export default function TutkintoPage() {
   const { addToast } = useToaster();
   const {
     isLoading: isHakemusLoading,
+    isUpdateSuccess: isHakemusUpdateSuccess,
     hakemusState,
     error: hakemusError,
     isSaving: isHakemusSaving,
@@ -38,6 +39,7 @@ export default function TutkintoPage() {
 
   const {
     isLoading,
+    isUpdateSuccess: isTutkinnotUpdateSuccess,
     isSaving,
     error,
     updateError,
@@ -77,6 +79,17 @@ export default function TutkintoPage() {
     handleFetchError(addToast, error, 'virhe.tutkintojenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [error, hakemusError, updateError, addToast, t]);
+
+  useEffect(() => {
+    if (isHakemusUpdateSuccess || isTutkinnotUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isHakemusUpdateSuccess, isTutkinnotUpdateSuccess, addToast, t]);
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(

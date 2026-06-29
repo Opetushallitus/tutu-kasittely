@@ -12,6 +12,7 @@ import { SearchRibbonContext } from './SearchRibbonContext';
 
 type HakemusContextValue = {
   hakemusState: EditableState<Hakemus>;
+  isUpdateSuccess: boolean;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
@@ -73,6 +74,7 @@ export const HakemusProvider = ({
 
   const {
     mutate: tallennaHakemus,
+    isSuccess: isUpdateSuccess,
     isPending: isSaving,
     isError: isUpdateError,
     error: updateError,
@@ -97,6 +99,7 @@ export const HakemusProvider = ({
     <HakemusContext.Provider
       value={{
         hakemusState,
+        isUpdateSuccess,
         isLoading,
         isError: isQueryError || isUpdateError,
         error,

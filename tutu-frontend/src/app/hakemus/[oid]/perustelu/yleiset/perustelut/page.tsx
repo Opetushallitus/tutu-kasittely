@@ -1,7 +1,6 @@
 'use client';
 
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useEffect } from 'react';
 
 import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
@@ -18,18 +17,20 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useToaster } from '@/src/hooks/useToaster';
-import { useTutkinnot } from '@/src/hooks/useTutkinnot';
+import { useTutkinnot, TutkintoState } from '@/src/hooks/useTutkinnot';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { Hakemus } from '@/src/lib/types/hakemus';
 import { Perustelu } from '@/src/lib/types/perustelu';
-import { handleFetchError } from '@/src/lib/utils';
 
 export default function YleisetPage() {
   const { t } = useTranslations();
-  const { hakemusState, isLoading, error: hakemusError } = useHakemus();
+  const {
+    hakemusState,
+    isLoading,
+    error: hakemusError,
+    isUpdateSuccess: isHakemusUpdateSuccess,
+  } = useHakemus();
 
   const {
     perustelu,
@@ -38,7 +39,15 @@ export default function YleisetPage() {
     isPerusteluSaving: perusteluIsSaving,
     error: perusteluError,
     updatePerusteluError,
+    isUpdateSuccess: isPerusteluUpdateSuccess,
   } = usePerustelu(hakemusState.editedData?.hakemusOid);
+
+  const {
+    tutkintoState,
+    isUpdateSuccess: isTutkinnotUpdateSuccess,
+    isSaving: isTutkintoSaving,
+    updateError: tutkintoUpdateError,
+  } = useTutkinnot(hakemusState.editedData?.hakemusOid);
 
   const perusteluState = useEditableState(perustelu, tallennaPerustelu);
 
@@ -53,35 +62,32 @@ export default function YleisetPage() {
       hakemusError={hakemusError}
       perusteluError={perusteluError}
       updatePerusteluError={updatePerusteluError}
+      tutkintoUpdateError={tutkintoUpdateError}
+      isHakemusUpdateSuccess={isHakemusUpdateSuccess}
+      isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
+      isTutkinnotUpdateSuccess={isTutkinnotUpdateSuccess}
     >
       <YleisetPerustelut
-        hakemus={hakemusState.editedData}
         perusteluState={perusteluState}
-        isSaving={perusteluIsSaving}
+        tutkintoState={tutkintoState}
+        isSaving={perusteluIsSaving || isTutkintoSaving}
       />
     </PerusteluLayout>
   );
 }
 
 interface YleisetPerustelutProps {
-  hakemus?: Hakemus;
+  tutkintoState: TutkintoState;
   perusteluState: EditableState<Perustelu>;
   isSaving: boolean;
 }
 
 const YleisetPerustelut = ({
-  hakemus,
+  tutkintoState,
   perusteluState,
   isSaving,
 }: YleisetPerustelutProps) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
-
-  const {
-    tutkintoState,
-    isSaving: isTutkintoSaving,
-    updateError: tutkintoUpdateError,
-  } = useTutkinnot(hakemus?.hakemusOid);
 
   const hasChanges = perusteluState.hasChanges || tutkintoState.hasChanges;
 
@@ -98,10 +104,6 @@ const YleisetPerustelut = ({
       tutkintoState.discard();
     }
   });
-
-  useEffect(() => {
-    handleFetchError(addToast, tutkintoUpdateError, 'virhe.tallennus', t);
-  }, [tutkintoUpdateError, addToast, t]);
 
   const lastModified = lastModifiedInArray([
     ...(perusteluState.editedData ? [perusteluState.editedData] : []),
@@ -155,7 +157,7 @@ const YleisetPerustelut = ({
       />
       <SaveRibbon
         onSave={handleSave}
-        isSaving={isSaving || isTutkintoSaving}
+        isSaving={isSaving}
         hasChanges={hasChanges}
         lastSaved={lastModified.muokattu}
         modifier={lastModified.muokkaaja}
