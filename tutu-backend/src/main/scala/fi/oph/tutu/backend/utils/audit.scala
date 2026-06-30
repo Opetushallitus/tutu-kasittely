@@ -187,6 +187,10 @@ object AuditOperation {
     val name = "HAKEMUKSEN_PAIVITYS"
   }
 
+  case object UpdateAsiakirjat extends AuditOperation {
+    val name = "ASIAKIRJAT_PAIVITYS"
+  }
+
   case object UpdateMaakoodi extends AuditOperation {
     val name = "MAAKOODI_PAIVITYS"
   }

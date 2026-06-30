@@ -2,6 +2,7 @@ import { expect, Page, Route, test } from '@playwright/test';
 
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockHakemus,
   mockLiitteet,
@@ -30,51 +31,61 @@ test.describe('Asiakirjapyynnöt', () => {
 
     await mockUser(page);
     await mockHakemus(page);
+    await mockAsiakirjat(page);
     await mockLiitteet(page);
 
     const hakemus = getHakemus();
+    const asiakirjat = hakemus.asiakirja;
 
-    await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(hakemus),
-        });
-        return;
-      }
-
-      if (route.request().method() === 'PUT') {
-        callCount++;
-        if (callCount == 1) {
+    await page.route(
+      '**/tutu-backend/api/hakemus/*/asiakirjat',
+      async (route) => {
+        if (route.request().method() === 'GET') {
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify({
-              ...hakemus,
-              asiakirja: {
+            body: JSON.stringify(asiakirjat),
+          });
+          return;
+        }
+
+        if (route.request().method() === 'PUT') {
+          callCount++;
+          if (callCount == 1) {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify({
                 ...hakemus.asiakirja,
                 pyydettavatAsiakirjat: [
                   { id: 'test-id', asiakirjanTyyppi: 'nimenmuutos' },
                 ],
-              },
-            }),
-          });
-        } else if (callCount == 2) {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              ...hakemus,
-              asiakirja: { ...hakemus.asiakirja, pyydettavatAsiakirjat: [] },
-            }),
-          });
+              }),
+            });
+          } else if (callCount == 2) {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify({
+                ...hakemus.asiakirja,
+                pyydettavatAsiakirjat: [],
+              }),
+            });
+          } else {
+            await route.continue();
+          }
         } else {
           await route.continue();
         }
-      } else {
-        await route.continue();
-      }
+      },
+    );
+
+    await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(hakemus),
+      });
     });
 
     await page.goto(
@@ -128,6 +139,7 @@ test.describe('Asiakirjapyynnöt', () => {
   }) => {
     await mockUser(page);
     await mockHakemusWithType(page, HakemusKoskee.LOPULLINEN_PAATOS);
+    await mockAsiakirjat(page);
     await mockLiitteet(page);
 
     await page.goto(

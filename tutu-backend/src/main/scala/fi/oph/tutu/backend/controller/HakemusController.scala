@@ -483,6 +483,118 @@ class HakemusController(
         errorMessageMapper.mapErrorMessage(e)
     }
 
+  @PutMapping(
+    path = Array("hakemus/{hakemusOid}/asiakirjat"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  @Operation(
+    summary = "Tallentaa hakemuksen asiakirjat",
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[Asiakirja]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def tallennaAsiakirjat(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody asiakirjatBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        var asiakirjaRequest: Asiakirja = null
+        try asiakirjaRequest = mapper.readValue(asiakirjatBytes, classOf[Asiakirja])
+        catch {
+          case e: Exception =>
+            LOG.error(s"Asiakirjojen tallennus epäonnistui: ${e.getMessage}", e)
+            return errorMessageMapper.mapPlainErrorMessage(
+              RESPONSE_400_DESCRIPTION,
+              HttpStatus.BAD_REQUEST
+            )
+        }
+        val vanhaAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
+        hakemusService.tallennaAsiakirjat(
+          HakemusOid(hakemusOid),
+          asiakirjaRequest,
+          UserOid(user.userOid)
+        )
+        val uusiAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
+        auditLog.logChanges(
+          auditLog.getUser(request),
+          Map("hakemusOid" -> hakemusOid),
+          UpdateAsiakirjat,
+          AuditUtil.getChanges(
+            vanhaAsiakirjat.map(h => mapper.writeValueAsString(h)),
+            uusiAsiakirjat.map(h => mapper.writeValueAsString(h))
+          )
+        )
+        ResponseEntity
+          .status(HttpStatus.OK)
+          .body(mapper.writeValueAsString(uusiAsiakirjat))
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+
+  @GetMapping(
+    path = Array("hakemus/{hakemusOid}/asiakirjat"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeAsiakirjat(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
+    } match {
+      case Success(result) =>
+        result match {
+          case None =>
+            LOG.warn(s"Asiakirjoja ei löytynyt hakemusOid:lla: $hakemusOid")
+            errorMessageMapper.mapPlainErrorMessage(
+              "Asiakirjoja ei löytynyt",
+              HttpStatus.NOT_FOUND
+            )
+          case Some(result) =>
+            auditLog.logRead("hakemus/{hakemusOid}/asiakirjat", hakemusOid, ReadLiitteenTiedot, request)
+            ResponseEntity.status(HttpStatus.OK).body(result)
+        }
+      case Failure(exception) =>
+        LOG.error(s"Asiakirjojen haku epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+  }
+
   @GetMapping(
     path = Array("liite/metadata/{hakemusOid}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
