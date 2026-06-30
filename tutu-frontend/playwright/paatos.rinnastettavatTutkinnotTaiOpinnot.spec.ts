@@ -170,3 +170,289 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
     },
   );
 });
+
+test('Riittävät opinnot, luokanopettaja näyttää oikeat valinnat', async ({
+  page,
+}) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=4 Riittävät opinnot');
+
+  await tasoOption.click();
+
+  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'Luokanopettaja',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="true"]')
+      .click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+              myonteinenPaatos: true,
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expect(
+    page.getByTestId('myonteinenPaatos-kelpoisuuskoe'),
+  ).toBeVisible();
+  await expectRequestData(
+    page,
+    '/paatos/',
+    page.getByTestId('myonteinenPaatos-kelpoisuuskoe').click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+              myonteinenPaatos: true,
+              myonteisenPaatoksenLisavaatimukset: {
+                kelpoisuuskoe: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
+  await expect(
+    page.getByTestId('myonteinenPaatos-opettajuutta-tutkimassa'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('myonteinenPaatos-suomalainen-koulu'),
+  ).toBeVisible();
+  await expect(page.getByTestId('myonteinenPaatos-opetusnayte')).toBeVisible();
+});
+
+test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
+  page,
+}) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=4 Riittävät opinnot');
+
+  await tasoOption.click();
+
+  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'suomi',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="true"]')
+      .click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
+              myonteinenPaatos: true,
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expect(
+    page.getByTestId('myonteinenPaatos-kelpoisuuskoe'),
+  ).toBeVisible();
+  await expectRequestData(
+    page,
+    '/paatos/',
+    page.getByTestId('myonteinenPaatos-kelpoisuuskoe').click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Aineenopettaja lukiossa_toinen kotimainen kieli_suomi',
+              myonteinenPaatos: true,
+              myonteisenPaatoksenLisavaatimukset: {
+                kelpoisuuskoe: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
+  await expect(
+    page.getByTestId('myonteinenPaatos-opettajuutta-tutkimassa'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('myonteinenPaatos-suomalainen-koulu'),
+  ).toBeVisible();
+  await expect(page.getByTestId('myonteinenPaatos-opetusnayte')).toBeVisible();
+});
+
+test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', async ({
+  page,
+}) => {
+  const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(paatostyyppiInput).toBeVisible();
+
+  await paatostyyppiInput.click();
+  await expect(paatostyyppiInput).toBeVisible();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=4 Riittävät opinnot');
+
+  await tasoOption.click();
+
+  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Steinerpedagogiikkaan tai montessoripedagogiikkaan perustuva opetus_Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="true"]')
+      .click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Steinerpedagogiikkaan tai montessoripedagogiikkaan perustuva opetus_Steinerpedagogiikkaan perustuva opetus (perusopetus, lukio)',
+              myonteinenPaatos: true,
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expect(
+    page.getByTestId('myonteinenPaatos-taydentavat-opinnot'),
+  ).toBeVisible();
+});

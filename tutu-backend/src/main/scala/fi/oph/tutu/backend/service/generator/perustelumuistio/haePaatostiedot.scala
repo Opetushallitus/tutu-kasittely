@@ -436,6 +436,18 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
       ),
       Option.when(node.sopeutumisaika)(
         translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika")
+      ),
+      Option.when(node.opettajuuttaTutkimassa)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opettajuuttaTutkimassa"
+        )
+      ),
+      Option.when(node.suomalainenKoulu)(
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.suomalainenKoulu")
+      ),
+      Option.when(node.opetusNayte)(
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opetusNayte")
       )
     ).flatten
 

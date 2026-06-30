@@ -18,6 +18,9 @@ const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
     taydentavatOpinnot: false,
     kelpoisuuskoe: false,
     sopeutumisaika: false,
+    opettajuuttaTutkimassa: false,
+    suomalainenKoulu: false,
+    opetusNayte: false,
   },
 });
 
