@@ -58,7 +58,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
 
-  const { opinnot, LisavaatimusComponent } = useMemo(() => {
+  const { naytaKielivalinta, LisavaatimusComponent } = useMemo(() => {
     const text = tutkintoTaiOpinto.tutkintoTaiOpinto ?? '';
 
     const aineenopettajaKeys = [
@@ -81,14 +81,19 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       found = Opinnot.Luokanopettaja;
     }
 
-    const component =
-      found === Opinnot.Steiner
-        ? MyonteinenPaatosSteiner
-        : found === Opinnot.Aineenopettaja || found === Opinnot.Luokanopettaja
-          ? MyonteinenPaatosLuokanopettajaTaiAineenopettaja
-          : MyonteinenPaatos;
+    const componentMap: Record<Opinnot, typeof MyonteinenPaatos> = {
+      [Opinnot.Steiner]: MyonteinenPaatosSteiner,
+      [Opinnot.Aineenopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
+      [Opinnot.Luokanopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
+      [Opinnot.Muu]: MyonteinenPaatos,
+    };
 
-    return { opinnot: found, LisavaatimusComponent: component };
+    const component = componentMap[found];
+
+    return {
+      naytaKielivalinta: found !== Opinnot.Steiner,
+      LisavaatimusComponent: component,
+    };
   }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
 
   const rinnastettavaTutkintoTaiOpinnotOptions =
@@ -172,7 +177,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         data-testid={'rinnastettava-tutkinto-tai-opinto-select'}
       />
-      {tyyppi === 'riittavatOpinnot' && opinnot !== Opinnot.Steiner && (
+      {tyyppi === 'riittavatOpinnot' && naytaKielivalinta && (
         <OphInputFormField
           label={t('hakemus.paatos.paatostyyppi.riittavatOpinnot.opetuskieli')}
           value={tutkintoTaiOpinto.opetuskieli ?? ''}
