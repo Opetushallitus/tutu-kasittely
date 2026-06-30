@@ -6,7 +6,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatos';
 import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/[oid]/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
@@ -57,26 +57,38 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
-  const [opinnot, setOpinnot] = useState<Opinnot>(Opinnot.Muu);
 
-  useEffect(() => {
-    if (tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Steiner')) {
-      setOpinnot(Opinnot.Steiner);
-    } else if (
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Aineenopettaja') ||
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Ämneslärare') ||
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Subject teacher')
-    ) {
-      setOpinnot(Opinnot.Aineenopettaja);
-    } else if (
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Luokanopettaja') ||
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Klasslärare') ||
-      tutkintoTaiOpinto.tutkintoTaiOpinto?.includes('Class teacher')
-    ) {
-      setOpinnot(Opinnot.Luokanopettaja);
-    } else {
-      setOpinnot(Opinnot.Muu);
+  const { opinnot, LisavaatimusComponent } = useMemo(() => {
+    const text = tutkintoTaiOpinto.tutkintoTaiOpinto ?? '';
+
+    const aineenopettajaKeys = [
+      'Aineenopettaja',
+      'Ämneslärare',
+      'Subject teacher',
+    ];
+    const luokanopettajaKeys = [
+      'Luokanopettaja',
+      'Klasslärare',
+      'Class teacher',
+    ];
+
+    let found: Opinnot = Opinnot.Muu;
+    if (text.includes('Steiner')) {
+      found = Opinnot.Steiner;
+    } else if (aineenopettajaKeys.some((k) => text.includes(k))) {
+      found = Opinnot.Aineenopettaja;
+    } else if (luokanopettajaKeys.some((k) => text.includes(k))) {
+      found = Opinnot.Luokanopettaja;
     }
+
+    const component =
+      found === Opinnot.Steiner
+        ? MyonteinenPaatosSteiner
+        : found === Opinnot.Aineenopettaja || found === Opinnot.Luokanopettaja
+          ? MyonteinenPaatosLuokanopettajaTaiAineenopettaja
+          : MyonteinenPaatos;
+
+    return { opinnot: found, LisavaatimusComponent: component };
   }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
 
   const rinnastettavaTutkintoTaiOpinnotOptions =
@@ -177,28 +189,18 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         ></OphInputFormField>
       )}
       <MyonteinenTaiKielteinenPaatosComponent
-        MyonteisenPaatoksenLisavaatimusComponent={
-          opinnot === Opinnot.Steiner
-            ? MyonteinenPaatosSteiner
-            : opinnot === Opinnot.Aineenopettaja ||
-                opinnot === Opinnot.Luokanopettaja
-              ? MyonteinenPaatosLuokanopettajaTaiAineenopettaja
-              : MyonteinenPaatos
-        }
+        MyonteisenPaatoksenLisavaatimusComponent={LisavaatimusComponent}
         lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={
           tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
         }
-        updatePaatosAction={(paatos) => {
+        updatePaatosAction={(paatos) =>
           updateTutkintoTaiOpintoAction(
-            {
-              ...tutkintoTaiOpinto,
-              ...paatos,
-            },
+            { ...tutkintoTaiOpinto, ...paatos },
             index,
-          );
-        }}
+          )
+        }
         t={t}
       />
     </Stack>
