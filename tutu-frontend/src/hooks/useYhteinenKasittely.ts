@@ -115,7 +115,7 @@ export const useYhteinenKasittely = (
       laheta?: boolean;
     }) => answerMutation.mutate(p),
     viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
-    updateError: createMutation.error || answerMutation.error,
+    updateError: createMutation.error ?? answerMutation.error,
     answerIsPending: answerMutation.isPending,
   };
 };

@@ -87,7 +87,7 @@ export const SaveRibbon = ({
           minHeight: 56,
         }}
       >
-        {Boolean(lastSaved || modifier) && (
+        {Boolean(lastSaved ?? modifier) && (
           <Stack
             data-testid="save-ribbon-last-saved"
             direction="row"

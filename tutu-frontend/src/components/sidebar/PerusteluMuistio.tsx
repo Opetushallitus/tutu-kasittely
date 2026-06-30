@@ -98,7 +98,7 @@ export const PerusteluMuistioModal = ({
   useEffect(() => {
     if (open) {
       getPerusteluMuistio(hakemusOid).then((sisalto: string) => {
-        setMuistio(sisalto || '');
+        setMuistio(sisalto ?? '');
         setIsLoading(false);
       });
     }
@@ -116,7 +116,7 @@ export const PerusteluMuistioModal = ({
 
       // Pyydä perustelumuistioteksti uudelleen
       const sisalto = await getPerusteluMuistio(hakemusOid);
-      setMuistio(sisalto || '');
+      setMuistio(sisalto ?? '');
 
       // Kopioi teksti
       navigator.clipboard.writeText(sisalto);

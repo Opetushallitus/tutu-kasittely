@@ -175,8 +175,8 @@ export const CalendarComponent = ({
             disabled={disabled}
             selected={selectedValue}
             onChange={(date) => setDate(date)}
-            minDate={minDate || undefined}
-            maxDate={maxDate || undefined}
+            minDate={minDate ?? undefined}
+            maxDate={maxDate ?? undefined}
             customInput={<CustomInput ref={refCustomInput} />}
             calendarClassName={CALENDAR_CLASSNAME}
             showTimeSelect={false}

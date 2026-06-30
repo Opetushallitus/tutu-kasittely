@@ -188,6 +188,7 @@ export type KoulutusEroModel = {
   kelpoisuusKey?: string;
   lyhytNimiKaannosAvain?: string;
   kelpoisuusKohtainenEroLkm: number;
+  kelpoisuusKohtainenEroTarkennukset?: Array<{ parent: number; lkm: number }>;
   yleisetErot: string[];
   sisaltaaMuuEro: boolean;
 };
@@ -206,6 +207,19 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'aineenopetus_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja perusopetuksessa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetus.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    kelpoisuusKohtainenEroTarkennukset: [
+      { parent: 3, lkm: 2 },
+      { parent: 4, lkm: 2 },
+    ],
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'aineenopetusLukio',
     kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja lukiossa',
     lyhytNimiKaannosAvain:
@@ -215,6 +229,19 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'aineenopetusLukio_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Aineenopettaja lukiossa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetusLukio.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    kelpoisuusKohtainenEroTarkennukset: [
+      { parent: 3, lkm: 2 },
+      { parent: 4, lkm: 2 },
+    ],
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'esiopettaja',
     kelpoisuusKey: 'Opetusalan ammatit_Esiopetusta antava opettaja',
     lyhytNimiKaannosAvain:
@@ -222,6 +249,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 1,
     yleisetErot: ['eriIkaryhma'],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'esiopettaja_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Esiopetusta antava opettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.esiopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'luokanopettaja',
@@ -260,6 +296,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'erityisluokanopettaja_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisluokanopettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisluokanopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'erityisopettajaPerusopetuksessa',
     kelpoisuusKey: 'Opetusalan ammatit_Erityisopettaja perusopetuksessa',
     lyhytNimiKaannosAvain:
@@ -267,6 +312,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisopettajaPerusopetuksessa_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisopettaja perusopetuksessa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaPerusopetuksessa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'erityisopettajaLukiossa',
@@ -278,6 +332,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'erityisopettajaLukiossa_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Erityisopettaja lukiossa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaLukiossa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'erityisopettajaMuu',
     kelpoisuusKey: 'Opetusalan ammatit_Muu erityisopettaja',
     lyhytNimiKaannosAvain:
@@ -285,6 +348,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'erityisopettajaMuu_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Muu erityisopettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.erityisopettajaMuu.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'oppilaanohjaajaPerusopetuksessa',
@@ -296,6 +368,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'oppilaanohjaajaPerusopetuksessa_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Oppilaanohjaaja perusopetuksessa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.oppilaanohjaajaPerusopetuksessa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'opintoohjaajaLukiossa',
     kelpoisuusKey: 'Opetusalan ammatit_Opinto-ohjaaja lukiossa',
     lyhytNimiKaannosAvain:
@@ -303,6 +384,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'opintoohjaajaLukiossa_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Opinto-ohjaaja lukiossa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.opintoohjaajaLukiossa.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'ammattikoulunOpettajaAmmattiosat',
