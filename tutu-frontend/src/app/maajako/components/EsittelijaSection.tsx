@@ -20,7 +20,7 @@ const filterMaakooditByEsittelija = (
 ) =>
   maakoodit
     ?.filter((maakoodi) => maakoodi.esittelijaId === esittelijaId)
-    .map((maakoodi) => maakoodi.fi) || [];
+    .map((maakoodi) => maakoodi.fi) ?? [];
 
 export const EsittelijaSection = ({
   esittelija,

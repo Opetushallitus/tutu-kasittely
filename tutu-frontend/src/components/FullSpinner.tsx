@@ -14,7 +14,7 @@ export const FullSpinner = ({
   minHeight?: string | number;
 }) => {
   const { t } = useTranslations();
-  const label = ariaLabel || t('yleinen.ladataan');
+  const label = ariaLabel ?? t('yleinen.ladataan');
 
   return (
     <Box

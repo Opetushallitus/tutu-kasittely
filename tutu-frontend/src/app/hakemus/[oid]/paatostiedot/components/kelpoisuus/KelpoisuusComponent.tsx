@@ -151,7 +151,7 @@ const KelpoisuusUOLiitannaisComponent = ({
         }}
         MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatosUO}
         lisavaatimusComponentProps={{
-          kelpoisuusKey: kelpoisuus.kelpoisuus,
+          kelpoisuusKey: `${kelpoisuus.kelpoisuus}_uo`,
           lisavaatimukset:
             kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
         }}
@@ -278,7 +278,8 @@ export const KelpoisuusComponent = ({
           data-testid="kelpoisuus-select"
         />
         {availableOpetettavaAineOptions.length > 0 &&
-          kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) && (
+          kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) &&
+          !showUOFields && (
             <SelectTreeDropdown
               label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
               value={kelpoisuus.opetettavaAine}

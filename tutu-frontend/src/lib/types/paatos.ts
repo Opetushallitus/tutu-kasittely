@@ -101,6 +101,7 @@ export type KelpoisuudenLisavaatimukset = {
 
 export type ErotKoulutuksessa = {
   erot?: NamedBoolean[];
+  eroTarkennukset?: Record<string, NamedBoolean[]>;
   muuEro?: boolean;
   muuEroKuvaus?: string;
 };
@@ -127,6 +128,8 @@ export type AmmattikokemuksenHuomioiminen =
   | 'SuomessaHankittuOsittain'
   | 'UlkomaillaHankittuKokonaan'
   | 'UlkomaillaHankittuOsittain'
+  | 'SuomessaJaUlkomaillaHankittuKokonaan'
+  | 'SuomessaJaUlkomaillaHankittuOsittain'
   | 'EiHuomioida';
 
 export type SuomessaSuoritettujenOpintojenHuomioiminen =

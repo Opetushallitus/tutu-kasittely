@@ -88,7 +88,7 @@ const TabButton = ({
           {showNotification && <InfoBadge />}
         </ActiveButton>
       ) : (
-        <InactiveButton href={linkPath || ''}>
+        <InactiveButton href={linkPath ?? ''}>
           {t(tabName)}
           {showNotification && <InfoBadge />}
         </InactiveButton>

@@ -44,7 +44,7 @@ export default function YkMainPage() {
   useEffect(() => {
     handleFetchError(
       addToast,
-      sentError || receivedError,
+      sentError ?? receivedError,
       'virhe.yhteisenkasittelynListanLataus',
       t,
     );
@@ -67,20 +67,20 @@ export default function YkMainPage() {
             onClick: handleTabChange('saapuneet'),
             tabName: 'saapuneet',
             active: tab === 'saapuneet',
-            value: countNotResponded(receivedMessages || []),
+            value: countNotResponded(receivedMessages ?? []),
           },
           {
             onClick: handleTabChange('lahetetyt'),
             tabName: 'lahetetyt',
             active: tab === 'lahetetyt',
-            value: countNotRead(sentMessages || []),
+            value: countNotRead(sentMessages ?? []),
           },
         ]}
       />
       {tab === 'lahetetyt' ? (
-        <SentMessages messageList={sentMessages || []} user={user} />
+        <SentMessages messageList={sentMessages ?? []} user={user} />
       ) : (
-        <ReceivedMessages messageList={receivedMessages || []} user={user} />
+        <ReceivedMessages messageList={receivedMessages ?? []} user={user} />
       )}
     </BoxWrapper>
   );

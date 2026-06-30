@@ -76,6 +76,7 @@ case class NamedBoolean(name: String, value: Boolean)
 
 case class ErotKoulutuksessa(
   erot: Seq[NamedBoolean] = Seq(),
+  eroTarkennukset: Map[String, Seq[NamedBoolean]] = Map(),
   muuEro: Option[Boolean] = None,
   muuEroKuvaus: Option[String] = None
 )

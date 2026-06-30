@@ -56,7 +56,7 @@ const TabButton = ({
   const { t } = useTranslations();
   const activeTabName = useActiveHakuTabName();
 
-  const isActive = active || activeTabName === tabName;
+  const isActive = active ?? activeTabName === tabName;
 
   const StyledButton = isActive ? ActiveButton : InactiveButton;
 

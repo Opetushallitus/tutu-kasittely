@@ -89,24 +89,39 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };
 };
 
+const createEroArray = (namePrefix: string, lkm: number) => {
+  return Array.from(
+    {
+      length: lkm,
+    },
+    (_, i) => ({ name: `${namePrefix}${i + 1}`, value: false }),
+  );
+};
+
 export const emptyErotKoulutuksessa = (
   kelpoisuusKey?: string,
-  sovellettuLaki?: string,
 ): ErotKoulutuksessa => {
-  const eroModel = koulutusEroModel(kelpoisuusKey, sovellettuLaki);
-  const kelpoisuusKohtaiset: NamedBoolean[] = Array.from(
-    {
-      length: eroModel.kelpoisuusKohtainenEroLkm,
-    },
-    (_, i) => ({ name: `ero${i + 1}`, value: false }),
+  const eroModel = koulutusEroModel(kelpoisuusKey);
+  const kelpoisuusKohtaiset: NamedBoolean[] = createEroArray(
+    'ero',
+    eroModel.kelpoisuusKohtainenEroLkm,
   );
   const yleiset: NamedBoolean[] = eroModel.yleisetErot.map((eroKey) => ({
     name: eroKey,
     value: false,
   }));
 
+  const tarkennukset = eroModel.kelpoisuusKohtainenEroTarkennukset?.reduce(
+    (acc, val) =>
+      Object.assign(acc, {
+        [`ero${val.parent}`]: createEroArray('tarkennus', val.lkm),
+      }),
+    {},
+  );
+
   return {
     erot: [...kelpoisuusKohtaiset, ...yleiset],
+    eroTarkennukset: tarkennukset,
     muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
   };
 };
@@ -114,12 +129,12 @@ export const emptyErotKoulutuksessa = (
 const initOrUpdateKorvaavaToimenpide = (
   korvaavaToimenpide?: KorvaavaToimenpide,
 ): KorvaavaToimenpide => {
-  const tobe = korvaavaToimenpide || emptyKorvaavaToimenpide();
+  const tobe = korvaavaToimenpide ?? emptyKorvaavaToimenpide();
   tobe.kelpoisuuskoeSisalto = tobe.kelpoisuuskoe
-    ? tobe.kelpoisuuskoeSisalto || emptyKelpoisuuskoeSisalto()
+    ? (tobe.kelpoisuuskoeSisalto ?? emptyKelpoisuuskoeSisalto())
     : undefined;
   tobe.kelpoisuuskoeJaSopeutumisaikaSisalto = tobe.kelpoisuuskoeJaSopeutumisaika
-    ? tobe.kelpoisuuskoeJaSopeutumisaikaSisalto || emptyKelpoisuuskoeSisalto()
+    ? (tobe.kelpoisuuskoeJaSopeutumisaikaSisalto ?? emptyKelpoisuuskoeSisalto())
     : undefined;
   tobe.sopeutumiusaikaKestoKk = tobe.sopeutumisaika
     ? tobe.sopeutumiusaikaKestoKk
@@ -142,12 +157,12 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
   };
   if (tobe.olennaisiaEroja) {
     tobe.erotKoulutuksessa =
-      tobe.erotKoulutuksessa || emptyErotKoulutuksessa(kelpoisuusKey);
+      tobe.erotKoulutuksessa ?? emptyErotKoulutuksessa(kelpoisuusKey);
     tobe.korvaavaToimenpide = initOrUpdateKorvaavaToimenpide(
       tobe.korvaavaToimenpide,
     );
     tobe.ammattikokemusJaElinikainenOppiminen =
-      tobe.ammattikokemusJaElinikainenOppiminen ||
+      tobe.ammattikokemusJaElinikainenOppiminen ??
       emptyAmmattikokemusJaElinikainenOppiminen();
 
     if (
@@ -190,7 +205,7 @@ export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
     ...updatedKelpoisuudenLisavaatimukset,
   };
   tobe.erotKoulutuksessa =
-    tobe.erotKoulutuksessa || emptyErotKoulutuksessa(kelpoisuusKey, 'uo');
+    tobe.erotKoulutuksessa ?? emptyErotKoulutuksessa(kelpoisuusKey);
   tobe.korvaavaToimenpide = showOsaamisenTaydentamisenTavat
     ? initOrUpdateKorvaavaToimenpide(tobe.korvaavaToimenpide)
     : undefined;
@@ -204,17 +219,12 @@ export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
   return tobe;
 };
 
-export const koulutusEroModel = (
-  kelpoisuusKey?: string,
-  sovellettuLaki?: string,
-) => {
-  const key = sovellettuLaki
-    ? `${kelpoisuusKey}_${sovellettuLaki}`
-    : kelpoisuusKey;
+export const koulutusEroModel = (kelpoisuusKey?: string) => {
+  const key = kelpoisuusKey;
   const option = kelpoisuusKey
     ? erotKoulutuksessaOptions.find((option) => option.kelpoisuusKey === key)
     : null;
-  return option || oletusKoulutusErot;
+  return option ?? oletusKoulutusErot;
 };
 
 export const setKoulutusEroValues = (

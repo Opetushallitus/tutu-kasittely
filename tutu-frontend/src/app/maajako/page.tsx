@@ -29,7 +29,7 @@ import { handleFetchError } from '@/src/lib/utils';
 type ChangeModelType = { [id: string]: string | null };
 
 const sortMaakoodit = (maakoodit: Maakoodi[] | undefined) =>
-  maakoodit?.slice().sort((a, b) => a.fi.localeCompare(b.fi)) || [];
+  maakoodit?.slice().sort((a, b) => a.fi.localeCompare(b.fi)) ?? [];
 
 export default function MaajakoPage() {
   const { t } = useTranslations();
