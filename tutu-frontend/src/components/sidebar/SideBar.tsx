@@ -2,8 +2,8 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { Stack, styled, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { usePathname } from 'next/navigation';
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
 import { Paatos } from '@/src/components/sidebar/Paatos';
@@ -41,7 +41,7 @@ const SidebarInfoStack = styled(Stack)(({ theme }) => ({
 export const SideBar = () => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const pathName = usePathname();
+  const { pathname } = useLocation();
   const {
     hakemusState: { editedData: hakemus },
   } = useHakemus();
@@ -64,20 +64,20 @@ export const SideBar = () => {
         <HakemusKoskee />
         <Paatos />
       </SidebarInfoStack>
-      {showTaydennyspyynto(pathName) && (
+      {showTaydennyspyynto(pathname) && (
         <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
           <Taydennyspyynto />
         </SidebarInfoStack>
       )}
       <ToimintoLinkki
-        href={`/hakemus/${hakemusOid}/editori/viesti`}
+        path={`/hakemus/${hakemusOid}/editori/viesti`}
         gap={theme.spacing(1)}
         icon={<MailOutlineIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaViesti')}
       />
       <AvaaPerusteluMuistioButton />
       <ToimintoLinkki
-        href={`/hakemus/${hakemusOid}/editori/paatos`}
+        path={`/hakemus/${hakemusOid}/editori/paatos`}
         gap={theme.spacing(1)}
         icon={<CheckCircleIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaPaatos')}

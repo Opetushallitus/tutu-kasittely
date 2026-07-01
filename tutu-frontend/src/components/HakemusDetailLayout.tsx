@@ -1,6 +1,7 @@
 'use client';
 import { Divider, Stack, useTheme } from '@mui/material';
 import React, { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -14,13 +15,7 @@ import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
-export const HakemusDetailLayout = ({
-  hakemusOid,
-  children,
-}: {
-  hakemusOid: string;
-  children: React.ReactNode;
-}) => {
+export const HakemusDetailLayout = ({ hakemusOid }: { hakemusOid: string }) => {
   const theme = useTheme();
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -60,7 +55,7 @@ export const HakemusDetailLayout = ({
             justifyContent="space-between"
             sx={{ paddingTop: 2 }}
           >
-            {children}
+            <Outlet />
             {!showPaatosTekstiPreview && !showTekstipohjaLista && <SideBar />}
           </Stack>
         </BoxWrapper>

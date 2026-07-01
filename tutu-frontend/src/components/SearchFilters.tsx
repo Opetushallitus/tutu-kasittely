@@ -20,7 +20,7 @@ import {
   paatostyyppiOptions,
   ratkaisutyyppiOptions,
   tutkinnonTasoOptions,
-} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+} from '@/src/app/hakemus/paatostiedot/constants';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
 import { kelpoisuusFilterTreeOptions } from '@/src/constants/kelpoisuusFilterOptions';
 import { opetettavaAineTreeOptions } from '@/src/constants/opetettavaAineFilterOptions';

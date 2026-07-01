@@ -76,7 +76,7 @@ const AikaisempiPaatos = ({
       <OphTypography variant={'body1'}>
         {t('hakemus.sivupalkki.paatos.seliteAikaisempi')}
       </OphTypography>
-      <StyledLink href={'/'} sx={{ fontWeight: '400' }}>
+      <StyledLink to={'/'} sx={{ fontWeight: '400' }}>
         {asiatunnus}
       </StyledLink>
     </Stack>

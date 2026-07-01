@@ -1,6 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import React, {
   createContext,
   useContext,
@@ -8,6 +7,7 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface PreviewContextType {
   showPaatosTekstiPreview: boolean;
@@ -24,7 +24,7 @@ export const ShowPreviewProvider = ({ children }: { children: ReactNode }) => {
   const [showPaatosTekstiPreview, setShowPaatosTekstiPreview] = useState(false);
   const [showPerusteluMuistioPreview, setShowPerusteluMuistioPreview] =
     useState(false);
-  const pathName = usePathname();
+  const pathName = useLocation();
 
   useEffect(() => {
     setShowPaatosTekstiPreview(false);

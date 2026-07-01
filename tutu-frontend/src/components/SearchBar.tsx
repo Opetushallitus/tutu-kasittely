@@ -17,9 +17,9 @@ import {
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { usePathname } from 'next/dist/client/components/navigation';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { hakuNakymaValintaOptions } from '@/src/constants/dropdownOptions';
 import { useSearchRibbon } from '@/src/context/SearchRibbonContext';
@@ -356,7 +356,7 @@ export const SearchBar = () => {
   };
 
   // Älä näytä hakuja editorissa
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   if (pathname.includes('/editori/')) {
     return null;
   }

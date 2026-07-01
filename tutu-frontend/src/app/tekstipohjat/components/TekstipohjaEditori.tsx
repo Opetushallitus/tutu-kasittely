@@ -6,7 +6,7 @@ import {
 import { LexicalEditor } from 'lexical';
 import { RefObject, useState } from 'react';
 
-import { Tabs } from '@/src/app/(root)/components/Tabs';
+import { Tabs } from '@/src/app/components/Tabs';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { Editor } from '@/src/components/editor/Editor';
 import { normalizedEditorContent } from '@/src/components/editor/editor-utils';

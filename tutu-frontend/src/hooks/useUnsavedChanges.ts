@@ -1,6 +1,5 @@
 'use client';
 
-import { useNavigationGuard } from 'next-navigation-guard';
 import { useEffect } from 'react';
 
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
@@ -82,6 +81,7 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
     return () => navigationApi.removeEventListener('navigate', handleNavigate);
   }, [enabled, onDiscard, t, showConfirmation]);
 
+  /*
   // Handles nextjs links and others that don't trigger the native navigation API.
   const guard = useNavigationGuard({
     enabled: () => enabled,
@@ -105,4 +105,6 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
       });
     }
   }, [guard, enabled, onDiscard, t, showConfirmation]);
+  
+   */
 }

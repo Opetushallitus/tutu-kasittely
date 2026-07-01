@@ -3,9 +3,15 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, styled, Tab, Tabs, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import Link, { LinkProps } from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useRef, useEffect } from 'react';
+import {
+  Link,
+  useLocation,
+  useSearchParams,
+  useNavigate,
+} from 'react-router-dom';
+//import Link, { LinkProps } from 'next/link';
+//import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { omit } from 'remeda';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -20,18 +26,6 @@ const InnerBoxWrapper = styled(Box)(() => ({
   border: DEFAULT_BOX_BORDER,
   backgroundColor: ophColors.white,
 }));
-
-type TabLinkProps = {
-  href?: string;
-  value?: string;
-  targetPage?: string;
-  hakemusOid?: string;
-  selected?: boolean;
-  isSubTab?: boolean;
-  expandable?: boolean;
-  expanded?: boolean;
-  wrapText?: boolean;
-} & Omit<LinkProps, 'href'>;
 
 const SUB_TAB_NAMES = ['perustelu.yleiset', 'perustelu.uoro', 'perustelu.ap'];
 
@@ -48,7 +42,7 @@ const TAB_ROUTES = {
 } as const;
 
 const useActiveTabFromPath = () => {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   if (pathname.includes('/perustelu/')) {
     if (pathname.includes('/perustelu/yleiset')) {
@@ -73,11 +67,23 @@ const useActiveTabFromPath = () => {
   return;
 };
 
+type TabLinkProps = {
+  path?: string;
+  value?: string;
+  targetPage?: string;
+  hakemusOid?: string;
+  selected?: boolean;
+  isSubTab?: boolean;
+  expandable?: boolean;
+  expanded?: boolean;
+  wrapText?: boolean;
+}; // & Omit<LinkProps, 'href'>;
+
 const TabLink = (props: TabLinkProps) => {
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const { href = '', ...rest } = props;
-  return <Link ref={ref} href={href} {...rest}></Link>;
+  const { path = '', ...rest } = props;
+  return <Link ref={ref} to={path} {...rest}></Link>;
 };
 
 const LinkedTab = (props: TabLinkProps) => {
@@ -93,9 +99,9 @@ const LinkedTab = (props: TabLinkProps) => {
     expandable,
   } = props;
   const pagePath = (targetPage || value!).replace(/\./g, '/');
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const search = searchParams.toString();
-  const href = `/hakemus/${hakemusOid}/${pagePath}${search ? `?${search}` : ''}`;
+  const path = `/hakemus/${hakemusOid}/${pagePath}${search ? `?${search}` : ''}`;
   const subTabSx = { marginLeft: theme.spacing(2), ...SMALL_FONT };
   const sx = {
     whiteSpace: wrapText ? 'normal' : 'nowrap',
@@ -109,7 +115,7 @@ const LinkedTab = (props: TabLinkProps) => {
     ...(isSubTab ? subTabSx : {}),
   };
   const tabProps = {
-    href,
+    path,
     ...omit(props, [
       'targetPage',
       'hakemusOid',
@@ -117,7 +123,7 @@ const LinkedTab = (props: TabLinkProps) => {
       'isSubTab',
       'expandable',
       'expanded',
-      'href',
+      // 'href',
     ]),
   };
   return (
@@ -151,8 +157,8 @@ export const HakemusTabs = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const activeTab = useActiveTabFromPath();
   const [selectedTabName, setSelectedTabName] = React.useState(activeTab);
 
@@ -214,11 +220,11 @@ export const HakemusTabs = ({
   useEffect(() => {
     if (displayTabName && selectedTabName !== displayTabName) {
       const search = searchParams.toString();
-      router.push(
+      navigate(
         `/hakemus/${hakemusOid}/${displayTabName}${search ? `?${search}` : ''}`,
       );
     }
-  }, [selectedTabName, displayTabName, hakemusOid, router, searchParams]);
+  }, [selectedTabName, displayTabName, hakemusOid, navigate, searchParams]);
 
   return (
     <InnerBoxWrapper
