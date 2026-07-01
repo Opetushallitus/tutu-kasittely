@@ -1,0 +1,170 @@
+'use client';
+
+import { Add } from '@mui/icons-material';
+import { Divider, Stack, useTheme } from '@mui/material';
+import {
+  OphButton,
+  OphInputFormField,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+
+import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
+import { LausuntopyyntoComponent } from '@/src/app/hakemus/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
+import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { useHakemus } from '@/src/context/HakemusContext';
+import { useEditableState } from '@/src/hooks/useEditableState';
+import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
+import { usePerustelu } from '@/src/hooks/usePerustelu';
+import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
+
+const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
+  jarjestys: jarjestys,
+  lahetetty: null,
+  saapunut: null,
+  lausunnonAntajaKoodiUri: null,
+  lausunnonAntajaMuu: null,
+});
+
+export default function Lausuntotiedot() {
+  const { t } = useTranslations();
+  const theme = useTheme();
+
+  const {
+    isLoading,
+    hakemusState: { editedData: hakemus },
+    error: hakemusError,
+  } = useHakemus();
+
+  const {
+    perustelu,
+    isPerusteluLoading,
+    tallennaPerustelu,
+    isPerusteluSaving,
+    error: perusteluError,
+    updatePerusteluError,
+  } = usePerustelu(hakemus?.hakemusOid);
+
+  const { korkeakouluOptions, isLoading: isKoodistoLoading } =
+    useKoodistoOptions();
+
+  // Use editableState hook for perustelu management
+  const perusteluState = useEditableState(perustelu, tallennaPerustelu);
+
+  const {
+    editedData: editedPerustelu,
+    hasChanges: hasPerusteluChanges,
+    updateLocal,
+    updateImmediately,
+    save,
+    discard: discardPerustelu,
+  } = perusteluState;
+
+  const serverLausuntopyynnot = editedPerustelu?.lausuntopyynnot ?? [];
+  const lausuntopyynnot =
+    serverLausuntopyynnot.length === 0
+      ? [emptyLausuntopyynto(1)]
+      : serverLausuntopyynnot;
+
+  const addLausuntopyynto = () => {
+    const newJarjestys = lausuntopyynnot.at(-1)?.jarjestys ?? 0;
+    const updatedLausuntopyynnot = [
+      ...lausuntopyynnot,
+      emptyLausuntopyynto(newJarjestys + 1),
+    ];
+
+    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
+  };
+
+  const deleteLausuntopyynto = (jarjestysNumberToBeDeleted: number) => {
+    const updatedLausuntopyynnot = lausuntopyynnot
+      .filter((p) => p.jarjestys !== jarjestysNumberToBeDeleted)
+      .map((pyynto, index) => ({
+        ...pyynto,
+        jarjestys: index + 1,
+      }));
+
+    updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
+  };
+
+  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
+
+  return (
+    <PerusteluLayout
+      showTabs={true}
+      title="hakemus.perustelu.lausuntotiedot.lausuntopyynnot"
+      t={t}
+      hakemus={hakemus}
+      perusteluState={perusteluState}
+      isLoading={isLoading || isPerusteluLoading}
+      hakemusError={hakemusError}
+      perusteluError={perusteluError}
+      updatePerusteluError={updatePerusteluError}
+    >
+      <Stack
+        gap={theme.spacing(3)}
+        sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
+      >
+        {lausuntopyynnot.map((lausuntopyynto) => (
+          <LausuntopyyntoComponent
+            lausuntopyynto={lausuntopyynto}
+            updateLausuntopyyntoAction={(pyynto: Lausuntopyynto) => {
+              const updatedLausuntopyynnot = lausuntopyynnot.map((p) =>
+                p.jarjestys === pyynto.jarjestys ? pyynto : p,
+              );
+              updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
+            }}
+            deleteLausuntopyyntoAction={deleteLausuntopyynto}
+            korkeakouluOptions={korkeakouluOptions}
+            isKoodistoLoading={isKoodistoLoading}
+            t={t}
+            theme={theme}
+            key={lausuntopyynto.jarjestys}
+          />
+        ))}
+        {lausuntopyynnot.length > 0 && <Divider orientation={'horizontal'} />}
+        <OphButton
+          sx={{
+            alignSelf: 'flex-start',
+          }}
+          data-testid={`lisaa-lausuntopyynto-button`}
+          variant="outlined"
+          startIcon={<Add />}
+          onClick={addLausuntopyynto}
+        >
+          {t('hakemus.perustelu.lausuntotiedot.lisaaLausuntopyynto')}
+        </OphButton>
+        <OphInputFormField
+          label={t('hakemus.perustelu.lausuntotiedot.pyyntojenLisatiedot')}
+          value={editedPerustelu?.lausuntoPyyntojenLisatiedot || ''}
+          onChange={(e) =>
+            updateLocal({ lausuntoPyyntojenLisatiedot: e.target.value })
+          }
+          multiline
+          minRows={4}
+          inputProps={{ 'data-testid': 'pyyntojenLisatiedot-input' }}
+        />
+        <Divider orientation={'horizontal'} />
+        <OphTypography variant={'h3'}>
+          {t('hakemus.perustelu.lausuntotiedot.lausunto')}
+        </OphTypography>
+        <OphInputFormField
+          label={t('hakemus.perustelu.lausuntotiedot.sisalto')}
+          value={editedPerustelu?.lausunnonSisalto || ''}
+          onChange={(e) => updateLocal({ lausunnonSisalto: e.target.value })}
+          multiline
+          minRows={4}
+          inputProps={{ 'data-testid': 'lausunnonSisalto-input' }}
+        />
+        <SaveRibbon
+          onSave={save}
+          isSaving={isPerusteluSaving}
+          hasChanges={hasPerusteluChanges}
+          lastSaved={editedPerustelu?.muokattu}
+          modifier={editedPerustelu?.muokkaaja}
+        />
+      </Stack>
+    </PerusteluLayout>
+  );
+}
