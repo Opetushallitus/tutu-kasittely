@@ -17,7 +17,7 @@ pnpm dev
 
 Open [http://localhost:3123](http://localhost:3123) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `app/App.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
@@ -26,8 +26,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 You need to request access to [Tolgee](https://app.tolgee.io/) for access to translations, after which you can put following to `.env.development.local`
 
 ```text
-NEXT_PUBLIC_TOLGEE_API_KEY=<key>
-NEXT_PUBLIC_TOLGEE_API_URL=https://app.tolgee.io
+PUBLIC_TOLGEE_API_KEY=<key>
+PUBLIC_TOLGEE_API_URL=https://app.tolgee.io
 ```
 
 Tolgee also has a [browser plugin](https://tolgee.io/apps-integrations/tools) which allows you to edit translations directly on the page by pressing Alt/Option and hovering over text.
