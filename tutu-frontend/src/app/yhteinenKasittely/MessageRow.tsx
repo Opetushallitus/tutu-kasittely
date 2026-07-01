@@ -82,7 +82,7 @@ export default function MessageRow({
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
       <StyledTableCell>
         <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
-          {formatHelsinki(luotu || '', 'd.M.yyyy')}
+          {formatHelsinki(luotu ?? '', 'd.M.yyyy')}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
@@ -94,7 +94,7 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <StyledLink
-          to={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
+          href={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
           data-testid={'hakijan-nimi'}
           sx={{ fontWeight: 'normal' }}
         >
