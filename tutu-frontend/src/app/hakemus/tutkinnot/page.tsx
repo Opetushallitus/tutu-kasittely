@@ -5,9 +5,6 @@ import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 
-import { MuuTutkintoComponent } from '@/src/app/hakemus/tutkinnot/components/MuuTutkintoComponent';
-import { TutkintoComponent } from '@/src/app/hakemus/tutkinnot/components/TutkintoComponent';
-import { Yhteistutkinto } from '@/src/app/hakemus/tutkinnot/components/Yhteistutkinto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import {
@@ -25,12 +22,17 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
 
+import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
+import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
+import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
+
 export default function TutkintoPage() {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
   const { addToast } = useToaster();
   const {
     isLoading: isHakemusLoading,
+    isUpdateSuccess: isHakemusUpdateSuccess,
     hakemusState,
     error: hakemusError,
     isSaving: isHakemusSaving,
@@ -38,6 +40,7 @@ export default function TutkintoPage() {
 
   const {
     isLoading,
+    isUpdateSuccess: isTutkinnotUpdateSuccess,
     isSaving,
     error,
     updateError,
@@ -77,6 +80,17 @@ export default function TutkintoPage() {
     handleFetchError(addToast, error, 'virhe.tutkintojenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [error, hakemusError, updateError, addToast, t]);
+
+  useEffect(() => {
+    if (isHakemusUpdateSuccess || isTutkinnotUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isHakemusUpdateSuccess, isTutkinnotUpdateSuccess, addToast, t]);
 
   const updateTutkintoLocal = (next: Tutkinto) => {
     const oldTutkinnot = editedTutkinnot.filter(

@@ -9,7 +9,6 @@ import {
 } from '@opetushallitus/oph-design-system';
 import * as R from 'remeda';
 
-import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
@@ -17,6 +16,8 @@ import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
+
+import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 
 export default function ApPage() {
   const { t, translateEntity } = useTranslations();
@@ -33,6 +34,7 @@ export default function ApPage() {
     isPerusteluSaving,
     error: perusteluError,
     updatePerusteluError,
+    isUpdateSuccess: isPerusteluUpdateSuccess,
   } = usePerustelu(hakemus?.hakemusOid);
 
   // Use editableState hook for perustelu management
@@ -78,6 +80,7 @@ export default function ApPage() {
         hakemusError={hakemusError}
         perusteluError={perusteluError}
         updatePerusteluError={updatePerusteluError}
+        isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
       >
         <OphFormFieldWrapper
           label={t('hakemus.perustelu.ap.perusteApLainSoveltamiselle')}

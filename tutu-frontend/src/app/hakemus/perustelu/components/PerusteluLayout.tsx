@@ -6,8 +6,8 @@ import {
   OphButton,
   ophColors,
 } from '@opetushallitus/oph-design-system';
+import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
@@ -42,8 +42,8 @@ const ActiveButton = styled(OphButton)({
 });
 
 const useActiveHakuTabName = () => {
-  const { pathname } = useLocation();
-  return pathname.split('/').at(-1);
+  const pathName = usePathname();
+  return pathName.split('/').at(-1);
 };
 
 const TabButton = ({
@@ -59,12 +59,9 @@ const TabButton = ({
   const StyledButton =
     activeTabName === tabName ? ActiveButton : InactiveButton;
   const useLinkPath = activeTabName === tabName ? undefined : linkPath;
-  const clickHandler = useLinkPath
-    ? { component: Link, to: useLinkPath }
-    : undefined;
 
   return (
-    <StyledButton {...clickHandler}>
+    <StyledButton href={useLinkPath}>
       {t(`hakemus.perustelu.yleiset.tab.${tabName}`)}
     </StyledButton>
   );
@@ -84,11 +81,8 @@ const Tabs = () => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton
-        linkPath="../perustelu/yleiset/perustelut"
-        tabName="perustelut"
-      />
-      <TabButton linkPath="../perustelu/yleiset/lausunto" tabName="lausunto" />
+      <TabButton linkPath="../yleiset/perustelut" tabName="perustelut" />
+      <TabButton linkPath="../yleiset/lausunto" tabName="lausunto" />
     </Stack>
   );
 };
@@ -103,6 +97,10 @@ interface PerusteluYleisetLayoutProps {
   hakemusError: Error | null;
   perusteluError: Error | null;
   updatePerusteluError: Error | null;
+  tutkintoUpdateError?: Error | null;
+  isHakemusUpdateSuccess?: boolean;
+  isPerusteluUpdateSuccess?: boolean;
+  isTutkinnotUpdateSuccess?: boolean;
   children: ReactNode;
 }
 
@@ -116,6 +114,10 @@ export const PerusteluLayout = ({
   hakemusError,
   perusteluError,
   updatePerusteluError,
+  tutkintoUpdateError,
+  isHakemusUpdateSuccess,
+  isPerusteluUpdateSuccess,
+  isTutkinnotUpdateSuccess,
   children,
 }: PerusteluYleisetLayoutProps) => {
   const theme = useTheme();
@@ -125,7 +127,36 @@ export const PerusteluLayout = ({
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, perusteluError, 'virhe.perustelunLataus', t);
     handleFetchError(addToast, updatePerusteluError, 'virhe.tallennus', t);
-  }, [hakemusError, perusteluError, updatePerusteluError, addToast, t]);
+    handleFetchError(addToast, tutkintoUpdateError, 'virhe.tallennus', t);
+  }, [
+    hakemusError,
+    perusteluError,
+    updatePerusteluError,
+    tutkintoUpdateError,
+    addToast,
+    t,
+  ]);
+
+  useEffect(() => {
+    if (
+      isHakemusUpdateSuccess ||
+      isPerusteluUpdateSuccess ||
+      isTutkinnotUpdateSuccess
+    ) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [
+    isHakemusUpdateSuccess,
+    isPerusteluUpdateSuccess,
+    isTutkinnotUpdateSuccess,
+    addToast,
+    t,
+  ]);
 
   if (hakemusError) {
     return null;

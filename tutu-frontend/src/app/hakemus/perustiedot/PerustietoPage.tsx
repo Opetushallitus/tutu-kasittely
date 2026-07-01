@@ -4,10 +4,6 @@ import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
-import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/perustiedot/components/EhdollisenHakemuksenSisalto';
-import { Henkilotiedot } from '@/src/app/hakemus/perustiedot/components/Henkilotiedot';
-import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/perustiedot/components/LopullisenHakemuksenSisalto';
-import { Peruutus } from '@/src/app/hakemus/perustiedot/components/Peruutus';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
@@ -24,6 +20,11 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 import { handleFetchError } from '@/src/lib/utils';
 
+import { EhdollisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/EhdollisenHakemuksenSisalto';
+import { Henkilotiedot } from '@/src/app/hakemus/[oid]/perustiedot/components/Henkilotiedot';
+import { LopullisenHakemuksenSisalto } from '@/src/app/hakemus/[oid]/perustiedot/components/LopullisenHakemuksenSisalto';
+import { Peruutus } from '@/src/app/hakemus/[oid]/perustiedot/components/Peruutus';
+
 export default function PerustietoPage() {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -31,6 +32,7 @@ export default function PerustietoPage() {
 
   const {
     isLoading,
+    isUpdateSuccess,
     isSaving,
     hakemusState: {
       editedData: hakemus,
@@ -49,6 +51,17 @@ export default function PerustietoPage() {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [error, updateError, addToast, t]);
+
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
 
   if (error) {
     return <></>;
