@@ -525,6 +525,10 @@ class HakemusService(
     }
   }
 
+  def poistaPyydettavaAsiakirja(asiakirjaId: UUID): Int = {
+    asiakirjaRepository.suoritaPoistaPyydettavaAsiakirja(asiakirjaId)
+  }
+
   def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {
     val result = hakemusRepository.suoritaPaivitaAsiatunnus(hakemusOid, asiatunnus, muokkaaja)
     perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)

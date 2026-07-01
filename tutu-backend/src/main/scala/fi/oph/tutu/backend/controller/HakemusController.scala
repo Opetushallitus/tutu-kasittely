@@ -27,6 +27,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import java.util.regex.Pattern
 import scala.util.{Failure, Success, Try}
+import org.springframework.web.bind.annotation.DeleteMapping
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -566,6 +567,60 @@ class HakemusController(
     }
   }
 
+  @DeleteMapping(
+    path = Array("hakemus/{hakemusOid}/asiakirjat/{asiakirjaId}")
+  )
+  @Operation(
+    summary = "Poista pyydettava asiakirja",
+    description = "DELETE endpoint pyydettavan asiakirjan poistamiselle.",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "204",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "404",
+        description = RESPONSE_404_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def poistaPyydettavaAsiakirja(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("asiakirjaId") asiakirjaId: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      hakemusService.poistaPyydettavaAsiakirja(UUID.fromString(asiakirjaId))
+    } match {
+      case Success(result) =>
+        if (result == 0) {
+          ResponseEntity.notFound().build()
+        } else {
+          auditLog.logChanges(
+            auditLog.getUser(request),
+            Map("hakemusOid" -> hakemusOid, "asiakirjaId" -> asiakirjaId),
+            DeletePyydettavaAsiakirja,
+            AuditUtil.getChanges(
+              None,
+              None
+            )
+          )
+          ResponseEntity.noContent().build()
+        }
+      case Failure(e) =>
+        LOG.error("Tutkinnon poistaminen epäonnistui", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+
   @GetMapping(
     path = Array("hakemus/{hakemusOid}/asiakirjat"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
@@ -586,7 +641,7 @@ class HakemusController(
               HttpStatus.NOT_FOUND
             )
           case Some(result) =>
-            auditLog.logRead("hakemus/{hakemusOid}/asiakirjat", hakemusOid, ReadLiitteenTiedot, request)
+            auditLog.logRead("hakemus/{hakemusOid}/asiakirjat", hakemusOid, ReadAsiakirjat, request)
             ResponseEntity.status(HttpStatus.OK).body(result)
         }
       case Failure(exception) =>

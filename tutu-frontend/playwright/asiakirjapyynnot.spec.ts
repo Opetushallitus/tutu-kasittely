@@ -122,16 +122,17 @@ test.describe('Asiakirjapyynnöt', () => {
     await expect(saveButton).toBeHidden();
 
     await page.getByTestId('poista-asiakirja-button-0').click();
+    await page.getByTestId('modal-confirm-button').click();
 
-    await expect(saveButton).toBeVisible();
+    await expect(saveButton).toBeHidden();
 
     await page.getByTestId('pyyda-asiakirja-button').click();
     await page.getByTestId('poista-asiakirja-button-undefined').click();
+    await page.getByTestId('modal-confirm-button').click();
 
     await expect(page.getByTestId('pyyda-asiakirja-select')).toBeHidden();
 
-    await expect(saveButton).toBeVisible();
-    await saveButton.click();
+    await expect(saveButton).toBeHidden();
   });
 
   test('Lopullisen päätöksen asiakirjapyyntöjen lisäys, disablointi ja keskimmäisen poisto', async ({
@@ -198,12 +199,14 @@ test.describe('Asiakirjapyynnöt', () => {
     // Poista tyhjä
     await page.keyboard.press('Escape'); // Sulje dropdown
     await page.getByTestId('poista-asiakirja-button-undefined').click();
+    await page.getByTestId('modal-confirm-button').click();
     await expect(selects).toHaveCount(3);
 
     await expect(selects.nth(1)).toContainText('kelpoisuuskokeen');
 
     // Poista keskimmäinen
     await page.getByTestId('poista-asiakirja-button-1').click();
+    await page.getByTestId('modal-confirm-button').click();
     await expect(selects).toHaveCount(2);
 
     // Kelpoisuskoe on poistettu

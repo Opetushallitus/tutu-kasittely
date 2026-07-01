@@ -34,8 +34,8 @@ import {
   ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { useAsiakirjat } from '@/src/hooks/useAsiakirjat';
-import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
+import { AsiakirjaState, useAsiakirjat } from '@/src/hooks/useAsiakirjat';
+import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
@@ -50,6 +50,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaMetadata,
+  AsiakirjaPyynto,
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   Hakemus,
@@ -97,8 +98,8 @@ export default function AsiakirjaPage() {
   } = useHakemus();
 
   const {
-    tallennaAsiakirjat,
-    asiakirjat,
+    asiakirjaState,
+    poistaPyydettavaAsiakirja,
     isLoading: asiakirjatIsLoading,
     isSaving,
     isUpdateSuccess,
@@ -133,23 +134,23 @@ export default function AsiakirjaPage() {
   return (
     <AsiakirjaHookLayer
       hakemusState={hakemusState}
+      asiakirjaState={asiakirjaState}
+      poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
       isSaving={isSaving}
-      tallennaAsiakirjat={tallennaAsiakirjat}
-      asiakirjat={asiakirjat!}
     />
   );
 }
 
 const AsiakirjaHookLayer = ({
   hakemusState,
+  asiakirjaState,
+  poistaPyydettavaAsiakirja,
   isSaving = false,
-  tallennaAsiakirjat,
-  asiakirjat,
 }: {
   hakemusState: EditableState<Hakemus>;
+  asiakirjaState: AsiakirjaState;
+  poistaPyydettavaAsiakirja: (poistettava: AsiakirjaPyynto) => void;
   isSaving: boolean;
-  tallennaAsiakirjat: (asiakirjat: AsiakirjaTieto) => void;
-  asiakirjat: AsiakirjaTieto;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -162,7 +163,7 @@ const AsiakirjaHookLayer = ({
     updateLocal,
     save,
     discard,
-  } = useEditableState(asiakirjat, tallennaAsiakirjat);
+  } = asiakirjaState;
 
   /* -------------------------- */
   /* Haetaan liitteiden  tiedot */
@@ -224,6 +225,7 @@ const AsiakirjaHookLayer = ({
         asiakirjaTietoUpdateAction={asiakirjaTietoUpdateAction}
         asiakirjaSisalto={asiakirjaSisalto}
         asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
+        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
       />
       <SaveRibbon onSave={save} isSaving={isSaving} hasChanges={hasChanges} />
     </>
@@ -236,12 +238,14 @@ const AsiakirjaPagePure = ({
   asiakirjaTietoUpdateAction,
   asiakirjaSisalto = [],
   asiakirjaMetadata = [],
+  poistaPyydettavaAsiakirja,
 }: {
   hakemus: Hakemus;
   asiakirjat: AsiakirjaTieto;
   asiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
   asiakirjaSisalto: SisaltoValue[];
   asiakirjaMetadata: AsiakirjaMetadata[];
+  poistaPyydettavaAsiakirja: (pyydettava: AsiakirjaPyynto) => void;
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
@@ -295,6 +299,7 @@ const AsiakirjaPagePure = ({
       <AsiakirjaPyynnot
         asiakirjaPyynnot={asiakirjat.pyydettavatAsiakirjat}
         updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
         hakemusKoskee={hakemus.hakemusKoskee}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />

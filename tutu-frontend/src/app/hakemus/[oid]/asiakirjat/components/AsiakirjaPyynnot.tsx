@@ -21,6 +21,7 @@ import {
   PYYDETTAVAT_ASIAKIRJAT,
   LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT,
 } from '@/src/app/hakemus/[oid]/asiakirjat/types';
+import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { IconButton } from '@/src/components/IconButton';
 import { StyledTooltip } from '@/src/components/ToolTip';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -34,6 +35,7 @@ import {
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];
   updateAsiakirjaTietoAction: AsiakirjaTietoUpdateCallback;
+  poistaPyydettavaAsiakirja: (pyydettava: AsiakirjaPyynto) => void;
   hakemusKoskee: HakemusKoskee;
 }
 
@@ -45,6 +47,7 @@ interface AsiakirjaPyyntoProps {
 export const AsiakirjaPyynnot = ({
   asiakirjaPyynnot,
   updateAsiakirjaTietoAction,
+  poistaPyydettavaAsiakirja,
   hakemusKoskee,
 }: AsiakirjaPyynnotProps) => {
   const { t } = useTranslations();
@@ -66,6 +69,8 @@ export const AsiakirjaPyynnot = ({
   useEffect(() => {
     setCurrentAsiakirjaPyynnot(asiakirjaPyynnot);
   }, [asiakirjaPyynnot]);
+
+  const { showConfirmation } = useGlobalConfirmationModal();
 
   const addOrUpdateAsiakirjapyynto = (selectedValue: string, id?: string) => {
     const pyynto = {
@@ -89,13 +94,16 @@ export const AsiakirjaPyynnot = ({
       setShowEmptyAsiakirjaPyyntoDropdown(false);
       return;
     }
+    const toRemoveAsiakirjaPyynto = currentAsiakirjaPyynnot.find(
+      (pyynto) => pyynto.id === id,
+    );
     const toBeAsiakirjaPyynnot = currentAsiakirjaPyynnot.filter(
-      (pyynto) => pyynto.id !== id,
+      (pyynto) => pyynto !== toRemoveAsiakirjaPyynto,
     );
     setCurrentAsiakirjaPyynnot(toBeAsiakirjaPyynnot);
-    updateAsiakirjaTietoAction({
-      pyydettavatAsiakirjat: toBeAsiakirjaPyynnot,
-    });
+    if (toRemoveAsiakirjaPyynto) {
+      poistaPyydettavaAsiakirja(toRemoveAsiakirjaPyynto);
+    }
   };
 
   const handleTooltipClose = () => {
@@ -214,7 +222,16 @@ export const AsiakirjaPyynnot = ({
         data-testid={`poista-asiakirja-button-${index}`}
         variant="text"
         startIcon={<DeleteOutline />}
-        onClick={() => deleteAsiakirjapyynto(pyynto?.id)}
+        onClick={() =>
+          showConfirmation({
+            header: t('hakemus.asiakirjat.modal.poistaAsiakirjapyynto.otsikko'),
+            content: t('hakemus.asiakirjat.modal.poistaAsiakirjapyynto.teksti'),
+            confirmButtonText: t(
+              'hakemus.asiakirjat.modal.poistaAsiakirjapyynto.poistaAsiakirja',
+            ),
+            handleConfirmAction: () => deleteAsiakirjapyynto(pyynto?.id),
+          })
+        }
       >
         {t('yleiset.poista')}
       </OphButton>

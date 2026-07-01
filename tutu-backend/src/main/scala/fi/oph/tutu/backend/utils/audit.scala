@@ -257,6 +257,10 @@ object AuditOperation {
     val name = "HAKEMUKSIEN_LUKU"
   }
 
+  case object ReadAsiakirjat extends AuditOperation {
+    val name = "ASIAKIRJAT_LUKU"
+  }
+
   case object ReadEsittelija extends AuditOperation {
     val name = "ESITTELIJAN_LUKU"
   }
@@ -341,6 +345,10 @@ object AuditOperation {
 
   case object DeleteTutkinto extends AuditOperation {
     val name = "TUTKINNON_POISTO"
+  }
+
+  case object DeletePyydettavaAsiakirja extends AuditOperation {
+    val name = "PYYDETTAVA_ASIAKIRJA_POISTO"
   }
 }
 

@@ -104,8 +104,12 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
     } as AsiakirjaState,
     poistaPyydettavaAsiakirja,
     isLoading: query.isLoading,
-    isSaving: mutationTallenna.isPending || isDeleting,
+<<<<<<< HEAD
+    isSaving: mutationTallenna.isPending,
     isUpdateSuccess: mutationTallenna.isSuccess,
+=======
+    isSaving: mutationTallenna.isPending || isDeleting,
+>>>>>>> 6b8078b5 (OPHTUTU-483: Pyydettävien asiakirjojen poiston vahvistus)
     updateError: mutationTallenna.error,
   };
 };
