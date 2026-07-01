@@ -149,7 +149,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
                 label={t(
                   'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.muuEro',
                 )}
-                checked={lisavaatimukset.erotKoulutuksessa.muuEro || false}
+                checked={lisavaatimukset.erotKoulutuksessa.muuEro ?? false}
                 onChange={(e) => {
                   updateKelpoisuudenLisavaatimukset({
                     ...lisavaatimukset,

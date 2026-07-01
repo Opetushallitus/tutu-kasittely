@@ -6,7 +6,7 @@ import {
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatos';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
@@ -20,6 +20,9 @@ import {
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
+
+import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
+import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosSteiner';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
@@ -35,6 +38,13 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
   tyyppi: string;
 }
 
+enum Opinnot {
+  Steiner,
+  Aineenopettaja,
+  Luokanopettaja,
+  Muu,
+}
+
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
   t,
   index,
@@ -48,6 +58,44 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
+
+  const { naytaKielivalinta, LisavaatimusComponent } = useMemo(() => {
+    const text = tutkintoTaiOpinto.tutkintoTaiOpinto ?? '';
+
+    const aineenopettajaKeys = [
+      'Aineenopettaja',
+      'Ämneslärare',
+      'Subject teacher',
+    ];
+    const luokanopettajaKeys = [
+      'Luokanopettaja',
+      'Klasslärare',
+      'Class teacher',
+    ];
+
+    let found: Opinnot = Opinnot.Muu;
+    if (text.includes('Steiner')) {
+      found = Opinnot.Steiner;
+    } else if (aineenopettajaKeys.some((k) => text.includes(k))) {
+      found = Opinnot.Aineenopettaja;
+    } else if (luokanopettajaKeys.some((k) => text.includes(k))) {
+      found = Opinnot.Luokanopettaja;
+    }
+
+    const componentMap: Record<Opinnot, typeof MyonteinenPaatos> = {
+      [Opinnot.Steiner]: MyonteinenPaatosSteiner,
+      [Opinnot.Aineenopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
+      [Opinnot.Luokanopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
+      [Opinnot.Muu]: MyonteinenPaatos,
+    };
+
+    const component = componentMap[found];
+
+    return {
+      naytaKielivalinta: found !== Opinnot.Steiner,
+      LisavaatimusComponent: component,
+    };
+  }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
 
   const rinnastettavaTutkintoTaiOpinnotOptions =
     tyyppi === 'riittavatOpinnot'
@@ -130,7 +178,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         data-testid={'rinnastettava-tutkinto-tai-opinto-select'}
       />
-      {tyyppi === 'riittavatOpinnot' && (
+      {tyyppi === 'riittavatOpinnot' && naytaKielivalinta && (
         <OphInputFormField
           label={t('hakemus.paatos.paatostyyppi.riittavatOpinnot.opetuskieli')}
           value={tutkintoTaiOpinto.opetuskieli ?? ''}
@@ -147,21 +195,18 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         ></OphInputFormField>
       )}
       <MyonteinenTaiKielteinenPaatosComponent
-        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenPaatos}
+        MyonteisenPaatoksenLisavaatimusComponent={LisavaatimusComponent}
         lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={
           tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
         }
-        updatePaatosAction={(paatos) => {
+        updatePaatosAction={(paatos) =>
           updateTutkintoTaiOpintoAction(
-            {
-              ...tutkintoTaiOpinto,
-              ...paatos,
-            },
+            { ...tutkintoTaiOpinto, ...paatos },
             index,
-          );
-        }}
+          )
+        }
         t={t}
       />
     </Stack>

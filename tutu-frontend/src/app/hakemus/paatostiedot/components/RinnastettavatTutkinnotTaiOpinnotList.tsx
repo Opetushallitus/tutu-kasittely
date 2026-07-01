@@ -4,7 +4,7 @@ import { Add } from '@mui/icons-material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
-import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
+import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/[oid]/paatostiedot/components/RinnastettavaTutkintoTaiOpintoComponent';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   PaatosTieto,
@@ -18,6 +18,9 @@ const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
     taydentavatOpinnot: false,
     kelpoisuuskoe: false,
     sopeutumisaika: false,
+    opettajuuttaTutkimassa: false,
+    suomalainenKoulu: false,
+    opetusNayte: false,
   },
 });
 
