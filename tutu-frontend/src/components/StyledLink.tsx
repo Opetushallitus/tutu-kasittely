@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 export const StyledLink = styled(Link)({
   color: ophColors.blue2,

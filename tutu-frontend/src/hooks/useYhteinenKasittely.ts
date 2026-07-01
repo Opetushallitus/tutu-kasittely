@@ -2,9 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { SortOrder } from '@/src/app/components/types';
 import { doApiFetch, doApiPatch, doApiPost } from '@/src/lib/tutu-backend/api';
 
-import { SortOrder } from '../app/(root)/components/types';
 import {
   YhteinenKasittely,
   YhteinenKasittelyDTO,

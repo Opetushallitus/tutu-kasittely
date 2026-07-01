@@ -1,11 +1,10 @@
+import { getKelpoisuusMuuAmmattiDropdownOption } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   TranslationNode,
   TreeOption,
   buildTreeOptions,
 } from '@/src/lib/localization/translationUtils';
-
-import { getKelpoisuusMuuAmmattiDropdownOption } from '../app/hakemus/[oid]/paatostiedot/paatostietoUtils';
 
 const kelpoisuusItems: TranslationNode[] = [
   {

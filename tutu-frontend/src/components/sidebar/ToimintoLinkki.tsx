@@ -1,5 +1,6 @@
 import { Box, styled } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
+import { Link } from 'react-router-dom';
 
 import { CenteredRow } from '@/src/components/CenteredRow';
 
@@ -9,13 +10,13 @@ const LinkBox = styled(Box)({
 });
 
 export const ToimintoLinkki = ({
-  href,
+  path,
   onClick,
   gap,
   icon,
   label,
 }: {
-  href?: string;
+  path?: string;
   onClick?: () => void;
   gap: string;
   icon: React.ReactNode;
@@ -25,7 +26,8 @@ export const ToimintoLinkki = ({
     <LinkBox>
       <OphButton
         sx={{ flexGrow: 1, justifyContent: 'flex-start', whiteSpace: 'nowrap' }}
-        href={href}
+        component={Link}
+        to={path ?? ''}
         onClick={onClick}
       >
         <CenteredRow gap={gap}>

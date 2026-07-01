@@ -1,17 +1,21 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
-import { Tabs } from '@/src/app/(root)/components/Tabs';
+import { Tabs } from '@/src/app/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
+import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { PageLayout } from '@/src/components/PageLayout';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
-export default function TekstipohjatLayout(props: {
-  children: React.ReactNode;
-  header: React.ReactNode;
-}) {
-  const { children, header } = props;
+const Header = () => {
+  const { t } = useTranslations();
 
+  return <PageHeaderRow header={t('hakemus.otsikko')} />;
+};
+
+export default function TekstipohjatLayout() {
   return (
-    <PageLayout header={header}>
+    <PageLayout header={<Header />}>
       <BoxWrapper>
         <Tabs
           buttons={[
@@ -20,7 +24,7 @@ export default function TekstipohjatLayout(props: {
           ]}
           tPrefix={'tekstipohjat'}
         />
-        {children}
+        <Outlet />
       </BoxWrapper>
     </PageLayout>
   );

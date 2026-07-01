@@ -7,8 +7,8 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Stack, Theme, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { PageContent } from '@/src/components/PageLayout';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
@@ -268,7 +268,7 @@ export const SearchResultsRibbon = () => {
     fetchPage,
   ]);
 
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   if (!ribbonVisible || pathname.includes('/editori/')) {
     return null;
   }

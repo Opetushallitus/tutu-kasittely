@@ -1,9 +1,31 @@
-import { buildConfiguration } from '@/src/lib/configuration/serverConfiguration';
+export type Configuration = {
+  IS_DEV?: boolean;
+  IS_PROD?: boolean;
+  IS_TEST?: boolean;
+  VIRKAILIJA_URL: string;
+  TUTU_BACKEND: string;
+  HOST?: string;
+  PORT?: string;
+  PUBLIC_TOLGEE_API_KEY?: string;
+  PUBLIC_TOLGEE_API_URL?: string;
+};
 
-export const isDev = process.env.NODE_ENV === 'development';
+declare global {
+  interface Window {
+    configuration: Configuration;
+  }
+}
 
-export const isProd = process.env.NODE_ENV === 'production';
+export const isDev = () => window.configuration.IS_DEV || false;
+export const isProd = () => window.configuration.IS_PROD || false;
+export const isTest = () => window.configuration.IS_TEST || false;
 
-export const isTesting = Boolean(process.env.TEST);
+export const virkailijaUrl = () => window.configuration.VIRKAILIJA_URL;
+export const raamitUrl = () =>
+  `${virkailijaUrl()}/virkailija-raamit/apply-raamit.js`;
+export const lokalisointiUrl = () => `${virkailijaUrl()}/lokalisointi/tolgee`;
+export const tutuBackendApiUrl = () =>
+  `${window.configuration.TUTU_BACKEND}/tutu-backend/api`;
 
-export type Configuration = Awaited<ReturnType<typeof buildConfiguration>>;
+export const tolgeeApiUrl = () => window.configuration.PUBLIC_TOLGEE_API_URL;
+export const tolgeeApiKey = () => window.configuration.PUBLIC_TOLGEE_API_KEY;

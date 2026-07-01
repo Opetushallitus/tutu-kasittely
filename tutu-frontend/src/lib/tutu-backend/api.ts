@@ -1,18 +1,13 @@
 'use client';
 
-import { redirect } from 'next/navigation';
-
 import { FetchError, PermissionError } from '@/src/lib/common';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { tutuBackendApiUrl } from '@/src/lib/configuration/configuration';
 import { requestAuthRedirectConfirm } from '@/src/lib/navigation/authRedirect';
 import { storePostLoginRedirectUrl } from '@/src/lib/navigation/postLoginRedirect';
 
 let _csrfToken: string;
-const isServer = typeof window === 'undefined';
 
-const getTutuBackendApiUrl = () => getConfiguration().TUTU_BACKEND_API_URL;
-
-const getLoginUrl = () => `${getTutuBackendApiUrl()}/login`;
+const getLoginUrl = () => `${tutuBackendApiUrl()}/login`;
 
 const isUnauthenticated = (response: Response) => {
   return response?.status === 401;
@@ -32,22 +27,18 @@ const isAuthFailureResponse = (response: Response) => {
 };
 
 const redirectToLogin = async () => {
-  if (isServer) {
-    redirect(getLoginUrl());
-  } else {
-    const shouldRedirect = await requestAuthRedirectConfirm();
-    if (!shouldRedirect) {
-      return;
-    }
-
-    storePostLoginRedirectUrl();
-    location.assign(getLoginUrl());
+  const shouldRedirect = await requestAuthRedirectConfirm();
+  if (!shouldRedirect) {
+    return;
   }
+
+  storePostLoginRedirectUrl();
+  location.assign(getLoginUrl());
 };
 
 async function csrfToken() {
   if (!_csrfToken) {
-    const response = await fetch(`${getTutuBackendApiUrl()}/csrf`, {
+    const response = await fetch(`${tutuBackendApiUrl()}/csrf`, {
       credentials: 'include',
     });
 
@@ -79,7 +70,7 @@ export async function apiFetch(
 
     const queryParams = options?.queryParams ? options.queryParams : '';
     const response = await fetch(
-      `${getTutuBackendApiUrl()}/${resource}${queryParams}`,
+      `${tutuBackendApiUrl()}/${resource}${queryParams}`,
       {
         ...options,
         method,

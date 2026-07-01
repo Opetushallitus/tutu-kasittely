@@ -4,7 +4,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import { styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
@@ -30,7 +30,7 @@ const StyledLink = styled(Link)({
 export const HomeIcon = ({ href }: { href: string }) => {
   const { t } = useTranslations();
   return (
-    <StyledLink href={href} aria-label={t('yleinen.palaa-etusivulle')}>
+    <StyledLink to={href} aria-label={t('yleinen.palaa-etusivulle')}>
       <StyledHomeIcon />
     </StyledLink>
   );

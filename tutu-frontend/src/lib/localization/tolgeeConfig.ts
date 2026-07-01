@@ -1,39 +1,36 @@
 import { FormatIcu } from '@tolgee/format-icu';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
-
-import { isDev, isTesting } from '../configuration/configuration';
-
-const REVALIDATE_TIME_SECONDS = 10 * 60;
-
-const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
-const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
+import {
+  isDev,
+  isTest,
+  lokalisointiUrl,
+  tolgeeApiKey,
+  tolgeeApiUrl,
+} from '@/src/lib/configuration/configuration';
 
 const NAMESPACE = 'tutu-kasittely';
+
+const isTestingOrDev = isTest() || isDev();
 
 export function TolgeeBase() {
   return Tolgee()
     .use(FormatIcu())
     .use(
       BackendFetch({
-        prefix:
-          isTesting || isDev
-            ? '/lokalisointi/tolgee' // Devi proxyn kautta
-            : getConfiguration().LOKALISOINTI_URL,
-        next: {
-          revalidate: REVALIDATE_TIME_SECONDS,
-        },
+        prefix: isTestingOrDev
+          ? '/lokalisointi/tolgee' // Devi proxyn kautta
+          : lokalisointiUrl(),
       }),
     )
-    .use(isTesting ? undefined : DevTools())
+    .use(isTest() ? undefined : DevTools())
     .updateDefaults({
       availableLanguages: ['fi', 'sv', 'en'],
       defaultLanguage: 'fi',
       defaultNs: NAMESPACE,
       ns: [NAMESPACE],
-      apiKey,
-      apiUrl,
+      apiKey: tolgeeApiKey(),
+      apiUrl: tolgeeApiUrl(),
       projectId: 11100,
     });
 }
