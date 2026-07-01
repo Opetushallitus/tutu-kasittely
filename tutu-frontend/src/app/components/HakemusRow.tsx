@@ -8,7 +8,6 @@ import {
 } from '@opetushallitus/oph-design-system';
 import * as dateFns from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 import { StyledTableCell } from '@/src/components/StyledTableCell';
@@ -96,7 +95,7 @@ export default function HakemusRow({
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus.hakemusKoskee),
-    )?.label || ''
+    )?.label ?? ''
   }`;
   const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
     useKasittelyvaiheTranslation(hakemus);
@@ -104,10 +103,7 @@ export default function HakemusRow({
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
-        <OphLink
-          component={Link}
-          to={`/hakemus/${hakemus.hakemusOid}/perustiedot`}
-        >
+        <OphLink href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
           {hakemus.hakija.etunimet} {hakemus.hakija.sukunimi}
         </OphLink>
       </StyledTableCell>

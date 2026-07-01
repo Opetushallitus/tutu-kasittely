@@ -5,19 +5,6 @@ import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
-import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/asiakirjat/components/AlkuperaisetAsiakirjat';
-import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/asiakirjat/components/AllekirjoitustenTarkistus';
-import { ApHakemus } from '@/src/app/hakemus/asiakirjat/components/ApHakemus';
-import { AsiakirjaPyynnot } from '@/src/app/hakemus/asiakirjat/components/AsiakirjaPyynnot';
-import {
-  AsiakirjaTaulukko,
-  AsiakirjaTaulukkoData,
-} from '@/src/app/hakemus/asiakirjat/components/AsiakirjaTaulukko';
-import { ImiPyyntoComponent } from '@/src/app/hakemus/asiakirjat/components/ImiPyynto';
-import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/asiakirjat/components/KaikkiSelvityksetSaatu';
-import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/asiakirjat/components/MallitTutkinnoista';
-import { SuostumusVahvistamiselle } from '@/src/app/hakemus/asiakirjat/components/SuostumusVahvistamiselle';
-import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/asiakirjat/components/ValmistumisenVahvistus';
 import { CenteredRow } from '@/src/components/CenteredRow';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
@@ -34,11 +21,12 @@ import {
   ylinTutkinto,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
+import { AsiakirjaState, useAsiakirjat } from '@/src/hooks/useAsiakirjat';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
-import { virkailijaUrl } from '@/src/lib/configuration/configuration';
+import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -49,6 +37,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AsiakirjaMetadata,
+  AsiakirjaPyynto,
   AsiakirjaTieto,
   AsiakirjaTietoUpdateCallback,
   Hakemus,
@@ -56,6 +45,19 @@ import {
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
 import { handleFetchError } from '@/src/lib/utils';
+import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
+import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
+import { ApHakemus } from '@/src/app/hakemus/[oid]/asiakirjat/components/ApHakemus';
+import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
+import {
+  AsiakirjaTaulukko,
+  AsiakirjaTaulukkoData,
+} from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaTaulukko';
+import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
+import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/components/KaikkiSelvityksetSaatu';
+import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
+import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
+import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
 
 const sisallonSuoratYlatasonOsiot = [
   henkilotietojenLiitteet,
@@ -65,16 +67,16 @@ const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
 const tutkintojenAliOsiot = [ylinTutkinto, alemmatTutkinnot, muutTutkinnot];
 
 const ExternalLink = ({
-  path,
+  href,
   label,
   gap,
 }: {
-  path: string;
+  href: string;
   label: string;
   gap: string;
 }) => {
   return (
-    <StyledLink to={path} target="_black" rel="noopener">
+    <StyledLink href={href} target="_black" rel="noopener">
       <CenteredRow gap={gap}>
         <OpenInNewIcon />
         {label}
@@ -93,9 +95,16 @@ export default function AsiakirjaPage() {
     isLoading: hakemusIsLoading,
     hakemusState,
     error: hakemusError,
-    isSaving,
-    updateError,
   } = useHakemus();
+
+  const {
+    asiakirjaState,
+    poistaPyydettavaAsiakirja,
+    isLoading: asiakirjatIsLoading,
+    isSaving,
+    isUpdateSuccess,
+    updateError,
+  } = useAsiakirjat(hakemusState.editedData!.hakemusOid);
 
   /* ----------------------------------------- */
   /* Käsitellään virheet ja puutteellinen data */
@@ -104,38 +113,57 @@ export default function AsiakirjaPage() {
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
   }, [hakemusError, updateError, addToast, t]);
 
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      addToast({
+        key: 'yleiset.tallennusOnnistui',
+        type: 'success',
+        message: t('yleiset.tallennusOnnistui'),
+        timeMs: 2500,
+      });
+    }
+  }, [isUpdateSuccess, addToast, t]);
+
   if (hakemusError) {
     return null;
   }
 
-  if (hakemusIsLoading || !hakemusState.editedData)
+  if (hakemusIsLoading || asiakirjatIsLoading || !hakemusState.editedData)
     return <FullSpinner></FullSpinner>;
 
   return (
     <AsiakirjaHookLayer
       hakemusState={hakemusState}
-      isSaving={isSaving || false}
+      asiakirjaState={asiakirjaState}
+      poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
+      isSaving={isSaving}
     />
   );
 }
 
 const AsiakirjaHookLayer = ({
   hakemusState,
-  isSaving,
+  asiakirjaState,
+  poistaPyydettavaAsiakirja,
+  isSaving = false,
 }: {
   hakemusState: EditableState<Hakemus>;
+  asiakirjaState: AsiakirjaState;
+  poistaPyydettavaAsiakirja: (poistettava: AsiakirjaPyynto) => void;
   isSaving: boolean;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
+  const { editedData: hakemus } = hakemusState;
+
   const {
-    editedData: hakemus,
-    save: saveHakemus,
-    hasChanges: hakemusHasChanges,
-    updateLocal: updateLocalHakemus,
-    discard: discardHakemus,
-  } = hakemusState;
+    editedData: asiakirjaData,
+    hasChanges,
+    updateLocal,
+    save,
+    discard,
+  } = asiakirjaState;
 
   /* -------------------------- */
   /* Haetaan liitteiden  tiedot */
@@ -149,15 +177,18 @@ const AsiakirjaHookLayer = ({
   const rajattuSisalto = sisalto.filter((item) =>
     sisaltoItemMatchesToAny(item, sisallonSuoratYlatasonOsiot),
   );
-  const asiakirjat = haeAsiakirjat([...rajattuSisalto, ...tutkintoSisalto]);
+  const asiakirjaSisalto = haeAsiakirjat([
+    ...rajattuSisalto,
+    ...tutkintoSisalto,
+  ]);
 
   const {
-    isLoading: asiakirjatIsLoading,
+    isLoading: asiakirjaMetadataIsLoading,
     data: asiakirjaMetadata,
     error: asiakirjaError,
   } = useLiitteet(
     hakemus!.hakemusOid,
-    asiakirjat.map((asiakirja) => asiakirja.label.fi).join(','),
+    asiakirjaSisalto.map((asiakirja) => asiakirja.label.fi).join(','),
   );
   const asiakirjaMetadataWithSaapumisaika = asiakirjaMetadata?.map((m) =>
     m.saapumisaika ? m : { ...m, saapumisaika: hakemus!.saapumisPvm },
@@ -169,55 +200,60 @@ const AsiakirjaHookLayer = ({
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteidenLataus', t);
   }, [asiakirjaError, addToast, t]);
 
-  useUnsavedChanges(hakemusHasChanges, discardHakemus);
+  useUnsavedChanges(hasChanges, discard);
 
   if (asiakirjaError) {
     return null;
   }
 
-  if (asiakirjatIsLoading || !asiakirjaMetadataWithSaapumisaika || !hakemus)
+  if (
+    asiakirjaMetadataIsLoading ||
+    !asiakirjaMetadataWithSaapumisaika ||
+    !hakemus
+  )
     return <FullSpinner></FullSpinner>;
 
   const asiakirjaTietoUpdateAction = (asiakirja: Partial<AsiakirjaTieto>) => {
-    updateLocalHakemus({ asiakirja: { ...hakemus.asiakirja, ...asiakirja } });
+    updateLocal({ ...asiakirjaData, ...asiakirja });
   };
 
   return (
     <>
       <AsiakirjaPagePure
         hakemus={hakemus}
+        asiakirjat={asiakirjaData!}
         asiakirjaTietoUpdateAction={asiakirjaTietoUpdateAction}
-        asiakirjat={asiakirjat}
+        asiakirjaSisalto={asiakirjaSisalto}
         asiakirjaMetadata={asiakirjaMetadataWithSaapumisaika}
+        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
       />
-      <SaveRibbon
-        onSave={saveHakemus}
-        isSaving={isSaving}
-        hasChanges={hakemusHasChanges}
-        lastSaved={hakemus.muokattu}
-        modifier={hakemus.muokkaaja}
-      />
+      <SaveRibbon onSave={save} isSaving={isSaving} hasChanges={hasChanges} />
     </>
   );
 };
 
 const AsiakirjaPagePure = ({
   hakemus,
+  asiakirjat,
   asiakirjaTietoUpdateAction,
-  asiakirjat = [],
+  asiakirjaSisalto = [],
   asiakirjaMetadata = [],
+  poistaPyydettavaAsiakirja,
 }: {
   hakemus: Hakemus;
+  asiakirjat: AsiakirjaTieto;
   asiakirjaTietoUpdateAction: AsiakirjaTietoUpdateCallback;
-  asiakirjat: SisaltoValue[];
+  asiakirjaSisalto: SisaltoValue[];
   asiakirjaMetadata: AsiakirjaMetadata[];
+  poistaPyydettavaAsiakirja: (pyydettava: AsiakirjaPyynto) => void;
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
+  const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
-  const completeAsiakirjaData: AsiakirjaTaulukkoData[] = asiakirjat.map(
+  const completeAsiakirjaData: AsiakirjaTaulukkoData[] = asiakirjaSisalto.map(
     (asiakirja) => {
       const metadata = asiakirjaMetadata.find(
         (dataItem) => dataItem.key === asiakirja.label.fi,
@@ -241,8 +277,6 @@ const AsiakirjaPagePure = ({
       getLanguage(),
     );
 
-  const asiakirja = hakemus.asiakirja;
-
   return (
     <Stack
       gap={theme.spacing(3)}
@@ -258,13 +292,14 @@ const AsiakirjaPagePure = ({
         <ExternalLink
           gap={theme.spacing(1)}
           label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
-          path={`${virkailijaUrl()}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
+          href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
         />
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
-        asiakirjaPyynnot={asiakirja.pyydettavatAsiakirjat}
+        asiakirjaPyynnot={asiakirjat.pyydettavatAsiakirjat}
         updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
         hakemusKoskee={hakemus.hakemusKoskee}
       ></AsiakirjaPyynnot>
       <Divider orientation={'horizontal'} />
@@ -272,20 +307,20 @@ const AsiakirjaPagePure = ({
         {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
       </OphTypography>
       <KaikkiSelvityksetSaatu
-        asiakirjaTieto={asiakirja}
+        asiakirjaTieto={asiakirjat}
         hakemusKoskee={hakemus.hakemusKoskee}
         updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         saapumisPvm={hakemus.saapumisPvm}
       />
       <ApHakemus
-        asiakirjaTieto={asiakirja}
+        asiakirjaTieto={asiakirjat}
         hakemusKoskee={hakemus.hakemusKoskee}
         updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
       />
       <Muistio
         label={t('hakemus.asiakirjat.muistio.sisainenOtsake')}
         helperText={t('hakemus.asiakirjat.muistio.sisainenOhjeteksti')}
-        sisalto={asiakirja.esittelijanHuomioita}
+        sisalto={asiakirjat.esittelijanHuomioita}
         updateMuistio={(value: string) => {
           asiakirjaTietoUpdateAction({ esittelijanHuomioita: value });
         }}
@@ -294,7 +329,7 @@ const AsiakirjaPagePure = ({
       {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
         <Muistio
           label={t('hakemus.asiakirjat.muistio.muistioOtsake')}
-          sisalto={asiakirja.huomiotMuistioon}
+          sisalto={asiakirjat.huomiotMuistioon}
           updateMuistio={(value: string) => {
             asiakirjaTietoUpdateAction({ huomiotMuistioon: value });
           }}
@@ -303,7 +338,7 @@ const AsiakirjaPagePure = ({
 
       {hakemus.hakemusKoskee === HakemusKoskee.KELPOISUUS_AMMATTIIN && (
         <ImiPyyntoComponent
-          imiPyynto={asiakirja.imiPyynto}
+          imiPyynto={asiakirjat.imiPyynto}
           updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
         ></ImiPyyntoComponent>
       )}
@@ -329,23 +364,23 @@ const AsiakirjaPagePure = ({
             </OphTypography>
           </Stack>
           <SuostumusVahvistamiselle
-            asiakirjaTieto={asiakirja}
+            asiakirjaTieto={asiakirjat}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           />
           <ValmistumisenVahvistusComponent
-            asiakirjaTieto={asiakirja}
+            asiakirjaTieto={asiakirjat}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           />
           <AllekirjoitustenTarkistus
-            asiakirjaTieto={asiakirja}
+            asiakirjaTieto={asiakirjat}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           />
           <AlkuperaisetAsiakirjat
-            asiakirja={asiakirja}
+            asiakirja={asiakirjat}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           />
           <AsiakirjaMallejaVastaavistaTutkinnoista
-            asiakirjaTieto={asiakirja}
+            asiakirjaTieto={asiakirjat}
             updateAsiakirjaTieto={asiakirjaTietoUpdateAction}
           />
         </>

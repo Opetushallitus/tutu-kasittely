@@ -2,7 +2,7 @@
 
 import { Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { Link, useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
@@ -31,8 +31,8 @@ const ActiveButton = styled(OphButton)({
 });
 
 const useActiveHakuTabName = () => {
-  const location = useLocation();
-  return location.pathname.split('/').at(-1);
+  const pathName = usePathname();
+  return pathName.split('/').at(-1);
 };
 
 interface TabButtonProps {
@@ -56,18 +56,15 @@ const TabButton = ({
   const { t } = useTranslations();
   const activeTabName = useActiveHakuTabName();
 
-  const isActive = active || activeTabName === tabName;
+  const isActive = active ?? activeTabName === tabName;
 
   const StyledButton = isActive ? ActiveButton : InactiveButton;
 
-  const clickHandlers =
-    linkPath && !isActive
-      ? {
-          component: Link,
-          to: linkPath,
-          onClick: onClick,
-        }
-      : { onClick: onClick };
+  const clickHandlers = {
+    href: !!onClick || isActive ? undefined : linkPath,
+    onClick: onClick,
+  };
+
   return (
     <StyledButton {...clickHandlers} {...rest}>
       {t(`${tPrefix}.${tabName}`, { value: value })}
