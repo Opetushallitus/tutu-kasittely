@@ -1,0 +1,121 @@
+'use client';
+
+import { Stack } from '@mui/material';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
+import { Link, useLocation } from 'react-router-dom';
+
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { DEFAULT_BOX_BORDER, styled } from '@/src/lib/theme';
+
+const TAB_BUTTON_HEIGHT = '32px';
+
+const InactiveButton = styled(OphButton)({
+  borderRadius: 0,
+  fontWeight: 'normal',
+  height: TAB_BUTTON_HEIGHT,
+  color: 'black',
+  padding: '4px 8px',
+  marginRight: '10px',
+});
+
+const ActiveButton = styled(OphButton)({
+  borderRadius: 0,
+  fontWeight: 'normal',
+  height: TAB_BUTTON_HEIGHT,
+  borderColor: ophColors.blue2,
+  borderWidth: 0,
+  borderBottomWidth: 2,
+  cursor: 'default',
+  padding: '4px 8px',
+  marginRight: '10px',
+});
+
+const useActiveHakuTabName = () => {
+  const location = useLocation();
+  return location.pathname.split('/').at(-1);
+};
+
+interface TabButtonProps {
+  tabName: string;
+  tPrefix: string;
+  linkPath?: string;
+  onClick?: VoidFunction;
+  active?: boolean;
+  value?: number;
+}
+
+const TabButton = ({
+  linkPath,
+  onClick,
+  tabName,
+  tPrefix,
+  active,
+  value,
+  ...rest
+}: TabButtonProps) => {
+  const { t } = useTranslations();
+  const activeTabName = useActiveHakuTabName();
+
+  const isActive = active || activeTabName === tabName;
+
+  const StyledButton = isActive ? ActiveButton : InactiveButton;
+
+  const clickHandlers =
+    linkPath && !isActive
+      ? {
+          component: Link,
+          to: linkPath,
+          onClick: onClick,
+        }
+      : { onClick: onClick };
+  return (
+    <StyledButton {...clickHandlers} {...rest}>
+      {t(`${tPrefix}.${tabName}`, { value: value })}
+    </StyledButton>
+  );
+};
+
+interface ButtonParams {
+  tabName: string;
+  linkPath?: string;
+  onClick?: VoidFunction;
+  active?: boolean;
+  value?: number;
+}
+
+interface TabsParams {
+  buttons: ButtonParams[];
+  tPrefix: string;
+}
+
+const Tabs = ({ buttons, tPrefix }: TabsParams) => {
+  const { t } = useTranslations();
+  return (
+    <Stack
+      component="nav"
+      direction="row"
+      sx={{
+        justifyContent: 'flex-start',
+        width: '100%',
+        borderBottom: DEFAULT_BOX_BORDER,
+        height: TAB_BUTTON_HEIGHT,
+        marginBottom: '16px',
+      }}
+      aria-label={t(`${tPrefix}.tabs`)}
+    >
+      {buttons.map((button) => {
+        const { tabName } = button;
+        return (
+          <TabButton
+            key={`${tPrefix}.${tabName}`}
+            data-testid={`hakemuslista-tab--${tabName}`}
+            tPrefix={tPrefix}
+            {...button}
+          />
+        );
+      })}
+    </Stack>
+  );
+};
+
+export { Tabs };

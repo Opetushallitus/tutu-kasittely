@@ -11,8 +11,8 @@ import {
   useTheme,
 } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -67,7 +67,11 @@ export default function FilemakerHakemus() {
   const { t } = useTranslations();
   const { addToast } = useToaster();
   const params = useParams<{ id: string }>();
-  const { isLoading, data: hakemus, error } = useFilemakerHakemus(params.id);
+  const {
+    isLoading,
+    data: hakemus,
+    error,
+  } = useFilemakerHakemus(params.id ?? '');
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
