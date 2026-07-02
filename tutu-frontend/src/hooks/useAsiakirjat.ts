@@ -45,6 +45,9 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
 
   const [localAsiakirja, setLocalAsiakirja] = useState(query.data);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | undefined>(
+    undefined,
+  );
 
   const discard = () => {
     setLocalAsiakirja(query.data);
@@ -57,9 +60,13 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
   const mutationTallenna = useMutation({
     mutationFn: (asiakirjat: AsiakirjaTieto) =>
       putAsiakirjat(hakemusOid!, asiakirjat),
+    onMutate: () => {
+      setIsUpdateSuccess(undefined);
+    },
     onSuccess: async (response) => {
       const paivitettyAsiakirjat = await response.json();
       queryClient.setQueryData(queryKey, paivitettyAsiakirjat);
+      setIsUpdateSuccess(true);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
       await queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
@@ -105,7 +112,7 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
     poistaPyydettavaAsiakirja,
     isLoading: query.isLoading,
     isSaving: mutationTallenna.isPending || isDeleting,
-    isUpdateSuccess: mutationTallenna.isSuccess,
+    isUpdateSuccess: isUpdateSuccess,
     updateError: mutationTallenna.error,
   };
 };
