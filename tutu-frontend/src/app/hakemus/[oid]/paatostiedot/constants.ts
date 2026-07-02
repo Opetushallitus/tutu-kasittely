@@ -405,6 +405,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'ammattikoulunOpettajaAmmattiosat_uo',
+    kelpoisuusKey:
+      'Opetusalan ammatit_Ammatillisten tutkinnon osien opettaja ammatillisessa koulutuksessa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ammattikoulunOpettajaAmmattiosat.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'ammattikoulunOpettajaYhteiset',
     kelpoisuusKey:
       'Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa',
@@ -413,6 +423,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'ammattikoulunOpettajaYhteiset_uo',
+    kelpoisuusKey:
+      'Opetusalan ammatit_Yhteisten tutkinnon osien opettaja ammatillisessa koulutuksessa_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.ammattikoulunOpettajaYhteiset.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'vapaanSivistystyonOpettaja',
@@ -424,8 +444,26 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'vapaanSivistystyonOpettaja_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Vapaan sivistystyön opettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.vapaanSivistystyonOpettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
     id: 'kuraattori',
     kelpoisuusKey: 'Opetusalan ammatit_Kuraattori',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.kuraattori.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: true,
+  },
+  {
+    id: 'kuraattori_uo',
+    kelpoisuusKey: 'Opetusalan ammatit_Kuraattori_uo',
     lyhytNimiKaannosAvain:
       'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.kuraattori.lyhytNimi',
     kelpoisuusKohtainenEroLkm: 4,
@@ -446,6 +484,15 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'varhaiskasvatuksenOpettaja_uo',
+    kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen opettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenOpettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'varhaiskasvatuksenSosionomi',
     kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen sosionomi',
     lyhytNimiKaannosAvain:
@@ -453,6 +500,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenSosionomi_uo',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen sosionomi_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenSosionomi.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
   {
     id: 'varhaiskasvatuksenLastenhoitaja',
@@ -465,6 +522,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'varhaiskasvatuksenLastenhoitaja_uo',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen lastenhoitaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenLastenhoitaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'varhaiskasvatuksenErityisopettaja',
     kelpoisuusKey:
       'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen erityisopettaja',
@@ -475,6 +542,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     sisaltaaMuuEro: true,
   },
   {
+    id: 'varhaiskasvatuksenErityisopettaja_uo',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Varhaiskasvatuksen erityisopettaja_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenErityisopettaja.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+  },
+  {
     id: 'varhaiskasvatuksenMuu',
     kelpoisuusKey: 'Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä',
     lyhytNimiKaannosAvain:
@@ -482,6 +559,16 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
     kelpoisuusKohtainenEroLkm: 4,
     yleisetErot: [],
     sisaltaaMuuEro: true,
+  },
+  {
+    id: 'varhaiskasvatuksenMuu_uo',
+    kelpoisuusKey:
+      'Varhaiskasvatuksen tehtävät_Muu varhaiskasvatuksen tehtävä_uo',
+    lyhytNimiKaannosAvain:
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.varhaiskasvatuksenMuu.lyhytNimi',
+    kelpoisuusKohtainenEroLkm: 4,
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
   },
 ];
 

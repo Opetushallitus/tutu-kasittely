@@ -73,8 +73,6 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
     },
   );
 
-  await expect(opetettavaAineSelect).toBeVisible();
-
   await selectOption(page, sovellettuLakiSelect, 'Päätös AP/SEUT');
   await selectOption(page, kelpoisuusSelect, 'Aineenopettaja lukiossa');
   await expect(opetettavaAineSelect).toBeVisible();

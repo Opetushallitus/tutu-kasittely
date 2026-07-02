@@ -95,15 +95,7 @@ const getAmmattikokemuksenHuomioiminenOptions = (
         'UlkomaillaHankittuOsittain',
         'EiHuomioida',
       ];
-    case 'Opetusalan ammatit_Esiopetusta antava opettaja_uo':
-    case 'Opetusalan ammatit_Aineenopettaja perusopetuksessa_uo':
-    case 'Opetusalan ammatit_Aineenopettaja lukiossa_uo':
-    case 'Opetusalan ammatit_Erityisluokanopettaja_uo':
-    case 'Opetusalan ammatit_Erityisopettaja perusopetuksessa_uo':
-    case 'Opetusalan ammatit_Erityisopettaja lukiossa_uo':
-    case 'Opetusalan ammatit_Muu erityisopettaja_uo':
-    case 'Opetusalan ammatit_Oppilaanohjaaja perusopetuksessa_uo':
-    case 'Opetusalan ammatit_Oppilaanohjaaja lukiossa_uo':
+    default:
       return [
         'SuomessaHankittuKokonaan',
         'SuomessaHankittuOsittain',
@@ -113,8 +105,6 @@ const getAmmattikokemuksenHuomioiminenOptions = (
         'SuomessaJaUlkomaillaHankittuOsittain',
         'EiHuomioida',
       ];
-    default:
-      return [];
   }
 };
 
