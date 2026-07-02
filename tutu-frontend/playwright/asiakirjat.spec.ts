@@ -4,6 +4,7 @@ import {
   mockUser,
   mockBasicForHakemus,
   mockLiitteet,
+  mockAsiakirjat,
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
@@ -26,6 +27,7 @@ test.describe('Tavalliset hakemukset', () => {
     await mockBasicForHakemus({ page });
     await mockUser(page);
     await mockHakemus(page);
+    await mockAsiakirjat(page);
     await mockLiitteet(page);
   });
 
@@ -227,6 +229,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     await mockBasicForHakemus({ page });
     await mockUser(page);
     await mockHakemus(page, HakemusKoskee.LOPULLINEN_PAATOS);
+    await mockAsiakirjat(page);
     await mockLiitteet(page);
   });
 

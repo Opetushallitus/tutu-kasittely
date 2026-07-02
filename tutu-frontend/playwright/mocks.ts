@@ -10,7 +10,7 @@ import { getPaatos } from '@/playwright/fixtures/paatos1';
 import { mockTekstipohjatKategorioittain } from '@/playwright/fixtures/tekstipohjat';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
 import { Language } from '@/src/lib/localization/localizationTypes';
-import { Hakemus } from '@/src/lib/types/hakemus';
+import { AsiakirjaTieto, Hakemus } from '@/src/lib/types/hakemus';
 import {
   Paatospohja,
   PaatospohjaListItem,
@@ -35,6 +35,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockHakemusLista(page),
     mockUser(page),
     mockHakemus(page),
+    mockAsiakirjat(page),
     mockPerustelu(page),
     mockPaatos(page),
     mockLiitteet(page),
@@ -300,6 +301,53 @@ export const mockHakemus = async (
       } as Hakemus),
     });
   });
+};
+
+export const mockAsiakirjat = async (page: Page) => {
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/asiakirjat',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          allekirjoituksetTarkistettu: false,
+          allekirjoituksetTarkistettuLisatiedot: null,
+          alkuperaisetAsiakirjatSaatuNahtavaksi: false,
+          alkuperaisetAsiakirjatSaatuNahtavaksiLisatiedot: null,
+          selvityksetSaatu: false,
+          pyydettavatAsiakirjat: [],
+          imiPyynto: {},
+          apHakemus: false,
+          asiakirjamallitTutkinnoista: {
+            ece: {
+              lahde: 'ece',
+              vastaavuus: true,
+              kuvaus: 'Jotain kuvausta',
+            },
+            nuffic: {
+              lahde: 'nuffic',
+              vastaavuus: false,
+            },
+            aacrao: {
+              lahde: 'aacrao',
+              vastaavuus: false,
+              kuvaus: 'Jotain muuta kuvausta',
+            },
+          },
+          valmistumisenVahvistus: {
+            valmistumisenVahvistus: false,
+            valmistumisenVahvistusLisatieto: null,
+            valmistumisenVahvistusPyyntoLahetetty: null,
+            valmistumisenVahvistusSaatu: null,
+            valmistumisenVahvistusVastaus: null,
+          },
+          suostumusVahvistamiselleSaatu: true,
+          esittelijanHuomioita: 'Muistion alkuperäinen sisältö',
+        } as AsiakirjaTieto),
+      });
+    },
+  );
 };
 
 export const mockLopullisenPaatoksenHakemus = async (page: Page) => {
