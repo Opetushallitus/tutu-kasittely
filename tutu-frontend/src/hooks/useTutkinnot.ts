@@ -52,6 +52,9 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
 
   const [localTutkinnot, setLocalTutkinnot] = useState(query.data);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | undefined>(
+    undefined,
+  );
 
   const updateLocal = (tutkinnot?: Tutkinto[]) => {
     setLocalTutkinnot(
@@ -69,9 +72,13 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
 
   const mutationTallenna = useMutation({
     mutationFn: (tutkinnot: Tutkinto[]) => putTutkinnot(hakemusOid!, tutkinnot),
+    onMutate: () => {
+      setIsUpdateSuccess(undefined);
+    },
     onSuccess: async (response) => {
       const paivitetytTutkinnot = await response.json();
       queryClient.setQueryData(queryKey, paivitetytTutkinnot);
+      setIsUpdateSuccess(true);
       // Invalidoi myös hakemus, koska kasittelyVaihe voi muuttua
       await queryClient.invalidateQueries({
         queryKey: ['getHakemus', hakemusOid],
@@ -154,7 +161,7 @@ export const useTutkinnot = (hakemusOid: string | undefined) => {
     poistaTutkinto,
     isPerusteluLoading: query.isLoading,
     isSaving: mutationTallenna.isPending || isDeleting,
-    isUpdateSuccess: mutationTallenna.isSuccess,
+    isUpdateSuccess: isUpdateSuccess,
     updateError: mutationTallenna.error,
   };
 };
