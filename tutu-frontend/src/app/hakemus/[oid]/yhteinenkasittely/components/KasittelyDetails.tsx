@@ -54,6 +54,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
       {kasittely.jatkoKasittelyt?.map((jatkoKasittely) => (
         <KysymysJaVastaus
           key={jatkoKasittely.id}
+          luotu={jatkoKasittely.luotu}
           kasittely={jatkoKasittely}
           answers={answers}
           handleChange={handleChange}
@@ -77,6 +78,7 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
 };
 
 interface KysymysJaVastausProps {
+  luotu?: string;
   kasittely: YhteinenKasittely;
   answers: Record<string, string>;
   handleChange: (id: string, value: string) => void;
@@ -85,6 +87,7 @@ interface KysymysJaVastausProps {
 }
 
 const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
+  luotu,
   kasittely,
   answers,
   handleChange,
@@ -106,9 +109,23 @@ const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
           paddingLeft: theme.spacing(0.5),
         }}
       >
-        <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-          {t('hakemus.yhteinenkasittely.kysymysTyoparille')}
-        </OphTypography>
+        <Stack direction="row">
+          <Box style={{ flex: 3, overflow: 'hidden' }}>
+            <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+              {t('hakemus.yhteinenkasittely.kysymysTyoparille')}
+            </OphTypography>
+          </Box>
+          {luotu !== undefined ? (
+            <Box style={{ flex: 1 }}>
+              <OphTypography
+                variant="body2"
+                sx={{ paddingLeft: theme.spacing(1.5) }}
+              >
+                {formatHelsinki(luotu, 'd.M.yyyy')}
+              </OphTypography>
+            </Box>
+          ) : null}
+        </Stack>
         <OphTypography
           variant="body1"
           sx={{ marginBottom: theme.spacing(4) }}
