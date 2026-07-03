@@ -407,35 +407,14 @@ class HakemusService(
           s"Hakemuksen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
       case Some(dbHakemus) =>
-        // Tallennetaan asiakirjatiedot täysin (korvaa kaikki kentät ilman mergeä)
-        val finalAsiakirjaId = dbHakemus.asiakirjaId match {
-          case Some(asiakirjaId) =>
-            // Päivitä olemassa oleva asiakirja täysin
-            asiakirjaRepository.paivitaAsiakirjaTiedot(
-              asiakirjaId,
-              hakemusUpdateRequest.asiakirja,
-              userOid
-            )
-            Some(asiakirjaId)
-          case None =>
-            // Luo uusi asiakirja jos ei ole olemassa
-            // tallennaUudetAsiakirjatiedot hoitaa myös nested collectionien tallennuksen
-            val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
-              hakemusUpdateRequest.asiakirja,
-              userOid.toString
-            )
-            Some(asiakirjaId)
-        }
-
         // Laske lopullinen kasittelyVaihe päivitettyjen tietojen perusteella
         val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
-          dbHakemus.copy(asiakirjaId = finalAsiakirjaId),
+          dbHakemus,
           haeAtaruHakemus(hakemusOid)
         )
 
         // Täysi päivitys - kaikki kentät korvataan
         val modifiedHakemus = dbHakemus.copy(
-          asiakirjaId = finalAsiakirjaId,
           hakemusKoskee = hakemusUpdateRequest.hakemusKoskee,
           asiatunnus = hakemusUpdateRequest.asiatunnus,
           esittelijaId = esittelijaId,
@@ -464,6 +443,90 @@ class HakemusService(
 
         result
     }
+  }
+
+  def haeAsiakirjat(hakemusOid: HakemusOid): Option[Asiakirja] = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case None =>
+        LOG.warn(s"Asiakirjojen haku epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        throw new RuntimeException(
+          s"Asiakirjojen haku epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+        )
+      case Some(dbHakemus) => {
+        asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
+          case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
+            Some(
+              new Asiakirja(
+                asiakirjaTiedot,
+                pyydettavatAsiakirjat,
+                asiakirjamallitTutkinnoista
+              )
+            )
+          case _ =>
+            None
+        }
+      }
+    }
+  }
+
+  def tallennaAsiakirjat(
+    hakemusOid: HakemusOid,
+    asiakirja: Asiakirja,
+    userOid: UserOid
+  ): HakemusOid = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case None =>
+        LOG.warn(s"Asiakirjojen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid")
+        throw new RuntimeException(
+          s"Asiakirjojen tallennus epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
+        )
+      case Some(dbHakemus) =>
+        // Tallennetaan asiakirjatiedot täysin (korvaa kaikki kentät ilman mergeä)
+        val finalAsiakirjaId = dbHakemus.asiakirjaId match {
+          case Some(asiakirjaId) =>
+            // Päivitä olemassa oleva asiakirja täysin
+            asiakirjaRepository.paivitaAsiakirjaTiedot(
+              asiakirjaId,
+              asiakirja,
+              userOid
+            )
+            Some(asiakirjaId)
+          case None =>
+            // Luo uusi asiakirja jos ei ole olemassa
+            // tallennaUudetAsiakirjatiedot hoitaa myös nested collectionien tallennuksen
+            val asiakirjaId = asiakirjaRepository.tallennaUudetAsiakirjatiedot(
+              asiakirja,
+              userOid.toString
+            )
+            Some(asiakirjaId)
+        }
+
+        // Laske lopullinen kasittelyVaihe päivitettyjen tietojen perusteella
+        val kasittelyVaihe = kasittelyVaiheService.resolveKasittelyVaihe(
+          dbHakemus.copy(asiakirjaId = finalAsiakirjaId),
+          haeAtaruHakemus(hakemusOid)
+        )
+
+        // Täysi päivitys - kaikki kentät korvataan
+        val modifiedHakemus = dbHakemus.copy(
+          asiakirjaId = finalAsiakirjaId,
+          kasittelyVaihe = kasittelyVaihe
+        )
+
+        val result = hakemusRepository.paivitaHakemus(
+          hakemusOid,
+          modifiedHakemus,
+          userOid.toString
+        )
+
+        perustelumuistioService.paivitaPerustelumuistio(hakemusOid, ATARU_SERVICE)
+
+        result
+    }
+  }
+
+  def poistaPyydettavaAsiakirja(asiakirjaId: UUID): Int = {
+    asiakirjaRepository.suoritaPoistaPyydettavaAsiakirja(asiakirjaId)
   }
 
   def paivitaAsiatunnus(hakemusOid: HakemusOid, asiatunnus: String, muokkaaja: String): Int = {

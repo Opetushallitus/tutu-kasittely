@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockHakemus,
   mockLiitteet,
@@ -14,6 +15,7 @@ test('Asiakirjan sisäisen muistion esittäminen ja tallennus', async ({
 }) => {
   await mockUser(page);
   await mockHakemus(page);
+  await mockAsiakirjat(page);
   await mockLiitteet(page);
 
   await page.goto(
@@ -37,7 +39,5 @@ test('Asiakirjan sisäisen muistion esittäminen ja tallennus', async ({
     saveButton.click(),
   ]);
 
-  expect(req.postDataJSON().asiakirja.esittelijanHuomioita).toEqual(
-    'Parempaa sisältöä!',
-  );
+  expect(req.postDataJSON().esittelijanHuomioita).toEqual('Parempaa sisältöä!');
 });

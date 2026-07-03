@@ -21,8 +21,61 @@ test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', 
 
   const hakemus = getHakemus();
 
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/asiakirjat',
+    async (route) => {
+      callCount++;
+      const imiPyynto: ImiPyynto = {
+        imiPyynto: null,
+        imiPyyntoNumero: null,
+        imiPyyntoLahetetty: null,
+        imiPyyntoVastattu: null,
+      };
+
+      const body = {
+        ...hakemus.asiakirja,
+        imiPyynto: imiPyynto,
+      };
+
+      if (callCount === 2) {
+        body.imiPyynto.imiPyynto = false;
+      }
+      if (callCount === 3) {
+        body.imiPyynto = imiPyynto;
+      }
+      if (callCount >= 4) {
+        body.imiPyynto.imiPyynto = true;
+      }
+      if (callCount >= 5) {
+        body.imiPyynto.imiPyyntoNumero = '123456';
+      }
+      if (callCount >= 6) {
+        body.imiPyynto.imiPyyntoLahetetty = dateFns.format(
+          new Date().setDate(26),
+          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        );
+      }
+      if (callCount >= 7) {
+        body.imiPyynto.imiPyyntoVastattu = dateFns.format(
+          new Date().setDate(26),
+          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+        );
+      }
+
+      if (callCount < 8) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(body),
+        });
+      } else {
+        await route.continue();
+      }
+    },
+  );
+
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    callCount++;
+    //callCount++;
     const imiPyynto: ImiPyynto = {
       imiPyynto: null,
       imiPyyntoNumero: null,

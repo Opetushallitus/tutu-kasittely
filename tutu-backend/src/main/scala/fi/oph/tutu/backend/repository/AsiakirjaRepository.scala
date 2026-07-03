@@ -374,6 +374,19 @@ class AsiakirjaRepository extends BaseResultHandlers {
           WHERE id = ${id.toString}::uuid
         """
 
+  def suoritaPoistaPyydettavaAsiakirja(id: UUID): Int = {
+    try {
+      db.run(poistaPyydettavaAsiakirja(id), "poista_pyydettava_asiakirja")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Pyydettävän asiakirjan  poistaminen epäonnistui: $e")
+        throw new RuntimeException(
+          s"Pyydettävän asiakirjan  poistaminen epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
   /**
    * Hakee hakemuksen pyydettävät asiakirjat
    *

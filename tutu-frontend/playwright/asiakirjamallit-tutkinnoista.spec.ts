@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import { clickSaveAndWaitForPUT } from '@/playwright/helpers/saveHelpers';
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockHakemus,
   mockLiitteet,
@@ -13,6 +14,7 @@ test.beforeEach(async ({ page }) => {
     mockBasicForHakemus({ page }),
     mockUser(page),
     mockHakemus(page),
+    mockAsiakirjat(page),
     mockLiitteet(page),
   ]);
 });
@@ -98,7 +100,7 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
 
   let request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.ece.vastaavuus,
+    request.postDataJSON().asiakirjamallitTutkinnoista.ece.vastaavuus,
   ).toEqual(false);
 
   const cellsOfUkEnic = page
@@ -109,11 +111,10 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
 
   request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic.kuvaus,
+    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.kuvaus,
   ).toEqual('Uusi kuvaus');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.UK_enic
-      .vastaavuus,
+    request.postDataJSON().asiakirjamallitTutkinnoista.UK_enic.vastaavuus,
   ).toEqual(true);
 
   await page
@@ -122,6 +123,6 @@ test('Asiakirjamallien modifioinneista lähtee pyynnöt backendille', async ({
 
   request = await clickSaveAndWaitForPUT(page, '/hakemus/');
   expect(
-    request.postDataJSON().asiakirja.asiakirjamallitTutkinnoista.aacrao,
+    request.postDataJSON().asiakirjamallitTutkinnoista.aacrao,
   ).toBeUndefined();
 });

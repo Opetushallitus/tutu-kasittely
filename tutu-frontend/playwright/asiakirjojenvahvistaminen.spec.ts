@@ -3,6 +3,7 @@ import * as dateFns from 'date-fns';
 
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockLiitteet,
   mockUser,
@@ -26,6 +27,7 @@ test('Todistusten aitoustarkistuksen lupa-vastaus näkyy sivulla', async ({
 }) => {
   await mockUser(page);
   await mockHakemus(page);
+  await mockAsiakirjat(page);
   await mockLiitteet(page);
 
   await page.goto(
@@ -44,6 +46,7 @@ test('Suostumus asiakirjojen vahvistamiselle -valinta näkyy sivulla', async ({
 }) => {
   await mockUser(page);
   await mockHakemus(page);
+  await mockAsiakirjat(page);
   await mockLiitteet(page);
 
   await page.goto(
@@ -61,21 +64,22 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await mockLiitteet(page);
 
   const hakemus = getHakemus();
+  const asiakirjat = hakemus.asiakirja;
 
-  await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
-    if (route.request().method() === 'GET') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(hakemus),
-      });
-      return;
-    }
+  await page.route(
+    '**/tutu-backend/api/hakemus/*/asiakirjat',
+    async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(asiakirjat),
+        });
+        return;
+      }
 
-    if (route.request().method() === 'PUT') {
-      const body = {
-        ...hakemus,
-        asiakirja: {
+      if (route.request().method() === 'PUT') {
+        const body = {
           ...hakemus.asiakirja,
           valmistumisenVahvistus: {
             valmistumisenVahvistus: true,
@@ -90,16 +94,24 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
             valmistumisenVahvistusVastaus: 'Myonteinen',
             valmistumisenVahvistusLisatieto: 'Hyvinhän se meni',
           },
-        },
-      };
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(body),
-      });
-    } else {
-      await route.continue();
-    }
+        };
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(body),
+        });
+      } else {
+        await route.continue();
+      }
+    },
+  );
+
+  await page.route('**/tutu-backend/api/hakemus/*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(hakemus),
+    });
   });
 
   await page.goto(
