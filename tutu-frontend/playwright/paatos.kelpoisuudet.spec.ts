@@ -678,3 +678,112 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
   await expect(epavirallinenKorkeakouluButton).toBeHidden();
   await expect(muuPerusteluButton).toBeHidden();
 });
+
+test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymyskentät', async ({
+  page,
+}) => {
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  const sovellettuLakiSelect = page.getByTestId(
+    'paatos-sovellettulaki-dropdown',
+  );
+  await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
+  await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
+  await page.getByTestId('kelpoisuus-select').isVisible();
+
+  await selectOption(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Aineenopettaja perusopetuksessa',
+  );
+
+  await page
+    .getByTestId('myonteinenPaatos-radio-group')
+    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .click();
+
+  const sovellettuTilanneSelect = page.getByTestId(
+    'uo-sovellettuTilanne-select',
+  );
+
+  await expect(sovellettuTilanneSelect).toBeVisible();
+
+  await sovellettuTilanneSelect.click();
+  await expect(sovellettuTilanneSelect).toBeVisible();
+  await expect(
+    page.locator('ul[role="listbox"] li[role="option"]'),
+  ).toHaveCount(10);
+  await page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator(
+      `text=${await translate(
+        page,
+        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne.pedagogiset1_ja_aine1',
+      )}`,
+    )
+    .last()
+    .click();
+  await page.getByTestId('erotKoulutuksessa-ero3').click();
+  await page.getByTestId('erotKoulutuksessa-ero4').click();
+
+  await expect(
+    page.getByTestId('erotKoulutuksessa-ero3-tarkennus1'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('erotKoulutuksessa-ero3-tarkennus2'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('erotKoulutuksessa-ero4-tarkennus1'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('erotKoulutuksessa-ero4-tarkennus2'),
+  ).toBeVisible();
+
+  const ammattikokemuksenHuomioiminenRadiot = page.getByTestId(
+    'uo-ammattikokemuksenHuomioiminen-radio',
+  );
+
+  const osaamisenTaydentamisenTavat = page.getByText(
+    await translate(
+      page,
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.osaamisenTaydentamisenTavat',
+    ),
+    { exact: true },
+  );
+  [
+    'SuomessaHankittuOsittain',
+    'UlkomaillaHankittuOsittain',
+    'SuomessaJaUlkomaillaHankittuOsittain',
+  ].map(async (option) => {
+    await ammattikokemuksenHuomioiminenRadiot
+      .locator(`input[value="${option}"]`)
+      .click();
+    await expect(osaamisenTaydentamisenTavat).toBeVisible();
+    await ammattikokemuksenHuomioiminenRadiot
+      .locator(`input[value="${option}"]`)
+      .click();
+  });
+
+  await page
+    .getByTestId('uo-suomessaSuoritettujenOpintojenHuomioiminen-radio')
+    .locator(`input[value="KorvaavatOsittain"]`)
+    .click();
+
+  await expect(osaamisenTaydentamisenTavat).toBeVisible();
+
+  await page
+    .getByTestId('uo-suomessaSuoritettujenOpintojenHuomioiminen-radio')
+    .locator(`input[value="EiHuomioida"]`)
+    .click();
+  await ammattikokemuksenHuomioiminenRadiot
+    .locator(`input[value="EiHuomioida"]`)
+    .click();
+
+  await expect(
+    page.getByText(
+      await translate(
+        page,
+        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
+      ),
+    ),
+  ).toBeVisible();
+});
