@@ -65,7 +65,6 @@ export const expectDataFromDropdownSelection = async (
     .last();
   await expectRequestData(page, expectedUrl, option.click(), data);
 };
-
 export const selectOption = async (
   page: Page,
   menuButton: Locator,
@@ -77,6 +76,19 @@ export const selectOption = async (
     .locator('ul[role="listbox"] li[role="option"]')
     .locator(`text=${optionText}`);
   await option.last().click();
+};
+
+export const selectOptionByValue = async (
+  page: Page,
+  menuButton: Locator,
+  dataValue: string,
+) => {
+  await menuButton.click({ position: { x: 20, y: 10 } });
+  await expect(menuButton).toBeVisible();
+  const option = page.locator(
+    `ul[role="listbox"] li[data-value="${dataValue}"]`,
+  );
+  await option.first().click();
 };
 
 export const clickSaveButton = async (page: Page) => {

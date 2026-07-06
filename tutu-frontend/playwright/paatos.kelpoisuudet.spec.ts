@@ -5,6 +5,7 @@ import {
   expectHiddenOrDetached,
   expectRequestData,
   selectOption,
+  selectOptionByValue,
 } from '@/playwright/helpers/testUtils';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
 import {
@@ -690,10 +691,10 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
   await page.getByTestId('kelpoisuus-select').isVisible();
 
-  await selectOption(
+  await selectOptionByValue(
     page,
     page.getByTestId('kelpoisuus-select'),
-    'Aineenopettaja perusopetuksessa',
+    'Opetusalan ammatit_Esiopetusta antava opettaja',
   );
 
   await page
@@ -704,6 +705,45 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   const sovellettuTilanneSelect = page.getByTestId(
     'uo-sovellettuTilanne-select',
   );
+
+  await expect(sovellettuTilanneSelect).toBeHidden();
+
+  await selectOptionByValue(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Opetusalan ammatit_Luokanopettaja',
+  );
+
+  await page
+    .getByTestId('myonteinenPaatos-radio-group')
+    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .click();
+
+  await expect(sovellettuTilanneSelect).toBeVisible();
+  const ammattikokemuksenHuomioiminenRadiot = page.getByTestId(
+    'uo-ammattikokemuksenHuomioiminen-radio',
+  );
+
+  [
+    'UlkomaillaHankittuKokonaan',
+    'SuomessaJaUlkomaillaHankittuKokonaan',
+    'SuomessaJaUlkomaillaHankittuOsittain',
+  ].map(async (option) => {
+    await expect(
+      ammattikokemuksenHuomioiminenRadiot.locator(`input[value="${option}"]`),
+    ).toBeHidden();
+  });
+
+  await selectOptionByValue(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Opetusalan ammatit_Aineenopettaja perusopetuksessa',
+  );
+
+  await page
+    .getByTestId('myonteinenPaatos-radio-group')
+    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .click();
 
   await expect(sovellettuTilanneSelect).toBeVisible();
 
@@ -737,10 +777,6 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   await expect(
     page.getByTestId('erotKoulutuksessa-ero4-tarkennus2'),
   ).toBeVisible();
-
-  const ammattikokemuksenHuomioiminenRadiot = page.getByTestId(
-    'uo-ammattikokemuksenHuomioiminen-radio',
-  );
 
   const osaamisenTaydentamisenTavat = page.getByText(
     await translate(
