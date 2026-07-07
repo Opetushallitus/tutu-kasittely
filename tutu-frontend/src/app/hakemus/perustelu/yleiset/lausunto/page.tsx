@@ -8,6 +8,8 @@ import {
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 
+import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
+import { LausuntopyyntoComponent } from '@/src/app/hakemus/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
@@ -16,9 +18,6 @@ import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
-
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { LausuntopyyntoComponent } from '@/src/app/hakemus/[oid]/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
 
 const emptyLausuntopyynto = (jarjestys: number): Lausuntopyynto => ({
   jarjestys: jarjestys,

@@ -2,6 +2,17 @@
 
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
+import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
+import { AikaisemmatPaatokset } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
+import { JatkoOpintoKelpoisuus } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/JatkoOpintoKelpoisuus';
+import { Lahde } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/Lahde';
+import { MuuPerustelu } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/MuuPerustelu';
+import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
+import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
+import { TutkintokohtaisetTiedot } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/TutkintokohtaisetTiedot';
+import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/VirallinenTutkinnonMyontaja';
+import { VirallinenTutkinto } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
+import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
@@ -11,18 +22,6 @@ import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
-
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
-import { AikaisemmatPaatokset } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/AikaisemmatPaatokset';
-import { JatkoOpintoKelpoisuus } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/JatkoOpintoKelpoisuus';
-import { Lahde } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/Lahde';
-import { MuuPerustelu } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/MuuPerustelu';
-import { SelvitysTutkinnonAsemasta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonAsemasta';
-import { SelvitysTutkinnonMyontajastaJaVirallisuudesta } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/SelvitysTutkinnonMyontajastaJaVirallisuudesta';
-import { TutkintokohtaisetTiedot } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/TutkintokohtaisetTiedot';
-import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinnonMyontaja';
-import { VirallinenTutkinto } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
-import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/[oid]/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
 
 export default function YleisetPage() {
   const { t } = useTranslations();

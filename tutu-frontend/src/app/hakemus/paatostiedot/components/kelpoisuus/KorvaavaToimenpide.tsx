@@ -2,6 +2,7 @@ import { Stack } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
+  OphFormFieldWrapper,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
@@ -150,16 +151,21 @@ export const KorvaavaToimenpideComponent = ({
 
   return (
     <Stack gap={theme.spacing(1)}>
-      <Stack gap={theme.spacing(1)}>
-        <OphTypography variant="h5">{label}</OphTypography>
-        {showLisatieto && (
-          <OphTypography variant="body1">
-            {t(
-              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.toimenpideLisatieto',
-            )}
-          </OphTypography>
-        )}
-      </Stack>
+      <OphFormFieldWrapper
+        sx={{ gap: theme.spacing(1) }}
+        label={label}
+        renderInput={
+          showLisatieto
+            ? () => (
+                <OphTypography variant="body1">
+                  {t(
+                    'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.toimenpideLisatieto',
+                  )}
+                </OphTypography>
+              )
+            : () => undefined
+        }
+      />
       {showTaydentavatOpinnot && (
         <OphCheckbox
           data-testid={`${testIdPrefix}-korvaavaToimenpide-taydentavatOpinnot`}

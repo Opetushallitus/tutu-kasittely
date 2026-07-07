@@ -9,6 +9,8 @@ import {
 import React, { useMemo } from 'react';
 
 import { MyonteinenPaatos } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatos';
+import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
+import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosSteiner';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
@@ -20,9 +22,6 @@ import {
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
-
-import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
-import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosSteiner';
 
 interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;

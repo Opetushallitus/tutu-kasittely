@@ -1,7 +1,7 @@
 import ErrorIcon from '@mui/icons-material/Error';
 import { Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { usePathname } from 'next/navigation';
+import { useLocation } from 'react-router-dom';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
@@ -55,8 +55,8 @@ const InfoBadge = styled(ErrorIcon)({
 });
 
 const useActiveHakuTabName = () => {
-  const pathName = usePathname();
-  return pathName.split('/').at(-1);
+  const { pathname } = useLocation();
+  return pathname.split('/').at(-1);
 };
 
 interface TabButtonProps {

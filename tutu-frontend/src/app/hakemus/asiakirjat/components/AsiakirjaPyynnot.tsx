@@ -17,6 +17,10 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useMemo } from 'react';
 
+import {
+  PYYDETTAVAT_ASIAKIRJAT,
+  LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT,
+} from '@/src/app/hakemus/asiakirjat/types';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { IconButton } from '@/src/components/IconButton';
 import { StyledTooltip } from '@/src/components/ToolTip';
@@ -27,11 +31,6 @@ import {
   AsiakirjaTietoUpdateCallback,
   HakemusKoskee,
 } from '@/src/lib/types/hakemus';
-
-import {
-  PYYDETTAVAT_ASIAKIRJAT,
-  LOPULLISEN_PAATOKSEN_PYYDETTAVAT_ASIAKIRJAT,
-} from '@/src/app/hakemus/[oid]/asiakirjat/types';
 
 interface AsiakirjaPyynnotProps {
   asiakirjaPyynnot: AsiakirjaPyynto[];

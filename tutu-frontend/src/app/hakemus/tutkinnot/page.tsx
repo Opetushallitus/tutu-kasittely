@@ -5,6 +5,9 @@ import { Divider, Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 
+import { MuuTutkintoComponent } from '@/src/app/hakemus/tutkinnot/components/MuuTutkintoComponent';
+import { TutkintoComponent } from '@/src/app/hakemus/tutkinnot/components/TutkintoComponent';
+import { Yhteistutkinto } from '@/src/app/hakemus/tutkinnot/components/Yhteistutkinto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import {
@@ -21,10 +24,6 @@ import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { handleFetchError, updateTutkintoJarjestys } from '@/src/lib/utils';
-
-import { MuuTutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/MuuTutkintoComponent';
-import { TutkintoComponent } from '@/src/app/hakemus/[oid]/tutkinnot/components/TutkintoComponent';
-import { Yhteistutkinto } from '@/src/app/hakemus/[oid]/tutkinnot/components/Yhteistutkinto';
 
 export default function TutkintoPage() {
   const theme = useTheme();

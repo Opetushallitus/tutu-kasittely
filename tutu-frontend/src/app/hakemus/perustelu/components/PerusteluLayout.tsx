@@ -6,8 +6,8 @@ import {
   OphButton,
   ophColors,
 } from '@opetushallitus/oph-design-system';
-import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
@@ -42,8 +42,8 @@ const ActiveButton = styled(OphButton)({
 });
 
 const useActiveHakuTabName = () => {
-  const pathName = usePathname();
-  return pathName.split('/').at(-1);
+  const { pathname } = useLocation();
+  return pathname.split('/').at(-1);
 };
 
 const TabButton = ({

@@ -6,7 +6,7 @@ import {
   MUU_AMMATTI_KEY,
   oletusKoulutusErot,
   yleinenKoulutusEroTranslationKeys,
-} from '@/src/app/hakemus/[oid]/paatostiedot/constants';
+} from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   Language,

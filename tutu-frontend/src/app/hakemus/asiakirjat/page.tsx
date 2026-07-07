@@ -5,6 +5,19 @@ import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
+import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/asiakirjat/components/AlkuperaisetAsiakirjat';
+import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/asiakirjat/components/AllekirjoitustenTarkistus';
+import { ApHakemus } from '@/src/app/hakemus/asiakirjat/components/ApHakemus';
+import { AsiakirjaPyynnot } from '@/src/app/hakemus/asiakirjat/components/AsiakirjaPyynnot';
+import {
+  AsiakirjaTaulukko,
+  AsiakirjaTaulukkoData,
+} from '@/src/app/hakemus/asiakirjat/components/AsiakirjaTaulukko';
+import { ImiPyyntoComponent } from '@/src/app/hakemus/asiakirjat/components/ImiPyynto';
+import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/asiakirjat/components/KaikkiSelvityksetSaatu';
+import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/asiakirjat/components/MallitTutkinnoista';
+import { SuostumusVahvistamiselle } from '@/src/app/hakemus/asiakirjat/components/SuostumusVahvistamiselle';
+import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/asiakirjat/components/ValmistumisenVahvistus';
 import { CenteredRow } from '@/src/components/CenteredRow';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
@@ -26,7 +39,7 @@ import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { virkailijaUrl } from '@/src/lib/configuration/configuration';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -45,19 +58,6 @@ import {
   SisaltoValue,
 } from '@/src/lib/types/hakemus';
 import { handleFetchError } from '@/src/lib/utils';
-import { AlkuperaisetAsiakirjat } from '@/src/app/hakemus/[oid]/asiakirjat/components/AlkuperaisetAsiakirjat';
-import { AllekirjoitustenTarkistus } from '@/src/app/hakemus/[oid]/asiakirjat/components/AllekirjoitustenTarkistus';
-import { ApHakemus } from '@/src/app/hakemus/[oid]/asiakirjat/components/ApHakemus';
-import { AsiakirjaPyynnot } from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaPyynnot';
-import {
-  AsiakirjaTaulukko,
-  AsiakirjaTaulukkoData,
-} from '@/src/app/hakemus/[oid]/asiakirjat/components/AsiakirjaTaulukko';
-import { ImiPyyntoComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ImiPyynto';
-import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/components/KaikkiSelvityksetSaatu';
-import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
-import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
-import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
 
 const sisallonSuoratYlatasonOsiot = [
   henkilotietojenLiitteet,
@@ -76,7 +76,7 @@ const ExternalLink = ({
   gap: string;
 }) => {
   return (
-    <StyledLink href={href} target="_black" rel="noopener">
+    <StyledLink to={href} target="_black" rel="noopener">
       <CenteredRow gap={gap}>
         <OpenInNewIcon />
         {label}
@@ -249,7 +249,6 @@ const AsiakirjaPagePure = ({
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
-  const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -292,7 +291,7 @@ const AsiakirjaPagePure = ({
         <ExternalLink
           gap={theme.spacing(1)}
           label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
-          href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
+          href={`${virkailijaUrl()}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
         />
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />

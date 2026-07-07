@@ -2,6 +2,7 @@
 
 import { Stack } from '@mui/material';
 
+import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -9,8 +10,6 @@ import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
-import { PerusteluLayout } from '@/src/app/hakemus/[oid]/perustelu/components/PerusteluLayout';
 
 export default function UoroPage() {
   const { t } = useTranslations();

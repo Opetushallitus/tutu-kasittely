@@ -94,7 +94,7 @@ export default function MessageRow({
       </StyledTableCell>
       <StyledTableCell>
         <StyledLink
-          href={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
+          to={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
           data-testid={'hakijan-nimi'}
           sx={{ fontWeight: 'normal' }}
         >
