@@ -1,5 +1,3 @@
-'use client';
-
 import { Divider, Stack, useTheme } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';

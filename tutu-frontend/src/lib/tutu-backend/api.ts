@@ -1,5 +1,3 @@
-'use client';
-
 import { FetchError, PermissionError } from '@/src/lib/common';
 import { tutuBackendApiUrl } from '@/src/lib/configuration/configuration';
 import { requestAuthRedirectConfirm } from '@/src/lib/navigation/authRedirect';

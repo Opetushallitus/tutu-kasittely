@@ -1,5 +1,3 @@
-'use client';
-
 import { Divider, Stack, useTheme } from '@mui/material';
 import {
   OphTypography,

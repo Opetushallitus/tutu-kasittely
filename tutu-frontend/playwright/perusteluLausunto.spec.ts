@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { translate } from './helpers/translate';
+
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { setupPerusteluRoute } from '@/playwright/helpers/routeHandlers';
 import {
@@ -7,8 +9,6 @@ import {
   waitForSaveComplete,
 } from '@/playwright/helpers/saveHelpers';
 import { mockAll } from '@/playwright/mocks';
-
-import { translate } from './helpers/translate';
 
 const matchingDate = () => {
   return '2025-09-26T00:00:00.000Z';

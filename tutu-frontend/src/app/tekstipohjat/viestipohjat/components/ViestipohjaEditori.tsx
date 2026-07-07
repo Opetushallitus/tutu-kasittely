@@ -1,5 +1,3 @@
-'use client';
-
 import { ListAlt } from '@mui/icons-material';
 import { Box, Stack } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';

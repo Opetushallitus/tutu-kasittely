@@ -1,14 +1,12 @@
-'use client';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { createContext, useContext } from 'react';
+
+import { SearchRibbonContext } from './SearchRibbonContext';
 
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Hakemus, HakemusUpdateRequest } from '@/src/lib/types/hakemus';
 import { buildHakemusUpdateRequest } from '@/src/lib/utils';
-
-import { SearchRibbonContext } from './SearchRibbonContext';
 
 type HakemusContextValue = {
   hakemusState: EditableState<Hakemus>;

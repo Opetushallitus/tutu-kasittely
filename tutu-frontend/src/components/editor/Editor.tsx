@@ -1,4 +1,3 @@
-'use client';
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -39,12 +38,12 @@ import { Box, styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
 import { RefObject, useState } from 'react';
 
+import { Toolbar } from './Toolbar';
+
 import { validateUrl } from '@/src/components/editor/editor-utils';
 import { ExtendedTextNode } from '@/src/components/editor/ExtendedTextNode';
 import FloatingLinkEditorPlugin from '@/src/components/editor/FloatingLinkEditorPlugin';
 import ValitsePohjaProps from '@/src/components/editor/ValitsePohjaProps';
-
-import { Toolbar } from './Toolbar';
 
 const editorConfig: InitialConfigType = {
   namespace: 'React.js Demo',

@@ -2,11 +2,11 @@ import { Box, Chip } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
-import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
-import { Esittelija } from '@/src/lib/types/esittelija';
-
 import { TFunction } from '../../../lib/localization/hooks/useTranslations';
 import { Maakoodi } from '../../../lib/types/maakoodi';
+
+import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
+import { Esittelija } from '@/src/lib/types/esittelija';
 
 interface EsittelijaSectionProps {
   esittelija: Esittelija;

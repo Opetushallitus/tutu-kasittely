@@ -1,8 +1,8 @@
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
-import { Esittelija } from '@/src/lib/types/esittelija';
-
 import { Maakoodi } from '../../../lib/types/maakoodi';
+
+import { Esittelija } from '@/src/lib/types/esittelija';
 
 interface SelectedMaakoodiInfoProps {
   maakoodit: Maakoodi[] | undefined;

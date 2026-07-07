@@ -24,6 +24,8 @@ next-env.d.ts
 
 # production
 /build
+/dist
+/public/config.js
 
 # misc
 .DS_Store

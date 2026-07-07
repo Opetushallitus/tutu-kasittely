@@ -1,5 +1,3 @@
-'use client';
-
 import { DeleteOutline } from '@mui/icons-material';
 import { Divider, Stack, Box } from '@mui/material';
 import {
@@ -9,15 +7,15 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
+import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
+
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OphSelectOption } from '@/src/lib/types/common';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
-
-import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
-import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
 // Remember to update these in PaatosTekstiGenerator
 

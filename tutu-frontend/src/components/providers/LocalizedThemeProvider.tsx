@@ -1,5 +1,3 @@
-'use client';
-
 import { OphThemeProvider } from '@opetushallitus/oph-design-system/theme';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';

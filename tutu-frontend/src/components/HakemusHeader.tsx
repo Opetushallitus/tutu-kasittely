@@ -1,7 +1,8 @@
-'use client';
-
 import { Divider, SelectChangeEvent, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+
+import { PeruutettuBadge } from './Badges';
+import { OphSelectFormFieldPatched } from './OphSelectFormFieldPatched';
 
 import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { useHakemus } from '@/src/context/HakemusContext';
@@ -9,9 +10,6 @@ import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
-import { PeruutettuBadge } from './Badges';
-import { OphSelectFormFieldPatched } from './OphSelectFormFieldPatched';
 
 export const HakemusHeader = () => {
   const {

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { doApiFetch } from '@/src/lib/tutu-backend/api';
-
 import { Paginated } from '../lib/types/paginated';
 import { FilemakerHakemus } from '../lib/utils/filemakerDataUtils';
+
+import { doApiFetch } from '@/src/lib/tutu-backend/api';
 
 const getFilemakerHakemukset = async (): Promise<
   Paginated<FilemakerHakemus>

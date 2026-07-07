@@ -1,5 +1,3 @@
-'use client';
-
 import { Grid2 as Grid, useTheme } from '@mui/material';
 import {
   OphInputFormField,

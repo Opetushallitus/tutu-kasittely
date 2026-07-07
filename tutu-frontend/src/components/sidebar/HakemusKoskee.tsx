@@ -1,8 +1,9 @@
-'use client';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Stack, useTheme, styled } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
+
+import { ApHakemusBadge } from '../Badges';
 
 import { CenteredRow } from '@/src/components/CenteredRow';
 import { StyledLink } from '@/src/components/StyledLink';
@@ -10,8 +11,6 @@ import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { virkailijaUrl } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
-import { ApHakemusBadge } from '../Badges';
 
 const OpenInNewOutlinedIconBlue = styled(OpenInNewOutlinedIcon)({
   color: ophColors.blue2,

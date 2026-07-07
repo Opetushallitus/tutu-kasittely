@@ -1,5 +1,3 @@
-'use client';
-
 import { Divider, Stack, Box } from '@mui/material';
 import {
   OphButton,
@@ -8,14 +6,14 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
+import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
+import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
+
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
-
-import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
-import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
 export type TutkintoProps = {
   tutkinto?: Tutkinto;

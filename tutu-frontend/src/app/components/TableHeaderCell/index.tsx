@@ -3,9 +3,9 @@ import { Button, TableCell } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { memo } from 'react';
 
-import { styled } from '@/src/lib/theme';
-
 import { getSortParts } from './tableUtils';
+
+import { styled } from '@/src/lib/theme';
 
 const SortIcon = ({
   sortValue,

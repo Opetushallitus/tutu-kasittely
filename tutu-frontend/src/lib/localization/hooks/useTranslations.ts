@@ -1,5 +1,3 @@
-'use client';
-
 import { TFnType, useTolgee, useTranslate } from '@tolgee/react';
 import { useCallback } from 'react';
 

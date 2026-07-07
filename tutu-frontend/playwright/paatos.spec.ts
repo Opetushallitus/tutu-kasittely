@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+import { translate } from './helpers/translate';
+
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 import {
   expectDataFromDropdownSelection,
   expectRequestData,
 } from '@/playwright/helpers/testUtils';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
-
-import { translate } from './helpers/translate';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });

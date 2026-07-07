@@ -3,11 +3,11 @@ import { Accordion, AccordionSummary, Box } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { KasittelyDetails } from './KasittelyDetails';
+
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
-
-import { KasittelyDetails } from './KasittelyDetails';
 
 interface KasittelyListProps {
   kasittelyt: YhteinenKasittely[];

@@ -1,5 +1,3 @@
-'use client';
-
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import { styled } from '@mui/material';

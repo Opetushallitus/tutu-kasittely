@@ -1,5 +1,3 @@
-'use client';
-
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';

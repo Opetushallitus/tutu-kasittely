@@ -1,5 +1,3 @@
-'use client';
-
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';

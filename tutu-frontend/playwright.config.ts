@@ -1,7 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import nextConfig from './next.config.mjs';
-
 process.env.TEST = 'true'; // For test-runner isTesting
 
 export default defineConfig({
@@ -19,7 +17,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: `https://${process.env.DOCKER ? 'host.docker.internal' : '127.0.0.1'}:33123${nextConfig.basePath}`,
+    baseURL: `https://${process.env.DOCKER ? 'host.docker.internal' : '127.0.0.1'}:33123/tutu-frontend`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,

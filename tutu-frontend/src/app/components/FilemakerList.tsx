@@ -1,7 +1,5 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
-'use client';
-
 import {
   styled,
   Table,
@@ -16,6 +14,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 
+import PaginationButtons from './PaginationButtons';
+
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
 import useToaster from '@/src/hooks/useToaster';
@@ -25,8 +25,6 @@ import {
   setFilemakerQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
 import { getters } from '@/src/lib/utils/filemakerDataUtils';
-
-import PaginationButtons from './PaginationButtons';
 
 const FIELD_KEYS = {
   hakija: 'hakija',

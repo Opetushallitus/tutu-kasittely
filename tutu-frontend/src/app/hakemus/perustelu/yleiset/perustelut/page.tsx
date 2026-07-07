@@ -1,5 +1,3 @@
-'use client';
-
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';

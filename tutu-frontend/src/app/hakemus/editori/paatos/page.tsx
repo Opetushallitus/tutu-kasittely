@@ -1,5 +1,3 @@
-'use client';
-
 import { CopyAllOutlined } from '@mui/icons-material';
 import { Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';

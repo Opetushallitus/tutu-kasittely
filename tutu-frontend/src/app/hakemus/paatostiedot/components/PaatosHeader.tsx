@@ -1,5 +1,3 @@
-'use client';
-
 import { Preview } from '@mui/icons-material';
 import { Stack, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';

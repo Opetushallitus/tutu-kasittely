@@ -1,5 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
+import { translate } from './helpers/translate';
+
 import {
   expectDataFromDropdownSelection,
   expectHiddenOrDetached,
@@ -12,8 +14,6 @@ import {
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
-
-import { translate } from './helpers/translate';
 
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });

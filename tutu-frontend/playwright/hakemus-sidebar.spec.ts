@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { mockAll } from '@/playwright/mocks';
-
 import { getPaatos } from './fixtures/paatos1';
 import { expectVisibleAndAttached } from './helpers/testUtils';
 import { translate } from './helpers/translate';
+
+import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(mockAll);
 

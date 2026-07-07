@@ -2,6 +2,8 @@ import { Stack, useTheme, Box } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { KielteinenBadge, MyonteinenBadge } from '../Badges';
+
 import { StyledLink } from '@/src/components/StyledLink';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
@@ -10,8 +12,6 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { PaatosTieto, Paatostyyppi } from '@/src/lib/types/paatos';
-
-import { KielteinenBadge, MyonteinenBadge } from '../Badges';
 
 export const mapPaatostyyppi = (
   paatosTyyppi: Paatostyyppi | undefined,

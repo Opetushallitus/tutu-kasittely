@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';

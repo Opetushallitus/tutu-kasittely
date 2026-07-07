@@ -1,7 +1,5 @@
-'use client';
-
 import { TolgeeProvider } from '@tolgee/react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';

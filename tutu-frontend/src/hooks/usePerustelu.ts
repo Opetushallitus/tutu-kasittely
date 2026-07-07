@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';

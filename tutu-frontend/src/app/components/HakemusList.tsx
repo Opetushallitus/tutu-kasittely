@@ -1,5 +1,3 @@
-'use client';
-
 import { Table, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -10,6 +8,9 @@ import {
 } from 'nuqs';
 import { useEffect } from 'react';
 import * as R from 'remeda';
+
+import PaginationButtons from './PaginationButtons';
+import TableSortLabel from './TableSortLabel';
 
 import HakemusRow from '@/src/app/components/HakemusRow';
 import { naytaQueryStates } from '@/src/app/components/types';
@@ -23,9 +24,6 @@ import {
   handleFetchError,
   setQueryStateAndLocalStorage,
 } from '@/src/lib/utils';
-
-import PaginationButtons from './PaginationButtons';
-import TableSortLabel from './TableSortLabel';
 
 const FIELD_KEYS = {
   hakija: 'hakija',

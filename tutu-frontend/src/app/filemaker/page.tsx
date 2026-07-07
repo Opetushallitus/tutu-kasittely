@@ -1,5 +1,3 @@
-'use client';
-
 import FilemakerFilters from '@/src/app/components/FilemakerFilters';
 import { FilemakerList } from '@/src/app/components/FilemakerList';
 import MainPageLayout from '@/src/app/components/MainPageLayout';

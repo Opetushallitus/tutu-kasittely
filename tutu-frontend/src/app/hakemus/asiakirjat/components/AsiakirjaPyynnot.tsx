@@ -1,4 +1,3 @@
-'use client';
 import { DeleteOutline } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';

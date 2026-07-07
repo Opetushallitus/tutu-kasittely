@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';

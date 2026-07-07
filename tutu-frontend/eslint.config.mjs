@@ -20,7 +20,6 @@ const compat = new FlatCompat({
 export default defineConfig([
   {
     extends: compat.extends(
-      'next/core-web-vitals',
       'eslint:recommended',
       'plugin:@typescript-eslint/recommended',
       'plugin:prettier/recommended',
@@ -85,11 +84,10 @@ export default defineConfig([
     },
   },
   globalIgnores([
-    '.next',
-    '.open-next',
     'node_modules',
     'certificates',
     'test-results',
-    'next-env.d.ts',
+    'public/config.js',
+    'dist',
   ]),
 ]);

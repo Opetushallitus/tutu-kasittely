@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack } from '@mui/material';
 
 import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';

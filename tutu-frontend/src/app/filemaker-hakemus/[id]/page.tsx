@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Box,
   Divider,
@@ -14,6 +12,8 @@ import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import FilemakerHeader from './components/FilemakerHeader';
+
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { PageHeaderRow } from '@/src/components/PageHeaderRow';
@@ -24,8 +24,6 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, THIN_BOX_BORDER } from '@/src/lib/theme';
 import { handleFetchError } from '@/src/lib/utils';
 import { getters } from '@/src/lib/utils/filemakerDataUtils';
-
-import FilemakerHeader from './components/FilemakerHeader';
 
 const InnerBoxWrapper = styled(Box)(() => ({
   border: DEFAULT_BOX_BORDER,

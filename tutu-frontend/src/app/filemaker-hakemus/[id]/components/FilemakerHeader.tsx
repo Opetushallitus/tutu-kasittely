@@ -1,15 +1,9 @@
-'use client';
-
 import { Divider } from '@mui/material';
 import { Stack, useTheme } from '@mui/system';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
-import {
-  getters,
-  FilemakerHakemus,
-} from '../../../../lib/utils/filemakerDataUtils';
+import { getters, FilemakerHakemus } from '@/src/lib/utils/filemakerDataUtils';
 
 const FilemakerHeader = ({ hakemus }: { hakemus: FilemakerHakemus }) => {
   const theme = useTheme();

@@ -1,13 +1,11 @@
-'use client';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 
-import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
-
 import { EditableState, normalize } from './useEditableState';
 import { AsiakirjaPyynto, AsiakirjaTieto } from '../lib/types/hakemus';
+
+import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 
 export type AsiakirjaState = Omit<
   EditableState<AsiakirjaTieto>,

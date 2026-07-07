@@ -1,5 +1,3 @@
-'use client';
-
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import LastPageIcon from '@mui/icons-material/LastPage';
@@ -7,8 +5,10 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Stack, Theme, useTheme } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+
+import { FullSpinner } from './FullSpinner';
 
 import { PageContent } from '@/src/components/PageLayout';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
@@ -20,8 +20,6 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER, ophColors } from '@/src/lib/theme';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
-
-import { FullSpinner } from './FullSpinner';
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (

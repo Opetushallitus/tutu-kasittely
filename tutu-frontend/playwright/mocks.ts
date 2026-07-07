@@ -4,6 +4,8 @@ import path from 'path';
 import { Route, Page } from '@playwright/test';
 import { sortBy } from 'remeda';
 
+import { _sisalto } from './fixtures/hakemus1/_sisalto';
+
 import { getLiitteet } from '@/playwright/fixtures/hakemus1';
 import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
@@ -25,8 +27,6 @@ import {
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
-
-import { _sisalto } from './fixtures/hakemus1/_sisalto';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([

@@ -1,5 +1,3 @@
-'use client';
-
 let authRedirectConfirmHandler: null | (() => Promise<boolean>) = null;
 
 export const registerAuthRedirectConfirmHandler = (

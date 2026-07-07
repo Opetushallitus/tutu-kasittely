@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useLocation } from 'react-router-dom';

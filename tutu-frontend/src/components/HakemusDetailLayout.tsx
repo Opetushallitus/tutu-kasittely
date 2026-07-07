@@ -1,4 +1,3 @@
-'use client';
 import { Divider, Stack, useTheme } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';

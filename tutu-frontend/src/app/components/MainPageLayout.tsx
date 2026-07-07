@@ -1,5 +1,3 @@
-'use client';
-
 import { Box, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Link } from 'react-router-dom';

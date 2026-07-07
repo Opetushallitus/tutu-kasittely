@@ -1,5 +1,3 @@
-'use client';
-
 import { DeleteOutline, ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
 import { Divider, Stack, useTheme } from '@mui/material';
 import {

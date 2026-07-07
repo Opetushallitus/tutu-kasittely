@@ -1,5 +1,3 @@
-'use client';
-
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -9,6 +7,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useQueryState } from 'nuqs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { KasittelyList } from './components/KasittelyList';
+import { KasittelyModal } from './components/KasittelyModal';
 
 import { SortOrder } from '@/src/app/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -27,9 +28,6 @@ import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
-
-import { KasittelyList } from './components/KasittelyList';
-import { KasittelyModal } from './components/KasittelyModal';
 
 function not<T>(predicate: (arg: T) => boolean) {
   return (arg: T) => !predicate(arg);
@@ -199,7 +197,7 @@ export default function YhteinenKasittelyPage() {
     if (!!viestiId && !!kasittelyt) {
       handleOpenPanel(viestiId);
     }
-  }, [kasittelyt, viestiId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [kasittelyt, viestiId]);
 
   if (kasittelyError) {
     return null;
@@ -209,10 +207,10 @@ export default function YhteinenKasittelyPage() {
     return <FullSpinner />;
   }
 
-  const handleSort = () => {
+  const handleSort = async () => {
     const newSort = sortKey === 'desc' ? 'asc' : 'desc';
     setSortKey(newSort as SortOrder);
-    queryClient.invalidateQueries({
+    await queryClient.invalidateQueries({
       queryKey: ['getYhteinenKasittely'],
     });
   };

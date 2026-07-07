@@ -1,10 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { Page, expect, test } from '@playwright/test';
 
+import { translate } from './helpers/translate';
+
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { mockAll } from '@/playwright/mocks';
-
-import { translate } from './helpers/translate';
 
 const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -14,7 +14,7 @@ const expectPageAccessibilityOk = async (page: Page) => {
 test.beforeEach(mockAll);
 
 test('Saavutettavuus listanäkymä ok', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/tutu-frontend');
   const otsikko = await translate(page, 'hakemuslista.otsikko');
   await expect(page.getByTestId('hakemuslista-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);

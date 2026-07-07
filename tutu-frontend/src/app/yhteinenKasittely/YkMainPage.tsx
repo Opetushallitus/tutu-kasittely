@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 
 import { Tabs } from '@/src/app/components/Tabs';

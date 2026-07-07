@@ -1,5 +1,3 @@
-'use client';
-
 import { Box, FormControl, useTheme } from '@mui/material';
 import {
   OphCheckbox,

@@ -1,5 +1,3 @@
-'use client';
-
 import { DeleteOutline } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
 import { Stack } from '@mui/system';

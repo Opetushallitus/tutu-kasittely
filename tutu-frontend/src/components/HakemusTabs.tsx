@@ -1,5 +1,3 @@
-'use client';
-
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box, styled, Tab, Tabs, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';

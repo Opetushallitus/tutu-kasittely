@@ -1,5 +1,3 @@
-'use client';
-
 import { Add } from '@mui/icons-material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';

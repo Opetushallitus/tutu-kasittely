@@ -1,5 +1,8 @@
 import { expect, Page, Route, test } from '@playwright/test';
 
+import { getHakemus } from './fixtures/hakemus1/index';
+import { translate } from './helpers/translate';
+
 import {
   mockUser,
   mockBasicForHakemus,
@@ -7,9 +10,6 @@ import {
   mockAsiakirjat,
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
-
-import { getHakemus } from './fixtures/hakemus1/index';
-import { translate } from './helpers/translate';
 
 export const mockHakemus = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {

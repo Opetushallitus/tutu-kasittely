@@ -1,5 +1,3 @@
-'use client';
-
 import { Alert, Box, Typography, Slide, styled } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 

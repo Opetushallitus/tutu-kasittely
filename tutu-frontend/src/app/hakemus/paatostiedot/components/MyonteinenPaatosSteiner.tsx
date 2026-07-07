@@ -1,4 +1,3 @@
-'use client';
 import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
