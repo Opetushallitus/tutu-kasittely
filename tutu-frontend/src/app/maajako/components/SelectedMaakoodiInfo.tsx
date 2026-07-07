@@ -19,7 +19,7 @@ export const SelectedMaakoodiInfo = ({
     maakoodit?.filter(
       (maakoodi) =>
         maakoodi.esittelijaId != null && maakoodi.koodiUri === selectedMaakoodi,
-    ) || [];
+    ) ?? [];
 
   if (filteredMaakoodit.length > 0) {
     const esittelijaId = filteredMaakoodit[0].esittelijaId;

@@ -73,9 +73,11 @@ export const findSisaltoQuestionAndAnswer = (
     item = findSisaltoItemRecursivelyFromChildren(childPath.slice(1), item);
   }
   if (item) {
-    const label = item.label?.[kieli] || item.label?.fi;
+    const label = item.label?.[kieli] ?? item.label?.fi;
     const value = item.value[0];
-    const answer = value ? value.label?.[kieli] || value.label?.fi : undefined;
+    const answer = value
+      ? (value.label?.[kieli] ?? value.label?.fi)
+      : undefined;
     return [label, answer];
   }
   return [undefined, undefined];
@@ -88,7 +90,7 @@ export const findSisaltoValuesByItem = (
   if (sisaltoItemMatches(sisalto, sisaltoId)) {
     return sisalto.value;
   }
-  const children = sisalto?.children || [];
+  const children = sisalto?.children ?? [];
   for (const child of children) {
     const result = findSisaltoValuesByItem(sisaltoId, child);
     if (result.length > 0) {
@@ -212,11 +214,11 @@ export const buildLopullinenPaatosSuoritusItems = (
   lomakkeenKieli: Language,
   translatedOtsikko: string,
 ): SisaltoItem[] => {
-  const suoritusValues = topLevelItem.children?.[0].value || [];
+  const suoritusValues = topLevelItem.children?.[0].value ?? [];
   return suoritusValues.map((sVal, index) => ({
     label: { [lomakkeenKieli]: translatedOtsikko },
     value: [sVal],
-    key: sVal.label[lomakkeenKieli] || `${translatedOtsikko}_${index}`,
+    key: sVal.label[lomakkeenKieli] ?? `${translatedOtsikko}_${index}`,
     fieldType: '',
     children: [],
   }));

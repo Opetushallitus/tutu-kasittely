@@ -13,7 +13,7 @@ trait TutuJsonFormats {
       renameFrom("created", "latestVersionCreated")
     ) + AnswerValueSerializer
       + KoodistoItemSerializer
-      + KielistettySerializer
+      + KieliKeySerializer
       + KasittelyVaiheSerializer
       + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
       + AmmattikokemuksenHuomioiminenSerializer
@@ -99,43 +99,14 @@ object KoodistoItemSerializer
       )
     )
 
-object KielistettySerializer
-    extends CustomSerializer[Kielistetty](_ =>
+object KieliKeySerializer
+    extends CustomKeySerializer[Kieli](_ =>
       (
-        {
-          case JObject(fields) =>
-            val fiEntry = fields.collectFirst { case ("fi", JString(value)) => Some((Kieli.fi, value)) }.flatten
-            val svEntry = fields.collectFirst { case ("sv", JString(value)) => Some((Kieli.sv, value)) }.flatten
-            val enEntry = fields.collectFirst { case ("en", JString(value)) => Some((Kieli.en, value)) }.flatten
-
-            val map = Seq(fiEntry, svEntry, enEntry).flatten
-              .foldLeft(
-                Map[Kieli, String]()
-              )((current, entry) => current.++(Map(entry(0) -> entry(1))))
-            map
-          case JNothing   => null
-          case unexpected =>
-            throw new MappingException(s"Cannot deserialize Kielistetty from $unexpected")
-        },
-        {
-          case kielistetty: Map[_, _] if kielistetty.isEmpty || kielistetty.keys.head.isInstanceOf[Kieli] =>
-            // Safe cast since we verified this is a Map with Kieli keys (or empty Map)
-            val typedMap = kielistetty.asInstanceOf[Kielistetty]
-            val fiEntry  =
-              typedMap.collectFirst { case (Kieli.fi, value) => Some(("fi", JString(value))) }.flatten
-            val svEntry =
-              typedMap.collectFirst { case (Kieli.sv, value) => Some(("sv", JString(value))) }.flatten
-            val enEntry =
-              typedMap.collectFirst { case (Kieli.en, value) => Some(("en", JString(value))) }.flatten
-
-            val obj = Seq(fiEntry, svEntry, enEntry).flatten
-              .foldLeft(
-                JObject()
-              )((current, entry) => current.merge(JObject(entry(0) -> entry(1))))
-            obj
-        }
+        { case key => Kieli.fromString(key) },
+        { case key => key.toString }
       )
     )
+
 object KasittelyVaiheSerializer
     extends CustomSerializer[KasittelyVaihe](_ =>
       (

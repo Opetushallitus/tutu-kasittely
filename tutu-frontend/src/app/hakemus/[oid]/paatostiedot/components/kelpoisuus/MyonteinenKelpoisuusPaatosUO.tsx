@@ -33,9 +33,11 @@ type MyonteinenKelpoisuusPaatosUOProps = {
   kelpoisuusKey?: string;
 };
 
-const getSovellettuTilanneOptions = (kelpoisuusKey?: string): Array<string> => {
+const getSovellettuTilanneOptions = (
+  kelpoisuusKey?: string,
+): Array<string> | undefined => {
   switch (kelpoisuusKey) {
-    case 'Opetusalan ammatit_Luokanopettaja':
+    case 'Opetusalan ammatit_Luokanopettaja_uo':
       return [
         'pedagogiset1_ja_monialaiset1',
         'pedagogiset1_ja_monialaiset2',
@@ -47,8 +49,38 @@ const getSovellettuTilanneOptions = (kelpoisuusKey?: string): Array<string> => {
         'pedagogiset3_ja_monialaiset2',
         'pedagogiset3_ja_monialaiset3',
       ];
+    case 'Opetusalan ammatit_Aineenopettaja perusopetuksessa_uo':
+      return [
+        'pedagogiset1_ja_aine1',
+        'pedagogiset1_ja_aine2',
+        'pedagogiset1_ja_aine3',
+        'pedagogiset2_ja_aine1',
+        'pedagogiset2_ja_aine2',
+        'pedagogiset2_ja_aine3',
+        'pedagogiset3_ja_aine1',
+        'pedagogiset3_ja_aine2',
+        'pedagogiset3_ja_aine3',
+      ];
+    case 'Opetusalan ammatit_Aineenopettaja lukiossa_uo':
+      return [
+        'pedagogiset1_ja_aine1/aine4',
+        'pedagogiset1_ja_aine2',
+        'pedagogiset1_ja_aine3',
+        'pedagogiset1_ja_aine5',
+        'pedagogiset1_ja_aine6',
+        'pedagogiset2_ja_aine1/aine4',
+        'pedagogiset2_ja_aine2',
+        'pedagogiset2_ja_aine3',
+        'pedagogiset2_ja_aine5',
+        'pedagogiset2_ja_aine6',
+        'pedagogiset3_ja_aine1/aine4',
+        'pedagogiset3_ja_aine2',
+        'pedagogiset3_ja_aine3',
+        'pedagogiset3_ja_aine5',
+        'pedagogiset3_ja_aine6',
+      ];
     default:
-      return [];
+      return undefined;
   }
 };
 
@@ -56,7 +88,7 @@ const getAmmattikokemuksenHuomioiminenOptions = (
   kelpoisuusKey?: string,
 ): Array<AmmattikokemuksenHuomioiminen> => {
   switch (kelpoisuusKey) {
-    case 'Opetusalan ammatit_Luokanopettaja':
+    case 'Opetusalan ammatit_Luokanopettaja_uo':
       return [
         'SuomessaHankittuKokonaan',
         'SuomessaHankittuOsittain',
@@ -64,7 +96,15 @@ const getAmmattikokemuksenHuomioiminenOptions = (
         'EiHuomioida',
       ];
     default:
-      return [];
+      return [
+        'SuomessaHankittuKokonaan',
+        'SuomessaHankittuOsittain',
+        'UlkomaillaHankittuKokonaan',
+        'UlkomaillaHankittuOsittain',
+        'SuomessaJaUlkomaillaHankittuKokonaan',
+        'SuomessaJaUlkomaillaHankittuOsittain',
+        'EiHuomioida',
+      ];
   }
 };
 
@@ -95,6 +135,8 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         'SuomessaHankittuOsittain' ||
       lisavaatimukset?.ammattikokemuksenHuomioiminen ===
         'UlkomaillaHankittuOsittain' ||
+      lisavaatimukset?.ammattikokemuksenHuomioiminen ===
+        'SuomessaJaUlkomaillaHankittuOsittain' ||
       lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
         'KorvaavatOsittain'
     );
@@ -102,21 +144,13 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
     lisavaatimukset?.ammattikokemuksenHuomioiminen,
     lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
   ]);
-  const kelpoisuuskoeFieldLabelPrefix = useMemo(() => {
-    switch (kelpoisuusKey) {
-      case 'Opetusalan ammatit_Luokanopettaja':
-        return 'luokanopettaja';
-      default:
-        return undefined;
-    }
-  }, [kelpoisuusKey]);
 
   const updateKelpoisuudenLisavaatimukset = (
     updatedLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
   ) => {
     const tobeVaatimukset = initOrUpdateMyonteinenKelpoisuusPaatosUO(
-      { ...lisavaatimukset },
-      { ...updatedLisavaatimukset },
+      lisavaatimukset ?? {},
+      updatedLisavaatimukset,
       showOsaamisenTaydentamisenTavat,
       kelpoisuusKey,
     );
@@ -124,69 +158,111 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   };
 
   const eroModel = useMemo(
-    () => koulutusEroModel(kelpoisuusKey, 'uo'),
+    () => koulutusEroModel(kelpoisuusKey),
     [kelpoisuusKey],
   );
 
   const erotKoulutuksessa = useMemo(() => {
-    const erotKoulutuksessa = emptyErotKoulutuksessa(kelpoisuusKey, 'uo');
+    const erotKoulutuksessa = emptyErotKoulutuksessa(kelpoisuusKey);
     if (lisavaatimukset?.erotKoulutuksessa) {
       const currentlySelectedErot =
-        lisavaatimukset.erotKoulutuksessa.erot || [];
-      const erot = (erotKoulutuksessa.erot || []).map((ero) => ({
+        lisavaatimukset.erotKoulutuksessa.erot ?? [];
+      const erot = (erotKoulutuksessa.erot ?? []).map((ero) => ({
         name: ero.name,
         value:
           currentlySelectedErot.find((eroObj) => eroObj.name === ero.name)
             ?.value ?? false,
       }));
-      return { ...erotKoulutuksessa, erot };
+      const eroTarkennukset =
+        lisavaatimukset.erotKoulutuksessa.eroTarkennukset ??
+        erotKoulutuksessa.eroTarkennukset;
+      return { ...erotKoulutuksessa, erot, eroTarkennukset };
     }
     return erotKoulutuksessa;
   }, [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey]);
 
   return (
     <Stack direction="column" gap={3}>
-      <OphSelectFormFieldPatched
-        options={sovellettuTilanneOptions.map((option) => ({
-          label: t(
-            `hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne.${option}`,
-          ),
-          value: option,
-        }))}
-        label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne`)}
-        value={lisavaatimukset?.sovellettuTilanne || ''}
-        onChange={(event) => {
-          updateKelpoisuudenLisavaatimukset({
-            sovellettuTilanne: event.target.value,
-          });
-        }}
-        data-testid={`uo-sovellettuTilanne-select`}
-      />
+      {sovellettuTilanneOptions && (
+        <OphSelectFormFieldPatched
+          options={sovellettuTilanneOptions.map((option) => ({
+            label: t(
+              `hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne.${option}`,
+            ),
+            value: option,
+          }))}
+          label={t(
+            `hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne`,
+          )}
+          value={lisavaatimukset?.sovellettuTilanne || ''}
+          onChange={(event) => {
+            updateKelpoisuudenLisavaatimukset({
+              sovellettuTilanne: event.target.value,
+            });
+          }}
+          data-testid={`uo-sovellettuTilanne-select`}
+        />
+      )}
       {erotKoulutuksessa && (
         <OphFormFieldWrapper
           renderInput={({ labelId }) => (
             <FormGroup aria-labelledby={labelId}>
               {erotKoulutuksessa.erot!.map((ero: NamedBoolean) => (
-                <OphCheckbox
-                  key={ero.name}
-                  data-testid={`erotKoulutuksessa-${ero.name}`}
-                  label={t(
-                    `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.uo.erotKoulutuksessa.${eroModel.id}.${ero.name}`,
-                  )}
-                  checked={ero.value}
-                  onChange={(e) => {
-                    updateKelpoisuudenLisavaatimukset({
-                      erotKoulutuksessa: {
-                        ...erotKoulutuksessa,
-                        erot: setKoulutusEroValues(
-                          erotKoulutuksessa.erot!,
-                          ero.name,
-                          e.target.checked,
-                        ),
-                      },
-                    });
-                  }}
-                />
+                <React.Fragment key={ero.name}>
+                  <OphCheckbox
+                    data-testid={`erotKoulutuksessa-${ero.name}`}
+                    label={t(
+                      `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.uo.erotKoulutuksessa.${eroModel.id}.${ero.name}`,
+                    )}
+                    checked={ero.value}
+                    onChange={(e) => {
+                      updateKelpoisuudenLisavaatimukset({
+                        erotKoulutuksessa: {
+                          ...erotKoulutuksessa,
+                          erot: setKoulutusEroValues(
+                            erotKoulutuksessa.erot!,
+                            ero.name,
+                            e.target.checked,
+                          ),
+                        },
+                      });
+                    }}
+                  />
+                  {ero.value &&
+                    erotKoulutuksessa.eroTarkennukset?.[ero.name] && (
+                      <FormGroup sx={{ paddingLeft: 4 }}>
+                        {erotKoulutuksessa.eroTarkennukset![ero.name].map(
+                          (tarkennus: NamedBoolean) => (
+                            <OphCheckbox
+                              key={tarkennus.name}
+                              data-testid={`erotKoulutuksessa-${ero.name}-${tarkennus.name}`}
+                              label={t(
+                                `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.uo.erotKoulutuksessa.${eroModel.id}.${ero.name}.${tarkennus.name}`,
+                              )}
+                              checked={tarkennus.value}
+                              onChange={(e) => {
+                                updateKelpoisuudenLisavaatimukset({
+                                  erotKoulutuksessa: {
+                                    ...erotKoulutuksessa,
+                                    eroTarkennukset: {
+                                      ...erotKoulutuksessa.eroTarkennukset,
+                                      [ero.name]: setKoulutusEroValues(
+                                        erotKoulutuksessa.eroTarkennukset![
+                                          ero.name
+                                        ],
+                                        tarkennus.name,
+                                        e.target.checked,
+                                      ),
+                                    },
+                                  },
+                                });
+                              }}
+                            />
+                          ),
+                        )}
+                      </FormGroup>
+                    )}
+                </React.Fragment>
               ))}
             </FormGroup>
           )}
@@ -211,7 +287,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         theme={theme}
         testIdPrefix={'lahtokohtaisetOsaamisenTaydentamisenTavat'}
         showTaydentavatOpinnot
-        kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
+        kelpoisuuskoeFieldLabelPrefix={eroModel.id}
       />
       <OphFormFieldWrapper
         label={t(
@@ -221,7 +297,9 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
           <OphRadioGroup
             sx={{ marginTop: 1 }}
             options={ammattikokemuksenHuomioiminenOptions.map((option) => ({
-              label: t(option),
+              label: t(
+                `hakemus.paatos.paatostyyppi.kelpoisuus.uo.ammattikokemuksenHuomioiminen.${option}`,
+              ),
               value: option,
             }))}
             labelId={labelId}
@@ -243,7 +321,12 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         renderInput={({ labelId }) => (
           <OphRadioGroup
             options={suomessaSuoritettujenOpintojenHuomioiminenOptions.map(
-              (option) => ({ label: t(option), value: option }),
+              (option) => ({
+                label: t(
+                  `hakemus.paatos.paatostyyppi.kelpoisuus.uo.suomessaSuoritettujenOpintojenHuomioiminen.${option}`,
+                ),
+                value: option,
+              }),
             )}
             sx={{ marginTop: 1 }}
             labelId={labelId}
@@ -276,7 +359,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
           t={t}
           theme={theme}
           testIdPrefix={'osaamisenTaydentamisenTavat'}
-          kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
+          kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           showTaydentavatOpinnot
         />
       )}

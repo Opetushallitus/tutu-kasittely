@@ -95,7 +95,7 @@ export default function HakemusRow({
   const hakemusKoskee = `valinnat.hakemusKoskeeValinta.${
     hakemusKoskeeOptions.find(
       (option) => option.value === String(hakemus.hakemusKoskee),
-    )?.label || ''
+    )?.label ?? ''
   }`;
   const { translation: kasittelyVaiheTranslation, timeLimitExceeded } =
     useKasittelyvaiheTranslation(hakemus);

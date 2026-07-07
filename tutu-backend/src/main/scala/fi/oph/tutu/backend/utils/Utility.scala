@@ -1,5 +1,8 @@
 package fi.oph.tutu.backend.utils
 
+import fi.oph.tutu.backend.domain.Kielistetty
+import fi.oph.tutu.backend.domain.Kieli.{en, fi, sv}
+
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 import scala.math.BigDecimal
 
@@ -12,4 +15,8 @@ object Utility {
 
   def toPrecision(value: Double, precision: Int): Double =
     BigDecimal(value).setScale(precision, BigDecimal.RoundingMode.HALF_UP).toDouble
+
+  def trimKielistetty(k: Kielistetty): Kielistetty = {
+    k.map((k, v) => (k, v.trim))
+  }
 }

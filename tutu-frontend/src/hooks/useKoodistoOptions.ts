@@ -102,6 +102,6 @@ export const useKoodistoOptions = () => {
     koulutusLuokitusOptions,
     korkeakouluOptions,
     isLoading: korkeakoulutLoading,
-    error: maatJaValtiotError || koulutusLuokitusError || korkeakoulutError,
+    error: maatJaValtiotError ?? koulutusLuokitusError ?? korkeakoulutError,
   };
 };

@@ -92,7 +92,7 @@ const LinkedTab = (props: TabLinkProps) => {
     expanded,
     expandable,
   } = props;
-  const pagePath = (targetPage || value!).replace(/\./g, '/');
+  const pagePath = (targetPage ?? value!).replace(/\./g, '/');
   const searchParams = useSearchParams();
   const search = searchParams.toString();
   const href = `/hakemus/${hakemusOid}/${pagePath}${search ? `?${search}` : ''}`;

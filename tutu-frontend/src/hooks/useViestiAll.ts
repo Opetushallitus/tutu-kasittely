@@ -71,7 +71,7 @@ export const useViestiAll = (hakemusOid?: string) => {
           value: 'hakemus.viesti.vahvistettuJaKopioitu',
         },
         { when: poistoSuccess, value: 'hakemus.viesti.poistettu' },
-      ].find((item) => item.when)?.value || null,
+      ].find((item) => item.when)?.value ?? null,
     [poistoSuccess, vahvistusSuccess, viestiUpdateSuccess],
   );
 
@@ -82,7 +82,7 @@ export const useViestiAll = (hakemusOid?: string) => {
     handleFetchError(
       addToast,
       maybeError?.error,
-      maybeError?.translationKey || '',
+      maybeError?.translationKey ?? '',
       t,
     );
   }, [maybeError, addToast, t]);

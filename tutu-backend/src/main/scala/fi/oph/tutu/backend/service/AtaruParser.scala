@@ -8,7 +8,7 @@ import fi.oph.tutu.backend.utils.Constants.{
   KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE,
   KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE
 }
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
+import fi.oph.tutu.backend.utils.Utility.{toLocalDateTime, trimKielistetty}
 import org.springframework.stereotype.{Component, Service}
 
 import java.time.LocalDateTime
@@ -495,8 +495,8 @@ class AtaruLomakeParser() {
         item.options.map { option =>
           val optionPathVal = optionPath(basePath, option.label)
           PaatosTietoOption(
-            label = Some(option.label),
-            value = Some(optionPathVal),
+            label = Some(trimKielistetty(option.label)),
+            value = Some(trimKielistetty(optionPathVal)),
             children = option.followups.flatMap { followup =>
               collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
             }
@@ -513,8 +513,8 @@ class AtaruLomakeParser() {
       val optionPathVal = optionPath(Some(basePath), option.label)
 
       PaatosTietoOption(
-        label = Some(option.label),
-        value = Some(optionPathVal),
+        label = Some(trimKielistetty(option.label)),
+        value = Some(trimKielistetty(optionPathVal)),
         children = option.followups.flatMap { followup =>
           collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
         }

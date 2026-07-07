@@ -118,8 +118,8 @@ export async function apiFetch(
         return Promise.reject(
           new FetchError(
             response,
-            responseJson?.origin?.toString() || '',
-            responseJson?.message?.toString() || '',
+            responseJson?.origin?.toString() ?? '',
+            responseJson?.message?.toString() ?? '',
           ),
         );
       } else {
