@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useBlocker } from 'react-router-dom';
 
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -79,14 +80,15 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
     return () => navigationApi.removeEventListener('navigate', handleNavigate);
   }, [enabled, onDiscard, t, showConfirmation]);
 
-  /*
-  // Handles nextjs links and others that don't trigger the native navigation API.
-  const guard = useNavigationGuard({
-    enabled: () => enabled,
-  });
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation, historyAction }) =>
+      enabled &&
+      historyAction !== 'POP' &&
+      currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
-    if (guard.active) {
+    if (blocker.state === 'blocked') {
       showConfirmation({
         header: t('yleiset.tallentamattomiaMuutoksia'),
         content: t('yleiset.lomakkeellaOnMuutoksia'),
@@ -95,14 +97,12 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
         confirmPrimary: false,
         handleConfirmAction: () => {
           onDiscard?.();
-          guard.accept();
+          blocker.proceed();
         },
         handleCloseAction: () => {
-          guard.reject();
+          blocker.reset();
         },
       });
     }
-  }, [guard, enabled, onDiscard, t, showConfirmation]);
-  
-   */
+  }, [blocker, onDiscard, t, showConfirmation]);
 }

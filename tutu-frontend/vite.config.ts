@@ -64,6 +64,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/virkailija-raamit': {
+          target: env.VIRKAILIJA_URL,
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: 'localhost',
+        },
       },
     },
   };
