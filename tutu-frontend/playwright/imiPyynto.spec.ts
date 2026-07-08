@@ -3,6 +3,7 @@ import * as dateFns from 'date-fns';
 
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockLiitteet,
   mockUser,
@@ -199,6 +200,7 @@ test('IMI-Pyynnön kentät eivät ole näkyvissä Tutkinnon tason rinnastaminen 
 }) => {
   mockUser(page);
   await mockLiitteet(page);
+  await mockAsiakirjat(page);
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {

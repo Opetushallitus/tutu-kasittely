@@ -5,6 +5,7 @@ import { Tabs } from '@/src/app/components/Tabs';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { PageHeaderRow } from '@/src/components/PageHeaderRow';
 import { PageLayout } from '@/src/components/PageLayout';
+import { BASE_NAME } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 const Header = () => {
@@ -19,8 +20,14 @@ export default function TekstipohjatLayout() {
       <BoxWrapper>
         <Tabs
           buttons={[
-            { tabName: 'viestipohjat', linkPath: '/tekstipohjat/viestipohjat' },
-            { tabName: 'paatospohjat', linkPath: '/tekstipohjat/paatospohjat' },
+            {
+              tabName: 'viestipohjat',
+              linkPath: `${BASE_NAME}/tekstipohjat/viestipohjat`,
+            },
+            {
+              tabName: 'paatospohjat',
+              linkPath: `${BASE_NAME}/tekstipohjat/paatospohjat`,
+            },
           ]}
           tPrefix={'tekstipohjat'}
         />

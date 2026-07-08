@@ -103,7 +103,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadg
     );
   });
 
-  await page.goto('/');
+  await page.goto('/tutu-frontend');
 
   const kasittelyvaihe = page.getByTestId('kasittelyvaihe').locator('input');
 
@@ -160,7 +160,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
     localStorage.setItem('tutu-query-string', 'sort=kasittelyvaihe:asc');
   });
 
-  await page.goto('/');
+  await page.goto('/tutu-frontend');
 
   const jarjestyskentta = page.getByTestId('sortlabel--kasittelyvaihe');
 
@@ -190,7 +190,7 @@ test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
     });
   });
 
-  await page.goto('/');
+  await page.goto('/tutu-frontend');
 
   await expect(page.getByTestId('hakemus-list')).toBeHidden();
 
@@ -203,7 +203,7 @@ test('Asiatunnuksen validointi toimii', async ({ page }) => {
   await page.route('**/asiatunnus*', async (route) => {
     await route.fulfill({});
   });
-  await page.goto('/');
+  await page.goto('/tutu-frontend');
   const asiatunnus = page.getByTestId('asiatunnus').first();
   const asiatunnusInput = asiatunnus.locator('input');
   const asiatunnusSubmit = asiatunnus.locator('button');

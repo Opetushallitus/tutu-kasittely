@@ -19,6 +19,7 @@ import PaginationButtons from './PaginationButtons';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
 import useToaster from '@/src/hooks/useToaster';
+import { BASE_NAME } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   handleFetchError,
@@ -113,12 +114,12 @@ const HakemusRow = ({ hakemus }: { hakemus: any }) => {
   return (
     <TableRow data-testid={'filemaker-hakemus-row'}>
       <StyledTableCell>
-        <OphLink href={`/filemaker-hakemus/${hakemus.id}`}>
+        <OphLink href={`${BASE_NAME}/filemaker-hakemus/${hakemus.id}`}>
           {kokonimi ? kokonimi : '-'}
         </OphLink>
       </StyledTableCell>
       <StyledTableCell>
-        <OphLink href={`/filemaker-hakemus/${hakemus.id}`}>
+        <OphLink href={`${BASE_NAME}/filemaker-hakemus/${hakemus.id}`}>
           {asiatunnus ? asiatunnus : '-'}
         </OphLink>
       </StyledTableCell>

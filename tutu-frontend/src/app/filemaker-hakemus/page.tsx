@@ -12,8 +12,7 @@ import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import FilemakerHeader from './components/FilemakerHeader';
-
+import FilemakerHeader from '@/src/app/filemaker-hakemus/components/FilemakerHeader';
 import { BoxWrapper } from '@/src/components/BoxWrapper';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { PageHeaderRow } from '@/src/components/PageHeaderRow';

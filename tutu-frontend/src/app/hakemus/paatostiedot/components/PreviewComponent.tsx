@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { BASE_NAME } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 interface PreviewComponentProps {
@@ -52,7 +53,7 @@ export const PreviewComponent = ({
           <Stack direction={'row'}>
             <OphButton
               variant={'contained'}
-              href={`/hakemus/${hakemusOid}/editori/paatos`}
+              href={`${BASE_NAME}/hakemus/${hakemusOid}/editori/paatos`}
               startIcon={<CheckCircleOutlineRoundedIcon />}
             >
               {t('hakemus.paatos')}

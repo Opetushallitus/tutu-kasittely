@@ -56,7 +56,7 @@ export default function MainPageLayout({
               <Stack direction={'row'}>
                 <OphButton
                   component={Link}
-                  to="/tekstipohjat/viestipohjat"
+                  to={'/tekstipohjat/viestipohjat'}
                   variant="text"
                   sx={{ fontWeight: 400 }}
                 >
@@ -64,7 +64,7 @@ export default function MainPageLayout({
                 </OphButton>
                 <OphButton
                   component={Link}
-                  to="/maajako"
+                  to={'/maajako'}
                   variant="text"
                   sx={{ fontWeight: 400 }}
                 >

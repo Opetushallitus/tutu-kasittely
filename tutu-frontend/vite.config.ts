@@ -59,6 +59,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/lokalisointi': {
+          target: env.VIRKAILIJA_URL,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
   };

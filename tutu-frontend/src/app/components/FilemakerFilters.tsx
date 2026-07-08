@@ -7,7 +7,6 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useFilemakerHakemukset } from '@/src/hooks/useFilemakerHakemukset';
@@ -22,7 +21,6 @@ export default function FilemakerFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { addToast } = useToaster();
   const { data: hakemukset, error: hakemuksetError } = useFilemakerHakemukset();
 
@@ -49,17 +47,6 @@ export default function FilemakerFilters() {
       );
     }
   };
-
-  useEffect(() => {
-    if (!window.location.search) {
-      const localStorageSearchParams = localStorage.getItem(
-        'tutu-filemaker-query-string',
-      );
-      if (localStorageSearchParams && localStorageSearchParams !== '') {
-        navigate(`?${localStorageSearchParams}`);
-      }
-    }
-  }, [navigate]);
 
   const debouncedFetch = useDebounce(() => {
     setFilemakerQueryStateAndLocalStorage(queryClient, setPage, 1);

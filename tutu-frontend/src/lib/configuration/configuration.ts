@@ -20,6 +20,8 @@ export const isDev = () => window.configuration.IS_DEV || false;
 export const isProd = () => window.configuration.IS_PROD || false;
 export const isTest = () => window.configuration.IS_TEST || false;
 
+export const BASE_NAME = '/tutu-frontend';
+
 export const virkailijaUrl = () => window.configuration.VIRKAILIJA_URL;
 export const raamitUrl = () =>
   `${virkailijaUrl()}/virkailija-raamit/apply-raamit.js`;

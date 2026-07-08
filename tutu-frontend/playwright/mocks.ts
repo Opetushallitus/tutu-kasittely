@@ -88,6 +88,16 @@ export const mockInit = async (page: Page) => {
       }),
     });
   });
+  await page.route(
+    '**/tutu-backend/api/ykViestiOnkoViesteja',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(false),
+      });
+    },
+  );
 };
 
 export const mockEsittelijat = async (page: Page) => {
@@ -491,7 +501,7 @@ export const mockGetAndPut = async (
 };
 
 export const mockPaatos = async (page: Page) => {
-  mockGetAndPut(page, `**/paatos/1.2.246.562.10.00000000001`, getPaatos());
+  await mockGetAndPut(page, `**/tutu-backend/api/paatos/*`, getPaatos());
 };
 
 export const mockTutkinnot = async (page: Page) => {
@@ -594,9 +604,10 @@ export const mockYhteinenKasittely = async (page: Page) => {
   })();
 
   await page.route(
-    '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
+    '**/tutu-backend/api/hakemus/*/yhteinenkasittely**',
     async (route: Route) => {
-      if (route.request().method() === 'POST') {
+      const method = route.request().method();
+      if (method === 'POST') {
         const data = route.request().postDataJSON() as YhteinenKasittely;
         yhteinenkasittelydata.push({
           id: `${nextId()}`,
@@ -612,12 +623,21 @@ export const mockYhteinenKasittely = async (page: Page) => {
           body: JSON.stringify(yhteinenkasittelydata),
         });
       }
-      if (route.request().method() === 'PUT') {
-        const data = route.request().postDataJSON() as {
-          id: string;
+      if (method === 'PUT' || method === 'PATCH') {
+        const path = new URL(route.request().url()).pathname;
+        const isLuettu = path.endsWith('/luettu');
+        if (isLuettu) {
+          // Viestin merkitseminen luetuksi: fire-and-forget, ei muuta dataa.
+          await route.fulfill({ status: 204 });
+          return;
+        }
+
+        const data = (route.request().postDataJSON() ?? {}) as {
+          id?: string;
           vastaus?: string;
         };
-        const item = yhteinenkasittelydata.find((i) => i.id === data.id);
+        const id = path.split('/').pop() || data.id;
+        const item = yhteinenkasittelydata.find((i) => i.id === id);
 
         if (item) {
           item.vastaus = data.vastaus;
@@ -629,7 +649,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
           body: JSON.stringify(yhteinenkasittelydata),
         });
       }
-      if (route.request().method() === 'GET') {
+      if (method === 'GET') {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',

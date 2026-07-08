@@ -3,6 +3,7 @@ import { Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useLocation } from 'react-router-dom';
 
+import { BASE_NAME } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { styled } from '@/src/lib/theme';
 
@@ -118,12 +119,12 @@ export default function SivuValinta({
       <TabButton
         tabName={'sivuValinta.hakemukset'}
         active={active === SelectedPage.Hakemukset}
-        linkPath="/"
+        linkPath={BASE_NAME}
       />
       <TabButton
         tabName={'sivuValinta.yhteinenKasittely'}
         active={active === SelectedPage.YhteinenKasittely}
-        linkPath="/yhteinenKasittely"
+        linkPath={`${BASE_NAME}/yhteinenKasittely`}
         showNotification={showNotification}
       />
     </Stack>

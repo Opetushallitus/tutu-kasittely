@@ -18,6 +18,13 @@ test.beforeEach(async ({ page }) => {
   await mockEsittelijat(page);
   await mockUser(page);
   await mockLopullisenPaatoksenHakemus(page);
+  await page.route('**/tutu-backend/api/hakemus/*/tutkinto/', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/paatostiedot',
   );

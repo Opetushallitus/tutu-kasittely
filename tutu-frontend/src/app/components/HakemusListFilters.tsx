@@ -21,7 +21,6 @@ import {
   useQueryState,
 } from 'nuqs';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import * as R from 'remeda';
 
 import { kasittelyVaiheet, naytaQueryStates } from '@/src/app/components/types';
@@ -40,7 +39,6 @@ export default function HakemusListFilters() {
   const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { addToast } = useToaster();
 
   const { options: esittelijaOptions, error } = useEsittelijat();
@@ -93,16 +91,6 @@ export default function HakemusListFilters() {
     'esittelija',
     parseAsArrayOf(parseAsString).withDefault([]),
   );
-
-  useEffect(() => {
-    if (!window.location.search) {
-      const localStorageSearchParams =
-        localStorage.getItem('tutu-query-string');
-      if (localStorageSearchParams && localStorageSearchParams !== '') {
-        navigate(`?${localStorageSearchParams}`, { replace: true });
-      }
-    }
-  }, [navigate]);
 
   const debouncedFetch = useDebounce(() => {
     setQueryStateAndLocalStorage(queryClient, setPage, 1);

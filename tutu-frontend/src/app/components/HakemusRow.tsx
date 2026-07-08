@@ -13,6 +13,7 @@ import { ApHakemusBadge, PeruutettuBadge } from '@/src/components/Badges';
 import { StyledTableCell } from '@/src/components/StyledTableCell';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import useToaster from '@/src/hooks/useToaster';
+import { BASE_NAME } from '@/src/lib/configuration/configuration';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useKasittelyvaiheTranslation } from '@/src/lib/localization/hooks/useKasittelyvaiheTranslation';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -103,7 +104,9 @@ export default function HakemusRow({
   return (
     <TableRow data-testid={'hakemus-row'}>
       <StyledTableCell>
-        <OphLink href={`/hakemus/${hakemus.hakemusOid}/perustiedot`}>
+        <OphLink
+          href={`${BASE_NAME}/hakemus/${hakemus.hakemusOid}/perustiedot`}
+        >
           {hakemus.hakija.etunimet} {hakemus.hakija.sukunimi}
         </OphLink>
       </StyledTableCell>

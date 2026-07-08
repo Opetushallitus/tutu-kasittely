@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 
 import FilemakerListViewPage from '@/src/app/filemaker/page';
+import FilemakerHakemus from '@/src/app/filemaker-hakemus/page';
 import AsiakirjaPage from '@/src/app/hakemus/asiakirjat/page';
 import PaatosEditorPage from '@/src/app/hakemus/editori/paatos/page';
 import ViestiPage from '@/src/app/hakemus/editori/viesti/page';
@@ -38,7 +39,11 @@ import {
 import { LocalizedThemeProvider } from '@/src/components/providers/LocalizedThemeProvider';
 import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClientProvider';
 import { Toaster } from '@/src/components/Toaster';
-import { isTest, raamitUrl } from '@/src/lib/configuration/configuration';
+import {
+  BASE_NAME,
+  isTest,
+  raamitUrl,
+} from '@/src/lib/configuration/configuration';
 import { ophColors, THEME_OVERRIDES } from '@/src/lib/theme';
 
 const RootLayout = () => {
@@ -83,7 +88,7 @@ const RootLayout = () => {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/tutu-frontend">
+    <BrowserRouter basename={BASE_NAME}>
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<MainPage />}></Route>
@@ -93,6 +98,7 @@ export default function App() {
           </Route>
           <Route path="/maajako" element={<MaajakoPage />} />
           <Route path="/filemaker" element={<FilemakerListViewPage />} />
+          <Route path="/filemaker-hakemus/:id" element={<FilemakerHakemus />} />
           <Route path="/yhteinenKasittely" element={<YkPage />} />
           <Route path="/hakemus/:oid/*" element={<HakemusLayout />}>
             <Route path="perustiedot" element={<PerustietoPage />} />
