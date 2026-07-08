@@ -91,6 +91,7 @@ export const OphRadioGroupWithClear = <T extends string>({
           <OphTypography
             variant={labelVariant}
             sx={{ minWidth: inlineLabelMinWidth }}
+            component="label"
           >
             {label}
           </OphTypography>
@@ -115,7 +116,7 @@ export const OphRadioGroupWithClear = <T extends string>({
     <Stack direction="column" spacing={0}>
       <Stack direction="row" alignItems="center">
         {label && (
-          <OphTypography variant={labelVariant} id={labelId}>
+          <OphTypography variant={labelVariant} component="label" id={labelId}>
             {label}
           </OphTypography>
         )}
