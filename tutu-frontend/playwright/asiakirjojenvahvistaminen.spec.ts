@@ -137,7 +137,8 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
   await lahetetty.evaluate((element) =>
     element.scrollIntoView({ block: 'start', inline: 'nearest' }),
   );
-  await lahetetty.click();
+
+  await lahetettyInput.click();
   await page
     .locator(
       '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',
@@ -148,8 +149,13 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
     dateFns.format(new Date().setDate(26), 'dd.MM.yyyy'),
   );
 
+  await expect(page.locator('.react-datepicker')).toHaveCount(0);
+
   const vastattuInput = vastattu.locator('input');
-  await vastattu.click();
+  await vastattu.evaluate((element) =>
+    element.scrollIntoView({ block: 'start', inline: 'nearest' }),
+  );
+  await vastattuInput.click();
   await page
     .locator(
       '.react-datepicker__day--026:not(.react-datepicker__day--outside-month)',

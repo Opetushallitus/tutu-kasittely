@@ -108,7 +108,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   });
   await waitForSaveComplete(page);
 
-  await lahetetty1.click();
+  await lahetetty1.locator('input').click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
@@ -129,7 +129,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   });
   await waitForSaveComplete(page);
 
-  await vastattu1.click();
+  await vastattu1.locator('input').click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
