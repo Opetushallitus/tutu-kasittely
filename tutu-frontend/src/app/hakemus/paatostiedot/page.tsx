@@ -11,13 +11,13 @@ import {
 } from '@/src/app/hakemus/paatostiedot/components/PreviewComponent';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
 import { Paatos } from '@/src/lib/types/paatos';
@@ -119,8 +119,6 @@ const Paatostiedot = ({
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
-  useUnsavedChanges(paatosState.hasChanges, paatosState.discard);
-
   if (!hakemus || !paatos) {
     return <FullSpinner></FullSpinner>;
   }
@@ -155,6 +153,10 @@ const Paatostiedot = ({
           : theme.spacing(3),
       }}
     >
+      <UnsavedChangesGuard
+        enabled={paatosState.hasChanges}
+        onDiscard={paatosState.discard}
+      />
       <Stack direction={'row'} gap={theme.spacing(2)}>
         <Stack
           gap={theme.spacing(2)}

@@ -12,11 +12,11 @@ import { VirallinenTutkinnonMyontaja } from '@/src/app/hakemus/perustelu/yleiset
 import { VirallinenTutkinto } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/VirallinenTutkinto';
 import { YlimmanTutkinnonAsema } from '@/src/app/hakemus/perustelu/yleiset/perustelut/components/YlimmanTutkinnonAsema';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
 import { useTutkinnot, TutkintoState } from '@/src/hooks/useTutkinnot';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Perustelu } from '@/src/lib/types/perustelu';
@@ -94,14 +94,14 @@ const YleisetPerustelut = ({
     tutkintoState.save();
   };
 
-  useUnsavedChanges(hasChanges, () => {
+  const discardUnsavedChanges = () => {
     if (perusteluState.hasChanges) {
       perusteluState.discard();
     }
     if (tutkintoState.hasChanges) {
       tutkintoState.discard();
     }
-  });
+  };
 
   const lastModified = lastModifiedInArray([
     ...(perusteluState.editedData ? [perusteluState.editedData] : []),
@@ -110,6 +110,10 @@ const YleisetPerustelut = ({
 
   return (
     <>
+      <UnsavedChangesGuard
+        enabled={hasChanges}
+        onDiscard={discardUnsavedChanges}
+      />
       <VirallinenTutkinnonMyontaja
         perustelu={perusteluState.editedData}
         updatePerustelu={perusteluState.updateLocal}

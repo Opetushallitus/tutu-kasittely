@@ -7,10 +7,10 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { TekstipohjaEditori } from '@/src/app/tekstipohjat/components/TekstipohjaEditori';
 import { importHtml } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePaatospohja } from '@/src/hooks/usePaatospohja';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { LanguageCode } from '@/src/lib/types/common';
 import {
@@ -54,7 +54,6 @@ const ValittuPaatospohja = ({
     paatospohja ?? emptyPaatospohja,
     updatePaatospohja,
   );
-  useUnsavedChanges(paatospohjaState.hasChanges);
   const currentPaatospohja = paatospohjaState.editedData;
 
   const editorRefs = {
@@ -104,20 +103,23 @@ const ValittuPaatospohja = ({
     return <FullSpinner />;
   }
   return (
-    <TekstipohjaEditori
-      id={paatospohja?.id}
-      setValittuId={setValittuPaatospohja}
-      kategoriat={kategoriat}
-      currentPohja={currentPaatospohja}
-      languages={languages}
-      onSave={onSave}
-      updateLocal={paatospohjaState.updateLocal}
-      hasChanges={paatospohjaState.hasChanges}
-      updateOngoing={false}
-      poistaPohja={() => poistaPaatospohja(() => setValittuPaatospohja(null))}
-      editorRefs={editorRefs}
-      translationKeyPrefix={'tekstipohjat.paatospohjat'}
-    />
+    <>
+      <UnsavedChangesGuard enabled={paatospohjaState.hasChanges} />
+      <TekstipohjaEditori
+        id={paatospohja?.id}
+        setValittuId={setValittuPaatospohja}
+        kategoriat={kategoriat}
+        currentPohja={currentPaatospohja}
+        languages={languages}
+        onSave={onSave}
+        updateLocal={paatospohjaState.updateLocal}
+        hasChanges={paatospohjaState.hasChanges}
+        updateOngoing={false}
+        poistaPohja={() => poistaPaatospohja(() => setValittuPaatospohja(null))}
+        editorRefs={editorRefs}
+        translationKeyPrefix={'tekstipohjat.paatospohjat'}
+      />
+    </>
   );
 };
 

@@ -9,11 +9,11 @@ import {
 import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
 import { LausuntopyyntoComponent } from '@/src/app/hakemus/perustelu/yleiset/lausunto/components/LausuntopyyntoComponent';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Lausuntopyynto } from '@/src/lib/types/lausuntotieto';
 
@@ -87,8 +87,6 @@ export default function Lausuntotiedot() {
     updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
-  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
-
   return (
     <PerusteluLayout
       showTabs={true}
@@ -102,6 +100,10 @@ export default function Lausuntotiedot() {
       updatePerusteluError={updatePerusteluError}
       isPerusteluUpdateSuccess={isPerusteluUpdateSuccess}
     >
+      <UnsavedChangesGuard
+        enabled={hasPerusteluChanges}
+        onDiscard={discardPerustelu}
+      />
       <Stack
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}

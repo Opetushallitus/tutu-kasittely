@@ -9,6 +9,7 @@ import { Peruutus } from '@/src/app/hakemus/perustiedot/components/Peruutus';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import {
   asiointiKieli,
   paatosJaAsiointikieli,
@@ -16,7 +17,6 @@ import {
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
@@ -41,8 +41,6 @@ export default function PerustietoPage() {
     error,
     updateError,
   } = useHakemus();
-
-  useUnsavedChanges(hasChanges, discardHakemus);
 
   useEffect(() => {
     handleFetchError(addToast, error, 'virhe.hakemuksenLataus', t);
@@ -80,6 +78,7 @@ export default function PerustietoPage() {
 
   return (
     <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
+      <UnsavedChangesGuard enabled={hasChanges} onDiscard={discardHakemus} />
       <OphTypography variant={'h2'} data-testid="perustiedot-otsikko">
         {t('hakemus.perustiedot.otsikko')}
       </OphTypography>

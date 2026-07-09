@@ -8,6 +8,7 @@ import { TutkintoComponent } from '@/src/app/hakemus/tutkinnot/components/Tutkin
 import { Yhteistutkinto } from '@/src/app/hakemus/tutkinnot/components/Yhteistutkinto';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import {
   paatosJaAsiointikieli,
   paatosKieli,
@@ -16,7 +17,6 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
 import useToaster from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -53,14 +53,16 @@ export default function TutkintoPage() {
     string | undefined
   >();
 
-  useUnsavedChanges(hakemusState.hasChanges || tutkintoState.hasChanges, () => {
+  const unsavedChangesEnabled =
+    hakemusState.hasChanges || tutkintoState.hasChanges;
+  const discardUnsavedChanges = () => {
     if (hakemusState.hasChanges) {
       hakemusState.discard();
     }
     if (tutkintoState.hasChanges) {
       tutkintoState.discard();
     }
-  });
+  };
 
   useEffect(() => {
     if (!hakemusState.editedData) return;
@@ -154,6 +156,10 @@ export default function TutkintoPage() {
 
   return (
     <>
+      <UnsavedChangesGuard
+        enabled={unsavedChangesEnabled}
+        onDiscard={discardUnsavedChanges}
+      />
       <Stack
         gap={theme.spacing(3)}
         sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}

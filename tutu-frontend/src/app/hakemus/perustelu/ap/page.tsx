@@ -9,10 +9,10 @@ import * as R from 'remeda';
 
 import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { APSisalto } from '@/src/lib/types/APSisalto';
 
@@ -61,12 +61,14 @@ export default function ApPage() {
     savePerustelu();
   };
 
-  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
-
   const apSisalto = editedPerustelu?.apSisalto;
 
   return (
     <>
+      <UnsavedChangesGuard
+        enabled={hasPerusteluChanges}
+        onDiscard={discardPerustelu}
+      />
       <PerusteluLayout
         showTabs={false}
         title={t('hakemus.perustelu.ap.otsikko')}

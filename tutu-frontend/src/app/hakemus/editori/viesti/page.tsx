@@ -24,11 +24,11 @@ import {
 import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useViestiAll } from '@/src/hooks/useViestiAll';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
@@ -90,8 +90,6 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
 
-  useUnsavedChanges(viestiState.hasChanges, viestiState.discard);
-
   useEffect(() => {
     const toBeSisalto = viesti?.viesti || oletusSisalto || '';
     importHtml(editorRef.current, toBeSisalto);
@@ -135,6 +133,10 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         marginRight: showTekstipohjaLista ? theme.spacing(0) : theme.spacing(3),
       }}
     >
+      <UnsavedChangesGuard
+        enabled={viestiState.hasChanges}
+        onDiscard={viestiState.discard}
+      />
       <Stack direction={'row'} gap={theme.spacing(2)}>
         <Stack
           gap={theme.spacing(2)}

@@ -16,11 +16,11 @@ import {
 import { TekstipohjaLista } from '@/src/components/editor/TekstipohjaLista';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { DATE_TIME_PLACEHOLDER } from '@/src/constants/constants';
 import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import { usePaatosteksti } from '@/src/hooks/usePaatosteksti';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatospohja } from '@/src/lib/types/paatosteksti';
@@ -38,8 +38,6 @@ export default function PaatosEditorPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
-
-  useUnsavedChanges(hasChanges);
 
   const { showConfirmation } = useGlobalConfirmationModal();
   const { addToast } = useToaster();
@@ -108,6 +106,7 @@ export default function PaatosEditorPage() {
 
   return (
     <>
+      <UnsavedChangesGuard enabled={hasChanges} />
       <Stack
         direction="column"
         gap={2}

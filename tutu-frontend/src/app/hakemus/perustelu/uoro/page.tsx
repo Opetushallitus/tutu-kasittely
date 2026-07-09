@@ -3,10 +3,10 @@ import { Stack } from '@mui/material';
 import { PerusteluLayout } from '@/src/app/hakemus/perustelu/components/PerusteluLayout';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { usePerustelu } from '@/src/hooks/usePerustelu';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 
 export default function UoroPage() {
@@ -66,10 +66,12 @@ export default function UoroPage() {
     savePerustelu();
   };
 
-  useUnsavedChanges(hasPerusteluChanges, discardPerustelu);
-
   return (
     <>
+      <UnsavedChangesGuard
+        enabled={hasPerusteluChanges}
+        onDiscard={discardPerustelu}
+      />
       <PerusteluLayout
         showTabs={false}
         title="hakemus.perustelu.uoro.otsikko"

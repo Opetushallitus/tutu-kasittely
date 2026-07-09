@@ -15,10 +15,10 @@ import { SortOrder } from '@/src/app/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
   TFunction,
@@ -146,7 +146,6 @@ export default function YhteinenKasittelyPage() {
   } = useEditableState(answersFromServer, (answers: Record<string, string>) => {
     Object.keys(answers).forEach((id) => handleSendAnswer(id));
   });
-  useUnsavedChanges(answersHasChanges, discard);
 
   useEffect(() => {
     handleFetchError(
@@ -274,6 +273,7 @@ export default function YhteinenKasittelyPage() {
 
   return (
     <>
+      <UnsavedChangesGuard enabled={answersHasChanges} onDiscard={discard} />
       <Box sx={{ width: '100%', marginRight: theme.spacing(3) }}>
         <Stack direction="row">
           <Box sx={{ width: '100%' }}>

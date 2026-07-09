@@ -21,6 +21,7 @@ import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { StyledLink } from '@/src/components/StyledLink';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import {
   alemmatTutkinnot,
   henkilotietojenLiitteet,
@@ -36,7 +37,6 @@ import { AsiakirjaState, useAsiakirjat } from '@/src/hooks/useAsiakirjat';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { virkailijaUrl } from '@/src/lib/configuration/configuration';
 import {
   checkLiitteenTila,
@@ -198,8 +198,6 @@ const AsiakirjaHookLayer = ({
     handleFetchError(addToast, asiakirjaError, 'virhe.liitteidenLataus', t);
   }, [asiakirjaError, addToast, t]);
 
-  useUnsavedChanges(hasChanges, discard);
-
   if (asiakirjaError) {
     return null;
   }
@@ -217,6 +215,7 @@ const AsiakirjaHookLayer = ({
 
   return (
     <>
+      <UnsavedChangesGuard enabled={hasChanges} onDiscard={discard} />
       <AsiakirjaPagePure
         hakemus={hakemus}
         asiakirjat={asiakirjaData!}
