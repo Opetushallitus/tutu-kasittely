@@ -114,29 +114,22 @@ export const OphRadioGroupWithClear = <T extends string>({
   }
 
   return (
-    <Stack direction="column" spacing={0}>
-      <OphFormFieldWrapper
-        sx={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          textWrapMode: 'nowrap',
-        }}
-        renderInput={() => (
-          <>
-            {label && (
-              <OphTypography
-                variant={labelVariant}
-                component="label"
-                id={labelId}
-              >
-                {label}
-              </OphTypography>
-            )}
-            {clearButton}
-          </>
-        )}
-      />
-      {radioGroup}
-    </Stack>
+    <OphFormFieldWrapper
+      sx={{ flexDirection: 'column' }}
+      renderInput={() => (
+        <div>
+          <OphFormFieldWrapper
+            sx={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              textWrapMode: 'nowrap',
+            }}
+            label={label ? label : undefined}
+            renderInput={() => <div>{clearButton}</div>}
+          />
+          {radioGroup}
+        </div>
+      )}
+    />
   );
 };

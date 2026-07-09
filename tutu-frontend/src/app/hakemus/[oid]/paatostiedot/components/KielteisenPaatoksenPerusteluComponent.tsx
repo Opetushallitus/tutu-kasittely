@@ -31,42 +31,40 @@ export const KielteisenPaatoksenPerusteluComponent = ({
   const theme = useTheme();
 
   return (
-    <Stack direction="column" gap={theme.spacing(2)}>
-      <OphFormFieldWrapper
-        label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
-        sx={{ flexDirection: 'column', gap: theme.spacing(2) }}
-        renderInput={() => (
-          <Stack direction="column" gap={theme.spacing(1)}>
-            {kielteisenPaatoksenPerustelutKeys.map((key) => (
-              <OphCheckbox
-                key={key}
-                data-testid={`kielteinenPaatos-${key}`}
-                label={t(`hakemus.paatos.kielteisenPaatoksenPerustelut.${key}`)}
-                checked={perustelut?.[key] || false}
-                onChange={(e) =>
-                  updatePerustelutAction({
-                    [key]: e.target.checked,
-                  })
-                }
-              />
-            ))}
-            {perustelut?.muuPerustelu && (
-              <OphInputFormField
-                label={t(
-                  'hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu',
-                )}
-                multiline={true}
-                minRows={3}
-                value={perustelut.muuPerusteluKuvaus || ''}
-                onChange={(e) =>
-                  updatePerustelutAction({ muuPerusteluKuvaus: e.target.value })
-                }
-                data-testid={`kielteinenPaatos-muuPerustelu-kuvaus-input`}
-              />
-            )}
-          </Stack>
-        )}
-      />
-    </Stack>
+    <OphFormFieldWrapper
+      label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
+      sx={{ flexDirection: 'column', gap: theme.spacing(2) }}
+      renderInput={() => (
+        <Stack direction="column" gap={theme.spacing(1)}>
+          {kielteisenPaatoksenPerustelutKeys.map((key) => (
+            <OphCheckbox
+              key={key}
+              data-testid={`kielteinenPaatos-${key}`}
+              label={t(`hakemus.paatos.kielteisenPaatoksenPerustelut.${key}`)}
+              checked={perustelut?.[key] || false}
+              onChange={(e) =>
+                updatePerustelutAction({
+                  [key]: e.target.checked,
+                })
+              }
+            />
+          ))}
+          {perustelut?.muuPerustelu && (
+            <OphInputFormField
+              label={t(
+                'hakemus.paatos.kielteisenPaatoksenPerustelut.muuPerustelu',
+              )}
+              multiline={true}
+              minRows={3}
+              value={perustelut.muuPerusteluKuvaus || ''}
+              onChange={(e) =>
+                updatePerustelutAction({ muuPerusteluKuvaus: e.target.value })
+              }
+              data-testid={`kielteinenPaatos-muuPerustelu-kuvaus-input`}
+            />
+          )}
+        </Stack>
+      )}
+    />
   );
 };
