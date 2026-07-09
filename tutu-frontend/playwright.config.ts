@@ -27,7 +27,7 @@ export default defineConfig({
   },
 
   webServer: {
-    command: 'pnpm exec vite --mode test',
+    command: './node_modules/.bin/vite --mode test',
     url: 'https://127.0.0.1:33123/tutu-frontend',
     reuseExistingServer: !process.env.CI, // fresh server in CI, reuse locally
     ignoreHTTPSErrors: true,
