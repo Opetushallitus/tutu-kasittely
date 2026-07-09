@@ -42,6 +42,34 @@ export default defineConfig(({ mode }) => {
     },
   };
 
+  const host = `${env.HOST || 'localhost'}`;
+  const port = parseInt(portStr, 10);
+  const httpsOptions = {
+    key: fs.readFileSync('./certificates/localhost-key.pem'),
+    cert: fs.readFileSync('./certificates/localhost.pem'),
+  };
+  const headers = {
+    'Content-Security-Policy': cspHeaders,
+  };
+  const proxy = {
+    '/tutu-backend/api': {
+      target: `${env.TUTU_BACKEND}/tutu-backend/api`,
+      changeOrigin: true,
+      secure: false,
+    },
+    '/lokalisointi': {
+      target: env.VIRKAILIJA_URL,
+      changeOrigin: true,
+      secure: false,
+    },
+    '/virkailija-raamit': {
+      target: env.VIRKAILIJA_URL,
+      changeOrigin: true,
+      secure: false,
+      cookieDomainRewrite: 'localhost',
+    },
+  };
+
   return {
     plugins: [react(), ...(mode === 'test' ? [stripExternalFontsInTest] : [])],
     resolve: {
@@ -51,38 +79,24 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       strictPort: true,
-      warmup:
-        mode === 'test'
-          ? { clientFiles: ['./src/main.tsx', './src/**/*.tsx'] }
-          : undefined,
-      headers: {
-        'Content-Security-Policy': cspHeaders,
-        //"default-src 'self'; connect-src 'self' app.tolgee.io ${env.TUTU_BACKEND} ${env.VIRKAILIJA_URL} https://cdn.jsdelivr.net; script-src 'self' 'unsafe-eval' 'unsafe-inline'; script-src-elem 'self' 'unsafe-inline' `${env.VIRKAILIJA_URL}` https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' blob: data:; font-src 'self' fonts.gstatic.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';",
-      },
-      https: {
-        key: fs.readFileSync('./certificates/localhost-key.pem'),
-        cert: fs.readFileSync('./certificates/localhost.pem'),
-      },
-      host: `${env.HOST || 'localhost'}`,
-      port: parseInt(portStr, 10),
-      proxy: {
-        '/tutu-backend/api': {
-          target: `${env.TUTU_BACKEND}/tutu-backend/api`,
-          changeOrigin: true,
-          secure: false,
-        },
-        '/lokalisointi': {
-          target: env.VIRKAILIJA_URL,
-          changeOrigin: true,
-          secure: false,
-        },
-        '/virkailija-raamit': {
-          target: env.VIRKAILIJA_URL,
-          changeOrigin: true,
-          secure: false,
-          cookieDomainRewrite: 'localhost',
-        },
-      },
+      headers,
+      https: httpsOptions,
+      host,
+      port,
+      proxy,
+    },
+    // Playwright tests run against a production build served by `vite preview`
+    // (see playwright.config.ts webServer). Preview serves the pre-built bundle
+    // with no on-demand transforms, which removes the cold vite-dev first-hit
+    // latency that made webkit navigations flaky. Mirror the dev server's TLS,
+    // CSP and proxy so the app behaves identically.
+    preview: {
+      strictPort: true,
+      headers,
+      https: httpsOptions,
+      host,
+      port,
+      proxy,
     },
   };
 });
