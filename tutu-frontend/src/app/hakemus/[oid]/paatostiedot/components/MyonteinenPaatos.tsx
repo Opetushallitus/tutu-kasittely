@@ -1,7 +1,10 @@
 'use client';
 import { Stack } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -24,43 +27,46 @@ export const MyonteinenPaatos: React.FC<MyonteinenPaatosProps> = ({
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
   return (
-    <Stack direction="column" gap={theme.spacing(2)}>
-      <OphTypography variant="h5">
-        {t('hakemus.paatos.myonteinenPaatos.otsikko')}
-      </OphTypography>
-      <OphCheckbox
-        data-testid="myonteinenPaatos-taydentavatOpinnot"
-        label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
-        checked={lisavaatimukset?.taydentavatOpinnot || false}
-        onChange={(e) =>
-          updateLisavaatimukset({
-            ...lisavaatimukset,
-            taydentavatOpinnot: e.target.checked,
-          })
-        }
-      />
-      <OphCheckbox
-        data-testid="myonteinenPaatos-kelpoisuuskoe"
-        label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
-        checked={lisavaatimukset?.kelpoisuuskoe || false}
-        onChange={(e) =>
-          updateLisavaatimukset({
-            ...lisavaatimukset,
-            kelpoisuuskoe: e.target.checked,
-          })
-        }
-      />
-      <OphCheckbox
-        data-testid="myonteinenPaatos-sopeutumisaika"
-        label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaika')}
-        checked={lisavaatimukset?.sopeutumisaika || false}
-        onChange={(e) =>
-          updateLisavaatimukset({
-            ...lisavaatimukset,
-            sopeutumisaika: e.target.checked,
-          })
-        }
-      />
-    </Stack>
+    <OphFormFieldWrapper
+      label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
+      sx={{ gap: theme.spacing(2) }}
+      renderInput={() => (
+        <Stack direction="column" gap={theme.spacing(2)}>
+          <OphCheckbox
+            data-testid="myonteinenPaatos-taydentavatOpinnot"
+            label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
+            checked={lisavaatimukset?.taydentavatOpinnot || false}
+            onChange={(e) =>
+              updateLisavaatimukset({
+                ...lisavaatimukset,
+                taydentavatOpinnot: e.target.checked,
+              })
+            }
+          />
+          <OphCheckbox
+            data-testid="myonteinenPaatos-kelpoisuuskoe"
+            label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
+            checked={lisavaatimukset?.kelpoisuuskoe || false}
+            onChange={(e) =>
+              updateLisavaatimukset({
+                ...lisavaatimukset,
+                kelpoisuuskoe: e.target.checked,
+              })
+            }
+          />
+          <OphCheckbox
+            data-testid="myonteinenPaatos-sopeutumisaika"
+            label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaika')}
+            checked={lisavaatimukset?.sopeutumisaika || false}
+            onChange={(e) =>
+              updateLisavaatimukset({
+                ...lisavaatimukset,
+                sopeutumisaika: e.target.checked,
+              })
+            }
+          />
+        </Stack>
+      )}
+    />
   );
 };

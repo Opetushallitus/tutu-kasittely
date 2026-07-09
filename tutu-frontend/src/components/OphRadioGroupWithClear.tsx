@@ -133,10 +133,10 @@ export const OphRadioGroupWithClear = <T extends string>({
               </OphTypography>
             )}
             {clearButton}
-            {radioGroup}
           </>
         )}
       />
+      {radioGroup}
     </Stack>
   );
 };

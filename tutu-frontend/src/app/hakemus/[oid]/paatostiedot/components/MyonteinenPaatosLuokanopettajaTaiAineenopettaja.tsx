@@ -1,7 +1,10 @@
 'use client';
 import { Stack } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -26,62 +29,67 @@ export const MyonteinenPaatosLuokanopettajaTaiAineenopettaja: React.FC<
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
   return (
-    <Stack direction="column" gap={theme.spacing(2)}>
-      <OphTypography variant="h5">
-        {t('hakemus.paatos.myonteinenPaatos.otsikko')}
-      </OphTypography>
-      <OphCheckbox
-        data-testid="myonteinenPaatos-kelpoisuuskoe"
-        label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
-        checked={lisavaatimukset?.kelpoisuuskoe || false}
-        onChange={(e) =>
-          updateLisavaatimukset({
-            ...lisavaatimukset,
-            kelpoisuuskoe: e.target.checked,
-          })
-        }
-      />
-      {lisavaatimukset?.kelpoisuuskoe && (
-        <Stack
-          direction="column"
-          gap={theme.spacing(2)}
-          sx={{ marginLeft: theme.spacing(4) }}
-        >
+    <OphFormFieldWrapper
+      sx={{ gap: theme.spacing(2) }}
+      label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
+      renderInput={() => (
+        <Stack direction="column" gap={theme.spacing(2)}>
           <OphCheckbox
-            data-testid="myonteinenPaatos-opettajuutta-tutkimassa"
-            label={t('hakemus.paatos.myonteinenPaatos.opettajuuttaTutkimassa')}
-            checked={lisavaatimukset?.opettajuuttaTutkimassa || false}
+            data-testid="myonteinenPaatos-kelpoisuuskoe"
+            label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
+            checked={lisavaatimukset?.kelpoisuuskoe || false}
             onChange={(e) =>
               updateLisavaatimukset({
                 ...lisavaatimukset,
-                opettajuuttaTutkimassa: e.target.checked,
+                kelpoisuuskoe: e.target.checked,
               })
             }
           />
-          <OphCheckbox
-            data-testid="myonteinenPaatos-suomalainen-koulu"
-            label={t('hakemus.paatos.myonteinenPaatos.suomalainenKoulu')}
-            checked={lisavaatimukset?.suomalainenKoulu || false}
-            onChange={(e) =>
-              updateLisavaatimukset({
-                ...lisavaatimukset,
-                suomalainenKoulu: e.target.checked,
-              })
-            }
-          />
-          <OphCheckbox
-            data-testid="myonteinenPaatos-opetusnayte"
-            label={t('hakemus.paatos.myonteinenPaatos.opetusnayte')}
-            checked={lisavaatimukset?.opetusNayte || false}
-            onChange={(e) =>
-              updateLisavaatimukset({
-                ...lisavaatimukset,
-                opetusNayte: e.target.checked,
-              })
-            }
-          />
+          {lisavaatimukset?.kelpoisuuskoe && (
+            <Stack
+              direction="column"
+              gap={theme.spacing(2)}
+              sx={{ marginLeft: theme.spacing(4) }}
+            >
+              <OphCheckbox
+                data-testid="myonteinenPaatos-opettajuutta-tutkimassa"
+                label={t(
+                  'hakemus.paatos.myonteinenPaatos.opettajuuttaTutkimassa',
+                )}
+                checked={lisavaatimukset?.opettajuuttaTutkimassa || false}
+                onChange={(e) =>
+                  updateLisavaatimukset({
+                    ...lisavaatimukset,
+                    opettajuuttaTutkimassa: e.target.checked,
+                  })
+                }
+              />
+              <OphCheckbox
+                data-testid="myonteinenPaatos-suomalainen-koulu"
+                label={t('hakemus.paatos.myonteinenPaatos.suomalainenKoulu')}
+                checked={lisavaatimukset?.suomalainenKoulu || false}
+                onChange={(e) =>
+                  updateLisavaatimukset({
+                    ...lisavaatimukset,
+                    suomalainenKoulu: e.target.checked,
+                  })
+                }
+              />
+              <OphCheckbox
+                data-testid="myonteinenPaatos-opetusnayte"
+                label={t('hakemus.paatos.myonteinenPaatos.opetusnayte')}
+                checked={lisavaatimukset?.opetusNayte || false}
+                onChange={(e) =>
+                  updateLisavaatimukset({
+                    ...lisavaatimukset,
+                    opetusNayte: e.target.checked,
+                  })
+                }
+              />
+            </Stack>
+          )}
         </Stack>
       )}
-    </Stack>
+    />
   );
 };

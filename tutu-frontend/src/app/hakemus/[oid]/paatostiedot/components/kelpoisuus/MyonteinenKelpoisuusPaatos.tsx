@@ -85,6 +85,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
   return (
     <Stack gap={theme.spacing(3)}>
       <OphRadioGroupWithClear
+        labelVariant="label"
         label={t(
           'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.olennaisiaEroja',
         )}
