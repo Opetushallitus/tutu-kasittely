@@ -1,5 +1,5 @@
-name: prepare-next-env
-description: "Prepare next env"
+name: prepare-node-env
+description: "Prepare node env"
 runs:
   using: "composite"
   steps:
@@ -20,13 +20,6 @@ runs:
       with:
         path: ${{ github.workspace }}/tutu-frontend/node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}
-    - name: Cache Next.js
-      uses: actions/cache@v5
-      with:
-        path: ${{ github.workspace }}/tutu-frontend/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}-${{ hashFiles('./tutu-frontend/next.config.*', './tutu-frontend/src/**/*.ts', './tutu-frontend/src/**/*.tsx') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}-
     - name: Install dependencies
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
       working-directory: ./tutu-frontend

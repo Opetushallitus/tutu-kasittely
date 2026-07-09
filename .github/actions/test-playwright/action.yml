@@ -9,7 +9,7 @@ runs:
   using: composite
   steps:
     - uses: extractions/setup-just@v4
-    - uses: ./.github/actions/prepare-next-env
+    - uses: ./.github/actions/prepare-node-env
     - name: Create self-signed dev certificates
       shell: bash
       working-directory: ./tutu-frontend
@@ -19,7 +19,7 @@ runs:
       working-directory: ./tutu-frontend
       env:
         PLAYWRIGHT_PROJECT: ${{ inputs.browser }}
-      run: pnpm start-server-and-test-playwright-in-docker
+      run: just _playwright-in-docker-ci
     - uses: actions/upload-artifact@v7
       if: always()
       with:

@@ -205,7 +205,6 @@ export const mockHakemus = async (
 
     let apHakemus = false;
     if (oid === '1.2.246.562.11.00000000004') {
-      // hakemukset.json oleva AP-hakemus
       apHakemus = true;
     }
 
@@ -627,7 +626,6 @@ export const mockYhteinenKasittely = async (page: Page) => {
         const path = new URL(route.request().url()).pathname;
         const isLuettu = path.endsWith('/luettu');
         if (isLuettu) {
-          // Viestin merkitseminen luetuksi: fire-and-forget, ei muuta dataa.
           await route.fulfill({ status: 204 });
           return;
         }

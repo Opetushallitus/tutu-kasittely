@@ -37,11 +37,6 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
     };
   }, [enabled, onDiscard, t, showConfirmation]);
 
-  // React Router blocker: intercept in-app navigations (links, navigate())
-  // as well as browser back/forward (POP). The data router manages history
-  // itself, so the blocker handles every navigation type reliably and cross-
-  // browser. Navigations that only change search params (e.g. nuqs) keep the
-  // same pathname and are allowed through.
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       enabled && currentLocation.pathname !== nextLocation.pathname,
