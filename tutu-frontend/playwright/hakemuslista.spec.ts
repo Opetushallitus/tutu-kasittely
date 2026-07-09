@@ -39,7 +39,7 @@ test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oi
 
   const kasittelyvaiheet = page.getByTestId('hakemus-row-kasittelyvaihe');
   await expect(kasittelyvaiheet.last()).toHaveText(
-    'Odottaa täydennystä 28.07.2025 mennessä',
+    'hakemus.kasittelyvaihe.odottaataydennystamennessa',
   );
 });
 

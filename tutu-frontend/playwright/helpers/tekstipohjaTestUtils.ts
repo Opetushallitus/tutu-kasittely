@@ -1,7 +1,6 @@
 import { expect, Page, Route } from '@playwright/test';
 
 import { expectRequestData } from '@/playwright/helpers/testUtils';
-import { translate } from '@/playwright/helpers/translate';
 import { MOCK_KATEGORIAT, MOCK_TEKSTIPOHJA } from '@/playwright/mocks';
 import { PaatospohjaKategoria } from '@/src/lib/types/paatosteksti';
 import { ViestipohjaKategoria } from '@/src/lib/types/viesti';
@@ -17,11 +16,12 @@ const expectToast = async (
   textTranslationKey: string,
   severity: string,
 ) => {
-  const toastText = await translate(page, textTranslationKey);
   const toast = page.getByTestId('toast-alert');
   await expect(toast).toBeVisible();
   await expect(toast).toHaveAttribute('data-severity', severity);
-  await expect(toast.getByTestId('toast-message')).toHaveText(toastText);
+  await expect(toast.getByTestId('toast-message')).toHaveText(
+    textTranslationKey,
+  );
 };
 
 export const expectSuccessToast = async (
@@ -39,8 +39,7 @@ export const expectErrorToast = async (
 };
 
 export const getTekstipohjaNimiLocator = async (page: Page) => {
-  const nimiLabel = await translate(page, 'tekstipohjat.nimi');
-  return page.getByLabel(nimiLabel);
+  return page.getByLabel('tekstipohjat.nimi');
 };
 
 export const expectTekstipohjaNimi = async (page: Page, nimi: string) => {
@@ -103,8 +102,7 @@ export const expectDelete = async (
   poistatekstiTranslationKey: string,
   deleteUrl: string,
 ) => {
-  const poistaText = await translate(page, poistatekstiTranslationKey);
-  await page.getByRole('button', { name: poistaText }).click();
+  await page.getByRole('button', { name: poistatekstiTranslationKey }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
   const [request] = await Promise.all([
     page.waitForRequest(
@@ -120,8 +118,7 @@ export const confirmDelete = async (
   page: Page,
   buttonTextTranslationKey: string,
 ) => {
-  const poistaText = await translate(page, buttonTextTranslationKey);
-  await page.getByRole('button', { name: poistaText }).click();
+  await page.getByRole('button', { name: buttonTextTranslationKey }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
   await page.getByTestId('modal-confirm-button').click();
 };
@@ -173,13 +170,11 @@ export const syotaKategoriaNimiModaliin = async (
   vanhaNimi?: string,
 ) => {
   await expect(page.getByTestId('modal-component')).toBeVisible();
-  const otsikkoText = await translate(page, modalHeaderTranslationKey);
   await expect(
-    page.locator('h1').filter({ hasText: otsikkoText }),
+    page.locator('h1').filter({ hasText: modalHeaderTranslationKey }),
   ).toBeVisible();
 
-  const nimiLabel = await translate(page, 'tekstipohjat.kategoriat.nimi');
-  const nimiInput = await page.getByLabel(nimiLabel);
+  const nimiInput = page.getByLabel('tekstipohjat.kategoriat.nimi');
   if (vanhaNimi) await expect(nimiInput).toHaveValue(vanhaNimi);
   await nimiInput.fill(nimi);
 };
@@ -188,11 +183,9 @@ export const avaaKategoriaModalAndSyotaNimi = async (
   page: Page,
   nimi: string,
 ) => {
-  const lisaaKategoriaText = await translate(
-    page,
-    'tekstipohjat.kategoriat.lisaa',
-  );
-  await page.getByRole('button', { name: lisaaKategoriaText }).click();
+  await page
+    .getByRole('button', { name: 'tekstipohjat.kategoriat.lisaa' })
+    .click();
 
   await syotaKategoriaNimiModaliin(page, 'tekstipohjat.kategoriat.lisaa', nimi);
 };
@@ -234,22 +227,18 @@ export const clickLisaapohja = async (
   page: Page,
   pohjatyyppi: 'viestipohjat' | 'paatospohjat',
 ) => {
-  const lisaaPohjaText = await translate(
-    page,
-    `tekstipohjat.${pohjatyyppi}.lisaa`,
-  );
-  await page.getByRole('button', { name: lisaaPohjaText }).click();
+  await page
+    .getByRole('button', { name: `tekstipohjat.${pohjatyyppi}.lisaa` })
+    .click();
 };
 
 export const expectRequiredDataMissing = async (
   page: Page,
   nbrOfMessages: number,
 ) => {
-  const requiredFieldMsg = await translate(
-    page,
-    'virhe.validaatio.pakollinenTietoPuuttuu',
-  );
-  await expect(page.getByText(requiredFieldMsg)).toHaveCount(nbrOfMessages);
+  await expect(
+    page.getByText('virhe.validaatio.pakollinenTietoPuuttuu'),
+  ).toHaveCount(nbrOfMessages);
 };
 
 export const valitseKategoria = async (page: Page, kategoria: string) => {

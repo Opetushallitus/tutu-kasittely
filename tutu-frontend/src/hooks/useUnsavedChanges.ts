@@ -5,9 +5,6 @@ import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { registerAuthRedirectConfirmHandler } from '@/src/lib/navigation/authRedirect';
 
-const navigationApi =
-  typeof window !== 'undefined' ? window.navigation : undefined;
-
 export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
   const { t } = useTranslations();
   const { showConfirmation } = useGlobalConfirmationModal();
@@ -40,51 +37,14 @@ export function useUnsavedChanges(enabled: boolean, onDiscard?: () => void) {
     };
   }, [enabled, onDiscard, t, showConfirmation]);
 
-  // Navigation API: intercept back/forward (traverse) natively.
-  useEffect(() => {
-    if (!enabled || !navigationApi) {
-      return;
-    }
-
-    let resuming = false;
-
-    const handleNavigate = (e: NavigateEvent) => {
-      if (e.navigationType !== 'traverse' || !e.cancelable) return;
-
-      if (resuming) {
-        resuming = false;
-        return;
-      }
-
-      e.preventDefault();
-
-      const destinationKey = e.destination.key;
-      showConfirmation({
-        header: t('yleiset.tallentamattomiaMuutoksia'),
-        content: t('yleiset.lomakkeellaOnMuutoksia'),
-        confirmButtonText: t('yleiset.jatkaTallentamatta'),
-        cancelButtonText: t('yleiset.palaaTallentamaan'),
-        confirmPrimary: false,
-        handleConfirmAction: () => {
-          onDiscard?.();
-          if (destinationKey != null) {
-            // Set flag for re-triggered event
-            resuming = true;
-            navigationApi.traverseTo(destinationKey);
-          }
-        },
-      });
-    };
-
-    navigationApi.addEventListener('navigate', handleNavigate);
-    return () => navigationApi.removeEventListener('navigate', handleNavigate);
-  }, [enabled, onDiscard, t, showConfirmation]);
-
+  // React Router blocker: intercept in-app navigations (links, navigate())
+  // as well as browser back/forward (POP). The data router manages history
+  // itself, so the blocker handles every navigation type reliably and cross-
+  // browser. Navigations that only change search params (e.g. nuqs) keep the
+  // same pathname and are allowed through.
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation, historyAction }) =>
-      enabled &&
-      historyAction !== 'POP' &&
-      currentLocation.pathname !== nextLocation.pathname,
+    ({ currentLocation, nextLocation }) =>
+      enabled && currentLocation.pathname !== nextLocation.pathname,
   );
 
   useEffect(() => {

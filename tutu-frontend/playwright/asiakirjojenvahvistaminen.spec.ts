@@ -83,14 +83,12 @@ test('Valmistumisen vahvistus -komponentit toimivat oikein', async ({
           ...hakemus.asiakirja,
           valmistumisenVahvistus: {
             valmistumisenVahvistus: true,
-            valmistumisenVahvistusPyyntoLahetetty: dateFns.format(
+            valmistumisenVahvistusPyyntoLahetetty: new Date(
               new Date().setDate(26),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            ),
-            valmistumisenVahvistusSaatu: dateFns.format(
+            ).toISOString(),
+            valmistumisenVahvistusSaatu: new Date(
               new Date().setDate(26),
-              "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            ),
+            ).toISOString(),
             valmistumisenVahvistusVastaus: 'Myonteinen',
             valmistumisenVahvistusLisatieto: 'Hyvinhän se meni',
           },

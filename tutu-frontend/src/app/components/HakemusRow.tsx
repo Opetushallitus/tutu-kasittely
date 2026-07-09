@@ -194,13 +194,13 @@ export default function HakemusRow({
         {formatHelsinki(hakemus.saapumisPvm, 'd.M.yyyy')}
       </StyledTableCell>
       <StyledTableCell>
-        {t('hakemuslista.kokonaisaikaKk', '', {
+        {t('hakemuslista.kokonaisaikaKk', {
           aika: muotoileKokonaisaika(hakemus.saapumisPvm),
         })}
       </StyledTableCell>
       <StyledTableCell>
         {hakemus.viimeinenAsiakirjaHakijalta
-          ? t('hakemuslista.kokonaisaikaKk', '', {
+          ? t('hakemuslista.kokonaisaikaKk', {
               aika: muotoileKokonaisaika(hakemus.viimeinenAsiakirjaHakijalta),
             })
           : ''}

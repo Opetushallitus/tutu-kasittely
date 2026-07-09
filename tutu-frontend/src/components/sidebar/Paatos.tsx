@@ -106,7 +106,7 @@ export const Paatos = () => {
             }}
           >
             <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
-              {t('hakemus.sivupalkki.paatos.otsikko', '', {
+              {t('hakemus.sivupalkki.paatos.otsikko', {
                 numero: index + 1,
               })}
             </OphTypography>

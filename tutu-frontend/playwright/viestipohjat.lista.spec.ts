@@ -11,7 +11,6 @@ import {
   mockRemoteVirhe,
   syotaKategoriaNimiModaliin,
 } from '@/playwright/helpers/tekstipohjaTestUtils';
-import { translate } from '@/playwright/helpers/translate';
 import {
   mockInit,
   mockUser,
@@ -115,10 +114,7 @@ test('Kategorioiden latauksen epäonnistuessa näytetään virheteksti', async (
 });
 
 test('Modaalin peruutus sulkee modaalin', async ({ page }) => {
-  const lisaaKategoriaText = await translate(
-    page,
-    'tekstipohjat.kategoriat.lisaa',
-  );
+  const lisaaKategoriaText = 'tekstipohjat.kategoriat.lisaa';
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 

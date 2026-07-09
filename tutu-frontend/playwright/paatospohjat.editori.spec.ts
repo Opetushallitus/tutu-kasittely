@@ -20,7 +20,6 @@ import {
   clickSaveButton,
   expectRequestData,
 } from '@/playwright/helpers/testUtils';
-import { translate } from '@/playwright/helpers/translate';
 import {
   MOCK_TEKSTIPOHJA,
   mockInit,
@@ -138,7 +137,7 @@ test('Paatospohjan poisto onnistuu', async ({ page }) => {
     '/tutu-backend/api/paatospohja',
   );
 
-  const valitseText = await translate(page, 'tekstipohjat.valitsePaatospohja');
+  const valitseText = 'tekstipohjat.valitsePaatospohja';
   await expect(page.getByText(valitseText)).toBeVisible();
 
   await expectSuccessToast(

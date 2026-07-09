@@ -1,8 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { Page, expect, test } from '@playwright/test';
 
-import { translate } from './helpers/translate';
-
 import { getPerustelu } from '@/playwright/fixtures/perustelu1';
 import { mockAll } from '@/playwright/mocks';
 
@@ -15,14 +13,14 @@ test.beforeEach(mockAll);
 
 test('Saavutettavuus listanäkymä ok', async ({ page }) => {
   await page.goto('/tutu-frontend');
-  const otsikko = await translate(page, 'hakemuslista.otsikko');
+  const otsikko = 'hakemuslista.otsikko';
   await expect(page.getByTestId('hakemuslista-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus filemaker listanäkymä ok', async ({ page }) => {
   await page.goto('/tutu-frontend/filemaker');
-  const otsikko = await translate(page, 'hakemuslista.otsikko');
+  const otsikko = 'hakemuslista.otsikko';
   await expect(page.getByTestId('hakemuslista-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
@@ -31,7 +29,7 @@ test('Saavutettavuus filemaker hakemus ok', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/filemaker-hakemus/257acdfc-06c9-44b5-b76d-6c5d06200aa6',
   );
-  const otsikko = await translate(page, 'hakemus.filemaker.otsikko');
+  const otsikko = 'hakemus.filemaker.otsikko';
   await expect(page.getByTestId('filemaker-hakemus-otsikko')).toHaveText(
     otsikko,
   );
@@ -40,14 +38,14 @@ test('Saavutettavuus filemaker hakemus ok', async ({ page }) => {
 
 test('Saavutettavuus perustiedot ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/perustiedot');
-  const otsikko = await translate(page, 'hakemus.perustiedot.otsikko');
+  const otsikko = 'hakemus.perustiedot.otsikko';
   await expect(page.getByTestId('perustiedot-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus asiakirjat ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/asiakirjat');
-  const otsikko = await translate(page, 'hakemus.asiakirjat.otsikko');
+  const otsikko = 'hakemus.asiakirjat.otsikko';
   await expect(page.getByTestId('asiakirjat-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
@@ -57,14 +55,14 @@ test('Saavutettavuus tutkinnot ok', async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/tutkinnot',
   );
 
-  const otsikko = await translate(page, 'hakemus.tutkinnot.otsikko');
+  const otsikko = 'hakemus.tutkinnot.otsikko';
   await expect(page.getByTestId('tutkinnot-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut yleiset ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/yleiset/perustelut');
-  const otsikko = await translate(page, 'hakemus.perustelu.yleiset.otsikko');
+  const otsikko = 'hakemus.perustelu.yleiset.otsikko';
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
@@ -85,24 +83,21 @@ test('Saavutettavuus perustelut yleiset lausuntotiedot ok', async ({
     }
   });
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/yleiset/lausunto');
-  const otsikko = await translate(
-    page,
-    'hakemus.perustelu.lausuntotiedot.lausuntopyynnot',
-  );
+  const otsikko = 'hakemus.perustelu.lausuntotiedot.lausuntopyynnot';
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut uoro ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/uoro');
-  const otsikko = await translate(page, 'hakemus.perustelu.uoro.otsikko');
+  const otsikko = 'hakemus.perustelu.uoro.otsikko';
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus perustelut ap ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/perustelu/ap');
-  const otsikko = await translate(page, 'hakemus.perustelu.ap.otsikko');
+  const otsikko = 'hakemus.perustelu.ap.otsikko';
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
@@ -111,7 +106,7 @@ test('Saavutettavuus päätös ok', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot',
   );
-  const otsikko = await translate(page, 'hakemus.paatos.otsikko');
+  const otsikko = 'hakemus.paatos.otsikko';
   await expect(page.getByTestId('paatos-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
@@ -120,7 +115,7 @@ test('Saavutettavuus yhteinen käsittely ok', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
-  const otsikko = await translate(page, 'hakemus.yhteinenkasittely.otsikko');
+  const otsikko = 'hakemus.yhteinenkasittely.otsikko';
   await expect(page.getByTestId('yhteinenkasittely-otsikko')).toHaveText(
     otsikko,
   );
@@ -134,22 +129,19 @@ test('Saavutettavuus yhteinen käsittely ok', async ({ page }) => {
 
 test('Saavutettavuus valitustiedot ok', async ({ page }) => {
   await page.goto('/tutu-frontend/hakemus/oid/valitustiedot');
-  const otsikko = await translate(page, 'hakemus.valitustiedot.otsikko');
+  const otsikko = 'hakemus.valitustiedot.otsikko';
   await expect(page.getByTestId('valitustiedot-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);
 });
 
 test('Saavutettavuus viestipohjat ok', async ({ page }) => {
   await page.goto('/tutu-frontend/tekstipohjat/viestipohjat');
-  const otsikko = await translate(page, 'tekstipohjat.viestipohjat');
+  const otsikko = 'tekstipohjat.viestipohjat';
   await expect(page.locator('h2')).toHaveText(otsikko);
 
   await expectPageAccessibilityOk(page);
 
-  const lisaaKategoriaText = await translate(
-    page,
-    'tekstipohjat.kategoriat.lisaa',
-  );
+  const lisaaKategoriaText = 'tekstipohjat.kategoriat.lisaa';
   await page.getByRole('button', { name: lisaaKategoriaText }).click();
 
   await expectPageAccessibilityOk(page);

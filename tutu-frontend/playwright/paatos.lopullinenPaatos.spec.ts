@@ -4,7 +4,6 @@ import {
   expectDataFromDropdownSelection,
   expectRequestData,
 } from '@/playwright/helpers/testUtils';
-import { translate } from '@/playwright/helpers/translate';
 import {
   mockEsittelijat,
   mockGetAndPut,
@@ -48,18 +47,10 @@ test('Päätöskentät näkyvät oikein ja muutosten tallennus lähettää PUT-k
     'paatos-sovellettulaki-dropdown',
   );
 
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.lopullinenPaatos',
-  );
-  const peruutusTaiRaukeaminenText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen',
-  );
-  const sovellettuLakiAp = await translate(
-    page,
-    'hakemus.paatos.sovellettuLaki.ap',
-  );
+  const paatosText = 'hakemus.paatos.paatostyyppi.lopullinenPaatos';
+  const peruutusTaiRaukeaminenText =
+    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen';
+  const sovellettuLakiAp = 'hakemus.paatos.sovellettuLaki.ap';
 
   await expect(page.getByTestId('korvaavatToimenpiteet-otsikko')).toBeVisible();
   await expect(suoritettuRadioGroup).toBeVisible();

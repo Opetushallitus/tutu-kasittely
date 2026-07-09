@@ -12,7 +12,7 @@ test('UO/RO-perustelun kentät näkyvät oikein ja kenttien muutos lähettää P
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/uoro/',
   );
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(
-    'Tiettyä kelpoisuutta koskevan UO/RO -päätöksen perustelut',
+    'hakemus.perustelu.uoro.otsikko',
   );
 
   const koulutuksenSisaltoField = page.getByTestId('koulutuksenSisalto');

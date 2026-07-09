@@ -1,6 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
 
-import { translate } from '@/playwright/helpers/translate';
 import { mockAll } from '@/playwright/mocks';
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 import { Paginated } from '@/src/lib/types/paginated';
@@ -151,7 +150,7 @@ const mockHakemus = async (page: Page) => {
 
 const searchButtonClick = async (page: Page) => {
   const haeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.hae'),
+    name: 'haku.hae',
   });
 
   await haeButton.click();
@@ -159,7 +158,7 @@ const searchButtonClick = async (page: Page) => {
 
 const closeButtonClick = async (page: Page) => {
   const suljeButton = page.getByRole('button', {
-    name: await translate(page, 'haku.suljeJaPalaaHakemukseesi'),
+    name: 'haku.suljeJaPalaaHakemukseesi',
   });
 
   await suljeButton.click();
@@ -262,7 +261,7 @@ test('Sivutus: Seuraava-nappi näyttää seuraavan hakemuksen', async ({
 
   await page
     .getByRole('button', {
-      name: await translate(page, 'hakemuslista.seuraava'),
+      name: 'hakemuslista.seuraava',
     })
     .click();
 
@@ -305,10 +304,7 @@ test('Tarkat hakuehdot: kelpoisuus-suodatin lähettää parametrin pyyntöön', 
 
   await page.getByTestId('haku-kelpoisuus').click();
 
-  const luokanopettajaText = await translate(
-    page,
-    'haku.kelpoisuus.luokanopettaja',
-  );
+  const luokanopettajaText = 'haku.kelpoisuus.luokanopettaja';
   await page
     .getByRole('option', { name: luokanopettajaText, exact: true })
     .click();
@@ -368,10 +364,7 @@ test('Kelpoisuus-hakuehto: chipin X poistaa valinnan avaamatta dropdownia, kent�
 
   const kelpoisuusSelect = page.getByTestId('haku-kelpoisuus');
   const chip = kelpoisuusSelect.locator('.MuiChip-root');
-  const luokanopettajaText = await translate(
-    page,
-    'haku.kelpoisuus.luokanopettaja',
-  );
+  const luokanopettajaText = 'haku.kelpoisuus.luokanopettaja';
 
   // Valitaan kelpoisuus
   await kelpoisuusSelect.click();

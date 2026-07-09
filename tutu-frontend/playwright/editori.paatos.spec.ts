@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 import { expectRequestData } from '@/playwright/helpers/testUtils';
-import { translate } from '@/playwright/helpers/translate';
 import {
   mockEsittelijat,
   mockInit,
@@ -28,9 +27,7 @@ test('Olemassaoleva työversio näkyy oikein', async ({ page }) => {
   await expect(page.getByTestId('editor-content-editable')).toHaveText(
     'Päätosteksti sisältö',
   );
-  await expect(
-    page.getByText(await translate(page, 'hakemus.editori.paatos.vahvista')),
-  ).toBeEnabled();
+  await expect(page.getByText('hakemus.editori.paatos.vahvista')).toBeEnabled();
   await expect(page.getByTestId('save-ribbon-button')).toBeHidden();
 });
 
@@ -57,9 +54,7 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
   await expect(saveButton).toBeHidden();
   const vahvistettuAikaleima = page.getByTestId('vahvistettu-aikaleima');
   const vahvistaButton = page.getByTestId('vahvista-kopioi-painike');
-  await expect(vahvistaButton).toHaveText(
-    await translate(page, 'hakemus.editori.paatos.vahvista'),
-  );
+  await expect(vahvistaButton).toHaveText('hakemus.editori.paatos.vahvista');
 
   await expect(vahvistettuAikaleima).toBeHidden();
 
@@ -83,9 +78,7 @@ test('Päätöstekstin vahvistamisesta lähetetään PUT -kutsu backendille', as
   });
 
   await expect(vahvistettuAikaleima).toBeVisible();
-  await expect(vahvistaButton).toHaveText(
-    await translate(page, 'hakemus.editori.paatos.kopioi'),
-  );
+  await expect(vahvistaButton).toHaveText('hakemus.editori.paatos.kopioi');
 });
 
 test('Vahvistetun päätöstekstin tallennus palauttaa tekstin vahvistamattomaksi', async ({
@@ -96,24 +89,18 @@ test('Vahvistetun päätöstekstin tallennus palauttaa tekstin vahvistamattomaks
   await expect(saveButton).toBeHidden();
   const vahvistettuAikaleima = page.getByTestId('vahvistettu-aikaleima');
   const vahvistaButton = page.getByTestId('vahvista-kopioi-painike');
-  await expect(vahvistaButton).toHaveText(
-    await translate(page, 'hakemus.editori.paatos.vahvista'),
-  );
+  await expect(vahvistaButton).toHaveText('hakemus.editori.paatos.vahvista');
   await expect(vahvistettuAikaleima).toBeHidden();
 
   await editori.fill('Vahvistettava päätösteksti');
   await vahvistaButton.click();
   await page.getByTestId('modal-confirm-button').click();
   await expect(vahvistettuAikaleima).toBeVisible();
-  await expect(vahvistaButton).toHaveText(
-    await translate(page, 'hakemus.editori.paatos.kopioi'),
-  );
+  await expect(vahvistaButton).toHaveText('hakemus.editori.paatos.kopioi');
 
   await editori.fill('Muokattu päätösteksti');
   await saveButton.click();
-  await expect(vahvistaButton).toHaveText(
-    await translate(page, 'hakemus.editori.paatos.vahvista'),
-  );
+  await expect(vahvistaButton).toHaveText('hakemus.editori.paatos.vahvista');
   await expect(vahvistettuAikaleima).toBeHidden();
 });
 
@@ -153,9 +140,7 @@ test('Päätöstekstin tallennuksen epäonnistuessa näytetään virhetoast', as
   await expect(saveButton).toBeVisible();
   await saveButton.click();
 
-  await expect(
-    page.getByText(await translate(page, 'virhe.paatostekstiTallennus')),
-  ).toBeVisible();
+  await expect(page.getByText('virhe.paatostekstiTallennus')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(
     'data-severity',
     'error',

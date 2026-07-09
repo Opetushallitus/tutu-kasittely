@@ -58,9 +58,7 @@ const tiedostoNimi = (metadata?: AsiakirjaMetadata) => {
 
 const tarkistuksenTila = (t: TFunction, data: AsiakirjaTaulukkoData) => {
   const translationKey = `hakemus.asiakirjat.tarkistuksenTila.${data.liitteenTila?.state}`;
-  const result = t(translationKey);
-
-  return result !== translationKey ? result : '-';
+  return data.liitteenTila?.state ? t(translationKey) : '-';
 };
 
 const tarkistuksenTilaIcon = (data: AsiakirjaTaulukkoData) => {

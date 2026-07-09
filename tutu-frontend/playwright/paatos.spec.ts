@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-import { translate } from './helpers/translate';
-
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 import {
   expectDataFromDropdownSelection,
@@ -23,14 +21,9 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää PUT-kutsu
   const seutCheckbox = page.getByTestId('paatos-seut');
   await expect(seutCheckbox).not.toBeChecked();
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const peruutusTaiRaukeaminenText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const peruutusTaiRaukeaminenText =
+    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(
     page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
@@ -75,26 +68,13 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const tasoText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.taso',
-  );
-  const kelpoisuusText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.kelpoisuus',
-  );
-  const riittavatOpinnotText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.riittavatOpinnot',
-  );
-  const peruutusTaiRaukeaminenText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const tasoText = 'hakemus.paatos.paatostyyppi.options.taso';
+  const kelpoisuusText = 'hakemus.paatos.paatostyyppi.options.kelpoisuus';
+  const riittavatOpinnotText =
+    'hakemus.paatos.paatostyyppi.options.riittavatOpinnot';
+  const peruutusTaiRaukeaminenText =
+    'hakemus.paatos.ratkaisutyyppi.peruutusTaiRaukeaminen';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();
 
@@ -163,45 +143,20 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
 test('Päätöstiedon valinta näyttää oikeat arvot sovellettu laki-dropdownissa', async ({
   page,
 }) => {
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const valitseText = await translate(page, 'yleiset.valitse');
-  const paatosUOText = await translate(
-    page,
-    'hakemus.paatos.sovellettuLaki.uo',
-  );
-  const paatosAPText = await translate(
-    page,
-    'hakemus.paatos.sovellettuLaki.ap',
-  );
-  const paatosAPSEUTText = await translate(
-    page,
-    'hakemus.paatos.sovellettuLaki.ap_seut',
-  );
-  const paatosROText = await translate(
-    page,
-    'hakemus.paatos.sovellettuLaki.ro',
-  );
-  const tasoText =
-    '1 ' + (await translate(page, 'hakemus.paatos.paatostyyppi.options.taso'));
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const valitseText = 'yleiset.valitse';
+  const paatosUOText = 'hakemus.paatos.sovellettuLaki.uo';
+  const paatosAPText = 'hakemus.paatos.sovellettuLaki.ap';
+  const paatosAPSEUTText = 'hakemus.paatos.sovellettuLaki.ap_seut';
+  const paatosROText = 'hakemus.paatos.sovellettuLaki.ro';
+  const tasoText = '1 ' + 'hakemus.paatos.paatostyyppi.options.taso';
   const kelpoisuusText =
-    '2 ' +
-    (await translate(page, 'hakemus.paatos.paatostyyppi.options.kelpoisuus'));
+    '2 ' + 'hakemus.paatos.paatostyyppi.options.kelpoisuus';
 
   const tiettyTutkintoTaiOpinnotText =
-    '3 ' +
-    (await translate(
-      page,
-      'hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot',
-    ));
+    '3 ' + 'hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot';
   const riittavatOpinnotText =
-    '4 ' +
-    (await translate(
-      page,
-      'hakemus.paatos.paatostyyppi.options.riittavatOpinnot',
-    ));
+    '4 ' + 'hakemus.paatos.paatostyyppi.options.riittavatOpinnot';
 
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
@@ -323,14 +278,8 @@ test('Päätöstiedon valinta näyttää oikeat arvot tutkinto-dropdownissa ja p
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const tasoText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.taso',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const tasoText = 'hakemus.paatos.paatostyyppi.options.taso';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();
 
@@ -381,18 +330,9 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const tasoText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.taso',
-  );
-  const alempiKorkeakouluText = await translate(
-    page,
-    'hakemus.paatos.tutkinto.alempiKorkeakoulu',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const tasoText = 'hakemus.paatos.paatostyyppi.options.taso';
+  const alempiKorkeakouluText = 'hakemus.paatos.tutkinto.alempiKorkeakoulu';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();
 
@@ -463,14 +403,8 @@ test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja 
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const tasoText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.options.taso',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const tasoText = 'hakemus.paatos.paatostyyppi.options.taso';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();
 
@@ -600,15 +534,10 @@ test('Päätöksen otsikon päivämääräkentät toimivat oikein', async ({ pag
 test('Päätösten uudelleenjärjestäminen toimii', async ({ page }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const tasoText =
-    '1 ' + (await translate(page, 'hakemus.paatos.paatostyyppi.options.taso'));
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const tasoText = '1 ' + 'hakemus.paatos.paatostyyppi.options.taso';
   const kelpoisuusText =
-    '2 ' +
-    (await translate(page, 'hakemus.paatos.paatostyyppi.options.kelpoisuus'));
+    '2 ' + 'hakemus.paatos.paatostyyppi.options.kelpoisuus';
 
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();

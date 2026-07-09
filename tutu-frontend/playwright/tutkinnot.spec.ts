@@ -20,7 +20,9 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   );
 
   await expect(page.getByTestId('tutkinto-otsikko-1')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-otsikko-1')).toHaveText('Tutkinto 1');
+  await expect(page.getByTestId('tutkinto-otsikko-1')).toHaveText(
+    'hakemus.tutkinnot.tutkinto.tutkintoOtsikko 1',
+  );
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-todistusotsikko-1')).toHaveText(
@@ -56,11 +58,13 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
 
   await expect(page.getByTestId('tutkinto-koulutusala-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-koulutusala-1')).toHaveText(
-    'Valitse...',
+    'yleiset.valitse',
   );
 
   await expect(page.getByTestId('tutkinto-otsikko-2')).toBeVisible();
-  await expect(page.getByTestId('tutkinto-otsikko-2')).toHaveText('Tutkinto 2');
+  await expect(page.getByTestId('tutkinto-otsikko-2')).toHaveText(
+    'hakemus.tutkinnot.tutkinto.tutkintoOtsikko 2',
+  );
 
   await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toBeVisible();
   await expect(page.getByTestId('tutkinto-todistusotsikko-2')).toHaveText(
@@ -91,7 +95,7 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
   // Muu tutkinto
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toBeVisible();
   await expect(page.getByTestId('tutkinto-otsikko-MUU')).toHaveText(
-    'Muut tutkinnot ja opinnot',
+    'hakemus.tutkinnot.tutkinto.tutkintoOtsikkoMUU',
   );
   await expect(page.getByTestId('tutkinto-tieto-MUU')).toBeVisible();
   await expect(page.getByTestId('tutkinto-tieto-MUU')).toHaveText(

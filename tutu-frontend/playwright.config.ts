@@ -26,6 +26,13 @@ export default defineConfig({
     video: process.env.VIDEO ? 'retain-on-failure' : 'off',
   },
 
+  webServer: {
+    command: 'vite --mode test',
+    url: 'https://localhost:33123/tutu-frontend',
+    reuseExistingServer: !process.env.CI, // fresh server in CI, reuse locally
+    ignoreHTTPSErrors: true,
+  },
+
   /* Configure projects for major browsers */
   projects: [
     {

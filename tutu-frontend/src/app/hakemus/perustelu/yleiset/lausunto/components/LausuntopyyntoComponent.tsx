@@ -71,7 +71,7 @@ export const LausuntopyyntoComponent = ({
           variant={'h3'}
           data-testid={`lausuntopyynto-otsikko-${lausuntopyynto.jarjestys}`}
         >
-          {t('hakemus.perustelu.lausuntotiedot.lausuntopyynto', '', {
+          {t('hakemus.perustelu.lausuntotiedot.lausuntopyynto', {
             numero: lausuntopyynto.jarjestys,
           })}
         </OphTypography>
