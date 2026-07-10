@@ -51,10 +51,13 @@ export default defineConfig(({ mode }) => {
 
   const host = `${env.HOST || 'localhost'}`;
   const port = parseInt(portStr, 10);
-  const httpsOptions = {
-    key: fs.readFileSync('./certificates/localhost-key.pem'),
-    cert: fs.readFileSync('./certificates/localhost.pem'),
-  };
+  const httpsOptions =
+    mode !== 'production'
+      ? {}
+      : {
+          key: fs.readFileSync('./certificates/localhost-key.pem'),
+          cert: fs.readFileSync('./certificates/localhost.pem'),
+        };
   const headers = {
     'Content-Security-Policy': cspHeaders,
   };
