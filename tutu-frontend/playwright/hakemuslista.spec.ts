@@ -11,7 +11,7 @@ test.beforeEach(mockBasicForLista);
 
 test('Hakemuslistaus latautuu', async ({ page }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   await expect(page.locator('h1')).toBeVisible();
 
@@ -28,7 +28,7 @@ test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oi
   page,
 }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   await expect(page.locator('h1')).toBeVisible();
 
@@ -45,7 +45,7 @@ test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oi
 
 test('Hakemuslistaus haku query lähetetään oikein', async ({ page }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
   await expect(page.getByTestId('hakemus-list')).toBeVisible();
 
   const hakukentta = page.getByTestId('hakukentta').locator('input');
@@ -64,7 +64,7 @@ test('Hakemuslistan filtteri saa oikeat arvot query-parametreista', async ({
   page,
 }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend?haku=testihakusana&nayta=omat');
+  await page.goto('/tutu-frontend/?haku=testihakusana&nayta=omat');
 
   const hakukentta = page.getByTestId('hakukentta').locator('input');
 
@@ -80,7 +80,7 @@ test('Hakemuslistan esittelija-dropdown saa oikeat arvot query-parametreista', a
 }) => {
   await mockSuccessfullLists({ page });
   await page.goto(
-    '/tutu-frontend?esittelija=1.2.246.562.24.999999999999&nayta=kaikki',
+    '/tutu-frontend/?esittelija=1.2.246.562.24.999999999999&nayta=kaikki',
   );
 
   const esittelija = page.getByTestId('esittelija').locator('input');
@@ -103,7 +103,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadg
     );
   });
 
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   const kasittelyvaihe = page.getByTestId('kasittelyvaihe').locator('input');
 
@@ -124,7 +124,7 @@ test('Hakemuslistan filtteri saa oikeat arvot local storagesta ja AP-hakemusbadg
 
 test('Peruutettu-badge näkyy', async ({ page }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   await expect(page.getByTestId('peruutettu-badge')).toBeVisible();
 });
@@ -133,7 +133,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot query-parametreista', 
   page,
 }) => {
   await mockSuccessfullLists({ page });
-  await page.goto('/tutu-frontend?sort=asiatunnus:desc');
+  await page.goto('/tutu-frontend/?sort=asiatunnus:desc');
 
   const jarjestyskentta = page.getByTestId('sortlabel--asiatunnus');
 
@@ -160,7 +160,7 @@ test('Hakemuslistan järjestysparametrit saa oikeat arvot local storagesta', asy
     localStorage.setItem('tutu-query-string', 'sort=kasittelyvaihe:asc');
   });
 
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   const jarjestyskentta = page.getByTestId('sortlabel--kasittelyvaihe');
 
@@ -190,7 +190,7 @@ test('Hakemuslistan lataus epäonnistuu', async ({ page }) => {
     });
   });
 
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
 
   await expect(page.getByTestId('hakemus-list')).toBeHidden();
 
@@ -203,7 +203,7 @@ test('Asiatunnuksen validointi toimii', async ({ page }) => {
   await page.route('**/asiatunnus*', async (route) => {
     await route.fulfill({});
   });
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
   const asiatunnus = page.getByTestId('asiatunnus').first();
   const asiatunnusInput = asiatunnus.locator('input');
   const asiatunnusSubmit = asiatunnus.locator('button');

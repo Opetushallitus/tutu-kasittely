@@ -3,24 +3,37 @@ import { createServer } from 'http';
 const port = 3104;
 
 export default async function playwrightSetup() {
-  const server = createServer(async (request, response) => {
+  const server = createServer((request, response) => {
     if (request.url?.endsWith('apply-raamit.js')) {
-      response.write('');
-      response.end();
+      response.writeHead(200, {
+        'content-type': 'application/javascript; charset=utf-8',
+      });
+      response.end('// mocked by Playwright');
       return;
-    } else if (request.url?.endsWith(`favicon.ico`)) {
+    }
+
+    if (request.url?.endsWith('favicon.ico')) {
       response.writeHead(404);
       response.end();
       return;
-    } else {
-      console.log('(Backend) mock not implemented', request.url);
-      return;
     }
+
+    console.log('(Backend) mock not implemented', request.url);
+    response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+    response.end('mock not implemented');
   });
-  server.listen(port, () => {
-    console.log(`(Backend) Mock server listening on port ${port}`);
+
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(port, () => {
+      console.log(`(Backend) Mock server listening on port ${port}`);
+      resolve();
+    });
   });
-  server.once('error', (err) => {
-    console.error(err);
-  });
+
+  return async () => {
+    await new Promise<void>((resolve, reject) => {
+      server.close((err) => (err ? reject(err) : resolve()));
+    });
+  };
 }

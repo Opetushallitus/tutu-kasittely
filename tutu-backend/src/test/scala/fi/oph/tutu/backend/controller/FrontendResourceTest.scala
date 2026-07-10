@@ -48,6 +48,12 @@ class FrontendResourceTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
       .andExpect(content().string(containsString("Frontend index")))
+
+    mockMvc
+      .perform(get("/tutu-frontend/hakemus/1.2.246.562.11.00000000000003494141/perustiedot"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+      .andExpect(content().string(containsString("Frontend index")))
   }
 
   @Test

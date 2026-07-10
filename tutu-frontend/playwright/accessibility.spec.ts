@@ -12,7 +12,7 @@ const expectPageAccessibilityOk = async (page: Page) => {
 test.beforeEach(mockAll);
 
 test('Saavutettavuus listanäkymä ok', async ({ page }) => {
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
   const otsikko = 'hakemuslista.otsikko';
   await expect(page.getByTestId('hakemuslista-otsikko')).toHaveText(otsikko);
   await expectPageAccessibilityOk(page);

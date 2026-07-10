@@ -39,6 +39,9 @@ import scala.jdk.javaapi.CollectionConverters.asJava
 @EnableWebSecurity
 @EnableJdbcHttpSession(tableName = "VIRKAILIJA_SESSION")
 class SecurityConfig {
+  final private val CAS_SECURITY_CHECK_PATH =
+    "/api/j_spring_cas_security_check"
+
   final private val SPRING_CAS_SECURITY_CHECK_PATH =
     "/tutu-backend/api/j_spring_cas_security_check"
 
@@ -118,7 +121,7 @@ class SecurityConfig {
   def serviceProperties(): ServiceProperties = {
     val serviceProperties = ServiceProperties()
     serviceProperties.setService(
-      tutu_backend_url + SPRING_CAS_SECURITY_CHECK_PATH
+      tutu_backend_url + CAS_SECURITY_CHECK_PATH
     )
     serviceProperties.setSendRenew(false)
     serviceProperties
@@ -356,9 +359,9 @@ class SecurityConfig {
   private def frontendContentSecurityPolicy: String =
     List(
       "default-src 'self'",
-      s"connect-src 'self' app.tolgee.io ${opintopolku_virkailija_domain} https://cdn.jsdelivr.net",
+      s"connect-src 'self' ${opintopolku_virkailija_domain}",
       "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-      s"script-src-elem 'self' 'unsafe-inline' ${opintopolku_virkailija_domain} https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
+      s"script-src-elem 'self' 'unsafe-inline' ${opintopolku_virkailija_domain}",
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
       "img-src 'self' blob: data:",
       "font-src 'self' fonts.gstatic.com",

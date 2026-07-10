@@ -93,11 +93,6 @@ export default defineConfig(({ mode }) => {
       port,
       proxy,
     },
-    // Playwright tests run against a production build served by `vite preview`
-    // (see playwright.config.ts webServer). Preview serves the pre-built bundle
-    // with no on-demand transforms, which removes the cold vite-dev first-hit
-    // latency that made webkit navigations flaky. Mirror the dev server's TLS,
-    // CSP and proxy so the app behaves identically.
     preview: {
       strictPort: true,
       headers,

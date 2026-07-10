@@ -17,7 +17,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: `https://127.0.0.1:33123/tutu-frontend`,
+    baseURL: `https://127.0.0.1:33123/tutu-frontend/`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
@@ -27,15 +27,12 @@ export default defineConfig({
   },
 
   webServer: {
-    // Build once, then serve the production bundle with `vite preview`. Serving
-    // a real build (no on-demand dev transforms) removes the cold first-hit
-    // latency that made webkit navigations flaky. reuseExistingServer lets a
-    // locally-running dev/test server be reused instead of rebuilding.
-    command:
-      './node_modules/.bin/vite build --mode test && ./node_modules/.bin/vite preview --mode test',
-    url: 'https://127.0.0.1:33123/tutu-frontend',
-    reuseExistingServer: !process.env.CI, // fresh server in CI, reuse locally
-    timeout: 180 * 1000, // allow time for the build step
+    command: process.env.CI
+      ? './node_modules/.bin/vite build --mode test && ./node_modules/.bin/vite preview --mode test'
+      : 'pnpm test-server',
+    url: 'https://127.0.0.1:33123/tutu-frontend/',
+    reuseExistingServer: false, // fresh server in CI, reuse locally
+    timeout: 120 * 1000, // allow time for the build step
     ignoreHTTPSErrors: true,
   },
 

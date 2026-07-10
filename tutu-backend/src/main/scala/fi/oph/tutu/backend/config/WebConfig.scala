@@ -39,12 +39,13 @@ class WebConfig extends WebMvcConfigurer {
       .addResolver(new PathResourceResolver {
         override def getResource(resourcePath: String, location: Resource): Resource = {
           val requestedResource = super.getResource(resourcePath, location)
+          val lastPathSegment   = resourcePath.split("/").lastOption.getOrElse(resourcePath)
           if (
             requestedResource != null && requestedResource
               .exists() && requestedResource.isReadable && requestedResource.isFile
           ) {
             requestedResource
-          } else if (resourcePath.contains(".")) {
+          } else if (lastPathSegment.contains(".")) {
             null
           } else {
             val indexResource = location.createRelative("index.html")

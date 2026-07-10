@@ -18,7 +18,7 @@ test.beforeEach(({ page }) => {
 
 test('Hakemuslistaus latautuu', async ({ page }) => {
   // Navigoi filemaker-hakemuksiin
-  await page.goto('/tutu-frontend');
+  await page.goto('/tutu-frontend/');
   await expect(
     page.getByTestId('hakemuslista-tab--filemakerHakemukset'),
   ).toBeVisible();
