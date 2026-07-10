@@ -432,8 +432,14 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
 
-  await muuEroButton.click();
-  await expect(muuEroInput).toBeVisible();
+  // Edellisen tallennuksen PUT-vastaus on saattanut viivästyttää DOM-päivitystä,
+  // joten odotetaan että muuEroInput tulee näkyviin ennen kuin jatketaan
+  await expect(async () => {
+    if (!(await muuEroButton.isChecked())) {
+      await muuEroButton.click();
+    }
+    await expect(muuEroInput).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 15000 });
   lisavaatimusRequest.erotKoulutuksessa = {
     muuEro: true,
     muuEroKuvaus: 'Tämä on muu ero',
