@@ -24,9 +24,6 @@ import { NamespaceStack } from '../lib/namespaceStack'
 import { GithubActionsStack } from '../lib/githubActionsStack'
 import { UtilityStack } from '../lib/utility-stack'
 import { MonitorStack } from '../lib/monitor-stack'
-import { FrontendNextjsStack } from '../lib/front-end-nextjs-stack'
-import { FrontendBuildBucketStack } from '../lib/frontend-build-bucket-stack'
-import { Runtime } from 'aws-cdk-lib/aws-lambda'
 
 const app = new cdk.App()
 
@@ -60,7 +57,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
   const revision = app.node.tryGetContext('revision')
 
   if (revision === undefined) {
-    console.error('You must define a valid (backend: ga-${{github.run_number}}) revision in CDK context!')
+    console.error('You must define a valid revision in CDK context!')
     process.exit(1)
   }
 
@@ -222,7 +219,7 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     secrets_manager_secrets: [Secrets.secrets.PG_PASS, Secrets.secrets.SESSION_SECRET],
     ecrAccountId: utilityConfig.accountId,
     listener: Alb.albListener,
-    listenerPathPatterns: ['/tutu-backend/*'],
+    listenerPathPatterns: ['/tutu-backend/*', '/tutu-frontend', '/tutu-frontend/*'],
     healthCheckPath: '/tutu-backend/api/healthcheck',
     healthCheckGracePeriod: 180,
     healthCheckInterval: 5,
@@ -232,20 +229,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     alarmSnsTopic: Monitor.topic
   })
 
-  new FrontendNextjsStack(app, 'TutuFrontendNextjsStack', {
-    basePath: '/tutu-frontend',
-    domainName: `frontend.${domain}`,
-    hostedZone: HostedZones.publicHostedZone,
-    environment: environmentName,
-    envVars: environmentConfig.services.web_frontend.env_vars,
-    nextjsPath: '../tutu-frontend',
-    certificate: CloudfrontCertificate.certificate,
-    env: envEU,
-    crossRegionReferences: true,
-    serviceName: utilityConfig.frontend_service_name,
-    skipBuild: Boolean(app.node.tryGetContext('skipfrontend')),
-    runtime: Runtime.NODEJS_24_X
-  })
 } else if (environmentName === 'utility') {
   const Utility = new UtilityStack(app, 'UtilityStack', {
     env: envEU,
@@ -263,12 +246,5 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     serviceName: utilityConfig.backend_service_name,
     projectAwsOrgOrganizationalUnit: utilityConfig.aws.project_organizational_unit,
     githubActionsDeploymentRole: Utility.githubActionsDeploymentRole
-  })
-
-  new FrontendBuildBucketStack(app, 'FrontendBuildBucketStack', {
-    env: envEU,
-    githubActionsDeploymentRole: Utility.githubActionsDeploymentRole,
-    serviceName: utilityConfig.frontend_service_name,
-    projectAwsOrgOrganizationalUnit: utilityConfig.aws.project_organizational_unit
   })
 }
