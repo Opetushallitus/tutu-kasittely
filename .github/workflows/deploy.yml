@@ -1,6 +1,60 @@
-name: deploy.yml
-on: workflow_dispatch
+name: Deploy TUTU
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment
+        options:
+          - dev
+          - qa
+        required: true
+      revision:
+        description: Build GH Actions number
+        required: true
+        type: number
+
+run-name: Deploy TUTU revision ${{ inputs.revision }} to ${{ inputs.environment }}
+
+permissions:
+  id-token: write
+  contents: read
+  packages: read
 
 jobs:
-  deploy-backend:
+  deploy:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "tutu-infra/.nvmrc"
+          cache: "pnpm"
+          cache-dependency-path: tutu-infra/pnpm-lock.yaml
+      - name: Install infrastructure dependencies
+        working-directory: ./tutu-infra
+        run: pnpm install --prefer-offline
+      - name: Configure AWS dev-role credentials
+        if: ${{ inputs.environment == 'dev' }}
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_DEV_ROLE_ARN }}
+          role-session-name: tutu-deploy-dev
+          aws-region: eu-west-1
+      - name: Configure AWS qa-role credentials
+        if: ${{ inputs.environment == 'qa' }}
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_QA_ROLE_ARN }}
+          role-session-name: tutu-deploy-qa
+          aws-region: eu-west-1
+      - name: Deploy backend to ECS
+        working-directory: ./tutu-infra
+        run: |
+          pnpm exec cdk cli-telemetry --disable
+          pnpm exec cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
