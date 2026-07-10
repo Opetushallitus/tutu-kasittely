@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
   const host = `${env.HOST || 'localhost'}`;
   const port = parseInt(portStr, 10);
   const httpsOptions =
-    mode !== 'production'
+    mode === 'production'
       ? {}
       : {
           key: fs.readFileSync('./certificates/localhost-key.pem'),
