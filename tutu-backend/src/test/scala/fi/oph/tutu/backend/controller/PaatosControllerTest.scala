@@ -490,7 +490,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja")
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOid")
+        put(s"/tutu-backend/api/paatos/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -517,7 +517,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOid")
+        get(s"/tutu-backend/api/paatos/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -531,7 +531,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   def haePaatosPalauttaa404KunPaatosEiKannassa(): Unit = {
     mvc
       .perform(
-        get(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
+        get(s"/tutu-backend/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
       )
       .andExpect(status().isNotFound)
     verify(auditLog, times(0)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatos), any())
@@ -544,7 +544,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosTietoOptions")
     mvc
       .perform(
-        put(s"/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
+        put(s"/tutu-backend/api/paatos/${HakemusOid("1.2.246.562.11.00000000000000009999")}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -570,7 +570,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOid")
+        put(s"/tutu-backend/api/paatos/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -600,7 +600,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOid")
+        get(s"/tutu-backend/api/paatos/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -628,7 +628,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
+        put(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -655,7 +655,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).get.id
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -687,7 +687,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
+        put(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -719,7 +719,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   def haePaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200(): Unit = {
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -757,7 +757,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
+        put(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -802,7 +802,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        put(s"/api/paatos/$hakemusOidWithKielteisetPaatosTiedot")
+        put(s"/tutu-backend/api/paatos/$hakemusOidWithKielteisetPaatosTiedot")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(paatosJSON)
@@ -834,7 +834,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
       )
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOidWithKielteisetPaatosTiedot")
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithKielteisetPaatosTiedot")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -917,7 +917,9 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
     assert(paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).isEmpty)
     val result = mvc
-      .perform(get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"))
+      .perform(
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
+      )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.sisalto").value(startsWith("<p>")))
@@ -944,7 +946,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
+          s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -975,7 +977,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
+          s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -999,7 +1001,9 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
   @Order(17)
   def haePaatostekstiPalauttaaKannassaOlevanJosLoytyy(): Unit = {
     val result = mvc
-      .perform(get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti"))
+      .perform(
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
+      )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.sisalto").value("Muokattu sisältö"))
@@ -1026,7 +1030,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/paatosteksti/vahvista"
+          s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaKelpoisuudet/paatosteksti/vahvista"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -1056,7 +1060,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     val result = mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
+          s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -1083,7 +1087,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     mvc
       .perform(
         put(
-          s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
+          s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"
         )
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
@@ -1092,7 +1096,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
     mvc
       .perform(
-        get(s"/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
+        get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)

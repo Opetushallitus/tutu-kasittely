@@ -119,7 +119,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   def haeViestinTyoversioPalauttaa404ElleiHakemustaLoydy(): Unit = {
     mvc
       .perform(
-        get(s"/api/viesti/tyoversio/1.2.246.562.11.00000000002")
+        get(s"/tutu-backend/api/viesti/tyoversio/1.2.246.562.11.00000000002")
       )
       .andExpect(status().isNotFound)
   }
@@ -131,7 +131,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests()
     mvc
       .perform(
-        get(s"/api/viesti/tyoversio/$hakemusOid")
+        get(s"/tutu-backend/api/viesti/tyoversio/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").value(hakemusId.get.toString))
@@ -147,7 +147,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       s"""{"kieli": "fi", "viestityyppi": "taydennyspyynto", "otsikko": "Testiviesti", "viesti": "Tämä on testiviesti"}"""
     mvc
       .perform(
-        put(s"/api/viesti/$hakemusOid")
+        put(s"/tutu-backend/api/viesti/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(newViesti)
@@ -166,7 +166,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       s"""{"id": "${viesti.id.get}", "hakemusId": "${hakemusId.get}", "kieli": "fi", "viestityyppi": "taydennyspyynto", "otsikko": "Päivitetty", "viesti": "Päivitetty teksti"}"""
     mvc
       .perform(
-        put(s"/api/viesti/$hakemusOid")
+        put(s"/tutu-backend/api/viesti/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(updatedViesti)
@@ -186,7 +186,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     val viesti = viestiRepository.haeVahvistamatonViesti(hakemusId.get).get
     mvc
       .perform(
-        get(s"/api/viesti/tyoversio/$hakemusOid")
+        get(s"/tutu-backend/api/viesti/tyoversio/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").value(viesti.id.get.toString))
@@ -206,7 +206,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     )
     mvc
       .perform(
-        get(s"/api/viesti/${existing.id.get}")
+        get(s"/tutu-backend/api/viesti/${existing.id.get}")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").value(existing.id.get.toString))
@@ -243,7 +243,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     )
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(3)))
@@ -256,7 +256,7 @@ class ViestiControllerTest extends IntegrationTestBase {
   def haeViestilistaPalauttaaKannastaLoytyvatVahvistetutViestitSortattunaAikaleimanMukaan(): Unit = {
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:desc")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid?sort=vahvistettu:desc")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(3)))
@@ -266,7 +266,7 @@ class ViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:asc")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid?sort=vahvistettu:asc")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$[0].otsikko").value("Toinen"))
@@ -279,19 +279,19 @@ class ViestiControllerTest extends IntegrationTestBase {
   def haeViestilistaPalauttaa400JosSorttausParametritVirheellisest(): Unit = {
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid?sort=hopohopolopolopo")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid?sort=hopohopolopolopo")
       )
       .andExpect(status().isBadRequest)
 
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid?sort=vahvistettu:hopo")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid?sort=vahvistettu:hopo")
       )
       .andExpect(status().isBadRequest)
 
     mvc
       .perform(
-        get(s"/api/viestilista/$hakemusOid?sort=eiootammoistakenttaa:desc")
+        get(s"/tutu-backend/api/viestilista/$hakemusOid?sort=eiootammoistakenttaa:desc")
       )
       .andExpect(status().isBadRequest)
   }
@@ -304,7 +304,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     mvc
       .perform(
         MockMvcRequestBuilders
-          .delete(s"/api/viesti/${viesti.id}")
+          .delete(s"/tutu-backend/api/viesti/${viesti.id}")
           .`with`(csrf())
       )
       .andExpect(status().isNoContent)
@@ -322,7 +322,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     mvc
       .perform(
         MockMvcRequestBuilders
-          .delete(s"/api/viesti/${idCandidate.toString}")
+          .delete(s"/tutu-backend/api/viesti/${idCandidate.toString}")
           .`with`(csrf())
       )
       .andExpect(status().isNotFound)
@@ -336,7 +336,7 @@ class ViestiControllerTest extends IntegrationTestBase {
       s"""{"kieli": "fi", "viestityyppi": "taydennyspyynto", "otsikko": "Testiviesti", "teksti": "Tämä on testiviesti"}"""
     mvc
       .perform(
-        put(s"/api/viesti/1.2.246.562.11.00000000002")
+        put(s"/tutu-backend/api/viesti/1.2.246.562.11.00000000002")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(newViesti)
@@ -351,7 +351,7 @@ class ViestiControllerTest extends IntegrationTestBase {
     initAtaruHakemusRequests()
     val result = mvc
       .perform(
-        get(s"/api/viesti/oletussisalto/$hakemusOid/taydennyspyynto")
+        get(s"/tutu-backend/api/viesti/oletussisalto/$hakemusOid/taydennyspyynto")
       )
       .andExpect(status().isOk)
       .andReturn()

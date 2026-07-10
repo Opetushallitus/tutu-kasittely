@@ -96,7 +96,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/hakemus/hakemus-333/yhteinenkasittely")
+        get(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$").isArray)
@@ -126,7 +126,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        post(s"/api/hakemus/hakemus-333/yhteinenkasittely")
+        post(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(postBodyAsJson)
@@ -135,7 +135,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/hakemus/hakemus-333/yhteinenkasittely")
+        get(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(2)))
@@ -156,7 +156,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/ykViestiOnkoViesteja")
+        get(s"/tutu-backend/api/ykViestiOnkoViesteja")
       )
       .andExpect(status().isOk)
       .andExpect(content().string("true"))
@@ -177,7 +177,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/ykSaapuneetViestit?sort=tila:asc")
+        get(s"/tutu-backend/api/ykSaapuneetViestit?sort=tila:asc")
       )
       .andExpect(status().isOk)
       .andExpect(
@@ -220,7 +220,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        patch(s"/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
+        patch(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(patchBodyAsJson)
@@ -229,7 +229,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/hakemus/hakemus-333/yhteinenkasittely")
+        get(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(2)))
@@ -251,7 +251,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/ykLahetetytViestit")
+        get(s"/tutu-backend/api/ykLahetetytViestit")
       )
       .andExpect(status().isOk)
       .andExpect(
@@ -292,7 +292,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        patch(s"/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}/luettu")
+        patch(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}/luettu")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(patchBodyAsJson)
@@ -301,7 +301,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/hakemus/hakemus-333/yhteinenkasittely")
+        get(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(2)))

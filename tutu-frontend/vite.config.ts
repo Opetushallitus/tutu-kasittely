@@ -8,18 +8,25 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const portStr = env.PORT || '3123';
 
-  const configJs = `
-    window.configuration = {
-      IS_DEV: ${mode === 'development'},
-      IS_PROD: ${mode === 'production'},
-      IS_TEST: ${mode === 'test'},
-      VIRKAILIJA_URL: "${env.VIRKAILIJA_URL}",
-      TUTU_BACKEND: "${env.TUTU_BACKEND}",
-      PUBLIC_TOLGEE_API_URL: "${env.PUBLIC_TOLGEE_API_URL}",
-      PUBLIC_TOLGEE_API_KEY: "${env.PUBLIC_TOLGEE_API_KEY}",
-    };
-  `;
-  fs.writeFileSync(path.resolve(__dirname, 'public/config.js'), configJs);
+  if (mode !== 'production') {
+    const configJs = `
+      window.configuration = {
+        IS_DEV: ${mode === 'development'},
+        IS_PROD: ${mode === 'production'},
+        IS_TEST: ${mode === 'test'},
+        VIRKAILIJA_URL: "${env.VIRKAILIJA_URL}",
+        TUTU_BACKEND: "${env.TUTU_BACKEND}",
+        PUBLIC_TOLGEE_API_URL: "${env.PUBLIC_TOLGEE_API_URL}",
+        PUBLIC_TOLGEE_API_KEY: "${env.PUBLIC_TOLGEE_API_KEY}",
+      };
+    `;
+    fs.writeFileSync(path.resolve(__dirname, 'public/config.js'), configJs);
+  } else {
+    const configPath = path.resolve(__dirname, 'public/config.js');
+    if (fs.existsSync(configPath)) {
+      fs.unlinkSync(configPath);
+    }
+  }
 
   const cspHeaders = [
     "default-src 'self'",
@@ -71,6 +78,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    base: '/tutu-frontend/',
     plugins: [react(), ...(mode === 'test' ? [stripExternalFontsInTest] : [])],
     resolve: {
       alias: {

@@ -134,7 +134,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/hakemus/1.2.246.562.11.00000000000002354670")
+        get("/tutu-backend/api/hakemus/1.2.246.562.11.00000000000002354670")
       )
       .andExpect(status().isNotFound)
       .andExpect(content().contentType(MediaType.valueOf("text/plain; charset=UTF-8")))
@@ -164,7 +164,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put(s"/api/hakemus/$hakemusOid")
+        put(s"/tutu-backend/api/hakemus/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -249,7 +249,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006668"), 0))
     mockMvc
       .perform(
-        get("/api/hakemuslista")
+        get("/tutu-backend/api/hakemuslista")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -343,7 +343,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/hakemus/1.2.246.562.11.00000000000000006667")
+        get("/tutu-backend/api/hakemus/1.2.246.562.11.00000000000000006667")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -385,7 +385,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/hakemuslista?nayta=omat&hakemuskoskee=4")
+        get("/tutu-backend/api/hakemuslista?nayta=omat&hakemuskoskee=4")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -408,7 +408,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/liite/metadata/${hakemusOid.toString}?avaimet=key1,key2")
+        get(s"/tutu-backend/api/liite/metadata/${hakemusOid.toString}?avaimet=key1,key2")
       )
       .andExpect(status().isOk)
       .andExpect(content().string("[]"))
@@ -463,7 +463,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put(s"/api/hakemus/$hakemusOid")
+        put(s"/tutu-backend/api/hakemus/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -489,7 +489,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        patch(s"/api/hakemus/${hakemusOid.toString}/asiatunnus")
+        patch(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/asiatunnus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -502,7 +502,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/hakemus/${hakemusOid.toString}")
+        get(s"/tutu-backend/api/hakemus/${hakemusOid.toString}")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -524,7 +524,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        patch(s"/api/hakemus/${hakemusOid.toString}/asiatunnus")
+        patch(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/asiatunnus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -561,7 +561,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
+        get("/tutu-backend/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
       )
       .andExpect(status().isOk)
 
@@ -607,7 +607,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
+        get("/tutu-backend/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
       )
       .andExpect(status().isOk)
 
@@ -626,7 +626,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
+        get("/tutu-backend/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
       )
       .andExpect(status().isBadRequest)
   }
@@ -652,7 +652,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/hakemuslista?hakemuskoskee=1&hakemuskoskee=4")
+        get("/tutu-backend/api/hakemuslista?hakemuskoskee=1&hakemuskoskee=4")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -683,21 +683,21 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     // Name hit: "Testi Kolmas Hakija" contains "Kolmas"
     mockMvc
-      .perform(get("/api/hakemuslista?haku=Kolmas"))
+      .perform(get("/tutu-backend/api/hakemuslista?haku=Kolmas"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006667"))
 
     // Asiatunnus hit: set to "OPH-4321-2025" for hakemus 6667 in Order 7
     mockMvc
-      .perform(get("/api/hakemuslista?haku=OPH-4321"))
+      .perform(get("/tutu-backend/api/hakemuslista?haku=OPH-4321"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006667"))
 
     // No match
     mockMvc
-      .perform(get("/api/hakemuslista?haku=EiLöydyMitään"))
+      .perform(get("/tutu-backend/api/hakemuslista?haku=EiLöydyMitään"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
@@ -719,7 +719,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        patch(s"/api/hakemus/${hakemusOid.toString}/esittelypvm")
+        patch(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/esittelypvm")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -732,7 +732,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/hakemus/${hakemusOid.toString}")
+        get(s"/tutu-backend/api/hakemus/${hakemusOid.toString}")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -762,7 +762,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        patch(s"/api/hakemus/${hakemusOid.toString}/esittelypvm")
+        patch(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/esittelypvm")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -775,7 +775,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/hakemus/${hakemusOid.toString}")
+        get(s"/tutu-backend/api/hakemus/${hakemusOid.toString}")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -793,7 +793,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   def haeHakemuksetHaullaLoytyy(): Unit = {
     // "Testi Toka Hakija"
     mockMvc
-      .perform(get("/api/hakemus/haku?haku=Toka"))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku=Toka"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
@@ -801,7 +801,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadHakemukset), any())
 
     mockMvc
-      .perform(get("/api/hakemus/haku?haku=Testi Toka"))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku=Testi Toka"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
@@ -813,20 +813,20 @@ class HakemusControllerTest extends IntegrationTestBase {
   def haeHakemuksetHaullaTutkintoFilterLoytyy(): Unit = {
     // Kaikille hakemuksille on luotu tutkinnot, joilla oppilaitos = "Butan Amattikoulu".
     mockMvc
-      .perform(get("/api/hakemus/haku?oppilaitos=Butan"))
+      .perform(get("/tutu-backend/api/hakemus/haku?oppilaitos=Butan"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(4))
 
     // Yhdistetty: hakusana + oppilaitos-suodatin
     mockMvc
-      .perform(get("/api/hakemus/haku?haku=Toka&oppilaitos=Butan"))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku=Toka&oppilaitos=Butan"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     // Olematon oppilaitos ei tuota tuloksia
     mockMvc
-      .perform(get("/api/hakemus/haku?oppilaitos=EiOleOppilaitos"))
+      .perform(get("/tutu-backend/api/hakemus/haku?oppilaitos=EiOleOppilaitos"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
@@ -836,7 +836,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTyhjaHakuPalauttaaTyhjanTuloksen(): Unit = {
     mockMvc
-      .perform(get("/api/hakemus/haku?haku="))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku="))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
       .andExpect(jsonPath("$.items.length()").value(0))
@@ -847,13 +847,13 @@ class HakemusControllerTest extends IntegrationTestBase {
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaNakymaMaaritteleeHakualueen(): Unit = {
     mockMvc
-      .perform(get("/api/hakemus/haku?haku=Toka&nakyma=perustiedot"))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku=Toka&nakyma=perustiedot"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     mockMvc
-      .perform(get("/api/hakemus/haku?haku=Toka&nakyma=tutkinnot"))
+      .perform(get("/tutu-backend/api/hakemus/haku?haku=Toka&nakyma=tutkinnot"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
@@ -922,19 +922,19 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     // Kaikilla hakemuksilla on tutkinnot joilla maakoodiuri = "maatjavaltiot2_762"
     mockMvc
-      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762"))
+      .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(12))
 
     // Lista maita
     mockMvc
-      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&suoritusmaa=maatjavaltiot2_762"))
+      .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&suoritusmaa=maatjavaltiot2_762"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(12))
 
     // Tuntematon suoritusmaa -> 0 tulosta
     mockMvc
-      .perform(get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000"))
+      .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
@@ -949,21 +949,21 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     // Myönteinen päätös -> vain hakemus 6666 (kelpoisuuden myonteinenPaatos=true)
     mockMvc
-      .perform(get("/api/hakemus/haku?myonteinen=true"))
+      .perform(get("/tutu-backend/api/hakemus/haku?myonteinen=true"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     // Kielteinen päätös -> vain hakemus 6665 (kelpoisuuden myonteinenPaatos=false)
     mockMvc
-      .perform(get("/api/hakemus/haku?kielteinen=true"))
+      .perform(get("/tutu-backend/api/hakemus/haku?kielteinen=true"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
 
     // Molemmat valittu -> hakemukset joilla on jokin päätös (6665 ja 6666)
     mockMvc
-      .perform(get("/api/hakemus/haku?myonteinen=true&kielteinen=true"))
+      .perform(get("/tutu-backend/api/hakemus/haku?myonteinen=true&kielteinen=true"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(2))
       .andExpect(
@@ -983,32 +983,32 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     // Kelpoisuushaku
     mockMvc
-      .perform(get("/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"))
+      .perform(get("/tutu-backend/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     mockMvc
-      .perform(get("/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"))
+      .perform(get("/tutu-backend/api/hakemus/haku?kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
 
     // Tuntematon kelpoisuus -> 0 tulosta
     mockMvc
-      .perform(get("/api/hakemus/haku?kelpoisuus=tuntematonKelpoisuus"))
+      .perform(get("/tutu-backend/api/hakemus/haku?kelpoisuus=tuntematonKelpoisuus"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
 
     // Opetettava aine -haku
     mockMvc
-      .perform(get("/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali"))
+      .perform(get("/tutu-backend/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     mockMvc
-      .perform(get("/api/hakemus/haku?opetettavatAineet=vieras kieli_englanti"))
+      .perform(get("/tutu-backend/api/hakemus/haku?opetettavatAineet=vieras kieli_englanti"))
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
@@ -1016,7 +1016,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     // Molemmat valittu
     mockMvc
       .perform(
-        get("/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali&opetettavatAineet=vieras kieli_englanti")
+        get(
+          "/tutu-backend/api/hakemus/haku?opetettavatAineet=vieras kieli_portugali&opetettavatAineet=vieras kieli_englanti"
+        )
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(2))
@@ -1038,7 +1040,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         get(
-          "/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
+          "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
         )
       )
       .andExpect(status().isOk)
@@ -1048,7 +1050,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     // Hakemus 6665: mutta paatostiedolla ei tutkintoId
     mockMvc
       .perform(
-        get("/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa")
+        get(
+          "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"
+        )
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
@@ -1057,7 +1061,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     mockMvc
       .perform(
         get(
-          "/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
+          "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
         )
       )
       .andExpect(status().isOk)

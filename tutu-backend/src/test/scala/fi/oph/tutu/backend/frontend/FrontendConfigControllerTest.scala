@@ -1,23 +1,24 @@
-package fi.oph.tutu.backend.controller
+package fi.oph.tutu.backend.frontend
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import org.hamcrest.Matchers.{containsString, equalTo}
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.{WithAnonymousUser, WithMockUser}
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
-class UserControllerTest extends IntegrationTestBase {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class FrontendConfigControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
@@ -32,41 +33,17 @@ class UserControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  def get200ResponseFromHealthcheckUnautheticated(): Unit =
-    mockMvc
-      .perform(
-        get("/tutu-backend/api/healthcheck")
-          .accept(MediaType.APPLICATION_JSON)
-      )
-      .andExpect(status.isOk)
-      .andExpect(content.string(equalTo("Tutu is alive and kicking!")))
-
-  @Test
   @WithMockUser(username = "testuser", roles = Array("USER"))
-  def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit =
-    mockMvc
-      .perform(get("/tutu-backend/api/session"))
-      .andExpect(status().isOk)
-      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-
-  @Test
-  @WithAnonymousUser
-  def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit =
-    mockMvc
-      .perform(get("/tutu-backend/api/session"))
-      .andExpect(status().isUnauthorized)
-
-  @Test
-  def unauthenticatedFrontendRequestsRedirectToCas(): Unit =
-    mockMvc
-      .perform(get("/tutu-frontend/"))
-      .andExpect(status().isFound)
-      .andExpect(header().string("Location", containsString("https://virkailija.testiopintopolku.fi/cas/login")))
-
-  @Test
-  def unauthenticatedFrontendConfigIsPublic(): Unit =
+  def returnsRuntimeConfigJs(): Unit =
     mockMvc
       .perform(get("/tutu-frontend/config.js"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.valueOf("application/javascript")))
+      .andExpect(header().string("Cache-Control", containsString("no-store")))
+      .andExpect(content().string(containsString("window.configuration = ")))
+      .andExpect(content().string(containsString("\"VIRKAILIJA_URL\"")))
+      .andExpect(content().string(containsString("\"TUTU_BACKEND\" : \"\"")))
+      .andExpect(content().string(containsString("\"IS_TEST\" : true")))
+      .andExpect(content().string(containsString("\"PUBLIC_TOLGEE_API_URL\"")))
+      .andExpect(content().string(containsString("\"PUBLIC_TOLGEE_API_KEY\"")))
 }

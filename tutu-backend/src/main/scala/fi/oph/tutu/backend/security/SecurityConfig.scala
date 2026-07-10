@@ -12,7 +12,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.cas.ServiceProperties
@@ -23,7 +22,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.context.{HttpSessionSecurityContextRepository, SecurityContextRepository}
+import org.springframework.security.web.savedrequest.{HttpSessionRequestCache, RequestCache}
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
 import org.springframework.session.web.http.{CookieSerializer, DefaultCookieSerializer}
 import org.springframework.web.cors.{CorsConfiguration, UrlBasedCorsConfigurationSource}
@@ -39,7 +40,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
 @EnableJdbcHttpSession(tableName = "VIRKAILIJA_SESSION")
 class SecurityConfig {
   final private val SPRING_CAS_SECURITY_CHECK_PATH =
-    "/api/j_spring_cas_security_check"
+    "/tutu-backend/api/j_spring_cas_security_check"
 
   @Value("${cas.url}")
   val cas_url: String = null
@@ -49,6 +50,9 @@ class SecurityConfig {
 
   @Value("${opintopolku.virkailija.url}")
   val opintopolku_virkailija_domain: String = null
+
+  @Value("${tutu.ui.url}")
+  val tutu_ui_url: String = null
 
   @Bean
   def auditLog(): AuditLog = AuditLog
@@ -122,7 +126,6 @@ class SecurityConfig {
 
   @Bean
   def casAuthenticationEntrypoint(
-    environment: Environment,
     serviceProperties: ServiceProperties
   ): CasAuthenticationEntryPoint = {
     val casAuthenticationEntryPoint = CasAuthenticationEntryPoint()
@@ -160,6 +163,18 @@ class SecurityConfig {
       .authenticationProvider(casAuthenticationProvider)
       .build()
 
+  @Bean
+  def requestCache(): RequestCache =
+    new HttpSessionRequestCache()
+
+  @Bean
+  def casSuccessHandler(requestCache: RequestCache): SavedRequestAwareAuthenticationSuccessHandler = {
+    val successHandler = new SavedRequestAwareAuthenticationSuccessHandler()
+    successHandler.setRequestCache(requestCache)
+    successHandler.setDefaultTargetUrl(tutu_ui_url)
+    successHandler
+  }
+
   class PreserveXForwardedForFilter extends Filter {
     override def doFilter(req: ServletRequest, res: ServletResponse, chain: FilterChain): Unit = {
       val request = req.asInstanceOf[HttpServletRequest]
@@ -190,7 +205,8 @@ class SecurityConfig {
   def casAuthenticationFilter(
     authenticationManager: AuthenticationManager,
     serviceProperties: ServiceProperties,
-    securityContextRepository: SecurityContextRepository
+    securityContextRepository: SecurityContextRepository,
+    successHandler: SavedRequestAwareAuthenticationSuccessHandler
   ): CasAuthenticationFilter = {
     val casAuthenticationFilter = CasAuthenticationFilter()
     casAuthenticationFilter.setAuthenticationManager(authenticationManager)
@@ -201,10 +217,38 @@ class SecurityConfig {
     casAuthenticationFilter.setSecurityContextRepository(
       securityContextRepository
     )
+    casAuthenticationFilter.setAuthenticationSuccessHandler(successHandler)
     casAuthenticationFilter
   }
 
   @Bean
+  @Order(2)
+  def frontendFilterChain(
+    http: HttpSecurity,
+    casAuthenticationEntryPoint: CasAuthenticationEntryPoint,
+    requestCache: RequestCache
+  ): SecurityFilterChain = {
+    http
+      .securityMatcher("/tutu-frontend", "/tutu-frontend/", "/tutu-frontend/**")
+      .authorizeHttpRequests(requests =>
+        requests
+          .requestMatchers(
+            "/tutu-frontend/config.js",
+            "/tutu-frontend/assets/**",
+            "/tutu-frontend/favicon.ico"
+          )
+          .permitAll()
+          .anyRequest()
+          .fullyAuthenticated()
+      )
+      .requestCache(requestCacheConfigurer => requestCacheConfigurer.requestCache(requestCache))
+      .exceptionHandling(exceptionHandling => exceptionHandling.authenticationEntryPoint(casAuthenticationEntryPoint))
+      .headers(headers => headers.contentSecurityPolicy(csp => csp.policyDirectives(frontendContentSecurityPolicy)))
+      .build()
+  }
+
+  @Bean
+  @Order(3)
   def casFilterChain(
     http: HttpSecurity,
     authenticationFilter: CasAuthenticationFilter,
@@ -214,11 +258,11 @@ class SecurityConfig {
   ): SecurityFilterChain = {
 
     val SWAGGER_WHITELIST = List(
-      "/swagger-resources",
-      "/swagger-resources/**",
-      "/swagger-ui.html",
-      "/v3/api-docs/**",
-      "/swagger-ui/**"
+      "/tutu-backend/swagger-resources",
+      "/tutu-backend/swagger-resources/**",
+      "/tutu-backend/swagger-ui.html",
+      "/tutu-backend/v3/api-docs/**",
+      "/tutu-backend/swagger-ui/**"
     )
 
     http
@@ -226,8 +270,9 @@ class SecurityConfig {
       .authorizeHttpRequests(requests =>
         requests
           .requestMatchers(
-            "/api/csrf",
-            "/api/healthcheck"
+            "/tutu-backend/api/csrf",
+            "/tutu-backend/api/healthcheck",
+            SPRING_CAS_SECURITY_CHECK_PATH
           )
           .permitAll()
           .requestMatchers(SWAGGER_WHITELIST*)
@@ -238,9 +283,9 @@ class SecurityConfig {
       .csrf(csrf =>
         csrf
           .ignoringRequestMatchers(
-            "/api/healthcheck",
-            "/api/csrf",
-            "/api/ataru-hakemus"
+            "/tutu-backend/api/healthcheck",
+            "/tutu-backend/api/csrf",
+            "/tutu-backend/api/ataru-hakemus"
           )
       )
       .exceptionHandling(exceptionHandling =>
@@ -261,7 +306,7 @@ class SecurityConfig {
       )
       .logout(logout =>
         logout
-          .logoutUrl("/logout")
+          .logoutUrl("/tutu-backend/logout")
           .deleteCookies("JSESSIONID")
       )
       .build()
@@ -275,7 +320,7 @@ class SecurityConfig {
     casAuthenticationEntryPoint: CasAuthenticationEntryPoint
   ): SecurityFilterChain =
     http
-      .securityMatcher("/api/login")
+      .securityMatcher("/tutu-backend/api/login")
       .authorizeHttpRequests(requests =>
         requests
           .requestMatchers(SPRING_CAS_SECURITY_CHECK_PATH)
@@ -304,6 +349,22 @@ class SecurityConfig {
     val serializer = new DefaultCookieSerializer()
     serializer.setUseSecureCookie(true)
     serializer.setCookieName("JSESSIONID")
+    serializer.setCookiePath("/")
     serializer
   }
+
+  private def frontendContentSecurityPolicy: String =
+    List(
+      "default-src 'self'",
+      s"connect-src 'self' app.tolgee.io ${opintopolku_virkailija_domain} https://cdn.jsdelivr.net",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      s"script-src-elem 'self' 'unsafe-inline' ${opintopolku_virkailija_domain} https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
+      "img-src 'self' blob: data:",
+      "font-src 'self' fonts.gstatic.com",
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'"
+    ).mkString("; ")
 }

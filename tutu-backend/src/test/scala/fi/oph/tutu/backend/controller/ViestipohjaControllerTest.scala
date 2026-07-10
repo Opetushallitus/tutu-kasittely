@@ -19,13 +19,13 @@ class ViestipohjaControllerTest extends TekstipohjaControllerTestBase {
 
   override def haeTekstipohjaLista(): Seq[TekstipohjaListItem] = viestipohjaRepository.haeTekstipohjaLista()
 
-  override def pohjaListPath                = "/api/viestipohja"
-  override def pohjaListKategorioittainPath = "/api/viestipohja/kategorioittain"
-  override def kategoriaListPath            = "/api/viestipohja/kategoria"
-  override def pohjaSavePath                = "/api/viestipohja"
-  override def kategoriaSavePath            = "/api/viestipohja/kategoria"
+  override def pohjaListPath                = "/tutu-backend/api/viestipohja"
+  override def pohjaListKategorioittainPath = "/tutu-backend/api/viestipohja/kategorioittain"
+  override def kategoriaListPath            = "/tutu-backend/api/viestipohja/kategoria"
+  override def pohjaSavePath                = "/tutu-backend/api/viestipohja"
+  override def kategoriaSavePath            = "/tutu-backend/api/viestipohja/kategoria"
 
-  override def pohjaAccessPath(viestipohjaId: UUID): String = s"/api/viestipohja/$viestipohjaId"
+  override def pohjaAccessPath(viestipohjaId: UUID): String = s"/tutu-backend/api/viestipohja/$viestipohjaId"
 
   override def pohjaListAuditOperation: AuditOperation       = AuditOperation.ReadViestipohjat
   override def pohjaReadAuditOperation: AuditOperation       = AuditOperation.ReadViestipohja

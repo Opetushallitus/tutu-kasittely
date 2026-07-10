@@ -84,7 +84,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/migration/start")
+        get("/tutu-backend/api/migration/start")
           .param("key", "test-key")
           .accept(MediaType.APPLICATION_JSON)
       )
@@ -107,7 +107,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
   def testStartMigrationUnauthorized(): Unit = {
     mockMvc
       .perform(
-        get("/api/migration/start")
+        get("/tutu-backend/api/migration/start")
           .param("key", "test-key")
           .accept(MediaType.APPLICATION_JSON)
       )
@@ -129,7 +129,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/migration/start")
+        get("/tutu-backend/api/migration/start")
           .param("key", "test-key")
           .accept(MediaType.APPLICATION_JSON)
       )
@@ -154,7 +154,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/vanha-tutu/$id")
+        get(s"/tutu-backend/api/vanha-tutu/$id")
           .accept(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isOk)
@@ -179,7 +179,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
     val testId = java.util.UUID.randomUUID()
     mockMvc
       .perform(
-        get(s"/api/vanha-tutu/$testId")
+        get(s"/tutu-backend/api/vanha-tutu/$testId")
           .accept(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isUnauthorized)
@@ -194,7 +194,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
     val nonExistentId = java.util.UUID.randomUUID()
     mockMvc
       .perform(
-        get(s"/api/vanha-tutu/$nonExistentId")
+        get(s"/tutu-backend/api/vanha-tutu/$nonExistentId")
           .accept(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isNotFound)
@@ -210,7 +210,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
   def testGetVanhaTutuByIdInvalidId(): Unit = {
     mockMvc
       .perform(
-        get("/api/vanha-tutu/invalid-id")
+        get("/tutu-backend/api/vanha-tutu/invalid-id")
           .accept(MediaType.APPLICATION_JSON)
       )
       .andExpect(status().isInternalServerError)
