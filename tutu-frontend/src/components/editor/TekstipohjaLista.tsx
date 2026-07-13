@@ -110,7 +110,7 @@ const ListaSisalto = ({
     <Stack gap={theme.spacing(1)} data-testid="tekstipohja-lista-sisalto">
       {R.map(lista, (kategoria, kategoriaIndex) => (
         <Stack key={`kategoriaItem_${kategoriaIndex}`} gap={theme.spacing(1)}>
-          <OphTypography variant="h3">
+          <OphTypography variant="h5">
             {`${kategoriaIndex + 1}. ${kategoria.kategoriaNimi}`}
           </OphTypography>
           {R.map(kategoria.pohjat ?? [], (pohja, pohjaIndex) => (
