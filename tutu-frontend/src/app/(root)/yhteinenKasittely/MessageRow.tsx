@@ -29,8 +29,10 @@ enum Status {
 
 export default function MessageRow({
   message,
+  sentMessage = false,
 }: {
   message: YhteisenKasittelynViesti;
+  sentMessage: boolean;
 }) {
   const { t } = useTranslations();
   const { id, luotu, asiatunnus, hakija, hakemusOid, status } = message;
@@ -39,7 +41,9 @@ export default function MessageRow({
     <>
       <StyledNotRespondedIcon />
       <OphTypography variant="body1" data-testid={'viestin-status-vastaamatta'}>
-        {t('yhteinenKasittely.vastaamatta')}
+        {sentMessage
+          ? t('yhteinenKasittely.kysymysLahetetty')
+          : t('yhteinenKasittely.vastaamatta')}
       </OphTypography>
     </>
   );
@@ -48,7 +52,9 @@ export default function MessageRow({
     <>
       <StyledRespondedIcon />
       <OphTypography variant="body1" data-testid={'viestin-status-vastattu'}>
-        {t('yhteinenKasittely.vastattu')}
+        {sentMessage
+          ? t('yhteinenKasittely.vastausSaapunut')
+          : t('yhteinenKasittely.vastattu')}
       </OphTypography>
     </>
   );
