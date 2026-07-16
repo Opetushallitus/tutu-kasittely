@@ -56,7 +56,6 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto: 'Luokanopettaja',
-              opetuskieli: 'suomi',
             },
           ],
         },
