@@ -1,6 +1,5 @@
 'use client';
 
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
@@ -18,11 +17,9 @@ import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/[oid]/asiakirjat/compo
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/[oid]/asiakirjat/components/MallitTutkinnoista';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/[oid]/asiakirjat/components/SuostumusVahvistamiselle';
 import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/[oid]/asiakirjat/components/ValmistumisenVahvistus';
-import { CenteredRow } from '@/src/components/CenteredRow';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { StyledLink } from '@/src/components/StyledLink';
 import {
   alemmatTutkinnot,
   henkilotietojenLiitteet,
@@ -39,7 +36,6 @@ import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
 import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -65,26 +61,6 @@ const sisallonSuoratYlatasonOsiot = [
 ];
 const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
 const tutkintojenAliOsiot = [ylinTutkinto, alemmatTutkinnot, muutTutkinnot];
-
-const ExternalLink = ({
-  href,
-  label,
-  gap,
-}: {
-  href: string;
-  label: string;
-  gap: string;
-}) => {
-  return (
-    <StyledLink href={href} target="_black" rel="noopener">
-      <CenteredRow gap={gap}>
-        <OpenInNewIcon />
-        {label}
-      </CenteredRow>
-    </StyledLink>
-  );
-};
-
 export default function AsiakirjaPage() {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -249,7 +225,6 @@ const AsiakirjaPagePure = ({
 }) => {
   const theme = useTheme();
   const { t, getLanguage } = useTranslations();
-  const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
 
   /* ------------------------------- */
   /* Yhdistetään asiakirjojen tiedot */
@@ -289,11 +264,6 @@ const AsiakirjaPagePure = ({
         <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
           {t('hakemus.asiakirjat.otsikko')}
         </OphTypography>
-        <ExternalLink
-          gap={theme.spacing(1)}
-          label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
-          href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
-        />
       </Stack>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot

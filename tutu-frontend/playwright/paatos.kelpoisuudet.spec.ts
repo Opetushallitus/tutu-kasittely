@@ -724,15 +724,17 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
     'uo-ammattikokemuksenHuomioiminen-radio',
   );
 
-  [
-    'UlkomaillaHankittuKokonaan',
-    'SuomessaJaUlkomaillaHankittuKokonaan',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-  ].map(async (option) => {
-    await expect(
-      ammattikokemuksenHuomioiminenRadiot.locator(`input[value="${option}"]`),
-    ).toBeHidden();
-  });
+  await Promise.all(
+    [
+      'UlkomaillaHankittuKokonaan',
+      'SuomessaJaUlkomaillaHankittuKokonaan',
+      'SuomessaJaUlkomaillaHankittuOsittain',
+    ].map(async (option) => {
+      await expect(
+        ammattikokemuksenHuomioiminenRadiot.locator(`input[value="${option}"]`),
+      ).toBeHidden();
+    }),
+  );
 
   await selectOptionByValue(
     page,
@@ -785,19 +787,22 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
     ),
     { exact: true },
   );
-  [
-    'SuomessaHankittuOsittain',
-    'UlkomaillaHankittuOsittain',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-  ].map(async (option) => {
-    await ammattikokemuksenHuomioiminenRadiot
-      .locator(`input[value="${option}"]`)
-      .click();
-    await expect(osaamisenTaydentamisenTavat).toBeVisible();
-    await ammattikokemuksenHuomioiminenRadiot
-      .locator(`input[value="${option}"]`)
-      .click();
-  });
+
+  await Promise.all(
+    [
+      'SuomessaHankittuOsittain',
+      'UlkomaillaHankittuOsittain',
+      'SuomessaJaUlkomaillaHankittuOsittain',
+    ].map(async (option) => {
+      await ammattikokemuksenHuomioiminenRadiot
+        .locator(`input[value="${option}"]`)
+        .click();
+      await expect(osaamisenTaydentamisenTavat).toBeVisible();
+      await ammattikokemuksenHuomioiminenRadiot
+        .locator(`input[value="${option}"]`)
+        .click();
+    }),
+  );
 
   await page
     .getByTestId('uo-suomessaSuoritettujenOpintojenHuomioiminen-radio')
