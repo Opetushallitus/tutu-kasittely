@@ -1,7 +1,9 @@
 'use client';
-import { Stack } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -24,21 +26,22 @@ export const MyonteinenPaatosSteiner: React.FC<MyonteinenPaatosProps> = ({
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
   return (
-    <Stack direction="column" gap={theme.spacing(2)}>
-      <OphTypography variant="h5">
-        {t('hakemus.paatos.myonteinenPaatos.otsikko')}
-      </OphTypography>
-      <OphCheckbox
-        data-testid="myonteinenPaatos-taydentavat-opinnot"
-        label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
-        checked={lisavaatimukset?.taydentavatOpinnot || false}
-        onChange={(e) =>
-          updateLisavaatimukset({
-            ...lisavaatimukset,
-            taydentavatOpinnot: e.target.checked,
-          })
-        }
-      />
-    </Stack>
+    <OphFormFieldWrapper
+      label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
+      sx={{ gap: theme.spacing(2) }}
+      renderInput={() => (
+        <OphCheckbox
+          data-testid="myonteinenPaatos-taydentavat-opinnot"
+          label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}
+          checked={lisavaatimukset?.taydentavatOpinnot || false}
+          onChange={(e) =>
+            updateLisavaatimukset({
+              ...lisavaatimukset,
+              taydentavatOpinnot: e.target.checked,
+            })
+          }
+        />
+      )}
+    />
   );
 };

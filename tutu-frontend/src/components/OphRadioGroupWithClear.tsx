@@ -2,6 +2,7 @@
 
 import { Stack, Box } from '@mui/material';
 import {
+  OphFormFieldWrapper,
   OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
@@ -91,6 +92,7 @@ export const OphRadioGroupWithClear = <T extends string>({
           <OphTypography
             variant={labelVariant}
             sx={{ minWidth: inlineLabelMinWidth }}
+            component="label"
           >
             {label}
           </OphTypography>
@@ -112,16 +114,22 @@ export const OphRadioGroupWithClear = <T extends string>({
   }
 
   return (
-    <Stack direction="column" spacing={0}>
-      <Stack direction="row" alignItems="center">
-        {label && (
-          <OphTypography variant={labelVariant} id={labelId}>
-            {label}
-          </OphTypography>
-        )}
-        {clearButton}
-      </Stack>
-      {radioGroup}
-    </Stack>
+    <OphFormFieldWrapper
+      sx={{ flexDirection: 'column' }}
+      renderInput={() => (
+        <div>
+          <OphFormFieldWrapper
+            sx={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              textWrapMode: 'nowrap',
+            }}
+            label={label ? label : undefined}
+            renderInput={() => <div>{clearButton}</div>}
+          />
+          {radioGroup}
+        </div>
+      )}
+    />
   );
 };
