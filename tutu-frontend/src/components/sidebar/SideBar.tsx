@@ -2,13 +2,11 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { Stack, styled, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { usePathname } from 'next/navigation';
 import React from 'react';
 
 import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
 import { Paatos } from '@/src/components/sidebar/Paatos';
 import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
-import { Taydennyspyynto } from '@/src/components/sidebar/Taydennyspyynto';
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -23,16 +21,6 @@ const CheckCircleIconBlue = styled(CheckCircleOutlineRoundedIcon)({
   paddingTop: '3px',
 });
 
-const SHOW_TAYDENNYSPYYNTO_PATHS = ['/asiakirjat', '/tutkinnot'];
-
-const pathContainsOneOf = (options: string[], path: string) => {
-  return options.some((opt) => path.includes(opt));
-};
-
-const showTaydennyspyynto = (pathName: string) => {
-  return pathContainsOneOf(SHOW_TAYDENNYSPYYNTO_PATHS, pathName);
-};
-
 const SidebarInfoStack = styled(Stack)(({ theme }) => ({
   backgroundColor: ophColors.grey50,
   padding: theme.spacing(1, 1),
@@ -41,7 +29,6 @@ const SidebarInfoStack = styled(Stack)(({ theme }) => ({
 export const SideBar = () => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const pathName = usePathname();
   const {
     hakemusState: { editedData: hakemus },
   } = useHakemus();
@@ -64,11 +51,6 @@ export const SideBar = () => {
         <HakemusKoskee />
         <Paatos />
       </SidebarInfoStack>
-      {showTaydennyspyynto(pathName) && (
-        <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
-          <Taydennyspyynto />
-        </SidebarInfoStack>
-      )}
       <ToimintoLinkki
         href={`/hakemus/${hakemusOid}/editori/viesti`}
         gap={theme.spacing(1)}
