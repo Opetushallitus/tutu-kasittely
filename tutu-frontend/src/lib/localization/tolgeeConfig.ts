@@ -14,16 +14,20 @@ const NAMESPACE = 'tutu-kasittely';
 export function TolgeeBase() {
   const tolgee = Tolgee().use(FormatIcu());
 
+  const defaultSettings = {
+    availableLanguages: ['fi', 'sv', 'en'],
+    defaultLanguage: 'fi',
+    defaultNs: NAMESPACE,
+    ns: [NAMESPACE],
+  };
+
   // Testeissä ei haeta käännöksiä verkosta lainkaan. Annetaan tyhjä
   // staticData, jolloin Tolgee latautuu heti ja renderöi käännösavaimet
   // sellaisenaan. Näin Playwright-testit ovat deterministisiä eivätkä riipu
   // lokalisointipalvelusta.
   if (isTest()) {
     return tolgee.updateDefaults({
-      availableLanguages: ['fi', 'sv', 'en'],
-      defaultLanguage: 'fi',
-      defaultNs: NAMESPACE,
-      ns: [NAMESPACE],
+      ...defaultSettings,
       staticData: {
         [`fi:${NAMESPACE}`]: {},
         [`sv:${NAMESPACE}`]: {},
@@ -31,6 +35,9 @@ export function TolgeeBase() {
       },
     });
   }
+
+  const apiKey = tolgeeApiKey();
+  const apiUrl = tolgeeApiUrl();
 
   return tolgee
     .use(
@@ -41,13 +48,9 @@ export function TolgeeBase() {
       }),
     )
     .use(DevTools())
-    .updateDefaults({
-      availableLanguages: ['fi', 'sv', 'en'],
-      defaultLanguage: 'fi',
-      defaultNs: NAMESPACE,
-      ns: [NAMESPACE],
-      apiKey: tolgeeApiKey(),
-      apiUrl: tolgeeApiUrl(),
-      projectId: 11100,
-    });
+    .updateDefaults(
+      apiKey?.trim() && apiUrl?.trim()
+        ? { ...defaultSettings, apiKey, apiUrl, projectId: 11100 }
+        : defaultSettings,
+    );
 }

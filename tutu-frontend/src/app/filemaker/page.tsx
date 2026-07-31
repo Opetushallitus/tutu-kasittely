@@ -29,7 +29,7 @@ export default function FilemakerListViewPage() {
       t={t}
       hasTutuUserRights={hasTutuUserRights}
       tabsButtons={[
-        { linkPath: BASE_NAME, tabName: 'hakemukset', active: false },
+        { linkPath: `${BASE_NAME}/`, tabName: 'hakemukset', active: false },
         { tabName: 'filemakerHakemukset', active: true },
       ]}
     >

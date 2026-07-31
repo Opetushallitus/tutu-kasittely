@@ -119,7 +119,7 @@ export default function SivuValinta({
       <TabButton
         tabName={'sivuValinta.hakemukset'}
         active={active === SelectedPage.Hakemukset}
-        linkPath={BASE_NAME}
+        linkPath={`${BASE_NAME}/`}
       />
       <TabButton
         tabName={'sivuValinta.yhteinenKasittely'}

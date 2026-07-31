@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
   const portStr = env.PORT || '3123';
 
   if (mode !== 'production') {
+    const apiUrl = env.PUBLIC_TOLGEE_API_URL ?? '';
+    const apiKey = env.PUBLIC_TOLGEE_API_KEY ?? '';
+
     const configJs = `
       window.configuration = {
         IS_DEV: ${mode === 'development'},
@@ -16,8 +19,8 @@ export default defineConfig(({ mode }) => {
         IS_TEST: ${mode === 'test'},
         VIRKAILIJA_URL: "${env.VIRKAILIJA_URL}",
         TUTU_BACKEND: "${env.TUTU_BACKEND}",
-        PUBLIC_TOLGEE_API_URL: "${env.PUBLIC_TOLGEE_API_URL}",
-        PUBLIC_TOLGEE_API_KEY: "${env.PUBLIC_TOLGEE_API_KEY}",
+        PUBLIC_TOLGEE_API_URL: "${apiUrl}",
+        PUBLIC_TOLGEE_API_KEY: "${apiKey}",
       };
     `;
     fs.writeFileSync(path.resolve(__dirname, 'public/config.js'), configJs);
@@ -81,7 +84,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
-    base: '/tutu-frontend/',
+    base: '/',
     plugins: [react(), ...(mode === 'test' ? [stripExternalFontsInTest] : [])],
     resolve: {
       alias: {
