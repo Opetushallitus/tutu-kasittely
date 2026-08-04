@@ -138,7 +138,7 @@ case class Kelpoisuus(
   id: Option[UUID] = None,
   paatostietoId: Option[UUID] = None,
   kelpoisuus: Option[String] = None,
-  opetettavaAine: Option[String] = None,
+  opetettavaAine: Seq[String] = Seq.empty,
   muuAmmattiKuvaus: Option[String] = None,
   direktiivitaso: Option[Direktiivitaso] = None,
   kansallisestiVaadittavaDirektiivitaso: Option[Direktiivitaso] = None,

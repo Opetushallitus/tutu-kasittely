@@ -679,7 +679,7 @@ def bindExtractKelpoisuus(
     val nimi: Option[String] = node.kelpoisuus
       .map(_.split("_"))
       .map(_.last)
-    val opetettavaAine: Option[String]                        = node.opetettavaAine
+    val opetettavaAine: Option[String]                        = Some(node.opetettavaAine.mkString("\n").trim)
     val direktiiviTaso: Option[String]                        = node.direktiivitaso.map(_.toString)
     val direktiivitasoLisatiedot: Option[String]              = node.direktiivitasoLisatiedot
     val kansallisestiVaadittavaDirektiivitaso: Option[String] =

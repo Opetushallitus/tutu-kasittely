@@ -10,7 +10,7 @@ import { Kelpoisuus, PaatosTieto } from '@/src/lib/types/paatos';
 
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,
-  opetettavaAine: '',
+  opetettavaAine: [],
   myonteisenPaatoksenLisavaatimukset: undefined,
   kielteisenPaatoksenPerustelut: undefined,
 });
