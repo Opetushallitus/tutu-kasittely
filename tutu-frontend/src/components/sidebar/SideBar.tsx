@@ -3,7 +3,6 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { Stack, styled, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 
 import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
 import { Paatos } from '@/src/components/sidebar/Paatos';
@@ -30,7 +29,6 @@ const SidebarInfoStack = styled(Stack)(({ theme }) => ({
 export const SideBar = () => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const { pathname } = useLocation();
   const {
     hakemusState: { editedData: hakemus },
   } = useHakemus();
@@ -53,11 +51,6 @@ export const SideBar = () => {
         <HakemusKoskee />
         <Paatos />
       </SidebarInfoStack>
-      {showTaydennyspyynto(pathname) && (
-        <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
-          <Taydennyspyynto />
-        </SidebarInfoStack>
-      )}
       <ToimintoLinkki
         path={`/hakemus/${hakemusOid}/editori/viesti`}
         gap={theme.spacing(1)}

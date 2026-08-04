@@ -7,7 +7,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useMemo } from 'react';
 
-
+import { AmmattikokemusJaElinikainenOppiminenComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/AmmattikokemusJaElinikainenOppiminenComponent';
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
 import { olennaisiaErojaOptions } from '@/src/app/hakemus/paatostiedot/constants';
 import {
@@ -26,8 +26,6 @@ import {
   KorvaavaToimenpide,
   MyonteisenPaatoksenLisavaatimusUpdateCallback,
 } from '@/src/lib/types/paatos';
-
-import { AmmattikokemusJaElinikainenOppiminenComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/AmmattikokemusJaElinikainenOppiminenComponent';
 
 export type MyonteinenKelpoisuusPaatosProps = {
   lisavaatimukset?: KelpoisuudenLisavaatimukset | null;

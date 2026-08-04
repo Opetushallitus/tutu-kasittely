@@ -32,7 +32,9 @@ export default function SentMessages({
   const messageRows =
     messageList && user
       ? R.map(messageList, (message, index) => {
-          return <MessageRow message={message} key={index} />;
+          return (
+            <MessageRow message={message} sentMessage={true} key={index} />
+          );
         })
       : [];
 

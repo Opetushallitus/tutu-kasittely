@@ -108,9 +108,16 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         );
 
   const updateTutkintoTaiOpintoFieldAction = (fieldVal: string) => {
+    const tobeTutkinto = { ...tutkintoTaiOpinto };
+    if (fieldVal !== null) {
+      tobeTutkinto.myonteinenPaatos = undefined;
+      tobeTutkinto.opetuskieli = undefined;
+      tobeTutkinto.kielteisenPaatoksenPerustelut = undefined;
+      tobeTutkinto.myonteisenPaatoksenLisavaatimukset = undefined;
+    }
     updateTutkintoTaiOpintoAction(
       {
-        ...tutkintoTaiOpinto,
+        ...tobeTutkinto,
         tutkintoTaiOpinto: fieldVal,
       },
       index,
