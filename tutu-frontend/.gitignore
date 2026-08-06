@@ -26,7 +26,7 @@ next-env.d.ts
 # production
 /build
 /dist
-/public/config.js
+/public/tutu-frontend/config.js
 
 # misc
 .DS_Store

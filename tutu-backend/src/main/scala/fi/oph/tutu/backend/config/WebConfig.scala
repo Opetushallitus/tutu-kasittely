@@ -28,7 +28,7 @@ class WebConfig extends WebMvcConfigurer {
 
     registry
       .addResourceHandler("/tutu-frontend/assets/**")
-      .addResourceLocations(distLocation + "assets/")
+      .addResourceLocations(distLocation + "tutu-frontend/assets/")
       .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
 
     registry

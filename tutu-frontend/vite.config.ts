@@ -23,9 +23,15 @@ export default defineConfig(({ mode }) => {
         PUBLIC_TOLGEE_API_KEY: "${apiKey}",
       };
     `;
-    fs.writeFileSync(path.resolve(__dirname, 'public/config.js'), configJs);
+    fs.writeFileSync(
+      path.resolve(__dirname, 'public/tutu-frontend/config.js'),
+      configJs,
+    );
   } else {
-    const configPath = path.resolve(__dirname, 'public/config.js');
+    const configPath = path.resolve(
+      __dirname,
+      'public/tutu-frontend/config.js',
+    );
     if (fs.existsSync(configPath)) {
       fs.unlinkSync(configPath);
     }
@@ -86,6 +92,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/',
     plugins: [react(), ...(mode === 'test' ? [stripExternalFontsInTest] : [])],
+    build: {
+      assetsDir: 'tutu-frontend/assets',
+    },
     resolve: {
       alias: {
         '@': resolve(__dirname, '.'),
