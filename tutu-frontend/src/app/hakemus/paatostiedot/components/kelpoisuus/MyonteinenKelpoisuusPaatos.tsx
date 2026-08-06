@@ -202,6 +202,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
           t={t}
           theme={theme}
           testIdPrefix={'lahtokohtainen'}
+          kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           showKelpoisuuskoeJaSopeutumisaika
           showLisatieto
         />
@@ -217,6 +218,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
               ammattikokemusJaElinikainenOppiminen: updatedData,
             });
           }}
+          kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           t={t}
           theme={theme}
         />
