@@ -1,0 +1,1 @@
+!!! älä poista, tämä on dummy-tiedosto, jotta kansio pysyy versionhallinnassa
