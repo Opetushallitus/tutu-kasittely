@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
+
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
   expectDataFromDropdownSelection,
@@ -12,8 +14,6 @@ import {
   mockLopullisenPaatoksenHakemus,
   mockKoodistot,
 } from '@/playwright/mocks';
-
-import { _perustietoSisalto } from './fixtures/hakemus1/_perustietoSisalto';
 
 test.beforeEach(mockBasicForHakemus);
 
@@ -94,7 +94,7 @@ test('Hakemuksen perustiedot näkyvät sisällössä oikein', async ({ page }) =
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustiedot',
   );
   await expect(page.getByTestId('hakemus-koskee')).toHaveText(
-    'Kelpoisuus ammattiin',
+    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin',
   );
   await expect(
     page.getByTestId('sisalto-item-7d07bf15-79ab-4d2a-b1b9-63f03c1d0862'),

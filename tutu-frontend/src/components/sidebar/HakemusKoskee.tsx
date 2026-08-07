@@ -1,17 +1,16 @@
-'use client';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Stack, useTheme, styled } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { ApHakemusBadge } from '../Badges';
+
 import { CenteredRow } from '@/src/components/CenteredRow';
 import { StyledLink } from '@/src/components/StyledLink';
 import { hakemusKoskeeOptions } from '@/src/constants/dropdownOptions';
 import { useHakemus } from '@/src/context/HakemusContext';
-import { getConfiguration } from '@/src/lib/configuration/clientConfiguration';
+import { virkailijaUrl } from '@/src/lib/configuration/configuration';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-
-import { ApHakemusBadge } from '../Badges';
 
 const OpenInNewOutlinedIconBlue = styled(OpenInNewOutlinedIcon)({
   color: ophColors.blue2,
@@ -21,7 +20,6 @@ const OpenInNewOutlinedIconBlue = styled(OpenInNewOutlinedIcon)({
 export const HakemusKoskee = () => {
   const theme = useTheme();
   const { t } = useTranslations();
-  const VIRKAILIJA_URL = getConfiguration().VIRKAILIJA_URL;
   const { hakemusState } = useHakemus();
 
   const hakemus = hakemusState.editedData!;
@@ -53,7 +51,7 @@ export const HakemusKoskee = () => {
         />
       )}
       <StyledLink
-        href={`${VIRKAILIJA_URL}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
+        to={`${virkailijaUrl()}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
         target="_blank"
         rel="noopener"
         sx={{ fontWeight: 'normal' }}

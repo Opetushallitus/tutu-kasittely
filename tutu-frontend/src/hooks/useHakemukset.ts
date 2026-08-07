@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { doApiFetch } from '@/src/lib/tutu-backend/api';
-
 import { HakemusListItem } from '../lib/types/hakemusListItem';
 import { Paginated } from '../lib/types/paginated';
+
+import { doApiFetch } from '@/src/lib/tutu-backend/api';
 
 const DEFAULT_SORT = 'saapumisPvm:desc';
 

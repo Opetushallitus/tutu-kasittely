@@ -13,7 +13,7 @@ test('Tab navigaation active tab näkyy oikein, myös reloadin jälkeen', async 
 
   await page.goto(`/tutu-frontend/hakemus/${hakemusOid}/perustiedot`);
   await expect(
-    page.getByRole('tab', { name: 'Hakijan ja hakemuksen tiedot' }),
+    page.getByRole('tab', { name: 'hakemusTabs.perustiedot' }),
   ).toHaveClass(/Mui-selected/);
 
   await page.reload();
@@ -21,40 +21,40 @@ test('Tab navigaation active tab näkyy oikein, myös reloadin jälkeen', async 
     `/tutu-frontend/hakemus/${hakemusOid}/perustiedot`,
   );
   await expect(
-    page.getByRole('tab', { name: 'Hakijan ja hakemuksen tiedot' }),
+    page.getByRole('tab', { name: 'hakemusTabs.perustiedot' }),
   ).toHaveClass(/Mui-selected/);
 
   await page.goto(`/tutu-frontend/hakemus/${hakemusOid}/asiakirjat`);
-  await expect(page.getByRole('tab', { name: 'Asiakirjat' })).toHaveClass(
-    /Mui-selected/,
-  );
+  await expect(
+    page.getByRole('tab', { name: 'hakemusTabs.asiakirjat' }),
+  ).toHaveClass(/Mui-selected/);
 
   await page.reload();
   await expect(page).toHaveURL(
     `/tutu-frontend/hakemus/${hakemusOid}/asiakirjat`,
   );
-  await expect(page.getByRole('tab', { name: 'Asiakirjat' })).toHaveClass(
-    /Mui-selected/,
-  );
+  await expect(
+    page.getByRole('tab', { name: 'hakemusTabs.asiakirjat' }),
+  ).toHaveClass(/Mui-selected/);
 
   await page.goto(`/tutu-frontend/hakemus/${hakemusOid}/tutkinnot`);
-  await expect(page.getByRole('tab', { name: 'Tutkinnot' })).toHaveClass(
-    /Mui-selected/,
-  );
+  await expect(
+    page.getByRole('tab', { name: 'hakemusTabs.tutkinnot' }),
+  ).toHaveClass(/Mui-selected/);
 
   await page.reload();
   await expect(page).toHaveURL(
     `/tutu-frontend/hakemus/${hakemusOid}/tutkinnot`,
   );
-  await expect(page.getByRole('tab', { name: 'Tutkinnot' })).toHaveClass(
-    /Mui-selected/,
-  );
+  await expect(
+    page.getByRole('tab', { name: 'hakemusTabs.tutkinnot' }),
+  ).toHaveClass(/Mui-selected/);
 
   await page.goto(
     `/tutu-frontend/hakemus/${hakemusOid}/perustelu/yleiset/perustelut`,
   );
   await expect(
-    page.getByRole('tab', { name: 'Yleiset perustelut / Lausuntotiedot' }),
+    page.getByRole('tab', { name: 'hakemusTabs.perustelu.yleiset' }),
   ).toHaveClass(/Mui-selected/);
 
   await page.reload();
@@ -62,6 +62,6 @@ test('Tab navigaation active tab näkyy oikein, myös reloadin jälkeen', async 
     `/tutu-frontend/hakemus/${hakemusOid}/perustelu/yleiset/perustelut`,
   );
   await expect(
-    page.getByRole('tab', { name: 'Yleiset perustelut / Lausuntotiedot' }),
+    page.getByRole('tab', { name: 'hakemusTabs.perustelu.yleiset' }),
   ).toHaveClass(/Mui-selected/);
 });

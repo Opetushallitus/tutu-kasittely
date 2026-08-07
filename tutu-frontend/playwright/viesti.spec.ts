@@ -29,7 +29,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 const expectViestiFormToBeEmpty = async (page: Page) => {
-  await expect(page.getByTestId('viesti-kieli-select')).toHaveText('Englanti');
+  await expect(page.getByTestId('viesti-kieli-select')).toHaveText(
+    'yleiset.englanti',
+  );
   await expect(
     page
       .getByTestId('viesti-tyyppi-radio-group')
@@ -59,7 +61,9 @@ test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async 
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViestiLista(page);
   await mockViestiOletussisalto(page);
-  await expect(page.getByTestId('viesti-kieli-select')).toHaveText('Suomi');
+  await expect(page.getByTestId('viesti-kieli-select')).toHaveText(
+    'yleiset.suomi',
+  );
   await expect(
     page.locator('input[type="radio"][value="ennakkotieto"]'),
   ).toBeChecked();
@@ -285,6 +289,7 @@ test('Viestilistan latauksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
+  await mockViestiOletussisalto(page);
   await page.route(
     '**/tutu-backend/api/viestilista/1.2.246.562.11.00000000001',
     async (route: Route) => {
@@ -296,6 +301,9 @@ test('Viestilistan latauksen epäonnistuessa näytetään virheteksti', async ({
         }),
       });
     },
+  );
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );
   await expect(page.getByTestId('toast-alert')).toBeVisible();
   await expect(page.getByTestId('toast-alert')).toHaveAttribute(

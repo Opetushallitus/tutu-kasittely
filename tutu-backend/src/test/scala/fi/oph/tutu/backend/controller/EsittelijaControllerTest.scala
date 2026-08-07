@@ -70,7 +70,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get("/api/esittelijat")
+        get("/tutu-backend/api/esittelijat")
       )
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))

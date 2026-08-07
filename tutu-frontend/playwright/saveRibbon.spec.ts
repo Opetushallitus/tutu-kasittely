@@ -8,7 +8,6 @@ const TUTKINNOT_URL = `/tutu-frontend/hakemus/${HAKEMUS_OID}/tutkinnot`;
 
 test('Save ribbon flow: back navigation guard works after cancel and confirm', async ({
   page,
-  browserName,
 }) => {
   await mockAll({ page });
 
@@ -52,12 +51,6 @@ test('Save ribbon flow: back navigation guard works after cancel and confirm', a
   });
 
   await test.step('Toinen takaisin: jatka -> palataan yleiset-sivulle', async () => {
-    // Todennäköinen Webkit-bugi, ei varma sovellusbugi.
-    // eslint-disable-next-line playwright/no-conditional-in-test
-    if (browserName === 'webkit') {
-      return;
-    }
-
     await page.evaluate(() => history.back());
     await expect(page.getByTestId('modal-component')).toBeVisible();
 

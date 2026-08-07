@@ -10,8 +10,6 @@ import {
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
 
-import { translate } from './helpers/translate';
-
 const mockHakemusWithType = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
     const hakemus = getHakemus(hakemusKoskee);
@@ -102,17 +100,15 @@ test.describe('Asiakirjapyynnöt', () => {
     const pyydaSelect = page.getByTestId('pyyda-asiakirja-select').first();
     await expect(pyydaSelect).toBeVisible();
 
-    const valitseText = await translate(page, 'yleiset.valitse');
+    const valitseText = 'yleiset.valitse';
     await expect(pyydaSelect).toHaveText(valitseText);
     await pyydaSelect.click();
 
     const menuItems = page.locator('[role="option"]');
     await menuItems.last().click();
 
-    const nimenmuutosText = await translate(
-      page,
-      'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.nimenmuutos',
-    );
+    const nimenmuutosText =
+      'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.nimenmuutos';
     await expect(pyydaSelect).toHaveText(nimenmuutosText);
 
     const saveButton = page.getByTestId('save-ribbon-button');
@@ -153,12 +149,14 @@ test.describe('Asiakirjapyynnöt', () => {
     await addButton.click();
 
     let selects = page.getByTestId('pyyda-asiakirja-select');
-    const valitseText = await translate(page, 'yleiset.valitse');
+    const valitseText = 'yleiset.valitse';
     await expect(selects.nth(0)).toHaveText(valitseText);
     await selects.nth(0).click();
 
     await page
-      .getByRole('option', { name: 'Todistus sopeutumisajan suorittamisesta' })
+      .getByRole('option', {
+        name: 'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.sopeutumisaika',
+      })
       .click();
 
     // Toinen asiakirja pyyntö
@@ -168,7 +166,7 @@ test.describe('Asiakirjapyynnöt', () => {
 
     await page
       .getByRole('option', {
-        name: 'Todistus kelpoisuuskokeen suorittamisesta',
+        name: 'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.kelpoisuuskoe',
       })
       .click();
 
@@ -179,7 +177,7 @@ test.describe('Asiakirjapyynnöt', () => {
     // Kolmas asiakirja pyyntö
     await page
       .getByRole('option', {
-        name: 'Todistus täydentävien opintojen suorittamisesta',
+        name: 'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.taydentavatopinnot',
       })
       .click();
 
@@ -202,7 +200,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await page.getByTestId('modal-confirm-button').click();
     await expect(selects).toHaveCount(3);
 
-    await expect(selects.nth(1)).toContainText('kelpoisuuskokeen');
+    await expect(selects.nth(1)).toContainText('kelpoisuuskoe');
 
     // Poista keskimmäinen
     await page.getByTestId('poista-asiakirja-button-1').click();
@@ -210,7 +208,7 @@ test.describe('Asiakirjapyynnöt', () => {
     await expect(selects).toHaveCount(2);
 
     // Kelpoisuskoe on poistettu
-    await expect(selects.nth(0)).toContainText('sopeutumisajan');
-    await expect(selects.nth(1)).toContainText('täydentävien');
+    await expect(selects.nth(0)).toContainText('sopeutumisaika');
+    await expect(selects.nth(1)).toContainText('taydentavatopinnot');
   });
 });

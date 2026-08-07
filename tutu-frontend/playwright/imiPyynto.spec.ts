@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import * as dateFns from 'date-fns';
 
 import { getHakemus } from '@/playwright/fixtures/hakemus1';
 import {
+  mockAsiakirjat,
   mockBasicForHakemus,
   mockLiitteet,
   mockUser,
@@ -50,16 +50,14 @@ test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', 
         body.imiPyynto.imiPyyntoNumero = '123456';
       }
       if (callCount >= 6) {
-        body.imiPyynto.imiPyyntoLahetetty = dateFns.format(
+        body.imiPyynto.imiPyyntoLahetetty = new Date(
           new Date().setDate(26),
-          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-        );
+        ).toISOString();
       }
       if (callCount >= 7) {
-        body.imiPyynto.imiPyyntoVastattu = dateFns.format(
+        body.imiPyynto.imiPyyntoVastattu = new Date(
           new Date().setDate(26),
-          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-        );
+        ).toISOString();
       }
 
       if (callCount < 8) {
@@ -104,16 +102,14 @@ test('IMI-Pyynnön kentät toimivat oikein Kelpoisuus ammattiin -hakemukselle', 
       body.asiakirja.imiPyynto.imiPyyntoNumero = '123456';
     }
     if (callCount >= 6) {
-      body.asiakirja.imiPyynto.imiPyyntoLahetetty = dateFns.format(
+      body.asiakirja.imiPyynto.imiPyyntoLahetetty = new Date(
         new Date().setDate(26),
-        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-      );
+      ).toISOString();
     }
     if (callCount >= 7) {
-      body.asiakirja.imiPyynto.imiPyyntoVastattu = dateFns.format(
+      body.asiakirja.imiPyynto.imiPyyntoVastattu = new Date(
         new Date().setDate(26),
-        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-      );
+      ).toISOString();
     }
 
     if (callCount < 8) {
@@ -199,6 +195,7 @@ test('IMI-Pyynnön kentät eivät ole näkyvissä Tutkinnon tason rinnastaminen 
 }) => {
   mockUser(page);
   await mockLiitteet(page);
+  await mockAsiakirjat(page);
   const hakemus = getHakemus();
 
   await page.route('**/tutu-backend/api/hakemus/*', async (route) => {

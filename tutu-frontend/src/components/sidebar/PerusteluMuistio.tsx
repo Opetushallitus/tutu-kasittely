@@ -11,14 +11,14 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { useState, useEffect } from 'react';
 
+import { FullSpinner } from '../FullSpinner';
+
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { getPerusteluMuistio } from '@/src/hooks/usePerustelu';
 import useToaster from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiPatch } from '@/src/lib/tutu-backend/api';
-
-import { FullSpinner } from '../FullSpinner';
 
 const PreviewIconBlue = styled(PreviewIcon)({
   color: ophColors.blue2,

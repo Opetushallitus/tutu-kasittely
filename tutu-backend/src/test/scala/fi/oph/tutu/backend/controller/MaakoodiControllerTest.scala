@@ -81,7 +81,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @WithMockUser(username = "testuser", roles = Array("USER"))
   def listMaakooditReturns200AndExpectedData(): Unit = {
     mockMvc
-      .perform(get("/api/maakoodi"))
+      .perform(get("/tutu-backend/api/maakoodi"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$[0].koodiUri").value("maatjavaltiot2_752"))
@@ -95,7 +95,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @WithAnonymousUser
   def listMaakooditReturns401ForUnauthenticatedUser(): Unit = {
     mockMvc
-      .perform(get("/api/maakoodi"))
+      .perform(get("/tutu-backend/api/maakoodi"))
       .andExpect(status().isUnauthorized)
   }
 
@@ -107,7 +107,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put("/api/maakoodi")
+        put("/tutu-backend/api/maakoodi")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .param("id", maakoodi.id.toString)
@@ -139,7 +139,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put("/api/maakoodi")
+        put("/tutu-backend/api/maakoodi")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .param("id", maakoodi.id.toString)
@@ -174,7 +174,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put("/api/maakoodi")
+        put("/tutu-backend/api/maakoodi")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .param("id", maakoodi.id.toString)
@@ -190,7 +190,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put("/api/maakoodi")
+        put("/tutu-backend/api/maakoodi")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .param("id", invalidId.toString)

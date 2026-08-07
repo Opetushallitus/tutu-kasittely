@@ -1,4 +1,4 @@
-name: TUTU-käsittely backend build workflow
+name: TUTU build
 
 on:
   workflow_dispatch:
@@ -8,6 +8,7 @@ on:
       - main
 
 env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ github.token }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   HUSKY: 0
@@ -23,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
     steps:
       - uses: actions/checkout@v6
       - id: changes
@@ -32,6 +34,11 @@ jobs:
             backend:
               - 'tutu-backend/**/!(*.md)'
               - '.github/workflows/build-backend.yml'
+              - '.github/actions/**'
+            frontend:
+              - 'tutu-frontend/**'
+              - '.github/workflows/build-backend.yml'
+              - '.github/actions/**'
           list-files: 'json'
 
   test-backend:
@@ -45,13 +52,48 @@ jobs:
         working-directory: ./tutu-backend
         run: ./mvnw test
 
-  build-backend:
-    if: github.actor != 'dependabot[bot]' && (github.event_name == 'workflow_dispatch' || needs.filter.outputs.backend == 'true')
-    needs: [filter, test-backend]
+  lint-frontend:
+    needs: filter
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: ./.github/actions/prepare-node-env
+      - name: Run frontend checks
+        working-directory: ./tutu-frontend
+        run: |
+          pnpm lint
+          pnpm prettier
+          pnpm typecheck
+
+  playwright:
+    needs: filter
+    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/test-playwright
+        with:
+          browser: ${{ matrix.browser }}
+
+  build-image:
+    needs: [filter, test-backend, lint-frontend, playwright]
+    if: ${{ github.actor != 'dependabot[bot]' && !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/prepare-node-env
       - uses: ./.github/actions/prepare-scala-env
+      - name: Build frontend dist
+        working-directory: ./tutu-frontend
+        run: pnpm build
+      - name: Stage frontend dist for Docker
+        run: |
+          rm -rf tutu-backend/frontend-dist
+          cp -R tutu-frontend/dist tutu-backend/frontend-dist
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:

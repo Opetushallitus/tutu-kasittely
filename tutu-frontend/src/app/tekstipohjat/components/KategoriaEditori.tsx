@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';

@@ -1,7 +1,7 @@
-import { isObject } from '@/src/lib/common';
-
 import { TFunction } from './hooks/useTranslations';
 import { Language, TranslatedName } from './localizationTypes';
+
+import { isObject } from '@/src/lib/common';
 
 export function translateName(
   translated: TranslatedName,

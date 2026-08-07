@@ -120,7 +120,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
     val requestJson = mapper.writeValueAsString(hakemus)
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -144,7 +144,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -160,7 +160,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -179,7 +179,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -212,7 +212,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -262,7 +262,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)
@@ -313,7 +313,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        post("/api/ataru-hakemus")
+        post("/tutu-backend/api/ataru-hakemus")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(requestJson)

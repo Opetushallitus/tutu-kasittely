@@ -33,7 +33,9 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   const cellsOfEce = page
     .getByTestId('asiakirjamallit-tutkinnoista-ece')
     .locator('td');
-  await expect(cellsOfEce.nth(0)).toHaveText('ECE');
+  await expect(cellsOfEce.nth(0)).toHaveText(
+    'hakemus.asiakirjat.mallejaTutkinnoista.ece',
+  );
   await expect(
     cellsOfEce.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
@@ -47,7 +49,9 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   const cellsOfNuffic = page
     .getByTestId('asiakirjamallit-tutkinnoista-nuffic')
     .locator('td');
-  await expect(cellsOfNuffic.nth(0)).toHaveText('Nuffic');
+  await expect(cellsOfNuffic.nth(0)).toHaveText(
+    'hakemus.asiakirjat.mallejaTutkinnoista.nuffic',
+  );
   await expect(
     cellsOfNuffic.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();
@@ -59,7 +63,9 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
   const cellsOfAacrao = page
     .getByTestId('asiakirjamallit-tutkinnoista-aacrao')
     .locator('td');
-  await expect(cellsOfAacrao.nth(0)).toHaveText('Aacrao');
+  await expect(cellsOfAacrao.nth(0)).toHaveText(
+    'hakemus.asiakirjat.mallejaTutkinnoista.aacrao',
+  );
   await expect(
     cellsOfAacrao.nth(1).locator('.MuiRadio-root.Mui-checked'),
   ).toBeVisible();

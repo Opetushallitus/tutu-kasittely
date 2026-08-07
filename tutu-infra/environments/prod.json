@@ -59,15 +59,6 @@
         "EXAMPLE_REQUEST_URL": "http://web-backend.prod.example.local:8080/api/v1/oaipmh/metadata"
       }
     },
-    "web_frontend": {
-      "env_vars": {
-        "NEXT_TELEMETRY_DISABLED": "1",
-        "NODE_ENV": "production",
-        "VIRKAILIJA_URL": "https://virkailija.opintopolku.fi",
-        "APP_URL": "https://virkailija.opintopolku.fi/tutu-frontend",
-        "TUTU_BACKEND": "https://virkailija.opintopolku.fi"
-      }
-    },
     "web_backend": {
       "cpu_limit": "512",
       "memory_limit": "1024",

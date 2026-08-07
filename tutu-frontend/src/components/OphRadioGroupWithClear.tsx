@@ -1,5 +1,3 @@
-'use client';
-
 import { Stack, Box } from '@mui/material';
 import {
   OphFormFieldWrapper,

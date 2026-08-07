@@ -8,8 +8,6 @@ import {
 } from '@/playwright/helpers/saveHelpers';
 import { mockAll } from '@/playwright/mocks';
 
-import { translate } from './helpers/translate';
-
 const matchingDate = () => {
   return '2025-09-26T00:00:00.000Z';
 };
@@ -26,22 +24,9 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/lausunto/',
   );
-  const lausuntopyynnot = await translate(
-    page,
-    'hakemus.perustelu.lausuntotiedot.lausuntopyynnot',
-  );
-  const lausuntopyynto1 = await translate(
-    page,
-    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
-    '',
-    { numero: 1 },
-  );
-  const lausuntopyynto2 = await translate(
-    page,
-    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
-    '',
-    { numero: 2 },
-  );
+  const lausuntopyynnot = 'hakemus.perustelu.lausuntotiedot.lausuntopyynnot';
+  const lausuntopyynto1 = 'hakemus.perustelu.lausuntotiedot.lausuntopyynto';
+  const lausuntopyynto2 = 'hakemus.perustelu.lausuntotiedot.lausuntopyynto';
   await expect(page.getByTestId('perustelu-otsikko')).toHaveText(
     lausuntopyynnot,
   );
@@ -101,7 +86,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   await lausunnonAntaja1.click();
   await page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Muu lausunnon antaja')
+    .locator('text=hakemus.perustelu.lausuntotiedot.muuLausunnonAntajaValinta')
     .click();
   await page.getByTestId('muu-lausunnon-antaja-1').fill('Esko Mörkö');
 
@@ -123,7 +108,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   });
   await waitForSaveComplete(page);
 
-  await lahetetty1.click();
+  await lahetetty1.locator('input').click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
@@ -144,7 +129,7 @@ test('Lausuntokentät näkyvät oikein ja kenttien muutos lähettää POST-kutsu
   });
   await waitForSaveComplete(page);
 
-  await vastattu1.click();
+  await vastattu1.locator('input').click();
   await page.locator('.react-datepicker__day--026').click();
 
   await clickSaveAndVerifyPayload(page, '/perustelu/', {
@@ -173,12 +158,7 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await expect(page.getByTestId('lausuntopyynto-otsikko-1')).toBeVisible();
 
   await page.getByTestId('lisaa-lausuntopyynto-button').click();
-  const lausuntopyynto3 = await translate(
-    page,
-    'hakemus.perustelu.lausuntotiedot.lausuntopyynto',
-    '',
-    { numero: 3 },
-  );
+  const lausuntopyynto3 = 'hakemus.perustelu.lausuntotiedot.lausuntopyynto';
   await expect(page.getByTestId('lausuntopyynto-otsikko-3')).toHaveText(
     lausuntopyynto3,
   );
@@ -188,7 +168,7 @@ test('Lausuntopyyntöjen lisäys ja poisto toimivat oikein', async ({ page }) =>
   await lausunnonAntaja3.click();
   await page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=Muu lausunnon antaja')
+    .locator('text=hakemus.perustelu.lausuntotiedot.muuLausunnonAntajaValinta')
     .click();
   await page.getByTestId('muu-lausunnon-antaja-3').fill('Pertti Keinonen');
 

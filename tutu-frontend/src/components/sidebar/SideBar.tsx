@@ -52,14 +52,14 @@ export const SideBar = () => {
         <Paatos />
       </SidebarInfoStack>
       <ToimintoLinkki
-        href={`/hakemus/${hakemusOid}/editori/viesti`}
+        path={`/hakemus/${hakemusOid}/editori/viesti`}
         gap={theme.spacing(1)}
         icon={<MailOutlineIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaViesti')}
       />
       <AvaaPerusteluMuistioButton />
       <ToimintoLinkki
-        href={`/hakemus/${hakemusOid}/editori/paatos`}
+        path={`/hakemus/${hakemusOid}/editori/paatos`}
         gap={theme.spacing(1)}
         icon={<CheckCircleIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaPaatos')}

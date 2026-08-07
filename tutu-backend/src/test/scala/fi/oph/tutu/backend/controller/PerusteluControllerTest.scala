@@ -354,7 +354,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid}")
+        put(s"/tutu-backend/api/perustelu/${hakemusOid}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -388,7 +388,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid}")
+        get(s"/tutu-backend/api/perustelu/${hakemusOid}")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -427,7 +427,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/$hakemusOid")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -439,7 +439,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/$hakemusOid")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
@@ -452,7 +452,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def haePerusteluPalauttaa404KunPerusteluaEiKannassa(): Unit = {
     mvc
       .perform(
-        get("/api/perustelu/000")
+        get("/tutu-backend/api/perustelu/000")
       )
       .andExpect(status().isNotFound)
   }
@@ -475,7 +475,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid2}")
+        put(s"/tutu-backend/api/perustelu/${hakemusOid2}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -503,7 +503,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid2}")
+        get(s"/tutu-backend/api/perustelu/${hakemusOid2}")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -536,7 +536,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/$hakemusOid2")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid2")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -547,7 +547,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
-        get(s"/api/perustelu/$hakemusOid2")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid2")
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
@@ -574,7 +574,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid3}")
+        put(s"/tutu-backend/api/perustelu/${hakemusOid3}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -618,7 +618,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid3}")
+        get(s"/tutu-backend/api/perustelu/${hakemusOid3}")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -662,7 +662,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/$hakemusOid3")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid3")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -676,7 +676,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
-        get(s"/api/perustelu/$hakemusOid3")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid3")
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))
@@ -701,7 +701,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/${hakemusOid4}")
+        put(s"/tutu-backend/api/perustelu/${hakemusOid4}")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -729,7 +729,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        get(s"/api/perustelu/${hakemusOid4}")
+        get(s"/tutu-backend/api/perustelu/${hakemusOid4}")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -762,7 +762,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     mvc
       .perform(
-        put(s"/api/perustelu/$hakemusOid4")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid4")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -773,7 +773,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
-        get(s"/api/perustelu/$hakemusOid4")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid4")
       )
       .andExpect(status().isOk)
       .andExpect(content().json(perusteluJSON))

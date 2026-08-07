@@ -1,5 +1,3 @@
-'use client';
-
 const POST_LOGIN_REDIRECT_KEY = 'tutu-post-login-redirect';
 
 export const storePostLoginRedirectUrl = () => {

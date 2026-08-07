@@ -1,4 +1,3 @@
-'use client';
 import CloseIcon from '@mui/icons-material/Close';
 import { Stack, styled } from '@mui/material';
 import Box from '@mui/material/Box';

@@ -1,5 +1,3 @@
-'use client';
-
 import { ListAlt } from '@mui/icons-material';
 import { Box, Stack } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
@@ -9,9 +7,9 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { TekstipohjaEditori } from '@/src/app/tekstipohjat/components/TekstipohjaEditori';
 import { importHtml } from '@/src/components/editor/editor-utils';
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import useToaster from '@/src/hooks/useToaster';
-import { useUnsavedChanges } from '@/src/hooks/useUnsavedChanges';
 import { useViestipohja } from '@/src/hooks/useViestipohja';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { LanguageCode } from '@/src/lib/types/common';
@@ -55,7 +53,6 @@ const ValittuViestipohja = ({
     viestipohja ?? emptyViestipohja,
     updateViestipohja,
   );
-  useUnsavedChanges(viestipohjaState.hasChanges);
   const currentViestipohja = viestipohjaState.editedData;
 
   const editorRefs = {
@@ -111,20 +108,23 @@ const ValittuViestipohja = ({
   }
 
   return (
-    <TekstipohjaEditori
-      id={viestipohja?.id}
-      setValittuId={setValittuViestipohja}
-      kategoriat={kategoriat}
-      currentPohja={currentViestipohja}
-      languages={languages}
-      onSave={onSave}
-      updateLocal={viestipohjaState.updateLocal}
-      hasChanges={viestipohjaState.hasChanges}
-      updateOngoing={updateOngoing}
-      poistaPohja={() => poistaViestipohja(() => setValittuViestipohja(null))}
-      editorRefs={editorRefs}
-      translationKeyPrefix={'tekstipohjat.viestipohjat'}
-    />
+    <>
+      <UnsavedChangesGuard enabled={viestipohjaState.hasChanges} />
+      <TekstipohjaEditori
+        id={viestipohja?.id}
+        setValittuId={setValittuViestipohja}
+        kategoriat={kategoriat}
+        currentPohja={currentViestipohja}
+        languages={languages}
+        onSave={onSave}
+        updateLocal={viestipohjaState.updateLocal}
+        hasChanges={viestipohjaState.hasChanges}
+        updateOngoing={updateOngoing}
+        poistaPohja={() => poistaViestipohja(() => setValittuViestipohja(null))}
+        editorRefs={editorRefs}
+        translationKeyPrefix={'tekstipohjat.viestipohjat'}
+      />
+    </>
   );
 };
 

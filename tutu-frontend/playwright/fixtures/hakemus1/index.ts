@@ -1,5 +1,12 @@
 import { clone } from 'remeda';
 
+import { _asiakirjamallit } from './_asiakirjamallit';
+import { _hakemus } from './_hakemus';
+import { _liitteet } from './_liitteet';
+import { _liitteidenTilat } from './_liitteidenTilat';
+import { _muutoshistoria } from './_muutoshistoria';
+import { _sisalto } from './_sisalto';
+
 import {
   AsiakirjamallitTutkinnoista,
   Hakemus,
@@ -8,13 +15,6 @@ import {
   SisaltoItem,
 } from '@/src/lib/types/hakemus';
 import { LiiteItem } from '@/src/lib/types/liiteItem';
-
-import { _asiakirjamallit } from './_asiakirjamallit';
-import { _hakemus } from './_hakemus';
-import { _liitteet } from './_liitteet';
-import { _liitteidenTilat } from './_liitteidenTilat';
-import { _muutoshistoria } from './_muutoshistoria';
-import { _sisalto } from './_sisalto';
 
 export const getHakemus = (hakemusKoskee?: HakemusKoskee) => {
   const hakemus: Hakemus = { ..._hakemus };

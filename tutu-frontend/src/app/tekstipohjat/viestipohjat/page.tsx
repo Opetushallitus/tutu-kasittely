@@ -1,16 +1,14 @@
-'use client';
-
 import { Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
+
+import ViestipohjaEditori from './components/ViestipohjaEditori';
+import TekstipohjaLista from '../components/TekstipohjaLista';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import useToaster from '@/src/hooks/useToaster';
 import { useViestipohjat } from '@/src/hooks/useViestipohjat';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
-
-import ViestipohjaEditori from './components/ViestipohjaEditori';
-import TekstipohjaLista from '../components/TekstipohjaLista';
 
 export default function ViestipohjatPage() {
   const {

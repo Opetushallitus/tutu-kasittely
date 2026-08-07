@@ -1,9 +1,9 @@
 import { Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
-import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
-
 import { SearchBar } from './SearchBar';
+
+import { HomeIcon, HomeStyledChevron } from '@/src/components/HomeLink';
 
 export const PageHeaderRow = ({
   header,

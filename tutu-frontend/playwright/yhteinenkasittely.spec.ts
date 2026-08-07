@@ -2,7 +2,6 @@
 
 import { test, expect, Route, Page } from '@playwright/test';
 
-import { translate } from './helpers/translate';
 import { mockAll } from './mocks';
 
 test.beforeEach(mockAll);
@@ -12,18 +11,12 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
 
-  const otsikkoTeksti = await translate(
-    page,
-    'hakemus.yhteinenkasittely.otsikko',
-  );
+  const otsikkoTeksti = 'hakemus.yhteinenkasittely.otsikko';
 
   const otsikko = page.getByTestId('yhteinenkasittely-otsikko');
   await expect(otsikko).toHaveText(otsikkoTeksti);
 
-  const uusiKasittely = await translate(
-    page,
-    'hakemus.yhteinenkasittely.uusiYhteinenKasittely',
-  );
+  const uusiKasittely = 'hakemus.yhteinenkasittely.uusiYhteinenKasittely';
 
   await expect(page.getByTestId('uusi-yhteinen-kasittely-btn')).toHaveText(
     uusiKasittely,
@@ -37,10 +30,7 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
   await expect(textbox).toBeVisible();
   await textbox.fill('Testivastaus');
 
-  const lahetaVastaus = await translate(
-    page,
-    'hakemus.yhteinenkasittely.lahetaVastaus',
-  );
+  const lahetaVastaus = 'hakemus.yhteinenkasittely.lahetaVastaus';
 
   await page.getByRole('button', { name: lahetaVastaus }).click();
 
@@ -160,7 +150,9 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
     );
-    await expect(page.getByText('Uusi yhteinen käsittely')).toBeVisible();
+    await expect(
+      page.getByText('hakemus.yhteinenkasittely.uusiYhteinenKasittely'),
+    ).toBeVisible();
   };
 
   const verifyQuestionVisible = async (page: Page) => {

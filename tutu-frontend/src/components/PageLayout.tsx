@@ -1,5 +1,3 @@
-'use client';
-
 import { Box, Stack, useTheme } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { ReactNode } from 'react';

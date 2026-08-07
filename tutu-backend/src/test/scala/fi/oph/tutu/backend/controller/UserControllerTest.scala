@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.{containsString, equalTo}
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -35,7 +35,7 @@ class UserControllerTest extends IntegrationTestBase {
   def get200ResponseFromHealthcheckUnautheticated(): Unit =
     mockMvc
       .perform(
-        get("/api/healthcheck")
+        get("/tutu-backend/api/healthcheck")
           .accept(MediaType.APPLICATION_JSON)
       )
       .andExpect(status.isOk)
@@ -45,7 +45,7 @@ class UserControllerTest extends IntegrationTestBase {
   @WithMockUser(username = "testuser", roles = Array("USER"))
   def getAuthenticatedUserGets200ResponseFromAuthenticatedApi(): Unit =
     mockMvc
-      .perform(get("/api/session"))
+      .perform(get("/tutu-backend/api/session"))
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
@@ -53,6 +53,20 @@ class UserControllerTest extends IntegrationTestBase {
   @WithAnonymousUser
   def getUnauthenticatedUserGets401ResponseFromAuthenticatedApi(): Unit =
     mockMvc
-      .perform(get("/api/session"))
+      .perform(get("/tutu-backend/api/session"))
       .andExpect(status().isUnauthorized)
+
+  @Test
+  def unauthenticatedFrontendRequestsRedirectToCas(): Unit =
+    mockMvc
+      .perform(get("/tutu-frontend/"))
+      .andExpect(status().isFound)
+      .andExpect(header().string("Location", containsString("https://virkailija.testiopintopolku.fi/cas/login")))
+
+  @Test
+  def unauthenticatedFrontendConfigIsPublic(): Unit =
+    mockMvc
+      .perform(get("/tutu-frontend/config.js"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.valueOf("application/javascript")))
 }

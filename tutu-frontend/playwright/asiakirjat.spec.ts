@@ -1,5 +1,7 @@
 import { expect, Page, Route, test } from '@playwright/test';
 
+import { getHakemus } from './fixtures/hakemus1/index';
+
 import {
   mockUser,
   mockBasicForHakemus,
@@ -7,9 +9,6 @@ import {
   mockAsiakirjat,
 } from '@/playwright/mocks';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
-
-import { getHakemus } from './fixtures/hakemus1/index';
-import { translate } from './helpers/translate';
 
 export const mockHakemus = (page: Page, hakemusKoskee?: HakemusKoskee) => {
   return page.route('**/tutu-backend/api/hakemus/*', async (route: Route) => {
@@ -36,26 +35,13 @@ test.describe('Tavalliset hakemukset', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
     );
 
-    const tarkastamattaText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.not-checked',
-    );
-    const tarkistettuText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.checked',
-    );
-    const liitePuuttuuText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing',
-    );
-    const puutteellinenLiiteText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment',
-    );
-    const myohassaText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.overdue',
-    );
+    const tarkastamattaText = 'hakemus.asiakirjat.tarkistuksenTila.not-checked';
+    const tarkistettuText = 'hakemus.asiakirjat.tarkistuksenTila.checked';
+    const liitePuuttuuText =
+      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing';
+    const puutteellinenLiiteText =
+      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment';
+    const myohassaText = 'hakemus.asiakirjat.tarkistuksenTila.overdue';
 
     const asiakirjaId1 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25fx';
     const asiakirjaId2 = '#asiakirja__c95d7c76-5a4c-4ce5-a173-5c848664e6ed';
@@ -238,26 +224,13 @@ test.describe('Lopullinen päätös hakemukset', () => {
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
     );
 
-    const tarkastamattaText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.not-checked',
-    );
-    const tarkistettuText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.checked',
-    );
-    const liitePuuttuuText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing',
-    );
-    const puutteellinenLiiteText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment',
-    );
-    const myohassaText = await translate(
-      page,
-      'hakemus.asiakirjat.tarkistuksenTila.overdue',
-    );
+    const tarkastamattaText = 'hakemus.asiakirjat.tarkistuksenTila.not-checked';
+    const tarkistettuText = 'hakemus.asiakirjat.tarkistuksenTila.checked';
+    const liitePuuttuuText =
+      'hakemus.asiakirjat.tarkistuksenTila.attachment-missing';
+    const puutteellinenLiiteText =
+      'hakemus.asiakirjat.tarkistuksenTila.incomplete-attachment';
+    const myohassaText = 'hakemus.asiakirjat.tarkistuksenTila.overdue';
 
     const asiakirjaId1 = '#asiakirja__f0974a8c-ff0e-4702-b62c-58f69047e25fx';
     const asiakirjaId2 = '#asiakirja__c95d7c76-5a4c-4ce5-a173-5c848664e6ed';
@@ -386,7 +359,7 @@ test.describe('Lopullinen päätös hakemukset', () => {
     ).toBeAttached();
     const row7_tarkistuksentila_check = expect(
       page.locator(`${asiakirjaId7} .asiakirja-row__tarkistuksen-tila`),
-    ).toContainText('Tarkastamatta');
+    ).toContainText('hakemus.asiakirjat.tarkistuksenTila.not-checked');
 
     await Promise.all([
       row1_otsake_check,

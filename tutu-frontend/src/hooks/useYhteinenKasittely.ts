@@ -1,14 +1,12 @@
-'use client';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { doApiFetch, doApiPatch, doApiPost } from '@/src/lib/tutu-backend/api';
-
-import { SortOrder } from '../app/(root)/components/types';
 import {
   YhteinenKasittely,
   YhteinenKasittelyDTO,
 } from '../lib/types/yhteinenkasittely';
+
+import { SortOrder } from '@/src/app/components/types';
+import { doApiFetch, doApiPatch, doApiPost } from '@/src/lib/tutu-backend/api';
 
 const getYhteinenKasittely = async (
   hakemusOid: string,

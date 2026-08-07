@@ -1,14 +1,12 @@
-'use client';
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 
+import { normalize } from './useEditableState';
+
 import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 import { updateTutkintoJarjestys } from '@/src/lib/utils';
-
-import { normalize } from './useEditableState';
 
 export interface TutkintoState {
   updateLocal: (tutkinnot?: Tutkinto[] | undefined) => void;

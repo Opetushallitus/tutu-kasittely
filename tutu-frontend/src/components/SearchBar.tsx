@@ -1,5 +1,3 @@
-'use client';
-
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -17,9 +15,11 @@ import {
   OphSelectFormField,
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
-import { usePathname } from 'next/dist/client/components/navigation';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { SearchFilters } from './SearchFilters';
 
 import { hakuNakymaValintaOptions } from '@/src/constants/dropdownOptions';
 import { useSearchRibbon } from '@/src/context/SearchRibbonContext';
@@ -31,8 +31,6 @@ import {
 import { useToaster } from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
-
-import { SearchFilters } from './SearchFilters';
 
 type CommittedSearch = {
   haku: string;
@@ -214,25 +212,27 @@ export const SearchBar = () => {
       setRibbonVisible(true);
     }
     registerOnClose(() => {
-      setHaku('');
-      setNakyma('kaikki');
-      setSuoritusmaa(null);
-      setPaattymisVuosi('');
-      setTodistusVuosi('');
-      setOppilaitos('');
-      setTutkinnonNimi('');
-      setPaaAine('');
-      setKelpoisuus('');
-      setOpetettavatAineet(null);
-      setRatkaisutyyppi('');
-      setPaatostyyppi('');
-      setSovellettuLaki('');
-      setTutkinnonTaso('');
-      setKielteinen('');
-      setMyonteinen('');
-      setEsittelijaOid('');
-      setHakijanNimi('');
-      setAsiatunnus('');
+      Promise.all([
+        setHaku(''),
+        setNakyma('kaikki'),
+        setSuoritusmaa(null),
+        setPaattymisVuosi(''),
+        setTodistusVuosi(''),
+        setOppilaitos(''),
+        setTutkinnonNimi(''),
+        setPaaAine(''),
+        setKelpoisuus(''),
+        setOpetettavatAineet(null),
+        setRatkaisutyyppi(''),
+        setPaatostyyppi(''),
+        setSovellettuLaki(''),
+        setTutkinnonTaso(''),
+        setKielteinen(''),
+        setMyonteinen(''),
+        setEsittelijaOid(''),
+        setHakijanNimi(''),
+        setAsiatunnus(''),
+      ]).finally(() => {});
       setCommitted(EMPTY_COMMITTED);
     });
     if (registerFetchPage) {
@@ -269,8 +269,7 @@ export const SearchBar = () => {
           });
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   useEffect(() => {
     if (hakemukset && ribbonVisible) {
@@ -356,7 +355,7 @@ export const SearchBar = () => {
   };
 
   // Älä näytä hakuja editorissa
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   if (pathname.includes('/editori/')) {
     return null;
   }

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { OphSelectOption } from '../lib/types/common';
+
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
-
-import { OphSelectOption } from '../lib/types/common';
 
 type KoodistoItem = {
   koodiUri: string;

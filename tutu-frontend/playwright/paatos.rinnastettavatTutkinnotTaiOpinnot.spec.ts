@@ -19,7 +19,9 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText(
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -27,11 +29,13 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=4 Riittävät opinnot');
+    .locator('text=4 hakemus.paatos.paatostyyppi.options.riittavatOpinnot');
 
   await tasoOption.click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.riittavatOpinnot.otsikko1',
+  );
 
   const tutkintoDropdown = page.getByTestId(
     'rinnastettava-tutkinto-tai-opinto-select',
@@ -68,7 +72,9 @@ test('Valittaessa 4 Riittävät opinnot, tulee opintojen lisäyksen jälkeen oik
   ).toBeVisible();
   await page.getByTestId('lisaa-tutkinto-tai-opinto-button').click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 2');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.riittavatOpinnot.otsikko2',
+  );
 });
 
 test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja lähettää kutsun backendille', async ({
@@ -76,7 +82,9 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText(
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -84,11 +92,15 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=3 Tietty tutkinto tai opinnot');
+    .locator(
+      'text=3 hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot',
+    );
 
   await tasoOption.click();
 
-  await expect(page.locator('h3').last()).toHaveText('Tutkinto tai opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.otsikko1',
+  );
 
   const tutkintoDropdown = page.getByTestId(
     'rinnastettava-tutkinto-tai-opinto-select',
@@ -175,7 +187,9 @@ test('Riittävät opinnot, luokanopettaja näyttää oikeat valinnat', async ({
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText(
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -183,11 +197,13 @@ test('Riittävät opinnot, luokanopettaja näyttää oikeat valinnat', async ({
 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=4 Riittävät opinnot');
+    .locator('text=4 hakemus.paatos.paatostyyppi.options.riittavatOpinnot');
 
   await tasoOption.click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.riittavatOpinnot.otsikko1',
+  );
 
   const tutkintoDropdown = page.getByTestId(
     'rinnastettava-tutkinto-tai-opinto-select',
@@ -278,7 +294,9 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText(
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -286,11 +304,13 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=4 Riittävät opinnot');
+    .locator('text=4 hakemus.paatos.paatostyyppi.options.riittavatOpinnot');
 
   await tasoOption.click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.riittavatOpinnot.otsikko1',
+  );
 
   const tutkintoDropdown = page.getByTestId(
     'rinnastettava-tutkinto-tai-opinto-select',
@@ -384,7 +404,9 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await expect(ratkaisutyyppiInput).toHaveText('1 Päätös');
+  await expect(ratkaisutyyppiInput).toHaveText(
+    'hakemus.paatos.ratkaisutyyppi.paatos',
+  );
   await expect(paatostyyppiInput).toBeVisible();
 
   await paatostyyppiInput.click();
@@ -392,11 +414,13 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
 
   const tasoOption = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator('text=4 Riittävät opinnot');
+    .locator('text=4 hakemus.paatos.paatostyyppi.options.riittavatOpinnot');
 
   await tasoOption.click();
 
-  await expect(page.locator('h3').last()).toHaveText('Opinnot 1');
+  await expect(page.locator('h3').last()).toHaveText(
+    'hakemus.paatos.paatostyyppi.riittavatOpinnot.otsikko1',
+  );
 
   const tutkintoDropdown = page.getByTestId(
     'rinnastettava-tutkinto-tai-opinto-select',

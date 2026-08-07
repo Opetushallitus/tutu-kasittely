@@ -1,5 +1,3 @@
-'use client';
-
 import { TolgeeInstance } from '@tolgee/react';
 
 import { Language } from './localizationTypes';
@@ -22,5 +20,7 @@ export function getTolgee(): TolgeeInstance {
 
 export function changeLanguage(language: Language) {
   document.documentElement.lang = language;
-  getTolgee().changeLanguage(language);
+  getTolgee()
+    .changeLanguage(language)
+    .finally(() => {});
 }

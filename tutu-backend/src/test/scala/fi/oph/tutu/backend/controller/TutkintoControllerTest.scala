@@ -130,7 +130,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        get(s"/api/hakemus/${hakemusOid.toString}/tutkinto/")
+        get(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/tutkinto/")
           .header(dummyUserAgent, dummyUserAgentValue)
           .header(xffOriginalHeaderName, xffOriginalHeaderValue)
       )
@@ -164,7 +164,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        put(s"/api/hakemus/${hakemusOid.toString}/tutkinto/")
+        put(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/tutkinto/")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(mapper.writeValueAsString(muutetutTutkinnot))
@@ -206,7 +206,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
     mockMvc
       .perform(
-        delete(s"/api/hakemus/${hakemusOid.toString}/tutkinto/${poistettuId.toString}")
+        delete(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/tutkinto/${poistettuId.toString}")
           .`with`(csrf())
           .header(dummyUserAgent, dummyUserAgentValue)
           .header(xffOriginalHeaderName, xffOriginalHeaderValue)

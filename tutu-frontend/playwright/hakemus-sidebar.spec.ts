@@ -1,16 +1,15 @@
 import { expect, test } from '@playwright/test';
 
-import { mockAll } from '@/playwright/mocks';
-
 import { getPaatos } from './fixtures/paatos1';
 import { expectVisibleAndAttached } from './helpers/testUtils';
-import { translate } from './helpers/translate';
+
+import { mockAll } from '@/playwright/mocks';
 
 test.beforeEach(mockAll);
 
 test('Sivupalkki näkyvissä oletussivulla', async ({ page }) => {
   await page.goto(
-    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
   );
 
   await expect(page.getByTestId('hakemus-sidebar')).toBeVisible();
@@ -20,18 +19,16 @@ test('HakemusKoskee näyttää oikean labelin ja AP-hakemus-badgen', async ({
   page,
 }) => {
   await page.goto(
-    'tutu-frontend/hakemus/1.2.246.562.11.00000000004/perustiedot',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000004/perustiedot',
   );
 
-  const kelpoisuusAmmattiin = await translate(
-    page,
-    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin',
-  );
+  const kelpoisuusAmmattiin =
+    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin';
 
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
   await expect(hakemusKoskee).toHaveText(kelpoisuusAmmattiin);
 
-  const apHakemusText = await translate(page, 'hakemus.apHakemus');
+  const apHakemusText = 'hakemus.apHakemus';
 
   const apHakemusBadge = page.getByTestId('hakemus-sidebar-ap-hakemus-badge');
 
@@ -43,13 +40,11 @@ test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async 
   page,
 }) => {
   await page.goto(
-    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
   );
 
-  const kelpoisuusAmmattiin = await translate(
-    page,
-    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin',
-  );
+  const kelpoisuusAmmattiin =
+    'valinnat.hakemusKoskeeValinta.kelpoisuusAmmattiin';
 
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
   await expect(hakemusKoskee).toHaveText(kelpoisuusAmmattiin);
@@ -62,7 +57,7 @@ test('HakemusKoskee ei näytä AP-hakemus-badgea kun apHakemus on false', async 
 test('Paatöksiä ei näytetä kun päätöstekstiä ei ole vahvistettu', async ({
   page,
 }) => {
-  await page.route('**/paatos/**', async (route) => {
+  await page.route('**/tutu-backend/api/paatos/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -83,7 +78,7 @@ test('Paatöksiä ei näytetä kun päätöstekstiä ei ole vahvistettu', async 
   });
 
   await page.goto(
-    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
   );
 
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');
@@ -93,7 +88,7 @@ test('Paatöksiä ei näytetä kun päätöstekstiä ei ole vahvistettu', async 
 });
 
 test('Päätös näkyy kun päätösteksti on vahvistettu', async ({ page }) => {
-  await page.route('**/paatos/**', async (route) => {
+  await page.route('**/tutu-backend/api/paatos/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -114,7 +109,7 @@ test('Päätös näkyy kun päätösteksti on vahvistettu', async ({ page }) => 
   });
 
   await page.goto(
-    'tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
   );
 
   const hakemusKoskee = page.getByTestId('hakemus-sidebar-hakemus-koskee');

@@ -13,5 +13,6 @@ COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/application/ ./
+COPY frontend-dist/ /opt/tutu-frontend/dist/
 COPY src/main/resources/oph-configuration/logback.xml ./logback.xml
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher", "--spring.profiles.active=prod", "--spring.config.additional-location=classpath:/oph-configuration/application.properties"]

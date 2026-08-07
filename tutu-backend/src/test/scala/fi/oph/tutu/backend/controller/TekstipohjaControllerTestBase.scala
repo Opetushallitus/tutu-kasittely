@@ -111,7 +111,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
     )
   }
 
-  // --- GET /api/XXXXXpohja ---
+  // --- GET /tutu-backend/api/XXXXXpohja ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -123,7 +123,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(pohjaListAuditOperation), any())
   }
 
-  // --- GET /api/XXXXXpohja/kategoria ---
+  // --- GET /tutu-backend/api/XXXXXpohja/kategoria ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -135,7 +135,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(kategoriaListAuditOperation), any())
   }
 
-  // --- PUT /api/XXXXXpohja/kategoria ---
+  // --- PUT /tutu-backend/api/XXXXXpohja/kategoria ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -190,7 +190,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
       .andExpect(status().isNotFound)
   }
 
-  // --- PUT /api/XXXXXpohja ---
+  // --- PUT /tutu-backend/api/XXXXXpohja ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -262,7 +262,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
       .andExpect(status().isNotFound)
   }
 
-  // --- GET /api/XXXXXpohja/{XXXXXpohjaId} ---
+  // --- GET /tutu-backend/api/XXXXXpohja/{XXXXXpohjaId} ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -287,7 +287,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
       .andExpect(status().isNotFound)
   }
 
-  // --- DELETE /api/XXXXXpohja/{XXXXXpohjaId} ---
+  // --- DELETE /tutu-backend/api/XXXXXpohja/{XXXXXpohjaId} ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
@@ -319,7 +319,7 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
       .andExpect(status().isNotFound)
   }
 
-  // --- GET /api/XXXXXpohja/kategorioittain ---
+  // --- GET /tutu-backend/api/XXXXXpohja/kategorioittain ---
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))

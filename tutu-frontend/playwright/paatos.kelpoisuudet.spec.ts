@@ -13,8 +13,6 @@ import {
   KielteisenPaatoksenPerustelut,
 } from '@/src/lib/types/paatos';
 
-import { translate } from './helpers/translate';
-
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
   await mockPaatos(page);
@@ -33,24 +31,26 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   const kelpoisuusSelect = page.getByTestId('kelpoisuus-select');
   const opetettavaAineSelect = page.getByTestId('opetettavaAine-select');
   const muuAmmattiInput = page.getByTestId('muuAmmattikuvaus-input');
-  const paatosText = await translate(
-    page,
-    'hakemus.paatos.ratkaisutyyppi.paatos',
-  );
-  const kelpoisuusText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
-  );
+  const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
+  const kelpoisuusText = 'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko';
   await expect(page.getByTestId('paatos-ratkaisutyyppi')).toHaveText(
     paatosText,
   );
 
-  await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
+  await selectOption(
+    page,
+    paatostyyppiInput,
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
 
   await expect(kelpoisuusSelect).toBeHidden();
   await expect(opetettavaAineSelect).toBeHidden();
 
-  await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
+  await selectOption(
+    page,
+    sovellettuLakiSelect,
+    'hakemus.paatos.sovellettuLaki.uo',
+  );
   await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
   await expect(kelpoisuusSelect).toBeVisible();
   await expect(opetettavaAineSelect).toBeHidden();
@@ -74,7 +74,11 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
     },
   );
 
-  await selectOption(page, sovellettuLakiSelect, 'Päätös AP/SEUT');
+  await selectOption(
+    page,
+    sovellettuLakiSelect,
+    'hakemus.paatos.sovellettuLaki.ap_seut',
+  );
   await selectOption(page, kelpoisuusSelect, 'Aineenopettaja lukiossa');
   await expect(opetettavaAineSelect).toBeVisible();
   await expect(muuAmmattiInput).toBeHidden();
@@ -103,7 +107,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   await expectDataFromDropdownSelection(
     page,
     page.getByTestId('direktiivitaso-select'),
-    'b - 1384/2015 pätevyystaso 2',
+    'hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2',
     '/paatos/',
     {
       paatosTiedot: [
@@ -125,7 +129,7 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
   await expectDataFromDropdownSelection(
     page,
     page.getByTestId('kansallisestiVaadittavaDirektiivitaso-select'),
-    'c - 1384/2015 pätevyystaso 3',
+    'hakemus.paatos.direktiivitaso.c_1384_2015_patevyystaso_3',
     '/paatos/',
     {
       paatosTiedot: [
@@ -167,7 +171,11 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
     },
   );
 
-  await selectOption(page, kelpoisuusSelect, 'Muu ammatti');
+  await selectOption(
+    page,
+    kelpoisuusSelect,
+    'hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti',
+  );
   await expect(opetettavaAineSelect).toBeHidden();
   await expect(muuAmmattiInput).toBeVisible();
 
@@ -195,12 +203,12 @@ const makeInitialKelpoisuusSelections = async (page: Page) => {
   await selectOption(
     page,
     page.getByTestId('paatos-paatostyyppi-dropdown'),
-    '2 Kelpoisuus',
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
   );
   await selectOption(
     page,
     page.getByTestId('paatos-sovellettulaki-dropdown'),
-    'Päätös AP/SEUT',
+    'hakemus.paatos.sovellettuLaki.ap_seut',
   );
   await selectOption(
     page,
@@ -213,10 +221,7 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
   page,
 }) => {
   await makeInitialKelpoisuusSelections(page);
-  const kelpoisuusText = await translate(
-    page,
-    'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko',
-  );
+  const kelpoisuusText = 'hakemus.paatos.paatostyyppi.kelpoisuus.otsikko';
   await expect(page.locator('h3').last()).toHaveText(kelpoisuusText + ' 1');
 
   const lisaaKelpoisuusButton = page.getByTestId('lisaa-kelpoisuus-button');
@@ -427,8 +432,14 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
 
-  await muuEroButton.click();
-  await expect(muuEroInput).toBeVisible();
+  // Edellisen tallennuksen PUT-vastaus on saattanut viivästyttää DOM-päivitystä,
+  // joten odotetaan että muuEroInput tulee näkyviin ennen kuin jatketaan
+  await expect(async () => {
+    if (!(await muuEroButton.isChecked())) {
+      await muuEroButton.click();
+    }
+    await expect(muuEroInput).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 15000 });
   lisavaatimusRequest.erotKoulutuksessa = {
     muuEro: true,
     muuEroKuvaus: 'Tämä on muu ero',
@@ -687,8 +698,16 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   const sovellettuLakiSelect = page.getByTestId(
     'paatos-sovellettulaki-dropdown',
   );
-  await selectOption(page, paatostyyppiInput, '2 Kelpoisuus');
-  await selectOption(page, sovellettuLakiSelect, 'Päätös UO');
+  await selectOption(
+    page,
+    paatostyyppiInput,
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+  await selectOption(
+    page,
+    sovellettuLakiSelect,
+    'hakemus.paatos.sovellettuLaki.uo',
+  );
   await page.getByTestId('kelpoisuus-select').isVisible();
 
   await selectOptionByValue(
@@ -699,7 +718,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
 
   await page
     .getByTestId('myonteinenPaatos-radio-group')
-    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .getByText('hakemus.paatos.myonteinen')
     .click();
 
   const sovellettuTilanneSelect = page.getByTestId(
@@ -716,7 +735,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
 
   await page
     .getByTestId('myonteinenPaatos-radio-group')
-    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .getByText('hakemus.paatos.myonteinen')
     .click();
 
   await expect(sovellettuTilanneSelect).toBeVisible();
@@ -744,7 +763,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
 
   await page
     .getByTestId('myonteinenPaatos-radio-group')
-    .getByText(await translate(page, 'hakemus.paatos.myonteinen'))
+    .getByText('hakemus.paatos.myonteinen')
     .click();
 
   await expect(sovellettuTilanneSelect).toBeVisible();
@@ -757,10 +776,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   await page
     .locator('ul[role="listbox"] li[role="option"]')
     .locator(
-      `text=${await translate(
-        page,
-        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne.pedagogiset1_ja_aine1',
-      )}`,
+      `text=${'hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne.pedagogiset1_ja_aine1'}`,
     )
     .last()
     .click();
@@ -781,10 +797,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
   ).toBeVisible();
 
   const osaamisenTaydentamisenTavat = page.getByText(
-    await translate(
-      page,
-      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.osaamisenTaydentamisenTavat',
-    ),
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.osaamisenTaydentamisenTavat',
     { exact: true },
   );
 
@@ -821,10 +834,7 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
 
   await expect(
     page.getByText(
-      await translate(
-        page,
-        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
-      ),
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
     ),
   ).toBeVisible();
 });

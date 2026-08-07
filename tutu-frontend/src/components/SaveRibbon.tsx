@@ -1,5 +1,3 @@
-'use client';
-
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Box, Stack, useTheme } from '@mui/material';
 import {

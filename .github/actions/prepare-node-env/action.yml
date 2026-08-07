@@ -1,0 +1,27 @@
+name: prepare-node-env
+description: "Prepare node env"
+runs:
+  using: "composite"
+  steps:
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v5
+      with:
+        version: 10
+    - name: Set up node
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: "tutu-frontend/.nvmrc"
+        cache: "pnpm"
+        cache-dependency-path: tutu-frontend/pnpm-lock.yaml
+        registry-url: "https://npm.pkg.github.com"
+        scope: "@opetushallitus"
+    - name: node_modules-cache
+      uses: actions/cache@v5
+      with:
+        path: ${{ github.workspace }}/tutu-frontend/node_modules
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('./tutu-frontend/pnpm-lock.yaml') }}
+    - name: Install dependencies
+      if: steps.node_modules-cache.outputs.cache-hit != 'true'
+      working-directory: ./tutu-frontend
+      shell: bash
+      run: pnpm install

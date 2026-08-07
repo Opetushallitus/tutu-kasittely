@@ -17,12 +17,12 @@ class PaatospohjaControllerTest extends TekstipohjaControllerTestBase {
     paatospohjaRepository.lisaaTekstipohja(tekstipohja, "test-user").id.get
   override def haeTekstipohjaLista(): Seq[TekstipohjaListItem] = paatospohjaRepository.haeTekstipohjaLista()
 
-  override def pohjaListPath                                = "/api/paatospohja"
-  override def pohjaListKategorioittainPath                 = "/api/paatospohja/kategorioittain"
-  override def kategoriaListPath                            = "/api/paatospohja/kategoria"
-  override def pohjaSavePath                                = "/api/paatospohja"
-  override def kategoriaSavePath                            = "/api/paatospohja/kategoria"
-  override def pohjaAccessPath(paatospohjaId: UUID): String = s"/api/paatospohja/$paatospohjaId"
+  override def pohjaListPath                                = "/tutu-backend/api/paatospohja"
+  override def pohjaListKategorioittainPath                 = "/tutu-backend/api/paatospohja/kategorioittain"
+  override def kategoriaListPath                            = "/tutu-backend/api/paatospohja/kategoria"
+  override def pohjaSavePath                                = "/tutu-backend/api/paatospohja"
+  override def kategoriaSavePath                            = "/tutu-backend/api/paatospohja/kategoria"
+  override def pohjaAccessPath(paatospohjaId: UUID): String = s"/tutu-backend/api/paatospohja/$paatospohjaId"
 
   override def pohjaListAuditOperation: AuditOperation       = AuditOperation.ReadPaatospohjat
   override def pohjaReadAuditOperation: AuditOperation       = AuditOperation.ReadPaatospohja

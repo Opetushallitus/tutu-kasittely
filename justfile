@@ -39,14 +39,53 @@ start-all:
     done; \
     just start-dev-frontend
 
-# CI
 [working-directory: 'tutu-frontend']
-_playwright-in-docker:
+_playwright-in-docker-ci:
     #!/usr/bin/env bash
+    set -euo pipefail
     pnpm list --json @playwright/test > pw.json
     PLAYWRIGHT_VERSION=$(node -e "console.log(require('./pw.json')[0].devDependencies['@playwright/test'].version)")
     rm pw.json
-    docker run --mount type=bind,source=$PWD,target=/app --user "$(id -u):$(id -g)" -w /app \
-    --add-host=host.docker.internal:host-gateway -e DOCKER=1 \
-    mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
-    npx playwright test --project=$PLAYWRIGHT_PROJECT
+    docker run --rm \
+      --mount "type=bind,source=$PWD,target=/app" \
+      --user "$(id -u):$(id -g)" \
+      -w /app \
+      -e CI=1 \
+      -e PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+      mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
+      ./node_modules/.bin/playwright test --project="${PLAYWRIGHT_PROJECT:-chromium}"
+
+[working-directory: 'tutu-frontend']
+playwright-docker:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pnpm list --json @playwright/test > pw.json
+    PLAYWRIGHT_VERSION=$(node -e "console.log(require('./pw.json')[0].devDependencies['@playwright/test'].version)")
+    rm pw.json
+    NPMRC_MOUNT=()
+    if [ -f "$HOME/.npmrc" ]; then
+      NPMRC_MOUNT=(--mount "type=bind,source=$HOME/.npmrc,target=/root/.npmrc,readonly")
+    else
+      echo "⚠️  No ~/.npmrc — GitHub Packages auth will likely fail." >&2
+    fi
+    docker run --rm \
+      --mount "type=bind,source=$PWD,target=/app" \
+      --mount "type=volume,source=tutu-frontend-node-modules,target=/app/node_modules" \
+      "${NPMRC_MOUNT[@]}" \
+      -w /app \
+      -e CI=1 \
+      -e PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+      -e "PLAYWRIGHT_PROJECT=${PLAYWRIGHT_PROJECT:-chromium}" \
+      -e "HOST_UID=$(id -u)" \
+      -e "HOST_GID=$(id -g)" \
+      mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION"-noble \
+      bash -c '
+        set -e
+        corepack enable
+        pnpm install --frozen-lockfile
+        set +e
+        ./node_modules/.bin/playwright test --project="$PLAYWRIGHT_PROJECT"
+        code=$?
+        chown -R "$HOST_UID:$HOST_GID" /app/test-results /app/playwright-report 2>/dev/null || true
+        exit $code
+      '

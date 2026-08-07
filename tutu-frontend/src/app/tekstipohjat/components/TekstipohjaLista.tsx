@@ -1,9 +1,9 @@
-'use client';
-
 import { Add } from '@mui/icons-material';
 import { Box, List, Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
+
+import { KategoriaEditori } from './KategoriaEditori';
 
 import { KategoriaSubHeader } from '@/src/app/tekstipohjat/components/KategoriaSubHeader';
 import { TekstipohjaListItem } from '@/src/app/tekstipohjat/components/TekstipohjaListItem';
@@ -17,8 +17,6 @@ import {
   ViestipohjaKategoria,
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
-
-import { KategoriaEditori } from './KategoriaEditori';
 
 export default function TekstipohjaLista<
   T extends ViestipohjaListItem | PaatospohjaListItem,

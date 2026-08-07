@@ -24,5 +24,5 @@ class SwaggerConfig {
       .components(
         Components()
       )
-      .addServersItem(new Server().url("/tutu-backend/"))
+      .addServersItem(new Server().url("/"))
 }
