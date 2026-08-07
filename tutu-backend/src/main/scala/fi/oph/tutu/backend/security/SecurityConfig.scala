@@ -364,7 +364,7 @@ class SecurityConfig {
       s"script-src-elem 'self' 'unsafe-inline' ${opintopolku_virkailija_domain}",
       "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
       "img-src 'self' blob: data:",
-      "font-src 'self' fonts.gstatic.com",
+      "font-src 'self' fonts.gstatic.com data:",
       "frame-ancestors 'none'",
       "object-src 'none'",
       "base-uri 'self'",

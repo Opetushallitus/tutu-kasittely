@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
     `script-src-elem 'self' 'unsafe-inline' ${env.VIRKAILIJA_URL} https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js`,
     "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
     "img-src 'self' blob: data:",
-    "font-src 'self' fonts.gstatic.com",
+    "font-src 'self' fonts.gstatic.com data:",
     "frame-ancestors 'none'",
     "object-src 'none'",
     "base-uri 'self'",
