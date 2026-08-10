@@ -23,6 +23,7 @@ import {
 export type AmmattikokemusJaElinikainenOppiminenProps = {
   data: AmmattikokemusJaElinikainenOppiminen;
   updateDataAction: (updatedData: AmmattikokemusJaElinikainenOppiminen) => void;
+  kelpoisuuskoeFieldLabelPrefix?: string;
   t: TFunction;
   theme: Theme;
 };
@@ -30,6 +31,7 @@ export type AmmattikokemusJaElinikainenOppiminenProps = {
 export const AmmattikokemusJaElinikainenOppiminenComponent = ({
   data,
   updateDataAction,
+  kelpoisuuskoeFieldLabelPrefix,
   t,
   theme,
 }: AmmattikokemusJaElinikainenOppiminenProps) => {
@@ -115,6 +117,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
               t={t}
               theme={theme}
               testIdPrefix={'ammattikokemusElinikainenOppiminen'}
+              kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
               showKelpoisuuskoeJaSopeutumisaika
               showLisatieto
             />
