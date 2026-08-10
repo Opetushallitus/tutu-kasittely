@@ -520,27 +520,28 @@ class PaatosRepository extends BaseResultHandlers {
     kelpoisuus: Kelpoisuus,
     muokkaaja: String
   ): DBIO[Int] = {
-    var actions: Seq[DBIO[Int]] = Seq.empty
-    actions = actions :+ sqlu"""
+    var actions: Seq[DBIO[Int]] = Seq(
+      sqlu"""
           UPDATE kelpoisuus
           SET
             kelpoisuus = ${kelpoisuus.kelpoisuus},
             muu_ammatti_kuvaus = ${kelpoisuus.muuAmmattiKuvaus},
             direktiivitaso = ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
             kansallisesti_vaadittava_direktiivitaso = ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso
-        .map(_.toString)
-        .orNull}::direktiivitaso,
+          .map(_.toString)
+          .orNull}::direktiivitaso,
             direktiivitaso_lisatiedot = ${kelpoisuus.direktiivitasoLisatiedot},
             myonteinen_paatos = ${kelpoisuus.myonteinenPaatos},
             myonteisen_paatoksen_lisavaatimukset = ${Serialization.write(
-        kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull
-      )}::jsonb,
+          kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull
+        )}::jsonb,
             kielteisen_paatoksen_perustelut = ${Serialization.write(
-        kelpoisuus.kielteisenPaatoksenPerustelut.orNull
-      )}::jsonb,
+          kelpoisuus.kielteisenPaatoksenPerustelut.orNull
+        )}::jsonb,
             muokkaaja = $muokkaaja
           WHERE id = ${kelpoisuus.id.get.toString}::uuid
         """
+    )
     actions = actions ++ paivitaOpetettavatAineet(kelpoisuus.id, kelpoisuus.opetettavaAine, muokkaaja)
 
     db.combineIntDBIOs(actions)
