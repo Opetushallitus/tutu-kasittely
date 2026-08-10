@@ -250,7 +250,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
               id = None,
               paatostietoId = givenPaatosTietoId,
               kelpoisuus = Some("Maajussi"),
-              opetettavaAine = Some("kyntäminen"),
+              opetettavaAine = Seq("kyntäminen"),
               muuAmmattiKuvaus = None,
               direktiivitaso = Some(a_1384_2015_patevyystaso_1),
               kansallisestiVaadittavaDirektiivitaso = Some(b_1384_2015_patevyystaso_2),

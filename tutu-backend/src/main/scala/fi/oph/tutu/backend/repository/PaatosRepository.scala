@@ -8,6 +8,7 @@ import org.springframework.stereotype.{Component, Repository}
 import slick.dbio.DBIO
 import slick.jdbc.PostgresProfile.api.*
 import slick.jdbc.{GetResult, SQLActionBuilder}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID
 import scala.util.{Failure, Success}
@@ -75,7 +76,6 @@ class PaatosRepository extends BaseResultHandlers {
       id = Some(r.nextObject().asInstanceOf[UUID]),
       paatostietoId = Some(r.nextObject().asInstanceOf[UUID]),
       kelpoisuus = r.nextStringOption(),
-      opetettavaAine = r.nextStringOption(),
       muuAmmattiKuvaus = r.nextStringOption(),
       direktiivitaso = Direktiivitaso.optionFromString(r.nextString()),
       kansallisestiVaadittavaDirektiivitaso = Direktiivitaso.optionFromString(r.nextString()),
@@ -464,66 +464,94 @@ class PaatosRepository extends BaseResultHandlers {
           WHERE id = ${id.toString}::uuid
         """
 
-  private def lisaaKelpoisuus(paatostietoId: UUID, kelpoisuus: Kelpoisuus, luoja: String): DBIO[Int] =
-    sqlu"""
-          INSERT INTO kelpoisuus (
-            paatostieto_id,
-            kelpoisuus,
-            opetettava_aine,
-            muu_ammatti_kuvaus,
-            direktiivitaso,
-            kansallisesti_vaadittava_direktiivitaso,
-            direktiivitaso_lisatiedot,
-            myonteinen_paatos,
-            myonteisen_paatoksen_lisavaatimukset,
-            kielteisen_paatoksen_perustelut,
-            luoja
-          )
-          VALUES (
-            ${paatostietoId.toString}::uuid,
-            ${kelpoisuus.kelpoisuus},
-            ${kelpoisuus.opetettavaAine},
-            ${kelpoisuus.muuAmmattiKuvaus},
-            ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
-            ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso.map(_.toString).orNull}::direktiivitaso,
-            ${kelpoisuus.direktiivitasoLisatiedot},
-            ${kelpoisuus.myonteinenPaatos},
-            ${Serialization.write(kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
-            ${Serialization.write(kelpoisuus.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
-            $luoja
-          )"""
+  private def lisaaKelpoisuus(paatostietoId: UUID, kelpoisuus: Kelpoisuus, luoja: String): DBIO[Int] = {
+    val insertKelpoisuusAction: DBIO[Seq[UUID]] = sql"""
+        INSERT INTO kelpoisuus (
+          paatostieto_id,
+          kelpoisuus,
+          muu_ammatti_kuvaus,
+          direktiivitaso,
+          kansallisesti_vaadittava_direktiivitaso,
+          direktiivitaso_lisatiedot,
+          myonteinen_paatos,
+          myonteisen_paatoksen_lisavaatimukset,
+          kielteisen_paatoksen_perustelut,
+          luoja
+        )
+        VALUES (
+          ${paatostietoId.toString}::uuid,
+          ${kelpoisuus.kelpoisuus},
+          ${kelpoisuus.muuAmmattiKuvaus},
+          ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
+          ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso.map(_.toString).orNull}::direktiivitaso,
+          ${kelpoisuus.direktiivitasoLisatiedot},
+          ${kelpoisuus.myonteinenPaatos},
+          ${Serialization.write(kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
+          ${Serialization.write(kelpoisuus.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
+          $luoja
+        ) RETURNING id""".as[UUID]
+
+    val insertOpetettavatAineet = insertKelpoisuusAction.flatMap(kelpoisuusIdSeq => {
+      val kelpoisuusId = kelpoisuusIdSeq.head
+      db.combineIntDBIOs(
+        kelpoisuus.opetettavaAine
+          .filter(_.nonEmpty)
+          .map(opetettavaAine => {
+            sqlu"""
+            INSERT INTO opetettava_aine (
+              kelpoisuus_id,
+              opetettava_aine,
+              luoja
+            )
+            VALUES (
+              ${kelpoisuusId.toString}::uuid,
+              ${opetettavaAine},
+              ${luoja}
+            )
+          """
+          })
+      )
+    })
+
+    insertOpetettavatAineet
+  }
 
   private def paivitaKelpoisuus(
     kelpoisuus: Kelpoisuus,
     muokkaaja: String
-  ): DBIO[Int] =
-    sqlu"""
+  ): DBIO[Int] = {
+    var actions: Seq[DBIO[Int]] = Seq(
+      sqlu"""
           UPDATE kelpoisuus
           SET
             kelpoisuus = ${kelpoisuus.kelpoisuus},
-            opetettava_aine = ${kelpoisuus.opetettavaAine},
             muu_ammatti_kuvaus = ${kelpoisuus.muuAmmattiKuvaus},
             direktiivitaso = ${kelpoisuus.direktiivitaso.map(_.toString).orNull}::direktiivitaso,
             kansallisesti_vaadittava_direktiivitaso = ${kelpoisuus.kansallisestiVaadittavaDirektiivitaso
-        .map(_.toString)
-        .orNull}::direktiivitaso,
+          .map(_.toString)
+          .orNull}::direktiivitaso,
             direktiivitaso_lisatiedot = ${kelpoisuus.direktiivitasoLisatiedot},
             myonteinen_paatos = ${kelpoisuus.myonteinenPaatos},
             myonteisen_paatoksen_lisavaatimukset = ${Serialization.write(
-        kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull
-      )}::jsonb,
+          kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull
+        )}::jsonb,
             kielteisen_paatoksen_perustelut = ${Serialization.write(
-        kelpoisuus.kielteisenPaatoksenPerustelut.orNull
-      )}::jsonb,
+          kelpoisuus.kielteisenPaatoksenPerustelut.orNull
+        )}::jsonb,
             muokkaaja = $muokkaaja
           WHERE id = ${kelpoisuus.id.get.toString}::uuid
         """
+    )
+    actions = actions ++ paivitaOpetettavatAineet(kelpoisuus.id, kelpoisuus.opetettavaAine, muokkaaja)
+
+    db.combineIntDBIOs(actions)
+  }
 
   def haeKelpoisuudet(paatostietoId: UUID): Seq[Kelpoisuus] = {
     try {
-      db.run(
+      val kelpoisuudet = db.run(
         sql"""
-            SELECT id, paatostieto_id, kelpoisuus, opetettava_aine, muu_ammatti_kuvaus,
+            SELECT id, paatostieto_id, kelpoisuus, muu_ammatti_kuvaus,
               direktiivitaso, kansallisesti_vaadittava_direktiivitaso, direktiivitaso_lisatiedot,
               myonteinen_paatos, myonteisen_paatoksen_lisavaatimukset, kielteisen_paatoksen_perustelut,
               luotu, luoja, muokkaaja
@@ -533,6 +561,11 @@ class PaatosRepository extends BaseResultHandlers {
           """.as[Kelpoisuus],
         "hae_kelpoisuudet"
       )
+      kelpoisuudet.map(kelpoisuus => {
+        kelpoisuus.copy(
+          opetettavaAine = haeOpetettavatAineet(kelpoisuus.id)
+        )
+      })
     } catch {
       case e: Exception =>
         LOG.error(s"Kelpoisuuksien haku epäonnistui: $e")
@@ -543,11 +576,78 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
-  private def poistaKelpoisuus(id: UUID): DBIO[Int] =
-    sqlu"""
-          DELETE FROM kelpoisuus
-          WHERE id = ${id.toString}::uuid
+  private def poistaKelpoisuus(id: UUID): DBIO[Int] = {
+    var deleteActions: Seq[DBIO[Int]] = Seq.empty
+
+    deleteActions = deleteActions :+ sqlu"""
+      DELETE FROM opetettava_aine
+      WHERE kelpoisuus_id = ${id.toString}::uuid
+    """
+    deleteActions = deleteActions :+ sqlu"""
+      DELETE FROM kelpoisuus
+      WHERE id = ${id.toString}::uuid
+    """
+
+    db.combineIntDBIOs(deleteActions)
+  }
+
+  def paivitaOpetettavatAineet(
+    kelpoisuusIdMaybe: Option[UUID],
+    opetettavatAineet: Seq[String],
+    muokkaaja: String
+  ): Seq[DBIO[Int]] = {
+    kelpoisuusIdMaybe match {
+      case None               => Seq.empty
+      case Some(kelpoisuusId) => {
+        val removeActions: DBIO[Int] = sqlu"""
+          DELETE FROM opetettava_aine
+          WHERE kelpoisuus_id = ${kelpoisuusId.toString}::uuid
         """
+
+        val insertActions: Seq[DBIO[Int]] = opetettavatAineet
+          .filter(_.nonEmpty)
+          .map(opetettavaAine => sqlu"""
+          INSERT INTO opetettava_aine (
+            kelpoisuus_id,
+            opetettava_aine,
+            luoja
+          )
+          VALUES (
+            ${kelpoisuusId.toString}::uuid,
+            $opetettavaAine,
+            $muokkaaja
+          )
+        """)
+
+        removeActions +: insertActions
+      }
+    }
+  }
+
+  def haeOpetettavatAineet(kelpoisuusIdMaybe: Option[UUID]): Seq[String] = {
+    kelpoisuusIdMaybe match {
+      case None               => Seq.empty
+      case Some(kelpoisuusId) => {
+        try {
+          db.run(
+            sql"""
+                SELECT opetettava_aine
+                FROM opetettava_aine
+                WHERE kelpoisuus_id = ${kelpoisuusId.toString}::uuid
+              """.as[String],
+            "hae_opetettavat_aineet"
+          )
+        } catch {
+          case e: Exception =>
+            LOG.error(s"Opetettavien aineiden haku epäonnistui: $e")
+            throw new RuntimeException(
+              s"Opetettavien aineiden haku epäonnistui: ${e.getMessage}",
+              e
+            )
+        }
+      }
+    }
+  }
 
   def asetaPaatosPeruutetuksi(hakemusId: UUID, muokkaaja: String): Int = {
     try {

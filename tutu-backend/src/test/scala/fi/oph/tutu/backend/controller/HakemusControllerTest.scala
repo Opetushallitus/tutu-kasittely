@@ -878,7 +878,7 @@ class HakemusControllerTest extends IntegrationTestBase {
               kelpoisuudet = Seq(
                 Kelpoisuus(
                   kelpoisuus = Some("Opetusalan ammatit_Aineenopettaja perusopetuksessa"),
-                  opetettavaAine = Some("Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_portugali"),
+                  opetettavaAine = Seq("Opetusalan ammatit_Aineenopettaja perusopetuksessa_vieras kieli_portugali"),
                   myonteinenPaatos = Some(true)
                 )
               )
@@ -899,7 +899,7 @@ class HakemusControllerTest extends IntegrationTestBase {
               kelpoisuudet = Seq(
                 Kelpoisuus(
                   kelpoisuus = Some("Opetusalan ammatit_Aineenopettaja lukiossa"),
-                  opetettavaAine = Some("Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_englanti"),
+                  opetettavaAine = Seq("Opetusalan ammatit_Aineenopettaja lukiossa_vieras kieli_englanti"),
                   myonteinenPaatos = Some(false)
                 )
               )
