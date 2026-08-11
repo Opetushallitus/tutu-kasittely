@@ -200,7 +200,6 @@ class PaatosService(
     }
 
   private def haeMuokkaajaNimi(paatosteksti: Paatosteksti): Paatosteksti = {
-    val muokkaajaNimi = onrService.haeNimi(paatosteksti.muokkaaja)
     paatosteksti.copy(muokkaaja = Some(onrService.haeNimi(paatosteksti.muokkaaja)))
   }
 

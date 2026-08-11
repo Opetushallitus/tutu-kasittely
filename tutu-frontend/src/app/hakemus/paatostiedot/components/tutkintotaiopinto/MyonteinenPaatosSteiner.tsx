@@ -1,29 +1,18 @@
-import { Theme } from '@mui/material/styles';
+import { useTheme } from '@mui/material';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import {
-  MyonteisenPaatoksenLisavaatimukset,
-  MyonteisenPaatoksenLisavaatimusUpdateCallback,
-} from '@/src/lib/types/paatos';
-
-interface MyonteinenPaatosProps {
-  t: TFunction;
-  theme: Theme;
-  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
-  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
-}
+import { MyonteinenPaatosProps } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
 
 export const MyonteinenPaatosSteiner: React.FC<MyonteinenPaatosProps> = ({
   t,
-  theme,
   updateLisavaatimukset,
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
+  const theme = useTheme();
   return (
     <OphFormFieldWrapper
       label={t('hakemus.paatos.myonteinenPaatos.otsikko')}

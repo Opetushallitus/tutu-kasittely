@@ -1,17 +1,26 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   OphButton,
   ophColors,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
+import { match, P } from 'ts-pattern';
 
-import { MyonteinenPaatos } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatos';
-import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
-import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/MyonteinenPaatosSteiner';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
+import {
+  MyonteinenPaatos,
+  MyonteinenPaatosProps,
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
+import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosLuokanopettajaTaiAineenopettaja';
+import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosSteiner';
+import { MyonteinenPaatosTutkintoTaiOpintoUO } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosTutkintoTaiOpintoUO';
+import {
+  AINEENOPETTAJA_OPTION_KEYS,
+  LUOKANOPETTAJA_OPTION_KEYS,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
@@ -19,6 +28,7 @@ import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   MyonteisenPaatoksenLisavaatimukset,
+  PaatosTieto,
   PaatosTietoOptionGroup,
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
@@ -27,77 +37,74 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
   t: TFunction;
   index: number;
   tutkintoTaiOpinto: TutkintoTaiOpinto;
-  paatosTyyppi: string;
+  paatosTieto: PaatosTieto;
   paatosTietoOptions: PaatosTietoOptionGroup;
   updateTutkintoTaiOpintoAction: (
     updatedTutkintoTaiOpinto: TutkintoTaiOpinto,
     index: number,
   ) => void;
   deleteTutkintoTaiOpintoAction: (id: string | undefined) => void;
-  tyyppi: string;
 }
 
-enum Opinnot {
-  Steiner,
-  Aineenopettaja,
-  Luokanopettaja,
-  Muu,
-}
+const myonteinenPaatosComponent = (
+  paatosTieto: PaatosTieto,
+  tutkintoTaiOpinto: TutkintoTaiOpinto,
+): [FC<MyonteinenPaatosProps>, boolean] => {
+  switch (paatosTieto.paatosTyyppi) {
+    case 'RiittavatOpinnot':
+      return match(tutkintoTaiOpinto.tutkintoTaiOpinto)
+        .returnType<[FC<MyonteinenPaatosProps>, boolean]>()
+        .with(
+          P.when((t) =>
+            AINEENOPETTAJA_OPTION_KEYS.concat(LUOKANOPETTAJA_OPTION_KEYS).some(
+              (key) => t?.includes(key),
+            ),
+          ),
+          () => [MyonteinenPaatosLuokanopettajaTaiAineenopettaja, true],
+        )
+
+        .with(
+          P.when((t) => t?.includes('Steiner')),
+          () => [MyonteinenPaatosSteiner, false],
+        )
+        .otherwise(() => [MyonteinenPaatos, true]);
+    default:
+      return paatosTieto.sovellettuLaki === 'uo'
+        ? [MyonteinenPaatosTutkintoTaiOpintoUO, true]
+        : [MyonteinenPaatos, true];
+  }
+};
 
 export const RinnastettavaTutkintoTaiOpintoComponent = ({
   t,
   index,
   tutkintoTaiOpinto,
-  paatosTyyppi,
+  paatosTieto,
   paatosTietoOptions,
   updateTutkintoTaiOpintoAction,
   deleteTutkintoTaiOpintoAction,
-  tyyppi,
 }: RinnastettavaTutkintoTaiOpintoComponentProps) => {
-  const theme = useTheme();
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
 
   const { naytaKielivalinta, LisavaatimusComponent } = useMemo(() => {
-    const text = tutkintoTaiOpinto.tutkintoTaiOpinto ?? '';
-
-    const aineenopettajaKeys = [
-      'Aineenopettaja',
-      'Ämneslärare',
-      'Subject teacher',
-    ];
-    const luokanopettajaKeys = [
-      'Luokanopettaja',
-      'Klasslärare',
-      'Class teacher',
-    ];
-
-    let found: Opinnot = Opinnot.Muu;
-    if (text.includes('Steiner')) {
-      found = Opinnot.Steiner;
-    } else if (aineenopettajaKeys.some((k) => text.includes(k))) {
-      found = Opinnot.Aineenopettaja;
-    } else if (luokanopettajaKeys.some((k) => text.includes(k))) {
-      found = Opinnot.Luokanopettaja;
-    }
-
-    const componentMap: Record<Opinnot, typeof MyonteinenPaatos> = {
-      [Opinnot.Steiner]: MyonteinenPaatosSteiner,
-      [Opinnot.Aineenopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
-      [Opinnot.Luokanopettaja]: MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
-      [Opinnot.Muu]: MyonteinenPaatos,
-    };
-
-    const component = componentMap[found];
-
+    const [component, naytaKielivalinta] = myonteinenPaatosComponent(
+      paatosTieto,
+      tutkintoTaiOpinto,
+    );
     return {
-      naytaKielivalinta: found !== Opinnot.Steiner,
+      naytaKielivalinta,
       LisavaatimusComponent: component,
     };
-  }, [tutkintoTaiOpinto.tutkintoTaiOpinto]);
+  }, [paatosTieto, tutkintoTaiOpinto]);
+
+  const paatosTyyppi =
+    paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
+      ? 'riittavatOpinnot'
+      : 'tiettyTutkintoTaiOpinnot';
 
   const rinnastettavaTutkintoTaiOpinnotOptions =
-    tyyppi === 'riittavatOpinnot'
+    paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
       ? getPaatosTietoDropdownOptions(
           asiointikieli,
           paatosTietoOptions.riittavatOpinnotOptions,
@@ -128,19 +135,19 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     lisavaatimukset:
       tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset as MyonteisenPaatoksenLisavaatimukset,
     t: t,
-    theme: theme,
+    tutkintoTaiOpinto: tutkintoTaiOpinto.tutkintoTaiOpinto,
   };
 
   return (
     <Stack
       direction={'column'}
-      gap={theme.spacing(2)}
+      gap={2}
       sx={{ width: '100%', padding: 2, backgroundColor: ophColors.grey50 }}
     >
       <Stack
         key={`stack-${index}`}
         direction={'row'}
-        gap={theme.spacing(2)}
+        gap={2}
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
         <OphTypography variant={'h3'}>
@@ -158,13 +165,13 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
             onClick={() =>
               showConfirmation({
                 header: t(
-                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.otsikko`,
+                  `hakemus.paatos.paatostyyppi.${paatosTyyppi}.modal.otsikko`,
                 ),
                 content: t(
-                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.teksti`,
+                  `hakemus.paatos.paatostyyppi.${paatosTyyppi}.modal.teksti`,
                 ),
                 confirmButtonText: t(
-                  `hakemus.paatos.paatostyyppi.${tyyppi}.modal.poistaTutkintoTaiOpinnot`,
+                  `hakemus.paatos.paatostyyppi.${paatosTyyppi}.modal.poistaTutkintoTaiOpinnot`,
                 ),
                 handleConfirmAction: () =>
                   deleteTutkintoTaiOpintoAction(tutkintoTaiOpinto.id),
@@ -184,7 +191,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         value={tutkintoTaiOpinto.tutkintoTaiOpinto || ''}
         data-testid={'rinnastettava-tutkinto-tai-opinto-select'}
       />
-      {tyyppi === 'riittavatOpinnot' && naytaKielivalinta && (
+      {paatosTyyppi === 'riittavatOpinnot' && naytaKielivalinta && (
         <OphInputFormField
           label={t('hakemus.paatos.paatostyyppi.riittavatOpinnot.opetuskieli')}
           value={tutkintoTaiOpinto.opetuskieli ?? ''}

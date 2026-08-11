@@ -1,10 +1,8 @@
 package fi.oph.tutu.backend.utils
 
 import fi.oph.tutu.backend.domain.Kielistetty
-import fi.oph.tutu.backend.domain.Kieli.{en, fi, sv}
 
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
-import scala.math.BigDecimal
 
 object Utility {
   def stringToSeq(s: String): Seq[String] = s.split(",").map(_.trim).toSeq

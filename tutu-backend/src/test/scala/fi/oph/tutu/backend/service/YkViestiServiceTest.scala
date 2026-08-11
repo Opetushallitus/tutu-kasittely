@@ -1,22 +1,12 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import org.mockito.ArgumentMatchers.*
-import org.mockito.Mock
-import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.test.context.bean.`override`.mockito.MockitoBean
-
-import java.util.UUID
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
