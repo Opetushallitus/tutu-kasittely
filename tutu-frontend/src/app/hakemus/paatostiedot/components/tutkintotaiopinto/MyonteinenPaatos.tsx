@@ -1,5 +1,4 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
@@ -12,25 +11,24 @@ import {
   MyonteisenPaatoksenLisavaatimusUpdateCallback,
 } from '@/src/lib/types/paatos';
 
-interface MyonteinenPaatosProps {
+export interface MyonteinenPaatosProps {
   t: TFunction;
-  theme: Theme;
+  tutkintoTaiOpinto?: string;
   updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
   lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
 }
 
 export const MyonteinenPaatos: React.FC<MyonteinenPaatosProps> = ({
   t,
-  theme,
   updateLisavaatimukset,
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
   return (
     <OphFormFieldWrapper
       label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
-      sx={{ gap: theme.spacing(2) }}
+      sx={{ gap: 2 }}
       renderInput={() => (
-        <Stack direction="column" gap={theme.spacing(2)}>
+        <Stack direction="column" gap={2}>
           <OphCheckbox
             data-testid="myonteinenPaatos-taydentavatOpinnot"
             label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}

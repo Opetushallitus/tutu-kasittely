@@ -109,7 +109,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   await expectDataFromDropdownSelection(
     page,
     tutkintoDropdown,
-    'uskonto, ortodoksinen',
+    'Rinnastaminen oikeustieteen maisterin tutkintoon',
     '/paatos/',
     {
       paatosTiedot: [
@@ -118,7 +118,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
             },
           ],
         },
@@ -146,7 +146,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
               myonteinenPaatos: true,
             },
           ],
@@ -155,13 +155,15 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
     },
   );
 
-  await expect(
-    page.getByTestId('myonteinenPaatos-taydentavatOpinnot'),
-  ).toBeVisible();
-  await expectRequestData(
+  const sovellettuTilanneDropdown = page.getByTestId(
+    'myonteinenPaatos-uo-sovellettuTilanne-select',
+  );
+  await expect(sovellettuTilanneDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
     page,
+    sovellettuTilanneDropdown,
+    '3',
     '/paatos/',
-    page.getByTestId('myonteinenPaatos-taydentavatOpinnot').click(),
     {
       paatosTiedot: [
         {
@@ -169,10 +171,10 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
           rinnastettavatTutkinnotTaiOpinnot: [
             {
               tutkintoTaiOpinto:
-                'Opetettavan aineen opinnot_uskonto_uskonto, ortodoksinen',
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
               myonteinenPaatos: true,
               myonteisenPaatoksenLisavaatimukset: {
-                taydentavatOpinnot: true,
+                sovellettuTilanne: '3',
               },
             },
           ],

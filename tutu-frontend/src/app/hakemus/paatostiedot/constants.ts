@@ -628,3 +628,21 @@ export const emptyAmmattikokemusJaElinikainenOppiminen =
     }, {} as AmmattikokemusJaElinikainenOppiminen);
 
 export const MUU_AMMATTI_KEY = 'Muu ammatti';
+
+export const AINEENOPETTAJA_OPTION_KEYS = [
+  'Aineenopettaja',
+  'Ämneslärare',
+  'Subject teacher',
+];
+
+export const LUOKANOPETTAJA_OPTION_KEYS = [
+  'Luokanopettaja',
+  'Klasslärare',
+  'Class teacher',
+];
+
+export const OIKEUSTIETEEN_MAISTERI_KEYS = [
+  'Rinnastaminen oikeustieteen maisterin tutkintoon',
+  'Jämställande med juris magisterexamen',
+  'Recognition of studies as comparable to a Master of Laws degree completed in Finland',
+];

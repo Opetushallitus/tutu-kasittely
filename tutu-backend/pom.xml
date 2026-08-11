@@ -28,7 +28,7 @@
     </scm>
     <properties>
         <scala.version>3.3.5</scala.version>
-        <java.cas.version>1.2.2-SNAPSHOT</java.cas.version>
+        <java.cas.version>1.2.4-SNAPSHOT</java.cas.version>
         <scalatest.version>3.2.19</scalatest.version>
         <flyway.version>11.3.4</flyway.version>
     </properties>
@@ -132,7 +132,13 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>rds</artifactId>
-            <version>2.33.2</version>
+            <version>2.39.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -175,7 +181,7 @@
             <version>3.6.1</version>
         </dependency>
         <dependency>
-            <groupId>fi.vm.sade.java-utils</groupId>
+            <groupId>opiskelijavalinnat-utils.java-utils</groupId>
             <artifactId>java-cas</artifactId>
             <version>${java.cas.version}</version>
             <!-- exclude pakko tehdä koska muuten valuu ylimääräinen lokitusimplementaatio -->
@@ -189,22 +195,22 @@
         <dependency>
             <groupId>fi.vm.sade.java-utils</groupId>
             <artifactId>opintopolku-user-details-service</artifactId>
-            <version>0.5.1-SNAPSHOT</version>
+            <version>0.5.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.java-utils</groupId>
             <artifactId>java-http</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade</groupId>
             <artifactId>auditlogger</artifactId>
-            <version>9.2.5-SNAPSHOT</version>
+            <version>9.2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
             <artifactId>dokumenttipalvelu</artifactId>
-            <version>6.15-SNAPSHOT</version>
+            <version>6.16-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -270,26 +276,6 @@
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oph-sade-artifactory-snapshots</id>
-            <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oph-sade-artifactory-releases</id>
-            <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>

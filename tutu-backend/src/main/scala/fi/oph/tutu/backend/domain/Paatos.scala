@@ -72,7 +72,8 @@ case class MyonteisenPaatoksenLisavaatimukset(
   sopeutumisaika: Boolean = false,
   opettajuuttaTutkimassa: Boolean = false,
   suomalainenKoulu: Boolean = false,
-  opetusNayte: Boolean = false
+  opetusNayte: Boolean = false,
+  sovellettuTilanne: Option[String] = None
 )
 
 case class NamedBoolean(name: String, value: Boolean)

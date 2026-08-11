@@ -83,6 +83,7 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   opettajuuttaTutkimassa: boolean;
   suomalainenKoulu: boolean;
   opetusNayte: boolean;
+  sovellettuTilanne?: string;
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (

@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 
 import { KelpoisuusList } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KelpoisuusList';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
-import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/paatostiedot/components/RinnastettavatTutkinnotTaiOpinnotList';
 import { SovellettuLakiComponent } from '@/src/app/hakemus/paatostiedot/components/SovellettuLakiComponent';
+import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/RinnastettavatTutkinnotTaiOpinnotList';
 import {
   paatostyyppiOptions,
   tutkinnonTasoOptions,
