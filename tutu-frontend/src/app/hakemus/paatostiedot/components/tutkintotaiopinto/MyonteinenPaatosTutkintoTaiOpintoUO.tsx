@@ -84,22 +84,20 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
 
   return (
     <Stack direction="column" gap={3}>
-      {sovellettuTilanneOptions && (
+      {sovellettuTilanneOptions.length > 0 && (
         <OphSelectFormFieldPatched
           options={sovellettuTilanneOptions.map((option) => ({
             label: option, // TODO Lisää käännöslogiikka niille jotka löytyvät ENTITIES_WITH_KIELISTETTY_SOVELLETTU_TILANNE:sta
             value: option,
           }))}
-          label={t(
-            `hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne`,
-          )}
+          label={t(`hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne`)}
           value={lisavaatimukset?.sovellettuTilanne || ''}
           onChange={(event) => {
             updateLisavaatimukset({
               sovellettuTilanne: event.target.value,
             });
           }}
-          data-testid={`uo-sovellettuTilanne-select`}
+          data-testid={`myonteinenPaatos-uo-sovellettuTilanne-select`}
         />
       )}
     </Stack>
