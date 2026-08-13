@@ -166,23 +166,16 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
       emptyAmmattikokemusJaElinikainenOppiminen();
 
     if (
-      tobe.ammattikokemusJaElinikainenOppiminen.ammattikokemus ||
-      tobe.ammattikokemusJaElinikainenOppiminen.elinikainenOppiminen
+      tobe.ammattikokemusJaElinikainenOppiminen.korvaavuusAmmattikokemus ===
+        'Osittainen' ||
+      tobe.ammattikokemusJaElinikainenOppiminen
+        .korvaavuusElinikainenOppiminen === 'Osittainen'
     ) {
-      if (
-        tobe.ammattikokemusJaElinikainenOppiminen.korvaavuus === 'Osittainen'
-      ) {
-        tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
-          initOrUpdateKorvaavaToimenpide(
-            tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide,
-          );
-      } else {
-        tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
-          undefined;
-      }
+      tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
+        initOrUpdateKorvaavaToimenpide(
+          tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide,
+        );
     } else {
-      tobe.ammattikokemusJaElinikainenOppiminen.lisatieto = undefined;
-      tobe.ammattikokemusJaElinikainenOppiminen.korvaavuus = undefined;
       tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide = undefined;
     }
   } else {

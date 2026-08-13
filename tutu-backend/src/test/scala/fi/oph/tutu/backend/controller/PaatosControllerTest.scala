@@ -284,10 +284,10 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
                   ),
                   ammattikokemusJaElinikainenOppiminen = Some(
                     AmmattikomemusJaElinikainenOppiminen(
-                      ammattikokemus = Some(true),
-                      elinikainenOppiminen = Some(true),
                       lisatieto = Some("Lisätietoa"),
-                      korvaavuus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                      korvaavuusAmmattikokemus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                      korvaavuusElinikainenOppiminen = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa = Some(false),
                       korvaavaToimenpide = Some(
                         KorvaavaToimenpide(
                           kelpoisuuskoeJaSopeutumisaika = true,

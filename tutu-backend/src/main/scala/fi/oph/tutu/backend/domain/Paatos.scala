@@ -103,13 +103,10 @@ case class KorvaavaToimenpide(
 )
 
 case class AmmattikomemusJaElinikainenOppiminen(
-  ammattikokemus: Option[Boolean] = None,
-  elinikainenOppiminen: Option[Boolean] = None,
   lisatieto: Option[String] = None,
-  // TODO: datamuutokset -- repository ym.
-  // korvaavuus: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
   korvaavuusAmmattikokemus: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
   korvaavuusElinikainenOppiminen: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
+  korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: Option[Boolean] = None,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None
 )
 

@@ -147,10 +147,10 @@ export type AmmattikokemusJaElinikainenOppiminenKorvaavuus =
   | 'Ei';
 
 export type AmmattikokemusJaElinikainenOppiminen = {
-  ammattikokemus?: boolean;
-  elinikainenOppiminen?: boolean;
   lisatieto?: string;
-  korvaavuus?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
+  korvaavuusAmmattikokemus?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
+  korvaavuusElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
+  korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa?: boolean;
   korvaavaToimenpide?: KorvaavaToimenpide;
 };
 
