@@ -540,68 +540,86 @@ def bindExtractAmmattikomemusJaElinikainenOppiminen(
   tutkinnot: Seq[Tutkinto]
 ): (AmmattikomemusJaElinikainenOppiminen) => Option[String] = {
   def next(node: AmmattikomemusJaElinikainenOppiminen): Option[String] = {
-    val ammattikokemusTaiElinikainenOppiminenValittu = Seq(
-      node.ammattikokemus,
-      node.elinikainenOppiminen
-    ).flatten
-      .contains(true)
 
-    if (ammattikokemusTaiElinikainenOppiminenValittu) {
-      val ammattikokemus = node.ammattikokemus
-        .map(_ =>
-          translationService.getTranslation(
-            FI,
-            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.ammattikokemus"
-          )
+    val lisatieto = node.lisatieto
+      .map(value =>
+        val label = translationService.getTranslation(
+          FI,
+          "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.lisatietoLabel"
         )
-
-      val elinikainenOppiminen = node.elinikainenOppiminen
-        .map(_ =>
-          translationService.getTranslation(
-            FI,
-            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.elinikainenOppiminen"
-          )
-        )
-
-      val lisatieto = node.lisatieto
-        .map(value =>
-          val label = translationService.getTranslation(
-            FI,
-            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.lisatietoLabel"
-          )
-          s"$label\n  $value".trim
-        )
-
-      val korvaavuus = node.korvaavuus
-        .map {
-          case AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi =>
-            translationService.getTranslation(
-              FI,
-              "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.taysin"
-            )
-          case AmmattikokemusElinikainenOppiminenKorvaavuus.Osittainen =>
-            translationService.getTranslation(
-              FI,
-              "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.osittain"
-            )
-          case AmmattikokemusElinikainenOppiminenKorvaavuus.Ei =>
-            translationService.getTranslation(
-              FI,
-              "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ei"
-            )
-        }
-
-      Some(
-        Seq(
-          ammattikokemus,
-          elinikainenOppiminen,
-          lisatieto,
-          korvaavuus
-        ).flatten.mkString("\n")
+        s"$label\n  $value".trim
       )
-    } else {
-      None
-    }
+
+    val korvaavuusAmmattikokemus = node.korvaavuusAmmattikokemus
+      .map {
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.taysin"
+          )
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Osittainen =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.osittain"
+          )
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Ei =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ei"
+          )
+      }
+      .map(value =>
+        val label = translationService.getTranslation(
+          FI,
+          "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemus.title"
+        )
+        s"$label:  $value".trim
+      )
+
+    val korvaavuusElinikainenOppiminen = node.korvaavuusElinikainenOppiminen
+      .map {
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.taysin"
+          )
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Osittainen =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.osittain"
+          )
+        case AmmattikokemusElinikainenOppiminenKorvaavuus.Ei =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ei"
+          )
+      }
+      .map(value =>
+        val label = translationService.getTranslation(
+          FI,
+          "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.elinikainenOppiminen.title"
+        )
+        s"$label:  $value".trim
+      )
+
+    val korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa =
+      node.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa
+        .filter(_ == true)
+        .map(_ => {
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title"
+          )
+        })
+
+    Some(
+      Seq(
+        korvaavuusAmmattikokemus,
+        korvaavuusElinikainenOppiminen,
+        korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa,
+        lisatieto
+      ).flatten.mkString("\n")
+    )
   }
 
   next

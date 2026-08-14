@@ -615,17 +615,11 @@ export const emptyKelpoisuuskoeSisalto = (): KelpoisuuskoeSisalto =>
     return acc;
   }, {} as KelpoisuuskoeSisalto);
 
-export const ammattikokemusJaElinikainenOppiminenOptions = [
-  'ammattikokemus',
-  'elinikainenOppiminen',
-] as const satisfies (keyof AmmattikokemusJaElinikainenOppiminen)[];
-
 export const emptyAmmattikokemusJaElinikainenOppiminen =
   (): AmmattikokemusJaElinikainenOppiminen =>
-    ammattikokemusJaElinikainenOppiminenOptions.reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {} as AmmattikokemusJaElinikainenOppiminen);
+    ({
+      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: false,
+    }) as AmmattikokemusJaElinikainenOppiminen;
 
 export const MUU_AMMATTI_KEY = 'Muu ammatti';
 
