@@ -107,14 +107,9 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
       {erotKoulutuksessa && lisavaatimukset?.erotKoulutuksessa && (
         <Stack gap={theme.spacing(2)}>
           <OphTypography variant="h5">
-            {eroModel.lyhytNimiKaannosAvain
-              ? t(
-                  'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.otsikkoTiettyKelpoisuus',
-                  { kelpoisuus: t(eroModel.lyhytNimiKaannosAvain) },
-                )
-              : t(
-                  'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.otsikko',
-                )}
+            {t(
+              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.otsikko',
+            )}
           </OphTypography>
           <Stack gap={theme.spacing(1)}>
             {erotKoulutuksessa.erot!.map((ero: NamedBoolean) => (
