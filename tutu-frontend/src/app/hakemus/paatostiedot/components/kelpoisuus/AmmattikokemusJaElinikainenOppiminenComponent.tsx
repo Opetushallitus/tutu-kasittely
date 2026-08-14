@@ -44,7 +44,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
 }: AmmattikokemusJaElinikainenOppiminenProps) => {
   return (
     <>
-      <Stack gap={theme.spacing(2)}>
+      <Stack gap={2}>
         <OphRadioGroupWithClear
           label={t(
             'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemus.title',
@@ -54,7 +54,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
           }
           data-testid={'ammattikokemus-korvaavuus-radio-group'}
           options={ammattikokemusElinikainenOppiminenKorvaavuusOptions(t)}
-          value={data.korvaavuusAmmattikokemus?.toString() || ''}
+          value={data.korvaavuusAmmattikokemus?.toString() ?? ''}
           onChange={(e) =>
             updateDataAction({
               ...data,
@@ -76,7 +76,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
           }
           data-testid={'elinikainenOppiminen-korvaavuus-radio-group'}
           options={ammattikokemusElinikainenOppiminenKorvaavuusOptions(t)}
-          value={data.korvaavuusElinikainenOppiminen?.toString() || ''}
+          value={data.korvaavuusElinikainenOppiminen?.toString() ?? ''}
           onChange={(e) =>
             updateDataAction({
               ...data,
@@ -114,7 +114,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             )}
             multiline={true}
             minRows={3}
-            value={data.lisatieto || ''}
+            value={data.lisatieto ?? ''}
             onChange={(e) =>
               updateDataAction({
                 ...data,
@@ -127,7 +127,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
       </Stack>
 
       {osittainenKorvaavuus(data) && (
-        <Stack gap={theme.spacing(2)} paddingLeft={theme.spacing(3)}>
+        <Stack gap={2} paddingLeft={3}>
           {data.korvaavaToimenpide && (
             <KorvaavaToimenpideComponent
               korvaavaToimenpide={data.korvaavaToimenpide}
