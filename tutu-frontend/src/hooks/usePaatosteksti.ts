@@ -24,6 +24,13 @@ const putPaatosteksti = (hakemusOid: string, params: MutateParameters) => {
   return doApiPut(url, params.paatosteksti);
 };
 
+const generatePaatosTeksti = async (
+  hakemusOid: string | undefined,
+): Promise<string> => {
+  const url = `paatos/${hakemusOid}/paatosteksti/generate`;
+  return await doApiFetch(url, undefined, 'no-store');
+};
+
 export const usePaatosteksti = (hakemusOid: string) => {
   const queryClient = useQueryClient();
   const queryKey = ['paatosteksti', hakemusOid];
@@ -89,5 +96,6 @@ export const usePaatosteksti = (hakemusOid: string) => {
     updateOngoing: isPending,
     updateSuccess: isSuccess,
     updateError: updateError,
+    generatePaatosTeksti: () => generatePaatosTeksti(hakemusOid),
   };
 };
