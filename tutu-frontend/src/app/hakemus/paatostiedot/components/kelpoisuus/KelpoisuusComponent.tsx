@@ -211,7 +211,7 @@ export const KelpoisuusComponent = ({
   ) => {
     const tobeKelpoisuus = { ...kelpoisuus };
     if (updatedKelpoisuus.kelpoisuus) {
-      tobeKelpoisuus.opetettavaAine = [''];
+      tobeKelpoisuus.opetettavaAine = undefined;
       tobeKelpoisuus.direktiivitaso = undefined;
       tobeKelpoisuus.direktiivitasoLisatiedot = undefined;
       tobeKelpoisuus.kansallisestiVaadittavaDirektiivitaso = undefined;
@@ -280,59 +280,13 @@ export const KelpoisuusComponent = ({
         {availableOpetettavaAineOptions.length > 0 &&
           kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) &&
           !showUOFields && (
-            <>
-              {kelpoisuus.opetettavaAine.map((opetettavaAine, index) => (
-                <Stack
-                  key={`${kelpoisuus.id}__opetettavaAine--${index}`}
-                  direction="row"
-                >
-                  <SelectTreeDropdown
-                    label={t(
-                      `hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`,
-                    )}
-                    value={opetettavaAine}
-                    options={availableOpetettavaAineOptions}
-                    onChange={(val) => {
-                      const copy = [...kelpoisuus.opetettavaAine];
-                      copy[index] = val;
-                      updateKelpoisuus({
-                        opetettavaAine: copy,
-                      });
-                    }}
-                    data-testid="opetettavaAine-select"
-                  />
-                  <OphButton
-                    onClick={() => {
-                      const copy = [...kelpoisuus.opetettavaAine].filter(
-                        (_, i) => i !== index,
-                      );
-                      updateKelpoisuus({
-                        opetettavaAine: copy,
-                      });
-                    }}
-                    sx={{ visibility: index > 0 ? 'visible' : 'hidden' }}
-                    data-testid="opetettavaAine-remove"
-                  >
-                    {t(
-                      'hakemus.paatos.paatostyyppi.kelpoisuus.poistaOpetettavaAine',
-                    )}
-                  </OphButton>
-                </Stack>
-              ))}
-              <OphButton
-                onClick={() => {
-                  const copy = [...kelpoisuus.opetettavaAine, ''];
-                  updateKelpoisuus({
-                    opetettavaAine: copy,
-                  });
-                }}
-                data-testid="opetettavaAine-add"
-              >
-                {t(
-                  'hakemus.paatos.paatostyyppi.kelpoisuus.lisaaOpetettavaAine',
-                )}
-              </OphButton>
-            </>
+            <SelectTreeDropdown
+              label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
+              value={kelpoisuus.opetettavaAine}
+              options={availableOpetettavaAineOptions}
+              onChange={(val) => updateKelpoisuus({ opetettavaAine: val })}
+              data-testid="opetettavaAine-select"
+            />
           )}
         {showDirektiivitasoFields && (
           <KelpoisuusDirektiiviLiitannaisComponent

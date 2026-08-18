@@ -265,9 +265,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
       sql"""SELECT pa.hakemus_id AS id FROM paatos pa
             JOIN paatostieto pt ON pt.paatos_id = pa.id
             JOIN kelpoisuus k ON k.paatostieto_id = pt.id
-            JOIN opetettava_aine oa ON oa.kelpoisuus_id = k.id
             WHERE k.kelpoisuus ILIKE $wordPat
-            OR oa.opetettava_aine ILIKE $wordPat
+            OR k.opetettava_aine ILIKE $wordPat
             OR k.muu_ammatti_kuvaus ILIKE $wordPat
             OR k.direktiivitaso ILIKE $wordPat
             OR k.direktiivitaso_lisatiedot ILIKE $wordPat
@@ -414,7 +413,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
     sql"""COALESCE((
       SELECT MAX(
         word_similarity($word, COALESCE(k.kelpoisuus, '')) +
-        word_similarity($word, COALESCE(oa.opetettava_aine, '')) +
+        word_similarity($word, COALESCE(k.opetettava_aine, '')) +
         word_similarity($word, COALESCE(k.muu_ammatti_kuvaus, '')) +
         word_similarity($word, COALESCE(k.direktiivitaso, '')) +
         word_similarity($word, COALESCE(k.direktiivitaso_lisatiedot, '')) +
@@ -427,7 +426,6 @@ class HakemusSearchRepository extends BaseResultHandlers {
       FROM paatos pa
       JOIN paatostieto pt ON pt.paatos_id = pa.id
       LEFT JOIN kelpoisuus k ON k.paatostieto_id = pt.id
-      LEFT JOIN opetettava_aine oa ON oa.kelpoisuus_id = k.id
       LEFT JOIN tutkinto_tai_opinto tto ON tto.paatostieto_id = pt.id
       WHERE pa.hakemus_id = h.id
     ), 0.0)"""
@@ -530,7 +528,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
         filters.kelpoisuus.foreach(v => c += sql"k.kelpoisuus = $v")
         filters.opetettavatAineet.foreach(aineet => {
           val aineClauses = aineet
-            .map(aine => sql"""oa.opetettava_aine ILIKE ${s"%$aine%"}
+            .map(aine => sql"""k.opetettava_aine ILIKE ${s"%$aine%"}
                                 OR tto.tutkinto_tai_opinto ILIKE ${s"%$aine%"}""")
             .reduce(_ ++ sql" OR " ++ _)
           c += sql"(" ++ aineClauses ++ sql")"
@@ -583,7 +581,6 @@ class HakemusSearchRepository extends BaseResultHandlers {
                   FROM paatos p
                   JOIN paatostieto pt ON pt.paatos_id = p.id
                   LEFT JOIN kelpoisuus k ON k.paatostieto_id = pt.id
-                  LEFT JOIN opetettava_aine oa ON oa.kelpoisuus_id = k.id
                   LEFT JOIN tutkinto_tai_opinto tto ON tto.paatostieto_id = pt.id
                   LEFT JOIN tutkinto t ON t.id = pt.tutkinto_id
                   WHERE """ ++ allClauses.reduce(_ ++ sql" AND " ++ _)

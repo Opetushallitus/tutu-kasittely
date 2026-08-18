@@ -95,9 +95,8 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
           kelpoisuudet: [
             {
               kelpoisuus: 'Opetusalan ammatit_Aineenopettaja lukiossa',
-              opetettavaAine: [
+              opetettavaAine:
                 'Opetusalan ammatit_Aineenopettaja lukiossa_biologia',
-              ],
             },
           ],
         },
@@ -117,9 +116,8 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
           kelpoisuudet: [
             {
               kelpoisuus: 'Opetusalan ammatit_Aineenopettaja lukiossa',
-              opetettavaAine: [
+              opetettavaAine:
                 'Opetusalan ammatit_Aineenopettaja lukiossa_biologia',
-              ],
               direktiivitaso: 'b_1384_2015_patevyystaso_2',
             },
           ],
@@ -140,9 +138,8 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
           kelpoisuudet: [
             {
               kelpoisuus: 'Opetusalan ammatit_Aineenopettaja lukiossa',
-              opetettavaAine: [
+              opetettavaAine:
                 'Opetusalan ammatit_Aineenopettaja lukiossa_biologia',
-              ],
               direktiivitaso: 'b_1384_2015_patevyystaso_2',
               kansallisestiVaadittavaDirektiivitaso:
                 'c_1384_2015_patevyystaso_3',
