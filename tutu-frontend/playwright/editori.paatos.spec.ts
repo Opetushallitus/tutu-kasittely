@@ -146,3 +146,23 @@ test('Päätöstekstin tallennuksen epäonnistuessa näytetään virhetoast', as
     'error',
   );
 });
+
+test('Päätösteksti voidaan palauttaa generoiduksi', async ({ page }) => {
+  await page.getByTestId('palauta-generoitu-painike').click();
+
+  await page.getByTestId('modal-confirm-button').click();
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
+  expect(
+    await page.getByTestId('editor-content-editable').textContent(),
+  ).toMatch('Päätosteksti generoitu');
+
+  await page.getByTestId('UndoIcon').click();
+  await expect(saveButton).toBeHidden();
+
+  expect(
+    await page.getByTestId('editor-content-editable').textContent(),
+  ).toMatch('Päätosteksti sisältö');
+});

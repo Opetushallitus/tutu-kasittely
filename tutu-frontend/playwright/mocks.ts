@@ -668,12 +668,12 @@ const defaultPaatosteksti: Paatosteksti = {
   kieli: 'fi',
 };
 
-export const mockPaatosteksti = (
+export const mockPaatosteksti = async (
   page: Page,
   paatosteksti?: Partial<Paatosteksti>,
   modifyFails: boolean = false,
 ) => {
-  return page.route(
+  await page.route(
     '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti**',
     async (route: Route) => {
       if (route.request().method() === 'PUT') {
@@ -698,6 +698,16 @@ export const mockPaatosteksti = (
           body: JSON.stringify({ ...defaultPaatosteksti, ...paatosteksti }),
         });
       }
+    },
+  );
+  await page.route(
+    '**/tutu-backend/api/paatos/1.2.246.562.11.00000000001/paatosteksti/generate',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<p><span style="white-space: pre-wrap;">Päätosteksti generoitu</span></p>',
+      });
     },
   );
 };

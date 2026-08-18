@@ -33,8 +33,14 @@ export default function PaatosEditorPage() {
   const { t } = useTranslations();
   const editorRef = useRef<LexicalEditor | null>(null);
   const { oid } = useParams<{ oid: string }>();
-  const { paatosteksti, savePaatosteksti, updateOngoing, error, updateError } =
-    usePaatosteksti(oid ?? '');
+  const {
+    paatosteksti,
+    savePaatosteksti,
+    updateOngoing,
+    error,
+    updateError,
+    generatePaatosTeksti,
+  } = usePaatosteksti(oid ?? '');
   const [hasChanges, setHasChanges] = useState(false);
   const { showTekstipohjaLista, setShowTekstipohjaLista } =
     useShowTekstipohjat();
@@ -66,7 +72,7 @@ export default function PaatosEditorPage() {
     }
   }, [paatosteksti, savePaatosteksti]);
 
-  const updateHasChanges = (editor: LexicalEditor) => {
+  const updateHasChanges = (editor: LexicalEditor | null) => {
     if (paatosteksti) {
       setHasChanges(paatosteksti.sisalto !== exportHtml(editor));
     }
@@ -76,9 +82,9 @@ export default function PaatosEditorPage() {
     return <FullSpinner />;
   }
 
-  const painikeAction = () => {
+  const vahvistaPainikeAction = async () => {
     if (paatosteksti.vahvistettu) {
-      copy2Clipboard(editorRef.current!);
+      await copy2Clipboard(editorRef.current!);
       return;
     }
 
@@ -86,7 +92,7 @@ export default function PaatosEditorPage() {
       header: t(`hakemus.editori.paatos.vahvistus.modal.otsikko`),
       content: t(`hakemus.editori.paatos.vahvistus.modal.teksti`),
       confirmButtonText: t(`hakemus.editori.paatos.vahvistus.modal.vahvista`),
-      handleConfirmAction: () => {
+      handleConfirmAction: async () => {
         savePaatosteksti(
           {
             ...paatosteksti,
@@ -95,14 +101,26 @@ export default function PaatosEditorPage() {
           true,
           () => setHasChanges(false),
         );
-        copy2Clipboard(editorRef.current!);
+        await copy2Clipboard(editorRef.current!);
       },
     });
   };
 
-  const painikkeenTeksti = paatosteksti.vahvistettu
+  const vahvistaPainikkeenTeksti = paatosteksti.vahvistettu
     ? t('hakemus.editori.paatos.kopioi')
     : t('hakemus.editori.paatos.vahvista');
+
+  const palautaGeneroituPainikeAction = async () => {
+    showConfirmation({
+      header: t(`hakemus.editori.paatos.palauta.modal.otsikko`),
+      content: '',
+      confirmButtonText: t(`hakemus.editori.paatos.palauta.modal.vahvista`),
+      handleConfirmAction: async () => {
+        importHtml(editorRef.current, await generatePaatosTeksti());
+        updateHasChanges(editorRef.current);
+      },
+    });
+  };
 
   return (
     <>
@@ -129,10 +147,10 @@ export default function PaatosEditorPage() {
             sx={{ alignSelf: 'flex-end' }}
             variant={'contained'}
             startIcon={<CopyAllOutlined />}
-            onClick={painikeAction}
+            onClick={vahvistaPainikeAction}
             data-testid={'vahvista-kopioi-painike'}
           >
-            {painikkeenTeksti}
+            {vahvistaPainikkeenTeksti}
           </OphButton>
           {paatosteksti.vahvistettu && (
             <OphTypography
@@ -147,6 +165,14 @@ export default function PaatosEditorPage() {
               })}
             </OphTypography>
           )}
+          <OphButton
+            sx={{ alignSelf: 'flex-end' }}
+            variant={'outlined'}
+            onClick={palautaGeneroituPainikeAction}
+            data-testid={'palauta-generoitu-painike'}
+          >
+            {t('hakemus.editori.paatos.palauta')}
+          </OphButton>
         </Stack>
       </Stack>
       <SaveRibbon
