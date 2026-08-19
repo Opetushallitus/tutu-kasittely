@@ -336,6 +336,7 @@ test('Riittävät opinnot - aineopettaja näyttää oikeat valinnat', async ({
         },
       ],
     },
+    false,
   );
 
   const myonteinenPaatosRadioGroup = page.getByTestId(

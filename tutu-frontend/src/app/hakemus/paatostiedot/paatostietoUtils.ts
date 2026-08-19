@@ -19,6 +19,8 @@ import {
   KelpoisuudenLisavaatimukset,
   KorvaavaToimenpide,
   KorvaavaToimenpideDto,
+  OikeustieteenMaisteriLisavaatimukset,
+  OikeustieteenSuomiOpintojenAihealue,
   Paatos,
   PaatosTieto,
 } from '@/src/lib/types/paatos';
@@ -286,3 +288,71 @@ export const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   rinnastettavatTutkinnotTaiOpinnot: [],
   kelpoisuudet: [],
 });
+
+export const newLaajuusValue = (
+  currentValue?: number,
+  numberValue?: number | null,
+): number | undefined => {
+  if (numberValue === undefined) return currentValue;
+  return numberValue !== null ? numberValue : undefined;
+};
+
+export const emptyOikeustieteenMaisterinOpinnot =
+  (): OikeustieteenMaisteriLisavaatimukset => ({
+    tallinnassaSuoritettujaOpintoja: false,
+    isTallinnaOpintojenLaajuusModified: false,
+    eurooppaOpintojaSisallossa: false,
+    eurooppaOpintojaKokonaismaarassa: false,
+    suomiOpintojaSisallossa: false,
+    suomiOpintojaLaajuudessa: false,
+  });
+
+export const emptySuomiOpintojenAihealue =
+  (): OikeustieteenSuomiOpintojenAihealue => ({
+    velvoiteOikeus: false,
+    esineOikeus: false,
+    perheJaJaamistooikeus: false,
+    rikosoikeus: false,
+    prosessiOikeus: false,
+    valtioSaantooikeus: false,
+    hallintoOikeus: false,
+  });
+
+export const initOrUpdateOikeustieteenMaisteriOpinnot = (
+  current: OikeustieteenMaisteriLisavaatimukset,
+  updated: Partial<OikeustieteenMaisteriLisavaatimukset>,
+): OikeustieteenMaisteriLisavaatimukset => {
+  const tobe = {
+    ...current,
+    ...updated,
+  };
+  if (tobe.tallinnassaSuoritettujaOpintoja) {
+    if (!tobe.isTallinnaOpintojenLaajuusModified) {
+      tobe.tallinnaOpintojenLaajuus = 10;
+    }
+  } else {
+    tobe.tallinnaOpintojenLaajuus = undefined;
+    tobe.isTallinnaOpintojenLaajuusModified = false;
+  }
+
+  if (!tobe.eurooppaOpintojaSisallossa) {
+    tobe.eurooppaOpintojenSisallonLisatieto = undefined;
+  }
+  if (!tobe.eurooppaOpintojaKokonaismaarassa) {
+    tobe.eurooppaOpintojenLaajuus = undefined;
+  }
+
+  if (tobe.suomiOpintojaSisallossa) {
+    tobe.suomiOpintojenAihealueet =
+      tobe.suomiOpintojenAihealueet ?? emptySuomiOpintojenAihealue();
+  } else {
+    tobe.suomiOpintojenAihealueet = undefined;
+    tobe.suomiOpintojenSisallonLisatieto = undefined;
+  }
+
+  if (!tobe.suomiOpintojaLaajuudessa) {
+    tobe.suomiOpintojenLaajuus = undefined;
+  }
+
+  return tobe;
+};
