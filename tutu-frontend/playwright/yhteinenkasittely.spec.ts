@@ -49,6 +49,15 @@ test('Yhteisen käsittelyn luominen', async ({ page }) => {
     'yhteinenkasittely-uusiKasittely-tyopari',
   );
   await tyopariSelect.click();
+
+  // Varmistetaan että esittäjät on sukunimen mukaan järjestettynä
+  const options = page.locator(
+    'ul[role="listbox"]:visible li[role="option"]:visible',
+  );
+  await expect(options).toHaveCount(2);
+  await expect(options.first()).toHaveText('Janne Jamaika');
+  await expect(options.nth(1)).toHaveText('Kari Karibia');
+
   const tyopariOption = page.locator(
     "xpath=//li[@data-value='1.2.246.562.24.999999999999']",
   );
