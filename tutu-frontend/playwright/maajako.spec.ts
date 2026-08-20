@@ -252,3 +252,28 @@ test('SelectedMaakoodiInfo päivittyy kun maakoodien esittelijät muuttuvat', as
   // Tarkista että esittelijän nimi ei ole enää näkyvissä
   await expect(page.getByTestId('selected-maakoodi-esittelija')).toBeHidden();
 });
+
+test('Esittelijät on järjestetty sukunimen mukaan', async ({ page }) => {
+  setupMaakoodiApi(page, [
+    {
+      id: 'M1',
+      koodiUri: 'maatjavaltiot2_001',
+      fi: 'Suomi',
+      esittelijaId: 'E1',
+    },
+    {
+      id: 'M2',
+      koodiUri: 'maatjavaltiot2_002',
+      fi: 'Ruotsi',
+      esittelijaId: null,
+    },
+  ]);
+
+  await gotoMaajako(page);
+
+  const esittelijaSections = page.getByTestId('esittelija-section');
+  await expect(esittelijaSections).toHaveText([
+    'Janne Jamaika',
+    'Kari Karibia',
+  ]);
+});

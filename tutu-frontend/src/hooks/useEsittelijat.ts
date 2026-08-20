@@ -16,6 +16,7 @@ export const useEsittelijat = () => {
   } = useQuery({
     queryKey: ['getEsittelijat'],
     queryFn: getEsittelijat,
+    select: (data) => R.sortBy(data ?? [], (e) => e.sukunimi),
     staleTime: Infinity,
     throwOnError: false,
   });
@@ -25,14 +26,11 @@ export const useEsittelijat = () => {
   const selectOptions =
     isLoading || error
       ? []
-      : R.map(
-          R.sortBy(uniqueEsittelijat, (esittelija) => esittelija.etunimi),
-          (esittelija) => ({
-            value: esittelija.esittelijaOid,
-            label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
-            ...(esittelija.id ? { id: esittelija.id } : {}),
-          }),
-        );
+      : R.map(uniqueEsittelijat, (esittelija) => ({
+          value: esittelija.esittelijaOid,
+          label: `${esittelija.etunimi} ${esittelija.sukunimi}`,
+          ...(esittelija.id ? { id: esittelija.id } : {}),
+        }));
 
   return { data, isLoading, options: selectOptions, error };
 };
