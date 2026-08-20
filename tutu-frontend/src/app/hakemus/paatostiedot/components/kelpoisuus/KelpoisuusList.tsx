@@ -1,4 +1,5 @@
 import { Add } from '@mui/icons-material';
+import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
 
@@ -52,10 +53,12 @@ export const KelpoisuusList = ({
     });
   };
 
-  const addKelpoisuus = () => {
-    const tobeKelpoisuudet = currentKelpoisuudet.concat([
-      emptyKelpoisuus(paatosTieto.id!),
-    ]);
+  const addKelpoisuus = ({ kelpoisuus }: Partial<Kelpoisuus> = {}) => {
+    const uusiKelpoisuus = emptyKelpoisuus(paatosTieto.id!);
+    if (kelpoisuus !== undefined) {
+      uusiKelpoisuus.kelpoisuus = kelpoisuus;
+    }
+    const tobeKelpoisuudet = currentKelpoisuudet.concat([uusiKelpoisuus]);
     setCurrentKelpoisuudet(tobeKelpoisuudet);
     updatePaatosTietoAction({
       ...paatosTieto,
@@ -77,6 +80,10 @@ export const KelpoisuusList = ({
     );
   };
 
+  const lastAineenopetusKelpoisuus: Kelpoisuus | undefined = currentKelpoisuudet
+    .toReversed()
+    .find((k: Kelpoisuus) => k.kelpoisuus?.includes('Aineenopettaja'));
+
   return (
     <>
       {currentKelpoisuudet.map((kelpoisuus, index) => (
@@ -91,17 +98,36 @@ export const KelpoisuusList = ({
           kelpoisuusOptions={kelpoisuusOptions}
         />
       ))}
-      <OphButton
-        sx={{
-          alignSelf: 'flex-start',
-        }}
-        data-testid={`lisaa-kelpoisuus-button`}
-        variant="outlined"
-        startIcon={<Add />}
-        onClick={() => addKelpoisuus()}
-      >
-        {t(`hakemus.paatos.paatostyyppi.kelpoisuus.lisaa`)}
-      </OphButton>
+      <Stack direction="row" gap={2}>
+        <OphButton
+          sx={{
+            alignSelf: 'flex-start',
+          }}
+          data-testid={`lisaa-kelpoisuus-button`}
+          variant="outlined"
+          startIcon={<Add />}
+          onClick={() => addKelpoisuus()}
+        >
+          {t(`hakemus.paatos.paatostyyppi.kelpoisuus.lisaa`)}
+        </OphButton>
+        {lastAineenopetusKelpoisuus && (
+          <OphButton
+            sx={{
+              alignSelf: 'flex-start',
+            }}
+            data-testid={`lisaa-opetettava-aine-button`}
+            variant="outlined"
+            startIcon={<Add />}
+            onClick={() =>
+              addKelpoisuus({
+                kelpoisuus: lastAineenopetusKelpoisuus.kelpoisuus,
+              })
+            }
+          >
+            {t(`hakemus.paatos.paatostyyppi.kelpoisuus.lisaaOpetettavaAine`)}
+          </OphButton>
+        )}
+      </Stack>
     </>
   );
 };
