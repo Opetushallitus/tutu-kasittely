@@ -2,6 +2,7 @@ import { Stack } from '@mui/material';
 import React, { useMemo } from 'react';
 
 import { MyonteinenPaatosProps } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
+import { SovellettuTilanneOikeustieteenMaisteri } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/SovellettuTilanneOikeustieteenMaisteri';
 import { OIKEUSTIETEEN_MAISTERI_KEYS } from '@/src/app/hakemus/paatostiedot/constants';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 
@@ -37,16 +38,24 @@ const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
   { tutkintoTaiOpinto: resolvedEntity.Muu, keywords: [] },
 ];
 
-const SOVELLETTU_TILANNE_BY_ENTITY: Record<resolvedEntity, string[]> = {
+type SovellettuTilanne = {
+  value: string;
+  tKey?: string;
+};
+const SOVELLETTU_TILANNE_BY_ENTITY: Record<
+  resolvedEntity,
+  SovellettuTilanne[]
+> = {
   [resolvedEntity.OikeustieteenMaisteri]: [
-    '1',
-    '1a',
-    '1b',
-    '2',
-    '2a',
-    '3',
-    '4',
-    '4a',
+    { value: '1' },
+    { value: '1a' },
+    { value: '1b' },
+    { value: '2' },
+    { value: '2a' },
+    { value: '3' },
+    { value: '4' },
+    { value: '4a' },
+    { value: 'muu', tKey: 'muuOikeustieteenMaisteri' },
   ],
   [resolvedEntity.OpetettavaAine]: [],
   [resolvedEntity.OpettajanPedagogisetOpinnot]: [],
@@ -70,7 +79,6 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
   tutkintoTaiOpinto,
   lisavaatimukset,
 }: MyonteinenPaatosProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { selectedEntity, sovellettuTilanneOptions } = useMemo(() => {
     const entity =
       KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find((item) =>
@@ -87,8 +95,12 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
       {sovellettuTilanneOptions.length > 0 && (
         <OphSelectFormFieldPatched
           options={sovellettuTilanneOptions.map((option) => ({
-            label: option, // TODO Lisää käännöslogiikka niille jotka löytyvät ENTITIES_WITH_KIELISTETTY_SOVELLETTU_TILANNE:sta
-            value: option,
+            label: option.tKey
+              ? t(
+                  `hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.${option.tKey}`,
+                )
+              : option.value,
+            value: option.value,
           }))}
           label={t(`hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne`)}
           value={lisavaatimukset?.sovellettuTilanne || ''}
@@ -100,6 +112,14 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
           data-testid={`myonteinenPaatos-uo-sovellettuTilanne-select`}
         />
       )}
+      {selectedEntity === resolvedEntity.OikeustieteenMaisteri &&
+        lisavaatimukset?.sovellettuTilanne && (
+          <SovellettuTilanneOikeustieteenMaisteri
+            t={t}
+            lisavaatimukset={lisavaatimukset}
+            updateLisavaatimukset={updateLisavaatimukset}
+          />
+        )}
     </Stack>
   );
 };

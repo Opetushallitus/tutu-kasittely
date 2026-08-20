@@ -3,6 +3,7 @@ import {
   AmmattikokemusJaElinikainenOppiminen,
   KelpoisuuskoeSisalto,
   KorvaavaToimenpide,
+  OikeustieteenSuomiOpintojenAihealue,
   Paatostyyppi,
 } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
@@ -640,3 +641,13 @@ export const OIKEUSTIETEEN_MAISTERI_KEYS = [
   'Jämställande med juris magisterexamen',
   'Recognition of studies as comparable to a Master of Laws degree completed in Finland',
 ];
+
+export const oikeustieteenSuomiOpintojenAihealueOptions = [
+  'velvoiteOikeus',
+  'esineOikeus',
+  'perheJaJaamistooikeus',
+  'rikosoikeus',
+  'prosessiOikeus',
+  'valtioSaantooikeus',
+  'hallintoOikeus',
+] as const satisfies (keyof OikeustieteenSuomiOpintojenAihealue)[];

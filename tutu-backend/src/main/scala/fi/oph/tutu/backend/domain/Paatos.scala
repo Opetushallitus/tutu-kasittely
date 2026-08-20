@@ -66,6 +66,32 @@ case class TutkintoTaiOpinto(
   muokkaaja: Option[String] = None
 )
 
+case class OikeustieteenSuomiOpintojenAihealue(
+  velvoiteOikeus: Boolean = false,
+  esineOikeus: Boolean = false,
+  perheJaJaamistooikeus: Boolean = false,
+  rikosoikeus: Boolean = false,
+  prosessiOikeus: Boolean = false,
+  valtioSaantooikeus: Boolean = false,
+  hallintoOikeus: Boolean = false
+)
+
+case class OikeustieteenMaisteriLisavaatimukset(
+  muuSovellettuTilanneLisatieto: Option[String] = None,
+  tallinnassaSuoritettujaOpintoja: Boolean = false,
+  tallinnaOpintojenLaajuus: Option[Int] = None,
+  isTallinnaOpintojenLaajuusModified: Boolean = false,
+  eurooppaOpintojaSisallossa: Boolean = false,
+  eurooppaOpintojenSisallonLisatieto: Option[String] = None,
+  eurooppaOpintojaKokonaismaarassa: Boolean = false,
+  eurooppaOpintojenLaajuus: Option[Int] = None,
+  suomiOpintojaSisallossa: Boolean = false,
+  suomiOpintojenSisallonLisatieto: Option[String] = None,
+  suomiOpintojenAihealueet: Option[OikeustieteenSuomiOpintojenAihealue] = None,
+  suomiOpintojaLaajuudessa: Boolean = false,
+  suomiOpintojenLaajuus: Option[Int] = None
+)
+
 case class MyonteisenPaatoksenLisavaatimukset(
   taydentavatOpinnot: Boolean = false,
   kelpoisuuskoe: Boolean = false,
@@ -73,7 +99,8 @@ case class MyonteisenPaatoksenLisavaatimukset(
   opettajuuttaTutkimassa: Boolean = false,
   suomalainenKoulu: Boolean = false,
   opetusNayte: Boolean = false,
-  sovellettuTilanne: Option[String] = None
+  sovellettuTilanne: Option[String] = None,
+  oikeustieteenMaisteriLisavaatimukset: Option[OikeustieteenMaisteriLisavaatimukset] = None
 )
 
 case class NamedBoolean(name: String, value: Boolean)

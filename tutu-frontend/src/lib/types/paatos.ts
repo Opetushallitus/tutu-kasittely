@@ -76,6 +76,32 @@ export type TutkintoTaiOpinto = {
   opetuskieli?: string;
 } & MyonteinenTaiKielteinenPaatos;
 
+export type OikeustieteenSuomiOpintojenAihealue = {
+  velvoiteOikeus: boolean;
+  esineOikeus: boolean;
+  perheJaJaamistooikeus: boolean;
+  rikosoikeus: boolean;
+  prosessiOikeus: boolean;
+  valtioSaantooikeus: boolean;
+  hallintoOikeus: boolean;
+};
+
+export type OikeustieteenMaisteriLisavaatimukset = {
+  muuSovellettuTilanneLisatieto?: string;
+  tallinnassaSuoritettujaOpintoja: boolean;
+  tallinnaOpintojenLaajuus?: number;
+  isTallinnaOpintojenLaajuusModified: boolean;
+  eurooppaOpintojaSisallossa: boolean;
+  eurooppaOpintojenSisallonLisatieto?: string;
+  eurooppaOpintojaKokonaismaarassa: boolean;
+  eurooppaOpintojenLaajuus?: number;
+  suomiOpintojaSisallossa: boolean;
+  suomiOpintojenSisallonLisatieto?: string;
+  suomiOpintojenAihealueet?: OikeustieteenSuomiOpintojenAihealue;
+  suomiOpintojaLaajuudessa: boolean;
+  suomiOpintojenLaajuus?: number;
+};
+
 export type MyonteisenPaatoksenLisavaatimukset = {
   taydentavatOpinnot: boolean;
   kelpoisuuskoe: boolean;
@@ -84,6 +110,7 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   suomalainenKoulu: boolean;
   opetusNayte: boolean;
   sovellettuTilanne?: string;
+  oikeustieteenMaisteriLisavaatimukset?: OikeustieteenMaisteriLisavaatimukset;
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (

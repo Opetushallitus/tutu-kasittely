@@ -84,6 +84,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
     tasoText,
     '/paatos/',
     { paatosTiedot: [{ paatosTyyppi: 'Taso' }] },
+    false,
   );
 
   await page.getByTestId('lisaa-paatos-button').click();
@@ -98,6 +99,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
     {
       paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
     },
+    false,
   );
 
   await page.getByTestId('lisaa-paatos-button').click();
@@ -114,6 +116,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
         { paatosTyyppi: 'RiittavatOpinnot' },
       ],
     },
+    false,
   );
 
   await page.getByTestId('poista-paatos-button').last().click();
@@ -137,6 +140,7 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
     {
       paatosTiedot: [],
     },
+    false,
   );
 });
 

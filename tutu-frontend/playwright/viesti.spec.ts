@@ -94,6 +94,7 @@ test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
     {
       kieli: 'sv',
     },
+    false,
   );
 
   await expectRequestData(

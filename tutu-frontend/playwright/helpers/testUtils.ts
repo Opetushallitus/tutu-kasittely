@@ -56,13 +56,14 @@ export const expectDataFromDropdownSelection = async (
   optionText: string,
   expectedUrl: string,
   data: Record<string, unknown>,
+  exactText: boolean = true,
 ) => {
   await menuButton.click();
   await expect(menuButton).toBeVisible();
-  const option = page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator(`text=${optionText}`)
-    .last();
+  let option = page.locator('ul[role="listbox"] li[role="option"]');
+  option = exactText
+    ? option.getByText(optionText, { exact: true })
+    : option.locator(`text=${optionText}`).last();
   await expectRequestData(page, expectedUrl, option.click(), data);
 };
 export const selectOption = async (
@@ -74,7 +75,7 @@ export const selectOption = async (
   await expect(menuButton).toBeVisible();
   const option = page
     .locator('ul[role="listbox"] li[role="option"]')
-    .locator(`text=${optionText}`);
+    .getByText(optionText, { exact: true });
   await option.last().click();
 };
 
