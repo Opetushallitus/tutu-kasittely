@@ -41,7 +41,10 @@ export const useTekstipohjaSelect = (
     throwOnError: false,
   });
   return {
-    selectTekstipohja: (pohjaId: string) => setPohjaId(pohjaId),
+    selectTekstipohja: async (pohjaId: string) => {
+      setPohjaId(pohjaId);
+      await query.refetch();
+    },
     isLoadingPohja: query.isLoading,
     pohjaLoadError: query.error,
   };
