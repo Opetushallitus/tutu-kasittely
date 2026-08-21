@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
+import fi.oph.tutu.backend.utils.Utility.{toLocalDateTime, toUtcDateTime}
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
@@ -146,7 +146,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
         rawItems.flatMap(item => {
           val fields    = item.asInstanceOf[JObject].values
           val time      = (item \ "time").extract[String]
-          val localTime = toLocalDateTime(time)
+          val localTime = toUtcDateTime(time)
 
           val keysOfModifiedFields = fields.keys.toSeq.diff(COMMON_MUUTOSHISTORIA_FIELDS)
           keysOfModifiedFields.flatMap(key =>
