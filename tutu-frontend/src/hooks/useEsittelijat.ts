@@ -16,7 +16,12 @@ export const useEsittelijat = () => {
   } = useQuery({
     queryKey: ['getEsittelijat'],
     queryFn: getEsittelijat,
-    select: (data) => R.sortBy(data ?? [], (e) => e.sukunimi),
+    select: (data) =>
+      R.sortBy(
+        data ?? [],
+        (e) => e.sukunimi,
+        (e) => e.etunimi,
+      ),
     staleTime: Infinity,
     throwOnError: false,
   });
