@@ -34,7 +34,7 @@ export const EsittelijaSection = ({
 
   return (
     <>
-      <OphTypography variant={'h4'}>
+      <OphTypography variant={'h4'} data-testid="esittelija-section">
         {esittelija.etunimi} {esittelija.sukunimi}
       </OphTypography>
 
