@@ -68,7 +68,6 @@ jobs:
 
   playwright:
     needs: filter
-    if: github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -76,6 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/test-playwright
+        if: ${{github.event_name == 'workflow_dispatch' || needs.filter.outputs.frontend == 'true'}}
         with:
           browser: ${{ matrix.browser }}
 
