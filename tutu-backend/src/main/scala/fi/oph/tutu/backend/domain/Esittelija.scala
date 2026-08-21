@@ -34,6 +34,8 @@ case class DbEsittelija(
   )
 }
 
+// testi
+
 case class Esittelija(
   esittelijaOid: String,
   etunimi: String,
