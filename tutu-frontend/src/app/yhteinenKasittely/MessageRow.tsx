@@ -66,7 +66,7 @@ export default function MessageRow({
         variant="body1"
         data-testid={'viestin-status-uusi-vastaus'}
       >
-        {t('yhteinenKasittely.vastattu')}
+        {t('yhteinenKasittely.vastausSaapunut')}
       </OphTypography>
       <OphTypography
         variant="body1"
