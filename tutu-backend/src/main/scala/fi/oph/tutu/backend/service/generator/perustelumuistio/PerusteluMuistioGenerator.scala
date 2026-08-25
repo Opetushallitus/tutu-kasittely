@@ -259,7 +259,7 @@ def haeYleisetPerustelut(translationService: TranslationService, perusteluMaybe:
   perusteluMaybe match {
     case None            => None
     case Some(perustelu) =>
-      val resultString = Seq(
+      val result = Seq(
         perustelu.virallinenTutkinnonMyontaja
           .map {
             case true =>
@@ -338,12 +338,19 @@ def haeYleisetPerustelut(translationService: TranslationService, perusteluMaybe:
             s"$label\n${perustelu.selvitysTutkinnonAsemastaLahtomaanJarjestelmassa}"
           )
         } else None
-      ).flatten.mkString("\n")
+      ).flatten
 
-      resultString match {
-        case "" => None
-        case _  => Some(resultString)
+      if (result.nonEmpty) {
+        val title = translationService.getTranslation(
+          FI,
+          "perustelumuistio.yleisetPerustelut.title"
+        )
+        val resultWithTitle = title +: result
+        Some(resultWithTitle.mkString("\n"))
+      } else {
+        None
       }
+
   }
 }
 
@@ -437,7 +444,8 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
     case None            => None
     case Some(perustelu) =>
       val apSisalto = perustelu.apSisalto
-      val result    = Seq(
+
+      val apPerusteResult = Seq(
         /////////////////////////////////
         // Peruste AP-lain soveltamiselle
         apSisalto.lakiperusteToisessaJasenmaassaSaannelty
@@ -487,8 +495,10 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
             val label =
               translationService.getTranslation(FI, "perustelumuistio.ap.koulutuksenKestoJaSisalto.label")
             s"$label\n$text\n"
-          ),
+          )
+      ).flatten
 
+      val ammattipatevyysResult = Seq(
         //////////////////////////////////////////////////////////////////////////////
         // Ammattipätevyyttä ja ammatin tai koulutuksen sääntelyä koskevat selvitykset
         apSisalto.selvityksetLahtomaanViranomaiselta
@@ -535,6 +545,29 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
             val label = translationService.getTranslation(FI, "perustelumuistio.ap.SEUTArviointi.label")
             s"$label\n$text"
           )
+      ).flatten
+
+      val apPerusteResultWithTitle = if (apPerusteResult.nonEmpty) {
+        val title = translationService.getTranslation(
+          FI,
+          "perustelumuistio.apPerustelut.title"
+        )
+        val resultWithTitle = title +: apPerusteResult
+        Some(resultWithTitle.mkString("\n"))
+      } else { None }
+
+      val ammattipatevyysResultWithTitle = if (ammattipatevyysResult.nonEmpty) {
+        val title = translationService.getTranslation(
+          FI,
+          "perustelumuistio.apAmmattipatevyys.title"
+        )
+        val resultWithTitle = title +: ammattipatevyysResult
+        Some(resultWithTitle.mkString("\n"))
+      } else { None }
+
+      val result = Seq(
+        apPerusteResultWithTitle,
+        ammattipatevyysResultWithTitle
       ).flatten.mkString("\n")
 
       result match {
