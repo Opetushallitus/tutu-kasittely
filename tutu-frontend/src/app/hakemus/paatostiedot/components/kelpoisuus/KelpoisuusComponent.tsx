@@ -278,8 +278,7 @@ export const KelpoisuusComponent = ({
           data-testid="kelpoisuus-select"
         />
         {availableOpetettavaAineOptions.length > 0 &&
-          kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) &&
-          !showUOFields && (
+          kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t) && (
             <SelectTreeDropdown
               label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.opetettavaAine`)}
               value={kelpoisuus.opetettavaAine}
