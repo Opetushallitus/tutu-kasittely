@@ -131,14 +131,24 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   );
   const showOsaamisenTaydentamisenTavat = useMemo(() => {
     return (
-      lisavaatimukset?.ammattikokemuksenHuomioiminen ===
+      (lisavaatimukset?.ammattikokemuksenHuomioiminen ===
         'SuomessaHankittuOsittain' ||
-      lisavaatimukset?.ammattikokemuksenHuomioiminen ===
-        'UlkomaillaHankittuOsittain' ||
-      lisavaatimukset?.ammattikokemuksenHuomioiminen ===
-        'SuomessaJaUlkomaillaHankittuOsittain' ||
-      lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
-        'KorvaavatOsittain'
+        lisavaatimukset?.ammattikokemuksenHuomioiminen ===
+          'UlkomaillaHankittuOsittain' ||
+        lisavaatimukset?.ammattikokemuksenHuomioiminen ===
+          'SuomessaJaUlkomaillaHankittuOsittain' ||
+        lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
+          'KorvaavatOsittain') &&
+      !(
+        lisavaatimukset.ammattikokemuksenHuomioiminen ===
+          'SuomessaHankittuKokonaan' ||
+        lisavaatimukset.ammattikokemuksenHuomioiminen ===
+          'UlkomaillaHankittuKokonaan' ||
+        lisavaatimukset.ammattikokemuksenHuomioiminen ===
+          'SuomessaJaUlkomaillaHankittuKokonaan' ||
+        lisavaatimukset.suomessaSuoritettujenOpintojenHuomioiminen ===
+          'KorvaavatKokonaan'
+      )
     );
   }, [
     lisavaatimukset?.ammattikokemuksenHuomioiminen,
