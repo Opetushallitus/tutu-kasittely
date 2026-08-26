@@ -184,6 +184,64 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   );
 });
 
+test('Tietty tutkinto tai opinnot, monialaiset opinnot ja varhaiskasvatuksen valmiusopinnot ovat valittavissa', async ({
+  page,
+}) => {
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await paatostyyppiInput.click();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator(
+      'text=3 hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot',
+    );
+  await tasoOption.click();
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.monialaisetOpinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Monialaiset opinnot',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatusJaEsiopetusValmiusOpinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot',
+            },
+          ],
+        },
+      ],
+    },
+  );
+});
+
 test('Riittävät opinnot, luokanopettaja näyttää oikeat valinnat', async ({
   page,
 }) => {

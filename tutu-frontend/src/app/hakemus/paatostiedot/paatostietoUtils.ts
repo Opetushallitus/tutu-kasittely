@@ -3,8 +3,10 @@ import {
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
   erotKoulutuksessaOptions,
+  MONIALAISET_OPINNOT_KEY,
   MUU_AMMATTI_KEY,
   oletusKoulutusErot,
+  VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -90,6 +92,23 @@ export const getKelpoisuusMuuAmmattiDropdownOption = (
 
   return { ...muuAmmattiOption, children: [muuAmmattiOption] };
 };
+
+export const getTiettyTutkintoTaiOpinnotAdditionalOptions = (
+  t: TFunction,
+): TreeOption[] => [
+  {
+    label: t(
+      'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.monialaisetOpinnot',
+    ),
+    value: MONIALAISET_OPINNOT_KEY,
+  },
+  {
+    label: t(
+      'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatusJaEsiopetusValmiusOpinnot',
+    ),
+    value: VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
+  },
+];
 
 const createEroArray = (namePrefix: string, lkm: number) => {
   return Array.from(
