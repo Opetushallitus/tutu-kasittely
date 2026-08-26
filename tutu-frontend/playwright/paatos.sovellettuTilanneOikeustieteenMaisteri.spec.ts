@@ -1,9 +1,9 @@
 import { expect, Page, test } from '@playwright/test';
 
 import {
-  expectDataFromDropdownSelection,
   expectHiddenOrDetached,
   expectRequestData,
+  navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto,
 } from '@/playwright/helpers/testUtils';
 import { mockAll, mockPaatos } from '@/playwright/mocks';
 
@@ -27,95 +27,10 @@ async function navigateToSovellettuTilanne(
   page: Page,
   sovellettuTilanne: string,
 ): Promise<void> {
-  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
-  await paatostyyppiInput.click();
-  await expect(paatostyyppiInput).toBeVisible();
-
-  await page
-    .locator('ul[role="listbox"] li[role="option"]')
-    .locator(
-      'text=3 hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot',
-    )
-    .click();
-
-  await expect(page.locator('h3').last()).toHaveText(
-    'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.otsikko1',
-  );
-
-  const tutkintoDropdown = page.getByTestId(
-    'rinnastettava-tutkinto-tai-opinto-select',
-  );
-  await expect(tutkintoDropdown).toBeVisible();
-
-  await expectDataFromDropdownSelection(
+  await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
     page,
-    tutkintoDropdown,
     OIKEUSTIETEEN_MAISTERI_OPTION,
-    PAATOS_URL,
-    {
-      paatosTiedot: [
-        {
-          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
-          rinnastettavatTutkinnotTaiOpinnot: [
-            { tutkintoTaiOpinto: OIKEUSTIETEEN_MAISTERI_OPTION },
-          ],
-        },
-      ],
-    },
-  );
-
-  const myonteinenPaatosRadioGroup = page.getByTestId(
-    'myonteinenPaatos-radio-group',
-  );
-  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
-  await expectRequestData(
-    page,
-    PAATOS_URL,
-    myonteinenPaatosRadioGroup
-      .locator('input[type="radio"][value="true"]')
-      .click(),
-    {
-      paatosTiedot: [
-        {
-          rinnastettavatTutkinnotTaiOpinnot: [
-            {
-              tutkintoTaiOpinto: OIKEUSTIETEEN_MAISTERI_OPTION,
-              myonteinenPaatos: true,
-            },
-          ],
-        },
-      ],
-    },
-  );
-
-  const sovellettuTilanneDropdown = page.getByTestId(
-    'myonteinenPaatos-uo-sovellettuTilanne-select',
-  );
-  await expect(sovellettuTilanneDropdown).toBeVisible();
-
-  const optionLabel =
-    sovellettuTilanne === 'muu'
-      ? 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuOikeustieteenMaisteri'
-      : sovellettuTilanne;
-
-  await expectDataFromDropdownSelection(
-    page,
-    sovellettuTilanneDropdown,
-    optionLabel,
-    PAATOS_URL,
-    {
-      paatosTiedot: [
-        {
-          rinnastettavatTutkinnotTaiOpinnot: [
-            {
-              myonteisenPaatoksenLisavaatimukset: {
-                sovellettuTilanne,
-              },
-            },
-          ],
-        },
-      ],
-    },
+    sovellettuTilanne,
   );
 }
 

@@ -1,5 +1,5 @@
 import { Info } from '@mui/icons-material';
-import { FormGroup, Paper, Stack, useTheme } from '@mui/material';
+import { FormGroup, Paper, Stack } from '@mui/material';
 import {
   OphCheckbox,
   ophColors,
@@ -9,9 +9,10 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React, { useMemo } from 'react';
 
-import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
+import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import {
   emptyErotKoulutuksessa,
+  initOrUpdateErotKoulutuksessa,
   initOrUpdateMyonteinenKelpoisuusPaatosUO,
   koulutusEroModel,
   setKoulutusEroValues,
@@ -119,7 +120,6 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   lisavaatimukset,
 }: MyonteinenKelpoisuusPaatosUOProps) => {
   const { t } = useTranslations();
-  const theme = useTheme();
 
   const sovellettuTilanneOptions = useMemo(
     () => getSovellettuTilanneOptions(kelpoisuusKey),
@@ -173,22 +173,10 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   );
 
   const erotKoulutuksessa = useMemo(() => {
-    const erotKoulutuksessa = emptyErotKoulutuksessa(kelpoisuusKey);
-    if (lisavaatimukset?.erotKoulutuksessa) {
-      const currentlySelectedErot =
-        lisavaatimukset.erotKoulutuksessa.erot ?? [];
-      const erot = (erotKoulutuksessa.erot ?? []).map((ero) => ({
-        name: ero.name,
-        value:
-          currentlySelectedErot.find((eroObj) => eroObj.name === ero.name)
-            ?.value ?? false,
-      }));
-      const eroTarkennukset =
-        lisavaatimukset.erotKoulutuksessa.eroTarkennukset ??
-        erotKoulutuksessa.eroTarkennukset;
-      return { ...erotKoulutuksessa, erot, eroTarkennukset };
-    }
-    return erotKoulutuksessa;
+    return initOrUpdateErotKoulutuksessa(
+      emptyErotKoulutuksessa(kelpoisuusKey),
+      lisavaatimukset?.erotKoulutuksessa,
+    );
   }, [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey]);
 
   return (
@@ -276,9 +264,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
               ))}
             </FormGroup>
           )}
-          label={t(
-            `hakemus.paatos.paatostyyppi.kelpoisuus.uo.erotKoulutuksessa`,
-          )}
+          label={t(`hakemus.paatos.myonteinenPaatos.erotKoulutuksessa`)}
         />
       )}
       <KorvaavaToimenpideComponent
@@ -294,7 +280,9 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
           });
         }}
         t={t}
-        theme={theme}
+        kelpoisuuskoeTransKeyBase={
+          'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
+        }
         testIdPrefix={'lahtokohtaisetOsaamisenTaydentamisenTavat'}
         showTaydentavatOpinnot
         kelpoisuuskoeFieldLabelPrefix={eroModel.id}
@@ -367,7 +355,9 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
             });
           }}
           t={t}
-          theme={theme}
+          kelpoisuuskoeTransKeyBase={
+            'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
+          }
           testIdPrefix={'osaamisenTaydentamisenTavat'}
           kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           showTaydentavatOpinnot

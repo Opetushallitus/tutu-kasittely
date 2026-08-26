@@ -1,12 +1,11 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
+import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import { ammattikokemusElinikainenOppiminenKorvaavuusOptions } from '@/src/app/hakemus/paatostiedot/constants';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -32,7 +31,6 @@ export type AmmattikokemusJaElinikainenOppiminenProps = {
   updateDataAction: (updatedData: AmmattikokemusJaElinikainenOppiminen) => void;
   kelpoisuuskoeFieldLabelPrefix?: string;
   t: TFunction;
-  theme: Theme;
 };
 
 export const AmmattikokemusJaElinikainenOppiminenComponent = ({
@@ -40,7 +38,6 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
   updateDataAction,
   kelpoisuuskoeFieldLabelPrefix,
   t,
-  theme,
 }: AmmattikokemusJaElinikainenOppiminenProps) => {
   return (
     <>
@@ -143,11 +140,13 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
                 })
               }
               t={t}
-              theme={theme}
               testIdPrefix={'ammattikokemusElinikainenOppiminen'}
               kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
               showKelpoisuuskoeJaSopeutumisaika
               showLisatieto
+              kelpoisuuskoeTransKeyBase={
+                'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
+              }
             />
           )}
         </Stack>

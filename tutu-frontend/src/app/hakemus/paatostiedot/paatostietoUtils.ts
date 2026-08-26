@@ -3,6 +3,7 @@ import {
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
   erotKoulutuksessaOptions,
+  KoulutusEroModel,
   MUU_AMMATTI_KEY,
   oletusKoulutusErot,
   yleinenKoulutusEroTranslationKeys,
@@ -100,14 +101,19 @@ const createEroArray = (namePrefix: string, lkm: number) => {
   );
 };
 
-export const emptyErotKoulutuksessa = (
-  kelpoisuusKey?: string,
-): ErotKoulutuksessa => {
+export const emptyErotKoulutuksessa = (kelpoisuusKey?: string) => {
   const eroModel = koulutusEroModel(kelpoisuusKey);
+  return emptyErotKoulutuksessaForModel(eroModel);
+};
+
+export const emptyErotKoulutuksessaForModel = (
+  eroModel: KoulutusEroModel,
+): ErotKoulutuksessa => {
   const kelpoisuusKohtaiset: NamedBoolean[] = createEroArray(
     'ero',
     eroModel.kelpoisuusKohtainenEroLkm,
   );
+
   const yleiset: NamedBoolean[] = eroModel.yleisetErot.map((eroKey) => ({
     name: eroKey,
     value: false,
@@ -116,7 +122,7 @@ export const emptyErotKoulutuksessa = (
   const tarkennukset = eroModel.kelpoisuusKohtainenEroTarkennukset?.reduce(
     (acc, val) =>
       Object.assign(acc, {
-        [`ero${val.parent}`]: createEroArray('tarkennus', val.lkm),
+        [`ero${val.parentIdx}`]: createEroArray('tarkennus', val.lkm),
       }),
     {},
   );
@@ -126,6 +132,24 @@ export const emptyErotKoulutuksessa = (
     eroTarkennukset: tarkennukset,
     muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
   };
+};
+
+export const initOrUpdateErotKoulutuksessa = (
+  initial: ErotKoulutuksessa,
+  erotKoulutuksessa?: ErotKoulutuksessa,
+): ErotKoulutuksessa => {
+  if (erotKoulutuksessa) {
+    const erot = (initial.erot ?? []).map((ero) => ({
+      name: ero.name,
+      value:
+        erotKoulutuksessa?.erot?.find((eroObj) => eroObj.name === ero.name)
+          ?.value ?? false,
+    }));
+    const eroTarkennukset =
+      erotKoulutuksessa.eroTarkennukset ?? initial.eroTarkennukset;
+    return { ...initial, erot, eroTarkennukset };
+  }
+  return initial;
 };
 
 const initOrUpdateKorvaavaToimenpide = (

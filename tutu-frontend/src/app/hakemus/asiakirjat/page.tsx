@@ -1,4 +1,3 @@
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Divider, Stack, useTheme } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
@@ -16,11 +15,9 @@ import { KaikkiSelvityksetSaatu } from '@/src/app/hakemus/asiakirjat/components/
 import { AsiakirjaMallejaVastaavistaTutkinnoista } from '@/src/app/hakemus/asiakirjat/components/MallitTutkinnoista';
 import { SuostumusVahvistamiselle } from '@/src/app/hakemus/asiakirjat/components/SuostumusVahvistamiselle';
 import { ValmistumisenVahvistusComponent } from '@/src/app/hakemus/asiakirjat/components/ValmistumisenVahvistus';
-import { CenteredRow } from '@/src/components/CenteredRow';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { SaveRibbon } from '@/src/components/SaveRibbon';
-import { StyledLink } from '@/src/components/StyledLink';
 import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import {
   alemmatTutkinnot,
@@ -37,7 +34,6 @@ import { AsiakirjaState, useAsiakirjat } from '@/src/hooks/useAsiakirjat';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
 import useToaster from '@/src/hooks/useToaster';
-import { virkailijaUrl } from '@/src/lib/configuration/configuration';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -63,25 +59,6 @@ const sisallonSuoratYlatasonOsiot = [
 ];
 const tutkintojenYlatasonOsio = tutkintoTaiKoulutus;
 const tutkintojenAliOsiot = [ylinTutkinto, alemmatTutkinnot, muutTutkinnot];
-
-const ExternalLink = ({
-  href,
-  label,
-  gap,
-}: {
-  href: string;
-  label: string;
-  gap: string;
-}) => {
-  return (
-    <StyledLink to={href} target="_black" rel="noopener">
-      <CenteredRow gap={gap}>
-        <OpenInNewIcon />
-        {label}
-      </CenteredRow>
-    </StyledLink>
-  );
-};
 
 export default function AsiakirjaPage() {
   const { t } = useTranslations();
@@ -281,16 +258,9 @@ const AsiakirjaPagePure = ({
         marginRight: theme.spacing(3),
       }}
     >
-      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
-          {t('hakemus.asiakirjat.otsikko')}
-        </OphTypography>
-        <ExternalLink
-          gap={theme.spacing(1)}
-          label={t('hakemus.asiakirjat.avaaHakemuspalvelussa')}
-          href={`${virkailijaUrl()}/lomake-editori/applications/${hakemus.lomakeOid}?application-key=${hakemus.hakemusOid}&ensisijaisesti=false`}
-        />
-      </Stack>
+      <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
+        {t('hakemus.asiakirjat.otsikko')}
+      </OphTypography>
       <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
       <AsiakirjaPyynnot
         asiakirjaPyynnot={asiakirjat.pyydettavatAsiakirjat}

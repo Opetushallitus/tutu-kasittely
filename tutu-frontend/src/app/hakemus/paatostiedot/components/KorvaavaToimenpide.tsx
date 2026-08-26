@@ -1,5 +1,4 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
@@ -16,15 +15,10 @@ import {
 } from '@/src/lib/types/paatos';
 
 const IndentedStack: React.FC<{
-  theme: Theme;
   children: React.ReactNode | React.ReactNode[];
-}> = ({ theme, children }) => {
+}> = ({ children }) => {
   return (
-    <Stack
-      paddingLeft={theme.spacing(3)}
-      paddingBottom={theme.spacing(2)}
-      gap={theme.spacing(2)}
-    >
+    <Stack paddingLeft={3} paddingBottom={2} gap={2}>
       {children}
     </Stack>
   );
@@ -33,9 +27,9 @@ const IndentedStack: React.FC<{
 const Kelpoisuuskoe = ({
   sisalto,
   field,
+  kelpoisuuskoeTransKeyBase,
   updateKelpoisuuskoeAction,
   t,
-  theme,
   kelpoisuuskoeFieldLabelPrefix,
   testIdPrefix,
 }: {
@@ -45,24 +39,22 @@ const Kelpoisuuskoe = ({
     field: keyof KorvaavaToimenpide,
     updatedKelpoisuuskoeSisalto: KelpoisuuskoeSisalto,
   ) => void;
+  kelpoisuuskoeTransKeyBase: string;
   t: TFunction;
-  theme: Theme;
   kelpoisuuskoeFieldLabelPrefix?: string;
   testIdPrefix: string;
 }) => {
   return (
-    <Stack gap={theme.spacing(1)}>
+    <Stack gap={1}>
       <OphTypography variant="h5">
-        {t(
-          'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.otsikko',
-        )}
+        {t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoeSisalto')}
       </OphTypography>
       {kelpoisuuskoeFields.map((key) => (
         <OphCheckbox
           key={key}
           data-testid={`${testIdPrefix}-kelpoisuuskoe-sisalto-${key}`}
           label={t(
-            `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe.${kelpoisuuskoeFieldLabelPrefix ? `${kelpoisuuskoeFieldLabelPrefix}.` : ''}${key}`,
+            `${kelpoisuuskoeTransKeyBase}.${kelpoisuuskoeFieldLabelPrefix ? `${kelpoisuuskoeFieldLabelPrefix}.` : ''}${key}`,
           )}
           checked={sisalto?.[key] || false}
           onChange={(e) => {
@@ -84,8 +76,8 @@ export type KorvaavaToimenpideProps = {
     updatedKorvaavaToimenpide: KorvaavaToimenpide,
   ) => void;
   t: TFunction;
-  theme: Theme;
   testIdPrefix: string;
+  kelpoisuuskoeTransKeyBase: string;
   showTaydentavatOpinnot?: boolean;
   showKelpoisuuskoeJaSopeutumisaika?: boolean;
   showLisatieto?: boolean;
@@ -95,13 +87,13 @@ export type KorvaavaToimenpideProps = {
 export const KorvaavaToimenpideComponent = ({
   korvaavaToimenpide,
   label,
+  kelpoisuuskoeTransKeyBase,
   updateKorvaavaToimenpide,
   showKelpoisuuskoeJaSopeutumisaika,
   showTaydentavatOpinnot,
   showLisatieto,
   kelpoisuuskoeFieldLabelPrefix,
   t,
-  theme,
   testIdPrefix,
 }: KorvaavaToimenpideProps) => {
   const kelpoisuuskoeElement = (
@@ -123,7 +115,7 @@ export const KorvaavaToimenpideComponent = ({
         });
       }}
       t={t}
-      theme={theme}
+      kelpoisuuskoeTransKeyBase={kelpoisuuskoeTransKeyBase}
       testIdPrefix={testIdPrefix}
       kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
     />
@@ -136,7 +128,7 @@ export const KorvaavaToimenpideComponent = ({
   ) => (
     <OphInputFormField
       key={field}
-      label={t('hakemus.paatos.paatostyyppi.kelpoisuus.paatos.sopeutumisaika')}
+      label={t('hakemus.paatos.myonteinenPaatos.sopeutumisaikaKesto')}
       multiline={false}
       value={kesto || ''}
       onChange={(e) => {
@@ -150,17 +142,15 @@ export const KorvaavaToimenpideComponent = ({
   );
 
   return (
-    <Stack gap={theme.spacing(1)}>
+    <Stack gap={1}>
       <OphFormFieldWrapper
-        sx={{ gap: theme.spacing(1) }}
+        sx={{ gap: 1 }}
         label={label}
         renderInput={
           showLisatieto
             ? () => (
                 <OphTypography variant="body1">
-                  {t(
-                    'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.toimenpideLisatieto',
-                  )}
+                  {t('hakemus.paatos.myonteinenPaatos.toimenpideLisatieto')}
                 </OphTypography>
               )
             : () => undefined
@@ -191,7 +181,7 @@ export const KorvaavaToimenpideComponent = ({
         }}
       />
       {korvaavaToimenpide?.kelpoisuuskoe && (
-        <IndentedStack theme={theme}>
+        <IndentedStack>
           {kelpoisuuskoeElement(
             'kelpoisuuskoeSisalto',
             `${testIdPrefix}-singleChoice`,
@@ -211,7 +201,7 @@ export const KorvaavaToimenpideComponent = ({
         }}
       />
       {korvaavaToimenpide?.sopeutumisaika && (
-        <IndentedStack theme={theme}>
+        <IndentedStack>
           {sopeutumisaikaElement(
             'sopeutumiusaikaKestoKk',
             `${testIdPrefix}-singleChoice`,
@@ -235,7 +225,7 @@ export const KorvaavaToimenpideComponent = ({
             }}
           />
           {korvaavaToimenpide?.kelpoisuuskoeJaSopeutumisaika && (
-            <IndentedStack theme={theme}>
+            <IndentedStack>
               {[
                 kelpoisuuskoeElement(
                   'kelpoisuuskoeJaSopeutumisaikaSisalto',

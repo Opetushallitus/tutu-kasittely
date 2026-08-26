@@ -50,9 +50,9 @@ const Huomautus = ({ t }: { t: TFunction }) => {
       direction="row"
       gap={1}
       padding={2}
-      sx={{ backgroundColor: ophColors.lightBlue2 }}
+      sx={{ backgroundColor: `${ophColors.blue2}0A` }}
     >
-      <Info sx={{ color: ophColors.blue1 }} />
+      <Info sx={{ color: ophColors.blue2 }} />
       <OphTypography>
         {t(
           'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vahimmaismaaraHuomautus',
