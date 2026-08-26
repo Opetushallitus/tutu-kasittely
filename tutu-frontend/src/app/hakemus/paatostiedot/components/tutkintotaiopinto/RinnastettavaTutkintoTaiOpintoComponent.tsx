@@ -117,6 +117,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
             asiointikieli,
             paatosTietoOptions.tiettyTutkintoTaiOpinnotOptions,
           );
+          // Lisätään "additional options" ennen viimeistä elementtiä
           return [
             ...options.slice(0, -1),
             ...getTiettyTutkintoTaiOpinnotAdditionalOptions(t),
