@@ -3,8 +3,10 @@ import {
   emptyKelpoisuuskoeSisalto,
   emptyKorvaavaToimenpide,
   erotKoulutuksessaOptions,
+  KoulutusEroModel,
   MUU_AMMATTI_KEY,
   oletusKoulutusErot,
+  SimpleKoulutusEroModel,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -101,17 +103,17 @@ const createEroArray = (namePrefix: string, lkm: number) => {
 };
 
 export const emptyErotKoulutuksessa = (
-  kelpoisuusKey?: string,
+  kelpoisuusKeyOrModel: string | SimpleKoulutusEroModel | undefined,
 ): ErotKoulutuksessa => {
-  const eroModel = koulutusEroModel(kelpoisuusKey);
+  const eroModel: SimpleKoulutusEroModel | KoulutusEroModel =
+    kelpoisuusKeyOrModel === undefined ||
+    typeof kelpoisuusKeyOrModel === 'string'
+      ? koulutusEroModel(kelpoisuusKeyOrModel)
+      : kelpoisuusKeyOrModel;
   const kelpoisuusKohtaiset: NamedBoolean[] = createEroArray(
     'ero',
     eroModel.kelpoisuusKohtainenEroLkm,
   );
-  const yleiset: NamedBoolean[] = eroModel.yleisetErot.map((eroKey) => ({
-    name: eroKey,
-    value: false,
-  }));
 
   const tarkennukset = eroModel.kelpoisuusKohtainenEroTarkennukset?.reduce(
     (acc, val) =>
@@ -121,11 +123,43 @@ export const emptyErotKoulutuksessa = (
     {},
   );
 
+  if ('yleisetErot' in eroModel && 'sisaltaaMuuEro' in eroModel) {
+    return {
+      erot: [
+        ...kelpoisuusKohtaiset,
+        ...(eroModel.yleisetErot as string[]).map((eroKey) => ({
+          name: eroKey,
+          value: false,
+        })),
+      ],
+      eroTarkennukset: tarkennukset,
+      muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
+    };
+  }
+
   return {
-    erot: [...kelpoisuusKohtaiset, ...yleiset],
+    erot: kelpoisuusKohtaiset,
     eroTarkennukset: tarkennukset,
-    muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
   };
+};
+
+export const initOrUpdateErotKoulutuksessa = (
+  kelpoisuusKeyOrModel: string | SimpleKoulutusEroModel | undefined,
+  erotKoulutuksessa?: ErotKoulutuksessa,
+): ErotKoulutuksessa => {
+  const initial = emptyErotKoulutuksessa(kelpoisuusKeyOrModel);
+  if (erotKoulutuksessa) {
+    const erot = (initial.erot ?? []).map((ero) => ({
+      name: ero.name,
+      value:
+        erotKoulutuksessa?.erot?.find((eroObj) => eroObj.name === ero.name)
+          ?.value ?? false,
+    }));
+    const eroTarkennukset =
+      erotKoulutuksessa.eroTarkennukset ?? initial.eroTarkennukset;
+    return { ...initial, erot, eroTarkennukset };
+  }
+  return initial;
 };
 
 const initOrUpdateKorvaavaToimenpide = (

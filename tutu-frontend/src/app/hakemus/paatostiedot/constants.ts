@@ -194,6 +194,15 @@ export type KoulutusEroModel = {
   sisaltaaMuuEro: boolean;
 };
 
+export type SimpleKoulutusEroModel = Omit<
+  KoulutusEroModel,
+  | 'id'
+  | 'kelpoisuusKey'
+  | 'lyhytNimiKaannosAvain'
+  | 'yleisetErot'
+  | 'sisaltaaMuuEro'
+>;
+
 export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
   //////////////////
   // Opetusala
@@ -640,6 +649,12 @@ export const OIKEUSTIETEEN_MAISTERI_KEYS = [
   'Rinnastaminen oikeustieteen maisterin tutkintoon',
   'Jämställande med juris magisterexamen',
   'Recognition of studies as comparable to a Master of Laws degree completed in Finland',
+];
+
+export const OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS = [
+  'Opettajan pedagogiset opinnot',
+  'Pedagogiska studier för lärare',
+  'Teacher’s pedagogical studies',
 ];
 
 export const oikeustieteenSuomiOpintojenAihealueOptions = [

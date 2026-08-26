@@ -8,7 +8,7 @@ import {
 import React, { useMemo } from 'react';
 
 import { AmmattikokemusJaElinikainenOppiminenComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/AmmattikokemusJaElinikainenOppiminenComponent';
-import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KorvaavaToimenpide';
+import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import { olennaisiaErojaOptions } from '@/src/app/hakemus/paatostiedot/constants';
 import {
   emptyErotKoulutuksessa,
@@ -64,10 +64,10 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
     const erotKoulutuksessa = lisavaatimukset?.olennaisiaEroja
       ? emptyErotKoulutuksessa(kelpoisuusKey)
       : undefined;
-    if (erotKoulutuksessa && lisavaatimukset?.erotKoulutuksessa) {
+    if (lisavaatimukset?.erotKoulutuksessa) {
       const currentlySelectedErot =
         lisavaatimukset.erotKoulutuksessa.erot || [];
-      const erot = (erotKoulutuksessa.erot || []).map((ero) => ({
+      const erot = (erotKoulutuksessa?.erot || []).map((ero) => ({
         name: ero.name,
         value:
           currentlySelectedErot.find((eroObj) => eroObj.name === ero.name)
@@ -195,7 +195,9 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
             });
           }}
           t={t}
-          theme={theme}
+          kelpoisuuskoeTransKeyBase={
+            'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
+          }
           testIdPrefix={'lahtokohtainen'}
           kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           showKelpoisuuskoeJaSopeutumisaika
@@ -215,7 +217,6 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
           }}
           kelpoisuuskoeFieldLabelPrefix={eroModel.id}
           t={t}
-          theme={theme}
         />
       )}
     </Stack>

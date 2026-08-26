@@ -110,6 +110,11 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   suomalainenKoulu: boolean;
   opetusNayte: boolean;
   sovellettuTilanne?: string;
+  erotKoulutuksessa?: ErotKoulutuksessa;
+  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide;
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen;
+  korvaavaToimenpide?: KorvaavaToimenpide;
   oikeustieteenMaisteriLisavaatimukset?: OikeustieteenMaisteriLisavaatimukset;
 };
 

@@ -100,6 +100,11 @@ case class MyonteisenPaatoksenLisavaatimukset(
   suomalainenKoulu: Boolean = false,
   opetusNayte: Boolean = false,
   sovellettuTilanne: Option[String] = None,
+  erotKoulutuksessa: Option[ErotKoulutuksessa] = None,
+  lahtokohtaisetOsaamisenTaydentamisenTavat: Option[KorvaavaToimenpide] = None,
+  ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
+  suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None,
+  korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
   oikeustieteenMaisteriLisavaatimukset: Option[OikeustieteenMaisteriLisavaatimukset] = None
 )
 
