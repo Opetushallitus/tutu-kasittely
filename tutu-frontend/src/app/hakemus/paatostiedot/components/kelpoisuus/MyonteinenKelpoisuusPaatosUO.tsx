@@ -11,6 +11,7 @@ import React, { useMemo } from 'react';
 
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import {
+  emptyErotKoulutuksessa,
   initOrUpdateErotKoulutuksessa,
   initOrUpdateMyonteinenKelpoisuusPaatosUO,
   koulutusEroModel,
@@ -173,7 +174,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
 
   const erotKoulutuksessa = useMemo(() => {
     return initOrUpdateErotKoulutuksessa(
-      kelpoisuusKey,
+      emptyErotKoulutuksessa(kelpoisuusKey),
       lisavaatimukset?.erotKoulutuksessa,
     );
   }, [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey]);

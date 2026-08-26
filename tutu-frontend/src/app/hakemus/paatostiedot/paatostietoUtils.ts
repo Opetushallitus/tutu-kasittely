@@ -6,7 +6,6 @@ import {
   KoulutusEroModel,
   MUU_AMMATTI_KEY,
   oletusKoulutusErot,
-  SimpleKoulutusEroModel,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -102,52 +101,43 @@ const createEroArray = (namePrefix: string, lkm: number) => {
   );
 };
 
-export const emptyErotKoulutuksessa = (
-  kelpoisuusKeyOrModel: string | SimpleKoulutusEroModel | undefined,
+export const emptyErotKoulutuksessa = (kelpoisuusKey?: string) => {
+  const eroModel = koulutusEroModel(kelpoisuusKey);
+  return emptyErotKoulutuksessaForModel(eroModel);
+};
+
+export const emptyErotKoulutuksessaForModel = (
+  eroModel: KoulutusEroModel,
 ): ErotKoulutuksessa => {
-  const eroModel: SimpleKoulutusEroModel | KoulutusEroModel =
-    kelpoisuusKeyOrModel === undefined ||
-    typeof kelpoisuusKeyOrModel === 'string'
-      ? koulutusEroModel(kelpoisuusKeyOrModel)
-      : kelpoisuusKeyOrModel;
   const kelpoisuusKohtaiset: NamedBoolean[] = createEroArray(
     'ero',
     eroModel.kelpoisuusKohtainenEroLkm,
   );
 
+  const yleiset: NamedBoolean[] = eroModel.yleisetErot.map((eroKey) => ({
+    name: eroKey,
+    value: false,
+  }));
+
   const tarkennukset = eroModel.kelpoisuusKohtainenEroTarkennukset?.reduce(
     (acc, val) =>
       Object.assign(acc, {
-        [`ero${val.parent}`]: createEroArray('tarkennus', val.lkm),
+        [`ero${val.parentIdx}`]: createEroArray('tarkennus', val.lkm),
       }),
     {},
   );
 
-  if ('yleisetErot' in eroModel && 'sisaltaaMuuEro' in eroModel) {
-    return {
-      erot: [
-        ...kelpoisuusKohtaiset,
-        ...(eroModel.yleisetErot as string[]).map((eroKey) => ({
-          name: eroKey,
-          value: false,
-        })),
-      ],
-      eroTarkennukset: tarkennukset,
-      muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
-    };
-  }
-
   return {
-    erot: kelpoisuusKohtaiset,
+    erot: [...kelpoisuusKohtaiset, ...yleiset],
     eroTarkennukset: tarkennukset,
+    muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
   };
 };
 
 export const initOrUpdateErotKoulutuksessa = (
-  kelpoisuusKeyOrModel: string | SimpleKoulutusEroModel | undefined,
+  initial: ErotKoulutuksessa,
   erotKoulutuksessa?: ErotKoulutuksessa,
 ): ErotKoulutuksessa => {
-  const initial = emptyErotKoulutuksessa(kelpoisuusKeyOrModel);
   if (erotKoulutuksessa) {
     const erot = (initial.erot ?? []).map((ero) => ({
       name: ero.name,

@@ -184,24 +184,16 @@ export const yleinenKoulutusEroTranslationKeys = {
     'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.yleiset.eriIkaryhma',
 };
 
+export type KoulutusEroTarkennukset = Array<{ parentIdx: number; lkm: number }>;
 export type KoulutusEroModel = {
   id: string;
   kelpoisuusKey?: string;
   lyhytNimiKaannosAvain?: string;
   kelpoisuusKohtainenEroLkm: number;
-  kelpoisuusKohtainenEroTarkennukset?: Array<{ parent: number; lkm: number }>;
+  kelpoisuusKohtainenEroTarkennukset?: KoulutusEroTarkennukset;
   yleisetErot: string[];
   sisaltaaMuuEro: boolean;
 };
-
-export type SimpleKoulutusEroModel = Omit<
-  KoulutusEroModel,
-  | 'id'
-  | 'kelpoisuusKey'
-  | 'lyhytNimiKaannosAvain'
-  | 'yleisetErot'
-  | 'sisaltaaMuuEro'
->;
 
 export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
   //////////////////
@@ -223,8 +215,8 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
       'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetus.lyhytNimi',
     kelpoisuusKohtainenEroLkm: 4,
     kelpoisuusKohtainenEroTarkennukset: [
-      { parent: 3, lkm: 2 },
-      { parent: 4, lkm: 2 },
+      { parentIdx: 3, lkm: 2 },
+      { parentIdx: 4, lkm: 2 },
     ],
     yleisetErot: [],
     sisaltaaMuuEro: false,
@@ -245,8 +237,8 @@ export const erotKoulutuksessaOptions: KoulutusEroModel[] = [
       'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.aineenopetusLukio.lyhytNimi',
     kelpoisuusKohtainenEroLkm: 4,
     kelpoisuusKohtainenEroTarkennukset: [
-      { parent: 3, lkm: 2 },
-      { parent: 4, lkm: 2 },
+      { parentIdx: 3, lkm: 2 },
+      { parentIdx: 4, lkm: 2 },
     ],
     yleisetErot: [],
     sisaltaaMuuEro: false,

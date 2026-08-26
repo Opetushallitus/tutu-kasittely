@@ -17,11 +17,13 @@ import {
   SovellettuTilanneOption,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
+  KoulutusEroModel,
+  KoulutusEroTarkennukset,
   OIKEUSTIETEEN_MAISTERI_KEYS,
   OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
-  SimpleKoulutusEroModel,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import {
+  emptyErotKoulutuksessaForModel,
   initOrUpdateErotKoulutuksessa,
   setKoulutusEroValues,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
@@ -94,15 +96,26 @@ const SOVELLETTU_TILANNE_BY_ENTITY: Record<
   [ResolvedEntity.muu]: [],
 };
 
+const eroModel = (
+  eroLkm: number,
+  tarkennukset?: KoulutusEroTarkennukset,
+): KoulutusEroModel => {
+  return {
+    id: '',
+    yleisetErot: [],
+    sisaltaaMuuEro: false,
+    kelpoisuusKohtainenEroLkm: eroLkm,
+    kelpoisuusKohtainenEroTarkennukset: tarkennukset,
+  };
+};
+
 const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
   ResolvedEntity,
-  SimpleKoulutusEroModel | undefined
+  KoulutusEroModel | undefined
 > = {
   [ResolvedEntity.oikeustieteenMaisteri]: undefined,
   [ResolvedEntity.opetettavaAine]: undefined,
-  [ResolvedEntity.opettajanPedagogisetOpinnot]: {
-    kelpoisuusKohtainenEroLkm: 2,
-  },
+  [ResolvedEntity.opettajanPedagogisetOpinnot]: eroModel(2),
   [ResolvedEntity.erityisopetus]: undefined,
   [ResolvedEntity.oppilasJaOpintoOhjaus]: undefined,
   [ResolvedEntity.kasvatustieteellinenAla]: undefined,
@@ -156,7 +169,7 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
       const koulutusEroModel = EROT_KOULUTUKSESSA_BY_ENTITY[entity];
       const erotKoulutuksessa = koulutusEroModel
         ? initOrUpdateErotKoulutuksessa(
-            koulutusEroModel,
+            emptyErotKoulutuksessaForModel(koulutusEroModel),
             lisavaatimukset?.erotKoulutuksessa,
           )
         : undefined;
