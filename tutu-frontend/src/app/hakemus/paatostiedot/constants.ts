@@ -625,6 +625,11 @@ export const emptyAmmattikokemusJaElinikainenOppiminen =
 
 export const MUU_AMMATTI_KEY = 'Muu ammatti';
 
+export const MONIALAISET_OPINNOT_KEY = 'Monialaiset opinnot';
+
+export const VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY =
+  'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot';
+
 export const AINEENOPETTAJA_OPTION_KEYS = [
   'Aineenopettaja',
   'Ämneslärare',

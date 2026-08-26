@@ -21,7 +21,10 @@ import {
   AINEENOPETTAJA_OPTION_KEYS,
   LUOKANOPETTAJA_OPTION_KEYS,
 } from '@/src/app/hakemus/paatostiedot/constants';
-import { getPaatosTietoDropdownOptions } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+import {
+  getPaatosTietoDropdownOptions,
+  getTiettyTutkintoTaiOpinnotAdditionalOptions,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
 import { useAsiointiKieli } from '@/src/hooks/useAsiointikieli';
@@ -109,10 +112,17 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           asiointikieli,
           paatosTietoOptions.riittavatOpinnotOptions,
         )
-      : getPaatosTietoDropdownOptions(
-          asiointikieli,
-          paatosTietoOptions.tiettyTutkintoTaiOpinnotOptions,
-        );
+      : (() => {
+          const options = getPaatosTietoDropdownOptions(
+            asiointikieli,
+            paatosTietoOptions.tiettyTutkintoTaiOpinnotOptions,
+          );
+          return [
+            ...options.slice(0, -1),
+            ...getTiettyTutkintoTaiOpinnotAdditionalOptions(t),
+            ...options.slice(-1),
+          ];
+        })();
 
   const updateTutkintoTaiOpintoFieldAction = (fieldVal: string) => {
     const tobeTutkinto = { ...tutkintoTaiOpinto };
