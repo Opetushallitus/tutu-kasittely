@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { Link } from 'react-router-dom';
 
 import SivuValinta, { SelectedPage } from '@/src/app/components/SivuValinta';
 import YkMainPage from '@/src/app/yhteinenKasittely/YkMainPage';
@@ -44,7 +45,8 @@ export default function YkPage() {
                 showNotification={hasMessages}
               />
               <OphButton
-                href="/maajako"
+                component={Link}
+                to={'/maajako'}
                 variant="text"
                 sx={{ fontWeight: 400 }}
               >
