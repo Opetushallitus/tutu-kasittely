@@ -407,12 +407,16 @@ def bindExtractTutkintoTaiOpinto(
   def next(node: TutkintoTaiOpinto): Option[String] = {
     val nimi: Option[String] = node.tutkintoTaiOpinto
       .map(_.split("_"))
-      .map(_.last)
+      .map(_.mkString(", "))
+    val opetuskieliLabel: String =
+      translationService.getTranslation(FI, "perustelumuistio.tutkintoTaiOpinto.opetuskieli.label")
+    val opetuskieli: Option[String]      = node.opetuskieli.map(value => s"$opetuskieliLabel\n- $value")
     val myonteinenPaatos: Option[String] = haeMyonteinenTaiKielteinen(translationService, node.myonteinenPaatos)
 
     val result =
       Seq(
         nimi,
+        opetuskieli,
         myonteinenPaatos
       ).flatten.mkString("\n").trim
 
@@ -431,24 +435,36 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
       Option.when(node.taydentavatOpinnot)(
         translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.taydentavatOpinnot")
       ),
-      Option.when(node.kelpoisuuskoe)(
-        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe")
-      ),
       Option.when(node.sopeutumisaika)(
         translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.sopeutumisaika")
       ),
-      Option.when(node.opettajuuttaTutkimassa)(
+      Option.when(node.kelpoisuuskoe)(
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe")
+      ),
+      Option.when(node.kelpoisuuskoe && (node.opettajuuttaTutkimassa || node.suomalainenKoulu || node.opetusNayte))(
         translationService.getTranslation(
           FI,
-          "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opettajuuttaTutkimassa"
+          "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kelpoisuuskoe.aihealue.label"
         )
       ),
-      Option.when(node.suomalainenKoulu)(
-        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.suomalainenKoulu")
-      ),
-      Option.when(node.opetusNayte)(
-        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opetusNayte")
-      )
+      Option
+        .when(node.opettajuuttaTutkimassa)(
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opettajuuttaTutkimassa"
+          )
+        )
+        .map(value => s"- $value"),
+      Option
+        .when(node.suomalainenKoulu)(
+          translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.suomalainenKoulu")
+        )
+        .map(value => s"- $value"),
+      Option
+        .when(node.opetusNayte)(
+          translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opetusNayte")
+        )
+        .map(value => s"- $value")
     ).flatten
 
     if (result.nonEmpty) {
