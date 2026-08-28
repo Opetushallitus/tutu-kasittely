@@ -1,234 +1,86 @@
-import { Info } from '@mui/icons-material';
-import { FormGroup, Paper, Stack } from '@mui/material';
+import { FormGroup, Stack } from '@mui/material';
 import {
   OphCheckbox,
-  ophColors,
   OphFormFieldWrapper,
   OphRadioGroup,
-  OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React, { useMemo } from 'react';
 
+import { SovellettuTilanneOikeustieteenMaisteri } from './oikeustieteenmaisteri/SovellettuTilanneOikeustieteenMaisteri';
+
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
+import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/Info';
 import { MyonteinenPaatosProps } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
-import { SovellettuTilanneOikeustieteenMaisteri } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/SovellettuTilanneOikeustieteenMaisteri';
+import { SovellettuTilanneSelection } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
-  SovellettuTilanneSelection,
-  SovellettuTilanneOption,
-} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
-import {
-  KoulutusEroModel,
-  KoulutusEroTarkennukset,
-  OIKEUSTIETEEN_MAISTERI_KEYS,
-  OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
-} from '@/src/app/hakemus/paatostiedot/constants';
+  AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
+  EROT_KOULUTUKSESSA_BY_ENTITY,
+  KEYWORDS_BY_TUTKINTO_TAI_OPINTO,
+  ResolvedEntity,
+  shouldShowLisavalinnat,
+  shouldShowOsaamisenTaydentamisenTavat,
+  SOVELLETTU_TILANNE_BY_ENTITY,
+  SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS,
+  translationForEroTarkennus,
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
 import {
   emptyErotKoulutuksessaForModel,
   initOrUpdateErotKoulutuksessa,
   setKoulutusEroValues,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { NamedBoolean } from '@/src/lib/types/common';
 import {
   AmmattikokemuksenHuomioiminen,
+  ErotKoulutuksessa,
   KorvaavaToimenpide,
+  MyonteisenPaatoksenLisavaatimukset,
+  MyonteisenPaatoksenLisavaatimusUpdateCallback,
   SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 
-enum ResolvedEntity {
-  oikeustieteenMaisteri,
-  opetettavaAine,
-  opettajanPedagogisetOpinnot,
-  erityisopetus,
-  oppilasJaOpintoOhjaus,
-  kasvatustieteellinenAla,
-  sosiaaliJaTerveysAla,
-  monialaisetOpinnot,
-  ammatillisetValmiudet,
-  muu,
-}
-
-const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
-  {
-    tutkintoTaiOpinto: ResolvedEntity.oikeustieteenMaisteri,
-    keywords: OIKEUSTIETEEN_MAISTERI_KEYS,
-  },
-  { tutkintoTaiOpinto: ResolvedEntity.opetettavaAine, keywords: [] },
-  {
-    tutkintoTaiOpinto: ResolvedEntity.opettajanPedagogisetOpinnot,
-    keywords: OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
-  },
-  { tutkintoTaiOpinto: ResolvedEntity.erityisopetus, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.oppilasJaOpintoOhjaus, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.kasvatustieteellinenAla, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.sosiaaliJaTerveysAla, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.monialaisetOpinnot, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.ammatillisetValmiudet, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.muu, keywords: [] },
-];
-
-const SOVELLETTU_TILANNE_BY_ENTITY: Record<
-  ResolvedEntity,
-  SovellettuTilanneOption[]
-> = {
-  [ResolvedEntity.oikeustieteenMaisteri]: [
-    { value: '1' },
-    { value: '1a' },
-    { value: '1b' },
-    { value: '2' },
-    { value: '2a' },
-    { value: '3' },
-    { value: '4' },
-    { value: '4a' },
-    { value: 'muu', tKey: 'muuOikeustieteenMaisteri' },
-  ],
-  [ResolvedEntity.opetettavaAine]: [],
-  [ResolvedEntity.opettajanPedagogisetOpinnot]: [
-    { value: 'pedagogiset1', tKey: 'pedagogiset', ordinal: '1' },
-    { value: 'pedagogiset2', tKey: 'pedagogiset', ordinal: '2' },
-    { value: 'pedagogiset3', tKey: 'pedagogiset', ordinal: '3' },
-  ],
-  [ResolvedEntity.erityisopetus]: [],
-  [ResolvedEntity.oppilasJaOpintoOhjaus]: [],
-  [ResolvedEntity.kasvatustieteellinenAla]: [],
-  [ResolvedEntity.sosiaaliJaTerveysAla]: [],
-  [ResolvedEntity.monialaisetOpinnot]: [],
-  [ResolvedEntity.ammatillisetValmiudet]: [],
-  [ResolvedEntity.muu]: [],
-};
-
-const eroModel = (
-  eroLkm: number,
-  tarkennukset?: KoulutusEroTarkennukset,
-): KoulutusEroModel => {
-  return {
-    id: '',
-    yleisetErot: [],
-    sisaltaaMuuEro: false,
-    kelpoisuusKohtainenEroLkm: eroLkm,
-    kelpoisuusKohtainenEroTarkennukset: tarkennukset,
-  };
-};
-
-const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
-  ResolvedEntity,
-  KoulutusEroModel | undefined
-> = {
-  [ResolvedEntity.oikeustieteenMaisteri]: undefined,
-  [ResolvedEntity.opetettavaAine]: undefined,
-  [ResolvedEntity.opettajanPedagogisetOpinnot]: eroModel(2),
-  [ResolvedEntity.erityisopetus]: undefined,
-  [ResolvedEntity.oppilasJaOpintoOhjaus]: undefined,
-  [ResolvedEntity.kasvatustieteellinenAla]: undefined,
-  [ResolvedEntity.sosiaaliJaTerveysAla]: undefined,
-  [ResolvedEntity.monialaisetOpinnot]: undefined,
-  [ResolvedEntity.ammatillisetValmiudet]: undefined,
-  [ResolvedEntity.muu]: undefined,
-};
-
-const AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
-  [
-    'SuomessaHankittuKokonaan',
-    'SuomessaHankittuOsittain',
-    'UlkomaillaHankittuKokonaan',
-    'UlkomaillaHankittuOsittain',
-    'SuomessaJaUlkomaillaHankittuKokonaan',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-    'EiHuomioida',
-  ];
-
-const TAYSI_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> = [
-  'SuomessaHankittuKokonaan',
-  'UlkomaillaHankittuKokonaan',
-  'SuomessaJaUlkomaillaHankittuKokonaan',
-];
-
-const OSITTAINEN_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
-  [
-    'SuomessaHankittuOsittain',
-    'UlkomaillaHankittuOsittain',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-  ];
-
-const SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<SuomessaSuoritettujenOpintojenHuomioiminen> =
-  ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
-
-export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
-  MyonteinenPaatosProps
-> = ({
-  t,
+const Lisavalinnat = ({
   updateLisavaatimukset,
-  tutkintoTaiOpinto,
   lisavaatimukset,
-}: MyonteinenPaatosProps) => {
-  const { selectedEntity, sovellettuTilanneOptions, erotKoulutuksessa } =
-    useMemo(() => {
-      const entity =
-        KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find((item) =>
-          item.keywords.some((kw) => (tutkintoTaiOpinto ?? '').includes(kw)),
-        )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
-      const koulutusEroModel = EROT_KOULUTUKSESSA_BY_ENTITY[entity];
-      const erotKoulutuksessa = koulutusEroModel
-        ? initOrUpdateErotKoulutuksessa(
-            emptyErotKoulutuksessaForModel(koulutusEroModel),
-            lisavaatimukset?.erotKoulutuksessa,
-          )
-        : undefined;
-
-      return {
-        selectedEntity: entity,
-        sovellettuTilanneOptions: SOVELLETTU_TILANNE_BY_ENTITY[entity],
-        erotKoulutuksessa: erotKoulutuksessa,
-      };
-    }, [tutkintoTaiOpinto, lisavaatimukset?.erotKoulutuksessa]);
+  t,
+  selectedEntity,
+  erotKoulutuksessa,
+}: {
+  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
+  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
+  t: TFunction;
+  selectedEntity: ResolvedEntity;
+  erotKoulutuksessa: ErotKoulutuksessa | undefined;
+}) => {
+  const showLisavalinnat = useMemo(() => {
+    return shouldShowLisavalinnat(
+      selectedEntity,
+      lisavaatimukset?.sovellettuTilanne,
+    );
+  }, [selectedEntity, lisavaatimukset?.sovellettuTilanne]);
 
   const showOsaamisenTaydentamisenTavat = useMemo(() => {
-    const ammattikokemus = lisavaatimukset?.ammattikokemuksenHuomioiminen;
-    const suomiOpinnot =
-      lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen;
-    return (
-      ((ammattikokemus &&
-        OSITTAINEN_AMMATTIKOKEMUS_OPTIONS.includes(ammattikokemus)) ||
-        suomiOpinnot === 'KorvaavatOsittain') &&
-      !(
-        (ammattikokemus &&
-          TAYSI_AMMATTIKOKEMUS_OPTIONS.includes(ammattikokemus)) ||
-        suomiOpinnot === 'KorvaavatKokonaan'
-      )
+    return shouldShowOsaamisenTaydentamisenTavat(
+      selectedEntity,
+      lisavaatimukset?.ammattikokemuksenHuomioiminen,
+      lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
     );
   }, [
+    selectedEntity,
     lisavaatimukset?.ammattikokemuksenHuomioiminen,
     lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
   ]);
 
-  const sovellettuTilanneSelection = (
-    <SovellettuTilanneSelection
-      t={t}
-      sovellettuTilanne={lisavaatimukset?.sovellettuTilanne}
-      sovellettuTilanneOptions={sovellettuTilanneOptions}
-      updateCb={(st) =>
-        updateLisavaatimukset({ ...lisavaatimukset, sovellettuTilanne: st })
-      }
-    />
-  );
-
-  if (selectedEntity === ResolvedEntity.oikeustieteenMaisteri) {
+  if (!showLisavalinnat) {
     return (
-      <Stack gap={3}>
-        {sovellettuTilanneSelection}
-        {lisavaatimukset?.sovellettuTilanne && (
-          <SovellettuTilanneOikeustieteenMaisteri
-            t={t}
-            lisavaatimukset={lisavaatimukset}
-            updateLisavaatimukset={updateLisavaatimukset}
-          />
-        )}
-      </Stack>
+      <InFoTeksti
+        infoTeksti={t('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja')}
+      />
     );
   }
 
   return (
-    <Stack gap={3}>
-      {sovellettuTilanneSelection}
+    <>
       {erotKoulutuksessa && (
         <OphFormFieldWrapper
           renderInput={({ labelId }) => (
@@ -263,7 +115,8 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
                             <OphCheckbox
                               key={tarkennus.name}
                               data-testid={`erotKoulutuksessa-${ero.name}-${tarkennus.name}`}
-                              label={t(
+                              label={translationForEroTarkennus(
+                                t,
                                 `hakemus.paatos.myonteinenPaatos.uo.erotKoulutuksessa.${ResolvedEntity[selectedEntity]}.${ero.name}.${tarkennus.name}`,
                               )}
                               checked={tarkennus.value}
@@ -402,26 +255,77 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
       {lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
         'EiHuomioida' &&
         lisavaatimukset?.ammattikokemuksenHuomioiminen === 'EiHuomioida' && (
-          <Paper
-            square
-            variant={'outlined'}
-            sx={{
-              padding: 2,
-              display: 'flex',
-              gap: 1,
-              flexDirection: 'row',
-              backgroundColor: `${ophColors.blue2}0A`,
-              borderColor: `${ophColors.blue2}0A`,
-            }}
-          >
-            <Info sx={{ color: ophColors.blue2 }} />
-            <OphTypography>
-              {t(
-                'hakemus.paatos.myonteinenPaatos.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
-              )}
-            </OphTypography>
-          </Paper>
+          <InFoTeksti
+            infoTeksti={t(
+              'hakemus.paatos.myonteinenPaatos.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
+            )}
+          />
         )}
+    </>
+  );
+};
+
+export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
+  MyonteinenPaatosProps
+> = ({
+  t,
+  updateLisavaatimukset,
+  tutkintoTaiOpinto,
+  lisavaatimukset,
+}: MyonteinenPaatosProps) => {
+  const { selectedEntity, sovellettuTilanneOptions, erotKoulutuksessa } =
+    useMemo(() => {
+      const entity =
+        KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find((item) =>
+          item.keywords.some((kw) => (tutkintoTaiOpinto ?? '').includes(kw)),
+        )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
+      const koulutusEroModel = EROT_KOULUTUKSESSA_BY_ENTITY[entity];
+      const erotKoulutuksessa = koulutusEroModel
+        ? initOrUpdateErotKoulutuksessa(
+            emptyErotKoulutuksessaForModel(koulutusEroModel),
+            lisavaatimukset?.erotKoulutuksessa,
+          )
+        : undefined;
+
+      return {
+        selectedEntity: entity,
+        sovellettuTilanneOptions: SOVELLETTU_TILANNE_BY_ENTITY[entity],
+        erotKoulutuksessa: erotKoulutuksessa,
+      };
+    }, [tutkintoTaiOpinto, lisavaatimukset?.erotKoulutuksessa]);
+
+  const sovellettuTilanneSetOrNotNeeded =
+    lisavaatimukset?.sovellettuTilanne || sovellettuTilanneOptions.length === 0;
+
+  return (
+    <Stack gap={3}>
+      <SovellettuTilanneSelection
+        t={t}
+        sovellettuTilanne={lisavaatimukset?.sovellettuTilanne}
+        sovellettuTilanneOptions={sovellettuTilanneOptions}
+        updateCb={(st) =>
+          updateLisavaatimukset({ ...lisavaatimukset, sovellettuTilanne: st })
+        }
+      />
+      {sovellettuTilanneSetOrNotNeeded && (
+        <>
+          {selectedEntity === ResolvedEntity.oikeustieteenMaisteri ? (
+            <SovellettuTilanneOikeustieteenMaisteri
+              t={t}
+              lisavaatimukset={lisavaatimukset}
+              updateLisavaatimukset={updateLisavaatimukset}
+            />
+          ) : (
+            <Lisavalinnat
+              lisavaatimukset={lisavaatimukset}
+              updateLisavaatimukset={updateLisavaatimukset}
+              t={t}
+              selectedEntity={selectedEntity}
+              erotKoulutuksessa={erotKoulutuksessa}
+            />
+          )}
+        </>
+      )}
     </Stack>
   );
 };

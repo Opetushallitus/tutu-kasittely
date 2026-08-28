@@ -144,7 +144,7 @@ export const OpintopisteTaulukko = ({
         </TableRow>
         {vaadittuEurooppaOpinto && (
           <TableRow data-testid="opintopiste-taulukko-rivi-eurooppaOpinnot">
-            <LabelCell t={t} labelId="eurooppaOpinnot" />
+            <LabelCell t={t} labelId="eurooppaOpinnotLyhytNimi" />
             <OpCell val={vaadittuEurooppaOpinto} />
             <OpCell val={eurooppaOpintojenLaajuus ?? 0} />
             <OpCell

@@ -654,6 +654,12 @@ export const OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS = [
   'Teacher’s pedagogical studies',
 ];
 
+export const OPETETTAVAN_AINEEN_OPINNOT_KEYS = [
+  'Opetettavan aineen opinnot',
+  'Studier i ämnet som ska undervisas',
+  'Studies in a teaching subject',
+];
+
 export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'velvoiteOikeus',
   'esineOikeus',

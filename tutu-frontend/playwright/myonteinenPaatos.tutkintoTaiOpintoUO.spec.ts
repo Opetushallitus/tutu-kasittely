@@ -11,6 +11,8 @@ const PAGE_URL =
   '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/paatostiedot';
 const PAATOS_URL = '/paatos/';
 const PEDAGOGISET_OPINNOT = 'Opettajan pedagogiset opinnot';
+const OPETETTAVAN_AINEEN_OPINNOT_MATEMATIIKKA =
+  'Opetettavan aineen opinnot_matematiikka';
 
 const AMMATTIKOKEMUS_OSITTAIN_OPTIONS = [
   'SuomessaHankittuOsittain',
@@ -18,10 +20,31 @@ const AMMATTIKOKEMUS_OSITTAIN_OPTIONS = [
   'SuomessaJaUlkomaillaHankittuOsittain',
 ] as const;
 
+async function navigateToMyonteinenPaatosUOWithoutSovellettuTilanne(
+  page: Page,
+): Promise<void> {
+  await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
+    page,
+    PEDAGOGISET_OPINNOT,
+  );
+}
+
 async function navigateToMyonteinenPaatosUO(page: Page): Promise<void> {
   await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
     page,
     PEDAGOGISET_OPINNOT,
+    'pedagogiset1',
+  );
+}
+
+async function navigateToMyonteinenPaatosUOOpetettavaAine(
+  page: Page,
+  sovellettuTilanne: string,
+): Promise<void> {
+  await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
+    page,
+    OPETETTAVAN_AINEEN_OPINNOT_MATEMATIIKKA,
+    sovellettuTilanne,
   );
 }
 
@@ -35,7 +58,7 @@ test.describe('Sovellettu tilanne', () => {
   test('Sovellettu tilanne -dropdownissa kolme pedagogiset-vaihtoehtoa', async ({
     page,
   }) => {
-    await navigateToMyonteinenPaatosUO(page);
+    await navigateToMyonteinenPaatosUOWithoutSovellettuTilanne(page);
 
     await page
       .getByTestId('myonteinenPaatos-uo-sovellettuTilanne-select')
@@ -48,7 +71,7 @@ test.describe('Sovellettu tilanne', () => {
   test('Sovellettu tilanne -valinta lähettää PUT-kutsun oikeilla tiedoilla', async ({
     page,
   }) => {
-    await navigateToMyonteinenPaatosUO(page);
+    await navigateToMyonteinenPaatosUOWithoutSovellettuTilanne(page);
 
     await expectDataFromDropdownSelection(
       page,
@@ -648,5 +671,169 @@ test.describe('Info-ilmoitus', () => {
         'hakemus.paatos.myonteinenPaatos.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
       ),
     ).toBeHidden();
+  });
+});
+
+test.describe('Opetettavan aineen opinnot: eiKoulutusEroja-ilmoitus', () => {
+  for (const sovellettuTilanne of ['aine1', 'aine4']) {
+    test(`näytetään sovelletulla tilanteella ${sovellettuTilanne}`, async ({
+      page,
+    }) => {
+      await navigateToMyonteinenPaatosUOOpetettavaAine(page, sovellettuTilanne);
+
+      await expect(
+        page.getByText('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja'),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+      ).toBeHidden();
+    });
+  }
+
+  test('ei näytetä muulla sovelletulla tilanteella (aine2)', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOOpetettavaAine(page, 'aine2');
+
+    await expect(
+      page.getByText('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja'),
+    ).toBeHidden();
+    await expect(
+      page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+    ).toBeVisible();
+  });
+});
+
+test.describe('Opetettavan aineen opinnot: erotKoulutuksessa-tarkennukset', () => {
+  test('neljä eroa näytetään', async ({ page }) => {
+    await navigateToMyonteinenPaatosUOOpetettavaAine(page, 'aine2');
+
+    for (const eroName of ['ero1', 'ero2', 'ero3', 'ero4']) {
+      await expect(
+        page.getByTestId(`myonteinenPaatos-uo-erotKoulutuksessa-${eroName}`),
+      ).toBeVisible();
+    }
+  });
+
+  test('eron valinta avaa tarkennusvalintaruudut ja lähettää PUT-kutsun oikealla erot-taulukolla', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOOpetettavaAine(page, 'aine2');
+
+    const tarkennus1Checkbox = page.getByTestId(
+      'erotKoulutuksessa-ero1-tarkennus1',
+    );
+    const tarkennus2Checkbox = page.getByTestId(
+      'erotKoulutuksessa-ero1-tarkennus2',
+    );
+
+    await expect(tarkennus1Checkbox).toBeHidden();
+    await expect(tarkennus2Checkbox).toBeHidden();
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1').click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  erotKoulutuksessa: {
+                    erot: [
+                      { name: 'ero1', value: true },
+                      { name: 'ero2', value: false },
+                      { name: 'ero3', value: false },
+                      { name: 'ero4', value: false },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    await expect(tarkennus1Checkbox).toBeVisible();
+    await expect(tarkennus2Checkbox).toBeVisible();
+  });
+
+  test('tarkennuksen valinta lähettää PUT-kutsun oikealla tarkennustaulukolla', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOOpetettavaAine(page, 'aine2');
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1').click(),
+      {},
+    );
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page.getByTestId('erotKoulutuksessa-ero1-tarkennus1').click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  erotKoulutuksessa: {
+                    eroTarkennukset: {
+                      ero1: [
+                        { name: 'tarkennus1', value: true },
+                        { name: 'tarkennus2', value: false },
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
+  test('tarkennuksen poistaminen lähettää PUT-kutsun', async ({ page }) => {
+    await navigateToMyonteinenPaatosUOOpetettavaAine(page, 'aine2');
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1').click(),
+      {},
+    );
+
+    const tarkennus1Checkbox = page.getByTestId(
+      'erotKoulutuksessa-ero1-tarkennus1',
+    );
+
+    await expectRequestData(page, PAATOS_URL, tarkennus1Checkbox.click(), {});
+
+    await expectRequestData(page, PAATOS_URL, tarkennus1Checkbox.click(), {
+      paatosTiedot: [
+        {
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              myonteisenPaatoksenLisavaatimukset: {
+                erotKoulutuksessa: {
+                  eroTarkennukset: {
+                    ero1: [
+                      { name: 'tarkennus1', value: false },
+                      { name: 'tarkennus2', value: false },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
   });
 });

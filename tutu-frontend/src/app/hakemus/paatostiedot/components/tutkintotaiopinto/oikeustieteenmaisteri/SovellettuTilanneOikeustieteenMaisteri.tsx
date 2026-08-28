@@ -1,13 +1,13 @@
-import { Info, InfoOutlined } from '@mui/icons-material';
+import { InfoOutlined } from '@mui/icons-material';
 import { Stack } from '@mui/material';
 import {
-  ophColors,
   OphFormFieldWrapper,
   OphInputFormField,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/Info';
 import { EurooppaOpinnot } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/EurooppaOpinnot';
 import { OpintoOptionWithLaajuusInput } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintoOptionWithLaajuusInput';
 import { OpintopisteTaulukko } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintopisteTaulukko';
@@ -39,24 +39,6 @@ const Tayttoohje = ({ t }: { t: TFunction }) => {
       <InfoOutlined />
       <OphTypography>
         {t('hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.tayttoOhje')}
-      </OphTypography>
-    </Stack>
-  );
-};
-
-const Huomautus = ({ t }: { t: TFunction }) => {
-  return (
-    <Stack
-      direction="row"
-      gap={1}
-      padding={2}
-      sx={{ backgroundColor: `${ophColors.blue2}0A` }}
-    >
-      <Info sx={{ color: ophColors.blue2 }} />
-      <OphTypography>
-        {t(
-          'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vahimmaismaaraHuomautus',
-        )}
       </OphTypography>
     </Stack>
   );
@@ -226,7 +208,11 @@ export const SovellettuTilanneOikeustieteenMaisteri = ({
                 ?.suomiOpintojenLaajuus
             }
           />
-          <Huomautus t={t} />
+          <InFoTeksti
+            infoTeksti={t(
+              'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vahimmaismaaraHuomautus',
+            )}
+          />
         </>
       )}
     </Stack>
