@@ -16,7 +16,7 @@ class YkViestiRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiRepository])
 
   implicit val getYkViestiListItemResult: GetResult[YkViesti] =
     GetResult(r =>

@@ -42,6 +42,7 @@ import ReactQueryClientProvider from '@/src/components/providers/ReactQueryClien
 import { Toaster } from '@/src/components/Toaster';
 import {
   BASE_NAME,
+  isProd,
   isTest,
   raamitUrl,
 } from '@/src/lib/configuration/configuration';
@@ -128,5 +129,9 @@ const router = createBrowserRouter(
 );
 
 export default function App() {
+  if (window.location.pathname === '/' && !isProd()) {
+    window.location.replace(BASE_NAME);
+  }
+
   return <RouterProvider router={router} />;
 }

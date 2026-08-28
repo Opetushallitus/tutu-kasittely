@@ -181,6 +181,10 @@ object AuditOperation {
     val name = "PAATOSTEKSTIN_LUONTI"
   }
 
+  case object CreateValitustiedot extends AuditOperation {
+    val name = "VALITUSTIEDOT_LUONTI"
+  }
+
   // Päivitys operaatiot
 
   case object UpdateHakemus extends AuditOperation {
@@ -241,6 +245,10 @@ object AuditOperation {
 
   case object UpdatePaatosteksti extends AuditOperation {
     val name = "PAATOSTEKSTIN_PAIVITYS"
+  }
+
+  case object UpdateValitustiedot extends AuditOperation {
+    val name = "VALITUSTIEDOT_PAIVITYS"
   }
 
   // Luku operaatiot
@@ -327,6 +335,10 @@ object AuditOperation {
 
   case object ReadPaatospohjaKategoriat extends AuditOperation {
     val name = "PAATOSPOHJA_KATEGORIAT_LUKU"
+  }
+
+  case object ReadValitustiedot extends AuditOperation {
+    val name = "VALITUSTIEDOT_READ"
   }
 
   // Poisto operaatiot

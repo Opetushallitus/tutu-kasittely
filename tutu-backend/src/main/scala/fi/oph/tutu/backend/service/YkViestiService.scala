@@ -16,7 +16,7 @@ class YkViestiService(
   ykViestiRepository: YkViestiRepository,
   onrService: OnrService
 ) extends TutuJsonFormats {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusService])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiService])
 
   def isYkViesteja(
     userOid: String
