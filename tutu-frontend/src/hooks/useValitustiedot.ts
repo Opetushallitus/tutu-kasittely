@@ -9,11 +9,15 @@ import { Valitustiedot } from '@/src/lib/types/valitustiedot';
 const getValitustiedot = async (
   hakemusOid: string | undefined,
 ): Promise<Valitustiedot> => {
-  return await doApiFetch(`valitustiedot/${hakemusOid}`, undefined, 'no-store');
+  return await doApiFetch(
+    `hakemus/${hakemusOid}/valitustiedot`,
+    undefined,
+    'no-store',
+  );
 };
 
 const putValitustiedot = (hakemusOid: string, valitustiedot: Valitustiedot) => {
-  return doApiPut(`valitustiedot/${hakemusOid}`, valitustiedot);
+  return doApiPut(`hakemus/${hakemusOid}/valitustiedot`, valitustiedot);
 };
 
 export const useValitustiedot = (hakemusOid?: string) => {

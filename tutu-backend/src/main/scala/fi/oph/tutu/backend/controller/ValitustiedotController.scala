@@ -33,7 +33,7 @@ class ValitustiedotController(
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
   @GetMapping(
-    path = Array("valitustiedot/{hakemusOid}"),
+    path = Array("hakemus/{hakemusOid}/valitustiedot"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def getValitustiedot(
@@ -41,7 +41,6 @@ class ValitustiedotController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      val user = userService.getEnrichedUserDetails(true)
       valitustiedotService.haeValitustiedot(HakemusOid(hakemusOid))
     } match {
       case Success(result) =>
@@ -70,7 +69,7 @@ class ValitustiedotController(
   }
 
   @PutMapping(
-    path = Array("valitustiedot/{hakemusOid}"),
+    path = Array("hakemus/{hakemusOid}/valitustiedot"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE),
     consumes = Array(MediaType.APPLICATION_JSON_VALUE)
   )
@@ -131,7 +130,7 @@ class ValitustiedotController(
           case _ =>
             LOG.warn(s"Valitustietojen tallennus epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(
-              "Viestin tallennus epäonnistui",
+              "Valitustietojen tallennus epäonnistui",
               HttpStatus.INTERNAL_SERVER_ERROR
             )
         }

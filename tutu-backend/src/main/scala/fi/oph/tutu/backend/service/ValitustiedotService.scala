@@ -5,6 +5,8 @@ import fi.oph.tutu.backend.repository.{HakemusRepository, ValitustiedotRepositor
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
+import java.util.UUID
+
 @Component
 @Service
 class ValitustiedotService(
@@ -39,8 +41,8 @@ class ValitustiedotService(
     }
   }
 
-  private def paivitaValitustiedot(valitustiedot: Valitustiedot, muokkaaja: String): Option[Valitustiedot] = {
-    valitustiedotRepository.paivitaValitustiedot(valitustiedot, muokkaaja)
+  private def paivitaValitustiedot(id: UUID, valitustiedot: Valitustiedot, muokkaaja: String): Option[Valitustiedot] = {
+    valitustiedotRepository.paivitaValitustiedot(id, valitustiedot, muokkaaja)
   }
 
   def tallennaValitustiedot(
@@ -52,7 +54,7 @@ class ValitustiedotService(
       case Some(oldValitustiedot) =>
         (
           Some(haeNimet(oldValitustiedot)),
-          paivitaValitustiedot(valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt))
+          paivitaValitustiedot(oldValitustiedot.id.get, valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt))
         )
       case None =>
         (None, lisaaValitustiedot(hakemusOid, valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt)))

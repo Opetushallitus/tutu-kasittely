@@ -338,7 +338,7 @@ object AuditOperation {
   }
 
   case object ReadValitustiedot extends AuditOperation {
-    val name = "VALITUSTIEDOT_READ"
+    val name = "VALITUSTIEDOT_LUKU"
   }
 
   // Poisto operaatiot

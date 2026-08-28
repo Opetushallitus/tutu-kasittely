@@ -16,7 +16,7 @@ export type ValitusKHO = {
 
 export type Valitustiedot = {
   id?: string;
-  hakemusId: string;
+  hakemusId?: string;
   valitusOPH: ValitusOPH;
   valitusHO: ValitusHO;
   valitusKHO: ValitusKHO;

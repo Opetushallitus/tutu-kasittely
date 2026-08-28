@@ -68,7 +68,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
       ).head
     } catch {
       case e: Exception =>
-        LOG.error(s"Valitustietojen tallennus epäonnistui: $e")
+        LOG.error(s"Valitustietojen tallennus epäonnistui:", e)
         throw new RuntimeException(
           s"Valitustietojen tallennus epäonnistui: ${e.getMessage}",
           e
@@ -76,7 +76,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
     }
   }
 
-  def paivitaValitustiedot(valitustiedot: Valitustiedot, muokkaaja: String): Option[Valitustiedot] = {
+  def paivitaValitustiedot(id: UUID, valitustiedot: Valitustiedot, muokkaaja: String): Option[Valitustiedot] = {
     try {
       val valitusOPH: String = Serialization.write(valitustiedot.valitusOPH)
       val valitusHO: String  = Serialization.write(valitustiedot.valitusHO)
@@ -91,7 +91,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
             valitus_kho = $valitusKHO::jsonb,
             muokkaaja = $muokkaaja
           WHERE
-            id = ${valitustiedot.id.get.toString}::uuid
+            id = ${id.toString}::uuid
           RETURNING
             id,
             hakemus_id,
@@ -106,7 +106,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
       ).headOption
     } catch {
       case e: Exception =>
-        LOG.error(s"Valitustietojen ${valitustiedot.id} paivitys epäonnistui: $e")
+        LOG.error(s"Valitustietojen ${valitustiedot.id} paivitys epäonnistui:", e)
         throw new RuntimeException(
           s"Valitustietojen paivitys epäonnistui: ${e.getMessage}",
           e
@@ -137,7 +137,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
       ).headOption
     } catch {
       case e: Exception =>
-        LOG.error(s"Valitustietojen haku hakemusOid:lla $hakemusOid epäonnistui: $e")
+        LOG.error(s"Valitustietojen haku hakemusOid:lla $hakemusOid epäonnistui:", e)
         throw new RuntimeException(
           s"Valitustietojen haku epäonnistui: ${e.getMessage}",
           e
