@@ -118,10 +118,6 @@ def haeHakemusKoskeeRivit(
 
     val uudetRivit = values.size match {
       case 0 => alirivit
-      case 1 =>
-        val value = values.head
-        val rivi  = s"$label $value"
-        (level, rivi, fieldType) +: alirivit
       case _ =>
         val labelRivi = (level, label, fieldType)
         val rivit     = values.map(value => (level + 1, value, fieldType))
