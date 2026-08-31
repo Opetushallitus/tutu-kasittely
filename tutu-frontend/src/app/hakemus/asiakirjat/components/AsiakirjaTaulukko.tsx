@@ -105,13 +105,13 @@ const AsiakirjaTableHeader = () => {
   return (
     <TableHead>
       <TableRow>
-        <TableCell sx={{ width: '75%' }}>
+        <TableCell sx={{ width: '70%' }}>
           {t('hakemus.asiakirjat.asiakirja')}
         </TableCell>
-        <TableCell sx={{ width: '20%' }}>
+        <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
           {t('hakemus.asiakirjat.saapunut')}
         </TableCell>
-        <TableCell sx={{ width: '15%' }}>
+        <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
           {t('hakemus.asiakirjat.tarkistuksenTila.otsikko')}
         </TableCell>
       </TableRow>
@@ -125,7 +125,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
   const uusiLiite = isUusiLiite(data);
   return (
     <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
-      <TableCell>
+      <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
         <Stack sx={{ width: '100%' }} gap={theme.spacing(1)}>
           <OphTypography className="asiakirja-row__otsake">
             {lomakeOtsake(data.asiakirja)}
@@ -140,7 +140,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
           </OphTypography>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
         <Stack direction="row" gap={theme.spacing(1)}>
           <OphTypography className="asiakirja-row__saapumisaika">
             {saapumisAika(data.metadata)}
@@ -153,7 +153,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
           )}
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
         <Stack direction="row" gap={theme.spacing(1)}>
           {tarkistuksenTilaIcon(data)}
           <OphTypography className="asiakirja-row__tarkistuksen-tila">
@@ -171,7 +171,7 @@ export const AsiakirjaTaulukko = ({
   asiakirjat: AsiakirjaTaulukkoData[];
 }) => {
   return (
-    <Table style={{ tableLayout: 'fixed', width: '100%' }}>
+    <Table style={{ tableLayout: 'auto', width: '100%' }}>
       <AsiakirjaTableHeader />
       <TableBody>
         {asiakirjat.map((data) => (
