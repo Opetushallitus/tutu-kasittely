@@ -1,5 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { Divider, Stack, Box } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
@@ -7,7 +7,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { HakijanIlmoittamaPopover } from './HakijanIlmoittamaPopover';
+import { HakijanIlmoittamaFieldWrapper } from './HakijanIlmoittamaFieldWrapper';
 import { useHakijanIlmoittamaTieto } from '../hooks/useHakijanIlmoittamaTieto';
 
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
@@ -76,14 +76,6 @@ export const TutkintoComponent = ({
     hakemus?.lomakkeenKieli || 'fi',
   );
 
-  const [nimiAnchorEl, setNimiAnchorEl] = React.useState<HTMLElement | null>(
-    null,
-  );
-  const [oppilaitosAnchorEl, setOppilaitosAnchorEl] =
-    React.useState<HTMLElement | null>(null);
-  const [maaAnchorEl, setMaaAnchorEl] = React.useState<HTMLElement | null>(
-    null,
-  );
   const { showConfirmation } = useGlobalConfirmationModal();
 
   const updateCurrentTutkinto = (value: Tutkinto) => {
@@ -143,7 +135,11 @@ export const TutkintoComponent = ({
           'aria-label': t('hakemus.tutkinnot.tutkinto.tutkintoTodistusOtsikko'),
         }}
       />
-      <Stack direction="column" gap={0.5}>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.nimi}
+        linkTestId={`tutkinto-nimi-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
         <OphInputFormField
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimi')}
           onChange={(event) =>
@@ -158,24 +154,49 @@ export const TutkintoComponent = ({
             'data-testid': `tutkinto-tutkintonimi-${tutkinto.jarjestys}`,
           }}
         />
-        <Box>
-          <OphButton
-            variant="text"
-            size="small"
-            sx={{
-              padding: 0,
-              minWidth: 'auto',
-              textTransform: 'none',
-              color: 'primary.main',
-              fontWeight: 400,
-            }}
-            onClick={(event) => setNimiAnchorEl(event.currentTarget)}
-            data-testid={`tutkinto-nimi-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
-          >
-            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
-          </OphButton>
-        </Box>
-      </Stack>
+      </HakijanIlmoittamaFieldWrapper>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.nimiAlkuperaiskielella}
+        linkTestId={`tutkinto-nimi-alkuperaiskieli-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
+        <OphInputFormField
+          label={t(
+            'hakemus.tutkinnot.tutkinto.tutkinnonNimiAlkuperaiskielella',
+          )}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...tutkinto,
+              nimiAlkuperaiskielella: event.target.value,
+            })
+          }
+          multiline={true}
+          value={tutkinto.nimiAlkuperaiskielella ?? ''}
+          inputProps={{
+            'data-testid': `tutkinto-tutkintonimi-alkuperaiskieli-${tutkinto.jarjestys}`,
+          }}
+        />
+      </HakijanIlmoittamaFieldWrapper>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.nimiKaannoksessa}
+        linkTestId={`tutkinto-nimi-kaannos-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
+        <OphInputFormField
+          label={t('hakemus.tutkinnot.tutkinto.tutkinnonNimiKaannoksessa')}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...tutkinto,
+              nimiKaannoksessa: event.target.value,
+            })
+          }
+          multiline={true}
+          value={tutkinto.nimiKaannoksessa ?? ''}
+          inputProps={{
+            'data-testid': `tutkinto-tutkintonimi-kaannos-${tutkinto.jarjestys}`,
+          }}
+        />
+      </HakijanIlmoittamaFieldWrapper>
       <OphInputFormField
         label={t('hakemus.tutkinnot.tutkinto.tutkinnonPaaaineTaiErikoisala')}
         onChange={(event) =>
@@ -190,7 +211,11 @@ export const TutkintoComponent = ({
           'data-testid': `tutkinto-paaaine-${tutkinto.jarjestys}`,
         }}
       />
-      <Stack direction="column" gap={0.5}>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.oppilaitos}
+        linkTestId={`tutkinto-oppilaitos-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
         <OphInputFormField
           label={t('hakemus.tutkinnot.tutkinto.oppilaitos')}
           onChange={(event) =>
@@ -205,25 +230,52 @@ export const TutkintoComponent = ({
             'data-testid': `tutkinto-oppilaitos-${tutkinto.jarjestys}`,
           }}
         />
-        <Box>
-          <OphButton
-            variant="text"
-            size="small"
-            sx={{
-              padding: 0,
-              minWidth: 'auto',
-              textTransform: 'none',
-              color: 'primary.main',
-              fontWeight: 400,
-            }}
-            onClick={(event) => setOppilaitosAnchorEl(event.currentTarget)}
-            data-testid={`tutkinto-oppilaitos-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
-          >
-            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
-          </OphButton>
-        </Box>
-      </Stack>
-      <Stack direction="column" gap={0.5}>
+      </HakijanIlmoittamaFieldWrapper>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.oppilaitosAlkuperaiskielella}
+        linkTestId={`tutkinto-oppilaitos-alkuperaiskieli-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
+        <OphInputFormField
+          label={t('hakemus.tutkinnot.tutkinto.oppilaitosAlkuperaiskielella')}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...tutkinto,
+              oppilaitosAlkuperaiskielella: event.target.value,
+            })
+          }
+          multiline={true}
+          value={tutkinto.oppilaitosAlkuperaiskielella ?? ''}
+          inputProps={{
+            'data-testid': `tutkinto-oppilaitos-alkuperaiskieli-${tutkinto.jarjestys}`,
+          }}
+        />
+      </HakijanIlmoittamaFieldWrapper>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.oppilaitosKaannoksessa}
+        linkTestId={`tutkinto-oppilaitos-kaannos-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
+        <OphInputFormField
+          label={t('hakemus.tutkinnot.tutkinto.oppilaitosKaannoksessa')}
+          onChange={(event) =>
+            updateCurrentTutkinto({
+              ...tutkinto,
+              oppilaitosKaannoksessa: event.target.value,
+            })
+          }
+          multiline={true}
+          value={tutkinto.oppilaitosKaannoksessa ?? ''}
+          inputProps={{
+            'data-testid': `tutkinto-oppilaitos-kaannos-${tutkinto.jarjestys}`,
+          }}
+        />
+      </HakijanIlmoittamaFieldWrapper>
+      <HakijanIlmoittamaFieldWrapper
+        hakijanIlmoittamaSisalto={hakijanTieto.maakoodiUri}
+        linkTestId={`tutkinto-maa-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
+        t={t}
+      >
         <OphSelectFormFieldPatched
           placeholder={t('yleiset.valitse')}
           label={t('hakemus.tutkinnot.tutkinto.tutkinnonMaa')}
@@ -241,24 +293,7 @@ export const TutkintoComponent = ({
             'aria-label': t('hakemus.tutkinnot.tutkinto.tutkinnonMaa'),
           }}
         />
-        <Box>
-          <OphButton
-            variant="text"
-            size="small"
-            sx={{
-              padding: 0,
-              minWidth: 'auto',
-              textTransform: 'none',
-              color: 'primary.main',
-              fontWeight: 400,
-            }}
-            onClick={(event) => setMaaAnchorEl(event.currentTarget)}
-            data-testid={`tutkinto-maa-hakijan-ilmoittama-link-${tutkinto.jarjestys}`}
-          >
-            {t('hakemus.tutkinnot.hakijanIlmoittamaTieto.linkki')}
-          </OphButton>
-        </Box>
-      </Stack>
+      </HakijanIlmoittamaFieldWrapper>
       <Stack direction="row" gap={2}>
         <OphInputFormField
           sx={{ width: '25%' }}
@@ -322,21 +357,6 @@ export const TutkintoComponent = ({
           }}
         />
       )}
-      <HakijanIlmoittamaPopover
-        anchorEl={nimiAnchorEl}
-        onClose={() => setNimiAnchorEl(null)}
-        sisalto={hakijanTieto.nimi}
-      />
-      <HakijanIlmoittamaPopover
-        anchorEl={oppilaitosAnchorEl}
-        onClose={() => setOppilaitosAnchorEl(null)}
-        sisalto={hakijanTieto.oppilaitos}
-      />
-      <HakijanIlmoittamaPopover
-        anchorEl={maaAnchorEl}
-        onClose={() => setMaaAnchorEl(null)}
-        sisalto={hakijanTieto.maakoodiUri}
-      />
       <Divider orientation={'horizontal'} />
     </Stack>
   );
