@@ -1,5 +1,6 @@
 import { SovellettuTilanneOption } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
+  ERITYISOPETUS_OPINNOT_KEYS,
   KoulutusEroModel,
   KoulutusEroTarkennukset,
   OIKEUSTIETEEN_MAISTERI_KEYS,
@@ -38,7 +39,10 @@ export const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
     tutkintoTaiOpinto: ResolvedEntity.opettajanPedagogisetOpinnot,
     keywords: OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
   },
-  { tutkintoTaiOpinto: ResolvedEntity.erityisopetus, keywords: [] },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.erityisopetus,
+    keywords: ERITYISOPETUS_OPINNOT_KEYS,
+  },
   { tutkintoTaiOpinto: ResolvedEntity.oppilasJaOpintoOhjaus, keywords: [] },
   { tutkintoTaiOpinto: ResolvedEntity.kasvatustieteellinenAla, keywords: [] },
   { tutkintoTaiOpinto: ResolvedEntity.sosiaaliJaTerveysAla, keywords: [] },
@@ -75,7 +79,11 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
     { value: 'pedagogiset2', tKey: 'pedagogiset', ordinal: '2' },
     { value: 'pedagogiset3', tKey: 'pedagogiset', ordinal: '3' },
   ],
-  [ResolvedEntity.erityisopetus]: [],
+  [ResolvedEntity.erityisopetus]: [
+    { value: 'erityisopetus1', tKey: 'erityisopetus', ordinal: '1' },
+    { value: 'erityisopetus2', tKey: 'erityisopetus', ordinal: '2' },
+    { value: 'erityisopetus3', tKey: 'erityisopetus', ordinal: '3' },
+  ],
   [ResolvedEntity.oppilasJaOpintoOhjaus]: [],
   [ResolvedEntity.kasvatustieteellinenAla]: [],
   [ResolvedEntity.sosiaaliJaTerveysAla]: [],
@@ -109,7 +117,7 @@ export const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
     { parentIdx: 4, lkm: 2 },
   ]),
   [ResolvedEntity.opettajanPedagogisetOpinnot]: eroModel(2),
-  [ResolvedEntity.erityisopetus]: undefined,
+  [ResolvedEntity.erityisopetus]: eroModel(4),
   [ResolvedEntity.oppilasJaOpintoOhjaus]: undefined,
   [ResolvedEntity.kasvatustieteellinenAla]: undefined,
   [ResolvedEntity.sosiaaliJaTerveysAla]: undefined,
