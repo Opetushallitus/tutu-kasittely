@@ -27,7 +27,7 @@ class YkViestiController(
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusController])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 

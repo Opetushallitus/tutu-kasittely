@@ -17,7 +17,7 @@ class TutkintoRepository extends BaseResultHandlers {
   @Autowired
   val db: TutuDatabase = null
 
-  val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusRepository])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[TutkintoRepository])
 
   implicit val getTutkintoResult: GetResult[Tutkinto] =
     GetResult(r =>

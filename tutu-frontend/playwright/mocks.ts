@@ -46,6 +46,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockYhteinenKasittely(page),
     mockTekstipohjaLista(page, 'viestipohja'),
     mockTekstipohjaKategoriat(page, 'viestipohja'),
+    mockValituspohjat(page),
   ]);
 };
 
@@ -948,6 +949,25 @@ export const mockTekstipohjanValinta = (
           body: JSON.stringify(
             sisaltoFails ? { message: 'ei onnaa' } : tekstipohja,
           ),
+        });
+      }
+    },
+  );
+};
+
+export const mockValituspohjat = (page: Page) => {
+  return page.route(
+    `**/tutu-backend/api/hakemus/*/valitustiedot**`,
+    async (route: Route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            valitusOPH: {},
+            valitusHO: {},
+            valitusKHO: {},
+          }),
         });
       }
     },

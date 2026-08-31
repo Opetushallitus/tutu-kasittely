@@ -41,7 +41,7 @@ class PerustelumuistioService(
   translationService: TranslationService
 ) extends TutuJsonFormats
     with IPerustelumuistioService {
-  val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
+  val LOG: Logger = LoggerFactory.getLogger(classOf[PerustelumuistioService])
 
   def generoiPerustelumuistioHakemukselle(
     hakemusOid: HakemusOid
