@@ -660,6 +660,12 @@ export const OPETETTAVAN_AINEEN_OPINNOT_KEYS = [
   'Studies in a teaching subject',
 ];
 
+export const ERITYISOPETUS_OPINNOT_KEYS = [
+  'Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot',
+  'Studier som ger yrkesfärdigheter för uppgifter inom specialundervisning',
+  'Studies providing professional competence for special needs education',
+];
+
 export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'velvoiteOikeus',
   'esineOikeus',

@@ -3,10 +3,9 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import fi.oph.tutu.backend.utils.Utility.{toLocalDateTime, toUtcDateTime}
+import fi.oph.tutu.backend.utils.Utility.toUtcDateTime
 import fi.vm.sade.javautils.nio.cas.{CasClient, CasClientBuilder, CasConfig}
 import org.json4s.*
-import org.json4s.jackson.JsonMethods.*
 import org.json4s.native.JsonMethods.{compact, parse, render}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
