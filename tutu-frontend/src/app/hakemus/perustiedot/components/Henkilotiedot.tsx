@@ -22,7 +22,7 @@ const HenkilotietoGrid = ({
   children: ReactNode | ReactNode[];
 }) => {
   return (
-    <Grid container spacing={theme.spacing(2)} columns={6}>
+    <Grid container spacing={theme.spacing(2)} columns={{ xs: 12, md: 10 }}>
       {children}
     </Grid>
   );
@@ -39,12 +39,12 @@ const HenkilotietoRivi = ({
 }) => {
   return (
     <>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 7 }}>
         <OphTypography variant={'label'}>
           {t(`hakemus.perustiedot.henkilotiedot.${nimi}`)}
         </OphTypography>
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, md: 3 }}>
         <OphTypography data-testid={nimi} variant={'body1'}>
           {arvo}
         </OphTypography>
