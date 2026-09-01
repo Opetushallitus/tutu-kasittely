@@ -153,8 +153,8 @@ const AsiakirjaHookLayer = ({
     sisaltoItemMatchesToAny(item, sisallonSuoratYlatasonOsiot),
   );
   const asiakirjaSisalto = haeAsiakirjat([
-    ...rajattuSisalto,
     ...tutkintoSisalto,
+    ...rajattuSisalto,
   ]);
 
   const {
