@@ -34,12 +34,38 @@ test('Tutkinnot näkyvät oikein', async ({ page }) => {
     'Päälikkö',
   );
 
+  await expect(
+    page.getByTestId('tutkinto-tutkintonimi-alkuperaiskieli-1'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('tutkinto-tutkintonimi-alkuperaiskieli-1'),
+  ).toHaveValue('Head of Department');
+
+  await expect(
+    page.getByTestId('tutkinto-tutkintonimi-kaannos-1'),
+  ).toBeVisible();
+  await expect(page.getByTestId('tutkinto-tutkintonimi-kaannos-1')).toHaveValue(
+    'Osastopäällikkö',
+  );
+
   await expect(page.getByTestId('tutkinto-paaaine-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-paaaine-1')).toHaveText('');
 
   await expect(page.getByTestId('tutkinto-oppilaitos-1')).toBeVisible();
   await expect(page.getByTestId('tutkinto-oppilaitos-1')).toHaveValue(
     'Butan Amattikoulu',
+  );
+
+  await expect(
+    page.getByTestId('tutkinto-oppilaitos-alkuperaiskieli-1'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId('tutkinto-oppilaitos-alkuperaiskieli-1'),
+  ).toHaveValue('Bhutan Vocational School');
+
+  await expect(page.getByTestId('tutkinto-oppilaitos-kaannos-1')).toBeVisible();
+  await expect(page.getByTestId('tutkinto-oppilaitos-kaannos-1')).toHaveValue(
+    'Butanin ammattikoulu',
   );
 
   await expect(page.getByTestId('tutkinto-maa-1')).toBeVisible();
@@ -132,6 +158,12 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
 
   await paattymisvuosi1.fill('2015');
 
+  const nimiAlkuperaiskielella1 = page.getByTestId(
+    'tutkinto-tutkintonimi-alkuperaiskieli-1',
+  );
+  await expect(nimiAlkuperaiskielella1).toBeEditable();
+  await nimiAlkuperaiskielella1.fill('Original Name');
+
   const saveButton = page.getByTestId('save-ribbon-button');
   await expect(saveButton).toBeVisible();
 
@@ -151,6 +183,7 @@ test('Tutkinnon muokkaaminen lähettää oikean datan backendille', async ({
   );
 
   expect(updatedItem.paattymisVuosi).toEqual(2015);
+  expect(updatedItem.nimiAlkuperaiskielella).toEqual('Original Name');
 });
 
 test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', async ({
@@ -242,6 +275,43 @@ test('Hakijan ilmoittama tieto popover toimii', async ({ page }) => {
   await maaLink.click();
   await expect(page.locator('.MuiPopover-paper')).toBeVisible();
   await expect(page.locator('.MuiPopover-paper')).toContainText('Barbados');
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
+
+  const nimiAlkuperaiskieliLink = page.getByTestId(
+    'tutkinto-nimi-alkuperaiskieli-hakijan-ilmoittama-link-1',
+  );
+  await expect(nimiAlkuperaiskieliLink).toBeVisible();
+  await nimiAlkuperaiskieliLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await expect(page.locator('.MuiPopover-paper')).toContainText('');
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
+
+  const nimiKaannosLink = page.getByTestId(
+    'tutkinto-nimi-kaannos-hakijan-ilmoittama-link-1',
+  );
+  await expect(nimiKaannosLink).toBeVisible();
+  await nimiKaannosLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
+
+  const oppilaitosAlkuperaiskieliLink = page.getByTestId(
+    'tutkinto-oppilaitos-alkuperaiskieli-hakijan-ilmoittama-link-1',
+  );
+  await expect(oppilaitosAlkuperaiskieliLink).toBeVisible();
+  await oppilaitosAlkuperaiskieliLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
+  await page.locator('.MuiPopover-paper').getByRole('button').click();
+  await expect(page.locator('.MuiPopover-paper')).toBeHidden();
+
+  const oppilaitosKaannosLink = page.getByTestId(
+    'tutkinto-oppilaitos-kaannos-hakijan-ilmoittama-link-1',
+  );
+  await expect(oppilaitosKaannosLink).toBeVisible();
+  await oppilaitosKaannosLink.click();
+  await expect(page.locator('.MuiPopover-paper')).toBeVisible();
   await page.locator('.MuiPopover-paper').getByRole('button').click();
   await expect(page.locator('.MuiPopover-paper')).toBeHidden();
 });

@@ -3,7 +3,11 @@ export type Tutkinto = {
   hakemusId: string;
   jarjestys: string;
   nimi?: string;
+  nimiAlkuperaiskielella?: string;
+  nimiKaannoksessa?: string;
   oppilaitos?: string;
+  oppilaitosAlkuperaiskielella?: string;
+  oppilaitosKaannoksessa?: string;
   aloitusVuosi?: number;
   paattymisVuosi?: number;
   maakoodiUri?: string;

@@ -160,7 +160,15 @@ class TutkintoControllerTest extends IntegrationTestBase {
       )
 
     val tutkinnot         = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
-    val muutetutTutkinnot = tutkinnot.map(_.copy(nimi = Some("Muutettu nimi")))
+    val muutetutTutkinnot = tutkinnot.map(
+      _.copy(
+        nimi = Some("Muutettu nimi"),
+        nimiAlkuperaiskielella = Some("Muutettu nimi alkuperäiskielellä"),
+        nimiKaannoksessa = Some("Muutettu nimi käännöksessä"),
+        oppilaitosAlkuperaiskielella = Some("Muutettu oppilaitos alkuperäiskielellä"),
+        oppilaitosKaannoksessa = Some("Muutettu oppilaitos käännöksessä")
+      )
+    )
 
     mockMvc
       .perform(
@@ -190,6 +198,20 @@ class TutkintoControllerTest extends IntegrationTestBase {
     val tutkinnot2 = tutkintoRepository.haeTutkinnotHakemusOidilla(hakemusOid)
 
     assertTrue(tutkinnot2.forall(_.nimi.contains("Muutettu nimi")))
+    assertTrue(
+      tutkinnot2.forall(_.nimiAlkuperaiskielella.contains("Muutettu nimi alkuperäiskielellä"))
+    )
+    assertTrue(
+      tutkinnot2.forall(_.nimiKaannoksessa.contains("Muutettu nimi käännöksessä"))
+    )
+    assertTrue(
+      tutkinnot2.forall(
+        _.oppilaitosAlkuperaiskielella.contains("Muutettu oppilaitos alkuperäiskielellä")
+      )
+    )
+    assertTrue(
+      tutkinnot2.forall(_.oppilaitosKaannoksessa.contains("Muutettu oppilaitos käännöksessä"))
+    )
   }
 
   @Test

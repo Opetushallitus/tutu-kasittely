@@ -26,7 +26,11 @@ class TutkintoRepository extends BaseResultHandlers {
         hakemusId = UUID.fromString(r.nextString()),
         jarjestys = r.nextString(),
         nimi = r.nextStringOption(),
+        nimiAlkuperaiskielella = r.nextStringOption(),
+        nimiKaannoksessa = r.nextStringOption(),
         oppilaitos = r.nextStringOption(),
+        oppilaitosAlkuperaiskielella = r.nextStringOption(),
+        oppilaitosKaannoksessa = r.nextStringOption(),
         aloitusVuosi = r.nextIntOption(),
         paattymisVuosi = r.nextIntOption(),
         maakoodiUri = r.nextStringOption(),
@@ -46,28 +50,36 @@ class TutkintoRepository extends BaseResultHandlers {
     )
 
   def lisaaTutkinto(tutkinto: Tutkinto, luoja: String): DBIO[Int] = {
-    val hakemusId                   = tutkinto.hakemusId
-    val nimiOrNull                  = tutkinto.nimi.filter(_.nonEmpty).orNull
-    val oppilaitosOrNull            = tutkinto.oppilaitos.filter(_.nonEmpty).orNull
-    val aloitusVuosi                = tutkinto.aloitusVuosi
-    val paattymisVuosi              = tutkinto.paattymisVuosi
-    val maakoodiUri                 = tutkinto.maakoodiUri.filter(_.nonEmpty).orNull
-    val muuTutkintoTietoOrNull      = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
-    val todistuksenPaivamaaraOrNull = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
-    val koulutusalaKoodiUri         = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
-    val paaAineTaiErikoisala        = tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull
-    val todistusOtsikko             = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
-    val muuTutkintoMuistio          = tutkinto.muuTutkintoMuistio.orNull
-    val ohjeellinenLaajuus          = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
-    val opinnaytetyo                = tutkinto.opinnaytetyo
-    val harjoittelu                 = tutkinto.harjoittelu
-    val perustelunLisatietoja       = tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull
+    val hakemusId                          = tutkinto.hakemusId
+    val nimiOrNull                         = tutkinto.nimi.filter(_.nonEmpty).orNull
+    val nimiAlkuperaiskielellaOrNull       = tutkinto.nimiAlkuperaiskielella.filter(_.nonEmpty).orNull
+    val nimiKaannoksessaOrNull             = tutkinto.nimiKaannoksessa.filter(_.nonEmpty).orNull
+    val oppilaitosOrNull                   = tutkinto.oppilaitos.filter(_.nonEmpty).orNull
+    val oppilaitosAlkuperaiskielellaOrNull = tutkinto.oppilaitosAlkuperaiskielella.filter(_.nonEmpty).orNull
+    val oppilaitosKaannoksessaOrNull       = tutkinto.oppilaitosKaannoksessa.filter(_.nonEmpty).orNull
+    val aloitusVuosi                       = tutkinto.aloitusVuosi
+    val paattymisVuosi                     = tutkinto.paattymisVuosi
+    val maakoodiUri                        = tutkinto.maakoodiUri.filter(_.nonEmpty).orNull
+    val muuTutkintoTietoOrNull             = tutkinto.muuTutkintoTieto.filter(_.nonEmpty).orNull
+    val todistuksenPaivamaaraOrNull        = tutkinto.todistuksenPaivamaara.filter(_.nonEmpty).orNull
+    val koulutusalaKoodiUri                = tutkinto.koulutusalaKoodiUri.filter(_.nonEmpty).orNull
+    val paaAineTaiErikoisala               = tutkinto.paaAineTaiErikoisala.filter(_.nonEmpty).orNull
+    val todistusOtsikko                    = tutkinto.todistusOtsikko.filter(_.nonEmpty).orNull
+    val muuTutkintoMuistio                 = tutkinto.muuTutkintoMuistio.orNull
+    val ohjeellinenLaajuus                 = tutkinto.ohjeellinenLaajuus.filter(_.nonEmpty).orNull
+    val opinnaytetyo                       = tutkinto.opinnaytetyo
+    val harjoittelu                        = tutkinto.harjoittelu
+    val perustelunLisatietoja              = tutkinto.perustelunLisatietoja.filter(_.nonEmpty).orNull
     sqlu"""
       INSERT INTO tutkinto (
         hakemus_id,
         jarjestys,
         nimi,
+        nimi_alkuperaiskielella,
+        nimi_kaannoksessa,
         oppilaitos,
+        oppilaitos_alkuperaiskielella,
+        oppilaitos_kaannoksessa,
         aloitus_vuosi,
         paattymis_vuosi,
         maakoodiuri,
@@ -87,7 +99,11 @@ class TutkintoRepository extends BaseResultHandlers {
         ${hakemusId.toString}::uuid,
         ${tutkinto.jarjestys},
         $nimiOrNull,
+        $nimiAlkuperaiskielellaOrNull,
+        $nimiKaannoksessaOrNull,
         $oppilaitosOrNull,
+        $oppilaitosAlkuperaiskielellaOrNull,
+        $oppilaitosKaannoksessaOrNull,
         $aloitusVuosi,
         $paattymisVuosi,
         $maakoodiUri,
@@ -190,7 +206,11 @@ class TutkintoRepository extends BaseResultHandlers {
       SET
         jarjestys = ${tutkinto.jarjestys},
         nimi = ${tutkinto.nimi.filter(_.nonEmpty).orNull},
+        nimi_alkuperaiskielella = ${tutkinto.nimiAlkuperaiskielella.filter(_.nonEmpty).orNull},
+        nimi_kaannoksessa = ${tutkinto.nimiKaannoksessa.filter(_.nonEmpty).orNull},
         oppilaitos = ${tutkinto.oppilaitos.filter(_.nonEmpty).orNull},
+        oppilaitos_alkuperaiskielella = ${tutkinto.oppilaitosAlkuperaiskielella.filter(_.nonEmpty).orNull},
+        oppilaitos_kaannoksessa = ${tutkinto.oppilaitosKaannoksessa.filter(_.nonEmpty).orNull},
         aloitus_vuosi = ${tutkinto.aloitusVuosi},
         paattymis_vuosi = ${tutkinto.paattymisVuosi},
         maakoodiuri = ${tutkinto.maakoodiUri.filter(_.nonEmpty).orNull},
@@ -225,7 +245,11 @@ class TutkintoRepository extends BaseResultHandlers {
       hakemus_id,
       jarjestys,
       nimi,
+      nimi_alkuperaiskielella,
+      nimi_kaannoksessa,
       oppilaitos,
+      oppilaitos_alkuperaiskielella,
+      oppilaitos_kaannoksessa,
       aloitus_vuosi,
       paattymis_vuosi,
       maakoodiuri,
@@ -268,7 +292,11 @@ class TutkintoRepository extends BaseResultHandlers {
           hakemus_id,
           jarjestys,
           nimi,
+          nimi_alkuperaiskielella,
+          nimi_kaannoksessa,
           oppilaitos,
+          oppilaitos_alkuperaiskielella,
+          oppilaitos_kaannoksessa,
           aloitus_vuosi,
           paattymis_vuosi,
           maakoodiuri,
