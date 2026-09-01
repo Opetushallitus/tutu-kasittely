@@ -666,6 +666,12 @@ export const ERITYISOPETUS_OPINNOT_KEYS = [
   'Studies providing professional competence for special needs education',
 ];
 
+export const OHJAUS_TEHTAVA_OPINNOT = [
+  'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot',
+  'Studier som ger yrkesfärdigheter för uppgifter inom elevhandledning och studiehandledning',
+  'Studies providing professional competence for guidance counselling',
+];
+
 export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'velvoiteOikeus',
   'esineOikeus',
