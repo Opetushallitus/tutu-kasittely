@@ -672,6 +672,18 @@ export const OHJAUS_TEHTAVA_OPINNOT = [
   'Studies providing professional competence for guidance counselling',
 ];
 
+export const KASVATUSTIETEEN_TUTKINTO_KEYS = [
+  'Kasvatustieteellisen alan korkeakoulututkinto',
+  'Examen inom det pedagogiska utbildningsområdet',
+  'Higher education degree in the field of education',
+];
+
+export const SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS = [
+  'Sosiaali- ja terveysalan ammattikorkeakoulututkinto tai ylempi ammattikorkeakoulututkinto',
+  'Yrkeshögskoleexamen eller högre yrkeshögskoleexamen inom social- och hälsoområdet',
+  "Bachelor's or Master's degree in social services and health care",
+];
+
 export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'velvoiteOikeus',
   'esineOikeus',

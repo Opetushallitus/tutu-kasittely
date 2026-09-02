@@ -10,7 +10,10 @@ import { SovellettuTilanneOikeustieteenMaisteri } from './oikeustieteenmaisteri/
 
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/Info';
-import { MyonteinenPaatosProps } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
+import {
+  MyonteinenPaatos,
+  MyonteinenPaatosProps,
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
 import { SovellettuTilanneSelection } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
   AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
@@ -61,7 +64,6 @@ const Lisavalinnat = ({
 
   const showOsaamisenTaydentamisenTavat = useMemo(() => {
     return shouldShowOsaamisenTaydentamisenTavat(
-      selectedEntity,
       lisavaatimukset?.ammattikokemuksenHuomioiminen,
       lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
     );
@@ -172,6 +174,7 @@ const Lisavalinnat = ({
         testIdPrefix={'lahtokohtaisetOsaamisenTaydentamisenTavat'}
         showTaydentavatOpinnot
         kelpoisuuskoeFieldLabelPrefix={ResolvedEntity[selectedEntity]}
+        useOrdinalForKelpoisuuskoeLabels={true}
       />
       <OphFormFieldWrapper
         label={t(
@@ -249,6 +252,7 @@ const Lisavalinnat = ({
           }
           testIdPrefix={'osaamisenTaydentamisenTavat'}
           kelpoisuuskoeFieldLabelPrefix={ResolvedEntity[selectedEntity]}
+          useOrdinalForKelpoisuuskoeLabels={true}
           showTaydentavatOpinnot
         />
       )}
@@ -294,6 +298,15 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
       };
     }, [tutkintoTaiOpinto, lisavaatimukset?.erotKoulutuksessa]);
 
+  if (selectedEntity === ResolvedEntity.muu) {
+    return (
+      <MyonteinenPaatos
+        t={t}
+        lisavaatimukset={lisavaatimukset}
+        updateLisavaatimukset={updateLisavaatimukset}
+      />
+    );
+  }
   const sovellettuTilanneSetOrNotNeeded =
     lisavaatimukset?.sovellettuTilanne || sovellettuTilanneOptions.length === 0;
 
