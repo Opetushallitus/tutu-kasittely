@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.repository.{HakemusRepository, ValitustiedotRepository}
 import fi.oph.tutu.backend.UnitTestBase
 import org.junit.jupiter.api.Assertions.*
@@ -159,7 +160,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
     )
 
     assertThrows(
-      classOf[IllegalArgumentException],
+      classOf[ValitustiedotValidationException],
       () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
     )
     verify(valitustiedotRepository, never()).haeValitustiedot(any[HakemusOid])
@@ -178,7 +179,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
     )
 
     assertThrows(
-      classOf[IllegalArgumentException],
+      classOf[ValitustiedotValidationException],
       () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
     )
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
@@ -196,7 +197,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
     )
 
     assertThrows(
-      classOf[IllegalArgumentException],
+      classOf[ValitustiedotValidationException],
       () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
     )
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
@@ -214,7 +215,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
     )
 
     assertThrows(
-      classOf[IllegalArgumentException],
+      classOf[ValitustiedotValidationException],
       () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
     )
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])

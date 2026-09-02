@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHO, ValitusKHO, ValitusOPH, Valitustiedot}
+import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateValitustiedot, ReadValitustiedot, UpdateValitustiedot}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
@@ -138,8 +139,9 @@ class ValitustiedotController(
               HttpStatus.INTERNAL_SERVER_ERROR
             )
         }
-      case Failure(e: IllegalArgumentException) =>
+      case Failure(e: ValitustiedotValidationException) =>
         LOG.warn(s"Valitustietojen tallennus epäonnistui, hakemusOid: $hakemusOid: ${e.getMessage}")
+        // Voidaan mapata 'e' suoraan kun tämä on custom error tyyppi joka on tarkoitettu clientille
         errorMessageMapper.mapErrorMessage(e, HttpStatus.BAD_REQUEST)
       case Failure(e) =>
         LOG.error(s"Valitustietojen tallennus epäonnistui, hakemusOid: $hakemusOid", e)

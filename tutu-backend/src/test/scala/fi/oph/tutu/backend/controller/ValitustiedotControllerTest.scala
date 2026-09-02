@@ -2,6 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.{HakemusOid, User, ValitusHO, ValitusKHO, ValitusOPH, Valitustiedot}
+import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateValitustiedot, UpdateValitustiedot}
@@ -188,7 +189,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
         any(classOf[Valitustiedot]),
         eqTo(user.userOid)
       )
-    ).thenThrow(new IllegalArgumentException(virheviesti))
+    ).thenThrow(new ValitustiedotValidationException(virheviesti))
 
     val lahetetty = Valitustiedot(
       valitusOPH = ValitusOPH(),
