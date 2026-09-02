@@ -4,7 +4,7 @@ import fi.oph.tutu.backend.domain.*
 import org.json4s.*
 import org.json4s.FieldSerializer.{renameFrom, renameTo}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 trait TutuJsonFormats {
   implicit val formats: Formats = {
@@ -18,8 +18,23 @@ trait TutuJsonFormats {
       + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
       + AmmattikokemuksenHuomioiminenSerializer
       + SuomessaSuoritettujenOpintojenHuomioiminenSerializer
+      + LocalDateTimeSerializer
   }
 }
+
+object LocalDateTimeSerializer
+    extends CustomSerializer[LocalDateTime](_ =>
+      (
+        {
+          case JString(value) => LocalDateTime.parse(value)
+          case unexpected     =>
+            throw new MappingException(s"Cannot deserialize LocalDateTime from $unexpected")
+        },
+        { case dateTime: LocalDateTime =>
+          JString(dateTime.toString)
+        }
+      )
+    )
 
 object AnswerValueSerializer
     extends CustomSerializer[AnswerValue](format =>

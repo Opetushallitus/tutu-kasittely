@@ -58,7 +58,11 @@ class ValitustiedotController(
               .status(HttpStatus.OK)
               .body(
                 mapper.writeValueAsString(
-                  Valitustiedot(valitusOPH = ValitusOPH(), valitusHO = ValitusHO(), valitusKHO = ValitusKHO())
+                  Valitustiedot(
+                    valitusOPH = ValitusOPH(),
+                    valitusHO = ValitusHO(),
+                    valitusKHO = ValitusKHO(None, None, None)
+                  )
                 )
               )
         }
@@ -134,6 +138,9 @@ class ValitustiedotController(
               HttpStatus.INTERNAL_SERVER_ERROR
             )
         }
+      case Failure(e: IllegalArgumentException) =>
+        LOG.warn(s"Valitustietojen tallennus epäonnistui, hakemusOid: $hakemusOid: ${e.getMessage}")
+        errorMessageMapper.mapErrorMessage(e, HttpStatus.BAD_REQUEST)
       case Failure(e) =>
         LOG.error(s"Valitustietojen tallennus epäonnistui, hakemusOid: $hakemusOid", e)
         errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, HttpStatus.BAD_REQUEST)

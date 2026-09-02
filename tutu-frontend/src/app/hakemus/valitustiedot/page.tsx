@@ -12,7 +12,7 @@ import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import useToaster from '@/src/hooks/useToaster';
 import { useValitustiedot } from '@/src/hooks/useValitustiedot';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { ValitusOPH } from '@/src/lib/types/valitustiedot';
+import { ValitusOPH, ValitusKHO } from '@/src/lib/types/valitustiedot';
 import { handleFetchError } from '@/src/lib/utils';
 
 export default function ValitustietoPage() {
@@ -60,7 +60,17 @@ export default function ValitustietoPage() {
           }}
         />
         <ValitusHOComponent />
-        <ValitusKHOComponent />
+        <ValitusKHOComponent
+          valitusKHO={valitustiedot?.valitusKHO}
+          updateValitusKHO={(newValitusKHO: Partial<ValitusKHO>) => {
+            paivitaValitustiedot({
+              valitusKHO: {
+                ...valitustiedot?.valitusKHO,
+                ...newValitusKHO,
+              },
+            });
+          }}
+        />
       </Stack>
       <SaveRibbon
         onSave={tallennaValitustiedot}
