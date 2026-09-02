@@ -6,7 +6,7 @@ import {
 import React from 'react';
 
 import { OpintoOptionWithLaajuusInput } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintoOptionWithLaajuusInput';
-import { newLaajuusValue } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+import { newLaajuusValue } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OikeustieteenMaisteriLisavaatimukset } from '@/src/lib/types/paatos';
 
