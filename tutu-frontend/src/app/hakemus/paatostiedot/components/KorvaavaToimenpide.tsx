@@ -24,6 +24,19 @@ const IndentedStack: React.FC<{
   );
 };
 
+const kelpoisuuskoeLabel = (
+  t: TFunction,
+  keyBase: string,
+  useOrdinal: boolean,
+  key: string,
+  ordinal: number,
+  labelPrefix?: string,
+) => {
+  const labelKey = `${keyBase}${labelPrefix ? `.${labelPrefix}` : ''}${useOrdinal ? `` : `.${key}`}`;
+  const label = t(labelKey);
+  return useOrdinal ? `${label} ${ordinal}` : label;
+};
+
 const Kelpoisuuskoe = ({
   sisalto,
   field,
@@ -31,6 +44,7 @@ const Kelpoisuuskoe = ({
   updateKelpoisuuskoeAction,
   t,
   kelpoisuuskoeFieldLabelPrefix,
+  useOrdinalForKelpoisuuskoeLabels,
   testIdPrefix,
 }: {
   field: keyof KorvaavaToimenpide;
@@ -42,6 +56,7 @@ const Kelpoisuuskoe = ({
   kelpoisuuskoeTransKeyBase: string;
   t: TFunction;
   kelpoisuuskoeFieldLabelPrefix?: string;
+  useOrdinalForKelpoisuuskoeLabels?: boolean;
   testIdPrefix: string;
 }) => {
   return (
@@ -49,12 +64,17 @@ const Kelpoisuuskoe = ({
       <OphTypography variant="h5">
         {t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoeSisalto')}
       </OphTypography>
-      {kelpoisuuskoeFields.map((key) => (
+      {kelpoisuuskoeFields.map((key, index) => (
         <OphCheckbox
           key={key}
           data-testid={`${testIdPrefix}-kelpoisuuskoe-sisalto-${key}`}
-          label={t(
-            `${kelpoisuuskoeTransKeyBase}.${kelpoisuuskoeFieldLabelPrefix ? `${kelpoisuuskoeFieldLabelPrefix}.` : ''}${key}`,
+          label={kelpoisuuskoeLabel(
+            t,
+            kelpoisuuskoeTransKeyBase,
+            useOrdinalForKelpoisuuskoeLabels ?? false,
+            key,
+            index + 1,
+            kelpoisuuskoeFieldLabelPrefix,
           )}
           checked={sisalto?.[key] || false}
           onChange={(e) => {
@@ -78,10 +98,11 @@ export type KorvaavaToimenpideProps = {
   t: TFunction;
   testIdPrefix: string;
   kelpoisuuskoeTransKeyBase: string;
+  kelpoisuuskoeFieldLabelPrefix?: string;
+  useOrdinalForKelpoisuuskoeLabels?: boolean;
   showTaydentavatOpinnot?: boolean;
   showKelpoisuuskoeJaSopeutumisaika?: boolean;
   showLisatieto?: boolean;
-  kelpoisuuskoeFieldLabelPrefix?: string;
 };
 
 export const KorvaavaToimenpideComponent = ({
@@ -93,6 +114,7 @@ export const KorvaavaToimenpideComponent = ({
   showTaydentavatOpinnot,
   showLisatieto,
   kelpoisuuskoeFieldLabelPrefix,
+  useOrdinalForKelpoisuuskoeLabels,
   t,
   testIdPrefix,
 }: KorvaavaToimenpideProps) => {
@@ -118,6 +140,7 @@ export const KorvaavaToimenpideComponent = ({
       kelpoisuuskoeTransKeyBase={kelpoisuuskoeTransKeyBase}
       testIdPrefix={testIdPrefix}
       kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
+      useOrdinalForKelpoisuuskoeLabels={useOrdinalForKelpoisuuskoeLabels}
     />
   );
 
