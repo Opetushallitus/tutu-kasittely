@@ -959,6 +959,14 @@ export const mockValituspohjat = (page: Page) => {
   return page.route(
     `**/tutu-backend/api/hakemus/*/valitustiedot**`,
     async (route: Route) => {
+      if (route.request().method() === 'PUT') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: route.request().postData() ?? '{}',
+        });
+        return;
+      }
       if (route.request().method() === 'GET') {
         await route.fulfill({
           status: 200,

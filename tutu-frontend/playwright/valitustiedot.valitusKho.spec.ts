@@ -13,21 +13,6 @@ const VALITUSTIEDOT_URL = `/tutu-frontend/hakemus/${HAKEMUS_OID}/valitustiedot`;
 test.beforeEach(async ({ page }) => {
   await mockAll({ page });
 
-  await page.route(
-    '**/tutu-backend/api/hakemus/*/valitustiedot**',
-    async (route) => {
-      if (route.request().method() === 'PUT') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: route.request().postData() ?? '{}',
-        });
-        return;
-      }
-      await route.fallback();
-    },
-  );
-
   await page.goto(VALITUSTIEDOT_URL);
 });
 
