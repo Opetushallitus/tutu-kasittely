@@ -11,7 +11,9 @@ export type ValitusHO = {
 };
 
 export type ValitusKHO = {
-  tasmennys?: string;
+  valitettu?: boolean;
+  valitusPvm?: string;
+  ratkaisuPvm?: string;
 };
 
 export type Valitustiedot = {

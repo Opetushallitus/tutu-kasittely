@@ -26,5 +26,8 @@ case class ValitusOPH(
 // TODO
 case class ValitusHO()
 
-// TODO
-case class ValitusKHO()
+case class ValitusKHO(
+  valitettu: Option[Boolean] = None,
+  valitusPvm: Option[LocalDateTime] = None,
+  ratkaisuPvm: Option[LocalDateTime] = None
+)

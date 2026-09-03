@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{HakemusOid, Valitustiedot}
+import fi.oph.tutu.backend.domain.{HakemusOid, ValitusKHO, Valitustiedot}
+import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.repository.{HakemusRepository, ValitustiedotRepository}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
@@ -16,6 +17,20 @@ class ValitustiedotService(
 ) {
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[ValitustiedotService])
+
+  private def validoiValitusKHO(valitusKHO: ValitusKHO): Unit = {
+    (valitusKHO.valitettu, valitusKHO.valitusPvm, valitusKHO.ratkaisuPvm) match {
+      case (valitettu, Some(_), _) if !valitettu.contains(true) =>
+        throw new ValitustiedotValidationException("KHO:n valituspäivä ei voi olla asetettu ilman valitusta")
+      case (valitettu, _, Some(_)) if !valitettu.contains(true) =>
+        throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla asetettu ilman valitusta")
+      case (_, None, Some(_)) =>
+        throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla asetettu ilman valituspäivää")
+      case (_, Some(valitusPvm), Some(ratkaisuPvm)) if ratkaisuPvm.isBefore(valitusPvm) =>
+        throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla ennen valituspäivää")
+      case _ =>
+    }
+  }
 
   private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot = {
     valitustiedot.copy(
@@ -50,7 +65,9 @@ class ValitustiedotService(
     valitustiedot: Valitustiedot,
     luojaTaiMuokkaaja: String
   ): (Option[Valitustiedot], Option[Valitustiedot]) = {
-    haeValitustiedot(hakemusOid) match {
+    validoiValitusKHO(valitustiedot.valitusKHO)
+
+    valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>
         (
           Some(haeNimet(oldValitustiedot)),
