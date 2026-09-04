@@ -1,7 +1,15 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.UnitTestBase
-import fi.oph.tutu.backend.domain.{HakemusOid, User, ValitusHO, ValitusKHO, ValitusOPH, Valitustiedot}
+import fi.oph.tutu.backend.domain.{
+  HakemusOid,
+  User,
+  ValitusHO,
+  ValitusKHO,
+  ValitusKHORatkaisu,
+  ValitusOPH,
+  Valitustiedot
+}
 import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditLog
@@ -46,7 +54,9 @@ class ValitustiedotControllerTest extends UnitTestBase {
   private def valitusKHOWithPvms: ValitusKHO = ValitusKHO(
     valitettu = Some(true),
     valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
-    ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0))
+    ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0)),
+    ratkaisu = Some(ValitusKHORatkaisu.HakijanVaatimusHylatty),
+    ratkaisuLisatieto = Some("Lisätietoa KHO:n ratkaisusta")
   )
 
   @Test
@@ -76,7 +86,11 @@ class ValitustiedotControllerTest extends UnitTestBase {
     assertEquals(HttpStatus.OK, result.getStatusCode)
     assertEquals(
       mapper.writeValueAsString(
-        Valitustiedot(valitusOPH = ValitusOPH(), valitusHO = ValitusHO(), valitusKHO = ValitusKHO(None, None, None))
+        Valitustiedot(
+          valitusOPH = ValitusOPH(),
+          valitusHO = ValitusHO(),
+          valitusKHO = ValitusKHO()
+        )
       ),
       result.getBody
     )

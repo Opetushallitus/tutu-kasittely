@@ -62,7 +62,7 @@ class ValitustiedotController(
                   Valitustiedot(
                     valitusOPH = ValitusOPH(),
                     valitusHO = ValitusHO(),
-                    valitusKHO = ValitusKHO(None, None, None)
+                    valitusKHO = ValitusKHO()
                   )
                 )
               )

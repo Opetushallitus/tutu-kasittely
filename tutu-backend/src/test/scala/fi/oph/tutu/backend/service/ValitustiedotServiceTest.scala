@@ -112,10 +112,18 @@ class ValitustiedotServiceTest extends UnitTestBase {
 
   @Test
   def tallennaValitustiedotPaivittaaOlemassaOlevan(): Unit = {
-    val vanhaId    = UUID.randomUUID()
-    val vanha      = makeValitustiedot(id = Some(vanhaId), hakemusId = Some(UUID.randomUUID()))
-    val lahetetty  = makeValitustiedot()
-    val paivitetty = vanha.copy(valitusKHO = ValitusKHO(valitettu = Some(true)))
+    val vanhaId   = UUID.randomUUID()
+    val vanha     = makeValitustiedot(id = Some(vanhaId), hakemusId = Some(UUID.randomUUID()))
+    val lahetetty = makeValitustiedot()
+
+    val paivitetty = vanha.copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
+        ratkaisu = Some(ValitusKHORatkaisu.EiValituslupaa),
+        ratkaisuLisatieto = Some("Ei lupaa valittaa")
+      )
+    )
 
     when(valitustiedotRepository.haeValitustiedot(hakemusOid)).thenReturn(Some(vanha))
     when(valitustiedotRepository.paivitaValitustiedot(vanhaId, lahetetty, "muokkaaja-oid"))
@@ -125,6 +133,9 @@ class ValitustiedotServiceTest extends UnitTestBase {
 
     assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), vanhaTulos.get.luoja)
     assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), uusiTulos.get.luoja)
+    assertEquals(Some(ValitusKHORatkaisu.EiValituslupaa), uusiTulos.get.valitusKHO.ratkaisu)
+    assertEquals(Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)), uusiTulos.get.valitusKHO.valitusPvm)
+    assertEquals(Some("Ei lupaa valittaa"), uusiTulos.get.valitusKHO.ratkaisuLisatieto)
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
   }
 
