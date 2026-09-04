@@ -155,3 +155,187 @@ test('KHO valitusPvm tyhjentäminen tyhjentää myös ratkaisuPvm', async ({
   await expect(ratkaisupvmInput).toHaveValue('');
   await expect(ratkaisupvmInput).toBeDisabled();
 });
+
+test('KHO:n ratkaisu, radiovalinnat näytetään jos valitettu, valinta tallentuu ja on tyhjennettävissä', async ({
+  page,
+}) => {
+  const ratkaisuRadioGroup = page.getByTestId(
+    'valituskho-ratkaisu-radio-group',
+  );
+  const ratkaisuClearButton = page.getByTestId(
+    'valituskho-ratkaisu-radio-group-clear-button',
+  );
+
+  await expect(ratkaisuRadioGroup).toBeHidden();
+
+  await page.getByTestId('valituskho-valitettu-checkbox').click();
+
+  await expect(ratkaisuRadioGroup).toBeVisible();
+  await expect(ratkaisuClearButton).toBeHidden();
+
+  const ratkaisuValues = [
+    'EiValituslupaa',
+    'HakijanVaatimusHylatty',
+    'UudelleenOPHKasittelyyn',
+    'KhoErilainenPaatos',
+    'KhoKasittelyRauennut',
+  ];
+
+  for (const value of ratkaisuValues) {
+    await expect(
+      ratkaisuRadioGroup.locator(`input[type="radio"][value="${value}"]`),
+    ).toBeVisible();
+  }
+
+  await expectRequestData(
+    page,
+    '/valitustiedot',
+    ratkaisuRadioGroup
+      .locator('input[type="radio"][value="HakijanVaatimusHylatty"]')
+      .click(),
+    {
+      valitusKHO: { ratkaisu: 'HakijanVaatimusHylatty' },
+    },
+  );
+
+  await expect(
+    ratkaisuRadioGroup.locator(
+      'input[type="radio"][value="HakijanVaatimusHylatty"]',
+    ),
+  ).toBeChecked();
+  await expect(ratkaisuClearButton).toBeVisible();
+
+  await expectRequestData(
+    page,
+    '/valitustiedot',
+    ratkaisuRadioGroup
+      .locator('input[type="radio"][value="KhoKasittelyRauennut"]')
+      .click(),
+    {
+      valitusKHO: { ratkaisu: 'KhoKasittelyRauennut' },
+    },
+  );
+
+  await expect(
+    ratkaisuRadioGroup.locator(
+      'input[type="radio"][value="HakijanVaatimusHylatty"]',
+    ),
+  ).not.toBeChecked();
+  await expect(
+    ratkaisuRadioGroup.locator(
+      'input[type="radio"][value="KhoKasittelyRauennut"]',
+    ),
+  ).toBeChecked();
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  const [clearRequest] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/valitustiedot') && req.method() === 'PUT',
+    ),
+    (async () => {
+      await ratkaisuClearButton.click();
+      await expectVisibleAndAttached(saveButton);
+      await saveButton.click();
+    })(),
+  ]);
+  expect(clearRequest.postDataJSON().valitusKHO.ratkaisu).toBeUndefined();
+
+  await expect(ratkaisuClearButton).toBeHidden();
+  for (const value of ratkaisuValues) {
+    await expect(
+      ratkaisuRadioGroup.locator(`input[type="radio"][value="${value}"]`),
+    ).not.toBeChecked();
+  }
+});
+
+test('KHO:n lisätietokenttä näytetään kun ratkaisu on valittu, tallentuu ja tyhjenee kun ratkaisun poistaa', async ({
+  page,
+}) => {
+  const ratkaisuRadioGroup = page.getByTestId(
+    'valituskho-ratkaisu-radio-group',
+  );
+  const ratkaisuClearButton = page.getByTestId(
+    'valituskho-ratkaisu-radio-group-clear-button',
+  );
+  const ratkaisuLisatietoInput = page.getByTestId(
+    'valituskho-ratkaisulisatieto-input',
+  );
+
+  await page.getByTestId('valituskho-valitettu-checkbox').click();
+
+  await expect(ratkaisuLisatietoInput).toBeHidden();
+
+  await ratkaisuRadioGroup
+    .locator('input[type="radio"][value="HakijanVaatimusHylatty"]')
+    .click();
+
+  await expect(ratkaisuLisatietoInput).toBeVisible();
+
+  await expectRequestData(
+    page,
+    '/valitustiedot',
+    ratkaisuLisatietoInput
+      .getByRole('textbox')
+      .fill('Tarkempi selitys ratkaisusta'),
+    {
+      valitusKHO: { ratkaisuLisatieto: 'Tarkempi selitys ratkaisusta' },
+    },
+  );
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  const [clearRequest] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/valitustiedot') && req.method() === 'PUT',
+    ),
+    (async () => {
+      await ratkaisuClearButton.click();
+      await expectVisibleAndAttached(saveButton);
+      await saveButton.click();
+    })(),
+  ]);
+
+  const requestBody = clearRequest.postDataJSON();
+  expect(requestBody.valitusKHO.ratkaisu).toBeUndefined();
+  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeUndefined();
+
+  await expect(ratkaisuLisatietoInput).toBeHidden();
+});
+
+test('KHO:n ratkaisu piilotetaan ja tyhjennetään kun valitus poistetaan', async ({
+  page,
+}) => {
+  const valitettuCheckbox = page.getByTestId('valituskho-valitettu-checkbox');
+  const ratkaisuRadioGroup = page.getByTestId(
+    'valituskho-ratkaisu-radio-group',
+  );
+  const ratkaisuLisatietoInput = page.getByTestId(
+    'valituskho-ratkaisulisatieto-input',
+  );
+
+  await valitettuCheckbox.click();
+  await ratkaisuRadioGroup
+    .locator('input[type="radio"][value="KhoErilainenPaatos"]')
+    .click();
+  await ratkaisuLisatietoInput
+    .getByRole('textbox')
+    .fill('Tarkempi selitys ratkaisusta');
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  const [uncheckRequest] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/valitustiedot') && req.method() === 'PUT',
+    ),
+    (async () => {
+      await valitettuCheckbox.click();
+      await expectVisibleAndAttached(saveButton);
+      await saveButton.click();
+    })(),
+  ]);
+
+  const requestBody = uncheckRequest.postDataJSON();
+  expect(requestBody.valitusKHO.ratkaisu).toBeUndefined();
+  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeUndefined();
+
+  await expect(ratkaisuRadioGroup).toBeHidden();
+  await expect(ratkaisuLisatietoInput).toBeHidden();
+});
