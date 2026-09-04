@@ -1,11 +1,16 @@
 import { SovellettuTilanneOption } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
   ERITYISOPETUS_OPINNOT_KEYS,
+  KASVATUSTIETEEN_TUTKINTO_KEYS,
   KoulutusEroModel,
   KoulutusEroTarkennukset,
+  MONIALAISET_OPINNOT_KEY,
+  OHJAUS_TEHTAVA_OPINNOT,
   OIKEUSTIETEEN_MAISTERI_KEYS,
   OPETETTAVAN_AINEEN_OPINNOT_KEYS,
   OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
+  SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS,
+  VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -43,11 +48,26 @@ export const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
     tutkintoTaiOpinto: ResolvedEntity.erityisopetus,
     keywords: ERITYISOPETUS_OPINNOT_KEYS,
   },
-  { tutkintoTaiOpinto: ResolvedEntity.oppilasJaOpintoOhjaus, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.kasvatustieteellinenAla, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.sosiaaliJaTerveysAla, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.monialaisetOpinnot, keywords: [] },
-  { tutkintoTaiOpinto: ResolvedEntity.ammatillisetValmiudet, keywords: [] },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.oppilasJaOpintoOhjaus,
+    keywords: OHJAUS_TEHTAVA_OPINNOT,
+  },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.kasvatustieteellinenAla,
+    keywords: KASVATUSTIETEEN_TUTKINTO_KEYS,
+  },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.sosiaaliJaTerveysAla,
+    keywords: SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS,
+  },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.monialaisetOpinnot,
+    keywords: [MONIALAISET_OPINNOT_KEY],
+  },
+  {
+    tutkintoTaiOpinto: ResolvedEntity.ammatillisetValmiudet,
+    keywords: [VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY],
+  },
   { tutkintoTaiOpinto: ResolvedEntity.muu, keywords: [] },
 ];
 
@@ -85,10 +105,55 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
     { value: 'erityisopetus3', tKey: 'erityisopetus', ordinal: '3' },
   ],
   [ResolvedEntity.oppilasJaOpintoOhjaus]: [],
-  [ResolvedEntity.kasvatustieteellinenAla]: [],
-  [ResolvedEntity.sosiaaliJaTerveysAla]: [],
-  [ResolvedEntity.monialaisetOpinnot]: [],
-  [ResolvedEntity.ammatillisetValmiudet]: [],
+  [ResolvedEntity.kasvatustieteellinenAla]: [
+    { value: 'KK1' },
+    { value: 'KK2' },
+    { value: 'KM1' },
+    { value: 'KM1 + KK' },
+    { value: 'KM2A' },
+    { value: 'KM2A + KK' },
+    { value: 'KM2B' },
+    { value: 'KM2B + KK' },
+    { value: 'KM3' },
+    { value: 'KM3 + KK1 / KK2', tKey: 'KM3JaKK1TaiKK2' },
+    { value: 'KM4A' },
+    { value: 'KM4A + KK1 / KK2', tKey: 'KM4AJaKK1TaiKK2' },
+    { value: 'KM4B' },
+    { value: 'KM4B + KK1 / KK2', tKey: 'KM4BJaKK1TaiKK2' },
+    { value: 'KL' },
+    { value: 'KT' },
+  ],
+  [ResolvedEntity.sosiaaliJaTerveysAla]: [
+    { value: 'sote1', tKey: 'sote', ordinal: '1' },
+    { value: 'sote2', tKey: 'sote', ordinal: '2' },
+    { value: 'sote3', tKey: 'sote', ordinal: '3' },
+  ],
+  [ResolvedEntity.monialaisetOpinnot]: [
+    { value: 'monialaiset1', tKey: 'monialaiset', ordinal: '1' },
+    { value: 'monialaiset2', tKey: 'monialaiset', ordinal: '2' },
+  ],
+  [ResolvedEntity.ammatillisetValmiudet]: [
+    {
+      value: 'vakaJaErityisopetusA',
+      tKey: 'vakaJaErityisopetus',
+      ordinal: 'A',
+    },
+    {
+      value: 'vakaJaErityisopetusB',
+      tKey: 'vakaJaErityisopetus',
+      ordinal: 'B',
+    },
+    {
+      value: 'vakaJaErityisopetusC',
+      tKey: 'vakaJaErityisopetus',
+      ordinal: 'C',
+    },
+    {
+      value: 'vakaJaErityisopetusD',
+      tKey: 'vakaJaErityisopetus',
+      ordinal: 'D',
+    },
+  ],
   [ResolvedEntity.muu]: [],
 };
 
@@ -118,11 +183,11 @@ export const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
   ]),
   [ResolvedEntity.opettajanPedagogisetOpinnot]: eroModel(2),
   [ResolvedEntity.erityisopetus]: eroModel(4),
-  [ResolvedEntity.oppilasJaOpintoOhjaus]: undefined,
-  [ResolvedEntity.kasvatustieteellinenAla]: undefined,
-  [ResolvedEntity.sosiaaliJaTerveysAla]: undefined,
-  [ResolvedEntity.monialaisetOpinnot]: undefined,
-  [ResolvedEntity.ammatillisetValmiudet]: undefined,
+  [ResolvedEntity.oppilasJaOpintoOhjaus]: eroModel(4),
+  [ResolvedEntity.kasvatustieteellinenAla]: eroModel(2),
+  [ResolvedEntity.sosiaaliJaTerveysAla]: eroModel(4),
+  [ResolvedEntity.monialaisetOpinnot]: eroModel(2),
+  [ResolvedEntity.ammatillisetValmiudet]: eroModel(2),
   [ResolvedEntity.muu]: undefined,
 };
 
@@ -155,16 +220,9 @@ export const SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<Suomess
   ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
 
 export const shouldShowOsaamisenTaydentamisenTavat = (
-  entity: ResolvedEntity,
   ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen,
   suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen,
 ) => {
-  if (entity === ResolvedEntity.opetettavaAine) {
-    return (
-      ammattikokemuksenHuomioiminen === 'SuomessaHankittuOsittain' ||
-      ammattikokemuksenHuomioiminen === 'UlkomaillaHankittuOsittain'
-    );
-  }
   return (
     ((ammattikokemuksenHuomioiminen &&
       OSITTAINEN_AMMATTIKOKEMUS_OPTIONS.includes(

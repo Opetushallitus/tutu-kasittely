@@ -16,7 +16,11 @@ import { SisaltoItem } from '@/src/lib/types/hakemus';
 
 type HakijanIlmoittamaTieto = {
   nimi?: string;
+  nimiAlkuperaiskielella?: string;
+  nimiKaannoksessa?: string;
   oppilaitos?: string;
+  oppilaitosAlkuperaiskielella?: string;
+  oppilaitosKaannoksessa?: string;
   maakoodiUri?: string;
   muuTutkintoTieto?: string;
 };

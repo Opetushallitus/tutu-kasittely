@@ -255,7 +255,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         hakemusId = hakemusId,
         jarjestys = "1",
         nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_NIMI, answers),
+        nimiAlkuperaiskielella = None,
+        nimiKaannoksessa = None,
         oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_OPPILAITOS, answers),
+        oppilaitosAlkuperaiskielella = None,
+        oppilaitosKaannoksessa = None,
         aloitusVuosi =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_1_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
         paattymisVuosi =
@@ -285,7 +289,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         hakemusId = hakemusId,
         jarjestys = "2",
         nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_NIMI, answers),
+        nimiAlkuperaiskielella = None,
+        nimiKaannoksessa = None,
         oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_OPPILAITOS, answers),
+        oppilaitosAlkuperaiskielella = None,
+        oppilaitosKaannoksessa = None,
         aloitusVuosi =
           findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
         paattymisVuosi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_2_LOPETUS_VUOSI, answers).flatMap(
@@ -315,7 +323,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
           hakemusId = hakemusId,
           jarjestys = if (isTutkinto2Defined) "3" else "2",
           nimi = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_NIMI, answers),
+          nimiAlkuperaiskielella = None,
+          nimiKaannoksessa = None,
           oppilaitos = findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_OPPILAITOS, answers),
+          oppilaitosAlkuperaiskielella = None,
+          oppilaitosKaannoksessa = None,
           aloitusVuosi =
             findAnswerByAtaruKysymysId(Constants.ATARU_TUTKINTO_3_ALOITUS_VUOSI, answers).flatMap(_.toIntOption),
           paattymisVuosi =
@@ -345,7 +357,11 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
         id = None,
         hakemusId = hakemusId,
         nimi = None,
+        nimiAlkuperaiskielella = None,
+        nimiKaannoksessa = None,
         oppilaitos = None,
+        oppilaitosAlkuperaiskielella = None,
+        oppilaitosKaannoksessa = None,
         aloitusVuosi = None,
         paattymisVuosi = None,
         maakoodiUri = None,
