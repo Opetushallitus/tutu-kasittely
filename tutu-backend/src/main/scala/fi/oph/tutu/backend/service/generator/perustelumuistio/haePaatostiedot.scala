@@ -241,7 +241,10 @@ def expandTutkintoTaiOpinto(node: TutkintoTaiOpinto): Seq[PaatosNodeTypeAggregat
 }
 
 def expandMyonteisenPaatoksenLisavaatimukset(node: MyonteisenPaatoksenLisavaatimukset): Seq[PaatosNodeTypeAggregate] = {
-  if (node.lahtokohtaisetOsaamisenTaydentamisenTavat == node.korvaavaToimenpide) {
+  if (
+    node.ammattikokemuksenHuomioiminen == AmmattikokemuksenHuomioiminen.EiHuomioida &&
+    node.suomessaSuoritettujenOpintojenHuomioiminen == SuomessaSuoritettujenOpintojenHuomioiminen.EiHuomioida
+  ) {
     // "Käytetään lähtökohtaisia osaamisen täydentämisen tapoja"
     Seq(
       TitleNode(
