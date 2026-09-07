@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import {
+  OphButton,
   OphCheckbox,
   OphInputFormField,
   OphTypography,
@@ -7,11 +8,11 @@ import {
 import React from 'react';
 
 import { OpintoOptionWithLaajuusInput } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintoOptionWithLaajuusInput';
-import { oikeustieteenSuomiOpintojenAihealueOptions } from '@/src/app/hakemus/paatostiedot/constants';
 import {
-  emptySuomiOpintojenAihealue,
+  presetSuomiOpintojenAihealue,
   newLaajuusValue,
-} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
+import { oikeustieteenSuomiOpintojenAihealueOptions } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { OikeustieteenMaisteriLisavaatimukset } from '@/src/lib/types/paatos';
 
@@ -44,12 +45,30 @@ export const SuomiOpinnot = ({
       />
       {vaatimukset.suomiOpintojaSisallossa && (
         <>
-          <Stack gap={1} paddingLeft={4}>
+          <Stack gap={1} paddingLeft={4} alignItems={'flex-start'}>
             <OphTypography variant="h5">
               {t(
                 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.suomiOpinnot.aihealue',
               )}
             </OphTypography>
+            <OphTypography variant="body1">
+              {t(
+                'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.suomiOpinnot.aihealue.kehote',
+              )}
+            </OphTypography>
+            <OphButton
+              data-testid={`sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-valitseKaikki`}
+              variant="text"
+              sx={{ paddingLeft: 0 }}
+              onClick={() => {
+                const updatedAihealueet = presetSuomiOpintojenAihealue(true);
+                updateAction({ suomiOpintojenAihealueet: updatedAihealueet });
+              }}
+            >
+              {t(
+                'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.suomiOpinnot.aihealue.valitseKaikki',
+              )}
+            </OphButton>
             {oikeustieteenSuomiOpintojenAihealueOptions.map((option) => (
               <OphCheckbox
                 key={option}
@@ -60,7 +79,7 @@ export const SuomiOpinnot = ({
                 onChange={(e) => {
                   vaatimukset.suomiOpintojenAihealueet =
                     vaatimukset.suomiOpintojenAihealueet ??
-                    emptySuomiOpintojenAihealue();
+                    presetSuomiOpintojenAihealue(false);
                   updateAction({
                     suomiOpintojenAihealueet: {
                       ...vaatimukset.suomiOpintojenAihealueet,

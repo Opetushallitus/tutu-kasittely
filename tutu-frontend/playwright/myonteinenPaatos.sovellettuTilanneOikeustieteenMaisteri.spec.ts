@@ -576,6 +576,11 @@ test.describe('Suomi-opinnot', () => {
         'sovellettuTilanne-oikeustieteenMaisteri-suomiOpintojenSisallonLisatieto',
       ),
     );
+    await expectHiddenOrDetached(
+      page.getByTestId(
+        'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-valitseKaikki',
+      ),
+    );
 
     await expectRequestData(page, PAATOS_URL, suomiSisallossaCheckbox.click(), {
       paatosTiedot: [
@@ -612,6 +617,11 @@ test.describe('Suomi-opinnot', () => {
     await expect(
       page.getByTestId(
         'sovellettuTilanne-oikeustieteenMaisteri-suomiOpintojenSisallonLisatieto',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId(
+        'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-valitseKaikki',
       ),
     ).toBeVisible();
   });
@@ -825,6 +835,125 @@ test.describe('Suomi-opinnot', () => {
                     suomiOpintojaSisallossa: true,
                     suomiOpintojenSisallonLisatieto:
                       'Suomi-opintojen sisällön kuvaus',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
+  test("'Valitse kaikki' -painike valitsee kaikki aihealueet ja lähettää PUT-kutsun", async ({
+    page,
+  }) => {
+    await navigateToSovellettuTilanne(page, '1');
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(
+          'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnotSisallossa',
+        )
+        .click(),
+      {},
+    );
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(
+          'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-valitseKaikki',
+        )
+        .click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  oikeustieteenMaisteriLisavaatimukset: {
+                    suomiOpintojenAihealueet: {
+                      velvoiteOikeus: true,
+                      esineOikeus: true,
+                      perheJaJaamistooikeus: true,
+                      rikosoikeus: true,
+                      prosessiOikeus: true,
+                      valtioSaantooikeus: true,
+                      hallintoOikeus: true,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    for (const aihealue of AIHEALUEET) {
+      await expect(
+        page.getByTestId(
+          `sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-aihealue-${aihealue}`,
+        ),
+      ).toBeChecked();
+    }
+  });
+
+  test("'Valitse kaikki' ylikirjoittaa aiemmat yksittäiset valinnat", async ({
+    page,
+  }) => {
+    await navigateToSovellettuTilanne(page, '1');
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(
+          'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnotSisallossa',
+        )
+        .click(),
+      {},
+    );
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(
+          'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-aihealue-velvoiteOikeus',
+        )
+        .click(),
+      {},
+    );
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(
+          'sovellettuTilanne-oikeustieteenMaisteri-suomiOpinnot-valitseKaikki',
+        )
+        .click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  oikeustieteenMaisteriLisavaatimukset: {
+                    suomiOpintojenAihealueet: {
+                      velvoiteOikeus: true,
+                      esineOikeus: true,
+                      perheJaJaamistooikeus: true,
+                      rikosoikeus: true,
+                      prosessiOikeus: true,
+                      valtioSaantooikeus: true,
+                      hallintoOikeus: true,
+                    },
                   },
                 },
               },

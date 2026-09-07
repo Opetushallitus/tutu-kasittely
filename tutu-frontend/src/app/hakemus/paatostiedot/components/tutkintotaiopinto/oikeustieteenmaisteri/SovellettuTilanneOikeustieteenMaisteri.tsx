@@ -16,7 +16,7 @@ import {
   emptyOikeustieteenMaisterinOpinnot,
   initOrUpdateOikeustieteenMaisteriOpinnot,
   newLaajuusValue,
-} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   MyonteisenPaatoksenLisavaatimukset,
