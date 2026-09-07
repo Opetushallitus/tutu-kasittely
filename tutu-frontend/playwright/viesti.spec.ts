@@ -3,6 +3,7 @@ import { expect, Page, Route, test } from '@playwright/test';
 import {
   expectDataFromDropdownSelection,
   expectRequestData,
+  selectOption,
 } from '@/playwright/helpers/testUtils';
 import {
   mockEsittelijat,
@@ -64,15 +65,16 @@ test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async 
   await expect(page.getByTestId('viesti-kieli-select')).toHaveText(
     'yleiset.suomi',
   );
+
   await expect(
     page.locator('input[type="radio"][value="ennakkotieto"]'),
   ).toBeChecked();
   await expect(
     page.getByTestId('viesti-otsikko-input').getByRole('textbox'),
   ).toHaveValue('Työversio');
-  await expect(page.getByTestId('editor-content-editable')).toHaveText(
-    'Tämä on työversio',
-  );
+  const sisalto = page.getByTestId('editor-content-editable');
+  await expect(sisalto).not.toHaveText('');
+  await expect(sisalto).toHaveText('Tämä on työversio');
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 
   const viestiTable = page.getByTestId('vahvistettu-viesti-table');
@@ -260,7 +262,42 @@ test('Viestityypin oletussisältö latautuu automaattisesti', async ({
   await expect(
     page.locator('input[type="radio"][value="taydennyspyynto"]'),
   ).toBeChecked();
-  await expect(sisalto).toHaveText('Oletussisältö');
+  await expect(sisalto).toHaveText('Oletussisältö en');
+  await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
+});
+
+test('Oletussisältö latautuu halutulla kielellä', async ({ page }) => {
+  await mockViestiTyoversio(page, uusiViesti);
+  await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
+  const sisalto = page.getByTestId('editor-content-editable');
+  await selectOption(
+    page,
+    page.getByTestId('viesti-kieli-select'),
+    'yleiset.ruotsi',
+  );
+  await page
+    .getByTestId('viesti-tyyppi-radio-group')
+    .locator('input[type="radio"][value="taydennyspyynto"]')
+    .click();
+  await expect(sisalto).toHaveText('Oletussisältö sv');
+  await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
+});
+
+test('Oletussisältöä ei ladata jos viestiä editoitu', async ({ page }) => {
+  await mockViestiTyoversio(page, uusiViesti);
+  await mockViestiLista(page);
+  await mockViestiOletussisalto(page);
+  const sisalto = page.getByTestId('editor-content-editable');
+  await sisalto.fill('Tämä on käyttäjän kirjoittama teksti');
+  await page
+    .getByTestId('viesti-tyyppi-radio-group')
+    .locator('input[type="radio"][value="taydennyspyynto"]')
+    .click();
+  await expect(
+    page.locator('input[type="radio"][value="taydennyspyynto"]'),
+  ).toBeChecked();
+  await expect(sisalto).toHaveText('Tämä on käyttäjän kirjoittama teksti');
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 });
 

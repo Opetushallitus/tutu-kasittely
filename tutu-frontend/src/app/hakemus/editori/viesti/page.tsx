@@ -77,7 +77,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     vahvistaViesti,
     poistaViesti,
     paivitaVahvistettuLista,
-    setViestityyppi: setViestityyppiForOletussisalto,
+    setViestityyppiJakieli: setViestiParamsForOletussisalto,
     updateOngoing,
     maybeError,
   } = useViestiAll(hakemus?.hakemusOid);
@@ -96,8 +96,18 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   }, [editorRef, viesti?.viesti, oletusSisalto]);
 
   useEffect(() => {
-    setViestityyppiForOletussisalto(currentViesti?.tyyppi || null);
-  }, [currentViesti?.tyyppi, setViestityyppiForOletussisalto]);
+    if (!currentViesti?.viesti) {
+      setViestiParamsForOletussisalto(
+        currentViesti?.tyyppi || null,
+        currentViesti?.kieli,
+      );
+    }
+  }, [
+    currentViesti?.tyyppi,
+    currentViesti?.kieli,
+    currentViesti?.viesti,
+    setViestiParamsForOletussisalto,
+  ]);
 
   const isViestiEmpty =
     !currentViesti?.tyyppi && !currentViesti?.otsikko && !currentViesti?.viesti;

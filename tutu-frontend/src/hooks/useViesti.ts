@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { Language } from '@/src/lib/localization/localizationTypes';
 import { doApiDelete, doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Viesti, Viestityyppi } from '@/src/lib/types/viesti';
 
@@ -16,12 +17,12 @@ const getViestiTyoversio = async (
 const getViestiOletussisalto = async (
   hakemusOid?: string,
   tyyppi?: Viestityyppi | null,
+  kieli?: Language,
 ): Promise<string> => {
-  return await doApiFetch(
-    `viesti/oletussisalto/${hakemusOid}/${tyyppi}`,
-    undefined,
-    'no-store',
-  );
+  const url = kieli
+    ? `viesti/oletussisalto/${hakemusOid}/${tyyppi}?kieli=${kieli}`
+    : `viesti/oletussisalto/${hakemusOid}/${tyyppi}`;
+  return await doApiFetch(url, undefined, 'no-store');
 };
 
 type UpdateViestiParams = {
@@ -148,8 +149,9 @@ export const useViesti = (hakemusOid?: string) => {
 export const useViestiOletusSisalto = (
   hakemusOid?: string,
   tyyppi?: Viestityyppi | null,
+  kieli?: Language,
 ) => {
-  const queryKey = ['viestiOletusSisalto', hakemusOid, tyyppi];
+  const queryKey = ['viestiOletusSisalto', hakemusOid, tyyppi, kieli];
   const queryClient = useQueryClient();
 
   // Tyypin ollessa tyhjä ei haluta näyttää mitään oletussisältöä =>
@@ -162,7 +164,7 @@ export const useViestiOletusSisalto = (
 
   const query = useQuery({
     queryKey,
-    queryFn: () => getViestiOletussisalto(hakemusOid, tyyppi),
+    queryFn: () => getViestiOletussisalto(hakemusOid, tyyppi, kieli),
     enabled: !!hakemusOid && !!tyyppi,
     throwOnError: false,
   });

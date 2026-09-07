@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.controller
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.Viestityyppi.ennakkotieto
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.domain.Kieli.en
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{OnrService, TranslationService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
@@ -348,7 +349,6 @@ class ViestiControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(13)
   def haeOletusSisaltoPalauttaaHtmlMuotoistaSisaltoa(): Unit = {
-    initAtaruHakemusRequests()
     val result = mvc
       .perform(
         get(s"/tutu-backend/api/viesti/oletussisalto/$hakemusOid/taydennyspyynto")
@@ -358,5 +358,23 @@ class ViestiControllerTest extends IntegrationTestBase {
     assert(result.getResponse.getContentAsString.contains("Yrjö Kortesniemi"))
     assert(result.getResponse.getContentAsString.contains("yka@niemi.fi"))
     assert(result.getResponse.getContentAsString.contains("123 456789"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(14)
+  def haeOletusSisaltoPalauttaaSisallonHalutullaKiella(): Unit = {
+    when(translationService.getTranslation(en, "hakemus.viesti.allekirjoitus.tervehdys")).thenReturn("Howdy partner!")
+    when(translationService.getTranslation(en, "hakemus.viesti.allekirjoitus.opetushallitus"))
+      .thenReturn("The government")
+
+    val result = mvc
+      .perform(
+        get(s"/tutu-backend/api/viesti/oletussisalto/$hakemusOid/muu").param("kieli", "en")
+      )
+      .andExpect(status().isOk)
+      .andReturn()
+    assert(result.getResponse.getContentAsString.contains("Howdy partner!"))
+    assert(result.getResponse.getContentAsString.contains("The government"))
   }
 }
