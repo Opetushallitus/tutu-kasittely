@@ -18,12 +18,8 @@ type PerustelumuistioGetter = PaatosNodeTypeAggregate => Option[String]
 
 case class TitleNode(
   titleKey: Option[String] = None,
-  child: Option[PaatosNodeType] = None
+  child: PaatosNodeTypeAggregate = None
 )
-
-def noExtract(node: PaatosNodeType): Option[String] = {
-  None
-}
 
 def bindHaePaatostiedot(
   translationService: TranslationService,
@@ -32,8 +28,6 @@ def bindHaePaatostiedot(
   PerustelumuistioGetter,
   PerustelumuistioGetter
 ) = {
-  val getListLabel = bindGetListLabel(translationService)
-
   val extractPaatos                             = bindExtractPaatos(translationService, tutkinnot)
   val extractPeruutuksenTaiRaukeamisenSyy       = bindExtractPeruutuksenTaiRaukeamisenSyy(translationService, tutkinnot)
   val extractPaatosTieto                        = bindExtractPaatosTieto(translationService, tutkinnot)
@@ -49,6 +43,7 @@ def bindHaePaatostiedot(
   val extractKelpoisuus                    = bindExtractKelpoisuus(translationService, tutkinnot)
   val extractTitleNode                     = bindExtractTitleNode(translationService, tutkinnot)
 
+  // Extract kaikki tyypit
   def extractNext(node: PaatosNodeType): Option[String] = {
     node match {
       case node: Paatos                               => extractPaatos(node)
@@ -67,46 +62,27 @@ def bindHaePaatostiedot(
     }
   }
 
-  def haePaatostiedotExtract = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    extractNext,
-    None
-  )
+  // Suodata myönteisen päätöksen mukaan
+  def haePaatostiedotExtract(node: PaatosNodeType): Option[String] = {
+    node match {
+      case node: KielteisenPaatoksenPerustelut => None
+      case _                                   => extractNext(node)
+    }
+  }
 
-  def haeKielteisenPaatoksenPerustelutExtract = applyOrDefault(
-    vainKielteisenPaatoksenPerustelut,
-    extractNext,
-    None
-  )
+  // Suodata kielteisen päätöksen mukaan
+  def haeKielteisenPaatoksenPerustelutExtract(node: PaatosNodeType): Option[String] = {
+    node match {
+      case node: KielteisenPaatoksenPerustelut => extractNext(node)
+      case _                                   => None
+    }
+  }
 
-  def haePaatosGetListLabel = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    getListLabel,
-    None
-  )
-
-  def haeKielteisenPaatoksenPerustelutGetListLabel = applyOrDefault(
-    vainKielteisenPaatoksenPerustelut,
-    getListLabel,
-    None
-  )
-
-  val haePaatostiedot                  = bindTraverse(haePaatostiedotExtract, expand, combine, haePaatosGetListLabel)
+  val haePaatostiedot                  = bindTraverse(haePaatostiedotExtract, expand, combine)
   val haeKielteisenPaatoksenPerustelut =
-    bindTraverse(haeKielteisenPaatoksenPerustelutExtract, expand, combine, haeKielteisenPaatoksenPerustelutGetListLabel)
+    bindTraverse(haeKielteisenPaatoksenPerustelutExtract, expand, combine)
 
   (haePaatostiedot, haeKielteisenPaatoksenPerustelut)
-}
-
-def applyOrDefault[S, T](
-  predicate: S => Boolean,
-  op: S => T,
-  defaultValue: T
-): S => T = {
-  def fn(node: S): T = {
-    if predicate(node) then op(node) else defaultValue
-  }
-  fn
 }
 
 def bindStep(
@@ -126,19 +102,15 @@ def bindStep(
 def bindTraverse(
   extract: PaatosNodeType => Option[String],
   expand: PaatosNodeType => Seq[PaatosNodeTypeAggregate],
-  combine: (Seq[PaatosNodeTypeAggregate], Seq[PaatosNodeTypeAggregate]) => Seq[PaatosNodeTypeAggregate],
-  getListLabel: PaatosNodeType => Option[String]
+  combine: (Seq[PaatosNodeTypeAggregate], Seq[PaatosNodeTypeAggregate]) => Seq[PaatosNodeTypeAggregate]
 ): PaatosNodeTypeAggregate => Option[String] = {
   def step = bindStep(extract, expand)
   def extractAndExpandAggregate(aggregate: PaatosNodeTypeAggregate): (Option[String], Seq[PaatosNodeTypeAggregate]) = {
     aggregate match {
-      case nodeSeq: Seq[PaatosNodeType] if nodeSeq.isEmpty => (None, Seq.empty)
-      case nodeSeq: Seq[PaatosNodeType]                    =>
-        val listLabel = getListLabel(nodeSeq.head)
-        (listLabel, nodeSeq)
-      case Some(node)           => step(node)
-      case None                 => (None, Seq.empty)
-      case node: PaatosNodeType => step(node)
+      case nodeSeq: Seq[PaatosNodeType] => (None, nodeSeq)   // Flatten lists
+      case Some(node)                   => step(node)
+      case None                         => (None, Seq.empty) // End propagation
+      case node: PaatosNodeType         => step(node)
     }
   }
 
@@ -187,32 +159,6 @@ def combine(
   newList ++ openList
 }
 
-def bindGetListLabel(translationService: TranslationService): PaatosNodeType => Option[String] = {
-  def fn(node: PaatosNodeType): Option[String] = {
-    node match {
-      case node: TutkintoTaiOpinto =>
-        Some(translationService.getTranslation(FI, "perustelumuistio.rinnastettavatTutkinnotTaiOpinnot.label"))
-      case node: Kelpoisuus => Some(translationService.getTranslation(FI, "perustelumuistio.kelpoisuudet.label"))
-      case _                => None
-    }
-  }
-  fn
-}
-
-def poistaKielteisenPaatoksenPerustelut(node: PaatosNodeType): Boolean = {
-  node match {
-    case _: KielteisenPaatoksenPerustelut => false
-    case _                                => true
-  }
-}
-
-def vainKielteisenPaatoksenPerustelut(node: PaatosNodeType): Boolean = {
-  node match {
-    case _: KielteisenPaatoksenPerustelut => true
-    case _                                => false
-  }
-}
-
 /* ------- */
 
 def expandPaatos(node: Paatos): Seq[PaatosNodeTypeAggregate] = {
@@ -227,8 +173,14 @@ def expandPeruutuksenTaiRaukeamisenSyy(node: PeruutuksenTaiRaukeamisenSyy): Seq[
 
 def expandPaatosTieto(node: PaatosTieto): Seq[PaatosNodeTypeAggregate] = {
   Seq(
-    node.kelpoisuudet,
-    node.rinnastettavatTutkinnotTaiOpinnot,
+    TitleNode(
+      titleKey = Some("perustelumuistio.kelpoisuudet.label"),
+      child = node.kelpoisuudet
+    ),
+    TitleNode(
+      titleKey = Some("perustelumuistio.rinnastettavatTutkinnotTaiOpinnot.label"),
+      child = node.rinnastettavatTutkinnotTaiOpinnot
+    ),
     node.kielteisenPaatoksenPerustelut
   )
 }

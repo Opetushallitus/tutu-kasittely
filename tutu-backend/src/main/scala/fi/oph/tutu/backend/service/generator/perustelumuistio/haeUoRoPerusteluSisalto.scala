@@ -14,8 +14,6 @@ def bindHaePaatostiedotUORO(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
 ): (Option[Paatos] => Option[String]) = {
-  val getListLabel = bindGetListLabel(translationService)
-
   val extractMyonteisenPaatoksenLisavaatimukset =
     bindExtractMyonteisenPaatoksenLisavaatimukset(translationService, tutkinnot)
   val extractErotKoulutuksessa                    = bindExtractErotKoulutuksessa(translationService, tutkinnot)
@@ -28,34 +26,22 @@ def bindHaePaatostiedotUORO(
 
   def extractNext(node: PaatosNodeType): Option[String] = {
     node match {
-      case node: Paatos                               => noExtract(node)
-      case node: PeruutuksenTaiRaukeamisenSyy         => noExtract(node)
-      case node: PaatosTieto                          => noExtract(node)
-      case node: TutkintoTaiOpinto                    => noExtract(node)
+      case node: Paatos                               => None
+      case node: PeruutuksenTaiRaukeamisenSyy         => None
+      case node: PaatosTieto                          => None
+      case node: TutkintoTaiOpinto                    => None
       case node: MyonteisenPaatoksenLisavaatimukset   => extractMyonteisenPaatoksenLisavaatimukset(node)
       case node: ErotKoulutuksessa                    => extractErotKoulutuksessa(node)
       case node: KorvaavaToimenpide                   => extractKorvaavaToimenpide(node)
       case node: AmmattikomemusJaElinikainenOppiminen => extractAmmattikomemusJaElinikainenOppiminen(node)
       case node: KelpoisuudenLisavaatimukset          => extractKelpoisuudenLisavaatimukset(node)
-      case node: KielteisenPaatoksenPerustelut        => extractKielteisenPaatoksenPerustelut(node)
+      case node: KielteisenPaatoksenPerustelut        => None
       case node: Kelpoisuus                           => extractKelpoisuus(node)
       case _                                          => None
     }
   }
 
-  def haePaatostiedotExtract = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    extractNext,
-    None
-  )
-
-  def haePaatosGetListLabel = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    getListLabel,
-    None
-  )
-
-  val heaPerustelutUOROPaatostiedoille = bindTraverse(haePaatostiedotExtract, expand, combine, haePaatosGetListLabel)
+  val heaPerustelutUOROPaatostiedoille = bindTraverse(extractNext, expandUORO, combine)
 
   def heaPerustelutUORO(paatosMaybe: Option[Paatos]): Option[String] = {
     val result = paatosMaybe
@@ -74,6 +60,13 @@ def bindHaePaatostiedotUORO(
   }
 
   heaPerustelutUORO
+}
+
+def expandUORO(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
+  node match {
+    case node: MyonteisenPaatoksenLisavaatimukset => expandMyonteisenPaatoksenLisavaatimuksetUORO(node)
+    case _                                        => expand(node)
+  }
 }
 
 def expandMyonteisenPaatoksenLisavaatimuksetUORO(
