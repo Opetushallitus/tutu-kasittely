@@ -4,9 +4,9 @@ import {
   mockEsittelijat,
   mockHakemus,
   mockInit,
+  mockPaatos,
   mockUser,
   mockViestiLista,
-  mockViestiOletussisalto,
   mockViestiTyoversio,
   uusiViesti,
   VIESTILISTAN_ENSIMMAINEN_AIKALEIMA,
@@ -37,6 +37,7 @@ test.beforeEach(async ({ page }) => {
   await mockHakemus(page);
   await mockViestiTyoversio(page, uusiViesti);
   await mockViestiLista(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );
@@ -96,10 +97,13 @@ test('Kopioitaessa editoriin, sisältö lisätään editorissa näytettävän te
   page,
 }) => {
   await mockViestiTyoversio(page, viestiTyoversio);
-  await mockViestiOletussisalto(page);
   openModal(page);
   const modal = page.getByTestId('vahvistettu-viesti-modal');
   await expect(modal).toBeVisible();
+  await expect(page.getByTestId('editor-ready')).toHaveAttribute(
+    'is-ready',
+    'true',
+  );
   await modal.getByTestId(`viesti-modal-kopioi-editoriin-button`).click();
   await expect(page.getByTestId('editor-content-editable')).toHaveText(
     'Tämä on työversioviestin sisältö',

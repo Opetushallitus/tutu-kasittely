@@ -25,6 +25,7 @@ import {
   InitialConfigType,
   LexicalComposer,
 } from '@lexical/react/LexicalComposer';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { EditorRefPlugin } from '@lexical/react/LexicalEditorRefPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
@@ -36,7 +37,7 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { Box, styled, useTheme } from '@mui/material';
 import { LexicalEditor, ParagraphNode } from 'lexical';
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 import { Toolbar } from './Toolbar';
 
@@ -82,6 +83,16 @@ const EditorInnerContainer = styled(Box)({
   },
 });
 
+const EditorReadyPlugin = ({ onReady }: { onReady: () => void }) => {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    onReady();
+  }, [editor, onReady]);
+
+  return null;
+};
+
 const URL_REGEX =
   /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(?<![-.+():%])/;
 
@@ -107,6 +118,7 @@ export function Editor({
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
+  const [, setEditorReady] = useState(false);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement | null) => {
     if (_floatingAnchorElem !== null) {
@@ -160,6 +172,7 @@ export function Editor({
       <LinkPlugin validateUrl={validateUrl} />
       <AutoLinkPlugin matchers={MATCHERS} />
       <EditorRefPlugin editorRef={editorRef} />
+      <EditorReadyPlugin onReady={() => setEditorReady(true)} />
       <MarkdownShortcutPlugin
         transformers={[
           UNORDERED_LIST,

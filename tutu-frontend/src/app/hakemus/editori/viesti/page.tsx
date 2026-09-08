@@ -91,9 +91,11 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     useShowTekstipohjat();
 
   useEffect(() => {
-    const toBeSisalto = viesti?.viesti || oletusSisalto || '';
-    importHtml(editorRef.current, toBeSisalto);
-  }, [editorRef, viesti?.viesti, oletusSisalto]);
+    if (editorRef?.current) {
+      const toBeSisalto = viesti?.viesti || oletusSisalto || '';
+      importHtml(editorRef.current, toBeSisalto);
+    }
+  }, [editorRef?.current, viesti?.viesti, oletusSisalto]);
 
   useEffect(() => {
     if (!currentViesti?.viesti) {
@@ -143,6 +145,10 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         marginRight: showTekstipohjaLista ? theme.spacing(0) : theme.spacing(3),
       }}
     >
+      <span
+        data-testid={'editor-ready'}
+        is-ready={editorRef?.current ? 'true' : 'false'}
+      />
       <UnsavedChangesGuard
         enabled={viestiState.hasChanges}
         onDiscard={viestiState.discard}

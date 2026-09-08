@@ -17,6 +17,7 @@ import {
   mockViesti,
   mockViestiOletussisalto,
   tallennettuTyoversio,
+  mockPaatos,
 } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
@@ -24,6 +25,7 @@ test.beforeEach(async ({ page }) => {
   await mockEsittelijat(page);
   await mockUser(page);
   await mockHakemus(page);
+  await mockPaatos(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );
@@ -62,24 +64,29 @@ test('Olemassaoleva työversio ja vahvistettujen lista näkyvät oikein', async 
   await mockViestiTyoversio(page, viestiTyoversio);
   await mockViestiLista(page);
   await mockViestiOletussisalto(page);
+
   await expect(page.getByTestId('viesti-kieli-select')).toHaveText(
     'yleiset.suomi',
   );
-
   await expect(
     page.locator('input[type="radio"][value="ennakkotieto"]'),
   ).toBeChecked();
   await expect(
     page.getByTestId('viesti-otsikko-input').getByRole('textbox'),
   ).toHaveValue('Työversio');
-  const sisalto = page.getByTestId('editor-content-editable');
-  await expect(sisalto).not.toHaveText('');
-  await expect(sisalto).toHaveText('Tämä on työversio');
   await expect(page.getByTestId('viesti-vahvista-button')).toBeEnabled();
 
   const viestiTable = page.getByTestId('vahvistettu-viesti-table');
   await expect(viestiTable).toBeVisible();
   await expect(viestiTable.locator('tbody tr')).toHaveCount(3);
+  await expect(page.getByTestId('editor-ready')).toHaveAttribute(
+    'is-ready',
+    'true',
+  );
+  const sisalto = page.getByTestId('editor-content-editable');
+  await expect(sisalto).toBeVisible();
+  await expect(sisalto).toBeEditable();
+  await expect(sisalto).toHaveText('Tämä on työversio');
 });
 
 test('Muokkauksesta lähetetään PUT -kutsu backendille', async ({ page }) => {
