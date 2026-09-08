@@ -72,7 +72,7 @@ export function ColorPicker({
             zIndex: 10,
           }}
         >
-          <Stack direction={'row'} gap={'15px'}>
+          <Stack direction={'row'} spacing={'15px'}>
             {fontColors.map((fontColor) => (
               <OphButton
                 key={fontColor}

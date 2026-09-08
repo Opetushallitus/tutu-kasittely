@@ -85,7 +85,7 @@ export const VahvistettuViestiModal = ({
   const content = isLoading ? (
     <FullSpinner />
   ) : (
-    <Stack gap={2}>
+    <Stack spacing={2}>
       <OphTypography data-testid="viesti-otsikko" variant={'h2'}>
         {viesti?.otsikko}
       </OphTypography>
@@ -110,10 +110,10 @@ export const VahvistettuViestiModal = ({
       data-testid="vahvistettu-viesti-modal"
     >
       <Box sx={style}>
-        <Stack sx={{ height: '100%' }} direction="column" gap={2}>
-          <Stack direction="row" gap={2} justifyContent="space-between">
+        <Stack sx={{ height: '100%' }} direction="column" spacing={2}>
+          <Stack direction="row" spacing={2} justifyContent="space-between">
             <OphTypography variant="h2">{tyyppi}</OphTypography>
-            <Stack direction="row" gap={2}>
+            <Stack direction="row" spacing={2}>
               <OphButton
                 data-testid={`viesti-modal-kopioi-button`}
                 variant="outlined"

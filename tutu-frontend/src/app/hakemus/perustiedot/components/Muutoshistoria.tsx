@@ -7,7 +7,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  useTheme,
 } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
@@ -45,7 +44,6 @@ export const Muutoshistoria = ({
   muutosHistoria: MuutosHistoriaItem[];
 }) => {
   const { t } = useTranslations();
-  const theme = useTheme();
   const queryClient = useQueryClient();
   const [sortDef, setSortDef] = useState('');
 
@@ -74,7 +72,7 @@ export const Muutoshistoria = ({
   };
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.muutoshistoria.otsikko')}
       </OphTypography>

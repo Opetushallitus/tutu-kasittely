@@ -139,7 +139,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
 
   return (
     <Stack
-      gap={theme.spacing(3)}
+      spacing={3}
       sx={{
         flexGrow: 1,
         marginRight: showTekstipohjaLista ? theme.spacing(0) : theme.spacing(3),
@@ -153,9 +153,9 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         enabled={viestiState.hasChanges}
         onDiscard={viestiState.discard}
       />
-      <Stack direction={'row'} gap={theme.spacing(2)}>
+      <Stack direction={'row'} spacing={2}>
         <Stack
-          gap={theme.spacing(2)}
+          spacing={2}
           direction={'column'}
           sx={{ width: showTekstipohjaLista ? '50%' : '100%' }}
         >
@@ -273,7 +273,6 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
           </Stack>
           <VahvistettuList
             t={t}
-            theme={theme}
             viestiLista={viestiLista || []}
             paivitaVahvistetut={paivitaVahvistettuLista}
             lisaaEditoriin={(html: string) => {

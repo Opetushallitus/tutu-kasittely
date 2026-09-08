@@ -127,7 +127,7 @@ export default function PaatosEditorPage() {
       <UnsavedChangesGuard enabled={hasChanges} />
       <Stack
         direction="column"
-        gap={2}
+        spacing={2}
         sx={{ width: '100%', marginRight: 3, marginTop: 1 }}
       >
         <OphTypography variant={'h2'}>

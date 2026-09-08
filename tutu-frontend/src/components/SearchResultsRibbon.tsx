@@ -293,11 +293,7 @@ export const SearchResultsRibbon = () => {
         border: DEFAULT_BOX_BORDER,
       }}
     >
-      <Stack
-        direction="column"
-        gap={theme.spacing(0.5)}
-        sx={{ paddingY: '8px' }}
-      >
+      <Stack direction="column" spacing={0.5} sx={{ paddingY: '8px' }}>
         <Stack direction="row" alignItems="center">
           <Box sx={{ width: 247, flexShrink: 0, marginRight: 2 }}>
             <OphTypography variant="label" sx={{ fontWeight: 'bold' }}>
@@ -310,7 +306,7 @@ export const SearchResultsRibbon = () => {
             alignItems="center"
             justifyContent="space-between"
             flex={1}
-            gap={theme.spacing(1)}
+            spacing={1}
           >
             <Stack direction="row" alignItems="center">
               <OphTypography variant="label" sx={{ fontWeight: 'bold' }}>

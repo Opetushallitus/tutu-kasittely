@@ -35,7 +35,7 @@ const SOVELLETUT_TILANTEET_FOR_EUROPPA_OPINNOT = ['2', '2a'];
 
 const Tayttoohje = ({ t }: { t: TFunction }) => {
   return (
-    <Stack direction="row" gap={1}>
+    <Stack direction="row" spacing={1}>
       <InfoOutlined />
       <OphTypography>
         {t('hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.tayttoOhje')}
@@ -63,7 +63,7 @@ const SovellettuTilanneComponent = ({
     SOVELLETUT_TILANTEET_FOR_EUROPPA_OPINNOT.includes(sovellettuTilanne);
 
   return (
-    <Stack direction="column" gap={3}>
+    <Stack direction="column" spacing={3}>
       <Tayttoohje t={t} />
       {showTallinnaOpinnot && (
         <OphFormFieldWrapper
@@ -72,7 +72,7 @@ const SovellettuTilanneComponent = ({
             'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.tallinnaOpinnot',
           )}
           renderInput={() => (
-            <Stack direction="column" gap={3}>
+            <Stack direction="column" spacing={3}>
               <OpintoOptionWithLaajuusInput
                 t={t}
                 checkboxLabel={
@@ -163,7 +163,7 @@ export const SovellettuTilanneOikeustieteenMaisteri = ({
   };
   const sovellettuTilanne = lisavaatimukset?.sovellettuTilanne ?? '';
   return (
-    <Stack direction="column" gap={3}>
+    <Stack direction="column" spacing={3}>
       {sovellettuTilanne === 'muu' ? (
         <OphInputFormField
           multiline={true}

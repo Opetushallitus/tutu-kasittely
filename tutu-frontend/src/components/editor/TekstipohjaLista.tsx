@@ -1,6 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import {
   OphButton,
@@ -62,7 +61,7 @@ export const TekstipohjaLista = ({
         borderColor: 'divider',
         paddingLeft: theme.spacing(2),
       }}
-      gap={theme.spacing(2)}
+      spacing={2}
       data-testid="tekstipohja-lista"
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -76,7 +75,6 @@ export const TekstipohjaLista = ({
         </OphButton>
       </Stack>
       <ListaSisalto
-        theme={theme}
         error={pohjatLoadError}
         isLoading={isLoadingPohjat || isLoadingPohja}
         lista={tekstipohjat ?? []}
@@ -87,13 +85,11 @@ export const TekstipohjaLista = ({
 };
 
 const ListaSisalto = ({
-  theme,
   error,
   isLoading,
   lista,
   selectTekstipohja,
 }: {
-  theme: Theme;
   error: Error | null;
   isLoading: boolean;
   lista: KategorianTekstipohjat[];
@@ -107,9 +103,9 @@ const ListaSisalto = ({
     return <FullSpinner></FullSpinner>;
   }
   return (
-    <Stack gap={theme.spacing(1)} data-testid="tekstipohja-lista-sisalto">
+    <Stack spacing={1} data-testid="tekstipohja-lista-sisalto">
       {R.map(lista, (kategoria, kategoriaIndex) => (
-        <Stack key={`kategoriaItem_${kategoriaIndex}`} gap={theme.spacing(1)}>
+        <Stack key={`kategoriaItem_${kategoriaIndex}`} spacing={1}>
           <OphTypography variant="h5">
             {`${kategoriaIndex + 1}. ${kategoria.kategoriaNimi}`}
           </OphTypography>

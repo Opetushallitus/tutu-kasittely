@@ -35,7 +35,7 @@ export const KielteisenPaatoksenPerusteluComponent = ({
       label={t('hakemus.paatos.kielteisenPaatoksenPerustelut.otsikko')}
       sx={{ flexDirection: 'column', gap: theme.spacing(2) }}
       renderInput={() => (
-        <Stack direction="column" gap={theme.spacing(1)}>
+        <Stack direction="column" spacing={1}>
           {kielteisenPaatoksenPerustelutKeys.map((key) => (
             <OphCheckbox
               key={key}

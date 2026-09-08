@@ -28,7 +28,7 @@ export const KieliSelect = ({
 }) => {
   const kieliOptions = getKieliOptions(t);
   return (
-    <Stack direction="column" width="100%" gap={theme.spacing(2)}>
+    <Stack direction="column" width="100%" spacing={2}>
       <OphTypography
         component="span"
         sx={{

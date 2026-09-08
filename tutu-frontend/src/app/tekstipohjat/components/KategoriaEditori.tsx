@@ -56,7 +56,7 @@ export const KategoriaEditori = <
           p: 3,
         }}
       >
-        <Stack direction="column" gap={6}>
+        <Stack direction="column" spacing={6}>
           <OphTypography variant="h1" id={'kategoria-editor-header'}>
             {kategoria
               ? t('tekstipohjat.kategoriat.muokkaa')
@@ -67,7 +67,7 @@ export const KategoriaEditori = <
             value={nimi}
             onChange={(event) => setNimi(event.target.value)}
           ></OphInputFormField>
-          <Stack direction="row" gap={2} justifyContent="flex-end">
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
             <OphButton
               data-testid="modal-peruuta-button"
               variant={'outlined'}

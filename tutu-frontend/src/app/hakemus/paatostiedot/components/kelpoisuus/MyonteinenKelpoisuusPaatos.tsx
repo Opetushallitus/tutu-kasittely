@@ -1,5 +1,4 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import {
   OphCheckbox,
   OphInputFormField,
@@ -32,7 +31,6 @@ export type MyonteinenKelpoisuusPaatosProps = {
   updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
   t: TFunction;
-  theme: Theme;
 };
 
 export const MyonteinenKelpoisuusPaatos: React.FC<
@@ -42,7 +40,6 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
   updateLisavaatimukset,
   kelpoisuusKey,
   t,
-  theme,
 }: MyonteinenKelpoisuusPaatosProps) => {
   const updateKelpoisuudenLisavaatimukset = (
     updatedLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
@@ -83,7 +80,7 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
   ]);
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <OphRadioGroupWithClear
         labelVariant="label"
         label={t(
@@ -105,13 +102,13 @@ export const MyonteinenKelpoisuusPaatos: React.FC<
         }
       />
       {erotKoulutuksessa && lisavaatimukset?.erotKoulutuksessa && (
-        <Stack gap={theme.spacing(2)}>
+        <Stack spacing={2}>
           <OphTypography variant="h5">
             {t(
               'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.erotKoulutuksessa.otsikko',
             )}
           </OphTypography>
-          <Stack gap={theme.spacing(1)}>
+          <Stack spacing={1}>
             {erotKoulutuksessa.erot!.map((ero: NamedBoolean) => (
               <OphCheckbox
                 key={ero.name}

@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   OphTypography,
   OphInputFormField,
@@ -37,14 +37,13 @@ const OhjeellinenLaajuus = ({ tutkinto, updateTutkinto }: FieldProps) => {
 };
 
 const Suoritusvuodet = ({ tutkinto, updateTutkinto }: FieldProps) => {
-  const theme = useTheme();
   const { t } = useTranslations();
   return (
     <Stack direction="column">
       <OphTypography variant="label">
         {t('hakemus.perustelu.yleiset.tutkinnot.suoritusvuodet')}
       </OphTypography>
-      <Stack direction="row" gap={theme.spacing(0.5)}>
+      <Stack direction="row" spacing={0.5}>
         <OphInputFormField
           multiline={false}
           data-testid={`yleiset-perustelut__tutkinto-${tutkinto.jarjestys}--suoritusvuodet-alku`}
@@ -142,7 +141,6 @@ export const TutkintokohtaisetTiedot = ({
   tutkinnot,
   updateTutkinnot,
 }: TutkintokohtaisetTiedotProps) => {
-  const theme = useTheme();
   const { t } = useTranslations();
 
   const updateTutkinto = (next: Tutkinto) => {
@@ -171,7 +169,7 @@ export const TutkintokohtaisetTiedot = ({
             jarjestys: tutkinto.jarjestys,
           })}
         </OphTypography>
-        <Stack direction="row" gap={theme.spacing(4)}>
+        <Stack direction="row" spacing={4}>
           <OhjeellinenLaajuus
             updateTutkinto={updateTutkintoWithPartial}
             tutkinto={tutkinto}

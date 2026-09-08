@@ -180,7 +180,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   }, [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey]);
 
   return (
-    <Stack direction="column" gap={3}>
+    <Stack direction="column" spacing={3}>
       {sovellettuTilanneOptions && (
         <OphSelectFormFieldPatched
           options={sovellettuTilanneOptions.map((option) => ({

@@ -1,4 +1,4 @@
-import { Box, Stack, useTheme } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { ReactNode } from 'react';
 
@@ -28,14 +28,13 @@ export const PageLayout = ({
   ribbon?: ReactNode;
   children: ReactNode;
 }) => {
-  const theme = useTheme();
   return (
     <Stack
       sx={{
         width: '100%',
         alignItems: 'stretch',
       }}
-      gap={theme.spacing(4)}
+      spacing={4}
     >
       <HeaderWrapper>
         <PageContent>{header}</PageContent>

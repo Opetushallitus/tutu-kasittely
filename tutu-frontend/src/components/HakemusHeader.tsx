@@ -28,7 +28,7 @@ export const HakemusHeader = () => {
         divider={<Divider orientation="vertical" flexItem />}
         spacing={5}
       >
-        <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
+        <Stack direction="column" width="100%" spacing={2}>
           <OphTypography variant="label" data-testid="hakemusotsikko-hakija">
             {hakemus?.hakija?.sukunimi}, {hakemus?.hakija?.etunimet}
           </OphTypography>
@@ -36,14 +36,14 @@ export const HakemusHeader = () => {
             {hakemus?.asiatunnus || t('hakemusotsikko.asiatunnusPuuttuu')}
           </OphTypography>
         </Stack>
-        <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
+        <Stack direction="column" width="100%" spacing={2}>
           <OphTypography data-testid="hakemusotsikko-kirjauspvm">
             {t('hakemusotsikko.kirjausPvm')}{' '}
             {hakemus.saapumisPvm
               ? formatHelsinki(hakemus.saapumisPvm, DATE_PLACEHOLDER)
               : t('puuttuu')}
           </OphTypography>
-          <Stack direction="row" alignItems="center" gap={theme.spacing(1)}>
+          <Stack direction="row" alignItems="center" spacing={1}>
             <OphTypography
               noWrap={true}
               data-testid="hakemusotsikko-kasittelyvaihe"
@@ -61,7 +61,7 @@ export const HakemusHeader = () => {
             )}
           </Stack>
         </Stack>
-        <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
+        <Stack direction="column" width="100%" spacing={2}>
           <OphTypography
             component="span"
             sx={{

@@ -1,5 +1,5 @@
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
-import { Stack, useTheme, styled } from '@mui/material';
+import { Stack, styled } from '@mui/material';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
@@ -18,7 +18,6 @@ const OpenInNewOutlinedIconBlue = styled(OpenInNewOutlinedIcon)({
 });
 
 export const HakemusKoskee = () => {
-  const theme = useTheme();
   const { t } = useTranslations();
   const { hakemusState } = useHakemus();
 
@@ -31,7 +30,7 @@ export const HakemusKoskee = () => {
   )?.label;
 
   return (
-    <Stack direction="column" gap={theme.spacing(0.25)}>
+    <Stack direction="column" spacing={0.25}>
       <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
         {t('hakemus.perustiedot.hakemusKoskee')}
       </OphTypography>
@@ -56,7 +55,7 @@ export const HakemusKoskee = () => {
         rel="noopener"
         sx={{ fontWeight: 'normal' }}
       >
-        <CenteredRow gap={theme.spacing(0.25)}>
+        <CenteredRow gap={0.25}>
           {t('hakemus.sivupalkki.avaaHakemus')}
           <OpenInNewOutlinedIconBlue />
         </CenteredRow>

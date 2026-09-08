@@ -47,7 +47,7 @@ export default function TekstipohjaLista<
     <>
       <Stack
         direction={'column'}
-        gap={2}
+        spacing={2}
         sx={{
           width: '30%',
           backgroundColor: 'white',
@@ -58,7 +58,7 @@ export default function TekstipohjaLista<
         <OphTypography variant={'h3'} sx={{ marginTop: 3 }}>
           {t(`${tPrefix}.lista.otsikko`)}
         </OphTypography>
-        <Stack direction={'row'} gap={1}>
+        <Stack direction={'row'} spacing={1}>
           <OphButton
             variant={'outlined'}
             startIcon={<Add />}

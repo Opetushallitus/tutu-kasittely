@@ -1,4 +1,3 @@
-import { Theme } from '@mui/material/styles';
 import React from 'react';
 
 import { KorvaavatToimenpiteet } from '@/src/app/hakemus/paatostiedot/components/KorvaavatToimenpiteet';
@@ -18,14 +17,12 @@ import {
 
 export type LopullinenPaatosComponentProps = {
   t: TFunction;
-  theme: Theme;
   paatos: Paatos;
   updatePaatosField: (paatos: Partial<Paatos>, immediateSave?: boolean) => void;
 };
 
 export const LopullinenPaatosComponent = ({
   t,
-  theme,
   paatos,
   updatePaatosField,
 }: LopullinenPaatosComponentProps) => {
@@ -37,7 +34,6 @@ export const LopullinenPaatosComponent = ({
     <>
       <KorvaavatToimenpiteet
         t={t}
-        theme={theme}
         paatos={paatos}
         updatePaatos={(toimenpideDto: KorvaavaToimenpideDto) => {
           const [updatedPaatos, updatedPaatostieto] =

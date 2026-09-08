@@ -1,5 +1,4 @@
 import { Divider, Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { OphInputFormField } from '@opetushallitus/oph-design-system';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -19,14 +18,12 @@ export type LopullisenHakemuksenSisaltoProps = {
   hakemus: Hakemus;
   updateHakemus: (newData: Partial<Hakemus>) => void;
   t: TFunction;
-  theme: Theme;
 };
 
 export const LopullisenHakemuksenSisalto = ({
   hakemus,
   updateHakemus,
   t,
-  theme,
 }: LopullisenHakemuksenSisaltoProps) => {
   const { maatJaValtiotOptions } = useKoodistoOptions();
 
@@ -54,7 +51,7 @@ export const LopullisenHakemuksenSisalto = ({
   }, [hakemus.sisalto, hakemus.lomakkeenKieli, suoritusOtsikko]);
 
   return (
-    <Stack gap={theme.spacing(2)}>
+    <Stack spacing={2}>
       <Divider orientation={'horizontal'} />
       <OphInputFormField
         label={t(
@@ -92,7 +89,7 @@ export const LopullisenHakemuksenSisalto = ({
       />
       <Divider orientation={'horizontal'} />
       {suoritusSisallot.map((item) => (
-        <Stack key={item.key} gap={theme.spacing(2)}>
+        <Stack key={item.key} spacing={2}>
           <Sisalto
             sisalto={[item]}
             osiot={[]}

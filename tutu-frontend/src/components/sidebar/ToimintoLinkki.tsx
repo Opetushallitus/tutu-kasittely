@@ -18,7 +18,7 @@ export const ToimintoLinkki = ({
 }: {
   path?: string;
   onClick?: () => void;
-  gap: string;
+  gap: number;
   icon: React.ReactNode;
   label: string;
 }) => {

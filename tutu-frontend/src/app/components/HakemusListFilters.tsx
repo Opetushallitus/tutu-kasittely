@@ -1,9 +1,4 @@
-import {
-  Grid2 as Grid,
-  ToggleButton,
-  ToggleButtonGroup,
-  useTheme,
-} from '@mui/material';
+import { Grid2 as Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {
   OphFormFieldWrapper,
   OphInputFormField,
@@ -36,7 +31,6 @@ import {
 } from '@/src/lib/utils';
 
 export default function HakemusListFilters() {
-  const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
@@ -97,8 +91,8 @@ export default function HakemusListFilters() {
   }, 300);
 
   return (
-    <Grid container spacing={theme.spacing(2)}>
-      <Grid container spacing={theme.spacing(3)} size={12}>
+    <Grid container spacing={2}>
+      <Grid container spacing={3} size={12}>
         <Grid size="auto">
           <OphFormFieldWrapper
             sx={{
@@ -165,7 +159,7 @@ export default function HakemusListFilters() {
           ></OphInputFormField>
         </Grid>
       </Grid>
-      <Grid container spacing={theme.spacing(3)} size={12}>
+      <Grid container spacing={3} size={12}>
         <Grid size={naytaKaikki ? 6 : 9}>
           <OphFormFieldWrapper
             label={t('hakemuslista.kasittelyvaihe')}

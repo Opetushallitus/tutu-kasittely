@@ -145,7 +145,7 @@ const Paatostiedot = ({
 
   return (
     <Stack
-      gap={theme.spacing(3)}
+      spacing={3}
       sx={{
         flexGrow: 1,
         marginRight: showPaatosTekstiPreview
@@ -157,9 +157,9 @@ const Paatostiedot = ({
         enabled={paatosState.hasChanges}
         onDiscard={paatosState.discard}
       />
-      <Stack direction={'row'} gap={theme.spacing(2)}>
+      <Stack direction={'row'} spacing={2}>
         <Stack
-          gap={theme.spacing(2)}
+          spacing={2}
           direction={'column'}
           sx={{ width: showPaatosTekstiPreview ? '50%' : '100%' }}
         >
@@ -175,14 +175,12 @@ const Paatostiedot = ({
           {hakemus.hakemusKoskee === HakemusKoskee.LOPULLINEN_PAATOS ? (
             <LopullinenPaatosComponent
               t={t}
-              theme={theme}
               paatos={paatos}
               updatePaatosField={updatePaatosField}
             />
           ) : (
             <EhdollinenPaatosComponent
               t={t}
-              theme={theme}
               paatos={paatos}
               tutkinnot={tutkinnot}
               updatePaatosField={updatePaatosField}

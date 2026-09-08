@@ -66,10 +66,10 @@ const AikaisempiPaatos = ({
 }: {
   t: TFunction;
   asiatunnus: string;
-  gap: string;
+  gap: number;
 }) => {
   return (
-    <Stack direction="column" gap={gap}>
+    <Stack direction="column" spacing={gap}>
       <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
         {t('hakemus.sivupalkki.paatos.otsikkoAikaisempi')}
       </OphTypography>
@@ -92,7 +92,7 @@ export const Paatos = () => {
   const { paatos } = usePaatos(hakemus?.hakemusOid);
 
   return (
-    <Stack direction="column" gap={theme.spacing(2)}>
+    <Stack direction="column" spacing={2}>
       {paatos?.paatostekstiVahvistettu &&
         paatos.paatosTiedot?.map((tiedot, index) => (
           <Box
@@ -122,7 +122,7 @@ export const Paatos = () => {
       <AikaisempiPaatos
         t={t}
         asiatunnus="OPH-1234-5678"
-        gap={theme.spacing(1)}
+        gap={1}
       ></AikaisempiPaatos>
     </Stack>
   );

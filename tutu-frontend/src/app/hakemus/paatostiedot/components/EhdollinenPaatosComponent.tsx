@@ -1,6 +1,5 @@
 import { Add } from '@mui/icons-material';
 import { Divider } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
@@ -15,7 +14,6 @@ import { Tutkinto } from '@/src/lib/types/tutkinto';
 
 export type EhdollinenPaatosComponentProps = {
   t: TFunction;
-  theme: Theme;
   paatos: Paatos;
   tutkinnot: Tutkinto[];
   updatePaatosField: (paatos: Partial<Paatos>, immediateSave?: boolean) => void;
@@ -23,7 +21,6 @@ export type EhdollinenPaatosComponentProps = {
 
 export const EhdollinenPaatosComponent = ({
   t,
-  theme,
   paatos,
   tutkinnot,
   updatePaatosField,
@@ -120,7 +117,6 @@ export const EhdollinenPaatosComponent = ({
       {paatos.ratkaisutyyppi === 'PeruutusTaiRaukeaminen' && (
         <PeruutuksenTaiRaukeamisenSyyComponent
           t={t}
-          theme={theme}
           syy={paatos.peruutuksenTaiRaukeamisenSyy}
           updatePeruutuksenTaiRaukeamisenSyy={(syy) =>
             updatePaatosField({ peruutuksenTaiRaukeamisenSyy: syy })

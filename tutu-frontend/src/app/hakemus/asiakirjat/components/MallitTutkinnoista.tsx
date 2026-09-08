@@ -5,7 +5,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  useTheme,
 } from '@mui/material';
 import {
   OphInputFormField,
@@ -197,7 +196,6 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   asiakirjaTieto: AsiakirjaTieto;
   updateAsiakirjaTieto: AsiakirjaTietoUpdateCallback;
 }) => {
-  const theme = useTheme();
   const { t } = useTranslations();
 
   const [currentMallit, setCurrentMallit] = React.useState<
@@ -266,7 +264,7 @@ export const AsiakirjaMallejaVastaavistaTutkinnoista = ({
   };
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <OphTypography
         variant={'h3'}
         data-testid="asiakirjamalleja-vastaavista-tutkinnoista-otsikko"

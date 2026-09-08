@@ -252,7 +252,7 @@ const AsiakirjaPagePure = ({
 
   return (
     <Stack
-      gap={theme.spacing(3)}
+      spacing={3}
       sx={{
         flexGrow: 1,
         marginRight: theme.spacing(3),

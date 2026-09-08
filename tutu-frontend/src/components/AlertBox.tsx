@@ -38,7 +38,7 @@ export const AlertBox = ({
 }) => {
   return (
     <StyledBox data-testid="alert-box">
-      <Stack gap={2} sx={{ width: '100%' }}>
+      <Stack spacing={2} sx={{ width: '100%' }}>
         <OphTypography variant={'h3'}>{headingText}</OphTypography>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <InfoIconBlue />

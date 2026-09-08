@@ -145,7 +145,7 @@ export default function PaatospohjaEditori({
   }, [valittuPaatospohjaId, t]);
 
   return (
-    <Stack direction={'column'} gap={2} sx={{ marginTop: 4, width: '65%' }}>
+    <Stack direction={'column'} spacing={2} sx={{ marginTop: 4, width: '65%' }}>
       <OphTypography variant={'h2'}>{headerText}</OphTypography>
       {valittuPaatospohjaId !== null ? (
         <ValittuPaatospohja
@@ -156,7 +156,7 @@ export default function PaatospohjaEditori({
       ) : (
         <Stack
           direction={'column'}
-          gap={2}
+          spacing={2}
           alignItems={'center'}
           justifyContent={'center'}
         >

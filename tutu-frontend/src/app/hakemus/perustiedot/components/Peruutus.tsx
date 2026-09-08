@@ -1,5 +1,4 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
@@ -12,15 +11,9 @@ export type PeruutusProps = {
   hakemus: Hakemus;
   updateHakemus: (newData: Partial<Hakemus>) => void;
   t: TFunction;
-  theme: Theme;
 };
 
-export const Peruutus = ({
-  hakemus,
-  updateHakemus,
-  t,
-  theme,
-}: PeruutusProps) => {
+export const Peruutus = ({ hakemus, updateHakemus, t }: PeruutusProps) => {
   const peruutusPvm = hakemus.peruutusPvm
     ? new Date(hakemus.peruutusPvm)
     : null;
@@ -31,7 +24,7 @@ export const Peruutus = ({
   };
 
   return (
-    <Stack gap={theme.spacing(2)}>
+    <Stack spacing={2}>
       <OphTypography variant="h3">
         {t('hakemus.perustiedot.peruutus.otsikko')}
       </OphTypography>

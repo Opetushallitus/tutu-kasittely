@@ -55,7 +55,7 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
         <Stack
           sx={{ height: '100%' }}
           direction="column"
-          gap={2}
+          spacing={2}
           justifyContent="space-between"
         >
           <OphTypography
@@ -89,7 +89,7 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
             onChange={(e) => setKysymys(e.target.value)}
             data-testid="yhteinenkasittely-uusiKasittely-kysymys"
           />
-          <Stack justifyContent="flex-end" direction="row" gap={2}>
+          <Stack justifyContent="flex-end" direction="row" spacing={2}>
             <OphButton onClick={handleClose}>{t('yleiset.peruuta')}</OphButton>
             <OphButton
               variant="contained"
@@ -144,7 +144,7 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
         <Stack
           sx={{ height: '100%' }}
           direction="column"
-          gap={2}
+          spacing={2}
           justifyContent="space-between"
         >
           <OphTypography
@@ -186,7 +186,7 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
             onChange={(e) => setKysymys(e.target.value)}
             data-testid="yhteinenkasittely-jatkoKasittely-kysymys"
           />
-          <Stack justifyContent="flex-end" direction="row" gap={2}>
+          <Stack justifyContent="flex-end" direction="row" spacing={2}>
             <OphButton onClick={handleClose}>{t('yleiset.peruuta')}</OphButton>
             <OphButton
               variant="contained"

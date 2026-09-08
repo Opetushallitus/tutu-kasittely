@@ -18,7 +18,7 @@ const IndentedStack: React.FC<{
   children: React.ReactNode | React.ReactNode[];
 }> = ({ children }) => {
   return (
-    <Stack paddingLeft={3} paddingBottom={2} gap={2}>
+    <Stack paddingLeft={3} paddingBottom={2} spacing={2}>
       {children}
     </Stack>
   );
@@ -60,7 +60,7 @@ const Kelpoisuuskoe = ({
   testIdPrefix: string;
 }) => {
   return (
-    <Stack gap={1}>
+    <Stack spacing={1}>
       <OphTypography variant="h5">
         {t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoeSisalto')}
       </OphTypography>
@@ -165,7 +165,7 @@ export const KorvaavaToimenpideComponent = ({
   );
 
   return (
-    <Stack gap={1}>
+    <Stack spacing={1}>
       <OphFormFieldWrapper
         sx={{ gap: 1 }}
         label={label}

@@ -118,7 +118,7 @@ export const ValmistumisenVahvistusComponent = ({
   };
 
   return (
-    <Stack direction="column" spacing={theme.spacing(2)}>
+    <Stack direction="column" spacing={2}>
       <OphCheckbox
         label={t('hakemus.asiakirjat.valmistumisenVahvistus.otsikko')}
         data-testid="valmistumisen-vahvistus-checkbox"
@@ -145,12 +145,8 @@ export const ValmistumisenVahvistusComponent = ({
         }}
       />
       {valmistumisenVahvistus.valmistumisenVahvistus && (
-        <Stack
-          direction="column"
-          spacing={theme.spacing(2)}
-          marginLeft={theme.spacing(4)}
-        >
-          <Stack direction="row" spacing={theme.spacing(2)} width="100%">
+        <Stack direction="column" spacing={2} marginLeft={theme.spacing(4)}>
+          <Stack direction="row" spacing={2} width="100%">
             <CalendarComponent
               setDate={updateVahvistusPyyntoLahetetty}
               selectedValue={pyyntoLahetetty}

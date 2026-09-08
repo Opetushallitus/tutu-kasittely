@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { SearchBar } from './SearchBar';
@@ -12,15 +12,9 @@ export const PageHeaderRow = ({
   header: string;
   showSearchBar?: boolean;
 }) => {
-  const theme = useTheme();
-
   return (
     <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
-      <Stack
-        direction="row"
-        spacing={theme.spacing(0, 1)}
-        sx={{ alignItems: 'center' }}
-      >
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <HomeIcon href={`/`} />
         <HomeStyledChevron />
         <OphTypography

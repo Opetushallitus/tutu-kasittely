@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphInputFormField } from '@opetushallitus/oph-design-system';
 
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
@@ -15,7 +15,6 @@ export const JatkoOpintoKelpoisuus = ({
   updatePerustelu,
 }: Props) => {
   const { t } = useTranslations();
-  const theme = useTheme();
 
   const currentValue = perustelu?.jatkoOpintoKelpoisuus;
   const currentLisatieto = perustelu?.jatkoOpintoKelpoisuusLisatieto;
@@ -41,7 +40,7 @@ export const JatkoOpintoKelpoisuus = ({
     kelpoisuus === 'muu';
 
   return (
-    <Stack direction="column" gap={theme.spacing(1)}>
+    <Stack direction="column" spacing={1}>
       <OphRadioGroupWithClear
         label={t(
           'hakemus.perustelu.yleiset.muutPerustelut.jatkoOpintoKelpoisuus.otsikko',

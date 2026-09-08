@@ -92,7 +92,7 @@ export const PaatosTietoComponent = ({
   };
 
   return (
-    <Stack direction={'column'} gap={2}>
+    <Stack direction={'column'} spacing={2}>
       <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.paatostyyppi.otsikko')}
