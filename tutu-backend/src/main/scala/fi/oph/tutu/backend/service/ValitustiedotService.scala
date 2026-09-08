@@ -6,6 +6,7 @@ import fi.oph.tutu.backend.repository.{HakemusRepository, ValitustiedotRepositor
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -18,7 +19,7 @@ class ValitustiedotService(
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[ValitustiedotService])
 
-  private def validoiValitusKHO(valitusKHO: ValitusKHO): Unit = {
+  private def validoiValitusKHOPvm(valitusKHO: ValitusKHO): Unit = {
     (valitusKHO.valitettu, valitusKHO.valitusPvm, valitusKHO.ratkaisuPvm) match {
       case (valitettu, Some(_), _) if !valitettu.contains(true) =>
         throw new ValitustiedotValidationException("KHO:n valituspäivä ei voi olla asetettu ilman valitusta")
@@ -30,6 +31,82 @@ class ValitustiedotService(
         throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla ennen valituspäivää")
       case _ =>
     }
+  }
+
+  private def validoiLausuntopyyntoTila(
+    tuomioistuinTunnus: String,
+    valitettu: Option[Boolean],
+    lausuntopyynto: Option[Boolean]
+  ): Unit = {
+    (valitettu, lausuntopyynto) match {
+      case (valitettu, Some(true)) if !valitettu.contains(true) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausuntopyyntö ei voi olla asetettu ilman valitusta"
+        )
+      case _ =>
+    }
+  }
+
+  private def validoiLausuntopyyntoSaapumisPvm(
+    tuomioistuinTunnus: String,
+    lausuntopyynto: Option[Boolean],
+    lausuntopyynnonSaapumisPvm: Option[LocalDateTime]
+  ): Unit = {
+    (lausuntopyynto, lausuntopyynnonSaapumisPvm) match {
+      case (lausuntopyynto, Some(_)) if !lausuntopyynto.contains(true) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausuntopyynnön saapumispäivä ei voi olla asetettu ilman lausuntopyyntöä"
+        )
+      case _ =>
+    }
+  }
+
+  private def validoiLausuntopyyntoMaaraaikaPvm(
+    tuomioistuinTunnus: String,
+    lausuntopyynnonSaapumisPvm: Option[LocalDateTime],
+    lausunnonMaaraaikaPvm: Option[LocalDateTime]
+  ): Unit = {
+    (lausuntopyynnonSaapumisPvm, lausunnonMaaraaikaPvm) match {
+      case (None, Some(_)) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausunnon määräaika ei voi olla asetettu ilman lausuntopyynnön saapumispäivää"
+        )
+      case (Some(saapumisPvm), Some(maaraaikaPvm)) if maaraaikaPvm.isBefore(saapumisPvm) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausunnon määräaika ei voi olla ennen lausuntopyynnön saapumispäivää"
+        )
+      case _ =>
+    }
+  }
+
+  private def validoiLausuntoAnnettuPvm(
+    tuomioistuinTunnus: String,
+    lausuntopyynnonSaapumisPvm: Option[LocalDateTime],
+    lausuntoAnnettuPvm: Option[LocalDateTime]
+  ): Unit = {
+    (lausuntopyynnonSaapumisPvm, lausuntoAnnettuPvm) match {
+      case (None, Some(_)) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausunto annettu -päivämäärä ei voi olla asetettu ilman lausuntopyynnön saapumispäivää"
+        )
+      case (Some(saapumisPvm), Some(annettuPvm)) if annettuPvm.isBefore(saapumisPvm) =>
+        throw new ValitustiedotValidationException(
+          s"$tuomioistuinTunnus:n lausunto annettu -päivämäärä ei voi olla ennen lausuntopyynnön saapumispäivää"
+        )
+      case _ =>
+    }
+  }
+
+  private def validoiValitusKHOLausuntopyynto(valitusKHO: ValitusKHO): Unit = {
+    validoiLausuntopyyntoTila("KHO", valitusKHO.valitettu, valitusKHO.lausuntopyynto)
+    validoiLausuntopyyntoSaapumisPvm("KHO", valitusKHO.lausuntopyynto, valitusKHO.lausuntopyynnonSaapumisPvm)
+    validoiLausuntopyyntoMaaraaikaPvm("KHO", valitusKHO.lausuntopyynnonSaapumisPvm, valitusKHO.lausunnonMaaraaikaPvm)
+    validoiLausuntoAnnettuPvm("KHO", valitusKHO.lausuntopyynnonSaapumisPvm, valitusKHO.lausuntoAnnettuPvm)
+  }
+
+  private def validoiValitusKHO(valitusKHO: ValitusKHO): Unit = {
+    validoiValitusKHOPvm(valitusKHO)
+    validoiValitusKHOLausuntopyynto(valitusKHO)
   }
 
   private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot = {

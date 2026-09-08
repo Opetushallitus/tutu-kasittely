@@ -121,7 +121,12 @@ class ValitustiedotServiceTest extends UnitTestBase {
         valitettu = Some(true),
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisu = Some(ValitusKHORatkaisu.EiValituslupaa),
-        ratkaisuLisatieto = Some("Ei lupaa valittaa")
+        ratkaisuLisatieto = Some("Ei lupaa valittaa"),
+        lausuntopyynto = Some(true),
+        ashaTunnus = Some("ASHA-123"),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
       )
     )
 
@@ -136,6 +141,14 @@ class ValitustiedotServiceTest extends UnitTestBase {
     assertEquals(Some(ValitusKHORatkaisu.EiValituslupaa), uusiTulos.get.valitusKHO.ratkaisu)
     assertEquals(Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)), uusiTulos.get.valitusKHO.valitusPvm)
     assertEquals(Some("Ei lupaa valittaa"), uusiTulos.get.valitusKHO.ratkaisuLisatieto)
+    assertEquals(Some(true), uusiTulos.get.valitusKHO.lausuntopyynto)
+    assertEquals(Some("ASHA-123"), uusiTulos.get.valitusKHO.ashaTunnus)
+    assertEquals(
+      Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+      uusiTulos.get.valitusKHO.lausuntopyynnonSaapumisPvm
+    )
+    assertEquals(Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)), uusiTulos.get.valitusKHO.lausunnonMaaraaikaPvm)
+    assertEquals(Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0)), uusiTulos.get.valitusKHO.lausuntoAnnettuPvm)
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
   }
 
@@ -238,6 +251,136 @@ class ValitustiedotServiceTest extends UnitTestBase {
     val dbHakemus = makeDbHakemus(hakemusOid)
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(valitettu = Some(false), valitusPvm = None, ratkaisuPvm = None)
+    )
+    val tallennettu = lahetetty.copy(id = Some(UUID.randomUUID()), hakemusId = Some(dbHakemus.id))
+
+    when(valitustiedotRepository.haeValitustiedot(hakemusOid)).thenReturn(None)
+    when(hakemusRepository.haeHakemus(hakemusOid)).thenReturn(Some(dbHakemus))
+    when(valitustiedotRepository.lisaaValitustiedot(any[Valitustiedot], any[String])).thenReturn(tallennettu)
+
+    val (_, uusi) = valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "luoja-oid")
+
+    assertEquals(Some(tallennettu.id.get), uusi.flatMap(_.id))
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuLausuntopyyntoKunEiValitettu(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(valitettu = Some(false), lausuntopyynto = Some(true))
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuSaapumisPvmKunLausuntopyyntoPuuttuu(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(false),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0))
+      )
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuMaaraaikaPvmIlmanSaapumisPvm(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0))
+      )
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuMaaraaikaPvmEnnenSaapumisPvm(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
+      )
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuAnnettuPvmIlmanSaapumisPvm(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
+      )
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotEpaonnistuuAnnettuPvmEnnenSaapumisPvm(): Unit = {
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
+      )
+    )
+
+    assertThrows(
+      classOf[ValitustiedotValidationException],
+      () => valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
+    )
+    verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
+    verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
+  }
+
+  @Test
+  def tallennaValitustiedotOnnistuuLausuntopyyntoPaivamaaratOK(): Unit = {
+    val dbHakemus = makeDbHakemus(hakemusOid)
+    val lahetetty = makeValitustiedot().copy(
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        ashaTunnus = Some("ASHA-123"),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0))
+      )
     )
     val tallennettu = lahetetty.copy(id = Some(UUID.randomUUID()), hakemusId = Some(dbHakemus.id))
 

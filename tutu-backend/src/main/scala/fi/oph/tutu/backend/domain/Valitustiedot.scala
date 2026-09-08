@@ -31,5 +31,10 @@ case class ValitusKHO(
   valitusPvm: Option[LocalDateTime] = None,
   ratkaisuPvm: Option[LocalDateTime] = None,
   ratkaisu: Option[ValitusKHORatkaisu] = None,
-  ratkaisuLisatieto: Option[String] = None
+  ratkaisuLisatieto: Option[String] = None,
+  lausuntopyynto: Option[Boolean] = None,
+  ashaTunnus: Option[String] = None,
+  lausuntopyynnonSaapumisPvm: Option[LocalDateTime] = None,
+  lausunnonMaaraaikaPvm: Option[LocalDateTime] = None,
+  lausuntoAnnettuPvm: Option[LocalDateTime] = None
 )

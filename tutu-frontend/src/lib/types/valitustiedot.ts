@@ -17,7 +17,15 @@ export type ValitusKHORatkaisu =
   | 'KhoErilainenPaatos'
   | 'KhoKasittelyRauennut';
 
-export type ValitusKHO = {
+export type ValitusLausuntopyynto = {
+  lausuntopyynto?: boolean;
+  ashaTunnus?: string;
+  lausuntopyynnonSaapumisPvm?: string;
+  lausunnonMaaraaikaPvm?: string;
+  lausuntoAnnettuPvm?: string;
+};
+
+export type ValitusKHO = ValitusLausuntopyynto & {
   valitettu?: boolean;
   valitusPvm?: string;
   ratkaisuPvm?: string;

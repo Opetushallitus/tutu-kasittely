@@ -56,7 +56,12 @@ class ValitustiedotControllerTest extends UnitTestBase {
     valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
     ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0)),
     ratkaisu = Some(ValitusKHORatkaisu.HakijanVaatimusHylatty),
-    ratkaisuLisatieto = Some("Lisätietoa KHO:n ratkaisusta")
+    ratkaisuLisatieto = Some("Lisätietoa KHO:n ratkaisusta"),
+    lausuntopyynto = Some(true),
+    ashaTunnus = Some("ASHA-123"),
+    lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+    lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+    lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
   )
 
   @Test
@@ -212,6 +217,34 @@ class ValitustiedotControllerTest extends UnitTestBase {
         valitettu = Some(true),
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
+      )
+    )
+    val bytes  = mapper.writeValueAsString(lahetetty).getBytes(StandardCharsets.UTF_8)
+    val result = valitustiedotController.tallennaValitustiedot(hakemusOid.s, bytes, null)
+
+    assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode)
+    assertTrue(result.getBody.asInstanceOf[String].contains(virheviesti))
+  }
+
+  @Test
+  def tallennaValitustiedotEpakelvotLausuntopyyntoPaivamaaratPalauttaa400(): Unit = {
+    val virheviesti = "KHO:n lausunnon määräaika ei voi olla ennen lausuntopyynnön saapumispäivää"
+    when(
+      valitustiedotService.tallennaValitustiedot(
+        eqTo(hakemusOid),
+        any(classOf[Valitustiedot]),
+        eqTo(user.userOid)
+      )
+    ).thenThrow(new ValitustiedotValidationException(virheviesti))
+
+    val lahetetty = Valitustiedot(
+      valitusOPH = ValitusOPH(),
+      valitusHO = ValitusHO(),
+      valitusKHO = ValitusKHO(
+        valitettu = Some(true),
+        lausuntopyynto = Some(true),
+        lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
       )
     )
     val bytes  = mapper.writeValueAsString(lahetetty).getBytes(StandardCharsets.UTF_8)

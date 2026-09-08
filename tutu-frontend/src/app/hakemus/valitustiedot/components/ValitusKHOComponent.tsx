@@ -6,6 +6,8 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { ValitusLausuntopyyntoComponent } from './ValitusLausuntopyyntoComponent';
+
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import {
@@ -82,6 +84,11 @@ export const ValitusKHOComponent = ({
                 ratkaisuPvm: undefined,
                 ratkaisu: undefined,
                 ratkaisuLisatieto: undefined,
+                lausuntopyynto: false,
+                ashaTunnus: undefined,
+                lausuntopyynnonSaapumisPvm: undefined,
+                lausunnonMaaraaikaPvm: undefined,
+                lausuntoAnnettuPvm: undefined,
               });
             } else {
               updateValitusKHO({ valitettu: true });
@@ -121,6 +128,11 @@ export const ValitusKHOComponent = ({
                 dataTestId="valituskho-ratkaisupvm-calendar"
               />
             </Stack>
+            <ValitusLausuntopyyntoComponent
+              namespace="valituskho"
+              lausuntopyynto={valitusKHO}
+              updateLausuntopyynto={updateValitusKHO}
+            />
             <Stack>
               <OphRadioGroupWithClear
                 labelId={
