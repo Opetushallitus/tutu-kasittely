@@ -18,6 +18,7 @@ trait TutuJsonFormats {
       + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
       + AmmattikokemuksenHuomioiminenSerializer
       + SuomessaSuoritettujenOpintojenHuomioiminenSerializer
+      + ValitusKHORatkaisuSerializer
       + LocalDateTimeSerializer
   }
 }
@@ -180,6 +181,20 @@ object SuomessaSuoritettujenOpintojenHuomioiminenSerializer
         },
         { case korvaavuus: SuomessaSuoritettujenOpintojenHuomioiminen =>
           JString(korvaavuus.toString)
+        }
+      )
+    )
+
+object ValitusKHORatkaisuSerializer
+    extends CustomSerializer[ValitusKHORatkaisu](_ =>
+      (
+        {
+          case JString(value) => ValitusKHORatkaisu.fromString(value)
+          case unexpected     =>
+            throw new MappingException(s"Cannot deserialize ValitusKHORatkaisu from $unexpected")
+        },
+        { case ratkaisu: ValitusKHORatkaisu =>
+          JString(ratkaisu.toString)
         }
       )
     )

@@ -129,6 +129,7 @@ export type CalendarProps = {
   maxDate?: Date | null;
   disabled?: boolean;
   dataTestId?: string;
+  sx?: object;
 };
 
 export const CalendarComponent = ({
@@ -139,6 +140,7 @@ export const CalendarComponent = ({
   maxDate,
   disabled,
   dataTestId,
+  sx,
 }: CalendarProps) => {
   const { t, getLanguage } = useTranslations();
 
@@ -169,6 +171,7 @@ export const CalendarComponent = ({
         data-testid={dataTestId}
         disabled={disabled}
         label={label}
+        sx={sx}
         renderInput={({ labelId }) => (
           <DatePicker
             ariaLabelledBy={labelId}

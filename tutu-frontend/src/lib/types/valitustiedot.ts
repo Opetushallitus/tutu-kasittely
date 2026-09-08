@@ -10,10 +10,27 @@ export type ValitusHO = {
   tasmennys?: string;
 };
 
-export type ValitusKHO = {
+export type ValitusKHORatkaisu =
+  | 'EiValituslupaa'
+  | 'HakijanVaatimusHylatty'
+  | 'UudelleenOPHKasittelyyn'
+  | 'KhoErilainenPaatos'
+  | 'KhoKasittelyRauennut';
+
+export type ValitusLausuntopyynto = {
+  lausuntopyynto?: boolean;
+  ashaTunnus?: string;
+  lausuntopyynnonSaapumisPvm?: string;
+  lausunnonMaaraaikaPvm?: string;
+  lausuntoAnnettuPvm?: string;
+};
+
+export type ValitusKHO = ValitusLausuntopyynto & {
   valitettu?: boolean;
   valitusPvm?: string;
   ratkaisuPvm?: string;
+  ratkaisu?: ValitusKHORatkaisu;
+  ratkaisuLisatieto?: string;
 };
 
 export type Valitustiedot = {
