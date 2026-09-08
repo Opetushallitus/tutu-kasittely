@@ -19,11 +19,11 @@ export const ValitusOPHComponent = ({
   const { t } = useTranslations();
 
   return (
-    <Stack gap={2}>
+    <Stack spacing={2}>
       <OphTypography variant={'h3'}>
         {t('hakemus.valitustiedot.valitusoph.otsikko')}
       </OphTypography>
-      <Stack gap={1}>
+      <Stack spacing={1}>
         <OphCheckbox
           label={t('hakemus.valitustiedot.valitusoph.maksu')}
           checked={valitusOPH?.maksu ?? false}

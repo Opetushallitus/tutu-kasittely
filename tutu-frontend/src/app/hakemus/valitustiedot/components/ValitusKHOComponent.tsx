@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   OphCheckbox,
   OphInputFormField,
@@ -57,7 +57,6 @@ export const ValitusKHOComponent = ({
   updateValitusKHO: (valitustiedot: Partial<ValitusKHO>) => void;
 }) => {
   const { t } = useTranslations();
-  const theme = useTheme();
 
   const khoValitusPvm = valitusKHO?.valitusPvm
     ? new Date(valitusKHO.valitusPvm)
@@ -67,11 +66,11 @@ export const ValitusKHOComponent = ({
     : null;
 
   return (
-    <Stack gap={theme.spacing(2)}>
+    <Stack spacing={2}>
       <OphTypography variant={'h3'}>
         {t('hakemus.valitustiedot.valituskho.otsikko')}
       </OphTypography>
-      <Stack gap={theme.spacing(4)}>
+      <Stack spacing={4}>
         <OphCheckbox
           data-testid="valituskho-valitettu-checkbox"
           label={t('hakemus.valitustiedot.valituskho.valitettu')}
@@ -84,11 +83,8 @@ export const ValitusKHOComponent = ({
                 ratkaisuPvm: undefined,
                 ratkaisu: undefined,
                 ratkaisuLisatieto: undefined,
-                lausuntopyynto: false,
-                ashaTunnus: undefined,
-                lausuntopyynnonSaapumisPvm: undefined,
-                lausunnonMaaraaikaPvm: undefined,
-                lausuntoAnnettuPvm: undefined,
+                lausuntopyyntoValittu: false,
+                lausuntopyynto: undefined,
               });
             } else {
               updateValitusKHO({ valitettu: true });
@@ -97,7 +93,7 @@ export const ValitusKHOComponent = ({
         />
         {valitusKHO?.valitettu && (
           <>
-            <Stack direction={'row'} gap={theme.spacing(3)}>
+            <Stack direction={'row'} spacing={3}>
               <CalendarComponent
                 label={t('hakemus.valitustiedot.valituskho.valituspvm')}
                 selectedValue={khoValitusPvm}
@@ -128,11 +124,34 @@ export const ValitusKHOComponent = ({
                 dataTestId="valituskho-ratkaisupvm-calendar"
               />
             </Stack>
-            <ValitusLausuntopyyntoComponent
-              namespace="valituskho"
-              lausuntopyynto={valitusKHO}
-              updateLausuntopyynto={updateValitusKHO}
+            <OphCheckbox
+              label={t('hakemus.valitustiedot.valitushao.haoLausuntopyynto')}
+              checked={valitusKHO?.lausuntopyyntoValittu ?? false}
+              onChange={() => {
+                if (valitusKHO?.lausuntopyyntoValittu) {
+                  updateValitusKHO({
+                    lausuntopyyntoValittu: false,
+                    lausuntopyynto: undefined,
+                  });
+                } else {
+                  updateValitusKHO({ lausuntopyyntoValittu: true });
+                }
+              }}
             />
+            {valitusKHO?.lausuntopyyntoValittu && (
+              <ValitusLausuntopyyntoComponent
+                namespace="valituskho"
+                lausuntopyynto={valitusKHO.lausuntopyynto}
+                updateLausuntopyynto={(lausuntopyynto) =>
+                  updateValitusKHO({
+                    lausuntopyynto: {
+                      ...valitusKHO?.lausuntopyynto,
+                      ...lausuntopyynto,
+                    },
+                  })
+                }
+              />
+            )}
             <Stack>
               <OphRadioGroupWithClear
                 labelId={

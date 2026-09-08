@@ -3,7 +3,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { ValitusHOComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusHOComponent';
+import { ValitusHaOComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusHaOComponent';
 import { ValitusKHOComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusKHOComponent';
 import { ValitusOPHComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusOPHComponent';
 import { FullSpinner } from '@/src/components/FullSpinner';
@@ -12,7 +12,11 @@ import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import useToaster from '@/src/hooks/useToaster';
 import { useValitustiedot } from '@/src/hooks/useValitustiedot';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { ValitusOPH, ValitusKHO } from '@/src/lib/types/valitustiedot';
+import {
+  ValitusOPH,
+  ValitusKHO,
+  ValitusHaO,
+} from '@/src/lib/types/valitustiedot';
 import { handleFetchError } from '@/src/lib/utils';
 
 export default function ValitustietoPage() {
@@ -44,7 +48,7 @@ export default function ValitustietoPage() {
   return (
     <>
       <UnsavedChangesGuard enabled={hasChanges} onDiscard={discard} />
-      <Stack gap={3} sx={{ flexGrow: 1, marginRight: 3 }}>
+      <Stack spacing={3} sx={{ flexGrow: 1, marginRight: 3 }}>
         <OphTypography variant={'h2'} data-testid="valitustiedot-otsikko">
           {t('hakemus.valitustiedot.otsikko')}
         </OphTypography>
@@ -59,7 +63,17 @@ export default function ValitustietoPage() {
             });
           }}
         />
-        <ValitusHOComponent />
+        <ValitusHaOComponent
+          valitusHaO={valitustiedot?.valitusHaO}
+          updateValitusHaO={(newValitusHaO: Partial<ValitusHaO>) => {
+            paivitaValitustiedot({
+              valitusHaO: {
+                ...valitustiedot?.valitusHaO,
+                ...newValitusHaO,
+              },
+            });
+          }}
+        />
         <ValitusKHOComponent
           valitusKHO={valitustiedot?.valitusKHO}
           updateValitusKHO={(newValitusKHO: Partial<ValitusKHO>) => {

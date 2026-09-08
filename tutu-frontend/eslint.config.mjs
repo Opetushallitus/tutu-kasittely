@@ -87,7 +87,7 @@ export default defineConfig([
     'node_modules',
     'certificates',
     'test-results',
-    'public/config.js',
+    'public',
     'dist',
   ]),
 ]);

@@ -7,7 +7,7 @@ case class Valitustiedot(
   id: Option[UUID] = None,
   hakemusId: Option[UUID] = None,
   valitusOPH: ValitusOPH,
-  valitusHO: ValitusHO,
+  valitusHaO: ValitusHaO,
   valitusKHO: ValitusKHO,
   luoja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
@@ -23,8 +23,34 @@ case class ValitusOPH(
   tasmennys: Option[String] = None
 )
 
-// TODO
-case class ValitusHO()
+case class ValitusHaO(
+  valitettu: Option[Boolean] = None,
+  valitusPvm: Option[LocalDateTime] = None,
+  ratkaisuPvm: Option[LocalDateTime] = None,
+  lausuntopyyntoValittu: Option[Boolean] = None,
+  lausuntopyynto: Option[ValitusLausuntopyynto] = None,
+  valittajanVaatimus: Option[ValitusHaOValittajanVaatimus] = None,
+  ratkaisu: Option[String] = None,
+  ratkaisuLisatieto: Option[String] = None
+)
+
+case class ValitusLausuntopyynto(
+  ashaTunnus: Option[String] = None,
+  saapumisPvm: Option[LocalDateTime] = None,
+  maaraAikaPvm: Option[LocalDateTime] = None,
+  lausuntoAnnettuPvm: Option[LocalDateTime] = None
+)
+
+case class ValitusHaOValittajanVaatimus(
+  taso: Option[Boolean] = None,
+  suuntautuminen: Option[Boolean] = None,
+  virallisuus: Option[Boolean] = None,
+  tiettyKelpoisuus: Option[Boolean] = None,
+  kompensaationPoistoTaiVahennysAP: Option[Boolean] = None,
+  kompensaationPoistoTaiVahennysUO: Option[Boolean] = None,
+  muu: Option[Boolean] = None,
+  tasmennys: Option[String] = None
+)
 
 case class ValitusKHO(
   valitettu: Option[Boolean] = None,
@@ -32,9 +58,6 @@ case class ValitusKHO(
   ratkaisuPvm: Option[LocalDateTime] = None,
   ratkaisu: Option[ValitusKHORatkaisu] = None,
   ratkaisuLisatieto: Option[String] = None,
-  lausuntopyynto: Option[Boolean] = None,
-  ashaTunnus: Option[String] = None,
-  lausuntopyynnonSaapumisPvm: Option[LocalDateTime] = None,
-  lausunnonMaaraaikaPvm: Option[LocalDateTime] = None,
-  lausuntoAnnettuPvm: Option[LocalDateTime] = None
+  lausuntopyyntoValittu: Option[Boolean] = None,
+  lausuntopyynto: Option[ValitusLausuntopyynto] = None
 )

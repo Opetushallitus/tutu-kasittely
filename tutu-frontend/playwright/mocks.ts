@@ -976,7 +976,7 @@ export const mockValituspohjat = (page: Page) => {
           contentType: 'application/json',
           body: JSON.stringify({
             valitusOPH: {},
-            valitusHO: {},
+            valitusHaO: {},
             valitusKHO: {},
           }),
         });
