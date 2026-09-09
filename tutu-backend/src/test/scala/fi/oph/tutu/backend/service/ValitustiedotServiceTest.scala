@@ -117,6 +117,21 @@ class ValitustiedotServiceTest extends UnitTestBase {
     val lahetetty = makeValitustiedot()
 
     val paivitetty = vanha.copy(
+      valitusHaO = ValitusHaO(
+        valitettu = Some(true),
+        valitusPvm = Some(LocalDateTime.of(2026, 9, 14, 0, 0, 0)),
+        ratkaisu = Some("UudelleenKasittely"),
+        ratkaisuLisatieto = Some("Palautettu uudelleen käsittelyyn"),
+        lausuntopyyntoValittu = Some(true),
+        lausuntopyynto = Some(
+          ValitusLausuntopyynto(
+            ashaTunnus = Some("ASHA-321"),
+            saapumisPvm = Some(LocalDateTime.of(2026, 9, 17, 0, 0, 0)),
+            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)),
+            lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 24, 0, 0, 0))
+          )
+        )
+      ),
       valitusKHO = ValitusKHO(
         valitettu = Some(true),
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
@@ -155,6 +170,20 @@ class ValitustiedotServiceTest extends UnitTestBase {
     assertEquals(
       Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0)),
       uusiTulos.get.valitusKHO.lausuntopyynto.get.lausuntoAnnettuPvm
+    )
+    assertEquals(Some("UudelleenKasittely"), uusiTulos.get.valitusHaO.ratkaisu)
+    assertEquals(Some(LocalDateTime.of(2026, 9, 14, 0, 0, 0)), uusiTulos.get.valitusHaO.valitusPvm)
+    assertEquals(Some("Palautettu uudelleen käsittelyyn"), uusiTulos.get.valitusHaO.ratkaisuLisatieto)
+    assertEquals(Some(true), uusiTulos.get.valitusHaO.lausuntopyyntoValittu)
+    assertEquals(Some("ASHA-321"), uusiTulos.get.valitusHaO.lausuntopyynto.get.ashaTunnus)
+    assertEquals(
+      Some(LocalDateTime.of(2026, 9, 17, 0, 0, 0)),
+      uusiTulos.get.valitusHaO.lausuntopyynto.get.saapumisPvm
+    )
+    assertEquals(Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)), uusiTulos.get.valitusHaO.lausuntopyynto.get.maaraAikaPvm)
+    assertEquals(
+      Some(LocalDateTime.of(2026, 9, 24, 0, 0, 0)),
+      uusiTulos.get.valitusHaO.lausuntopyynto.get.lausuntoAnnettuPvm
     )
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
   }

@@ -52,6 +52,23 @@ class ValitustiedotControllerTest extends UnitTestBase {
     when(userService.getEnrichedUserDetails(true)).thenReturn(user)
   }
 
+  private def valitusHaOWithPvms: ValitusHaO = ValitusHaO(
+    valitettu = Some(true),
+    valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
+    ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 10, 12, 30, 0)),
+    ratkaisu = Some("VaatimusHylatty"),
+    ratkaisuLisatieto = Some("Lisätietoa HaO:n ratkaisusta"),
+    lausuntopyyntoValittu = Some(true),
+    lausuntopyynto = Some(
+      ValitusLausuntopyynto(
+        ashaTunnus = Some("ASHA-456"),
+        saapumisPvm = Some(LocalDateTime.of(2026, 9, 2, 0, 0, 0)),
+        maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 9, 0, 0, 0)),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 8, 0, 0, 0))
+      )
+    )
+  )
+
   private def valitusKHOWithPvms: ValitusKHO = ValitusKHO(
     valitettu = Some(true),
     valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
@@ -75,7 +92,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
       id = Some(UUID.randomUUID()),
       hakemusId = Some(UUID.randomUUID()),
       valitusOPH = ValitusOPH(),
-      valitusHaO = ValitusHaO(),
+      valitusHaO = valitusHaOWithPvms,
       valitusKHO = valitusKHOWithPvms
     )
 
@@ -120,7 +137,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
   def tallennaValitustiedotLuoUudenPalauttaa200(): Unit = {
     val lahetetty = Valitustiedot(
       valitusOPH = ValitusOPH(),
-      valitusHaO = ValitusHaO(),
+      valitusHaO = valitusHaOWithPvms,
       valitusKHO = valitusKHOWithPvms
     )
     val tallennettu = lahetetty.copy(id = Some(UUID.randomUUID()), hakemusId = Some(UUID.randomUUID()))
@@ -140,6 +157,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
     assertEquals(HttpStatus.OK, result.getStatusCode)
     assertEquals(mapper.writeValueAsString(tallennettu), result.getBody)
     assertEquals(lahetetty.valitusKHO, captor.getValue.valitusKHO)
+    assertEquals(lahetetty.valitusHaO, captor.getValue.valitusHaO)
     verify(auditLog, times(1)).logCreate(any(), any(), eqTo(CreateValitustiedot), any())
   }
 
@@ -152,7 +170,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
       valitusHaO = ValitusHaO(),
       valitusKHO = ValitusKHO()
     )
-    val paivitetty = vanha.copy(valitusKHO = valitusKHOWithPvms)
+    val paivitetty = vanha.copy(valitusHaO = valitusHaOWithPvms, valitusKHO = valitusKHOWithPvms)
 
     when(
       valitustiedotService.tallennaValitustiedot(

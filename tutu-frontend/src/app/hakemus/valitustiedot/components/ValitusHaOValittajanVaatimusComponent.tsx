@@ -25,6 +25,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
         renderInput={() => (
           <Stack spacing={1}>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-taso-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.taso',
               )}
@@ -34,6 +35,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-suuntautuminen-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.suuntautuminen',
               )}
@@ -45,6 +47,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-virallisuus-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.virallisuus',
               )}
@@ -56,6 +59,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-tiettykelpoisuus-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.tiettyKelpoisuus',
               )}
@@ -67,6 +71,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-kompensaationpoistotaivahennysap-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.kompensaationPoistoTaiVahennysAP',
               )}
@@ -79,6 +84,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-kompensaationpoistotaivahennysuo-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.kompensaationPoistoTaiVahennysUO',
               )}
@@ -91,6 +97,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               }}
             ></OphCheckbox>
             <OphCheckbox
+              data-testid="valitushao-valittajanvaatimus-muu-checkbox"
               label={t(
                 'hakemus.valitustiedot.valitushao.valittajanVaatimus.muu',
               )}
@@ -114,6 +121,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
         onChange={(event) => {
           updateValittajanVaatimus({ tasmennys: event.target.value });
         }}
+        data-testid="valitushao-valittajanvaatimus-tasmennys-input"
       />
     </>
   );

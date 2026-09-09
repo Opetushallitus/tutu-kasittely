@@ -1,9 +1,7 @@
 import { Stack } from '@mui/material';
 import {
   OphCheckbox,
-  OphFormFieldWrapper,
   OphInputFormField,
-  OphRadioGroup,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
@@ -11,6 +9,7 @@ import React from 'react';
 import { ValitusHaOValittajanVaatimusComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusHaOValittajanVaatimusComponent';
 import { ValitusLausuntopyyntoComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusLausuntopyyntoComponent';
 import { CalendarComponent } from '@/src/components/calendar-component';
+import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ValitusHaORatkaisu, ValitusHaO } from '@/src/lib/types/valitustiedot';
 
@@ -43,6 +42,7 @@ export const ValitusHaOComponent = ({
         {t('hakemus.valitustiedot.valitushao.otsikko')}
       </OphTypography>
       <OphCheckbox
+        data-testid="valitushao-valitettu-checkbox"
         label={t('hakemus.valitustiedot.valitushao.haoValitettu')}
         checked={valitusHaO?.valitettu ?? false}
         onChange={() => {
@@ -69,11 +69,16 @@ export const ValitusHaOComponent = ({
               setDate={(date: Date | null) =>
                 updateValitusHaO({
                   valitusPvm: date ? date.toISOString() : undefined,
+                  ratkaisuPvm:
+                    !date || (ratkaisuPvm && date > ratkaisuPvm)
+                      ? undefined
+                      : valitusHaO?.ratkaisuPvm,
                 })
               }
               maxDate={new Date()}
               selectedValue={valitusPvm}
               label={t('hakemus.valitustiedot.valitushao.haoValitusPvm')}
+              dataTestId="valitushao-valituspvm-calendar"
             />
             <CalendarComponent
               setDate={(date: Date | null) =>
@@ -81,9 +86,11 @@ export const ValitusHaOComponent = ({
                   ratkaisuPvm: date ? date.toISOString() : undefined,
                 })
               }
+              disabled={!valitusPvm}
               minDate={valitusPvm}
               selectedValue={ratkaisuPvm}
               label={t('hakemus.valitustiedot.valitushao.haoRatkaisuPvm')}
+              dataTestId="valitushao-ratkaisupvm-calendar"
             />
           </Stack>
           <OphCheckbox
@@ -127,24 +134,34 @@ export const ValitusHaOComponent = ({
               })
             }
           />
-          <OphFormFieldWrapper
-            label={t('hakemus.valitustiedot.valitushao.ratkaisu')}
-            renderInput={({ labelId }) => (
-              <OphRadioGroup
-                labelId={labelId}
-                options={ratkaisuOptions.map((ratkaisutyyppi) => ({
-                  value: ratkaisutyyppi,
-                  label: t(
-                    `hakemus.valitustiedot.valitushao.ratkaisu.${ratkaisutyyppi}`,
-                  ),
-                }))}
-                onChange={(_, value) =>
-                  updateValitusHaO({ ratkaisu: value as ValitusHaORatkaisu })
-                }
-                value={valitusHaO.ratkaisu ?? ''}
-              />
-            )}
-          />
+          <Stack>
+            <OphRadioGroupWithClear
+              labelId={
+                'hakemus-valitustiedot-valitushao-ratkaisu-radio-group-label'
+              }
+              label={t('hakemus.valitustiedot.valitushao.ratkaisu')}
+              data-testid={'valitushao-ratkaisu-radio-group'}
+              options={ratkaisuOptions.map((ratkaisutyyppi) => ({
+                value: ratkaisutyyppi,
+                label: t(
+                  `hakemus.valitustiedot.valitushao.ratkaisu.${ratkaisutyyppi}`,
+                ),
+              }))}
+              row={false}
+              value={valitusHaO.ratkaisu ?? ''}
+              onChange={(e) =>
+                updateValitusHaO({
+                  ratkaisu: e.target.value as ValitusHaORatkaisu,
+                })
+              }
+              onClear={() => {
+                updateValitusHaO({
+                  ratkaisu: undefined,
+                  ratkaisuLisatieto: undefined,
+                });
+              }}
+            />
+          </Stack>
           {valitusHaO.ratkaisu && (
             <OphInputFormField
               multiline
@@ -154,6 +171,7 @@ export const ValitusHaOComponent = ({
               onChange={(e) => {
                 updateValitusHaO({ ratkaisuLisatieto: e.target.value });
               }}
+              data-testid="valitushao-ratkaisulisatieto-input"
             />
           )}
         </>

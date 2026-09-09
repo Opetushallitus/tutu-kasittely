@@ -185,6 +185,7 @@ class ValitustiedotService(
     luojaTaiMuokkaaja: String
   ): (Option[Valitustiedot], Option[Valitustiedot]) = {
     validoiValitusKHO(valitustiedot.valitusKHO)
+    validoiValitusHaO(valitustiedot.valitusHaO)
 
     valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>
