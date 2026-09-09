@@ -37,7 +37,7 @@ export const ValitusLausuntopyyntoComponent = ({
   return (
     <>
       <OphInputFormField
-        label={t(`hakemus.valitustiedot.${namespace}.ashaTunnus`)}
+        label={t('hakemus.valitustiedot.lausuntopyynto.ashaTunnus')}
         value={lausuntopyynto?.ashaTunnus ?? ''}
         onChange={(e) => {
           updateLausuntopyynto({ ashaTunnus: e.target.value });
@@ -48,7 +48,7 @@ export const ValitusLausuntopyyntoComponent = ({
         <CalendarComponent
           sx={calendarLabelSx}
           label={t(
-            `hakemus.valitustiedot.${namespace}.lausuntopyynnonSaapumisPvm`,
+            'hakemus.valitustiedot.lausuntopyynto.lausuntopyynnonSaapumisPvm',
           )}
           selectedValue={saapumisPvm}
           minDate={null}
@@ -70,7 +70,9 @@ export const ValitusLausuntopyyntoComponent = ({
         />
         <CalendarComponent
           sx={calendarLabelSx}
-          label={t(`hakemus.valitustiedot.${namespace}.lausunnonMaaraaikaPvm`)}
+          label={t(
+            'hakemus.valitustiedot.lausuntopyynto.lausunnonMaaraaikaPvm',
+          )}
           selectedValue={maaraaikaPvm}
           disabled={!saapumisPvm}
           minDate={saapumisPvm}
@@ -84,7 +86,7 @@ export const ValitusLausuntopyyntoComponent = ({
         />
         <CalendarComponent
           sx={calendarLabelSx}
-          label={t(`hakemus.valitustiedot.${namespace}.lausuntoAnnettuPvm`)}
+          label={t('hakemus.valitustiedot.lausuntopyynto.lausuntoAnnettuPvm')}
           selectedValue={annettuPvm}
           disabled={!saapumisPvm}
           minDate={saapumisPvm}

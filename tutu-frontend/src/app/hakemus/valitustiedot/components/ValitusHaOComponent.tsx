@@ -8,7 +8,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { HaOValittajanVaatimusComponent } from '@/src/app/hakemus/valitustiedot/components/HaOValittajanVaatimusComponent';
+import { ValitusHaOValittajanVaatimusComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusHaOValittajanVaatimusComponent';
 import { ValitusLausuntopyyntoComponent } from '@/src/app/hakemus/valitustiedot/components/ValitusLausuntopyyntoComponent';
 import { CalendarComponent } from '@/src/components/calendar-component';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
@@ -116,7 +116,7 @@ export const ValitusHaOComponent = ({
               />
             </>
           )}
-          <HaOValittajanVaatimusComponent
+          <ValitusHaOValittajanVaatimusComponent
             valittajanVaatimus={valitusHaO.valittajanVaatimus}
             updateValittajanVaatimus={(valittajanVaatimus) =>
               updateValitusHaO({

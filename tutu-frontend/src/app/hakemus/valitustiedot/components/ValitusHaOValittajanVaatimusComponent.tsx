@@ -8,7 +8,7 @@ import {
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ValitusHaOValittajanVaatimus } from '@/src/lib/types/valitustiedot';
 
-export const HaOValittajanVaatimusComponent = ({
+export const ValitusHaOValittajanVaatimusComponent = ({
   valittajanVaatimus,
   updateValittajanVaatimus,
 }: {
