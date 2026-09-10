@@ -41,9 +41,9 @@ def bindHaePaatostiedotUORO(
     }
   }
 
-  val heaPerustelutUOROPaatostiedoille = bindTraverse(extractNext, expandUORO, combine)
+  val haePerustelutUOROPaatostiedoille = bindTraverse(extractNext, expandUORO, combine)
 
-  def heaPerustelutUORO(paatosMaybe: Option[Paatos]): Option[String] = {
+  def haePerustelutUORO(paatosMaybe: Option[Paatos]): Option[String] = {
     val result = paatosMaybe
       .map(_.paatosTiedot)
       .map(
@@ -53,13 +53,13 @@ def bindHaePaatostiedotUORO(
           )
         )
       )
-      .map(heaPerustelutUOROPaatostiedoille)
+      .map(haePerustelutUOROPaatostiedoille)
       .flatten
       .mkString("\n")
     Option.when(result.nonEmpty)(result)
   }
 
-  heaPerustelutUORO
+  haePerustelutUORO
 }
 
 def expandUORO(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {

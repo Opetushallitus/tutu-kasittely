@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.service.generator.perustelumuistio
 
+import scala.annotation.tailrec
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.TranslationService
 import fi.oph.tutu.backend.service.generator.toKyllaEi
@@ -114,6 +115,7 @@ def bindTraverse(
     }
   }
 
+  @tailrec
   def traverseInternal(openList: Seq[PaatosNodeTypeAggregate], currentResultMaybe: Option[String]): Option[String] = {
     openList.headOption match {
       case None       => currentResultMaybe
