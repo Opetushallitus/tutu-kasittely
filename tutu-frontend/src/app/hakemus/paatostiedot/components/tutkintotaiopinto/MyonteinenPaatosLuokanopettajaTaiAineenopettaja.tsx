@@ -16,7 +16,7 @@ export const MyonteinenPaatosLuokanopettajaTaiAineenopettaja: React.FC<
       sx={{ gap: theme.spacing(2) }}
       label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
       renderInput={() => (
-        <Stack direction="column" gap={theme.spacing(2)}>
+        <Stack direction="column" spacing={2}>
           <OphCheckbox
             data-testid="myonteinenPaatos-kelpoisuuskoe"
             label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}
@@ -31,7 +31,7 @@ export const MyonteinenPaatosLuokanopettajaTaiAineenopettaja: React.FC<
           {lisavaatimukset?.kelpoisuuskoe && (
             <Stack
               direction="column"
-              gap={theme.spacing(2)}
+              spacing={2}
               sx={{ marginLeft: theme.spacing(4) }}
             >
               <OphCheckbox

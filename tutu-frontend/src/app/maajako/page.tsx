@@ -151,10 +151,7 @@ export default function MaajakoPage() {
   return (
     <PageLayout header={<Header />}>
       <BoxWrapper sx={{ borderBottom: 'none' }}>
-        <Stack
-          gap={theme.spacing(2)}
-          sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
-        >
+        <Stack spacing={2} sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}>
           <OphTypography variant={'h3'}>
             {t('maajako.kenellevalittu')}
           </OphTypography>

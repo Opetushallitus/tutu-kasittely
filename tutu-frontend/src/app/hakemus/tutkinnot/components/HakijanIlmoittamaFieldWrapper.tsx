@@ -22,7 +22,7 @@ export const HakijanIlmoittamaFieldWrapper = ({
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   return (
-    <Stack direction="column" gap={0.5}>
+    <Stack direction="column" spacing={0.5}>
       {children}
       <Box>
         <OphButton

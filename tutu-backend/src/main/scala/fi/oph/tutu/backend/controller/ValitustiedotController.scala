@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHO, ValitusKHO, ValitusOPH, Valitustiedot}
+import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHaO, ValitusKHO, ValitusOPH, Valitustiedot}
 import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateValitustiedot, ReadValitustiedot, UpdateValitustiedot}
@@ -61,7 +61,7 @@ class ValitustiedotController(
                 mapper.writeValueAsString(
                   Valitustiedot(
                     valitusOPH = ValitusOPH(),
-                    valitusHO = ValitusHO(),
+                    valitusHaO = ValitusHaO(),
                     valitusKHO = ValitusKHO()
                   )
                 )

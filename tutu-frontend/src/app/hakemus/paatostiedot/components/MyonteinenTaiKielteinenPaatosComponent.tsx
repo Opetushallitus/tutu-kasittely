@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import React from 'react';
 
 import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
@@ -37,7 +37,6 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
   updatePaatosAction,
   t,
 }: MyonteinenTaiKielteinenPaatosProps<T>) => {
-  const theme = useTheme();
   const updateMyonteisenPaatoksenLisavaatimukset = (
     lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
   ) => {
@@ -48,7 +47,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
     updateLisavaatimukset: updateMyonteisenPaatoksenLisavaatimukset,
   };
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <OphRadioGroupWithClear
         labelVariant="label"
         labelId="myonteinenPaatos-radio-group-label"

@@ -188,7 +188,7 @@ export const AsiakirjaPyynnot = ({
 
   const AsiakirjaPyyntoItem = ({ pyynto, index }: AsiakirjaPyyntoProps) => (
     <Stack direction="row" alignItems={'center'}>
-      <Stack direction="column" width="100%" gap={theme.spacing(1)}>
+      <Stack direction="column" width="100%" spacing={1}>
         <OphTypography variant="label">
           {t('hakemus.asiakirjat.asiakirja')}
         </OphTypography>

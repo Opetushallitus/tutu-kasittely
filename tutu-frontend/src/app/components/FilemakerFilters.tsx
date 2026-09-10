@@ -1,4 +1,4 @@
-import { Grid2 as Grid, useTheme } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import {
   OphInputFormField,
   OphSelect,
@@ -18,7 +18,6 @@ import {
 } from '@/src/lib/utils';
 
 export default function FilemakerFilters() {
-  const theme = useTheme();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
   const { addToast } = useToaster();
@@ -53,8 +52,8 @@ export default function FilemakerFilters() {
   }, 300);
 
   return (
-    <Grid container spacing={theme.spacing(2)}>
-      <Grid container spacing={theme.spacing(2)} size={12}>
+    <Grid container spacing={2}>
+      <Grid container spacing={2} size={12}>
         <Grid size={12}>
           <OphInputFormField
             label={t('filemaker.haeHakemuksia')}

@@ -38,7 +38,7 @@ export const SideBar = () => {
     <Stack
       data-testid={'hakemus-sidebar'}
       direction="column"
-      gap={theme.spacing(1)}
+      spacing={1}
       sx={{
         width: '250px',
         position: 'sticky',
@@ -47,20 +47,20 @@ export const SideBar = () => {
         flexShrink: 0,
       }}
     >
-      <SidebarInfoStack direction="column" gap={theme.spacing(2)}>
+      <SidebarInfoStack direction="column" spacing={2}>
         <HakemusKoskee />
         <Paatos />
       </SidebarInfoStack>
       <ToimintoLinkki
         path={`/hakemus/${hakemusOid}/editori/viesti`}
-        gap={theme.spacing(1)}
+        gap={1}
         icon={<MailOutlineIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaViesti')}
       />
       <AvaaPerusteluMuistioButton />
       <ToimintoLinkki
         path={`/hakemus/${hakemusOid}/editori/paatos`}
-        gap={theme.spacing(1)}
+        gap={1}
         icon={<CheckCircleIconBlue />}
         label={t('hakemus.sivupalkki.kirjoitaPaatos')}
       />

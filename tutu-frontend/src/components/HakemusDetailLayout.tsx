@@ -1,4 +1,4 @@
-import { Divider, Stack, useTheme } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { handleFetchError } from '@/src/lib/utils';
 
 export const HakemusDetailLayout = ({ hakemusOid }: { hakemusOid: string }) => {
-  const theme = useTheme();
   const { t } = useTranslations();
   const { addToast } = useToaster();
   const { showPaatosTekstiPreview } = useShowPreview();
@@ -38,12 +37,12 @@ export const HakemusDetailLayout = ({ hakemusOid }: { hakemusOid: string }) => {
   if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
 
   return (
-    <Stack direction="row" spacing={theme.spacing(3, 3)}>
+    <Stack direction="row" spacing={3}>
       <HakemusTabs
         hakemusOid={hakemusOid}
         hakemusKoskee={hakemus.hakemusKoskee}
       ></HakemusTabs>
-      <Stack direction="column" spacing={theme.spacing(0, 3)} width={'100%'}>
+      <Stack direction="column" width={'100%'}>
         <BoxWrapper sx={{ borderBottom: 0, paddingBottom: 0 }}>
           <HakemusHeader />
         </BoxWrapper>

@@ -69,7 +69,7 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   return (
     <>
       {kelpoisuus.kelpoisuus === MUU_AMMATTI_KEY && (
-        <Stack gap={theme.spacing(2)}>
+        <Stack spacing={2}>
           <OphTypography variant={'label'}>
             {t('hakemus.paatos.paatostyyppi.kelpoisuus.muuAmmatti')}
           </OphTypography>
@@ -224,14 +224,10 @@ export const KelpoisuusComponent = ({
   };
 
   return (
-    <Stack
-      key={`kelpoisuus-stack-${index}`}
-      gap={theme.spacing(2)}
-      sx={{ width: '100%' }}
-    >
+    <Stack key={`kelpoisuus-stack-${index}`} spacing={2} sx={{ width: '100%' }}>
       <Stack
         direction={'row'}
-        gap={theme.spacing(2)}
+        spacing={2}
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
         <OphTypography variant={'h3'}>
@@ -265,11 +261,7 @@ export const KelpoisuusComponent = ({
           </OphButton>
         )}
       </Stack>
-      <Stack
-        sx={{ backgroundColor: ophColors.grey50 }}
-        padding={theme.spacing(2)}
-        gap={theme.spacing(2)}
-      >
+      <Stack sx={{ backgroundColor: ophColors.grey50 }} padding={2} spacing={2}>
         <SelectTreeDropdown
           label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.otsikko`)}
           value={kelpoisuus.kelpoisuus}

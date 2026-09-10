@@ -16,11 +16,15 @@ class ValitusKHOSerializationTest extends UnitTestBase with TutuJsonFormats {
       valitettu = Some(true),
       valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
       ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0)),
-      lausuntopyynto = Some(true),
-      ashaTunnus = Some("ASHA-123"),
-      lausuntopyynnonSaapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-      lausunnonMaaraaikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
-      lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
+      lausuntopyyntoValittu = Some(true),
+      lausuntopyynto = Some(
+        ValitusLausuntopyynto(
+          ashaTunnus = Some("ASHA-123"),
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
+        )
+      )
     )
 
     val json   = Serialization.write(valitusKHO)

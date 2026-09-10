@@ -150,7 +150,7 @@ export default function ViestipohjaEditori({
   }, [valittuViestipohjaId, t]);
 
   return (
-    <Stack direction={'column'} gap={2} sx={{ marginTop: 4, width: '65%' }}>
+    <Stack direction={'column'} spacing={2} sx={{ marginTop: 4, width: '65%' }}>
       <OphTypography variant={'h2'}>{headerText}</OphTypography>
       {valittuViestipohjaId !== null ? (
         <ValittuViestipohja
@@ -161,7 +161,7 @@ export default function ViestipohjaEditori({
       ) : (
         <Stack
           direction={'column'}
-          gap={2}
+          spacing={2}
           alignItems={'center'}
           justifyContent={'center'}
         >

@@ -56,7 +56,7 @@ export const OpintoOptionWithLaajuusInput = ({
           sx={{ gap: 1, paddingLeft: 4 }}
           label={t(laajuusLabel)}
           renderInput={() => (
-            <Stack direction="row" gap={1}>
+            <Stack direction="row" spacing={1}>
               <OphInputFormField
                 multiline={false}
                 error={!isValidLaajuus}

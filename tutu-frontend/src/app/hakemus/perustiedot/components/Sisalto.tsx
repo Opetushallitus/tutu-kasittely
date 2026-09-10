@@ -74,7 +74,7 @@ const renderItem = (
                 ) : undefined}
                 {val.followups.length === 0 ? undefined : (
                   <Stack
-                    gap={2}
+                    spacing={2}
                     key={`${val.value}--followups`}
                     sx={{ paddingLeft: 2 }}
                   >
@@ -88,7 +88,7 @@ const renderItem = (
           });
     const renderedChildren =
       item.children.length > 0 ? (
-        <Stack gap={2} sx={{ paddingLeft: 2 }} key={`${item.key}-children`}>
+        <Stack spacing={2} sx={{ paddingLeft: 2 }} key={`${item.key}-children`}>
           {item.children.map((child) =>
             renderItem(child, lomakkeenKieli, filterEmpty),
           )}
@@ -98,7 +98,7 @@ const renderItem = (
     return renderedValueElements.length > 0 || renderedChildren ? (
       <Stack key={`${item.key}`}>
         {renderedLabel}
-        <Stack gap={2}>
+        <Stack spacing={2}>
           {renderedValueElements}
           {renderedChildren}
         </Stack>

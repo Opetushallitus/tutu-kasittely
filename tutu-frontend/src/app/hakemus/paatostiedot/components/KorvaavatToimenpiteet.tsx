@@ -1,4 +1,3 @@
-import { Theme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import {
   OphInputFormField,
@@ -32,12 +31,10 @@ const lopullinenPaatosOptions = (t: TFunction) => [
 
 export const KorvaavatToimenpiteet = ({
   t,
-  theme,
   paatos,
   updatePaatos,
 }: {
   t: TFunction;
-  theme: Theme;
   paatos?: Paatos;
   updatePaatos: (toimenpideDto: KorvaavaToimenpideDto) => void;
 }) => {
@@ -77,7 +74,7 @@ export const KorvaavatToimenpiteet = ({
   }, [naytaEiSuoritettuErikseen, paatos]);
 
   return (
-    <Stack direction="column" gap={theme.spacing(3)}>
+    <Stack direction="column" spacing={3}>
       <OphTypography variant={'h2'} data-testid="korvaavatToimenpiteet-otsikko">
         {t('hakemus.paatos.korvaavatToimenpiteet.otsikko')}
       </OphTypography>

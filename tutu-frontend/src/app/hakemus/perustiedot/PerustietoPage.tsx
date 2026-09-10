@@ -77,7 +77,7 @@ export default function PerustietoPage() {
   );
 
   return (
-    <Stack gap={theme.spacing(2)} sx={{ marginRight: theme.spacing(3) }}>
+    <Stack spacing={2} sx={{ marginRight: theme.spacing(3) }}>
       <UnsavedChangesGuard enabled={hasChanges} onDiscard={discardHakemus} />
       <OphTypography variant={'h2'} data-testid="perustiedot-otsikko">
         {t('hakemus.perustiedot.otsikko')}
@@ -86,7 +86,6 @@ export default function PerustietoPage() {
         <LopullisenHakemuksenSisalto
           hakemus={hakemus}
           t={t}
-          theme={theme}
           updateHakemus={updateLocal}
         />
       ) : (
@@ -99,23 +98,14 @@ export default function PerustietoPage() {
           updateLocal({ esittelijanHuomioita: value });
         }}
       />
-      <Stack
-        gap={theme.spacing(3)}
-        width={'60%'}
-        sx={{ marginBottom: theme.spacing(3) }}
-      >
+      <Stack spacing={3} width={'60%'} sx={{ marginBottom: theme.spacing(3) }}>
         <Henkilotiedot
           hakija={hakemus.hakija}
           paatosKieli={paatosKieliVal ?? ''}
           asiointiKieli={asiointiKieliVal ?? ''}
         />
       </Stack>
-      <Peruutus
-        hakemus={hakemus}
-        updateHakemus={updateLocal}
-        t={t}
-        theme={theme}
-      />
+      <Peruutus hakemus={hakemus} updateHakemus={updateLocal} t={t} />
       <SaveRibbon
         onSave={save}
         isSaving={isSaving ?? false}

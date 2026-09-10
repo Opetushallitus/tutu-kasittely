@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.repository
 
-import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHO, ValitusKHO, ValitusOPH, Valitustiedot}
+import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHaO, ValitusKHO, ValitusOPH, Valitustiedot}
 import org.json4s.jackson.Serialization
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +24,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
         id = Option(r.nextString()).filter(_.nonEmpty).map(UUID.fromString),
         hakemusId = Option(UUID.fromString(r.nextString())),
         valitusOPH = Serialization.read[ValitusOPH](r.nextString()),
-        valitusHO = Serialization.read[ValitusHO](r.nextString()),
+        valitusHaO = Serialization.read[ValitusHaO](r.nextString()),
         valitusKHO = Serialization.read[ValitusKHO](r.nextString()),
         luoja = r.nextStringOption(),
         luotu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
@@ -36,7 +36,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
   def lisaaValitustiedot(valitustiedot: Valitustiedot, luoja: String): Valitustiedot = {
     try {
       val valitusOPH: String = Serialization.write(valitustiedot.valitusOPH)
-      val valitusHO: String  = Serialization.write(valitustiedot.valitusHO)
+      val valitusHaO: String = Serialization.write(valitustiedot.valitusHaO)
       val valitusKHO: String = Serialization.write(valitustiedot.valitusKHO)
 
       db.run(
@@ -44,13 +44,13 @@ class ValitustiedotRepository extends BaseResultHandlers {
           INSERT INTO valitustiedot(
           hakemus_id,
           valitus_oph,
-          valitus_ho,
+          valitus_hao,
           valitus_kho,
           luoja
           ) VALUES (
             ${valitustiedot.hakemusId.get.toString}::uuid,
             $valitusOPH::jsonb,
-            $valitusHO::jsonb,
+            $valitusHaO::jsonb,
             $valitusKHO::jsonb,
             $luoja
           )
@@ -58,7 +58,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
             id,
             hakemus_id,
             valitus_oph,
-            valitus_ho,
+            valitus_hao,
             valitus_kho,
             luoja,
             luotu,
@@ -79,7 +79,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
   def paivitaValitustiedot(id: UUID, valitustiedot: Valitustiedot, muokkaaja: String): Option[Valitustiedot] = {
     try {
       val valitusOPH: String = Serialization.write(valitustiedot.valitusOPH)
-      val valitusHO: String  = Serialization.write(valitustiedot.valitusHO)
+      val valitusHaO: String = Serialization.write(valitustiedot.valitusHaO)
       val valitusKHO: String = Serialization.write(valitustiedot.valitusKHO)
 
       db.run(
@@ -87,7 +87,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
           UPDATE valitustiedot
           SET
             valitus_oph = $valitusOPH::jsonb,
-            valitus_ho = $valitusHO::jsonb,
+            valitus_hao = $valitusHaO::jsonb,
             valitus_kho = $valitusKHO::jsonb,
             muokkaaja = $muokkaaja
           WHERE
@@ -96,7 +96,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
             id,
             hakemus_id,
             valitus_oph,
-            valitus_ho,
+            valitus_hao,
             valitus_kho,
             luoja,
             luotu,
@@ -121,7 +121,7 @@ class ValitustiedotRepository extends BaseResultHandlers {
         SELECT id,
           hakemus_id,
           valitus_oph,
-          valitus_ho,
+          valitus_hao,
           valitus_kho,
           luoja,
           luotu,

@@ -41,7 +41,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
 }: AmmattikokemusJaElinikainenOppiminenProps) => {
   return (
     <>
-      <Stack gap={2}>
+      <Stack spacing={2}>
         <OphRadioGroupWithClear
           label={t(
             'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemus.title',
@@ -85,7 +85,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             updateDataAction({ ...data, korvaavuusElinikainenOppiminen: null })
           }
         />
-        <Stack gap={2}>
+        <Stack spacing={2}>
           <OphCheckbox
             data-testid={`ammattikokemusJalinikainenOppiminenYhdessa-checkbox`}
             label={t(
@@ -124,7 +124,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
       </Stack>
 
       {osittainenKorvaavuus(data) && (
-        <Stack gap={2} paddingLeft={3}>
+        <Stack spacing={2} paddingLeft={3}>
           {data.korvaavaToimenpide && (
             <KorvaavaToimenpideComponent
               korvaavaToimenpide={data.korvaavaToimenpide}

@@ -1,5 +1,5 @@
 import { Preview } from '@mui/icons-material';
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
@@ -19,7 +19,6 @@ export const PaatosHeader = ({
   updatePaatosField,
   t,
 }: PaatosHeaderProps) => {
-  const theme = useTheme();
   const { showPaatosTekstiPreview, setShowPaatosTekstiPreview } =
     useShowPreview();
 
@@ -32,11 +31,11 @@ export const PaatosHeader = ({
 
   return (
     <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-      <Stack direction="column" gap={theme.spacing(3)}>
+      <Stack direction="column" spacing={3}>
         <OphTypography variant={'h2'} data-testid="paatos-otsikko">
           {t('hakemus.paatos.otsikko')}
         </OphTypography>
-        <Stack direction="row" gap={theme.spacing(2)}>
+        <Stack direction="row" spacing={2}>
           <CalendarComponent
             setDate={(date: Date | null) =>
               updatePaatosField({

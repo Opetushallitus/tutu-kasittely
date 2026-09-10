@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{HakemusOid, ValitusKHO, Valitustiedot}
+import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHaO, ValitusKHO, ValitusLausuntopyynto, Valitustiedot}
 import fi.oph.tutu.backend.exception.ValitustiedotValidationException
 import fi.oph.tutu.backend.repository.{HakemusRepository, ValitustiedotRepository}
 import org.slf4j.{Logger, LoggerFactory}
@@ -29,6 +29,20 @@ class ValitustiedotService(
         throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla asetettu ilman valituspäivää")
       case (_, Some(valitusPvm), Some(ratkaisuPvm)) if ratkaisuPvm.isBefore(valitusPvm) =>
         throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla ennen valituspäivää")
+      case _ =>
+    }
+  }
+
+  private def validoiValitusHaOPvm(valitusHaO: ValitusHaO): Unit = {
+    (valitusHaO.valitettu, valitusHaO.valitusPvm, valitusHaO.ratkaisuPvm) match {
+      case (valitettu, Some(_), _) if !valitettu.contains(true) =>
+        throw new ValitustiedotValidationException("HaO:n valituspäivä ei voi olla asetettu ilman valitusta")
+      case (valitettu, _, Some(_)) if !valitettu.contains(true) =>
+        throw new ValitustiedotValidationException("HaO:n ratkaisupäivä ei voi olla asetettu ilman valitusta")
+      case (_, None, Some(_)) =>
+        throw new ValitustiedotValidationException("HaO:n ratkaisupäivä ei voi olla asetettu ilman valituspäivää")
+      case (_, Some(valitusPvm), Some(ratkaisuPvm)) if ratkaisuPvm.isBefore(valitusPvm) =>
+        throw new ValitustiedotValidationException("HaO:n ratkaisupäivä ei voi olla ennen valituspäivää")
       case _ =>
     }
   }
@@ -97,16 +111,44 @@ class ValitustiedotService(
     }
   }
 
-  private def validoiValitusKHOLausuntopyynto(valitusKHO: ValitusKHO): Unit = {
-    validoiLausuntopyyntoTila("KHO", valitusKHO.valitettu, valitusKHO.lausuntopyynto)
-    validoiLausuntopyyntoSaapumisPvm("KHO", valitusKHO.lausuntopyynto, valitusKHO.lausuntopyynnonSaapumisPvm)
-    validoiLausuntopyyntoMaaraaikaPvm("KHO", valitusKHO.lausuntopyynnonSaapumisPvm, valitusKHO.lausunnonMaaraaikaPvm)
-    validoiLausuntoAnnettuPvm("KHO", valitusKHO.lausuntopyynnonSaapumisPvm, valitusKHO.lausuntoAnnettuPvm)
+  private def validoiValitusLausuntopyynto(
+    tuomioistuinTunnus: String,
+    valitettu: Option[Boolean],
+    lausuntopyyntoValittu: Option[Boolean],
+    lausuntopyynto: Option[ValitusLausuntopyynto]
+  ): Unit = {
+    validoiLausuntopyyntoTila(tuomioistuinTunnus, valitettu, lausuntopyyntoValittu)
+    validoiLausuntopyyntoSaapumisPvm(tuomioistuinTunnus, lausuntopyyntoValittu, lausuntopyynto.flatMap(_.saapumisPvm))
+    validoiLausuntopyyntoMaaraaikaPvm(
+      tuomioistuinTunnus,
+      lausuntopyynto.flatMap(_.saapumisPvm),
+      lausuntopyynto.flatMap(_.maaraAikaPvm)
+    )
+    validoiLausuntoAnnettuPvm(
+      tuomioistuinTunnus,
+      lausuntopyynto.flatMap(_.saapumisPvm),
+      lausuntopyynto.flatMap(_.lausuntoAnnettuPvm)
+    )
   }
 
   private def validoiValitusKHO(valitusKHO: ValitusKHO): Unit = {
     validoiValitusKHOPvm(valitusKHO)
-    validoiValitusKHOLausuntopyynto(valitusKHO)
+    validoiValitusLausuntopyynto(
+      "KHO",
+      valitusKHO.valitettu,
+      valitusKHO.lausuntopyyntoValittu,
+      valitusKHO.lausuntopyynto
+    )
+  }
+
+  private def validoiValitusHaO(valitusHaO: ValitusHaO): Unit = {
+    validoiValitusHaOPvm(valitusHaO)
+    validoiValitusLausuntopyynto(
+      "HaO",
+      valitusHaO.valitettu,
+      valitusHaO.lausuntopyyntoValittu,
+      valitusHaO.lausuntopyynto
+    )
   }
 
   private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot = {
@@ -143,6 +185,7 @@ class ValitustiedotService(
     luojaTaiMuokkaaja: String
   ): (Option[Valitustiedot], Option[Valitustiedot]) = {
     validoiValitusKHO(valitustiedot.valitusKHO)
+    validoiValitusHaO(valitustiedot.valitusHaO)
 
     valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>

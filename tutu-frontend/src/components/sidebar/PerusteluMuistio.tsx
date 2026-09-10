@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import PreviewIcon from '@mui/icons-material/Preview';
-import { Divider, Stack, styled, useTheme } from '@mui/material';
+import { Divider, Stack, styled } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {
@@ -31,7 +31,6 @@ const asetaEsittelypaiva = async (hakemusOid: string) => {
 };
 
 export const AvaaPerusteluMuistioButton = () => {
-  const theme = useTheme();
   const { t } = useTranslations();
 
   const {
@@ -52,7 +51,7 @@ export const AvaaPerusteluMuistioButton = () => {
       {modalComponent}
       <ToimintoLinkki
         onClick={() => setIsOpen(true)}
-        gap={theme.spacing(1)}
+        gap={1}
         icon={<PreviewIconBlue />}
         label={t('hakemus.sivupalkki.perustelumuistio')}
       />
@@ -147,12 +146,12 @@ export const PerusteluMuistioModal = ({
       data-testid="perustelu-muistio-modal"
     >
       <Box sx={style}>
-        <Stack sx={{ height: '100%' }} direction="column" gap={2}>
-          <Stack direction="row" gap={2} justifyContent="space-between">
+        <Stack sx={{ height: '100%' }} direction="column" spacing={2}>
+          <Stack direction="row" spacing={2} justifyContent="space-between">
             <OphTypography variant="h2">
               {t('hakemus.perustelumuistio.otsikko')}
             </OphTypography>
-            <Stack direction="row" gap={2}>
+            <Stack direction="row" spacing={2}>
               <OphButton
                 data-testid="modal-confirm-button"
                 variant="contained"

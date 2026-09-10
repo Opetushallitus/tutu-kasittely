@@ -1,12 +1,11 @@
 import { Divider } from '@mui/material';
-import { Stack, useTheme } from '@mui/system';
+import { Stack } from '@mui/system';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { getters, FilemakerHakemus } from '@/src/lib/utils/filemakerDataUtils';
 
 const FilemakerHeader = ({ hakemus }: { hakemus: FilemakerHakemus }) => {
-  const theme = useTheme();
   const { t } = useTranslations();
 
   return (
@@ -15,7 +14,7 @@ const FilemakerHeader = ({ hakemus }: { hakemus: FilemakerHakemus }) => {
       divider={<Divider orientation="vertical" flexItem />}
       spacing={5}
     >
-      <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
+      <Stack direction="column" width="100%" spacing={2}>
         <OphTypography variant="label" data-testid="hakemusotsikko-hakija">
           {`${getters.kokonimi(hakemus)} ${getters.hetu(hakemus)}`}
         </OphTypography>
@@ -26,7 +25,7 @@ const FilemakerHeader = ({ hakemus }: { hakemus: FilemakerHakemus }) => {
           {`${t('filemaker.hakemuskoskee')}: ${getters.hakemusKoskee(hakemus)}`}
         </OphTypography>
       </Stack>
-      <Stack direction="column" width="100%" spacing={theme.spacing(2, 3)}>
+      <Stack direction="column" width="100%" spacing={2}>
         <OphTypography data-testid="hakemusotsikko-kirjauspvm">
           {`${t('filemaker.kirjauspvm')}: ${getters.kirjauspvm(hakemus)}`}
         </OphTypography>

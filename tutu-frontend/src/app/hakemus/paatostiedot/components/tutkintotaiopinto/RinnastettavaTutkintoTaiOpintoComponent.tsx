@@ -152,13 +152,13 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   return (
     <Stack
       direction={'column'}
-      gap={2}
+      spacing={2}
       sx={{ width: '100%', padding: 2, backgroundColor: ophColors.grey50 }}
     >
       <Stack
         key={`stack-${index}`}
         direction={'row'}
-        gap={2}
+        spacing={2}
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
         <OphTypography variant={'h3'}>

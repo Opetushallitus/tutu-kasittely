@@ -1,5 +1,4 @@
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -9,14 +8,12 @@ export const PeruutuksenTaiRaukeamisenSyyComponent = ({
   syy,
   updatePeruutuksenTaiRaukeamisenSyy,
   t,
-  theme,
 }: {
   syy?: PeruutuksenTaiRaukeamisenSyy;
   updatePeruutuksenTaiRaukeamisenSyy: (
     syy: PeruutuksenTaiRaukeamisenSyy,
   ) => void;
   t: TFunction;
-  theme: Theme;
 }) => {
   const updateSyy = (updated: Partial<PeruutuksenTaiRaukeamisenSyy>) => {
     updatePeruutuksenTaiRaukeamisenSyy({
@@ -26,10 +23,7 @@ export const PeruutuksenTaiRaukeamisenSyyComponent = ({
   };
 
   return (
-    <Stack
-      gap={theme.spacing(1)}
-      data-testid={'peruutuksenTaiRaukeamisenSyyComponent'}
-    >
+    <Stack spacing={1} data-testid={'peruutuksenTaiRaukeamisenSyyComponent'}>
       <OphTypography variant="label">
         {t('hakemus.paatos.peruutuksenTaiRaukeamisenSyy.otsikko')}
       </OphTypography>

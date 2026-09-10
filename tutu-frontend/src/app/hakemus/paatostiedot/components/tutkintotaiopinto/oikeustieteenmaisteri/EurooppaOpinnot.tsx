@@ -22,7 +22,7 @@ export const EurooppaOpinnot = ({
   ) => void;
 }) => {
   return (
-    <Stack direction="column" gap={3}>
+    <Stack direction="column" spacing={3}>
       <OphCheckbox
         label={t(
           'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.eurooppaOpinnotSisallossa',

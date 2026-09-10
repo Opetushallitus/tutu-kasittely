@@ -94,7 +94,7 @@ export default function FilemakerHakemus() {
         width: '100%',
         alignItems: 'stretch',
       }}
-      gap={theme.spacing(2)}
+      spacing={2}
     >
       <HeaderWrapper>
         <PageContent>
@@ -102,7 +102,7 @@ export default function FilemakerHakemus() {
         </PageContent>
       </HeaderWrapper>
       <PageContent>
-        <Stack direction="row" spacing={theme.spacing(3, 3)}>
+        <Stack direction="row" spacing={3}>
           <InnerBoxWrapper>
             <Tabs
               value={tab}
@@ -126,11 +126,7 @@ export default function FilemakerHakemus() {
               <LinkedTab value={'paatos'} setTab={setTab} />
             </Tabs>
           </InnerBoxWrapper>
-          <Stack
-            direction="column"
-            spacing={theme.spacing(0, 3)}
-            width={'100%'}
-          >
+          <Stack direction="column" spacing={0} width={'100%'}>
             <BoxWrapper sx={{ borderBottom: 0, paddingBottom: 0 }}>
               <FilemakerHeader hakemus={hakemus} />
             </BoxWrapper>
@@ -141,10 +137,7 @@ export default function FilemakerHakemus() {
                 justifyContent="space-between"
                 sx={{ paddingTop: 2 }}
               >
-                <Stack
-                  gap={theme.spacing(2)}
-                  sx={{ marginRight: theme.spacing(3) }}
-                >
+                <Stack spacing={2} sx={{ marginRight: theme.spacing(3) }}>
                   <OphTypography
                     variant={'h2'}
                     data-testid="filemaker-hakemus-otsikko"

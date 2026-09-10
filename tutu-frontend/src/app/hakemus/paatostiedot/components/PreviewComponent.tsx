@@ -42,10 +42,10 @@ export const PreviewComponent = ({
       }}
       data-testid="preview-content"
     >
-      <Stack sx={{ height: '100%' }} direction="column" gap={2}>
+      <Stack sx={{ height: '100%' }} direction="column" spacing={2}>
         <Stack
           direction="row"
-          gap={2}
+          spacing={2}
           justifyContent="space-between"
           alignItems="center"
         >

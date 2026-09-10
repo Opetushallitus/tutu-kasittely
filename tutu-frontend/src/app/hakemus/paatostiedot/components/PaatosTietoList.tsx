@@ -1,5 +1,5 @@
 import { DeleteOutline, ArrowDropUp, ArrowDropDown } from '@mui/icons-material';
-import { Divider, Stack, useTheme } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import {
   OphButton,
   ophColors,
@@ -41,15 +41,14 @@ export const PaatosTietoList = ({
   reorderPaatosTieto,
   tutkinnot,
 }: PaatosTietoListProps) => {
-  const theme = useTheme();
   const { showConfirmation } = useGlobalConfirmationModal();
 
   return paatosTiedot.map((paatosTieto, index) => (
-    <Stack key={index} direction={'column'} gap={theme.spacing(2)}>
+    <Stack key={index} direction={'column'} spacing={2}>
       <Stack
         key={`stack-${index}`}
         direction={'row'}
-        gap={theme.spacing(2)}
+        spacing={2}
         sx={{ justifyContent: 'space-between', alignItems: 'center' }}
       >
         <Stack direction={'row'} sx={{ alignItems: 'center' }}>

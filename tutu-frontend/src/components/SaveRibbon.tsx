@@ -1,5 +1,5 @@
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Stack, useTheme } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import {
   OphButton,
   OphTypography,
@@ -29,7 +29,6 @@ export const SaveRibbon = ({
 }: SaveRibbonProps) => {
   const { t } = useTranslations();
   const ribbonRef = useRef<HTMLDivElement | null>(null);
-  const theme = useTheme();
 
   const StyledInfoOutlinedIcon = styled(InfoOutlinedIcon)({
     color: ophColors.black,
@@ -90,7 +89,7 @@ export const SaveRibbon = ({
             data-testid="save-ribbon-last-saved"
             direction="row"
             alignItems="flex-start"
-            gap={theme.spacing(0.5)}
+            spacing={0.5}
             sx={{
               // Aloita 25%, piilota kun leveys <= 1000px;
               ml: 'max(0px, min(25%, calc(50% - 500px)))',

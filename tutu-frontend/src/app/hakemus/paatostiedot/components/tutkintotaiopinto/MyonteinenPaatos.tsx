@@ -28,7 +28,7 @@ export const MyonteinenPaatos: React.FC<MyonteinenPaatosProps> = ({
       label={t('hakemus.paatos.myonteinenPaatos.otsikko')}
       sx={{ gap: 2 }}
       renderInput={() => (
-        <Stack direction="column" gap={2}>
+        <Stack direction="column" spacing={2}>
           <OphCheckbox
             data-testid="myonteinenPaatos-taydentavatOpinnot"
             label={t('hakemus.paatos.myonteinenPaatos.taydentavatOpinnot')}

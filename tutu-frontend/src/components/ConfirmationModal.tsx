@@ -114,7 +114,7 @@ export const ConfirmationModal = ({
         <StyledIconButton aria-label="close" onClick={handleCloseAction}>
           <CloseIcon />
         </StyledIconButton>
-        <Stack direction="column" gap={6}>
+        <Stack direction="column" spacing={6}>
           <OphTypography
             id="modal-component-header"
             variant="body1"
@@ -123,7 +123,7 @@ export const ConfirmationModal = ({
             {header}
           </OphTypography>
           <OphTypography variant={'body1'}>{content}</OphTypography>
-          <Stack direction="row" gap={2} justifyContent="flex-end">
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
             <OphButton
               data-testid="modal-peruuta-button"
               variant={cancelVariant}

@@ -104,10 +104,7 @@ export default function Lausuntotiedot() {
         enabled={hasPerusteluChanges}
         onDiscard={discardPerustelu}
       />
-      <Stack
-        gap={theme.spacing(3)}
-        sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
-      >
+      <Stack spacing={3} sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}>
         {lausuntopyynnot.map((lausuntopyynto) => (
           <LausuntopyyntoComponent
             lausuntopyynto={lausuntopyynto}
@@ -121,7 +118,6 @@ export default function Lausuntotiedot() {
             korkeakouluOptions={korkeakouluOptions}
             isKoodistoLoading={isKoodistoLoading}
             t={t}
-            theme={theme}
             key={lausuntopyynto.jarjestys}
           />
         ))}

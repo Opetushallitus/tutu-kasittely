@@ -1,6 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
 import { Stack } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import {
   OphButton,
   OphInputFormField,
@@ -22,7 +21,6 @@ export type LausuntopyyntoProps = {
   korkeakouluOptions: OphSelectOption[];
   isKoodistoLoading: boolean;
   t: TFunction;
-  theme: Theme;
 };
 export const LausuntopyyntoComponent = ({
   lausuntopyynto,
@@ -31,7 +29,6 @@ export const LausuntopyyntoComponent = ({
   korkeakouluOptions,
   isKoodistoLoading,
   t,
-  theme,
 }: LausuntopyyntoProps) => {
   const { showConfirmation } = useGlobalConfirmationModal();
 
@@ -65,7 +62,7 @@ export const LausuntopyyntoComponent = ({
     : null;
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
           variant={'h3'}
@@ -127,7 +124,7 @@ export const LausuntopyyntoComponent = ({
           }}
         />
       )}
-      <Stack direction="row" gap={theme.spacing(5)}>
+      <Stack direction="row" spacing={5}>
         <CalendarComponent
           setDate={(date: Date | null) =>
             updateCurrentLausuntopyynto({

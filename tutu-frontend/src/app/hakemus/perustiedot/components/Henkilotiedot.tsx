@@ -1,5 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
-import { Theme } from '@mui/material/styles';
+import { Stack } from '@mui/material';
 import { Grid } from '@mui/system';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { ReactNode } from 'react';
@@ -15,14 +14,12 @@ import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { Hakija, HAKIJA_FIELDS } from '@/src/lib/types/hakija';
 
 const HenkilotietoGrid = ({
-  theme,
   children,
 }: {
-  theme: Theme;
   children: ReactNode | ReactNode[];
 }) => {
   return (
-    <Grid container spacing={theme.spacing(2)} columns={{ xs: 12, md: 10 }}>
+    <Grid container spacing={2} columns={{ xs: 12, md: 10 }}>
       {children}
     </Grid>
   );
@@ -62,8 +59,6 @@ export const Henkilotiedot = ({
   asiointiKieli: string;
 }) => {
   const { t, getLanguage } = useTranslations();
-  const theme = useTheme();
-
   const lan = getLanguage();
 
   const containsTranslatedName = (fieldValue: TranslatedName) => {
@@ -93,14 +88,14 @@ export const Henkilotiedot = ({
   };
 
   return (
-    <Stack gap={theme.spacing(2)}>
+    <Stack spacing={2}>
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.henkilotiedot.otsikko')}
       </OphTypography>
       {hakija.yksiloityVTJ && (
         <InfoBox infoText={t('hakemus.perustiedot.henkilotiedot.huomautus')} />
       )}
-      <HenkilotietoGrid theme={theme}>
+      <HenkilotietoGrid>
         {R.map(Object.values(HAKIJA_FIELDS), (fieldKey) => (
           <HenkilotietoRivi
             key={fieldKey}
@@ -113,7 +108,7 @@ export const Henkilotiedot = ({
       <OphTypography variant={'h3'}>
         {t('hakemus.perustiedot.henkilotiedot.kielet')}
       </OphTypography>
-      <HenkilotietoGrid theme={theme}>
+      <HenkilotietoGrid>
         <HenkilotietoRivi nimi={'paatoskieli'} arvo={paatosKieli} t={t} />
         <HenkilotietoRivi nimi={'asiointikieli'} arvo={asiointiKieli} t={t} />
       </HenkilotietoGrid>

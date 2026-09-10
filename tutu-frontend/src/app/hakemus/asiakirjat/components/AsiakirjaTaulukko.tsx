@@ -9,7 +9,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  useTheme,
 } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import * as R from 'remeda';
@@ -121,12 +120,11 @@ const AsiakirjaTableHeader = () => {
 
 const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
   const { t } = useTranslations();
-  const theme = useTheme();
   const uusiLiite = isUusiLiite(data);
   return (
     <TableRow className="asiakirja-row" id={`asiakirja__${data.key}`}>
       <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
-        <Stack sx={{ width: '100%' }} gap={theme.spacing(1)}>
+        <Stack sx={{ width: '100%' }} spacing={1}>
           <OphTypography className="asiakirja-row__otsake">
             {lomakeOtsake(data.asiakirja)}
           </OphTypography>
@@ -141,7 +139,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
         </Stack>
       </TableCell>
       <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
-        <Stack direction="row" gap={theme.spacing(1)}>
+        <Stack direction="row" spacing={1}>
           <OphTypography className="asiakirja-row__saapumisaika">
             {saapumisAika(data.metadata)}
           </OphTypography>
@@ -154,7 +152,7 @@ const AsiakirjaTableRow = ({ data }: { data: AsiakirjaTaulukkoData }) => {
         </Stack>
       </TableCell>
       <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
-        <Stack direction="row" gap={theme.spacing(1)}>
+        <Stack direction="row" spacing={1}>
           {tarkistuksenTilaIcon(data)}
           <OphTypography className="asiakirja-row__tarkistuksen-tila">
             {tarkistuksenTila(t, data)}

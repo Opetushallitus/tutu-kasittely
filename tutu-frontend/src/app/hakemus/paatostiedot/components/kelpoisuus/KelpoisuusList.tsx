@@ -98,7 +98,7 @@ export const KelpoisuusList = ({
           kelpoisuusOptions={kelpoisuusOptions}
         />
       ))}
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" spacing={2}>
         <OphButton
           sx={{
             alignSelf: 'flex-start',

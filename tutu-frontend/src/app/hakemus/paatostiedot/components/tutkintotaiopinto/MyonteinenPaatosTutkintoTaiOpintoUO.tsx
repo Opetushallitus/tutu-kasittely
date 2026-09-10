@@ -311,7 +311,7 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
     lisavaatimukset?.sovellettuTilanne || sovellettuTilanneOptions.length === 0;
 
   return (
-    <Stack gap={3}>
+    <Stack spacing={3}>
       <SovellettuTilanneSelection
         t={t}
         sovellettuTilanne={lisavaatimukset?.sovellettuTilanne}

@@ -5,7 +5,6 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { format } from 'date-fns';
 import { parseAsString, useQueryState } from 'nuqs';
@@ -40,7 +39,6 @@ const isSortableField = (fieldKey: string) =>
 
 export type VahvistettuListProps = {
   t: TFunction;
-  theme: Theme;
   viestiLista: VahvistettuViestiListItem[];
   paivitaVahvistetut: () => void;
   poistaViesti: (id: string) => void;
@@ -49,7 +47,6 @@ export type VahvistettuListProps = {
 
 export const VahvistettuList = ({
   t,
-  theme,
   viestiLista,
   paivitaVahvistetut,
   poistaViesti,
@@ -88,7 +85,7 @@ export const VahvistettuList = ({
     tyyppi ? t(`hakemus.viesti.${tyyppi}`) : '';
 
   return (
-    <Stack gap={theme.spacing(3)}>
+    <Stack spacing={3}>
       <OphTypography variant={'h3'}>
         {t('hakemus.viesti.listanOtsikko')}
       </OphTypography>

@@ -90,7 +90,7 @@ export const TutkintoComponent = ({
   }
 
   return (
-    <Stack direction="column" gap={2}>
+    <Stack direction="column" spacing={2}>
       <Stack direction="row" justifyContent="space-between">
         <OphTypography
           variant={'h3'}
@@ -294,7 +294,7 @@ export const TutkintoComponent = ({
           }}
         />
       </HakijanIlmoittamaFieldWrapper>
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" spacing={2}>
         <OphInputFormField
           sx={{ width: '25%' }}
           label={t('hakemus.tutkinnot.tutkinto.opintojenAloitusVuosi')}

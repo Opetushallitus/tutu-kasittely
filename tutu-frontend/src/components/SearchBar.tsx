@@ -7,7 +7,6 @@ import {
   InputAdornment,
   SelectChangeEvent,
   Stack,
-  useTheme,
 } from '@mui/material';
 import {
   OphButton,
@@ -66,7 +65,6 @@ const EMPTY_COMMITTED: CommittedSearch = {
 };
 
 export const SearchBar = () => {
-  const theme = useTheme();
   const { addToast } = useToaster();
   const { t } = useTranslations();
   const queryClient = useQueryClient();
@@ -361,18 +359,13 @@ export const SearchBar = () => {
   }
 
   return (
-    <Stack direction="column" flex={1} gap={theme.spacing(1)}>
-      <Stack
-        direction="row"
-        alignItems="center"
-        gap={theme.spacing(3)}
-        flex={1}
-      >
+    <Stack direction="column" flex={1} spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={3} flex={1}>
         <Stack
           component="form"
           direction="row"
           alignItems="center"
-          gap={theme.spacing(3)}
+          spacing={3}
           flex={1}
           onSubmit={(e) => {
             e.preventDefault();

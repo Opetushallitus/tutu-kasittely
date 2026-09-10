@@ -160,10 +160,7 @@ export default function TutkintoPage() {
         enabled={unsavedChangesEnabled}
         onDiscard={discardUnsavedChanges}
       />
-      <Stack
-        gap={theme.spacing(3)}
-        sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}
-      >
+      <Stack spacing={3} sx={{ flexGrow: 1, marginRight: theme.spacing(3) }}>
         <OphTypography variant={'h2'} data-testid="tutkinnot-otsikko">
           {t('hakemus.tutkinnot.otsikko')}
         </OphTypography>

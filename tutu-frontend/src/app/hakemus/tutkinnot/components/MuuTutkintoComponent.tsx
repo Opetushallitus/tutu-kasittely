@@ -51,7 +51,7 @@ export const MuuTutkintoComponent = ({
   if (!currentTutkinto) return <FullSpinner></FullSpinner>;
 
   return (
-    <Stack direction="column" gap={2}>
+    <Stack direction="column" spacing={2}>
       <OphTypography
         variant={'h3'}
         data-testid={'tutkinto-otsikko-MUU'}
@@ -62,7 +62,7 @@ export const MuuTutkintoComponent = ({
       <OphTypography variant={'label'}>
         {t('hakemus.tutkinnot.tutkinto.muuTutkintoHuomioSelite')}
       </OphTypography>
-      <Stack direction="column" gap={0.5}>
+      <Stack direction="column" spacing={0.5}>
         <OphInputFormField
           minRows={9}
           multiline={true}

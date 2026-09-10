@@ -28,7 +28,7 @@ export const SuomiOpinnot = ({
   ) => void;
 }) => {
   return (
-    <Stack direction="column" gap={3}>
+    <Stack direction="column" spacing={3}>
       <OphCheckbox
         label={t(
           'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.suomiOpinnotSisallossa',
@@ -45,7 +45,7 @@ export const SuomiOpinnot = ({
       />
       {vaatimukset.suomiOpintojaSisallossa && (
         <>
-          <Stack gap={1} paddingLeft={4} alignItems={'flex-start'}>
+          <Stack spacing={1} paddingLeft={4} alignItems={'flex-start'}>
             <OphTypography variant="h5">
               {t(
                 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.suomiOpinnot.aihealue',

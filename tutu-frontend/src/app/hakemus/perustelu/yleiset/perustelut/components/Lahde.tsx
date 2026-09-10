@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphCheckbox, OphTypography } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
 
@@ -15,7 +15,6 @@ export const Lahde = ({
   updatePerustelu,
 }: Props) => {
   const { t } = useTranslations();
-  const theme = useTheme();
 
   const [state, setState] = useState({
     lahdeLahtomaanKansallinenLahde: false,
@@ -51,7 +50,7 @@ export const Lahde = ({
   ]);
 
   return (
-    <Stack direction="column" gap={theme.spacing(1)}>
+    <Stack direction="column" spacing={1}>
       <OphTypography variant="label">
         {t('hakemus.perustelu.yleiset.perustelut.lahde.otsikko')}
       </OphTypography>
