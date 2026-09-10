@@ -77,7 +77,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     vahvistaViesti,
     poistaViesti,
     paivitaVahvistettuLista,
-    setViestityyppi: setViestityyppiForOletussisalto,
+    setViestityyppiJakieli: setViestiParamsForOletussisalto,
     updateOngoing,
     maybeError,
   } = useViestiAll(hakemus?.hakemusOid);
@@ -91,13 +91,25 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
     useShowTekstipohjat();
 
   useEffect(() => {
-    const toBeSisalto = viesti?.viesti || oletusSisalto || '';
-    importHtml(editorRef.current, toBeSisalto);
-  }, [editorRef, viesti?.viesti, oletusSisalto]);
+    if (editorRef?.current) {
+      const toBeSisalto = viesti?.viesti || oletusSisalto || '';
+      importHtml(editorRef.current, toBeSisalto);
+    }
+  }, [editorRef?.current, viesti?.viesti, oletusSisalto]);
 
   useEffect(() => {
-    setViestityyppiForOletussisalto(currentViesti?.tyyppi || null);
-  }, [currentViesti?.tyyppi, setViestityyppiForOletussisalto]);
+    if (!currentViesti?.viesti) {
+      setViestiParamsForOletussisalto(
+        currentViesti?.tyyppi || null,
+        currentViesti?.kieli,
+      );
+    }
+  }, [
+    currentViesti?.tyyppi,
+    currentViesti?.kieli,
+    currentViesti?.viesti,
+    setViestiParamsForOletussisalto,
+  ]);
 
   const isViestiEmpty =
     !currentViesti?.tyyppi && !currentViesti?.otsikko && !currentViesti?.viesti;
@@ -133,6 +145,10 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
         marginRight: showTekstipohjaLista ? theme.spacing(0) : theme.spacing(3),
       }}
     >
+      <span
+        data-testid={'editor-ready'}
+        is-ready={editorRef?.current ? 'true' : 'false'}
+      />
       <UnsavedChangesGuard
         enabled={viestiState.hasChanges}
         onDiscard={viestiState.discard}

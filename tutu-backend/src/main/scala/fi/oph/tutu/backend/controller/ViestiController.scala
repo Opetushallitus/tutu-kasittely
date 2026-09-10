@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, OletusSisaltoTyyppi, Viesti}
+import fi.oph.tutu.backend.domain.{HakemusOid, Kieli, OletusSisaltoTyyppi, Viesti}
 import fi.oph.tutu.backend.service.{UserService, ViestiService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
@@ -302,6 +302,7 @@ class ViestiController(
   def getOletusSisalto(
     @PathVariable("hakemusOid") hakemusOid: String,
     @PathVariable("tyyppi") tyyppi: String,
+    @RequestParam("kieli", required = false) kieliStr: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
@@ -309,7 +310,8 @@ class ViestiController(
       val contentType = OletusSisaltoTyyppi.fromString(tyyppi)
       val timezone    = request.getHeader("X-Timezone")
       val zone        = Option(timezone).map(ZoneId.of).getOrElse(ZoneId.of("UTC"))
-      viestiService.haeOletusSisalto(HakemusOid(hakemusOid), user.userOid, contentType, zone)
+      val kieli       = Option(kieliStr).flatMap(Kieli.optionFromString).getOrElse(Kieli.fi)
+      viestiService.haeOletusSisalto(HakemusOid(hakemusOid), user.userOid, contentType, zone, kieli)
     } match {
       case Success(result) =>
         result match {

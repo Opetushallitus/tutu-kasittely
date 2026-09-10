@@ -115,14 +115,13 @@ class ViestiService(
     hakemusOid: HakemusOid,
     esittelijaOid: String,
     sisaltoTyyppi: OletusSisaltoTyyppi,
-    requestTimezone: ZoneId
+    requestTimezone: ZoneId,
+    kieli: Kieli
   ): Option[String] = {
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
-        val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
         haeEsittelija(Some(esittelijaOid)) match {
           case Some(esittelija) =>
-            val kieli       = Kieli.optionFromString(ataruHakemus.lang).getOrElse(Kieli.fi)
             val hakemusInfo = ViestiHakemusInfo(
               hakemusOid = hakemusOid,
               esittelija = esittelija,

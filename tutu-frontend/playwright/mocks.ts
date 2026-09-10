@@ -808,10 +808,13 @@ export const mockViestiOletussisalto = (page: Page) => {
   return page.route(
     '**/tutu-backend/api/viesti/oletussisalto/1.2.246.562.11.00000000001/**',
     async (route: Route) => {
+      const url = new URL(route.request().url());
+      const kieli = url.searchParams.get('kieli') ?? 'fi';
+      const sisalto = `Oletussisältö ${kieli}`;
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<span style="white-space: pre-wrap;">Oletussisältö</span>',
+        body: `<span style="white-space: pre-wrap;">${sisalto}</span>`,
       });
     },
   );

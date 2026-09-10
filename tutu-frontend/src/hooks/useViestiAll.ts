@@ -5,6 +5,7 @@ import { useVahvistetutViestit } from '@/src/hooks/useVahvistetutViestit';
 import { useViesti, useViestiOletusSisalto } from '@/src/hooks/useViesti';
 import { errorItem, ErrorItem } from '@/src/lib/common';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
+import { Language } from '@/src/lib/localization/localizationTypes';
 import { Viestityyppi } from '@/src/lib/types/viesti';
 import { handleFetchError, handleSuccessMessage } from '@/src/lib/utils';
 
@@ -35,12 +36,13 @@ export const useViestiAll = (hakemusOid?: string) => {
   } = useVahvistetutViestit(hakemusOid);
 
   const [viestityyppi, setViestityyppi] = useState<Viestityyppi | null>(null);
+  const [kieli, setKieli] = useState<Language | undefined>(undefined);
 
   const {
     sisalto: oletusSisalto,
     isSisaltoLoading,
     sisaltoLoadingError,
-  } = useViestiOletusSisalto(hakemusOid, viestityyppi);
+  } = useViestiOletusSisalto(hakemusOid, viestityyppi, kieli);
 
   const maybeError: ErrorItem | undefined = useMemo(
     () =>
@@ -112,7 +114,10 @@ export const useViestiAll = (hakemusOid?: string) => {
     vahvistaViesti,
     poistaViesti,
     paivitaVahvistettuLista,
-    setViestityyppi,
+    setViestityyppiJakieli: (tyyppi: Viestityyppi | null, kieli?: Language) => {
+      setViestityyppi(tyyppi);
+      setKieli(kieli);
+    },
     updateOngoing,
     maybeSuccessMessage,
     maybeError,
