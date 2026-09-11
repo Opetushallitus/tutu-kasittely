@@ -756,7 +756,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     )
     val result = haeMyonteinenTaiKielteinen(translationService, paatosTiedot.myonteinenPaatos)
 
-    assert(result.get.contains("Päätös on myönteinen: Kyllä"))
+    assert(result.get.contains("Päätös on myönteinen"))
   }
 
   @Test

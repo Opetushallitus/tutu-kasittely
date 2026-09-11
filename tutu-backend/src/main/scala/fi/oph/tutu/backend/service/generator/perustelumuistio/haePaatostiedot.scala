@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.service.generator.perustelumuistio
 
+import scala.annotation.tailrec
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.TranslationService
 import fi.oph.tutu.backend.service.generator.toKyllaEi
@@ -9,12 +10,17 @@ private val FI = Kieli.fi
 type PaatosNodeType =
   Paatos | PeruutuksenTaiRaukeamisenSyy | PaatosTieto | TutkintoTaiOpinto | MyonteisenPaatoksenLisavaatimukset |
     ErotKoulutuksessa | KorvaavaToimenpide | AmmattikomemusJaElinikainenOppiminen | KelpoisuudenLisavaatimukset |
-    KielteisenPaatoksenPerustelut | Kelpoisuus
+    KielteisenPaatoksenPerustelut | Kelpoisuus | TitleNode
 
 type PaatosNodeTypeAggregate =
   PaatosNodeType | Option[PaatosNodeType] | Seq[PaatosNodeType]
 
 type PerustelumuistioGetter = PaatosNodeTypeAggregate => Option[String]
+
+case class TitleNode(
+  titleKey: Option[String] = None,
+  child: PaatosNodeTypeAggregate = None
+)
 
 def bindHaePaatostiedot(
   translationService: TranslationService,
@@ -23,8 +29,6 @@ def bindHaePaatostiedot(
   PerustelumuistioGetter,
   PerustelumuistioGetter
 ) = {
-  val getListLabel = bindGetListLabel(translationService)
-
   val extractPaatos                             = bindExtractPaatos(translationService, tutkinnot)
   val extractPeruutuksenTaiRaukeamisenSyy       = bindExtractPeruutuksenTaiRaukeamisenSyy(translationService, tutkinnot)
   val extractPaatosTieto                        = bindExtractPaatosTieto(translationService, tutkinnot)
@@ -38,7 +42,9 @@ def bindHaePaatostiedot(
   val extractKelpoisuudenLisavaatimukset   = bindExtractKelpoisuudenLisavaatimukset(translationService, tutkinnot)
   val extractKielteisenPaatoksenPerustelut = bindExtractKielteisenPaatoksenPerustelut(translationService, tutkinnot)
   val extractKelpoisuus                    = bindExtractKelpoisuus(translationService, tutkinnot)
+  val extractTitleNode                     = bindExtractTitleNode(translationService, tutkinnot)
 
+  // Extract kaikki tyypit
   def extractNext(node: PaatosNodeType): Option[String] = {
     node match {
       case node: Paatos                               => extractPaatos(node)
@@ -52,50 +58,32 @@ def bindHaePaatostiedot(
       case node: KelpoisuudenLisavaatimukset          => extractKelpoisuudenLisavaatimukset(node)
       case node: KielteisenPaatoksenPerustelut        => extractKielteisenPaatoksenPerustelut(node)
       case node: Kelpoisuus                           => extractKelpoisuus(node)
+      case node: TitleNode                            => extractTitleNode(node)
       case _                                          => None
     }
   }
 
-  def haePaatostiedotExtract = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    extractNext,
-    None
-  )
+  // Suodata myönteisen päätöksen mukaan
+  def haePaatostiedotExtract(node: PaatosNodeType): Option[String] = {
+    node match {
+      case node: KielteisenPaatoksenPerustelut => None
+      case _                                   => extractNext(node)
+    }
+  }
 
-  def haeKielteisenPaatoksenPerustelutExtract = applyOrDefault(
-    vainKielteisenPaatoksenPerustelut,
-    extractNext,
-    None
-  )
+  // Suodata kielteisen päätöksen mukaan
+  def haeKielteisenPaatoksenPerustelutExtract(node: PaatosNodeType): Option[String] = {
+    node match {
+      case node: KielteisenPaatoksenPerustelut => extractNext(node)
+      case _                                   => None
+    }
+  }
 
-  def haePaatosGetListLabel = applyOrDefault(
-    poistaKielteisenPaatoksenPerustelut,
-    getListLabel,
-    None
-  )
-
-  def haeKielteisenPaatoksenPerustelutGetListLabel = applyOrDefault(
-    vainKielteisenPaatoksenPerustelut,
-    getListLabel,
-    None
-  )
-
-  val haePaatostiedot                  = bindTraverse(haePaatostiedotExtract, expand, combine, haePaatosGetListLabel)
+  val haePaatostiedot                  = bindTraverse(haePaatostiedotExtract, expand, combine)
   val haeKielteisenPaatoksenPerustelut =
-    bindTraverse(haeKielteisenPaatoksenPerustelutExtract, expand, combine, haeKielteisenPaatoksenPerustelutGetListLabel)
+    bindTraverse(haeKielteisenPaatoksenPerustelutExtract, expand, combine)
 
   (haePaatostiedot, haeKielteisenPaatoksenPerustelut)
-}
-
-def applyOrDefault[S, T](
-  predicate: S => Boolean,
-  op: S => T,
-  defaultValue: T
-): S => T = {
-  def fn(node: S): T = {
-    if predicate(node) then op(node) else defaultValue
-  }
-  fn
 }
 
 def bindStep(
@@ -115,22 +103,19 @@ def bindStep(
 def bindTraverse(
   extract: PaatosNodeType => Option[String],
   expand: PaatosNodeType => Seq[PaatosNodeTypeAggregate],
-  combine: (Seq[PaatosNodeTypeAggregate], Seq[PaatosNodeTypeAggregate]) => Seq[PaatosNodeTypeAggregate],
-  getListLabel: PaatosNodeType => Option[String]
+  combine: (Seq[PaatosNodeTypeAggregate], Seq[PaatosNodeTypeAggregate]) => Seq[PaatosNodeTypeAggregate]
 ): PaatosNodeTypeAggregate => Option[String] = {
   def step = bindStep(extract, expand)
   def extractAndExpandAggregate(aggregate: PaatosNodeTypeAggregate): (Option[String], Seq[PaatosNodeTypeAggregate]) = {
     aggregate match {
-      case nodeSeq: Seq[PaatosNodeType] if nodeSeq.isEmpty => (None, Seq.empty)
-      case nodeSeq: Seq[PaatosNodeType]                    =>
-        val listLabel = getListLabel(nodeSeq.head)
-        (listLabel, nodeSeq)
-      case Some(node)           => step(node)
-      case None                 => (None, Seq.empty)
-      case node: PaatosNodeType => step(node)
+      case nodeSeq: Seq[PaatosNodeType] => (None, nodeSeq)   // Flatten lists
+      case Some(node)                   => step(node)
+      case None                         => (None, Seq.empty) // End propagation
+      case node: PaatosNodeType         => step(node)
     }
   }
 
+  @tailrec
   def traverseInternal(openList: Seq[PaatosNodeTypeAggregate], currentResultMaybe: Option[String]): Option[String] = {
     openList.headOption match {
       case None       => currentResultMaybe
@@ -164,6 +149,7 @@ def expand(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
     case node: KelpoisuudenLisavaatimukset          => expandKelpoisuudenLisavaatimukset(node)
     case node: KielteisenPaatoksenPerustelut        => expandKielteisenPaatoksenPerustelut(node)
     case node: Kelpoisuus                           => expandKelpoisuus(node)
+    case node: TitleNode                            => expandTitleNode(node)
     case _                                          => Seq.empty
   }
 }
@@ -173,32 +159,6 @@ def combine(
   newList: Seq[PaatosNodeTypeAggregate]
 ): Seq[PaatosNodeTypeAggregate] = {
   newList ++ openList
-}
-
-def bindGetListLabel(translationService: TranslationService): PaatosNodeType => Option[String] = {
-  def fn(node: PaatosNodeType): Option[String] = {
-    node match {
-      case node: TutkintoTaiOpinto =>
-        Some(translationService.getTranslation(FI, "perustelumuistio.rinnastettavatTutkinnotTaiOpinnot.label"))
-      case node: Kelpoisuus => Some(translationService.getTranslation(FI, "perustelumuistio.kelpoisuudet.label"))
-      case _                => None
-    }
-  }
-  fn
-}
-
-def poistaKielteisenPaatoksenPerustelut(node: PaatosNodeType): Boolean = {
-  node match {
-    case _: KielteisenPaatoksenPerustelut => false
-    case _                                => true
-  }
-}
-
-def vainKielteisenPaatoksenPerustelut(node: PaatosNodeType): Boolean = {
-  node match {
-    case _: KielteisenPaatoksenPerustelut => true
-    case _                                => false
-  }
 }
 
 /* ------- */
@@ -215,8 +175,14 @@ def expandPeruutuksenTaiRaukeamisenSyy(node: PeruutuksenTaiRaukeamisenSyy): Seq[
 
 def expandPaatosTieto(node: PaatosTieto): Seq[PaatosNodeTypeAggregate] = {
   Seq(
-    node.kelpoisuudet,
-    node.rinnastettavatTutkinnotTaiOpinnot,
+    TitleNode(
+      titleKey = Some("perustelumuistio.kelpoisuudet.label"),
+      child = node.kelpoisuudet
+    ),
+    TitleNode(
+      titleKey = Some("perustelumuistio.rinnastettavatTutkinnotTaiOpinnot.label"),
+      child = node.rinnastettavatTutkinnotTaiOpinnot
+    ),
     node.kielteisenPaatoksenPerustelut
   )
 }
@@ -229,7 +195,24 @@ def expandTutkintoTaiOpinto(node: TutkintoTaiOpinto): Seq[PaatosNodeTypeAggregat
 }
 
 def expandMyonteisenPaatoksenLisavaatimukset(node: MyonteisenPaatoksenLisavaatimukset): Seq[PaatosNodeTypeAggregate] = {
-  Seq.empty
+  if (
+    node.ammattikokemuksenHuomioiminen == AmmattikokemuksenHuomioiminen.EiHuomioida &&
+    node.suomessaSuoritettujenOpintojenHuomioiminen == SuomessaSuoritettujenOpintojenHuomioiminen.EiHuomioida
+  ) {
+    // "Käytetään lähtökohtaisia osaamisen täydentämisen tapoja"
+    Seq(
+      TitleNode(
+        titleKey = Some(
+          "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja"
+        ),
+        child = node.korvaavaToimenpide
+      )
+    )
+  } else {
+    Seq(
+      node.korvaavaToimenpide
+    )
+  }
 }
 
 def expandErotKoulutuksessa(node: ErotKoulutuksessa): Seq[PaatosNodeTypeAggregate] = {
@@ -267,7 +250,21 @@ def expandKelpoisuus(node: Kelpoisuus): Seq[PaatosNodeTypeAggregate] = {
   )
 }
 
+def expandTitleNode(node: TitleNode): Seq[PaatosNodeTypeAggregate] = {
+  Seq(node.child)
+}
+
 /* ------- */
+
+def bindExtractTitleNode(
+  translationService: TranslationService,
+  tutkinnot: Seq[Tutkinto]
+): (TitleNode) => Option[String] = {
+  def next(node: TitleNode): Option[String] = {
+    node.titleKey.map(key => translationService.getTranslation(FI, key))
+  }
+  next
+}
 
 def bindExtractPaatos(
   translationService: TranslationService,
@@ -464,7 +461,59 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
         .when(node.opetusNayte)(
           translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.opetusNayte")
         )
-        .map(value => s"- $value")
+        .map(value => s"- $value"),
+
+      node.ammattikokemuksenHuomioiminen.map {
+        case AmmattikokemuksenHuomioiminen.SuomessaHankittuKokonaan =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.suomessaHankittuKokonaan"
+          )
+        case AmmattikokemuksenHuomioiminen.SuomessaHankittuOsittain =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.suomessaHankittuOsittain"
+          )
+        case AmmattikokemuksenHuomioiminen.UlkomaillaHankittuKokonaan =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.ulkomaillaHankittuKokonaan"
+          )
+        case AmmattikokemuksenHuomioiminen.UlkomaillaHankittuOsittain =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.ulkomaillaHankittuOsittain"
+          )
+        case AmmattikokemuksenHuomioiminen.SuomessaJaUlkomaillaHankittuKokonaan =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.suomessaJaUlkomaillaHankittuKokonaan"
+          )
+        case AmmattikokemuksenHuomioiminen.SuomessaJaUlkomaillaHankittuOsittain =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.ammattikokemuksenHuomioiminen.suomessaJaUlkomaillaHankittuOsittain"
+          )
+        case AmmattikokemuksenHuomioiminen.EiHuomioida =>
+          translationService.getTranslation(FI, "perustelumuistio.ammattikokemuksenHuomioiminen.eiHuomioida")
+      },
+      node.suomessaSuoritettujenOpintojenHuomioiminen.map {
+        case SuomessaSuoritettujenOpintojenHuomioiminen.EiHuomioida =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.suomessaSuoritettujenOpintojenHuomioiminen.eiHuomioida"
+          )
+        case SuomessaSuoritettujenOpintojenHuomioiminen.KorvaavatOsittain =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.suomessaSuoritettujenOpintojenHuomioiminen.korvaavatOsittain"
+          )
+        case SuomessaSuoritettujenOpintojenHuomioiminen.KorvaavatKokonaan =>
+          translationService.getTranslation(
+            FI,
+            "perustelumuistio.suomessaSuoritettujenOpintojenHuomioiminen.korvaavatKokonaan"
+          )
+      }
     ).flatten
 
     if (result.nonEmpty) {
@@ -485,7 +534,7 @@ def bindExtractErotKoulutuksessa(
   tutkinnot: Seq[Tutkinto]
 ): (ErotKoulutuksessa) => Option[String] = {
   def next(node: ErotKoulutuksessa): Option[String] = {
-    val nimetytErot = node.erot.map(ero => s"- ${ero.name}: ${toKyllaEi(ero.value)}")
+    val nimetytErot = node.erot.filter(_.value == true).map(ero => s"- ${ero.name}")
 
     val muuEro = node.muuEro
       .filter(_ == true)
@@ -803,11 +852,8 @@ def haeMyonteinenTaiKielteinen(
   myonteinenPaatosMaybe: Option[Boolean]
 ): Option[String] = {
   myonteinenPaatosMaybe
-    .map(toKyllaEi)
-    .map(muotoiltu =>
-      val label = translationService.getTranslation(FI, "perustelumuistio.myonteinenTaiKielteinen.label")
-      s"$label $muotoiltu".trim
-    )
+    .filter(_ == true)
+    .map(muotoiltu => translationService.getTranslation(FI, "perustelumuistio.myonteinenTaiKielteinen.label"))
 }
 
 def haeTutkinnonTaso(translationService: TranslationService, paatostiedot: PaatosTieto): Option[String] = {
@@ -824,8 +870,9 @@ def haeSopeutumisaika(
   translationService: TranslationService,
   kestoMaybe: Option[String]
 ): Option[String] = {
+  val title = translationService.getTranslation(FI, "perustelumuistio.sopeutumisaika.title")
   val label = translationService.getTranslation(FI, "perustelumuistio.sopeutumisajanKesto.label")
-  kestoMaybe.map(kesto => s"$label $kesto".trim)
+  kestoMaybe.map(kesto => s"$label $kesto".trim).map(rivi => s"$title \n  $rivi")
 }
 
 def haeKelpoisuuskoeSisalto(
