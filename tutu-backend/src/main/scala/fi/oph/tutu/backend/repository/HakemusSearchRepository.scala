@@ -37,7 +37,8 @@ class HakemusSearchRepository extends BaseResultHandlers {
         ataruHakemustaMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         apHakemus = Option(r.nextBoolean()),
         viimeinenAsiakirjaHakijalta = Option(r.nextTimestamp()).map(_.toLocalDateTime),
-        onkoPeruutettu = Option(r.nextBoolean())
+        onkoPeruutettu = Option(r.nextBoolean()),
+        lausunnonMaaraaikaPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -126,10 +127,16 @@ class HakemusSearchRepository extends BaseResultHandlers {
           h.ataru_hakemus_muokattu,
           a.ap_hakemus,
           a.viimeinen_asiakirja_hakijalta,
-          h.onko_peruutettu
+          h.onko_peruutettu,
+          CASE h.kasittely_vaihe
+            WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+            WHEN 'OdottaaHaOLausuntoa' THEN (vt.valitus_hao #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+            ELSE NULL
+          END AS lausunnon_maaraaika_pvm
         FROM hakemus h
         LEFT JOIN esittelija e ON e.id = h.esittelija_id
         LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
+        LEFT JOIN valitustiedot vt ON vt.hakemus_id = h.id
         WHERE h.id IN (SELECT id FROM hakemus_ids)
         ORDER BY #$orderBy
       """).as[HakemusListItem]
@@ -676,11 +683,17 @@ class HakemusSearchRepository extends BaseResultHandlers {
           a.ap_hakemus,
           a.viimeinen_asiakirja_hakijalta,
           h.onko_peruutettu,
+          CASE h.kasittely_vaihe
+            WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+            WHEN 'OdottaaHaOLausuntoa' THEN (vt.valitus_hao #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+            ELSE NULL
+          END AS lausunnon_maaraaika_pvm,
           (SELECT COUNT(*) FROM ranked) AS total_count
         FROM hakemus h
         JOIN ranked ON ranked.id = h.id
         LEFT JOIN esittelija e ON e.id = h.esittelija_id
         LEFT JOIN asiakirja a ON a.id = h.asiakirja_id
+        LEFT JOIN valitustiedot vt ON vt.hakemus_id = h.id
         ORDER BY ranked.relevance_score DESC, h.saapumis_pvm DESC NULLS LAST
         LIMIT $pageSize
         OFFSET $offset

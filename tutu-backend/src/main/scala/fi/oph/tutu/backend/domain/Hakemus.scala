@@ -150,7 +150,9 @@ case class DbHakemus(
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50
   )
-  esittelyPvm: Option[LocalDateTime]
+  esittelyPvm: Option[LocalDateTime],
+  // Täytetty vain kun kasittelyVaihe on OdottaaKHOLausuntoa tai OdottaaHaOLausuntoa.
+  lausunnonMaaraaikaPvm: Option[LocalDateTime]
 )
 
 case class Hakemus(
@@ -182,7 +184,9 @@ case class Hakemus(
   onkoPeruutettu: Boolean = false,
   peruutusPvm: Option[LocalDateTime] = None,
   peruutusLisatieto: Option[String] = None,
-  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime] = None
+  viimeisinTaydennyspyyntoPvm: Option[LocalDateTime] = None,
+  // Täytetty vain kun kasittelyVaihe on OdottaaKHOLausuntoa tai OdottaaHaOLausuntoa.
+  lausunnonMaaraaikaPvm: Option[LocalDateTime] = None
 )
 
 /**

@@ -49,7 +49,8 @@ class HakemusRepository extends BaseResultHandlers {
         ataruHakemusMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         hakijaEtunimet = r.nextStringOption(),
         hakijaSukunimi = r.nextStringOption(),
-        esittelyPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
+        esittelyPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
+        lausunnonMaaraaikaPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
 
@@ -179,10 +180,16 @@ class HakemusRepository extends BaseResultHandlers {
               h.ataru_hakemus_muokattu,
               h.hakija_etunimet,
               h.hakija_sukunimi,
-              h.esittely_pvm
+              h.esittely_pvm,
+              CASE h.kasittely_vaihe
+                WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+                WHEN 'OdottaaHaOLausuntoa' THEN (vt.valitus_hao #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+                ELSE NULL
+              END AS lausunnon_maaraaika_pvm
             FROM
               hakemus h
             LEFT JOIN esittelija e on e.id = h.esittelija_id
+            LEFT JOIN valitustiedot vt ON vt.hakemus_id = h.id
             WHERE
               h.hakemus_oid = ${hakemusOid.s}
           """.as[DbHakemus].headOption,
