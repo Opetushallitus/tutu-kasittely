@@ -188,7 +188,7 @@ class ValitustiedotService(
     validoiValitusKHO(valitustiedot.valitusKHO)
     validoiValitusHaO(valitustiedot.valitusHaO)
 
-    val (vanhaValitustiedot, uusiValitustiedot) = valitustiedotRepository.haeValitustiedot(hakemusOid) match {
+    val (vanhatValitustiedot, uudetValitustiedot) = valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>
         (
           Some(haeNimet(oldValitustiedot)),
@@ -199,11 +199,11 @@ class ValitustiedotService(
     }
 
     // Valitustiedot voivat vaikuttaa hakemuksen käsittelyvaiheeseen,
-    // joten lasketaan se uudelleen tallennuksen jälkeen.
-    if (uusiValitustiedot.isDefined) {
+    // joten päivitetään se tallennuksen jälkeen
+    if (uudetValitustiedot.isDefined) {
       hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
     }
 
-    (vanhaValitustiedot, uusiValitustiedot)
+    (vanhatValitustiedot, uudetValitustiedot)
   }
 }

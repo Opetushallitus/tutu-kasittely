@@ -92,9 +92,9 @@ class KasittelyVaiheService(
     odottaaRatkaisua: KasittelyVaihe
   ): Option[KasittelyVaihe] =
     (lausuntopyynto.flatMap(_.maaraAikaPvm), lausuntopyynto.flatMap(_.lausuntoAnnettuPvm), ratkaisuPvm) match {
-      case (Some(_), None, _) => Some(odottaaLausuntoa)
-      case (_, Some(_), None) => Some(odottaaRatkaisua)
-      case _                  => None
+      case (Some(_), None, None) => Some(odottaaLausuntoa)
+      case (_, Some(_), None)    => Some(odottaaRatkaisua)
+      case _                     => None
     }
 
   /**
