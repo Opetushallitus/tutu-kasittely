@@ -69,7 +69,8 @@ class PaatosServiceTest extends UnitTestBase {
       ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
       hakijaEtunimet = Some("Jorma Eero"),
       hakijaSukunimi = Some(""),
-      esittelyPvm = None
+      esittelyPvm = None,
+      lausunnonMaaraaikaPvm = None
     )
   }
 

@@ -14,6 +14,7 @@ import java.util.UUID
 class ValitustiedotService(
   valitustiedotRepository: ValitustiedotRepository,
   hakemusRepository: HakemusRepository,
+  hakemusService: HakemusService,
   onrService: OnrService
 ) {
 
@@ -187,7 +188,7 @@ class ValitustiedotService(
     validoiValitusKHO(valitustiedot.valitusKHO)
     validoiValitusHaO(valitustiedot.valitusHaO)
 
-    valitustiedotRepository.haeValitustiedot(hakemusOid) match {
+    val (vanhaValitustiedot, uusiValitustiedot) = valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>
         (
           Some(haeNimet(oldValitustiedot)),
@@ -196,5 +197,13 @@ class ValitustiedotService(
       case None =>
         (None, lisaaValitustiedot(hakemusOid, valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt)))
     }
+
+    // Valitustiedot voivat vaikuttaa hakemuksen käsittelyvaiheeseen,
+    // joten lasketaan se uudelleen tallennuksen jälkeen.
+    if (uusiValitustiedot.isDefined) {
+      hakemusService.paivitaKasittelyVaiheSisaisesti(hakemusOid, luojaTaiMuokkaaja)
+    }
+
+    (vanhaValitustiedot, uusiValitustiedot)
   }
 }

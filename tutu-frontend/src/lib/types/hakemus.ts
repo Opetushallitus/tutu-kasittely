@@ -49,6 +49,7 @@ export type Hakemus = {
   peruutusPvm: string | null;
   peruutusLisatieto?: string;
   viimeisinTaydennyspyyntoPvm?: string;
+  lausunnonMaaraaikaPvm?: string | null;
 };
 
 /**

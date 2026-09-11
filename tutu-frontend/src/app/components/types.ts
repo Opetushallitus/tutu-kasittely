@@ -11,6 +11,10 @@ export const kasittelyVaiheet = [
   'HyvaksynnassaTaiLoppukasittelyssa',
   'HyvaksyttyEiLahetetty',
   'LoppukasittelyValmis',
+  'OdottaaKHOLausuntoa',
+  'OdottaaKHORatkaisua',
+  'OdottaaHaOLausuntoa',
+  'OdottaaHaORatkaisua',
 ] as const;
 
 export type KasittelyVaihe = (typeof kasittelyVaiheet)[number];

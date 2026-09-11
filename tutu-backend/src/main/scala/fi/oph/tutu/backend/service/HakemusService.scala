@@ -280,6 +280,7 @@ class HakemusService(
             ataruHakemustaMuokattu = Some(toLocalDateTime(ataruHakemus.modified)),
             kasittelyVaihe =
               dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
+            lausunnonMaaraaikaPvm = dbHakemus.lausunnonMaaraaikaPvm,
             muokattu = dbHakemus.muokattu,
             muokkaaja = onrService.haeNimi(dbHakemus.muokkaaja),
             muutosHistoria = Seq(),

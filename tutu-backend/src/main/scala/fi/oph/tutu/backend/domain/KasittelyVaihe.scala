@@ -6,7 +6,9 @@ enum KasittelyVaihe:
   case AlkukasittelyKesken, OdottaaTaydennysta, OdottaaIMIVastausta,
     OdottaaVahvistusta, OdottaaLausuntoa, ValmisKasiteltavaksi,
     HakemustaTaydennetty, HyvaksynnassaTaiLoppukasittelyssa,
-    HyvaksyttyEiLahetetty, LoppukasittelyValmis
+    HyvaksyttyEiLahetetty, LoppukasittelyValmis,
+    OdottaaKHOLausuntoa, OdottaaKHORatkaisua,
+    OdottaaHaOLausuntoa, OdottaaHaORatkaisua
 
 object KasittelyVaihe:
   def fromString(value: String): KasittelyVaihe = value match
@@ -20,6 +22,10 @@ object KasittelyVaihe:
     case "HyvaksynnassaTaiLoppukasittelyssa" => HyvaksynnassaTaiLoppukasittelyssa
     case "HyvaksyttyEiLahetetty"             => HyvaksyttyEiLahetetty
     case "LoppukasittelyValmis"              => LoppukasittelyValmis
+    case "OdottaaKHOLausuntoa"               => OdottaaKHOLausuntoa
+    case "OdottaaKHORatkaisua"               => OdottaaKHORatkaisua
+    case "OdottaaHaOLausuntoa"               => OdottaaHaOLausuntoa
+    case "OdottaaHaORatkaisua"               => OdottaaHaORatkaisua
     case _                                   => throw new IllegalArgumentException(s"Tuntematon käsittelyvaihe: $value")
 
   // Implicit ordering for sorting - uses the enum's ordinal (declaration order)
