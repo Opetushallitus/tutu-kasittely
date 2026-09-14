@@ -63,7 +63,11 @@ export const mockSuccessfullLists = async ({ page }: { page: Page }) => {
 };
 
 export const mockBasicForHakemus = async ({ page }: { page: Page }) => {
-  await Promise.all([mockInit(page), mockEsittelijat(page)]);
+  await Promise.all([
+    mockInit(page),
+    mockEsittelijat(page),
+    mockValituspohjat(page),
+  ]);
 };
 
 export const mockInit = async (page: Page) => {

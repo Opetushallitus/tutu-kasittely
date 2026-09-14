@@ -6,6 +6,11 @@ import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus } from '@/src/lib/types/hakemus';
 import { HakemusListItem } from '@/src/lib/types/hakemusListItem';
 
+const ODOTTAA_LAUSUNTOA_TRANSLATION_KEYS: Record<string, string> = {
+  OdottaaKHOLausuntoa: 'odottaakholausuntoamennessa',
+  OdottaaHaOLausuntoa: 'odottaahaolausuntoamennessa',
+};
+
 export function useKasittelyvaiheTranslation(
   hakemus: Hakemus | HakemusListItem | undefined,
 ) {
@@ -15,8 +20,17 @@ export function useKasittelyvaiheTranslation(
   }
 
   const kasittelyVaihe = hakemus.kasittelyVaihe;
+  const odottaaLausuntoaKey =
+    ODOTTAA_LAUSUNTOA_TRANSLATION_KEYS[kasittelyVaihe];
 
-  if (
+  if (odottaaLausuntoaKey && hakemus.lausunnonMaaraaikaPvm) {
+    return {
+      translation: t(`hakemus.kasittelyvaihe.${odottaaLausuntoaKey}`, {
+        date: formatHelsinki(hakemus.lausunnonMaaraaikaPvm, DATE_PLACEHOLDER),
+      }),
+      timeLimitExceeded: false,
+    };
+  } else if (
     kasittelyVaihe === 'HakemustaTaydennetty' &&
     hakemus.ataruHakemustaMuokattu
   ) {

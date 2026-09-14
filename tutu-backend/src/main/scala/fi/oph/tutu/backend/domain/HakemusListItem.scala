@@ -17,5 +17,7 @@ case class HakemusListItem(
   ataruHakemustaMuokattu: Option[LocalDateTime] = None,
   apHakemus: Option[Boolean] = None,
   viimeinenAsiakirjaHakijalta: Option[LocalDateTime] = None,
-  onkoPeruutettu: Option[Boolean] = None
+  onkoPeruutettu: Option[Boolean] = None,
+  // Täytetty vain kun kasittelyVaihe on OdottaaKHOLausuntoa tai OdottaaHaOLausuntoa.
+  lausunnonMaaraaikaPvm: Option[LocalDateTime] = None
 )

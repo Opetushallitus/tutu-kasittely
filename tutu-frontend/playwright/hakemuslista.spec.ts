@@ -1,4 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { readFile } from 'fs/promises';
+import path from 'path';
+
+import { test, expect, Route } from '@playwright/test';
 
 import {
   mockBasicForLista,
@@ -40,6 +43,51 @@ test('Hakemuslistaus latautuu ja odottaa täydennystä-käsittelyvaihe näkyy oi
   const kasittelyvaiheet = page.getByTestId('hakemus-row-kasittelyvaihe');
   await expect(kasittelyvaiheet.last()).toHaveText(
     'hakemus.kasittelyvaihe.odottaataydennystamennessa',
+  );
+});
+
+test('Hakemuslistaus näyttää KHO:n ja hallinto-oikeuden valitustietoihin perustuvat käsittelyvaiheet', async ({
+  page,
+}) => {
+  await mockEsittelijat(page);
+  await mockUser(page);
+  await page.route(
+    '**/tutu-backend/api/hakemuslista*',
+    async (route: Route) => {
+      const raw = await readFile(
+        path.join(__dirname, './fixtures/hakemukset.json'),
+        'utf-8',
+      );
+      const data = JSON.parse(raw);
+      data.items[0].kasittelyVaihe = 'OdottaaKHOLausuntoa';
+      data.items[0].lausunnonMaaraaikaPvm = '2026-12-31T00:00:00.000Z';
+      data.items[1].kasittelyVaihe = 'OdottaaKHORatkaisua';
+      data.items[2].kasittelyVaihe = 'OdottaaHaOLausuntoa';
+      data.items[2].lausunnonMaaraaikaPvm = '2025-06-15T00:00:00.000Z';
+      data.items[3].kasittelyVaihe = 'OdottaaHaORatkaisua';
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(data),
+      });
+    },
+  );
+  await page.goto('/tutu-frontend/');
+
+  await expect(page.getByTestId('hakemus-list')).toBeVisible();
+
+  const kasittelyvaiheet = page.getByTestId('hakemus-row-kasittelyvaihe');
+  await expect(kasittelyvaiheet.nth(0)).toHaveText(
+    'hakemus.kasittelyvaihe.odottaakholausuntoamennessa',
+  );
+  await expect(kasittelyvaiheet.nth(2)).toContainText(
+    'hakemus.kasittelyvaihe.odottaahaolausuntoamennessa',
+  );
+  await expect(kasittelyvaiheet.nth(3)).toContainText(
+    'hakemus.kasittelyvaihe.odottaahaoratkaisua',
+  );
+  await expect(kasittelyvaiheet.nth(1)).toHaveText(
+    'hakemus.kasittelyvaihe.odottaakhoratkaisua',
   );
 });
 

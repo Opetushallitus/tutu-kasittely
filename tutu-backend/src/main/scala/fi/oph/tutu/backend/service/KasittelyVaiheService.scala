@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
 import fi.oph.tutu.backend.domain.KasittelyVaihe.AlkukasittelyKesken
-import fi.oph.tutu.backend.repository.AsiakirjaRepository
+import fi.oph.tutu.backend.repository.{AsiakirjaRepository, ValitustiedotRepository}
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
 
@@ -32,7 +32,8 @@ import java.time.LocalDateTime
 @Component
 @Service
 class KasittelyVaiheService(
-  asiakirjaRepository: AsiakirjaRepository
+  asiakirjaRepository: AsiakirjaRepository,
+  valitustiedotRepository: ValitustiedotRepository
 ) {
 
   /**
@@ -41,6 +42,9 @@ class KasittelyVaiheService(
    * Käyttää optimoitua tietokantakyselyä, joka hakee vain tarvittavat kentät
    * yhdellä kyselyllä sen sijaan että haettaisiin kaikki asiakirja- ja
    * perustelutiedot useilla erillisillä kyselyillä.
+   *
+   * Tarkistaa ensin, onko hakemuksella valitustietoihin perustuva käsittelyvaihe.
+   * Jos on, ohittaa asiakirja/perustelu- pohjaisen päättelyn.
    *
    * @param dbHakemus
    * hakemuksen tiedot
@@ -53,11 +57,45 @@ class KasittelyVaiheService(
     dbHakemus: DbHakemus,
     ataruHakemus: AtaruHakemus
   ): KasittelyVaihe = {
-    asiakirjaRepository.haeKasittelyVaiheTiedot(dbHakemus.asiakirjaId, dbHakemus.id) match {
-      case Some(tiedot) => resolve(tiedot, ataruHakemus, dbHakemus.viimeisinTaydennyspyyntoPvm)
-      case None         => AlkukasittelyKesken
+    val valitustiedot = valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid)
+    resolveValitusVaihe(valitustiedot).getOrElse {
+      asiakirjaRepository.haeKasittelyVaiheTiedot(dbHakemus.asiakirjaId, dbHakemus.id) match {
+        case Some(tiedot) => resolve(tiedot, ataruHakemus, dbHakemus.viimeisinTaydennyspyyntoPvm)
+        case None         => AlkukasittelyKesken
+      }
     }
   }
+
+  private def resolveValitusVaihe(valitustiedot: Option[Valitustiedot]): Option[KasittelyVaihe] =
+    resolveValitusOdottaaVaihe(
+      valitustiedot.flatMap(_.valitusKHO.lausuntopyynto),
+      valitustiedot.flatMap(_.valitusKHO.ratkaisuPvm),
+      KasittelyVaihe.OdottaaKHOLausuntoa,
+      KasittelyVaihe.OdottaaKHORatkaisua
+    ).orElse(
+      resolveValitusOdottaaVaihe(
+        valitustiedot.flatMap(_.valitusHaO.lausuntopyynto),
+        valitustiedot.flatMap(_.valitusHaO.ratkaisuPvm),
+        KasittelyVaihe.OdottaaHaOLausuntoa,
+        KasittelyVaihe.OdottaaHaORatkaisua
+      )
+    )
+
+  /**
+   * Yhteinen sääntö KHO:n ja hallinto-oikeuden lausuntopyyntö-pohjaiselle
+   * käsittelyvaiheelle.
+   */
+  private def resolveValitusOdottaaVaihe(
+    lausuntopyynto: Option[ValitusLausuntopyynto],
+    ratkaisuPvm: Option[LocalDateTime],
+    odottaaLausuntoa: KasittelyVaihe,
+    odottaaRatkaisua: KasittelyVaihe
+  ): Option[KasittelyVaihe] =
+    (lausuntopyynto.flatMap(_.maaraAikaPvm), lausuntopyynto.flatMap(_.lausuntoAnnettuPvm), ratkaisuPvm) match {
+      case (Some(_), None, None) => Some(odottaaLausuntoa)
+      case (_, Some(_), None)    => Some(odottaaRatkaisua)
+      case _                     => None
+    }
 
   /**
    * Ratkaisee käsittelyvaiheen käyttäen optimoitua data-objektia.

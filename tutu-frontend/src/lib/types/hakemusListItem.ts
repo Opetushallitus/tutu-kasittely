@@ -17,4 +17,5 @@ export type HakemusListItem = {
   apHakemus?: boolean | null;
   viimeinenAsiakirjaHakijalta?: string | null;
   onkoPeruutettu?: boolean | null;
+  lausunnonMaaraaikaPvm?: string | null;
 };
