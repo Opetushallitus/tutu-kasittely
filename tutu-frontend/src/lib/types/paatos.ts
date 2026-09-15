@@ -190,6 +190,10 @@ export type KielteisenPaatoksenPerustelut = {
   epavirallinenKorkeakoulu?: boolean;
   epavirallinenTutkinto?: boolean;
   eiVastaaSuomessaSuoritettavaaTutkintoa?: boolean;
+  tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa?: boolean;
+  tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa?: boolean;
+  opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja?: boolean;
+  opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja?: boolean;
   muuPerustelu?: boolean;
   muuPerusteluKuvaus?: string;
 };

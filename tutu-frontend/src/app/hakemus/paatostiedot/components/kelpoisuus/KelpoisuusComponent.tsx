@@ -127,6 +127,7 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
           updateAction({ ...kelpoisuus, ...paatos });
         }}
         t={t}
+        paatosTyyppi="Kelpoisuus"
       />
     </>
   );
@@ -156,6 +157,7 @@ const KelpoisuusUOLiitannaisComponent = ({
             kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
         }}
         t={t}
+        paatosTyyppi="Kelpoisuus"
       />
     </>
   );

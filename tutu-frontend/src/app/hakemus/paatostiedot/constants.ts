@@ -2,11 +2,41 @@ import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AmmattikokemusJaElinikainenOppiminen,
   KelpoisuuskoeSisalto,
+  KielteisenPaatoksenPerustelut,
   KorvaavaToimenpide,
   OikeustieteenSuomiOpintojenAihealue,
   Paatostyyppi,
 } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
+
+export type KielteisenPaatoksenPerusteluCheckboxKey = Exclude<
+  keyof KielteisenPaatoksenPerustelut,
+  'muuPerusteluKuvaus'
+>;
+
+const kielteisenPaatoksenPerustelutKeys = [
+  'epavirallinenKorkeakoulu',
+  'epavirallinenTutkinto',
+  'eiVastaaSuomessaSuoritettavaaTutkintoa',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
+const tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys = [
+  'epavirallinenKorkeakoulu',
+  'epavirallinenTutkinto',
+  'tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
+  'tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa',
+  'opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
+  'opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
+export const kielteisenPaatoksenPerustelutKeysFor = (
+  paatosTyyppi?: Paatostyyppi,
+): readonly KielteisenPaatoksenPerusteluCheckboxKey[] =>
+  paatosTyyppi === 'TiettyTutkintoTaiOpinnot'
+    ? tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys
+    : kielteisenPaatoksenPerustelutKeys;
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },

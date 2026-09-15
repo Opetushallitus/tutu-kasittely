@@ -160,6 +160,7 @@ export const PaatosTietoComponent = ({
                     updatePaatosTietoAction(tobePaatostieto);
                   }}
                   t={t}
+                  paatosTyyppi={currentPaatosTieto.paatosTyyppi}
                 />
                 {currentPaatosTieto.myonteinenPaatos && (
                   <OphSelectFormFieldPatched

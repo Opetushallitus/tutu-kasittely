@@ -232,6 +232,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
           )
         }
         t={t}
+        paatosTyyppi={paatosTieto.paatosTyyppi}
       />
     </Stack>
   );
