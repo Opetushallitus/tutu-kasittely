@@ -190,8 +190,8 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     transformedContent
   }
 
-  def parseHakemusKoskee(hakemus: AtaruHakemus): Int = {
-    val answers = hakemus.content.answers
+  def parseHakemusKoskee(content: Content): Int = {
+    val answers = content.answers
     findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_KOSKEE, answers)
       .map(_.toInt)
       .getOrElse(HAKEMUS_KOSKEE_LOPULLINEN_PAATOS)
@@ -229,24 +229,21 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     val allAttachmentKeys = getAttachementKeys(ataruLomake.content)
     // TODO Ylemmän ehdon voi poistaa kunhan ataru ja tutu ovat ajantasalla
     val tilat =
-      if (ataruHakemus.`application-hakukohde-attachment-reviews`.nonEmpty)
-        ataruHakemus.`application-hakukohde-attachment-reviews`
-      else
-        ataruHakemus.`latest-attachment-reviews`.map(r =>
-          AttachmentReview(
-            r.attachment,
-            r.state,
-            r.hakukohde,
-            Some(toLocalDateTime(r.updateTime))
-          )
+      ataruHakemus.`latest-attachment-reviews`.map(r =>
+        AttachmentReview(
+          r.attachment,
+          r.state,
+          r.hakukohde,
+          Some(toLocalDateTime(r.updateTime))
         )
+      )
     allAttachmentKeys.map(key => {
       tilat.find(tila => tila.attachment == key).getOrElse(AttachmentReview(key, "not-checked", "form", None))
     })
   }
 
-  def parseTutkinnot(hakemusId: UUID, hakemus: AtaruHakemus): Seq[Tutkinto] = {
-    val answers     = hakemus.content.answers
+  def parseTutkinnot(hakemusId: UUID, content: Content): Seq[Tutkinto] = {
+    val answers     = content.answers
     val paatosKieli = findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, answers)
 
     val tutkinnot = ArrayBuffer(
@@ -375,15 +372,15 @@ class AtaruHakemusParser(koodistoService: KoodistoService) {
     tutkinnot.toSeq
   }
 
-  def onkoHakemusPeruutettu(hakemus: AtaruHakemus): Boolean = {
-    val answers = hakemus.content.answers
+  def onkoHakemusPeruutettu(content: Content): Boolean = {
+    val answers = content.answers
     findAnswerByAtaruKysymysId(Constants.ATARU_HAKEMUS_PERUTTU, answers)
       .flatMap(ataruAnswerToBoolean)
       .getOrElse(false)
   }
 
   def onkoApHakemus(hakemus: AtaruHakemus): Option[Boolean] = {
-    parseHakemusKoskee(hakemus) match {
+    parseHakemusKoskee(hakemus.content) match {
       case HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN =>
         val answers = hakemus.content.answers
         Some(

@@ -3,6 +3,8 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.fixture.{ataruHakemusFixture, dbHakemusFixture}
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, ValitustiedotRepository}
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.{KasittelyMaksettu, TaydennysPyynto}
+import fi.oph.tutu.backend.domain.KasittelyVaihe.OdottaaTaydennysta
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any
@@ -20,12 +22,15 @@ class KasittelyVaiheServiceTest {
   private var asiakirjaRepository: AsiakirjaRepository         = _
   private var valitustiedotRepository: ValitustiedotRepository = _
   private var kasittelyVaiheService: KasittelyVaiheService     = _
-  private val dbHakemus    = dbHakemusFixture.copy(id = hakemusId, asiakirjaId = Some(asiakirjaId))
-  private val ataruHakemus =
-    ataruHakemusFixture.copy(submitted = "2026-01-29T14:30:45.597Z", latestVersionCreated = "2026-01-29T14:30:45.597Z")
-
-  private def ataruHakemusInTila(ataruHakemuksenTila: String): AtaruHakemus =
-    ataruHakemus.copy(`application-hakukohde-reviews` = Seq(HakukohdeReview("", ataruHakemuksenTila, "")))
+  private val dbHakemus         = dbHakemusFixture.copy(id = hakemusId, asiakirjaId = Some(asiakirjaId))
+  private val ataruTilaPaivitys = AtaruTilaPaivitys(
+    AtaruHakemuksenTila.Tuntematon,
+    None,
+    LocalDateTime.parse("2026-01-29T14:30:45.597"),
+    LocalDateTime.parse("2026-01-29T14:30:45.597")
+  )
+  private def ataruTilaPaivitysInTila(haluttuTila: AtaruHakemuksenTila): AtaruTilaPaivitys =
+    ataruTilaPaivitys.copy(tila = haluttuTila)
 
   private def valitustiedotWithKho(valitusKHO: ValitusKHO): Valitustiedot =
     Valitustiedot(valitusOPH = ValitusOPH(), valitusHaO = ValitusHaO(), valitusKHO = valitusKHO)
@@ -61,10 +66,10 @@ class KasittelyVaiheServiceTest {
     val result =
       kasittelyVaiheService.resolveKasittelyVaihe(
         dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-29T18:30:45.597"))),
-        ataruHakemusInTila("information-request")
+        ataruTilaPaivitysInTila(TaydennysPyynto)
       )
 
-    assertEquals(KasittelyVaihe.OdottaaTaydennysta, result)
+    assertEquals(OdottaaTaydennysta, result)
   }
 
   @Test
@@ -85,7 +90,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaVahvistusta, result)
   }
@@ -108,7 +113,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaLausuntoa, result)
   }
@@ -131,7 +136,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaIMIVastausta, result)
   }
@@ -155,7 +160,9 @@ class KasittelyVaiheServiceTest {
 
     val result = kasittelyVaiheService.resolveKasittelyVaihe(
       dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-29T18:30:45.597"))),
-      ataruHakemusInTila("information-request").copy(latestVersionCreated = "2026-01-29T19:30:45.597Z")
+      ataruTilaPaivitysInTila(TaydennysPyynto).copy(latestVersionCreated =
+        LocalDateTime.parse("2026-01-29T19:30:45.597")
+      )
     )
 
     assertEquals(KasittelyVaihe.HakemustaTaydennetty, result)
@@ -178,7 +185,7 @@ class KasittelyVaiheServiceTest {
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
       .thenReturn(Some(tiedot))
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.ValmisKasiteltavaksi, result)
   }
@@ -201,7 +208,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -224,7 +231,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -247,7 +254,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -270,7 +277,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -294,7 +301,7 @@ class KasittelyVaiheServiceTest {
 
     val result = kasittelyVaiheService.resolveKasittelyVaihe(
       dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-29T18:30:45.597"))),
-      ataruHakemusInTila("information-request")
+      ataruTilaPaivitysInTila(TaydennysPyynto)
     )
 
     assertEquals(KasittelyVaihe.OdottaaTaydennysta, result)
@@ -318,7 +325,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaVahvistusta, result)
   }
@@ -341,7 +348,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaLausuntoa, result)
   }
@@ -364,7 +371,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.ValmisKasiteltavaksi, result)
   }
@@ -387,7 +394,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaVahvistusta, result)
   }
@@ -410,7 +417,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.ValmisKasiteltavaksi, result)
   }
@@ -433,7 +440,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.ValmisKasiteltavaksi, result)
   }
@@ -456,7 +463,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.ValmisKasiteltavaksi, result)
   }
@@ -469,7 +476,7 @@ class KasittelyVaiheServiceTest {
     val result =
       kasittelyVaiheService.resolveKasittelyVaihe(
         dbHakemus.copy(asiakirjaId = None),
-        ataruHakemusInTila("processing-fee-paid")
+        ataruTilaPaivitysInTila(KasittelyMaksettu)
       )
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
@@ -481,7 +488,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(None)
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -504,7 +511,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.HyvaksyttyEiLahetetty, result)
   }
@@ -527,7 +534,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.LoppukasittelyValmis, result)
   }
@@ -549,7 +556,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.HyvaksynnassaTaiLoppukasittelyssa, result)
   }
@@ -571,7 +578,7 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val result =
-      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+      kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.HyvaksyttyEiLahetetty, result)
   }
@@ -595,7 +602,7 @@ class KasittelyVaiheServiceTest {
 
     val result = kasittelyVaiheService.resolveKasittelyVaihe(
       dbHakemus.copy(viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-29T18:30:45.597"))),
-      ataruHakemusInTila("information-request")
+      ataruTilaPaivitysInTila(TaydennysPyynto)
     )
 
     assertEquals(KasittelyVaihe.LoppukasittelyValmis, result)
@@ -611,7 +618,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaKHOLausuntoa, result)
   }
@@ -626,7 +633,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaKHORatkaisua, result)
   }
@@ -657,7 +664,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.LoppukasittelyValmis, result)
   }
@@ -686,7 +693,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaKHOLausuntoa, result)
   }
@@ -701,7 +708,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithHao(valitusHaO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaHaOLausuntoa, result)
   }
@@ -716,7 +723,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithHao(valitusHaO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaHaORatkaisua, result)
   }
@@ -735,7 +742,7 @@ class KasittelyVaiheServiceTest {
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithHao(valitusHaO)))
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.AlkukasittelyKesken, result)
   }
@@ -759,7 +766,7 @@ class KasittelyVaiheServiceTest {
         )
       )
 
-    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruHakemusInTila("processing-fee-paid"))
+    val result = kasittelyVaiheService.resolveKasittelyVaihe(dbHakemus, ataruTilaPaivitysInTila(KasittelyMaksettu))
 
     assertEquals(KasittelyVaihe.OdottaaKHOLausuntoa, result)
   }

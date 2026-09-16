@@ -1,20 +1,16 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import fi.oph.tutu.backend.config.JacksonConfig
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_1384_2015_patevyystaso_2}
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{
-  HallintoOikeusService,
-  KoodistoService,
-  MaakoodiService,
-  OnrService,
-  TranslationService,
-  UserService
-}
-import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation, TutuJsonFormats}
+import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import fi.oph.tutu.backend.domain.Kieli.fi
+import org.hamcrest.Matchers.startsWith
 import org.json4s.jvalue2extractable
 import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
@@ -35,9 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.{get,
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.{content, jsonPath, status}
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
-import org.hamcrest.Matchers.startsWith
 
-import scala.jdk.CollectionConverters.*
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -45,7 +39,9 @@ import java.util.UUID
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
 @TestMethodOrder(classOf[OrderAnnotation])
-class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
+class PaatosControllerTest extends IntegrationTestBase {
+  val objectMapper: ObjectMapper = JacksonConfig.mapper
+
   @Autowired
   private val context: WebApplicationContext = null
   private var mvc: MockMvc                   = null
@@ -866,7 +862,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
       .thenReturn(Right(loadJson("ataruHakemus6667.json")))
     when(hakemuspalveluService.haeJaParsiHakemus(any[HakemusOid]))
-      .thenReturn(Right(JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]))
+      .thenReturn(Right(objectMapper.readValue(loadJson("ataruHakemus6667.json"), classOf[AtaruHakemus])))
     when(koodistoService.getKoodistoRelaatiot(any[String])).thenReturn(Right("""[
           {
             "koodiUri": "maakunta_01",

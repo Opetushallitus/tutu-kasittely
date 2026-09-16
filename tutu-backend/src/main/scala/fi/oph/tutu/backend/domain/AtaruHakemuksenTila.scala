@@ -1,5 +1,8 @@
 package fi.oph.tutu.backend.domain
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer}
+
 enum AtaruHakemuksenTila:
   case Kasittelematta, Kasittelyssa, KutsuttuHaastatteluun, KutsuttuValintaKokeeseen, Arvioinnissa, Valintaesitys,
     Kasitelty,
@@ -31,4 +34,19 @@ object AtaruHakemuksenTila {
   else throw new IllegalArgumentException(s"Tuntematon hakemuspalveluhakemuksen tila: $value")
 
   def isValidAtarutila(value: String): Boolean = ATARU2TUTU_TILA_MAPPINGS.contains(value)
+
+  def fromHakukohdeReviewList(reviewList: Seq[HakukohdeReview]): AtaruHakemuksenTila = {
+    fromString(
+      reviewList
+        .collectFirst(review => review.state)
+        .getOrElse(AtaruHakemuksenTila.UNDEFINED)
+    )
+  }
+}
+
+class AtaruHakemuksenTilaDeserializer extends JsonDeserializer[AtaruHakemuksenTila] {
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): AtaruHakemuksenTila = {
+    val value: String = p.getValueAsString
+    AtaruHakemuksenTila.fromString(value)
+  }
 }
