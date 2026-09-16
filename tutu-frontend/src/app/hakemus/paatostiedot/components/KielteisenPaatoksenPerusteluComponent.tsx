@@ -6,8 +6,12 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { kielteisenPaatoksenPerustelutKeysFor } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
-import { KielteisenPaatoksenPerustelut } from '@/src/lib/types/paatos';
+import {
+  KielteisenPaatoksenPerustelut,
+  Paatostyyppi,
+} from '@/src/lib/types/paatos';
 
 interface KielteisenPaatoksenPerusteluComponentProps {
   perustelut?: KielteisenPaatoksenPerustelut;
@@ -15,20 +19,17 @@ interface KielteisenPaatoksenPerusteluComponentProps {
     updatedPerustelut: Partial<KielteisenPaatoksenPerustelut>,
   ) => void;
   t: TFunction;
+  paatosTyyppi?: Paatostyyppi;
 }
-const kielteisenPaatoksenPerustelutKeys = [
-  'epavirallinenKorkeakoulu',
-  'epavirallinenTutkinto',
-  'eiVastaaSuomessaSuoritettavaaTutkintoa',
-  'muuPerustelu',
-] as const satisfies (keyof KielteisenPaatoksenPerustelut)[];
 
 export const KielteisenPaatoksenPerusteluComponent = ({
   perustelut,
   updatePerustelutAction,
   t,
+  paatosTyyppi,
 }: KielteisenPaatoksenPerusteluComponentProps) => {
   const theme = useTheme();
+  const perustelutKeys = kielteisenPaatoksenPerustelutKeysFor(paatosTyyppi);
 
   return (
     <OphFormFieldWrapper
@@ -36,7 +37,7 @@ export const KielteisenPaatoksenPerusteluComponent = ({
       sx={{ flexDirection: 'column', gap: theme.spacing(2) }}
       renderInput={() => (
         <Stack direction="column" spacing={1}>
-          {kielteisenPaatoksenPerustelutKeys.map((key) => (
+          {perustelutKeys.map((key) => (
             <OphCheckbox
               key={key}
               data-testid={`kielteinenPaatos-${key}`}

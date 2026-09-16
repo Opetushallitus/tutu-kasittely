@@ -540,3 +540,219 @@ test('Riittävät opinnot - steinerpedagogiikka näyttää oikeat valinnat', asy
     page.getByTestId('myonteinenPaatos-taydentavat-opinnot'),
   ).toBeVisible();
 });
+
+test('Tietty tutkinto tai opinnot, kielteisen päätöksen perustelujen näyttäminen', async ({
+  page,
+}) => {
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await paatostyyppiInput.click();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator(
+      'text=3 hakemus.paatos.paatostyyppi.options.tiettyTutkintoTaiOpinnot',
+    );
+  await tasoOption.click();
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'Rinnastaminen oikeustieteen maisterin tutkintoon',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="false"]')
+      .click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
+              myonteinenPaatos: false,
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox = page.getByTestId(
+    'kielteinenPaatos-eiVastaaSuomessaSuoritettavaaTutkintoa',
+  );
+  await expect(eiVastaaSuomessaSuoritettavaaTutkintojaCheckbox).toBeHidden();
+
+  const tutkintoEiVastaaTasoltaanCheckbox = page.getByTestId(
+    'kielteinenPaatos-tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
+  );
+  const tutkintoEiVastaaSisalloltaanCheckbox = page.getByTestId(
+    'kielteinenPaatos-tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa',
+  );
+  const opinnotEiVastaaTasoltaanCheckbox = page.getByTestId(
+    'kielteinenPaatos-opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
+  );
+  const opinnotEiVastaaSisalloltaanCheckbox = page.getByTestId(
+    'kielteinenPaatos-opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  );
+  const muuPerusteluCheckbox = page.getByTestId(
+    'kielteinenPaatos-muuPerustelu',
+  );
+
+  await expect(tutkintoEiVastaaTasoltaanCheckbox).toBeVisible();
+  await expect(tutkintoEiVastaaSisalloltaanCheckbox).toBeVisible();
+  await expect(opinnotEiVastaaTasoltaanCheckbox).toBeVisible();
+  await expect(opinnotEiVastaaSisalloltaanCheckbox).toBeVisible();
+  await expect(muuPerusteluCheckbox).toBeVisible();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    tutkintoEiVastaaTasoltaanCheckbox.click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
+              myonteinenPaatos: false,
+              kielteisenPaatoksenPerustelut: {
+                tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    opinnotEiVastaaSisalloltaanCheckbox.click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto:
+                'Rinnastaminen oikeustieteen maisterin tutkintoon',
+              myonteinenPaatos: false,
+              kielteisenPaatoksenPerustelut: {
+                tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa: true,
+                opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
+});
+
+test('Riittävät opinnot, kielteisen päätöksen perustelujen näyttäminen', async ({
+  page,
+}) => {
+  const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
+  await paatostyyppiInput.click();
+
+  const tasoOption = page
+    .locator('ul[role="listbox"] li[role="option"]')
+    .locator('text=4 hakemus.paatos.paatostyyppi.options.riittavatOpinnot');
+  await tasoOption.click();
+
+  const tutkintoDropdown = page.getByTestId(
+    'rinnastettava-tutkinto-tai-opinto-select',
+  );
+  await expect(tutkintoDropdown).toBeVisible();
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'Luokanopettaja',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const myonteinenPaatosRadioGroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  await expect(myonteinenPaatosRadioGroup).toBeVisible();
+  await myonteinenPaatosRadioGroup.scrollIntoViewIfNeeded();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    myonteinenPaatosRadioGroup
+      .locator('input[type="radio"][value="false"]')
+      .click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+              myonteinenPaatos: false,
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expect(
+    page.getByTestId('kielteinenPaatos-eiVastaaSuomessaSuoritettavaaTutkintoa'),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId(
+      'kielteinenPaatos-tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
+    ),
+  ).toBeHidden();
+  await expect(
+    page.getByTestId(
+      'kielteinenPaatos-opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
+    ),
+  ).toBeHidden();
+});

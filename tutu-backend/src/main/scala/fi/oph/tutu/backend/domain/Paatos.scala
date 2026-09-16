@@ -157,6 +157,10 @@ case class KielteisenPaatoksenPerustelut(
   epavirallinenKorkeakoulu: Boolean = false,
   epavirallinenTutkinto: Boolean = false,
   eiVastaaSuomessaSuoritettavaaTutkintoa: Boolean = false,
+  tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa: Boolean = false,
+  tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa: Boolean = false,
+  opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja: Boolean = false,
+  opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: Boolean = false,
   muuPerustelu: Boolean = false,
   muuPerusteluKuvaus: Option[String] = None
 )

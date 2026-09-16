@@ -727,6 +727,34 @@ def bindExtractKielteisenPaatoksenPerustelut(
           "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista"
         )
       )
+    val tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa =
+      Option.when(node.tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.tutkintoEiVastaaTasoltaan"
+        )
+      )
+    val tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa =
+      Option.when(node.tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.tutkintoEiVastaaSisalloltaan"
+        )
+      )
+    val opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja =
+      Option.when(node.opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.opinnotEiVastaaTasoltaan"
+        )
+      )
+    val opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja =
+      Option.when(node.opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.opinnotEiVastaaSisalloltaan"
+        )
+      )
     val muuPerustelu = if (node.muuPerustelu) {
       node.muuPerusteluKuvaus
         .map(kuvaus =>
@@ -739,6 +767,10 @@ def bindExtractKielteisenPaatoksenPerustelut(
       epavirallinenKorkeakoulu,
       epavirallinenTutkinto,
       eiVastaaSuomessaSuoritettavaaTutkintoa,
+      tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa,
+      tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa,
+      opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja,
+      opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja,
       muuPerustelu
     ).flatten
 
