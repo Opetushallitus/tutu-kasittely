@@ -326,7 +326,6 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       `application-review-notes` = None,
       henkilotunnus = None,
       `person-oid` = UUID.randomUUID().toString,
-      `application-hakukohde-attachment-reviews` = Seq.empty,
       `application-hakukohde-reviews` = Seq.empty,
       hakutoiveet = Seq.empty,
       `information-request-timestamp` = None

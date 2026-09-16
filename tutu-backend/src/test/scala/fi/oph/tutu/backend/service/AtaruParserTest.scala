@@ -1,11 +1,10 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.config.JacksonConfig
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
-import org.json4s.jvalue2extractable
-import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, DisplayName, Nested, Test}
 import org.mockito.Mockito.when
@@ -14,7 +13,8 @@ import org.mockito.{Mock, MockitoAnnotations}
 import java.time.ZonedDateTime
 import java.util.UUID
 
-class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
+class AtaruParserTest extends UnitTestBase {
+  val objectMapper: ObjectMapper = JacksonConfig.mapper
   @Mock
   var koodistoService: KoodistoService = _
 
@@ -22,9 +22,9 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
   var ataruLomakeParser: AtaruLomakeParser = _
 
-  val hakemus: AtaruHakemus = JsonMethods.parse(loadJson("ataruHakemus6667.json")).extract[AtaruHakemus]
+  val hakemus: AtaruHakemus = objectMapper.readValue(loadJson("ataruHakemus6667.json"), classOf[AtaruHakemus])
 
-  val lomake: AtaruLomake = JsonMethods.parse(loadJson("ataruLomake.json")).extract[AtaruLomake]
+  val lomake: AtaruLomake = objectMapper.readValue(loadJson("ataruLomake.json"), classOf[AtaruLomake])
 
   @BeforeEach
   def setup(): Unit = {
@@ -479,10 +479,11 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
   @Test
   def parseTutkinnotWithGeneratedIds(): Unit = {
-    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
-    val hakemusId                  = UUID.randomUUID()
+    val hakemusWithKaikkiTutkinnot = objectMapper.readValue(loadJson("ataruHakemus6669.json"), classOf[AtaruHakemus])
 
-    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val hakemusId = UUID.randomUUID()
+
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot.content)
     val tutkinto1   = tutkinnot.head
     val tutkinto2   = tutkinnot(1)
     val tutkinto3   = tutkinnot(2)
@@ -554,10 +555,10 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
   @Test
   def parseTutkinnotWithDefinedIds(): Unit = {
-    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6670.json")).extract[AtaruHakemus]
+    val hakemusWithKaikkiTutkinnot = objectMapper.readValue(loadJson("ataruHakemus6670.json"), classOf[AtaruHakemus])
     val hakemusId                  = UUID.randomUUID()
 
-    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot.content)
     val tutkinto1   = tutkinnot.head
     val tutkinto2   = tutkinnot(1)
     val tutkinto3   = tutkinnot(2)
@@ -630,10 +631,10 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
   @Test
   def parseTutkinnotWithTutkinto3AsTutkinto2WhenMissingTutkinto2WithGeneratedIds(): Unit = {
     val hakemusWithKaikkiTutkinnot =
-      JsonMethods.parse(loadJson("ataruHakemus6671WithMissingTutkinto2.json")).extract[AtaruHakemus]
+      objectMapper.readValue(loadJson("ataruHakemus6671WithMissingTutkinto2.json"), classOf[AtaruHakemus])
     val hakemusId = UUID.randomUUID()
 
-    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot)
+    val tutkinnot   = ataruHakemusParser.parseTutkinnot(hakemusId, hakemusWithKaikkiTutkinnot.content)
     val tutkinto1   = tutkinnot.head
     val tutkinto2   = tutkinnot(1)
     val muuTutkinto = tutkinnot.last
@@ -663,7 +664,7 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
   @Test
   def parseTutkinto1MaakoodiTest(): Unit = {
-    val hakemusWithKaikkiTutkinnot = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+    val hakemusWithKaikkiTutkinnot = objectMapper.readValue(loadJson("ataruHakemus6669.json"), classOf[AtaruHakemus])
     val maakoodi                   = ataruHakemusParser.parseTutkinto1MaakoodiUri(hakemusWithKaikkiTutkinnot)
     assertEquals(Some("maatjavaltiot2_152"), maakoodi)
   }
@@ -735,14 +736,14 @@ class AtaruParserTest extends UnitTestBase with TutuJsonFormats {
 
   @Test
   def parseIsApHakemusForKelpoisuusAmmattiinHakemus(): Unit = {
-    val kelpoisuusAmmattiinHakemus = JsonMethods.parse(loadJson("ataruHakemus6669.json")).extract[AtaruHakemus]
+    val kelpoisuusAmmattiinHakemus = objectMapper.readValue(loadJson("ataruHakemus6669.json"), classOf[AtaruHakemus])
     val isApHakemus                = ataruHakemusParser.onkoApHakemus(kelpoisuusAmmattiinHakemus)
     assertEquals(true, isApHakemus.get)
   }
 
   @Test
   def parseIsApHakemusForNonKelpoisuusAmmattiinHakemus(): Unit = {
-    val nonKelpoisuusAmmattiinHakemus = JsonMethods.parse(loadJson("ataruHakemus6668.json")).extract[AtaruHakemus]
+    val nonKelpoisuusAmmattiinHakemus = objectMapper.readValue(loadJson("ataruHakemus6668.json"), classOf[AtaruHakemus])
     val isApHakemus                   = ataruHakemusParser.onkoApHakemus(nonKelpoisuusAmmattiinHakemus)
     assertEquals(false, isApHakemus.isDefined)
   }

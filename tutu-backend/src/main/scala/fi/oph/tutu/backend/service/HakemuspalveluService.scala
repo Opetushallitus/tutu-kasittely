@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.TutuBackendApplication.CALLER_ID
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.utils.TutuJsonFormats
@@ -18,7 +19,7 @@ case class HakemuspalveluServiceException(cause: Throwable = null) extends Runti
 
 @Component
 @Service
-class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
+class HakemuspalveluService(httpService: HttpService, objectMapper: ObjectMapper) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemuspalveluService])
 
   @Value("${opintopolku.virkailija.url}")
@@ -65,7 +66,7 @@ class HakemuspalveluService(httpService: HttpService) extends TutuJsonFormats {
   }
 
   def haeJaParsiHakemus(hakemusOid: HakemusOid): Either[Throwable, AtaruHakemus] = {
-    haeHakemus(hakemusOid).map(response => parse(response).extract[AtaruHakemus])
+    haeHakemus(hakemusOid).map(response => objectMapper.readValue(response, classOf[AtaruHakemus]))
   }
 
   /*

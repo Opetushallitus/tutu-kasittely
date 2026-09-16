@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.Tuntematon
 import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
@@ -11,23 +10,12 @@ import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{
-  GetMapping,
-  PatchMapping,
-  PathVariable,
-  PostMapping,
-  PutMapping,
-  RequestBody,
-  RequestMapping,
-  RequestParam,
-  RestController
-}
+import org.springframework.web.bind.annotation.*
 
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.regex.Pattern
 import scala.util.{Failure, Success, Try}
-import org.springframework.web.bind.annotation.DeleteMapping
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -150,16 +138,41 @@ class HakemusController(
     }
   }
 
-  @GetMapping(
-    path = Array("hakemus-update-notification/{hakemusOid}"),
+  @PutMapping(
+    path = Array("hakemus-update/{hakemusOid}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Päivittää hakemuksen tiedot hakemuspalvelusta",
-    tags = Array("External")
+    summary = "Päivittää hakemuksen tiedot hakemuspalvelusta (hakemuspalvelun toimesta)",
+    tags = Array("External"),
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[AtaruHakemusUpdate]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def paivitaHakemuksenTiedotAtarusta(
     @PathVariable("hakemusOid") hakemusOid: String,
+    @RequestBody hakemusBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     val user        = userService.getEnrichedUserDetails(true)
@@ -171,63 +184,98 @@ class HakemusController(
         HttpStatus.FORBIDDEN
       )
     } else {
+      var hakemusUpdate: AtaruHakemusUpdate = null
+      try hakemusUpdate = mapper.readValue(hakemusBytes, classOf[AtaruHakemusUpdate])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui: ${e.getMessage}")
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
+          )
+      }
       Try {
-        hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid))
+        hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid), hakemusUpdate)
       } match {
         case Success(_) =>
           LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
           ResponseEntity.status(HttpStatus.OK).body("")
         case Failure(exception) =>
-          LOG.error(s"Hakemuksen päivitys atarusta epäonnistui, hakemusOid: $hakemusOid", exception)
+          LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui, hakemusOid: $hakemusOid", exception)
           errorMessageMapper.mapErrorMessage(exception)
       }
     }
   }
 
-  @GetMapping(
-    path = Array("state-change-notification/{hakemusOid}/{tila}"),
+  @PutMapping(
+    path = Array("state-change/{hakemusOid}"),
+    consumes = Array(MediaType.APPLICATION_JSON_VALUE),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   @Operation(
-    summary = "Päivittää hakemuksen tilan hakemuspalvelusta",
-    tags = Array("External")
+    summary = "Päivittää hakemuksen tilan hakemuspalvelun tietojen mukaisesti",
+    tags = Array("External"),
+    requestBody = new io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = Array(
+        new Content(schema = new Schema(implementation = classOf[AtaruTilaPaivitys]))
+      )
+    ),
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
   )
   def paivitaHakemuksenTilaAtarusta(
+    @RequestBody tilaBytes: Array[Byte],
     @PathVariable("hakemusOid") hakemusOid: String,
-    @PathVariable("tila") tila: String,
-    @RequestParam(required = false) timestamp: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     val user        = userService.getEnrichedUserDetails(true)
     val authorities = user.authorities
-    val tilaEnum    =
-      if (AtaruHakemuksenTila.isValidAtarutila(tila)) AtaruHakemuksenTila.fromString(tila)
-      else Tuntematon
 
     if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
       errorMessageMapper.mapPlainErrorMessage(
         RESPONSE_403_DESCRIPTION,
         HttpStatus.FORBIDDEN
       )
-    } else if (tilaEnum == Tuntematon) {
-      LOG.error(
-        s"Hakemuksen tilapäivitys atarusta hakemukselle $hakemusOid epäonnistui, virheellinen ataru-tila: $tila"
-      )
-      errorMessageMapper.mapPlainErrorMessage(
-        RESPONSE_400_DESCRIPTION,
-        HttpStatus.BAD_REQUEST
-      )
     } else {
+      var tilaPaivitys: AtaruTilaPaivitys = null
+      try tilaPaivitys = mapper.readValue(tilaBytes, classOf[AtaruTilaPaivitys])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Tilapäivitys atarusta epäonnistui: ${e.getMessage}")
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
+          )
+      }
       Try {
-        hakemusService.paivitaKasittelyVaiheAtarusta(HakemusOid(hakemusOid), tilaEnum, Option(timestamp))
+        hakemusService.paivitaKasittelyVaiheAtarusta(HakemusOid(hakemusOid), tilaPaivitys)
       } match {
         case Success(_) =>
           LOG.info(
-            s"Vastaanotettu tilapäivitys hakemukselle $hakemusOid atarusta, tila $tila, täydennyspyyntö-aikaleima $timestamp"
+            s"Vastaanotettu tilapäivitys hakemukselle ${hakemusOid} atarusta, tila ${tilaPaivitys.tila}, täydennyspyyntö-aikaleima ${tilaPaivitys.timestamp}"
           )
           ResponseEntity.status(HttpStatus.OK).body("")
         case Failure(exception) =>
-          LOG.error(s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: $hakemusOid, tila $tila", exception)
+          LOG.error(
+            s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: ${hakemusOid}, tila ${tilaPaivitys.tila}",
+            exception
+          )
           errorMessageMapper.mapErrorMessage(exception)
       }
     }

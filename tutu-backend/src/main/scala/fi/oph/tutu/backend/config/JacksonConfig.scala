@@ -7,8 +7,12 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import fi.oph.tutu.backend.domain.{
+  AnswerValue,
+  AnswerValueDeserializer,
   Asiakirja,
   AsiakirjaDeserializer,
+  AtaruHakemuksenTila,
+  AtaruHakemuksenTilaDeserializer,
   HakemusOid,
   HakemusOidDeserializer,
   ImiPyynto,
@@ -49,6 +53,8 @@ object JacksonConfig {
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
     customModule.addDeserializer(classOf[ValmistumisenVahvistus], new ValmistumisenVahvistusDeserializer())
     customModule.addDeserializer(classOf[Asiakirja], new AsiakirjaDeserializer())
+    customModule.addDeserializer(classOf[AtaruHakemuksenTila], new AtaruHakemuksenTilaDeserializer())
+    customModule.addDeserializer(classOf[AnswerValue], new AnswerValueDeserializer())
     mapper.registerModule(customModule)
 
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

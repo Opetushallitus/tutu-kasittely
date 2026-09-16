@@ -431,7 +431,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         )
       )
     initAtaruHakemusRequests("ataruHakemus6666.json")
-    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
+    when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(0)
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006668")
 
@@ -545,23 +545,50 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
 
+    val requestJson =
+      s"""{
+        "submitted" : "2026-01-02T18:30:45.597Z",
+        "created" : "2026-02-14T10:59:47.597Z",
+        "application-hakukohde-reviews" : [ ],
+        "form_id" : 5,
+        "information-request-timestamp" : "2026-01-11T18:30:45.597Z",
+        "modified" : "2025-05-14T10:59:47.597Z",
+        "content" : {
+          "answers": [
+            {
+              "key": "337c0b08-03d3-4659-9309-aa1bbe731717",
+              "value": "0",
+              "fieldType": "singleChoice"
+            }
+          ]
+        },
+        "latest-attachment-reviews" : [ ]
+        }"""
+
     val dbHakemus = hakemusRepository.haeHakemus(hakemusOid).get
     hakemusRepository.paivitaHakemus(
       hakemusOid,
       dbHakemus.copy(
         kasittelyVaihe = KasittelyVaihe.OdottaaTaydennysta,
-        viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-01T18:30:45.597"))
+        viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-10T18:30:45.597"))
       ),
       "1.2.246.562.24.00000000000000006666"
     )
 
-    initAtaruHakemusRequests("ataruHakemus6667_modified.json")
-    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(2)
-    when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(true)
+    when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(2)
+    when(ataruHakemusParser.onkoHakemusPeruutettu(any[Content])).thenReturn(true)
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content]))
+      .thenAnswer { invocation =>
+        val uuid = invocation.getArgument[UUID](0)
+        createTutkinnotFixture(uuid)
+      }
 
     mockMvc
       .perform(
-        get("/tutu-backend/api/hakemus-update-notification/1.2.246.562.11.00000000000000006667")
+        put(s"/tutu-backend/api/hakemus-update/$hakemusOid")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
       )
       .andExpect(status().isOk)
 
@@ -569,7 +596,7 @@ class HakemusControllerTest extends IntegrationTestBase {
     assertEquals(2, paivitettyHakemus.hakemusKoskee)
     assertEquals(KasittelyVaihe.HakemustaTaydennetty, paivitettyHakemus.kasittelyVaihe)
     assertTrue(paivitettyHakemus.onkoPeruutettu)
-    assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.peruutusPvm.get)
+    assertEquals(toLocalDateTime("2026-02-14T10:59:47.597Z"), paivitettyHakemus.peruutusPvm.get)
     assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(dbHakemus.id).get.ratkaisutyyppi.get)
 
     val tutkinnotFixture    = createTutkinnotFixture(dbHakemus.id)
@@ -584,12 +611,12 @@ class HakemusControllerTest extends IntegrationTestBase {
     )
 
     // Kentät siirretty hakemukseen: tarkistetaan oikeat tyypit ja arvot
-    assertEquals(toLocalDateTime("2026-01-30T10:59:47.597Z"), paivitettyHakemus.ataruHakemusMuokattu.get)
-    assertEquals(toLocalDateTime("2025-05-14T10:59:47.597Z"), paivitettyHakemus.saapumisPvm.get)
+    assertEquals(toLocalDateTime("2026-02-14T10:59:47.597Z"), paivitettyHakemus.ataruHakemusMuokattu.get)
+    assertEquals(toLocalDateTime("2026-01-02T18:30:45.597Z"), paivitettyHakemus.saapumisPvm.get)
     assertEquals("Testi Kolmas", paivitettyHakemus.hakijaEtunimet.get)
     assertEquals("Hakija", paivitettyHakemus.hakijaSukunimi.get)
     // Ei päivity
-    assertEquals(LocalDateTime.parse("2026-01-01T18:30:45.597"), paivitettyHakemus.viimeisinTaydennyspyyntoPvm.get)
+    assertEquals(LocalDateTime.parse("2026-01-10T18:30:45.597"), paivitettyHakemus.viimeisinTaydennyspyyntoPvm.get)
   }
 
   @Test
@@ -601,13 +628,22 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
 
+    val requestJson =
+      s"""{
+          "tila": "information-request",
+          "submitted": "2026-08-01T10:59:47.597Z",
+          "latestVersionCreated": "2026-08-15T10:59:47.597Z",
+          "timestamp": "2026-08-30T10:59:47.597Z"
+          }"""
+
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
-    initAtaruHakemusRequests("ataruHakemus6666.json")
-    when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(0)
 
     mockMvc
       .perform(
-        get("/tutu-backend/api/state-change-notification/1.2.246.562.11.00000000000000006667/information-request")
+        put(s"/tutu-backend/api/state-change/$hakemusOid")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
       )
       .andExpect(status().isOk)
 
@@ -624,9 +660,20 @@ class HakemusControllerTest extends IntegrationTestBase {
         User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
       )
 
+    val requestJson =
+      s"""{
+          "tila": "virheellinen",
+          "submitted": "2026-08-01T10:59:47.597Z",
+          "latestVersionCreated": "2026-08-15T10:59:47.597Z",
+          "timestamp": "2026-08-30T10:59:47.597Z"
+          }"""
+
     mockMvc
       .perform(
-        get("/tutu-backend/api/state-change-notification/1.2.246.562.11.00000000000000006667/virheellinen")
+        put(s"/tutu-backend/api/state-change/1.2.246.562.11.00000000000000006667")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
       )
       .andExpect(status().isBadRequest)
   }
@@ -808,7 +855,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(15)
+  @Order(14)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTutkintoFilterLoytyy(): Unit = {
     // Kaikille hakemuksille on luotu tutkinnot, joilla oppilaitos = "Butan Amattikoulu".
@@ -832,7 +879,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(14)
+  @Order(15)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTyhjaHakuPalauttaaTyhjanTuloksen(): Unit = {
     mockMvc
