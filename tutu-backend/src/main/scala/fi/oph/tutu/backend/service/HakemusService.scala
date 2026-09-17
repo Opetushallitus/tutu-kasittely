@@ -39,6 +39,7 @@ class HakemusService(
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   onrService: OnrService,
+  esittelijaService: EsittelijaService,
   ataruHakemusParser: AtaruHakemusParser,
   userService: UserService,
   @Lazy perustelumuistioService: IPerustelumuistioService,
@@ -280,7 +281,7 @@ class HakemusService(
               dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
             lausunnonMaaraaikaPvm = dbHakemus.lausunnonMaaraaikaPvm,
             muokattu = dbHakemus.muokattu,
-            muokkaaja = onrService.haeNimi(dbHakemus.muokkaaja),
+            muokkaaja = dbHakemus.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi).getOrElse(""),
             muutosHistoria = Seq(),
             taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
               case None            => None

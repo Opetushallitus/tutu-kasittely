@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.domain.Esittelija
+import fi.oph.tutu.backend.domain.{Esittelija, UserOid}
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.AuditLog
@@ -31,9 +31,6 @@ class EsittelijaControllerTest extends IntegrationTestBase {
   private var mockMvc: MockMvc               = null
 
   @MockitoBean
-  var mockUserService: UserService = _
-
-  @MockitoBean
   var auditLog: AuditLog = _
 
   @BeforeAll def setup(): Unit = {
@@ -61,12 +58,8 @@ class EsittelijaControllerTest extends IntegrationTestBase {
         |  }
         |]""".stripMargin
 
-    when(mockUserService.haeEsittelijat).thenReturn(
-      Seq(
-        Esittelija(esittelijaOid = "1.2.246.562.24.00000000001", etunimi = "Roope", sukunimi = "Roihuvuori"),
-        Esittelija(esittelijaOid = "1.2.246.562.24.00000000002", etunimi = "Jarmo", sukunimi = "Jakomäki")
-      )
-    )
+    esittelijaRepository.insertEsittelija(UserOid("1.2.246.562.24.00000000001"), "test", "Roope", "Roihuvuori")
+    esittelijaRepository.insertEsittelija(UserOid("1.2.246.562.24.00000000002"), "test", "Jarmo", "Jakomäki")
 
     mockMvc
       .perform(

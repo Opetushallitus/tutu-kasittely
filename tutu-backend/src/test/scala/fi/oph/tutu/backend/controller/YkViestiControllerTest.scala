@@ -45,7 +45,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
   private var auditLog: AuditLog = _
 
   @MockitoBean
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   var ykViestiId: UUID = null
 
@@ -92,7 +92,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -115,7 +115,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     val postBody = Map(
       "parentId"         -> None,
@@ -209,7 +209,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     val patchBody = Map(
       "id"      -> Some(ykViestiId.toString),
@@ -285,7 +285,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     val patchBody       = Map()
     val patchBodyAsJson = mapper.writeValueAsString(patchBody)

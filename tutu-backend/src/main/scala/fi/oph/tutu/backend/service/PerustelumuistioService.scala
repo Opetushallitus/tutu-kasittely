@@ -37,7 +37,7 @@ class PerustelumuistioService(
   hakemuspalveluService: HakemuspalveluService,
   maakoodiService: MaakoodiService,
   koodistoService: KoodistoService,
-  onrService: OnrService,
+  esittelijaService: EsittelijaService,
   translationService: TranslationService
 ) extends TutuJsonFormats
     with IPerustelumuistioService {
@@ -55,13 +55,13 @@ class PerustelumuistioService(
     val perusteluMuistio = generatePerustelumuistio(
       koodistoService,
       maakoodiService,
-      onrService,
       translationService,
       hakemusMaybe,
       tutkinnot,
       ataruHakemusMaybe,
       perusteluMaybe,
-      paatosMaybe
+      paatosMaybe,
+      esittelijaService
     )
 
     Some(perusteluMuistio)

@@ -2,9 +2,8 @@ package fi.oph.tutu.backend.service.generator.perustelumuistio
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.DAYS
-
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, OnrService, TranslationService}
+import fi.oph.tutu.backend.service.{EsittelijaService, KoodistoService, MaakoodiService, TranslationService}
 import fi.oph.tutu.backend.service.generator.{formatDate, toKyllaEi}
 import fi.oph.tutu.backend.utils.{Constants, Utility, haeKysymyksenTiedot}
 
@@ -677,10 +676,11 @@ def haeAsiakirjat(
 def haeEsittelija(
   translationService: TranslationService,
   hakemusMaybe: Option[Hakemus],
-  onrService: OnrService
+  esittelijaService: EsittelijaService
 ): Option[String] = {
-  onrService
-    .haeNimiOption(hakemusMaybe.flatMap(_.esittelijaOid))
+  hakemusMaybe
+    .flatMap(_.esittelijaOid)
+    .flatMap(esittelijaService.haeEsittelijaNimi)
     .map(nimi =>
       val label = translationService.getTranslation(FI, "perustelumuistio.esittelija.label")
       s"$label $nimi".trim
@@ -740,13 +740,13 @@ def haePerusteluTitle(
 def generate(
   koodistoService: KoodistoService,
   maakoodiService: MaakoodiService,
-  onrService: OnrService,
   translationService: TranslationService,
   hakemusMaybe: Option[Hakemus],
   tutkinnot: Seq[Tutkinto],
   ataruHakemusMaybe: Option[AtaruHakemus],
   perusteluMaybe: Option[Perustelu],
-  paatosMaybe: Option[Paatos]
+  paatosMaybe: Option[Paatos],
+  esittelijaService: EsittelijaService
 ): String = {
   val (haePaatostiedot, haeKielteisenPaatoksenPerustelut) = bindHaePaatostiedot(
     translationService = translationService,
@@ -759,7 +759,7 @@ def generate(
   )
 
   val result: Seq[String] = Seq[Option[String]](
-    haeEsittelija(translationService, hakemusMaybe, onrService),
+    haeEsittelija(translationService, hakemusMaybe, esittelijaService),
     haeKasittelyajat(translationService, hakemusMaybe),
 
     haeHakijanNimi(translationService, hakemusMaybe),

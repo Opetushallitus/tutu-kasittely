@@ -53,6 +53,9 @@ class PaatosControllerTest extends IntegrationTestBase {
   var onrService: OnrService = _
 
   @MockitoBean
+  var esittelijaService: EsittelijaService = _
+
+  @MockitoBean
   var koodistoService: KoodistoService = _
 
   @MockitoBean
@@ -476,7 +479,7 @@ class PaatosControllerTest extends IntegrationTestBase {
           )
         )
       )
-    when(onrService.haeNimi(Some("1.2.246.562.24.00000000000000006666"))).thenReturn("Esko Esittelijä")
+    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000000000000006666")).thenReturn(Some("Esko Esittelijä"))
   }
 
   @Test

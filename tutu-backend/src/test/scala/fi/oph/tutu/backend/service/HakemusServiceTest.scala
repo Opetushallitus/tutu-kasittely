@@ -40,6 +40,8 @@ class HakemusServiceTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
   @Mock
+  var esittelijaService: EsittelijaService = _
+  @Mock
   var ataruHakemusParser: AtaruHakemusParser = _
   @Mock
   var userService: UserService = _
@@ -161,6 +163,7 @@ class HakemusServiceTest extends UnitTestBase {
       paatosRepository = paatosRepository,
       hakemuspalveluService = hakemuspalveluService,
       onrService = onrService,
+      esittelijaService = esittelijaService,
       ataruHakemusParser = ataruHakemusParser,
       userService = userService,
       perustelumuistioService = perustelumuistioService,
@@ -268,8 +271,8 @@ class HakemusServiceTest extends UnitTestBase {
   def haeHakemusPalauttaaMuokkaajanNimen(): Unit = {
 
     // Data
-    val hakemusOid         = HakemusOid("poop")
-    val dbHakemus          = makeDbHakemus(hakemusOid, 5)
+    val hakemusOid   = HakemusOid("poop")
+    val dbHakemus    = makeDbHakemus(hakemusOid, 5).copy(muokkaaja = Some("1.2.246.562.24.00000000000000006666"))
     val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
     val hakemusMap         =
       ataruHakemusUpdate.productElementNames.toList.zip(ataruHakemusUpdate.productIterator.toList).toMap ++
@@ -297,7 +300,7 @@ class HakemusServiceTest extends UnitTestBase {
     when(onrService.haeHenkilo(any[String])).thenReturn(Right(henkilo))
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 
-    when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
 
     // Act
     val hakemus: Hakemus = hakemusService.haeHakemus(hakemusOid).get

@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service.generator.perustelumuistio
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.TranslationService
-import fi.oph.tutu.backend.service.generator.toKyllaEi
 
 private val FI = Kieli.fi
 
@@ -13,7 +12,7 @@ private val FI = Kieli.fi
 def bindHaePaatostiedotUORO(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (Option[Paatos] => Option[String]) = {
+): Option[Paatos] => Option[String] = {
   val extractMyonteisenPaatoksenLisavaatimukset =
     bindExtractMyonteisenPaatoksenLisavaatimukset(translationService, tutkinnot)
   val extractErotKoulutuksessa                    = bindExtractErotKoulutuksessa(translationService, tutkinnot)
@@ -35,7 +34,7 @@ def bindHaePaatostiedotUORO(
       case node: KorvaavaToimenpide                   => extractKorvaavaToimenpide(node)
       case node: AmmattikomemusJaElinikainenOppiminen => extractAmmattikomemusJaElinikainenOppiminen(node)
       case node: KelpoisuudenLisavaatimukset          => extractKelpoisuudenLisavaatimukset(node)
-      case node: KielteisenPaatoksenPerustelut        => None
+      case node: KielteisenPaatoksenPerustelut        => extractKielteisenPaatoksenPerustelut(node)
       case node: Kelpoisuus                           => extractKelpoisuus(node)
       case _                                          => None
     }
@@ -53,8 +52,7 @@ def bindHaePaatostiedotUORO(
           )
         )
       )
-      .map(haePerustelutUOROPaatostiedoille)
-      .flatten
+      .flatMap(haePerustelutUOROPaatostiedoille)
       .mkString("\n")
     Option.when(result.nonEmpty)(result)
   }

@@ -40,6 +40,8 @@ class PerusteluServiceTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
   @Mock
+  var esittelijaService: EsittelijaService = _
+  @Mock
   var translationService: TranslationService = _
   @Mock
   var perustelumuistioService: PerustelumuistioService = _
@@ -84,6 +86,7 @@ class PerusteluServiceTest extends UnitTestBase {
       hakemusRepository = hakemusRepository,
       perusteluRepository = perusteluRepository,
       onrService = onrService,
+      esittelijaService = esittelijaService,
       perustelumuistioService = perustelumuistioService
     )
   }
@@ -100,7 +103,7 @@ class PerusteluServiceTest extends UnitTestBase {
     when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(Some(dbPerustelu))
     when(perusteluRepository.haeLausuntopyynnot(any[UUID])).thenReturn(Seq())
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
 
     // Act
     val perustelu = perusteluService.haePerustelu(hakemusOid).get

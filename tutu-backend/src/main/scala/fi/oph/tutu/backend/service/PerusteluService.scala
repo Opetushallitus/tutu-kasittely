@@ -17,6 +17,7 @@ class PerusteluService(
   hakemusRepository: HakemusRepository,
   perusteluRepository: PerusteluRepository,
   onrService: OnrService,
+  esittelijaService: EsittelijaService,
   @Lazy perustelumuistioService: IPerustelumuistioService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluService])
@@ -34,13 +35,13 @@ class PerusteluService(
                 Some(
                   perustelu.copy(
                     lausuntopyynnot = lausuntoPyynnot,
-                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
+                    muokkaaja = perustelu.muokkaaja.flatMap(oid => esittelijaService.haeEsittelijaNimi(oid))
                   )
                 )
               case _ =>
                 Some(
                   perustelu.copy(
-                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
+                    muokkaaja = perustelu.muokkaaja.flatMap(oid => esittelijaService.haeEsittelijaNimi(oid))
                   )
                 )
             }

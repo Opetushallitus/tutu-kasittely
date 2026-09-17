@@ -1,6 +1,6 @@
 package fi.oph.tutu.backend.service
 
-import fi.oph.tutu.backend.domain.{Esittelija, User}
+import fi.oph.tutu.backend.domain.User
 import fi.oph.tutu.backend.security.AuthenticationFacade
 import fi.oph.tutu.backend.utils.AuthoritiesUtil
 import fi.oph.tutu.backend.repository.EsittelijaRepository
@@ -37,18 +37,5 @@ class UserService(
         asiointikieli = asiointikieli
       )
     }
-  }
-
-  def haeEsittelijat: Seq[Esittelija] = {
-    esittelijaRepository
-      .haeKaikkiEsittelijat()
-      .map(e =>
-        Esittelija(
-          esittelijaOid = e.esittelijaOid.toString,
-          etunimi = e.kutsumanimi.getOrElse(""),
-          sukunimi = e.sukunimi.getOrElse(""),
-          id = Some(e.esittelijaId)
-        )
-      )
   }
 }

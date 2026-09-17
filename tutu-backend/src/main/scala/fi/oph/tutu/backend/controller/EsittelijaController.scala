@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.service.UserService
+import fi.oph.tutu.backend.service.EsittelijaService
 import fi.oph.tutu.backend.utils.AuditOperation.ReadEsittelija
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -15,7 +15,7 @@ import scala.util.{Failure, Success, Try}
 @RestController
 @RequestMapping(path = Array("api"))
 class EsittelijaController(
-  userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
@@ -44,7 +44,7 @@ class EsittelijaController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      userService.haeEsittelijat
+      esittelijaService.haeEsittelijat
     } match {
       case Success(users) =>
         auditLog.logRead("esittelijat", "", ReadEsittelija, request)

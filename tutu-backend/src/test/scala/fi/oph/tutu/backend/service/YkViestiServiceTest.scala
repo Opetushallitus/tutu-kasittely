@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 class YkViestiServiceTest extends IntegrationTestBase {
 
   @MockitoBean
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   var ykViestiService: YkViestiService = _
 
@@ -46,7 +46,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
     MockitoAnnotations.openMocks(this)
     ykViestiService = new YkViestiService(
       ykViestiRepository = ykViestiRepository,
-      onrService = onrService
+      esittelijaService = esittelijaService
     )
   }
 

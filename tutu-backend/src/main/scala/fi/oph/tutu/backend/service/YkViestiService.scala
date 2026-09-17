@@ -6,7 +6,6 @@ import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
-import scala.math.Ordering
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -14,7 +13,7 @@ import java.util.UUID
 @Service
 class YkViestiService(
   ykViestiRepository: YkViestiRepository,
-  onrService: OnrService
+  esittelijaService: EsittelijaService
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiService])
 
@@ -159,7 +158,7 @@ class YkViestiService(
       .haeHakemuksenYkViestit(hakemusOid)
       .map(ykViesti =>
         ykViesti.copy(
-          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid),
+          vastaanottaja = ykViesti.vastaanottajaOid.flatMap(esittelijaService.haeEsittelijaNimi),
           vastaus =
             if ykViesti.vastattu.nonEmpty || ykViesti.vastaanottajaOid.contains(user.userOid) then ykViesti.vastaus
             else None
@@ -208,8 +207,8 @@ class YkViestiService(
       throw NotFoundException(s"Yhteiskäsittelyn viesti id is null")
     }
 
-    val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
-      case Some(ykViesti) => {
+    ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
+      case Some(ykViesti) =>
         val vastattu = if ykVastaus.laheta.getOrElse(false) then Some(LocalDateTime.now()) else ykViesti.vastattu
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
@@ -218,7 +217,6 @@ class YkViestiService(
             muokkaaja = Some(user.userOid)
           )
         )
-      }
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id.get} not found")
     }
   }
@@ -228,8 +226,8 @@ class YkViestiService(
     viestiId: String,
     user: User
   ): Unit = {
-    val ykViesti = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
-      case Some(ykViesti) => {
+    ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
+      case Some(ykViesti) =>
         val vastausLuettavissa = ykViesti.vastattu.nonEmpty
         val vastaustaEiLuettu  = ykViesti.vastausLuettu.isEmpty
         val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
@@ -252,8 +250,7 @@ class YkViestiService(
             )
           )
         }
-      }
-      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${viestiId} not found")
+      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
     }
   }
 }

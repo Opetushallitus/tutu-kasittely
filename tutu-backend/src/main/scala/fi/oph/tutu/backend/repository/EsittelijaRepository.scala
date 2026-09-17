@@ -42,7 +42,7 @@ class EsittelijaRepository {
    */
   def haeEsittelijaMaakoodiUrilla(maakoodiUri: String): Option[DbEsittelija] = {
     try {
-      val esittelija: DbEsittelija = db.run(
+      db.run(
         sql"""
           SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi, e.sahkoposti, e.puhelinnumero
           FROM esittelija e
@@ -50,10 +50,9 @@ class EsittelijaRepository {
           WHERE m.koodiuri = $maakoodiUri
           AND m.esittelija_id IS NOT NULL
           AND e.esittelija_oid IS NOT NULL
-        """.as[DbEsittelija].head,
+        """.as[DbEsittelija].headOption,
         "haeEsittelijaMaakoodilla"
       )
-      Some(esittelija)
     } catch {
       case e: Exception =>
         LOG.warn(s"Esittelijän haku epäonnistui maakoodilla: $maakoodiUri")
@@ -71,15 +70,14 @@ class EsittelijaRepository {
    */
   def haeEsittelijaOidilla(oid: String): Option[DbEsittelija] = {
     try {
-      val esittelija: DbEsittelija = db.run(
+      db.run(
         sql"""
           SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
           FROM esittelija
           WHERE esittelija_oid = $oid
-        """.as[DbEsittelija].head,
+        """.as[DbEsittelija].headOption,
         "haeEsittelijaOidilla"
       )
-      Some(esittelija)
     } catch {
       case e: Exception =>
         LOG.warn(s"Esittelijän haku epäonnistui oidilla: $oid")
@@ -119,13 +117,13 @@ class EsittelijaRepository {
         None
     }
 
-  def haeKaikkiEsitteilijaOidit(): Seq[String] = {
+  def haeKaikkiEsittelijaOidit(): Seq[String] = {
     try {
       db.run(
         sql"""
           SELECT esittelija_oid
           FROM esittelija
-          WHERE esittelija_oid IS NOT NULL
+          WHERE esittelija_oid IS NOT NULL AND deactivated IS NULL
         """.as[String],
         "listAllEsittelijaOids"
       )
@@ -142,7 +140,7 @@ class EsittelijaRepository {
         sql"""
           SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
           FROM esittelija
-          WHERE esittelija_oid IS NOT NULL
+          WHERE esittelija_oid IS NOT NULL AND deactivated IS NULL
         """.as[DbEsittelija],
         "haeKaikkiEsittelijat"
       )
@@ -165,7 +163,7 @@ class EsittelijaRepository {
         sqlu"""
           UPDATE esittelija
           SET kutsumanimi = $kutsumanimi, sukunimi = $sukunimi, sahkoposti = $sahkoposti, puhelinnumero = $puhelin
-          WHERE esittelija_oid = $oid
+          WHERE esittelija_oid = $oid AND deactivated IS NULL
         """,
         "paivitaEsittelijaTiedot"
       )
@@ -179,27 +177,31 @@ class EsittelijaRepository {
     sqlu"""
       INSERT INTO esittelija (esittelija_oid, luoja)
       VALUES ($oid, $muokkaajaTaiLuoja)
+      ON CONFLICT (esittelija_oid)
+      DO UPDATE SET deactivated = NULL, luoja = luoja
     """
 
-  private def syncDelete(oid: String): DBIO[Int] =
+  private def syncDeactivate(oid: String): DBIO[Int] =
     sqlu"""
-      DELETE FROM esittelija WHERE esittelija_oid = $oid
+      UPDATE esittelija
+      SET deactivated = now(), kutsumanimi = "Deaktivoitu", sukunimi = "Esittelija", sahkoposti = NULL, puhelin = NULL
+      WHERE esittelija_oid = $oid
     """
 
   def syncFromKayttooikeusService(esittelijaOids: Seq[String], muokkaajaTaiLuoja: String): Unit = {
-    val existing = haeKaikkiEsitteilijaOidit().toSet
+    val existing = haeKaikkiEsittelijaOidit().toSet
     val incoming = esittelijaOids.toSet
 
-    val toInsert = (incoming -- existing).toSeq.map(oid => syncInsert(oid, muokkaajaTaiLuoja))
-    val toDelete = (existing -- incoming).toSeq.map(syncDelete)
+    val toInsert     = (incoming -- existing).toSeq.map(oid => syncInsert(oid, muokkaajaTaiLuoja))
+    val toDeactivate = (existing -- incoming).toSeq.map(syncDeactivate)
 
-    val actions: Seq[DBIO[Int]] = toInsert ++ toDelete
+    val actions: Seq[DBIO[Int]] = toInsert ++ toDeactivate
 
     if (toInsert.nonEmpty) {
       LOG.info(s"Syncing ${toInsert.size} new esittelijät to database")
     }
-    if (toDelete.nonEmpty) {
-      LOG.info(s"Removing ${toDelete.size} esittelijät from database")
+    if (toDeactivate.nonEmpty) {
+      LOG.info(s"Deactivating ${toDeactivate.size} esittelijät from database")
     }
 
     try {
