@@ -1,8 +1,0 @@
-ALTER TABLE esittelija ADD COLUMN IF NOT EXISTS deactivated TIMESTAMPTZ;
-
-ALTER TABLE esittelija DROP COLUMN IF EXISTS kutsumanimi TIMESTAMPTZ;
-ALTER TABLE esittelija DROP COLUMN IF EXISTS sukunimi TIMESTAMPTZ;
-ALTER TABLE esittelija DROP COLUMN IF EXISTS sahkoposti TIMESTAMPTZ;
-ALTER TABLE esittelija DROP COLUMN IF EXISTS puhelinnumero TIMESTAMPTZ;
-
-COMMENT ON COLUMN esittelija.deactivated IS 'Käyttäjän deaktivointi aika';
