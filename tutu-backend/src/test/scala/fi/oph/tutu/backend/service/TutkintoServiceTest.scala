@@ -22,7 +22,7 @@ class TutkintoServiceTest extends UnitTestBase {
   @Mock
   var perustelumuistioService: IPerustelumuistioService = _
   @Mock
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   var tutkintoService: TutkintoService = _
 
@@ -32,7 +32,7 @@ class TutkintoServiceTest extends UnitTestBase {
     tutkintoService = new TutkintoService(
       tutkintoRepository = tutkintoRepository,
       perustelumuistioService = perustelumuistioService,
-      onrService = onrService
+      esittelijaService = esittelijaService
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
       .thenReturn(CompletableFuture.completedFuture(None))
@@ -55,7 +55,7 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkintoIdlla(any[UUID])).thenReturn(Some(dbTutkinto))
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
 
     // Act
     val tutkinto = tutkintoService.haeTutkinto(tutkintoId).get
@@ -80,7 +80,7 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq(dbTutkinto))
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
 
     // Act
     val tutkinnot = tutkintoService.haeTutkinnot(hakemusOid)

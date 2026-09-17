@@ -214,7 +214,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
   private var auditLog: AuditLog = _
 
   @MockitoBean
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   val hakemusOid: HakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006666")
   var hakemusId: Option[UUID] = None
@@ -350,7 +350,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -384,7 +384,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
     val perusteluJSON = perustelu2Json(perustelu.copy(id = perusteluId), "luotu", "muokattu", "muokkaaja")
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -423,7 +423,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -471,7 +471,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -499,7 +499,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = uoro)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -532,7 +532,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -570,7 +570,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -614,7 +614,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       "muokkaaja"
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -658,7 +658,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -697,7 +697,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -725,7 +725,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perustelu     = perustelu4.copy(id = perusteluId, apSisalto = ap)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
@@ -758,7 +758,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(

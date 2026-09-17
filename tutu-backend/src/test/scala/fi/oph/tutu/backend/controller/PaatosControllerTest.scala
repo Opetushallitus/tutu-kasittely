@@ -6,6 +6,7 @@ import fi.oph.tutu.backend.domain.Direktiivitaso.{a_1384_2015_patevyystaso_1, b_
 import fi.oph.tutu.backend.domain.Ratkaisutyyppi.PeruutusTaiRaukeaminen
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.{
+  EsittelijaService,
   HallintoOikeusService,
   KoodistoService,
   MaakoodiService,
@@ -55,6 +56,9 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
 
   @MockitoBean
   var onrService: OnrService = _
+
+  @MockitoBean
+  var esittelijaService: EsittelijaService = _
 
   @MockitoBean
   var koodistoService: KoodistoService = _
@@ -480,7 +484,7 @@ class PaatosControllerTest extends IntegrationTestBase with TutuJsonFormats {
           )
         )
       )
-    when(onrService.haeNimi(Some("1.2.246.562.24.00000000000000006666"))).thenReturn("Esko Esittelijä")
+    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000000000000006666")).thenReturn(Some("Esko Esittelijä"))
   }
 
   @Test

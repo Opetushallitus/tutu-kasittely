@@ -22,7 +22,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   @Mock
   var hakemusService: HakemusService = _
   @Mock
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   var valitustiedotService: ValitustiedotService = _
 
@@ -73,9 +73,9 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     valitustiedotService =
-      new ValitustiedotService(valitustiedotRepository, hakemusRepository, hakemusService, onrService)
-    when(onrService.haeNimiOption(any[Option[String]])).thenAnswer(invocation =>
-      invocation.getArgument[Option[String]](0).map(oid => s"Nimi $oid")
+      new ValitustiedotService(valitustiedotRepository, hakemusRepository, hakemusService, esittelijaService)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenAnswer(invocation =>
+      Some(s"Nimi ${invocation.getArgument[String](0)}")
     )
   }
 

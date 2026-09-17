@@ -15,7 +15,7 @@ class ValitustiedotService(
   valitustiedotRepository: ValitustiedotRepository,
   hakemusRepository: HakemusRepository,
   hakemusService: HakemusService,
-  onrService: OnrService
+  esittelijaService: EsittelijaService
 ) {
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[ValitustiedotService])
@@ -154,8 +154,8 @@ class ValitustiedotService(
 
   private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot = {
     valitustiedot.copy(
-      luoja = onrService.haeNimiOption(valitustiedot.luoja),
-      muokkaaja = onrService.haeNimiOption(valitustiedot.muokkaaja)
+      luoja = valitustiedot.luoja.flatMap(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = valitustiedot.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
     )
   }
 

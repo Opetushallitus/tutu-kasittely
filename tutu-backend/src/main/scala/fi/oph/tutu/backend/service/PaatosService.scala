@@ -23,6 +23,7 @@ class PaatosService(
   ataruLomakeParser: AtaruLomakeParser,
   maakoodiService: MaakoodiService,
   onrService: OnrService,
+  esittelijaService: EsittelijaService,
   perustelumuistioService: IPerustelumuistioService,
   paatosTekstiGenerator: PaatosTekstiGenerator
 ) extends TutuJsonFormats {
@@ -44,7 +45,7 @@ class PaatosService(
             case paatostiedot if paatostiedot.nonEmpty =>
               val paatostiedotWithMuokkaaja = paatostiedot.map { paatosTieto =>
                 paatosTieto.copy(
-                  muokkaaja = onrService.haeNimiOption(paatosTieto.muokkaaja)
+                  muokkaaja = paatosTieto.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
                 )
               }
               val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedotWithMuokkaaja.map { paatosTieto =>
@@ -52,7 +53,8 @@ class PaatosService(
                   case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
                     paatosTieto.copy(
                       rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot.map { tutkintoTaiOpinto =>
-                        tutkintoTaiOpinto.copy(muokkaaja = onrService.haeNimiOption(tutkintoTaiOpinto.muokkaaja))
+                        tutkintoTaiOpinto
+                          .copy(muokkaaja = tutkintoTaiOpinto.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi))
                       }
                     )
                   case _ => paatosTieto
@@ -63,7 +65,7 @@ class PaatosService(
                   case kelpoisuudet if kelpoisuudet.nonEmpty =>
                     paatosTieto.copy(
                       kelpoisuudet = kelpoisuudet.map { kelpoisuus =>
-                        kelpoisuus.copy(muokkaaja = onrService.haeNimiOption(kelpoisuus.muokkaaja))
+                        kelpoisuus.copy(muokkaaja = kelpoisuus.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi))
                       }
                     )
                   case _ => paatosTieto
@@ -73,14 +75,14 @@ class PaatosService(
                 paatos.copy(
                   paatosTiedot = paatostiedotWithAllData,
                   paatosTietoOptions = paatosTietoOptions,
-                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
+                  muokkaaja = paatos.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
                 )
               )
             case _ =>
               Some(
                 paatos.copy(
                   paatosTietoOptions = paatosTietoOptions,
-                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
+                  muokkaaja = paatos.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
                 )
               )
           }
@@ -144,7 +146,7 @@ class PaatosService(
             } else {
               latestSavedPaatos.paatosTiedot
             },
-            muokkaaja = onrService.haeNimiOption(latestSavedPaatos.muokkaaja)
+            muokkaaja = latestSavedPaatos.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
           )
         )
       case _ => None
@@ -200,7 +202,7 @@ class PaatosService(
     }
 
   private def haeMuokkaajaNimi(paatosteksti: Paatosteksti): Paatosteksti = {
-    paatosteksti.copy(muokkaaja = Some(onrService.haeNimi(paatosteksti.muokkaaja)))
+    paatosteksti.copy(muokkaaja = paatosteksti.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi))
   }
 
   def haeTaiGeneroiPaatosteksti(

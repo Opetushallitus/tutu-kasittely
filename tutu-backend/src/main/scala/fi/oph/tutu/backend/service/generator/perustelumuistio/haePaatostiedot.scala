@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service.generator.perustelumuistio
 import scala.annotation.tailrec
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.TranslationService
-import fi.oph.tutu.backend.service.generator.toKyllaEi
 
 private val FI = Kieli.fi
 
@@ -59,7 +58,6 @@ def bindHaePaatostiedot(
       case node: KielteisenPaatoksenPerustelut        => extractKielteisenPaatoksenPerustelut(node)
       case node: Kelpoisuus                           => extractKelpoisuus(node)
       case node: TitleNode                            => extractTitleNode(node)
-      case _                                          => None
     }
   }
 
@@ -119,13 +117,12 @@ def bindTraverse(
   def traverseInternal(openList: Seq[PaatosNodeTypeAggregate], currentResultMaybe: Option[String]): Option[String] = {
     openList.headOption match {
       case None       => currentResultMaybe
-      case Some(head) => {
+      case Some(head) =>
         val (stepResultMaybe, newOpenNodes) = extractAndExpandAggregate(head)
         val newResult                       = Seq(currentResultMaybe, stepResultMaybe).flatten.mkString("\n").trim
         val newResultMaybe                  = if newResult.isEmpty then None else Some(newResult)
         val newOpenList                     = combine(openList.tail, newOpenNodes)
         traverseInternal(newOpenList, newResultMaybe)
-      }
     }
   }
 
@@ -150,7 +147,6 @@ def expand(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
     case node: KielteisenPaatoksenPerustelut        => expandKielteisenPaatoksenPerustelut(node)
     case node: Kelpoisuus                           => expandKelpoisuus(node)
     case node: TitleNode                            => expandTitleNode(node)
-    case _                                          => Seq.empty
   }
 }
 
@@ -259,7 +255,7 @@ def expandTitleNode(node: TitleNode): Seq[PaatosNodeTypeAggregate] = {
 def bindExtractTitleNode(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (TitleNode) => Option[String] = {
+): TitleNode => Option[String] = {
   def next(node: TitleNode): Option[String] = {
     node.titleKey.map(key => translationService.getTranslation(FI, key))
   }
@@ -269,7 +265,7 @@ def bindExtractTitleNode(
 def bindExtractPaatos(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (Paatos) => Option[String] = {
+): Paatos => Option[String] = {
   def next(node: Paatos): Option[String] = {
     val ratkaisutyyppi: Option[String] = haeRatkaisutyyppi(translationService, node)
     val seutArviointi: Option[String]  =
@@ -291,7 +287,7 @@ def bindExtractPaatos(
 def bindExtractPeruutuksenTaiRaukeamisenSyy(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (PeruutuksenTaiRaukeamisenSyy) => Option[String] = {
+): PeruutuksenTaiRaukeamisenSyy => Option[String] = {
   def next(node: PeruutuksenTaiRaukeamisenSyy): Option[String] = {
     val eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = node.eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada
       .filter(_ == true)
@@ -374,7 +370,7 @@ def bindExtractPeruutuksenTaiRaukeamisenSyy(
 def bindExtractPaatosTieto(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (PaatosTieto) => Option[String] = {
+): PaatosTieto => Option[String] = {
   def next(node: PaatosTieto): Option[String] = {
     val paatosTyyppi     = haePaatosTyyppi(translationService, node)
     val sovellettuLaki   = haeSovellettuLaki(translationService, node)
@@ -400,7 +396,7 @@ def bindExtractPaatosTieto(
 def bindExtractTutkintoTaiOpinto(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (TutkintoTaiOpinto) => Option[String] = {
+): TutkintoTaiOpinto => Option[String] = {
   def next(node: TutkintoTaiOpinto): Option[String] = {
     val nimi: Option[String] = node.tutkintoTaiOpinto
       .map(_.split("_"))
@@ -426,7 +422,7 @@ def bindExtractTutkintoTaiOpinto(
 def bindExtractMyonteisenPaatoksenLisavaatimukset(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (MyonteisenPaatoksenLisavaatimukset) => Option[String] = {
+): MyonteisenPaatoksenLisavaatimukset => Option[String] = {
   def next(node: MyonteisenPaatoksenLisavaatimukset): Option[String] = {
     val result = Seq(
       Option.when(node.taydentavatOpinnot)(
@@ -532,7 +528,7 @@ def bindExtractMyonteisenPaatoksenLisavaatimukset(
 def bindExtractErotKoulutuksessa(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (ErotKoulutuksessa) => Option[String] = {
+): ErotKoulutuksessa => Option[String] = {
   def next(node: ErotKoulutuksessa): Option[String] = {
     val nimetytErot = node.erot.filter(_.value == true).map(ero => s"- ${ero.name}")
 
@@ -565,7 +561,7 @@ def bindExtractErotKoulutuksessa(
 def bindExtractKorvaavaToimenpide(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (KorvaavaToimenpide) => Option[String] = {
+): KorvaavaToimenpide => Option[String] = {
   def next(node: KorvaavaToimenpide): Option[String] = {
     val kelpoisuuskoe = if (node.kelpoisuuskoe) {
       haeKelpoisuuskoeSisalto(translationService, node.kelpoisuuskoeSisalto)
@@ -603,7 +599,7 @@ def bindExtractKorvaavaToimenpide(
 def bindExtractAmmattikomemusJaElinikainenOppiminen(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (AmmattikomemusJaElinikainenOppiminen) => Option[String] = {
+): AmmattikomemusJaElinikainenOppiminen => Option[String] = {
   def next(node: AmmattikomemusJaElinikainenOppiminen): Option[String] = {
 
     val lisatieto = node.lisatieto
@@ -693,7 +689,7 @@ def bindExtractAmmattikomemusJaElinikainenOppiminen(
 def bindExtractKelpoisuudenLisavaatimukset(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (KelpoisuudenLisavaatimukset) => Option[String] = {
+): KelpoisuudenLisavaatimukset => Option[String] = {
   def next(node: KelpoisuudenLisavaatimukset): Option[String] = {
     node.olennaisiaEroja
       .filter(_ == true)
@@ -710,7 +706,7 @@ def bindExtractKelpoisuudenLisavaatimukset(
 def bindExtractKielteisenPaatoksenPerustelut(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (KielteisenPaatoksenPerustelut) => Option[String] = {
+): KielteisenPaatoksenPerustelut => Option[String] = {
   def next(node: KielteisenPaatoksenPerustelut): Option[String] = {
     val epavirallinenKorkeakoulu =
       Option.when(node.epavirallinenKorkeakoulu)(
@@ -757,7 +753,7 @@ def bindExtractKielteisenPaatoksenPerustelut(
 def bindExtractKelpoisuus(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): (Kelpoisuus) => Option[String] = {
+): Kelpoisuus => Option[String] = {
   def next(node: Kelpoisuus): Option[String] = {
     val nimi: Option[String] = node.kelpoisuus
       .map(_.split("_"))

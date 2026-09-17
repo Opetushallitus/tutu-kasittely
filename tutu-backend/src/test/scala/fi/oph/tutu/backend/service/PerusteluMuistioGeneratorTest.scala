@@ -459,7 +459,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
   }
 
   @Mock
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   @Mock
   var translationService: TranslationService = _
@@ -481,18 +481,18 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupKorkeakoulut()
     setupKoulutusalat()
 
-    when(onrService.haeNimiOption(any[Some[String]])).thenReturn(Some("Erkki Esittelijä"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Erkki Esittelijä"))
 
     val result = generate(
       koodistoService,
       maakoodiService,
-      onrService,
       translationService,
       someHakemus,
       tutkinnot,
       someAtaruHakemus,
       somePerustelu,
-      somePaatos
+      somePaatos,
+      esittelijaService
     )
     assert(result.nonEmpty)
   }
@@ -772,10 +772,10 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeEsittelijaProducesString(): Unit = {
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Erkki Esittelijä"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Erkki Esittelijä"))
 
     val hakemusMaybe = someHakemus.map(_.copy(esittelijaOid = Some("1.2.3.4")))
-    val result       = haeEsittelija(translationService, hakemusMaybe, onrService)
+    val result       = haeEsittelija(translationService, hakemusMaybe, esittelijaService)
 
     assert(result.get.contains("Esittelijä: Erkki Esittelijä"))
   }

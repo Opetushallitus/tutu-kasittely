@@ -5,5 +5,5 @@ import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class ViestipohjaService(viestipohjaRepository: ViestipohjaRepository, onrService: OnrService)
-    extends TekstipohjaServiceBase(viestipohjaRepository, onrService)
+class ViestipohjaService(viestipohjaRepository: ViestipohjaRepository, esittelijaService: EsittelijaService)
+    extends TekstipohjaServiceBase(viestipohjaRepository, esittelijaService)
