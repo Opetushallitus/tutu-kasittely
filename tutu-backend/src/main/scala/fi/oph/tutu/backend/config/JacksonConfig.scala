@@ -1,7 +1,15 @@
 package fi.oph.tutu.backend.config
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.databind.{
+  DeserializationContext,
+  DeserializationFeature,
+  JsonDeserializer,
+  JsonMappingException,
+  ObjectMapper,
+  SerializationFeature
+}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
@@ -23,7 +31,7 @@ import fi.oph.tutu.backend.domain.{
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 
 @Configuration
@@ -45,9 +53,11 @@ object JacksonConfig {
     val customModule = new SimpleModule()
 
     // LocalDateTime-kenttiin lisätään UTC-aikavyöhyke, vaikka LocalDateTime ei itsessään sisällä aikavyöhyketietoa.
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    customModule.addSerializer(classOf[LocalDateTime], new LocalDateTimeSerializer(formatter))
-    customModule.addDeserializer(classOf[LocalDateTime], new LocalDateTimeDeserializer(formatter))
+    customModule.addSerializer(
+      classOf[LocalDateTime],
+      new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+    )
+    customModule.addDeserializer(classOf[LocalDateTime], new MultiFormatLocalDateTimeDeserializer())
 
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
@@ -62,5 +72,35 @@ object JacksonConfig {
     mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
 
     mapper
+  }
+}
+
+class MultiFormatLocalDateTimeDeserializer extends JsonDeserializer[LocalDateTime] {
+  private val formats = List(
+    DateTimeFormatter.ISO_LOCAL_DATE_TIME, // 2026-09-17T14:30:00
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
+  )
+
+  override def deserialize(
+    parser: JsonParser,
+    ctxt: DeserializationContext
+  ): LocalDateTime = {
+    val value = parser.getValueAsString.trim
+
+    formats.view
+      .flatMap { format =>
+        try Some(LocalDateTime.parse(value, format))
+        catch {
+          case _: DateTimeParseException => None
+        }
+      }
+      .headOption
+      .getOrElse {
+        throw JsonMappingException.from(
+          parser,
+          s"Unsupported date-time format: '$value'"
+        )
+      }
   }
 }
