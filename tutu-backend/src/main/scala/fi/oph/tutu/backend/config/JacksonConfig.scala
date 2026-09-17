@@ -30,7 +30,7 @@ import fi.oph.tutu.backend.domain.{
 }
 import org.springframework.context.annotation.{Bean, Configuration, Primary}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 import java.time.format.{DateTimeFormatter, DateTimeParseException}
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 
@@ -57,7 +57,8 @@ object JacksonConfig {
       classOf[LocalDateTime],
       new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
     )
-    customModule.addDeserializer(classOf[LocalDateTime], new MultiFormatLocalDateTimeDeserializer())
+    // Kaikki backendille tulevat datetime -arvot deserialisoidaan UTC-aikavyöhykkeelle.
+    customModule.addDeserializer(classOf[LocalDateTime], new MultiFormatToUtcDateTimeDeserializer())
 
     customModule.addDeserializer(classOf[HakemusOid], new HakemusOidDeserializer())
     customModule.addDeserializer(classOf[ImiPyynto], new ImiPyyntoDeserializer())
@@ -75,10 +76,10 @@ object JacksonConfig {
   }
 }
 
-class MultiFormatLocalDateTimeDeserializer extends JsonDeserializer[LocalDateTime] {
+class MultiFormatToUtcDateTimeDeserializer extends JsonDeserializer[LocalDateTime] {
   private val formats = List(
     DateTimeFormatter.ISO_LOCAL_DATE_TIME, // 2026-09-17T14:30:00
-    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX"),
     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
   )
 
@@ -90,7 +91,7 @@ class MultiFormatLocalDateTimeDeserializer extends JsonDeserializer[LocalDateTim
 
     formats.view
       .flatMap { format =>
-        try Some(LocalDateTime.parse(value, format))
+        try Some(ZonedDateTime.parse(value, format).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime)
         catch {
           case _: DateTimeParseException => None
         }

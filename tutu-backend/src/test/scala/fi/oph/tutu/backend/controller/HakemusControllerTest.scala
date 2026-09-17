@@ -547,7 +547,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     val requestJson =
       s"""{
-        "submitted" : "2026-01-02T18:30:45.597Z",
+        "submitted" : "2026-01-02T20:30:45+02:00",
         "created" : "2026-02-14T10:59:47.597Z",
         "application-hakukohde-reviews" : [ ],
         "form_id" : 5,
@@ -612,7 +612,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
     // Kentät siirretty hakemukseen: tarkistetaan oikeat tyypit ja arvot
     assertEquals(toLocalDateTime("2026-02-14T10:59:47.597Z"), paivitettyHakemus.ataruHakemusMuokattu.get)
-    assertEquals(toLocalDateTime("2026-01-02T18:30:45.597Z"), paivitettyHakemus.saapumisPvm.get)
+    assertEquals(toLocalDateTime("2026-01-02T18:30:45Z"), paivitettyHakemus.saapumisPvm.get)
     assertEquals("Testi Kolmas", paivitettyHakemus.hakijaEtunimet.get)
     assertEquals("Hakija", paivitettyHakemus.hakijaSukunimi.get)
     // Ei päivity
