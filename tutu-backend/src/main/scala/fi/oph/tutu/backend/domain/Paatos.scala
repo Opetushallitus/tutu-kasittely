@@ -161,6 +161,9 @@ case class KielteisenPaatoksenPerustelut(
   tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa: Boolean = false,
   opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja: Boolean = false,
   opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: Boolean = false,
+  eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa: Boolean = false,
+  eiApMukainenTutkintoTaiHaettuaPatevyytta: Boolean = false,
+  koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla: Boolean = false,
   muuPerustelu: Boolean = false,
   muuPerusteluKuvaus: Option[String] = None
 )

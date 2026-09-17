@@ -6,6 +6,7 @@ import {
   KorvaavaToimenpide,
   OikeustieteenSuomiOpintojenAihealue,
   Paatostyyppi,
+  SovellettuLaki,
 } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
@@ -31,12 +32,45 @@ const tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys = [
   'muuPerustelu',
 ] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
 
+const kelpoisuusApKielteisenPaatoksenPerustelutKeys = [
+  'eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa',
+  'eiApMukainenTutkintoTaiHaettuaPatevyytta',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
+const kelpoisuusApSeutKielteisenPaatoksenPerustelutKeys = [
+  'koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
+const kelpoisuusUoKielteisenPaatoksenPerustelutKeys = [
+  'epavirallinenKorkeakoulu',
+  'epavirallinenTutkinto',
+  'tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
+  'opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
+  'opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
 export const kielteisenPaatoksenPerustelutKeysFor = (
   paatosTyyppi?: Paatostyyppi,
-): readonly KielteisenPaatoksenPerusteluCheckboxKey[] =>
-  paatosTyyppi === 'TiettyTutkintoTaiOpinnot'
-    ? tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys
-    : kielteisenPaatoksenPerustelutKeys;
+  sovellettuLaki?: SovellettuLaki,
+): readonly KielteisenPaatoksenPerusteluCheckboxKey[] => {
+  if (paatosTyyppi === 'TiettyTutkintoTaiOpinnot') {
+    return tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys;
+  }
+  if (paatosTyyppi === 'Kelpoisuus') {
+    switch (sovellettuLaki) {
+      case 'ap':
+        return kelpoisuusApKielteisenPaatoksenPerustelutKeys;
+      case 'ap_seut':
+        return kelpoisuusApSeutKielteisenPaatoksenPerustelutKeys;
+      case 'uo':
+        return kelpoisuusUoKielteisenPaatoksenPerustelutKeys;
+    }
+  }
+  return kielteisenPaatoksenPerustelutKeys;
+};
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
   { value: 'Paatos', label: t('hakemus.paatos.ratkaisutyyppi.paatos') },
