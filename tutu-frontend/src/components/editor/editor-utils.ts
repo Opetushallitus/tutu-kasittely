@@ -21,6 +21,7 @@ import {
   $getSelection,
   $insertNodes,
   $isRangeSelection,
+  EditorUpdateOptions,
   ElementNode,
   LexicalEditor,
   RangeSelection,
@@ -32,19 +33,23 @@ import { anyRealContentInHtml } from '@/src/lib/utils';
 
 const MARKDOWN_TRANSFORMERS = [ORDERED_LIST, UNORDERED_LIST, LINK, BOLD_STAR];
 
-export const importHtml = (editor: LexicalEditor | null, html: string) => {
+export const importHtml = (
+  editor: LexicalEditor | null,
+  html: string,
+  silent: boolean = true,
+) => {
   if (editor) {
-    editor.update(
-      () => {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(html, 'text/html');
-        const nodes = $generateNodesFromDOM(editor, dom);
-        $getRoot().select();
-        $getRoot().clear();
-        $insertNodes(nodes);
-      },
-      { discrete: true, tag: 'silent' },
-    );
+    const options: EditorUpdateOptions = silent
+      ? { discrete: true, tag: 'silent' }
+      : { discrete: true };
+    editor.update(() => {
+      const parser = new DOMParser();
+      const dom = parser.parseFromString(html, 'text/html');
+      const nodes = $generateNodesFromDOM(editor, dom);
+      $getRoot().select();
+      $getRoot().clear();
+      $insertNodes(nodes);
+    }, options);
   }
 };
 
