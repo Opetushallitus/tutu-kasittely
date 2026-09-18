@@ -2,17 +2,12 @@ package fi.oph.tutu.backend.utils
 
 import fi.oph.tutu.backend.domain.*
 import org.json4s.*
-import org.json4s.FieldSerializer.{renameFrom, renameTo}
 
 import java.time.{LocalDate, LocalDateTime}
 
 trait TutuJsonFormats {
   implicit val formats: Formats = {
-    DefaultFormats + FieldSerializer[AtaruHakemus](
-      renameTo("latestVersionCreated", "created"),
-      renameFrom("created", "latestVersionCreated")
-    ) + AnswerValueSerializer
-      + KoodistoItemSerializer
+    DefaultFormats + KoodistoItemSerializer
       + KieliKeySerializer
       + KasittelyVaiheSerializer
       + AmmattikokemusElinikainenOppiminenKorvaavuusSerializer
@@ -34,42 +29,6 @@ object LocalDateTimeSerializer
         },
         { case dateTime: LocalDateTime =>
           JString(dateTime.toString)
-        }
-      )
-    )
-
-object AnswerValueSerializer
-    extends CustomSerializer[AnswerValue](format =>
-      (
-        {
-          case JString(value) =>
-            SingleValue(value)
-          case JArray(values) if values.forall(_.isInstanceOf[JString]) =>
-            MultiValue(values.map(_.extract[String](format)))
-          case JArray(values) if values.forall {
-                case JArray(innerValues) => innerValues.forall(_.isInstanceOf[JString])
-                case _                   => false
-              } =>
-            NestedValues(values.map {
-              case JArray(innerValues) => innerValues.map(_.extract[String](format))
-              case _                   => throw new MappingException("Invalid nested structure")
-            })
-          case JArray(Nil) =>
-            EmptyValue
-          case JNull =>
-            EmptyValue
-          case unexpected =>
-            throw new MappingException(s"Cannot deserialize AnswerValue from $unexpected")
-        },
-        {
-          case SingleValue(value) =>
-            JString(value)
-          case MultiValue(values) =>
-            JArray(values.map(org.json4s.JString.apply).toList)
-          case NestedValues(values) =>
-            JArray(values.map(nested => JArray(nested.map(org.json4s.JString.apply).toList)).toList)
-          case EmptyValue =>
-            JArray(Nil)
         }
       )
     )

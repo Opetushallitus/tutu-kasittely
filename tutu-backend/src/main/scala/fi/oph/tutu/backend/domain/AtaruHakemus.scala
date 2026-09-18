@@ -1,9 +1,12 @@
 package fi.oph.tutu.backend.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.json4s.native.JsonMethods.*
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, JsonMappingException, JsonNode}
+import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.fromHakukohdeReviewList
 
 import java.time.LocalDateTime
+import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 sealed trait AnswerValue
 case class SingleValue(value: String)            extends AnswerValue
@@ -27,19 +30,25 @@ case class AtaruHakemus(
   `application-review-notes`: Option[String],
   henkilotunnus: Option[String],
   `person-oid`: String,
-  `application-hakukohde-attachment-reviews`: Seq[AttachmentReview] =
-    Seq(), // TODO tämän voi poistaa kunhan ataru ja tutu on päivitetty
   `latest-attachment-reviews`: Seq[AttachmentReviewRaw] = Seq(),
   `application-hakukohde-reviews`: Seq[HakukohdeReview],
   hakutoiveet: Seq[String],
   `information-request-timestamp`: Option[String]
 ) {
-  def hakemuksenTila(): AtaruHakemuksenTila =
-    AtaruHakemuksenTila.fromString(
-      `application-hakukohde-reviews`
-        .collectFirst(review => review.state)
-        .getOrElse(AtaruHakemuksenTila.UNDEFINED)
-    )
+  def hakemuksenTila(): AtaruHakemuksenTila = fromHakukohdeReviewList(`application-hakukohde-reviews`)
+}
+
+case class AtaruHakemusUpdate(
+  form_id: Long,
+  content: Content,
+  @JsonProperty("created")
+  latestVersionCreated: LocalDateTime,
+  modified: LocalDateTime,
+  submitted: LocalDateTime,
+  `application-hakukohde-reviews`: Seq[HakukohdeReview],
+  `information-request-timestamp`: Option[LocalDateTime]
+) {
+  def hakemuksenTila(): AtaruHakemuksenTila = fromHakukohdeReviewList(`application-hakukohde-reviews`)
 }
 
 case class AtaruHakemusListItem(
@@ -85,3 +94,36 @@ case class HakukohdeReview(
   state: String,
   hakukohde: String
 )
+
+class AnswerValueDeserializer extends JsonDeserializer[AnswerValue] {
+
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnswerValue = {
+    val node: JsonNode = p.getCodec.readTree(p)
+    parse(node, p)
+  }
+
+  private def parse(node: JsonNode, p: JsonParser): AnswerValue = {
+    if (node == null || node.isNull) {
+      EmptyValue
+    } else if (node.isTextual) {
+      SingleValue(node.asText())
+    } else if (node.isArray) {
+      val elements = node.elements().asScala.toList
+
+      if (elements.isEmpty) {
+        EmptyValue
+      } else if (elements.forall(_.isTextual)) {
+        MultiValue(elements.map(_.asText()))
+      } else if (elements.forall(isStringArray)) {
+        NestedValues(elements.map(e => e.elements().asScala.map(_.asText()).toList))
+      } else {
+        throw new JsonMappingException(p, "Invalid nested structure")
+      }
+    } else {
+      throw new JsonMappingException(p, s"Cannot deserialize AnswerValue from $node")
+    }
+  }
+
+  private def isStringArray(node: JsonNode): Boolean =
+    node.isArray && node.elements().asScala.forall(_.isTextual)
+}

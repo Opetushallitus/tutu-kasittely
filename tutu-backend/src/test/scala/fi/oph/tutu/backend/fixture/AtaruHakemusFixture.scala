@@ -17,7 +17,6 @@ val ataruHakemusFixture = AtaruHakemus(
   `application-review-notes` = None,
   henkilotunnus = None,
   `person-oid` = "1.2.246.562.24.00000000000000006666",
-  `application-hakukohde-attachment-reviews` = Seq(),
   `latest-attachment-reviews` = Seq(),
   `application-hakukohde-reviews` = Seq(),
   hakutoiveet = Seq(),
