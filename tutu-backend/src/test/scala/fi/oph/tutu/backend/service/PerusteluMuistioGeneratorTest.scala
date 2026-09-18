@@ -104,6 +104,9 @@ val translations = Map[String, String](
   "perustelumuistio.kielteinenPaatos.perustelu.tutkintoEiVastaaSisalloltaan" -> "- Tutkinto ei vastaa sisällöltään Suomessa suoritettavaa tutkintoa",
   "perustelumuistio.kielteinenPaatos.perustelu.opinnotEiVastaaTasoltaan" -> "- Opinnot eivät vastaa tasoltaan Suomessa suoritettavia opintoja",
   "perustelumuistio.kielteinenPaatos.perustelu.opinnotEiVastaaSisalloltaan" -> "- Opinnot eivät vastaa sisällöltään Suomessa suoritettavia opintoja",
+  "perustelumuistio.kielteinenPaatos.perustelu.eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa" -> "- Ei EU- tai ETA-maan kansalainen, eikä kansalaisuuteen rinnastettavaa asiakirjaa",
+  "perustelumuistio.kielteinenPaatos.perustelu.eiApMukainenTutkintoTaiHaettuaPatevyytta" -> "- Ei AP-lain mukainen tutkinto tai ei haettua ammattipätevyyttä",
+  "perustelumuistio.kielteinenPaatos.perustelu.koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla" -> "- Koulutus ei vastaa AP-lain mukaista tutkintoa, eikä ole täydennettävissä korvaavilla toimenpiteillä",
   "perustelumuistio.kielteinenPaatos.perustelu.muuLabel" -> "- Muu perustelu:",
   "perustelumuistio.kielteinenPaatos.perustelu.label"    -> "Kielteisen päätöksen perustelut:",
   "perustelumuistio.peruutusTaiRaukeaminen.syy.eiSaaHakemaansa" -> "- Ei voi saada hakemaansa päätöstä, eikä halua päätöstä jonka voisi saada",
@@ -792,6 +795,40 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("Tutkinto ei vastaa sisällöltään Suomessa suoritettavaa tutkintoa"))
     assert(result.get.contains("Opinnot eivät vastaa tasoltaan Suomessa suoritettavia opintoja"))
     assert(result.get.contains("Opinnot eivät vastaa sisällöltään Suomessa suoritettavia opintoja"))
+  }
+
+  @Test
+  def bindExtractKielteisenPaatoksenPerustelutProducesStringForKelpoisuusApPerustelut(): Unit = {
+    val extract = bindExtractKielteisenPaatoksenPerustelut(translationService, tutkinnot)
+
+    val result = extract(
+      KielteisenPaatoksenPerustelut(
+        eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa = true,
+        eiApMukainenTutkintoTaiHaettuaPatevyytta = true
+      )
+    )
+
+    assert(result.get.contains("Kielteisen päätöksen perustelut:"))
+    assert(result.get.contains("Ei EU- tai ETA-maan kansalainen, eikä kansalaisuuteen rinnastettavaa asiakirjaa"))
+    assert(result.get.contains("Ei AP-lain mukainen tutkinto tai ei haettua ammattipätevyyttä"))
+  }
+
+  @Test
+  def bindExtractKielteisenPaatoksenPerustelutProducesStringForKelpoisuusApSeutPerustelut(): Unit = {
+    val extract = bindExtractKielteisenPaatoksenPerustelut(translationService, tutkinnot)
+
+    val result = extract(
+      KielteisenPaatoksenPerustelut(
+        koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla = true
+      )
+    )
+
+    assert(result.get.contains("Kielteisen päätöksen perustelut:"))
+    assert(
+      result.get.contains(
+        "Koulutus ei vastaa AP-lain mukaista tutkintoa, eikä ole täydennettävissä korvaavilla toimenpiteillä"
+      )
+    )
   }
 
   @Test

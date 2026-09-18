@@ -11,6 +11,7 @@ import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   KielteisenPaatoksenPerustelut,
   Paatostyyppi,
+  SovellettuLaki,
 } from '@/src/lib/types/paatos';
 
 interface KielteisenPaatoksenPerusteluComponentProps {
@@ -20,6 +21,7 @@ interface KielteisenPaatoksenPerusteluComponentProps {
   ) => void;
   t: TFunction;
   paatosTyyppi?: Paatostyyppi;
+  sovellettuLaki?: SovellettuLaki;
 }
 
 export const KielteisenPaatoksenPerusteluComponent = ({
@@ -27,9 +29,13 @@ export const KielteisenPaatoksenPerusteluComponent = ({
   updatePerustelutAction,
   t,
   paatosTyyppi,
+  sovellettuLaki,
 }: KielteisenPaatoksenPerusteluComponentProps) => {
   const theme = useTheme();
-  const perustelutKeys = kielteisenPaatoksenPerustelutKeysFor(paatosTyyppi);
+  const perustelutKeys = kielteisenPaatoksenPerustelutKeysFor(
+    paatosTyyppi,
+    sovellettuLaki,
+  );
 
   return (
     <OphFormFieldWrapper

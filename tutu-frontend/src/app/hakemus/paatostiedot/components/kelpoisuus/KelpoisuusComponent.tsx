@@ -51,12 +51,14 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
   theme,
   kelpoisuus,
   kelpoisuusKey,
+  sovellettuLaki,
   updateAction,
 }: {
   t: TFunction;
   theme: Theme;
   kelpoisuus: Kelpoisuus;
   kelpoisuusKey?: string;
+  sovellettuLaki?: SovellettuLaki;
   updateAction: KelpoisuusUpdateCallback;
 }) => {
   const myonteisenPaatoksenLisavaatimusProps = {
@@ -128,6 +130,7 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
         }}
         t={t}
         paatosTyyppi="Kelpoisuus"
+        sovellettuLaki={sovellettuLaki}
       />
     </>
   );
@@ -136,10 +139,12 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
 const KelpoisuusUOLiitannaisComponent = ({
   t,
   kelpoisuus,
+  sovellettuLaki,
   updateAction,
 }: {
   t: TFunction;
   kelpoisuus: Kelpoisuus;
+  sovellettuLaki?: SovellettuLaki;
   updateAction: KelpoisuusUpdateCallback;
 }) => {
   return (
@@ -158,6 +163,7 @@ const KelpoisuusUOLiitannaisComponent = ({
         }}
         t={t}
         paatosTyyppi="Kelpoisuus"
+        sovellettuLaki={sovellettuLaki}
       />
     </>
   );
@@ -287,6 +293,7 @@ export const KelpoisuusComponent = ({
             theme={theme}
             kelpoisuus={kelpoisuus}
             kelpoisuusKey={selectedKelpoisuusKey?.value?.['fi']}
+            sovellettuLaki={sovellettuLaki}
             updateAction={updateKelpoisuus}
           />
         )}
@@ -294,6 +301,7 @@ export const KelpoisuusComponent = ({
           <KelpoisuusUOLiitannaisComponent
             t={t}
             kelpoisuus={kelpoisuus}
+            sovellettuLaki={sovellettuLaki}
             updateAction={updateKelpoisuus}
           />
         )}

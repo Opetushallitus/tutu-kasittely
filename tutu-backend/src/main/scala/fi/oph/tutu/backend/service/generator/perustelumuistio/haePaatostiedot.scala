@@ -755,6 +755,27 @@ def bindExtractKielteisenPaatoksenPerustelut(
           "perustelumuistio.kielteinenPaatos.perustelu.opinnotEiVastaaSisalloltaan"
         )
       )
+    val eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa =
+      Option.when(node.eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa"
+        )
+      )
+    val eiApMukainenTutkintoTaiHaettuaPatevyytta =
+      Option.when(node.eiApMukainenTutkintoTaiHaettuaPatevyytta)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.eiApMukainenTutkintoTaiHaettuaPatevyytta"
+        )
+      )
+    val koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla =
+      Option.when(node.koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla)(
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kielteinenPaatos.perustelu.koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla"
+        )
+      )
     val muuPerustelu = if (node.muuPerustelu) {
       node.muuPerusteluKuvaus
         .map(kuvaus =>
@@ -771,6 +792,9 @@ def bindExtractKielteisenPaatoksenPerustelut(
       tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa,
       opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja,
       opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja,
+      eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa,
+      eiApMukainenTutkintoTaiHaettuaPatevyytta,
+      koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla,
       muuPerustelu
     ).flatten
 

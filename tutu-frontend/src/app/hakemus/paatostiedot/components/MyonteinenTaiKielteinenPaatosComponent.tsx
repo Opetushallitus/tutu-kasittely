@@ -11,6 +11,7 @@ import {
   MyonteinenTaiKielteinenPaatos,
   KielteisenPaatoksenPerustelut,
   Paatostyyppi,
+  SovellettuLaki,
 } from '@/src/lib/types/paatos';
 
 export type MyonteinenTaiKielteinenPaatosProps<
@@ -25,6 +26,7 @@ export type MyonteinenTaiKielteinenPaatosProps<
   ) => void;
   t: TFunction;
   paatosTyyppi?: Paatostyyppi;
+  sovellettuLaki?: SovellettuLaki;
 } & MyonteinenTaiKielteinenPaatos;
 
 export const MyonteinenTaiKielteinenPaatosComponent = <
@@ -39,6 +41,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
   updatePaatosAction,
   t,
   paatosTyyppi,
+  sovellettuLaki,
 }: MyonteinenTaiKielteinenPaatosProps<T>) => {
   const updateMyonteisenPaatoksenLisavaatimukset = (
     lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
@@ -95,6 +98,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
           }}
           t={t}
           paatosTyyppi={paatosTyyppi}
+          sovellettuLaki={sovellettuLaki}
         />
       )}
     </Stack>

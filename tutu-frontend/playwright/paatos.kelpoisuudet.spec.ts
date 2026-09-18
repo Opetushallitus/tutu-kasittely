@@ -640,8 +640,8 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
   const olennaisiaErojaRadiogroup = page.getByTestId(
     'kelpoisuus-myonteinenPaatos-olennaisiaEroja-radio-group',
   );
-  const epavirallinenKorkeakouluButton = page.getByTestId(
-    'kielteinenPaatos-epavirallinenKorkeakoulu',
+  const koulutusEiVastaaApMukaistaButton = page.getByTestId(
+    'kielteinenPaatos-koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla',
   );
   const muuPerusteluButton = page.getByTestId('kielteinenPaatos-muuPerustelu');
   const muuPerusteluInput = page.getByTestId(
@@ -665,7 +665,7 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
   await expect(olennaisiaErojaRadiogroup).toBeVisible();
-  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+  await expect(koulutusEiVastaaApMukaistaButton).toBeHidden();
   await expect(muuPerusteluButton).toBeHidden();
   await expect(muuPerusteluInput).toBeHidden();
 
@@ -678,15 +678,15 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
     backendRequestKielteinenPaatos(),
   );
   await expect(olennaisiaErojaRadiogroup).toBeHidden();
-  await expect(epavirallinenKorkeakouluButton).toBeVisible();
+  await expect(koulutusEiVastaaApMukaistaButton).toBeVisible();
   await expect(muuPerusteluButton).toBeVisible();
 
   const perustelutRequest: KielteisenPaatoksenPerustelut = {
-    epavirallinenKorkeakoulu: true,
+    koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla: true,
     muuPerustelu: true,
     muuPerusteluKuvaus: 'Huonosti meni',
   };
-  await epavirallinenKorkeakouluButton.click();
+  await koulutusEiVastaaApMukaistaButton.click();
   await muuPerusteluButton.click();
   await expect(muuPerusteluInput).toBeVisible();
   await expectRequestData(
@@ -711,8 +711,162 @@ test('Kielteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat PU
     },
   );
   await expect(olennaisiaErojaRadiogroup).toBeHidden();
-  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+  await expect(koulutusEiVastaaApMukaistaButton).toBeHidden();
   await expect(muuPerusteluButton).toBeHidden();
+});
+
+test('Valittaessa 2 Kelpoisuus ja Päätös AP näytetään AP:n mukaiset kielteisen päätöksen perustelut', async ({
+  page,
+}) => {
+  await selectOption(
+    page,
+    page.getByTestId('paatos-paatostyyppi-dropdown'),
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('paatos-sovellettulaki-dropdown'),
+    'hakemus.paatos.sovellettuLaki.ap',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Aineenopettaja perusopetuksessa',
+  );
+
+  const myonteinenPaatosRadiogroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  const epavirallinenKorkeakouluButton = page.getByTestId(
+    'kielteinenPaatos-epavirallinenKorkeakoulu',
+  );
+  const eiEuTaiEtaButton = page.getByTestId(
+    'kielteinenPaatos-eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa',
+  );
+  const eiApMukainenButton = page.getByTestId(
+    'kielteinenPaatos-eiApMukainenTutkintoTaiHaettuaPatevyytta',
+  );
+  const muuPerusteluButton = page.getByTestId('kielteinenPaatos-muuPerustelu');
+
+  await myonteinenPaatosRadiogroup
+    .locator('input[type="radio"][value="false"]')
+    .click();
+
+  await expect(eiEuTaiEtaButton).toBeVisible();
+  await expect(eiApMukainenButton).toBeVisible();
+  await expect(muuPerusteluButton).toBeVisible();
+  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+
+  await eiEuTaiEtaButton.click();
+  await expectRequestData(
+    page,
+    '/paatos/',
+    eiApMukainenButton.click(),
+    backendRequestKielteinenPaatos({
+      eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa: true,
+      eiApMukainenTutkintoTaiHaettuaPatevyytta: true,
+    }),
+  );
+});
+
+test('Valittaessa 2 Kelpoisuus ja Päätös AP/SEUT näytetään AP/SEUT:n mukaiset kielteisen päätöksen perustelut', async ({
+  page,
+}) => {
+  await makeInitialKelpoisuusSelections(page);
+
+  const myonteinenPaatosRadiogroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  const epavirallinenKorkeakouluButton = page.getByTestId(
+    'kielteinenPaatos-epavirallinenKorkeakoulu',
+  );
+  const koulutusEiVastaaApMukaistaButton = page.getByTestId(
+    'kielteinenPaatos-koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla',
+  );
+  const muuPerusteluButton = page.getByTestId('kielteinenPaatos-muuPerustelu');
+
+  await myonteinenPaatosRadiogroup
+    .locator('input[type="radio"][value="false"]')
+    .click();
+
+  await expect(koulutusEiVastaaApMukaistaButton).toBeVisible();
+  await expect(muuPerusteluButton).toBeVisible();
+  await expect(epavirallinenKorkeakouluButton).toBeHidden();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    koulutusEiVastaaApMukaistaButton.click(),
+    backendRequestKielteinenPaatos({
+      koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla: true,
+    }),
+  );
+});
+
+test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään UO:n mukaiset kielteisen päätöksen perustelut', async ({
+  page,
+}) => {
+  await selectOption(
+    page,
+    page.getByTestId('paatos-paatostyyppi-dropdown'),
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('paatos-sovellettulaki-dropdown'),
+    'hakemus.paatos.sovellettuLaki.uo',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Aineenopettaja perusopetuksessa',
+  );
+
+  const myonteinenPaatosRadiogroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  const epavirallinenKorkeakouluButton = page.getByTestId(
+    'kielteinenPaatos-epavirallinenKorkeakoulu',
+  );
+  const epavirallinenTutkintoButton = page.getByTestId(
+    'kielteinenPaatos-epavirallinenTutkinto',
+  );
+  const tutkintoEiVastaaTasoltaanButton = page.getByTestId(
+    'kielteinenPaatos-tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
+  );
+  const tutkintoEiVastaaSisalloltaanButton = page.getByTestId(
+    'kielteinenPaatos-tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa',
+  );
+  const opinnotEiVastaaTasoltaanButton = page.getByTestId(
+    'kielteinenPaatos-opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
+  );
+  const opinnotEiVastaaSisalloltaanButton = page.getByTestId(
+    'kielteinenPaatos-opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  );
+  const muuPerusteluButton = page.getByTestId('kielteinenPaatos-muuPerustelu');
+
+  await myonteinenPaatosRadiogroup
+    .locator('input[type="radio"][value="false"]')
+    .click();
+
+  await expect(epavirallinenKorkeakouluButton).toBeVisible();
+  await expect(epavirallinenTutkintoButton).toBeVisible();
+  await expect(tutkintoEiVastaaTasoltaanButton).toBeVisible();
+  await expect(opinnotEiVastaaTasoltaanButton).toBeVisible();
+  await expect(opinnotEiVastaaSisalloltaanButton).toBeVisible();
+  await expect(muuPerusteluButton).toBeVisible();
+  await expect(tutkintoEiVastaaSisalloltaanButton).toBeHidden();
+
+  await opinnotEiVastaaTasoltaanButton.click();
+  await expectRequestData(
+    page,
+    '/paatos/',
+    opinnotEiVastaaSisalloltaanButton.click(),
+    backendRequestKielteinenPaatos({
+      opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja: true,
+      opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: true,
+    }),
+  );
 });
 
 test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymyskentät', async ({
