@@ -233,6 +233,7 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         }
         t={t}
         paatosTyyppi={paatosTieto.paatosTyyppi}
+        sovellettuLaki={paatosTieto.sovellettuLaki}
       />
     </Stack>
   );

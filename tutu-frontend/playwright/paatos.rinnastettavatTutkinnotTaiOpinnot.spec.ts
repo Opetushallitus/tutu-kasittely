@@ -742,9 +742,27 @@ test('Riittävät opinnot, kielteisen päätöksen perustelujen näyttäminen', 
     },
   );
 
+  const epavirallinenKorkeakouluCheckbox = page.getByTestId(
+    'kielteinenPaatos-epavirallinenKorkeakoulu',
+  );
+  const epavirallinenTutkintoCheckbox = page.getByTestId(
+    'kielteinenPaatos-epavirallinenTutkinto',
+  );
+  const opinnotEiVastaaSisalloltaanCheckbox = page.getByTestId(
+    'kielteinenPaatos-opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  );
+  const muuPerusteluCheckbox = page.getByTestId(
+    'kielteinenPaatos-muuPerustelu',
+  );
+
+  await expect(epavirallinenKorkeakouluCheckbox).toBeVisible();
+  await expect(epavirallinenTutkintoCheckbox).toBeVisible();
+  await expect(opinnotEiVastaaSisalloltaanCheckbox).toBeVisible();
+  await expect(muuPerusteluCheckbox).toBeVisible();
+
   await expect(
     page.getByTestId('kielteinenPaatos-eiVastaaSuomessaSuoritettavaaTutkintoa'),
-  ).toBeVisible();
+  ).toBeHidden();
   await expect(
     page.getByTestId(
       'kielteinenPaatos-tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa',
@@ -755,4 +773,26 @@ test('Riittävät opinnot, kielteisen päätöksen perustelujen näyttäminen', 
       'kielteinenPaatos-opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja',
     ),
   ).toBeHidden();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    opinnotEiVastaaSisalloltaanCheckbox.click(),
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'RiittavatOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Luokanopettaja',
+              myonteinenPaatos: false,
+              kielteisenPaatoksenPerustelut: {
+                opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  );
 });

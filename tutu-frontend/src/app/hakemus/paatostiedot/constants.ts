@@ -52,24 +52,51 @@ const kelpoisuusUoKielteisenPaatoksenPerustelutKeys = [
   'muuPerustelu',
 ] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
 
+const riittavatOpinnotRoKielteisenPaatoksenPerustelutKeys = [
+  'epavirallinenKorkeakoulu',
+  'epavirallinenTutkinto',
+  'opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja',
+  'muuPerustelu',
+] as const satisfies KielteisenPaatoksenPerusteluCheckboxKey[];
+
+const kelpoisuusKielteisenPaatoksenPerustelutKeysFor = (
+  sovellettuLaki?: SovellettuLaki,
+): readonly KielteisenPaatoksenPerusteluCheckboxKey[] => {
+  switch (sovellettuLaki) {
+    case 'ap':
+      return kelpoisuusApKielteisenPaatoksenPerustelutKeys;
+    case 'ap_seut':
+      return kelpoisuusApSeutKielteisenPaatoksenPerustelutKeys;
+    case 'uo':
+      return kelpoisuusUoKielteisenPaatoksenPerustelutKeys;
+    default:
+      return kielteisenPaatoksenPerustelutKeys;
+  }
+};
+
+const riittavatOpinnotKielteisenPaatoksenPerustelutKeysFor = (
+  sovellettuLaki?: SovellettuLaki,
+): readonly KielteisenPaatoksenPerusteluCheckboxKey[] =>
+  sovellettuLaki === 'ro'
+    ? riittavatOpinnotRoKielteisenPaatoksenPerustelutKeys
+    : kielteisenPaatoksenPerustelutKeys;
+
 export const kielteisenPaatoksenPerustelutKeysFor = (
   paatosTyyppi?: Paatostyyppi,
   sovellettuLaki?: SovellettuLaki,
 ): readonly KielteisenPaatoksenPerusteluCheckboxKey[] => {
-  if (paatosTyyppi === 'TiettyTutkintoTaiOpinnot') {
-    return tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys;
+  switch (paatosTyyppi) {
+    case 'TiettyTutkintoTaiOpinnot':
+      return tiettyTutkintoTaiOpinnotKielteisenPaatoksenPerustelutKeys;
+    case 'Kelpoisuus':
+      return kelpoisuusKielteisenPaatoksenPerustelutKeysFor(sovellettuLaki);
+    case 'RiittavatOpinnot':
+      return riittavatOpinnotKielteisenPaatoksenPerustelutKeysFor(
+        sovellettuLaki,
+      );
+    default:
+      return kielteisenPaatoksenPerustelutKeys;
   }
-  if (paatosTyyppi === 'Kelpoisuus') {
-    switch (sovellettuLaki) {
-      case 'ap':
-        return kelpoisuusApKielteisenPaatoksenPerustelutKeys;
-      case 'ap_seut':
-        return kelpoisuusApSeutKielteisenPaatoksenPerustelutKeys;
-      case 'uo':
-        return kelpoisuusUoKielteisenPaatoksenPerustelutKeys;
-    }
-  }
-  return kielteisenPaatoksenPerustelutKeys;
 };
 
 export const ratkaisutyyppiOptions = (t: TFunction) => [
