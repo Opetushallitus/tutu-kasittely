@@ -61,6 +61,15 @@ export default function ViestiPage() {
   return <ViestiPageComponent hakemus={hakemus} />;
 }
 
+const viestiToBeSaved = (
+  viesti: Viesti,
+  oletusSisalto: string | undefined,
+): Viesti => {
+  return !viesti.viesti && oletusSisalto
+    ? { ...viesti, viesti: oletusSisalto }
+    : viesti;
+};
+
 const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
   const { t } = useTranslations();
   const theme = useTheme();
@@ -255,9 +264,12 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
                     navigator.clipboard.writeText(
                       exportMarkdown(editorRef.current),
                     );
-                    vahvistaViesti(currentViesti!, () => {
-                      paivitaVahvistettuLista();
-                    });
+                    vahvistaViesti(
+                      viestiToBeSaved(currentViesti!, oletusSisalto),
+                      () => {
+                        paivitaVahvistettuLista();
+                      },
+                    );
                     if (viestiState.hasChanges) {
                       // Vahvistettaessa viesti myös tallennetaan
                       // Vahvistamisen jälkeen editoriin tuodaan uusi tallentamaton viesti,
@@ -279,6 +291,7 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
               importHtml(
                 editorRef.current,
                 `${currentViesti?.viesti || ''}${html}`,
+                false,
               );
             }}
             poistaViesti={(viestiId) =>
@@ -296,7 +309,9 @@ const ViestiPageComponent = ({ hakemus }: { hakemus: Hakemus }) => {
             }
           />
           <SaveRibbon
-            onSave={() => updateViesti(currentViesti!)}
+            onSave={() =>
+              updateViesti(viestiToBeSaved(currentViesti!, oletusSisalto))
+            }
             isSaving={updateOngoing}
             hasChanges={viestiState.hasChanges}
             lastSaved={currentViesti?.muokattu}
