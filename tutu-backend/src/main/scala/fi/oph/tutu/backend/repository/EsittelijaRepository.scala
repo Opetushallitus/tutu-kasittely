@@ -28,7 +28,8 @@ class EsittelijaRepository {
         kutsumanimi = r.nextStringOption(),
         sukunimi = r.nextStringOption(),
         sahkoposti = r.nextStringOption(),
-        puhelinnumero = r.nextStringOption()
+        puhelinnumero = r.nextStringOption(),
+        deactivated = r.nextTimestampOption().map(_.toLocalDateTime)
       )
     )
 
@@ -44,7 +45,7 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-          SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi, e.sahkoposti, e.puhelinnumero
+          SELECT e.id, e.esittelija_oid, e.kutsumanimi, e.sukunimi, e.sahkoposti, e.puhelinnumero, deactivated
           FROM esittelija e
           INNER JOIN maakoodi m ON m.esittelija_id = e.id
           WHERE m.koodiuri = $maakoodiUri
@@ -72,7 +73,7 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero, deactivated
           FROM esittelija
           WHERE esittelija_oid = $oid
         """.as[DbEsittelija].headOption,
@@ -106,7 +107,7 @@ class EsittelijaRepository {
         sql"""
           INSERT INTO esittelija (esittelija_oid, luoja, kutsumanimi, sukunimi, sahkoposti, puhelinnumero)
           VALUES ($esittelijaOidString, $muokkaajaTaiLuoja, $kutsumanimi, $sukunimi, ${sahkoposti.orNull}, ${puhelinnumero.orNull})
-          RETURNING id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
+          RETURNING id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero, deactivated
         """.as[DbEsittelija].head,
         "insertEsittelija"
       )
@@ -117,7 +118,7 @@ class EsittelijaRepository {
         None
     }
 
-  def haeKaikkiEsittelijaOidit(): Seq[String] = {
+  private def haeKaikkiEsittelijaOidit(): Seq[String] = {
     try {
       db.run(
         sql"""
@@ -138,7 +139,7 @@ class EsittelijaRepository {
     try {
       db.run(
         sql"""
-          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero
+          SELECT id, esittelija_oid, kutsumanimi, sukunimi, sahkoposti, puhelinnumero, deactivated
           FROM esittelija
           WHERE esittelija_oid IS NOT NULL AND deactivated IS NULL
         """.as[DbEsittelija],
@@ -178,30 +179,43 @@ class EsittelijaRepository {
       INSERT INTO esittelija (esittelija_oid, luoja)
       VALUES ($oid, $muokkaajaTaiLuoja)
       ON CONFLICT (esittelija_oid)
-      DO UPDATE SET deactivated = NULL, luoja = luoja
+      DO UPDATE SET deactivated = NULL, muokkaaja = $muokkaajaTaiLuoja
     """
 
-  private def syncDeactivate(oid: String): DBIO[Int] =
+  private def syncDeactivate(oid: String, muokkaaja: String): DBIO[Int] =
     sqlu"""
       UPDATE esittelija
-      SET deactivated = now(), kutsumanimi = "Deaktivoitu", sukunimi = "Esittelija", sahkoposti = NULL, puhelin = NULL
+      SET deactivated = now(), muokkaaja = $muokkaaja, kutsumanimi = 'Deaktivoitu', sukunimi = 'Esittelija', sahkoposti = NULL, puhelinnumero = NULL
       WHERE esittelija_oid = $oid
     """
+
+  private def syncPoistaDeaktivoituEsittelijaMaakoodeista(oid: String, muokkaaja: String): DBIO[Int] = {
+    sqlu"""
+            UPDATE maakoodi
+              SET esittelija_id = NULL, muokkaaja = $muokkaaja
+              WHERE esittelija_id IN (SELECT id FROM esittelija WHERE esittelija_oid = $oid)
+          """
+  }
 
   def syncFromKayttooikeusService(esittelijaOids: Seq[String], muokkaajaTaiLuoja: String): Unit = {
     val existing = haeKaikkiEsittelijaOidit().toSet
     val incoming = esittelijaOids.toSet
 
-    val toInsert     = (incoming -- existing).toSeq.map(oid => syncInsert(oid, muokkaajaTaiLuoja))
-    val toDeactivate = (existing -- incoming).toSeq.map(syncDeactivate)
+    val toInsert              = (incoming -- existing).toSeq.map(oid => syncInsert(oid, muokkaajaTaiLuoja))
+    val toDeactivate          = (existing -- incoming).toSeq.map(oid => syncDeactivate(oid, muokkaajaTaiLuoja))
+    val toDeactivateMaakoodit =
+      (existing -- incoming).toSeq.map(oid => syncPoistaDeaktivoituEsittelijaMaakoodeista(oid, muokkaajaTaiLuoja))
 
-    val actions: Seq[DBIO[Int]] = toInsert ++ toDeactivate
+    val actions: Seq[DBIO[Int]] = toInsert ++ toDeactivate ++ toDeactivateMaakoodit
 
     if (toInsert.nonEmpty) {
       LOG.info(s"Syncing ${toInsert.size} new esittelijät to database")
     }
     if (toDeactivate.nonEmpty) {
-      LOG.info(s"Deactivating ${toDeactivate.size} esittelijät from database")
+      LOG.info(s"Deactivating ${toDeactivate.size} esittelijät in database")
+    }
+    if (toDeactivateMaakoodit.nonEmpty) {
+      LOG.info(s"Clearing deactivated esittelija from ${toDeactivateMaakoodit.size} maakoodit")
     }
 
     try {

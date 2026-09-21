@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.domain
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 
+import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.meta.field
 
@@ -22,7 +23,8 @@ case class DbEsittelija(
   kutsumanimi: Option[String],
   sukunimi: Option[String],
   sahkoposti: Option[String],
-  puhelinnumero: Option[String]
+  puhelinnumero: Option[String],
+  deactivated: Option[LocalDateTime] = None
 ) {
   def toEsittelija: Esittelija = Esittelija(
     esittelijaOid.toString,
