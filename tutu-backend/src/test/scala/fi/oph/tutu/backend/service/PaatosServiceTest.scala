@@ -2,6 +2,8 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
+import fi.oph.tutu.backend.service.*
+import fi.oph.tutu.backend.service.migration.*
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
@@ -37,9 +39,13 @@ class PaatosServiceTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
   @Mock
+  var vanhaTutuService: VanhaTutuService = _
+  @Mock
   var perustelumuistioService: IPerustelumuistioService = _
   @Mock
   var paatosTekstiGenerator: PaatosTekstiGenerator = _
+  @Mock
+  var translationService: TranslationService = _
 
   var paatosService: PaatosService = _
 
@@ -87,6 +93,8 @@ class PaatosServiceTest extends UnitTestBase {
       maakoodiService = maakoodiService,
       onrService = onrService,
       perustelumuistioService = perustelumuistioService,
+      vanhaTutuService = vanhaTutuService,
+      translationService = translationService,
       paatosTekstiGenerator = paatosTekstiGenerator
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))

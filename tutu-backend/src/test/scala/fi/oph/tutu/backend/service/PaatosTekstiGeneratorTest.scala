@@ -191,7 +191,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     )
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_taso.html"
     )
   }
@@ -222,6 +222,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     assertHtml(
       this.paatosTekstiGenerator.generatePaatosTeksti(
         makeHakemus(),
+        None,
         tutkinnot.filter(_.id == Some(tutkintoId1)), // Yksi tutkinto vain
         paatos,
         Kieli.fi,
@@ -244,7 +245,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     )
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -261,7 +262,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     )
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -278,7 +279,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     )
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_paatos_common.html"
     )
   }
@@ -292,6 +293,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     assertHtml(
       this.paatosTekstiGenerator.generatePaatosTeksti(
         makeHakemus(peruutusPvm = Some(LocalDateTime.parse("2026-03-13T00:00:00"))),
+        None,
         tutkinnot,
         paatos,
         Kieli.fi,
@@ -307,7 +309,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.Oikaisu))
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }
@@ -317,7 +319,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.JatetaanTutkimatta))
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }
@@ -327,7 +329,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
     val paatos = Paatos(ratkaisutyyppi = Some(Ratkaisutyyppi.Siirto))
     assertHtml(
       this.paatosTekstiGenerator
-        .generatePaatosTeksti(makeHakemus(), tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
+        .generatePaatosTeksti(makeHakemus(), None, tutkinnot, paatos, Kieli.fi, hallintoOikeus, maakoodiService),
       "paatosteksti_todo.html"
     )
   }

@@ -315,6 +315,14 @@ class HakemusService(
     }
   }
 
+  def haeHakemusAsiatunnuksella(asiatunnus: String): Option[Hakemus] = {
+    hakemusRepository.haeHakemusAsiatunnuksella(asiatunnus).map(dbHakemus => haeHakemus(dbHakemus.hakemusOid)).flatten
+  }
+
+  def haeHakemusAsiatunnuksella(asiatunnus: Option[String]): Option[Hakemus] = {
+    asiatunnus.map(haeHakemusAsiatunnuksella).flatten
+  }
+
   def haeHakemusLista(
     userOid: Option[String],
     haku: Option[String],

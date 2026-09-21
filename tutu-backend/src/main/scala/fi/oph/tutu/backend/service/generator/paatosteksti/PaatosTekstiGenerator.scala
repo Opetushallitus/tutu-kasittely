@@ -5,6 +5,7 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.generator.formatDate
 import fi.oph.tutu.backend.service.TranslationService
 import org.springframework.stereotype.{Component, Service}
+import fi.oph.tutu.backend.utils.{Constants, haeKysymyksenTiedot}
 
 // See TutkintoComponent.tsx
 val tutkintoOtsikkoLabelMap: Map[String, String] = Map(
@@ -26,6 +27,13 @@ val tutkintoOtsikkoLabelMap: Map[String, String] = Map(
 @Service
 class PaatosTekstiGenerator(translationService: TranslationService) {
 
+  private def getHakijanTiedot(hakemus: Hakemus): String = {
+    val hakijaNimi        = s"${hakemus.hakija.sukunimi} ${hakemus.hakija.etunimet}"
+    val hakijaSyntymaaika = hakemus.hakija.syntymaaika
+
+    s"""<p>$hakijaNimi<br>$hakijaSyntymaaika</p>"""
+  }
+
   private def getCommonPaatosHeader(
     hakemus: Hakemus,
     tutkinnot: Seq[Tutkinto],
@@ -33,8 +41,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     lang: Kieli,
     maakoodiService: MaakoodiService
   ): String = {
-    val hakijaNimi        = s"${hakemus.hakija.sukunimi} ${hakemus.hakija.etunimet}"
-    val hakijaSyntymaaika = hakemus.hakija.syntymaaika
+    val hakijanTiedotBlock = getHakijanTiedot(hakemus)
 
     val isPeruutus = paatos.ratkaisutyyppi match {
       case Some(Ratkaisutyyppi.PeruutusTaiRaukeaminen) => true
@@ -44,51 +51,12 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val tutkintoBlocks: String =
       if (isPeruutus) ""
       else {
-        tutkinnot
-          .map { tutkinto =>
-            val tutkintoOtsikko =
-              tutkinto.todistusOtsikko
-                .map(o => tutkintoOtsikkoLabelMap.getOrElse(o, o))
-                .getOrElse("")
-
-            val tutkintoNimi     = tutkinto.nimi.getOrElse("")
-            val tutkinnonPaaAine = tutkinto.paaAineTaiErikoisala.getOrElse("")
-            val korkeakoulu      = tutkinto.oppilaitos.getOrElse("")
-            val maakoodiUri      = tutkinto.maakoodiUri
-
-            val sijaintimaa = maakoodiUri
-              .flatMap(maakoodiUri =>
-                maakoodiService
-                  .getMaakoodiByUri(maakoodiUri)
-                  .flatMap(m => Some(if (lang == Kieli.fi) m.fi else m.sv))
-              )
-              .getOrElse("")
-
-            val tutkintoParts =
-              Seq(tutkintoNimi, tutkinnonPaaAine, korkeakoulu, sijaintimaa)
-                .map(_.trim)
-                .filter(_.nonEmpty)
-                .mkString("<br>")
-
-            val todistuksenPaivamaara = tutkinto.todistuksenPaivamaara.getOrElse("")
-            val tutkintoOtsikkoLabel  = tutkintoOtsikkoLabelMap.getOrElse(
-              tutkintoOtsikko,
-              tutkintoOtsikko
-            )
-
-            if (tutkintoParts.nonEmpty) { // Filtteröi esim. Muut tutkinnot pois
-              s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>"""
-                + translationService.getTranslation(
-                  lang,
-                  "paatosteksti.todistuksenPaivamaara",
-                  Map("paivamaara" -> todistuksenPaivamaara)
-                )
-                + "</p>"
-            } else {
-              ""
-            }
-          }
-          .mkString("")
+        getTutkintoBlocks(
+          tutkinnot,
+          lang,
+          maakoodiService,
+          translationService
+        )
       }
 
     "<p>"
@@ -96,7 +64,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
         lang,
         "paatosteksti.hakija"
       )
-      + s"""</p><p>$hakijaNimi<br>$hakijaSyntymaaika</p>$tutkintoBlocks"""
+      + s"""</p>$hakijanTiedotBlock$tutkintoBlocks"""
   }
 
   private def getTasoPaatosHeader(lang: Kieli, count: Number): String = lang match {
@@ -254,7 +222,91 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     translationService.getTranslation(lang, "paatosteksti.todo")
   }
 
-  def generatePaatosTeksti(
+  private def getRinnastamisBlock(
+    lang: Kieli,
+    hakemus: Hakemus,
+    vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus]
+  ): String = {
+    val hyvaksymispvm: String = vastaavaEhdollinenHakemus.flatMap(_.hyvaksymispvm()).getOrElse("")
+    val asiatunnus            = hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.getOrElse("")
+
+    translationService.getTranslation(
+      lang,
+      "paatosteksti.rinnastamispaatos.lopullinen",
+      Map("hyvaksymispvm" -> hyvaksymispvm, "asiatunnus" -> asiatunnus)
+    )
+  }
+
+  private def getSuoritetutToimenpiteet(lang: Kieli, hakemus: Hakemus): String = {
+    val sopeutumisajanTyonantaja =
+      haeKysymyksenTiedot(
+        hakemus.sisalto,
+        Constants.ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_SOPEUTUMUSAIKA_TYONANATAJA
+      )
+        .map(_.value.head.label.getOrElse(lang, ""))
+
+    val sopeutumisajanTodistuspvm: String =
+      haeKysymyksenTiedot(
+        hakemus.sisalto,
+        Constants.ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_SOPEUTUMUSAIKA_TODISTUSPVM
+      )
+        .flatMap(_.value.head.label.get(lang))
+        .getOrElse("")
+
+    val kelpoisuuskokeenJarjestaja =
+      haeKysymyksenTiedot(
+        hakemus.sisalto,
+        Constants.ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_KELPOISUUSKOE_JARJESTAJA
+      )
+        .map(_.value.head.label.getOrElse(lang, ""))
+
+    val kelpoisuuskokeenTodistuspvm: String =
+      haeKysymyksenTiedot(
+        hakemus.sisalto,
+        Constants.ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_KELPOISUUSKOE_TODISTUSPVM
+      )
+        .flatMap(_.value.head.label.get(lang))
+        .getOrElse("")
+
+    val taydentavienOpintojenJarjestaja =
+      haeKysymyksenTiedot(
+        hakemus.sisalto,
+        Constants.ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_TAYDENTAVAT_OPINNOT_JARJESTAJA
+      )
+        .map(_.value.head.label.getOrElse(lang, ""))
+
+    val result = Seq(
+      sopeutumisajanTyonantaja.map(tyonantaja =>
+        translationService.getTranslation(
+          lang,
+          "paatosteksti.lopullinen.toimenpiteet.sopeutumisaika",
+          Map("tyonantaja" -> tyonantaja, "todistuspvm" -> sopeutumisajanTodistuspvm)
+        )
+      ),
+      kelpoisuuskokeenJarjestaja.map(jarjestaja =>
+        translationService.getTranslation(
+          lang,
+          "paatosteksti.lopullinen.toimenpiteet.kelpoisuuskoe",
+          Map("jarjestaja" -> jarjestaja, "todistuspvm" -> kelpoisuuskokeenTodistuspvm)
+        )
+      ),
+      taydentavienOpintojenJarjestaja.map(jarjestaja =>
+        translationService.getTranslation(
+          lang,
+          "paatosteksti.lopullinen.toimenpiteet.taydentavatOpinnot",
+          Map("jarjestaja" -> jarjestaja)
+        )
+      )
+    ).flatten.mkString("\n")
+
+    if (result.nonEmpty) {
+      translationService.getTranslation(lang, "paatosteksti.lopullinen.toimenpiteet.title") + "\n" + result
+    } else {
+      ""
+    }
+  }
+
+  def generateEhdollinenPaatosteksti(
     hakemus: Hakemus,
     tutkinnot: Seq[Tutkinto],
     paatos: Paatos,
@@ -281,6 +333,74 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
           ++ generatePeruutusTeksti(paatosKieli, hakemus)
           ++ getCommonMaksunOikaisuText(paatosKieli, isPeruutus = true)
       case _ => getTODOText(paatosKieli)
+    }
+  }
+
+  def generateLopullinenUOPaatosteksti(
+    hakemus: Hakemus,
+    vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus],
+    tutkinnot: Seq[Tutkinto],
+    paatos: Paatos,
+    paatosKieli: Kieli,
+    hallintoOikeus: HallintoOikeus,
+    maakoodiService: MaakoodiService
+  ): String = {
+    val hakijanTiedot: String = getHakijanTiedot(hakemus)
+    val tutkinnot: String     = vastaavaEhdollinenHakemus.flatMap(_.haeTutkinnot()).getOrElse("")
+
+    val rinnastamisBlock: String       = getRinnastamisBlock(paatosKieli, hakemus, vastaavaEhdollinenHakemus)
+    val suoritetutToimenpiteet: String = getSuoritetutToimenpiteet(paatosKieli, hakemus)
+
+    val valitusoikeusBlock = getCommonPaatosValitusoikeusText(paatosKieli, hallintoOikeus.nimi.get(paatosKieli).get)
+
+    hakijanTiedot
+      ++ tutkinnot
+      ++ rinnastamisBlock
+      ++ suoritetutToimenpiteet
+      ++ valitusoikeusBlock
+  }
+
+  def generatePaatosTeksti(
+    hakemus: Hakemus,
+    vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus],
+    tutkinnot: Seq[Tutkinto],
+    paatos: Paatos,
+    paatosKieli: Kieli,
+    hallintoOikeus: HallintoOikeus,
+    maakoodiService: MaakoodiService
+  ): String = {
+
+    if (hakemus.onLopullinenPaatos) {
+      // Lopulliset päätöstekstit
+      val paatosOnMyonteinen = paatos.paatosTiedot.headOption.flatMap(_.myonteinenPaatos).exists(_ == true)
+      val uoLakiaSovellettu  = paatos.paatosTiedot.headOption.flatMap(_.sovellettuLaki).exists(_ == SovellettuLaki.uo)
+
+      if (paatosOnMyonteinen && uoLakiaSovellettu) {
+        // Lopullinen UO-päätös
+        generateLopullinenUOPaatosteksti(
+          hakemus,
+          vastaavaEhdollinenHakemus,
+          tutkinnot,
+          paatos,
+          paatosKieli,
+          hallintoOikeus,
+          maakoodiService
+        )
+      } else {
+        // TODO: fallback
+        ""
+      }
+    } else {
+      // Ehdolliset päätöstekstit
+
+      generateEhdollinenPaatosteksti(
+        hakemus,
+        tutkinnot,
+        paatos,
+        paatosKieli,
+        hallintoOikeus,
+        maakoodiService
+      )
     }
   }
 }
