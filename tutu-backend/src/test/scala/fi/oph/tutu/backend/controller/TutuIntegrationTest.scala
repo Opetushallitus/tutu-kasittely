@@ -170,7 +170,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(
-    value = HakemusControllerTestConstants.ESITTELIJA_OID,
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {

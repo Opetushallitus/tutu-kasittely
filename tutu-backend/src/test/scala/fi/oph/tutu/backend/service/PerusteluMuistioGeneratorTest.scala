@@ -487,7 +487,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     setupKorkeakoulut()
     setupKoulutusalat()
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Erkki Esittelijä"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn("Erkki Esittelijä")
 
     val result = generate(
       koodistoService,
@@ -841,7 +841,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
   @Test
   def haeEsittelijaProducesString(): Unit = {
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Erkki Esittelijä"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn("Erkki Esittelijä")
 
     val hakemusMaybe = someHakemus.map(_.copy(esittelijaOid = Some("1.2.3.4")))
     val result       = haeEsittelija(translationService, hakemusMaybe, esittelijaService)

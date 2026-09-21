@@ -4,11 +4,11 @@ import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
+import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.hamcrest.Matchers.{equalTo, hasKey, hasSize}
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
 
-import java.time.LocalDateTime
 import java.util.UUID
 
 @AutoConfigureMockMvc
@@ -92,7 +91,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenAnswer(invocation =>
+      invocation.getArgument(0, classOf[String])
+    )
 
     mvc
       .perform(
@@ -115,7 +116,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenAnswer(invocation =>
+      invocation.getArgument(0, classOf[String])
+    )
 
     val postBody = Map(
       "parentId"         -> None,
@@ -209,7 +212,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenAnswer(invocation =>
+      invocation.getArgument(0, classOf[String])
+    )
 
     val patchBody = Map(
       "id"      -> Some(ykViestiId.toString),
@@ -262,7 +267,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
                 "vastaanottajaOid":"vastaanottaja-oid",
                 "kysymys":"Toinen kyssäri",
                 "vastaus": null },
-               {"id":"${ykViestiId}",
+               {"id":"$ykViestiId",
                 "hakemusOid":"hakemus-333",
                 "status" : "uusiVastaus",
                 "lahettajaOid":"lahettaja-oid",
@@ -285,7 +290,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenAnswer(invocation =>
+      invocation.getArgument(0, classOf[String])
+    )
 
     val patchBody       = Map()
     val patchBodyAsJson = mapper.writeValueAsString(patchBody)

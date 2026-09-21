@@ -117,7 +117,7 @@ class TutkintoControllerTest extends IntegrationTestBase {
   @BeforeEach
   def setupMocks(): Unit = {
     when(esittelijaService.haeEsittelijaNimi(any[String]))
-      .thenReturn(Some("Muokkaaja"))
+      .thenReturn("Muokkaaja")
   }
 
   @Test

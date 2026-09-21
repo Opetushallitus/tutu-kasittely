@@ -1,8 +1,8 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.{HakemusOid, Paatos, Paatosteksti}
-import fi.oph.tutu.backend.service.{NotFoundException, PaatosService, UserService}
+import fi.oph.tutu.backend.domain.{HakemusOid, Kelpoisuus, Paatos, PaatosTieto, Paatosteksti, TutkintoTaiOpinto}
+import fi.oph.tutu.backend.service.{EsittelijaService, NotFoundException, PaatosService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -18,12 +18,45 @@ import scala.util.{Failure, Success, Try}
 class PaatosController(
   paatosService: PaatosService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(kelpoisuus: Kelpoisuus): Kelpoisuus =
+    kelpoisuus.copy(
+      luoja = kelpoisuus.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = kelpoisuus.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
+
+  private def haeNimet(tutkintoTaiOpinto: TutkintoTaiOpinto): TutkintoTaiOpinto =
+    tutkintoTaiOpinto.copy(
+      luoja = tutkintoTaiOpinto.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = tutkintoTaiOpinto.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
+
+  private def haeNimet(paatosTieto: PaatosTieto): PaatosTieto =
+    paatosTieto.copy(
+      luoja = paatosTieto.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = paatosTieto.muokkaaja.map(esittelijaService.haeEsittelijaNimi),
+      rinnastettavatTutkinnotTaiOpinnot = paatosTieto.rinnastettavatTutkinnotTaiOpinnot.map(haeNimet),
+      kelpoisuudet = paatosTieto.kelpoisuudet.map(haeNimet)
+    )
+
+  private def haeNimet(paatos: Paatos): Paatos =
+    paatos.copy(
+      luoja = paatos.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = paatos.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
+
+  private def haeNimet(paatosteksti: Paatosteksti): Paatosteksti =
+    paatosteksti.copy(
+      luoja = paatosteksti.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = paatosteksti.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
 
   @GetMapping(
     path = Array("paatos/{hakemusOid}"),
@@ -60,7 +93,7 @@ class PaatosController(
             errorMessageMapper.mapPlainErrorMessage("Päätöstä ei löytynyt", HttpStatus.NOT_FOUND)
           case Some(paatos) =>
             auditLog.logRead("päätös", hakemusOid, ReadPaatos, request)
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatos))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(paatos)))
         }
       case Failure(exception) =>
         LOG.error(s"Päätöksen haku epäonnistui", exception)
@@ -118,7 +151,7 @@ class PaatosController(
                 Some(mapper.writeValueAsString(paivitettyPaatos))
               )
             )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paivitettyPaatos))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(paivitettyPaatos)))
 
           case _ =>
             LOG.warn(s"Päätöksen tallennus epäonnistui")
@@ -195,7 +228,7 @@ class PaatosController(
     } match {
       case Success(paatosteksti) =>
         auditLog.logRead("päätösteksti", hakemusOid, ReadPaatosteksti, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(paatosteksti))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(paatosteksti)))
       case Failure(exception) =>
         LOG.error(
           s"Päätöstekstin haku epäonnistui, hakemusOid: $hakemusOid",
@@ -243,7 +276,7 @@ class PaatosController(
     } match {
       case Success(vanhaJaUusi) =>
         auditLogTallennus(vanhaJaUusi, hakemusOid, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(vanhaJaUusi._2))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(vanhaJaUusi._2)))
       case Failure(exception: NotFoundException) =>
         LOG.error(
           s"Päätöstekstin tallennus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",
@@ -297,7 +330,7 @@ class PaatosController(
     } match {
       case Success(vanhaJaUusi) =>
         auditLogTallennus(vanhaJaUusi, hakemusOid, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(vanhaJaUusi._2))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(vanhaJaUusi._2)))
       case Failure(exception: NotFoundException) =>
         LOG.error(
           s"Päätöstekstin vahvistus epäonnistui, hakemusOid: $hakemusOid ${paatosteksti.id.map(id => s", paatostekstiId: $id").getOrElse("")}",

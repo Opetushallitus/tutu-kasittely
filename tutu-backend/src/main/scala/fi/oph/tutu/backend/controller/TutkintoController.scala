@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Tutkinto, UserOid}
-import fi.oph.tutu.backend.service.{HakemusModifyOperationResolver, TutkintoService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusModifyOperationResolver, TutkintoService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{DeleteTutkinto, ReadTutkinnot, TallennaTutkinnot, UpdateTutkinto}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -29,12 +29,16 @@ import java.util.UUID
 class TutkintoController(
   tutkintoService: TutkintoService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[TutkintoController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(tutkinto: Tutkinto): Tutkinto =
+    tutkinto.copy(muokkaaja = tutkinto.muokkaaja.map(esittelijaService.haeEsittelijaNimi))
 
   @GetMapping(
     path = Array("hakemus/{hakemusOid}/tutkinto/"),
@@ -70,7 +74,7 @@ class TutkintoController(
     } match {
       case Success(result) =>
         auditLog.logRead("Tutkinnot", hakemusOid, ReadTutkinnot, request)
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(result))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(result.map(haeNimet)))
       case Failure(exception) =>
         LOG.error(s"Tutkintojen haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
@@ -140,7 +144,7 @@ class TutkintoController(
             Some(mapper.writeValueAsString(tutkinnot))
           )
         )
-        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(tutkinnot))
+        ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(tutkinnot.map(haeNimet)))
       case Failure(e) =>
         LOG.error("Tutkintojen tallentaminen epäonnistui", e)
         errorMessageMapper.mapPlainErrorMessage(

@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{Tekstipohja, TekstipohjaKategoria}
-import fi.oph.tutu.backend.service.{TekstipohjaServiceBase, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, TekstipohjaServiceBase, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import fi.vm.sade.auditlog.{Changes, User}
 import jakarta.servlet.http.HttpServletRequest
@@ -16,6 +16,7 @@ import scala.util.{Failure, Success, Try}
 trait TekstipohjaControllerBase(
   service: TekstipohjaServiceBase,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   auditLog: AuditLog,
   mapper: ObjectMapper
 ) {
@@ -36,6 +37,18 @@ trait TekstipohjaControllerBase(
 
   val LOG: Logger                = LoggerFactory.getLogger(classOf[TekstipohjaControllerBase])
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(tekstipohja: Tekstipohja): Tekstipohja =
+    tekstipohja.copy(
+      luoja = tekstipohja.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = tekstipohja.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
+
+  private def haeNimet(tekstipohjaKategoria: TekstipohjaKategoria): TekstipohjaKategoria =
+    tekstipohjaKategoria.copy(
+      luoja = tekstipohjaKategoria.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = tekstipohjaKategoria.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
 
   def haeTekstipohjaLista(request: HttpServletRequest): ResponseEntity[Any] = {
     Try {
@@ -72,7 +85,7 @@ trait TekstipohjaControllerBase(
     } match {
       case Success(Some(result)) =>
         auditlogPohjaRead(request, tekstipohjaId)
-        ResponseEntity.status(OK).body(mapper.writeValueAsString(result))
+        ResponseEntity.status(OK).body(mapper.writeValueAsString(haeNimet(result)))
       case Success(None) =>
         ResponseEntity.status(NOT_FOUND).build()
       case Failure(exception) =>
@@ -87,7 +100,7 @@ trait TekstipohjaControllerBase(
     } match {
       case Success(result) =>
         auditlogKategoriaListRead(request)
-        ResponseEntity.status(OK).body(mapper.writeValueAsString(result))
+        ResponseEntity.status(OK).body(mapper.writeValueAsString(result.map(haeNimet)))
       case Failure(exception) =>
         LOG.error(s"$kategoriaListDescGenitiveCase haku epäonnistui", exception)
         errorMessageMapper.mapErrorMessage(exception)
@@ -131,7 +144,7 @@ trait TekstipohjaControllerBase(
       }
     } match {
       case Success(Some(result)) =>
-        ResponseEntity.status(OK).body(mapper.writeValueAsString(result))
+        ResponseEntity.status(OK).body(mapper.writeValueAsString(haeNimet(result)))
       case Success(None) =>
         LOG.error(s"Päivitettävän $singleKategoriaDescGenitiveCase tietoja ei löytynyt")
         ResponseEntity.status(NOT_FOUND).build()
@@ -176,7 +189,7 @@ trait TekstipohjaControllerBase(
       }
     } match {
       case Success(Some(result)) =>
-        ResponseEntity.status(OK).body(mapper.writeValueAsString(result))
+        ResponseEntity.status(OK).body(mapper.writeValueAsString(haeNimet(result)))
       case Success(None) =>
         LOG.error(s"Päivitettävän $singlePohjaDescGenitiveCase tietoja ei löytynyt")
         ResponseEntity.status(NOT_FOUND).build()

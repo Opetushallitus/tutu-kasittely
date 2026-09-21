@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, ValitusHaO, ValitusKHO, ValitusOPH, Valitustiedot}
 import fi.oph.tutu.backend.exception.ValitustiedotValidationException
-import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateValitustiedot, ReadValitustiedot, UpdateValitustiedot}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -27,11 +27,18 @@ class ValitustiedotController(
   valitustiedotService: ValitustiedotService,
   hakemusService: HakemusService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger                = LoggerFactory.getLogger(classOf[ValitustiedotController])
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot =
+    valitustiedot.copy(
+      luoja = valitustiedot.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = valitustiedot.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
 
   @GetMapping(
     path = Array("hakemus/{hakemusOid}/valitustiedot"),
@@ -53,7 +60,7 @@ class ValitustiedotController(
         )
         result match {
           case Some(valitustiedot) =>
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(valitustiedot))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(valitustiedot)))
           case None =>
             ResponseEntity
               .status(HttpStatus.OK)
@@ -123,7 +130,7 @@ class ValitustiedotController(
                 Some(mapper.writeValueAsString(updatedValitustiedot))
               )
             )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(updatedValitustiedot))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(updatedValitustiedot)))
           case (None, Some(newValitustiedot)) =>
             auditLog.logCreate(
               auditLog.getUser(request),
@@ -131,7 +138,7 @@ class ValitustiedotController(
               CreateValitustiedot,
               mapper.writeValueAsString(newValitustiedot)
             )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(newValitustiedot))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(haeNimet(newValitustiedot)))
           case _ =>
             LOG.warn(s"Valitustietojen tallennus epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(

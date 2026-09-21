@@ -41,7 +41,7 @@ class TutkintoServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haeTutkintoPalauttaaMuokkaajanNimen(): Unit = {
+  def haeTutkintoPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusId  = UUID.randomUUID
     val tutkintoId = UUID.randomUUID
@@ -55,17 +55,15 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkintoIdlla(any[UUID])).thenReturn(Some(dbTutkinto))
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
-
     // Act
     val tutkinto = tutkintoService.haeTutkinto(tutkintoId).get
 
     // Verify
-    assertEquals(tutkinto.muokkaaja, Some("Topolino"))
+    assertEquals(tutkinto.muokkaaja, Some("1234"))
   }
 
   @Test
-  def haeTutkinnotPalauttaaMuokkaajanNimen(): Unit = {
+  def haeTutkinnotPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid = HakemusOid("poop")
     val hakemusId  = UUID.randomUUID
@@ -80,13 +78,11 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq(dbTutkinto))
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
-
     // Act
     val tutkinnot = tutkintoService.haeTutkinnot(hakemusOid)
 
     // Verify
-    tutkinnot.foreach(tutkinto => assertEquals(tutkinto.muokkaaja, Some("Topolino")))
+    tutkinnot.foreach(tutkinto => assertEquals(tutkinto.muokkaaja, Some("1234")))
   }
 
 }

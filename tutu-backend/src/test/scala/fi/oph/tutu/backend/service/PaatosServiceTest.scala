@@ -38,8 +38,6 @@ class PaatosServiceTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
   @Mock
-  var esittelijaService: EsittelijaService = _
-  @Mock
   var perustelumuistioService: IPerustelumuistioService = _
   @Mock
   var paatosTekstiGenerator: PaatosTekstiGenerator = _
@@ -89,7 +87,6 @@ class PaatosServiceTest extends UnitTestBase {
       ataruLomakeParser = ataruLomakeParser,
       maakoodiService = maakoodiService,
       onrService = onrService,
-      esittelijaService = esittelijaService,
       perustelumuistioService = perustelumuistioService,
       paatosTekstiGenerator = paatosTekstiGenerator
     )
@@ -100,7 +97,7 @@ class PaatosServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haePaatosPalauttaaMuokkaajanNimen(): Unit = {
+  def haePaatosPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid       = HakemusOid("poop")
     val dbHakemus        = makeDbHakemus(hakemusOid)
@@ -113,13 +110,11 @@ class PaatosServiceTest extends UnitTestBase {
     when(hakemuspalveluService.haeLomake(any[Long])).thenReturn(Right(lomakeJsonString))
     when(paatosRepository.haePaatosTiedot(any[UUID])).thenReturn(Seq())
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
-
     // Act
     val paatos = paatosService.haePaatos(hakemusOid).get
 
     // Verify
-    assertEquals(paatos.muokkaaja, Some("Topolino"))
+    assertEquals(paatos.muokkaaja, Some("1234"))
   }
 
 }

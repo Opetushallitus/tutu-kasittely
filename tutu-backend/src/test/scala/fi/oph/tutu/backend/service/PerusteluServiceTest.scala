@@ -40,8 +40,6 @@ class PerusteluServiceTest extends UnitTestBase {
   @Mock
   var onrService: OnrService = _
   @Mock
-  var esittelijaService: EsittelijaService = _
-  @Mock
   var translationService: TranslationService = _
   @Mock
   var perustelumuistioService: PerustelumuistioService = _
@@ -86,13 +84,12 @@ class PerusteluServiceTest extends UnitTestBase {
       hakemusRepository = hakemusRepository,
       perusteluRepository = perusteluRepository,
       onrService = onrService,
-      esittelijaService = esittelijaService,
       perustelumuistioService = perustelumuistioService
     )
   }
 
   @Test
-  def haePerusteluPalauttaaMuokkaajanNimen(): Unit = {
+  def haePerusteluPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid  = HakemusOid("poop")
     val dbHakemus   = makeDbHakemus(hakemusOid)
@@ -103,13 +100,10 @@ class PerusteluServiceTest extends UnitTestBase {
     when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(Some(dbPerustelu))
     when(perusteluRepository.haeLausuntopyynnot(any[UUID])).thenReturn(Seq())
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("Topolino"))
-
     // Act
     val perustelu = perusteluService.haePerustelu(hakemusOid).get
 
-    // Verify
-    assertEquals(perustelu.muokkaaja, Some("Topolino"))
+    assertEquals(perustelu.muokkaaja, Some("1234"))
   }
 
 }

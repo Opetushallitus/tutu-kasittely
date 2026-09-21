@@ -12,9 +12,6 @@ import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 @ActiveProfiles(Array("test"))
 class YkViestiServiceTest extends IntegrationTestBase {
 
-  @MockitoBean
-  var esittelijaService: EsittelijaService = _
-
   var ykViestiService: YkViestiService = _
 
   @BeforeAll
@@ -45,8 +42,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     ykViestiService = new YkViestiService(
-      ykViestiRepository = ykViestiRepository,
-      esittelijaService = esittelijaService
+      ykViestiRepository = ykViestiRepository
     )
   }
 

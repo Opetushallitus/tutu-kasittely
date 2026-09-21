@@ -680,7 +680,7 @@ def haeEsittelija(
 ): Option[String] = {
   hakemusMaybe
     .flatMap(_.esittelijaOid)
-    .flatMap(esittelijaService.haeEsittelijaNimi)
+    .map(esittelijaService.haeEsittelijaNimi)
     .map(nimi =>
       val label = translationService.getTranslation(FI, "perustelumuistio.esittelija.label")
       s"$label $nimi".trim

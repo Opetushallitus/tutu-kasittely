@@ -6,21 +6,21 @@ import org.springframework.stereotype.{Component, Service}
 
 @Component
 @Service
-class EsittelijaService(esittelijaRepository: EsittelijaRepository) {
+class EsittelijaService(esittelijaRepository: EsittelijaRepository, onrService: OnrService) {
   def haeEsittelijat: Seq[Esittelija] = {
     esittelijaRepository
       .haeKaikkiEsittelijat()
       .map(_.toEsittelija)
   }
 
-  def haeEsittelijaNimi(esittelijaOid: String): Option[String] = {
+  def haeEsittelijaNimi(esittelijaOid: String): String = {
     if (UserOid(esittelijaOid).isValid) {
       esittelijaRepository.haeEsittelijaOidilla(esittelijaOid) match {
-        case Some(esittelija) => Some(s"${esittelija.kutsumanimi} ${esittelija.sukunimi}")
-        case _                => Some(esittelijaOid)
+        case Some(esittelijaDb) => esittelijaDb.toEsittelija.kokoNimi()
+        case _ => onrService.haeHenkilo(esittelijaOid).toOption.map(_.toEsittelija.kokoNimi()).getOrElse(esittelijaOid)
       }
     } else {
-      Some(esittelijaOid)
+      esittelijaOid
     }
   }
 }

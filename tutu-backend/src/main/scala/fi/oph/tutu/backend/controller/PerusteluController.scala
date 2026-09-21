@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{HakemusOid, Perustelu}
-import fi.oph.tutu.backend.service.{PerusteluService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, PerusteluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.{ReadPerustelu, UpdatePerustelu}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -26,12 +26,19 @@ import scala.util.{Failure, Success, Try}
 class PerusteluController(
   perusteluService: PerusteluService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PerusteluController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(perustelu: Perustelu): Perustelu =
+    perustelu.copy(
+      luoja = perustelu.luoja.map(esittelijaService.haeEsittelijaNimi),
+      muokkaaja = perustelu.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+    )
 
   @GetMapping(
     path = Array("perustelu/{hakemusOid}"),
@@ -56,7 +63,7 @@ class PerusteluController(
             auditLog.logRead("perustelu", hakemusOid, ReadPerustelu, request)
             ResponseEntity
               .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(perustelu))
+              .body(mapper.writeValueAsString(haeNimet(perustelu)))
         }
       case Failure(exception) =>
         LOG.error(s"Perustelun haku epäonnistui", exception)
@@ -125,7 +132,7 @@ class PerusteluController(
             )
             ResponseEntity
               .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(paivitettyPerustelu))
+              .body(mapper.writeValueAsString(haeNimet(paivitettyPerustelu)))
           case _ =>
             LOG.warn(s"Perustelun päivitys epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(

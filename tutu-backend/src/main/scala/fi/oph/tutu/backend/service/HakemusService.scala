@@ -39,7 +39,6 @@ class HakemusService(
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   onrService: OnrService,
-  esittelijaService: EsittelijaService,
   ataruHakemusParser: AtaruHakemusParser,
   userService: UserService,
   @Lazy perustelumuistioService: IPerustelumuistioService,
@@ -281,7 +280,7 @@ class HakemusService(
               dbHakemus.kasittelyVaihe, // (kasittelyVaihe lasketaan ja päivitetään aina kun hakemusta muokataan)
             lausunnonMaaraaikaPvm = dbHakemus.lausunnonMaaraaikaPvm,
             muokattu = dbHakemus.muokattu,
-            muokkaaja = dbHakemus.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi).getOrElse(""),
+            muokkaaja = dbHakemus.muokkaaja.getOrElse(""),
             muutosHistoria = Seq(),
             taydennyspyyntoLahetetty = ataruHakemus.`information-request-timestamp` match {
               case None            => None
@@ -452,7 +451,7 @@ class HakemusService(
         throw new RuntimeException(
           s"Asiakirjojen haku epäonnistui, hakemusta ei löytynyt tietokannasta hakemusOidille: $hakemusOid"
         )
-      case Some(dbHakemus) => {
+      case Some(dbHakemus) =>
         asiakirjaRepository.haeKaikkiAsiakirjaTiedot(dbHakemus.asiakirjaId) match {
           case Some((asiakirjaTiedot, pyydettavatAsiakirjat, asiakirjamallitTutkinnoista)) =>
             Some(
@@ -465,7 +464,6 @@ class HakemusService(
           case _ =>
             None
         }
-      }
     }
   }
 

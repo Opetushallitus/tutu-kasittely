@@ -479,7 +479,9 @@ class PaatosControllerTest extends IntegrationTestBase {
           )
         )
       )
-    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000000000000006666")).thenReturn(Some("Esko Esittelijä"))
+    when(esittelijaService.haeEsittelijaNimi(any[String]))
+      .thenAnswer(invocation => invocation.getArgument(0, classOf[String]))
+    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000000000000006666")).thenReturn("Esko Esittelijä")
   }
 
   @Test
@@ -507,8 +509,9 @@ class PaatosControllerTest extends IntegrationTestBase {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
     val paatosJSON =
       paatos2Json(
-        paatos.copy(id = paatosId, luoja = Some("1.2.246.562.24.00000000000000006666")),
+        paatos.copy(id = paatosId),
         "id",
+        "luoja",
         "luotu",
         "muokattu",
         "muokkaaja",

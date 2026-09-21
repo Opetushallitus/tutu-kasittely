@@ -336,6 +336,11 @@ class PerusteluControllerTest extends IntegrationTestBase {
     perustelu4 = perustelu4.copy(hakemusId = Some(hakemusId4.get))
   }
 
+  @BeforeEach
+  def setupTest(): Unit = {
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn("test user")
+  }
+
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(1)
@@ -350,11 +355,10 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
 
     mvc
       .perform(
-        put(s"/tutu-backend/api/perustelu/${hakemusOid}")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -384,11 +388,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perusteluId   = perusteluRepository.haePerustelu(hakemusId.get).get.id
     val perusteluJSON = perustelu2Json(perustelu.copy(id = perusteluId), "luotu", "muokattu", "muokkaaja")
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        get(s"/tutu-backend/api/perustelu/${hakemusOid}")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
@@ -422,8 +424,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
-
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -471,11 +471,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        put(s"/tutu-backend/api/perustelu/${hakemusOid2}")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid2")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -499,11 +497,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perustelu     = perustelu2.copy(id = perusteluId, uoRoSisalto = uoro)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        get(s"/tutu-backend/api/perustelu/${hakemusOid2}")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid2")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -531,8 +527,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
-
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(
@@ -570,11 +564,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        put(s"/tutu-backend/api/perustelu/${hakemusOid3}")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid3")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -614,11 +606,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
       "muokkaaja"
     )
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        get(s"/tutu-backend/api/perustelu/${hakemusOid3}")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid3")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -658,8 +648,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
-
     mvc
       .perform(
         put(s"/tutu-backend/api/perustelu/$hakemusOid3")
@@ -671,8 +659,8 @@ class PerusteluControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.muokattu").isString)
       .andExpect(jsonPath("$.muokkaaja").isString)
       .andExpect(jsonPath("$.uoRoSisalto").isMap)
-      .andExpect(jsonPath("$.lausuntopyynnot[0].id").value(lausuntopyynnot(0).id.get.toString()))
-      .andExpect(jsonPath("$.lausuntopyynnot[1].id").value(lausuntopyynnot(1).id.get.toString()))
+      .andExpect(jsonPath("$.lausuntopyynnot[0].id").value(lausuntopyynnot.head.id.get.toString))
+      .andExpect(jsonPath("$.lausuntopyynnot[1].id").value(lausuntopyynnot(1).id.get.toString))
       .andExpect(content().json(perusteluJSON))
     mvc
       .perform(
@@ -697,11 +685,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
       )
     )
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        put(s"/tutu-backend/api/perustelu/${hakemusOid4}")
+        put(s"/tutu-backend/api/perustelu/$hakemusOid4")
           .`with`(csrf())
           .contentType(MediaType.APPLICATION_JSON)
           .content(perusteluJSON)
@@ -725,11 +711,9 @@ class PerusteluControllerTest extends IntegrationTestBase {
     val perustelu     = perustelu4.copy(id = perusteluId, apSisalto = ap)
     val perusteluJSON = perustelu2Json(perustelu, "luotu", "muokattu", "muokkaaja")
 
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(None)
-
     mvc
       .perform(
-        get(s"/tutu-backend/api/perustelu/${hakemusOid4}")
+        get(s"/tutu-backend/api/perustelu/$hakemusOid4")
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.hakemusId").isString)
@@ -757,8 +741,6 @@ class PerusteluControllerTest extends IntegrationTestBase {
         authorities = List()
       )
     )
-
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
 
     mvc
       .perform(

@@ -12,8 +12,7 @@ import java.util.UUID
 @Component
 @Service
 class YkViestiService(
-  ykViestiRepository: YkViestiRepository,
-  esittelijaService: EsittelijaService
+  ykViestiRepository: YkViestiRepository
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiService])
 
@@ -158,7 +157,6 @@ class YkViestiService(
       .haeHakemuksenYkViestit(hakemusOid)
       .map(ykViesti =>
         ykViesti.copy(
-          vastaanottaja = ykViesti.vastaanottajaOid.flatMap(esittelijaService.haeEsittelijaNimi),
           vastaus =
             if ykViesti.vastattu.nonEmpty || ykViesti.vastaanottajaOid.contains(user.userOid) then ykViesti.vastaus
             else None

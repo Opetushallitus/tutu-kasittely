@@ -13,22 +13,14 @@ class TutkintoService(
   perustelumuistioService: IPerustelumuistioService,
   esittelijaService: EsittelijaService
 ) {
-  private def haeMuokkaajaNimi(tutkinto: Tutkinto): Tutkinto = {
-    tutkinto.copy(
-      muokkaaja = tutkinto.muokkaaja.flatMap(esittelijaService.haeEsittelijaNimi)
-    )
-  }
-
   def haeTutkinnot(hakemusOid: HakemusOid): Seq[Tutkinto] = {
     tutkintoRepository
       .haeTutkinnotHakemusOidilla(hakemusOid)
-      .map(haeMuokkaajaNimi)
   }
 
   def haeTutkinto(tutkintoId: UUID): Option[Tutkinto] = {
     tutkintoRepository
       .haeTutkintoIdlla(tutkintoId)
-      .map(haeMuokkaajaNimi)
   }
 
   def lisaaTutkinnot(tutkinnot: Seq[Tutkinto], luoja: String): Seq[Int] = {
@@ -42,31 +34,24 @@ class TutkintoService(
   }
 
   def poistaTutkinto(tutkintoId: UUID, muokkaaja: UserOid): Int = {
-    val muokkaajaNimi     = esittelijaService.haeEsittelijaNimi(muokkaaja.s).getOrElse(muokkaaja.s)
     val poistettuTutkinto = tutkintoRepository.haeTutkintoIdlla(tutkintoId)
     val result            = tutkintoRepository.suoritaPoistaTutkinto(tutkintoId)
-    poistettuTutkinto.map(tutkinto =>
-      perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, muokkaajaNimi)
-    )
+    poistettuTutkinto.map(tutkinto => perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, muokkaaja.s))
     result
   }
 
   def tallennaTutkinnot(tutkintoModifyData: TutkintoModifyData, luojaTaiMuokkaaja: UserOid): Unit = {
-    val luojaTaiMuokkaajaNimi = esittelijaService.haeEsittelijaNimi(luojaTaiMuokkaaja.s).getOrElse(luojaTaiMuokkaaja.s)
-    val poistetutTutkinnot    = tutkintoModifyData.poistetut.flatMap(tutkintoRepository.haeTutkintoIdlla)
+    val poistetutTutkinnot = tutkintoModifyData.poistetut.flatMap(tutkintoRepository.haeTutkintoIdlla)
 
-    val result = tutkintoRepository.suoritaTutkintojenModifiointi(tutkintoModifyData, luojaTaiMuokkaajaNimi)
+    tutkintoRepository.suoritaTutkintojenModifiointi(tutkintoModifyData, luojaTaiMuokkaaja.s)
 
     (tutkintoModifyData.uudet ++ tutkintoModifyData.muutetut ++ poistetutTutkinnot).map(tutkinto =>
-      perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, luojaTaiMuokkaajaNimi)
+      perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, luojaTaiMuokkaaja.s)
     )
-
-    result
   }
 
   def paivitaTutkinto(tutkinto: Tutkinto, luojaTaiMuokkaaja: UserOid): Unit = {
-    val luojaTaiMuokkaajaNimi = esittelijaService.haeEsittelijaNimi(luojaTaiMuokkaaja.s).getOrElse(luojaTaiMuokkaaja.s)
-    tutkintoRepository.suoritaPaivitaTutkinto(tutkinto, luojaTaiMuokkaajaNimi)
-    perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, luojaTaiMuokkaajaNimi)
+    tutkintoRepository.suoritaPaivitaTutkinto(tutkinto, luojaTaiMuokkaaja.s)
+    perustelumuistioService.paivitaPerustelumuistio(tutkinto.hakemusId, luojaTaiMuokkaaja.s)
   }
 }

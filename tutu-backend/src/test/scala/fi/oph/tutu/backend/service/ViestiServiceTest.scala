@@ -106,7 +106,7 @@ class ViestiServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haeViestiPalauttaaMuokkaajanJaVahvistajanNimen(): Unit = {
+  def haeViestiPalauttaaMuokkaajanJaVahvistajanOidin(): Unit = {
     // Data
     val viestiId = UUID.randomUUID
     val dbViesti =
@@ -119,7 +119,7 @@ class ViestiServiceTest extends UnitTestBase {
     val viesti = viestiService.haeViesti(viestiId).get
 
     // Verify
-    assertEquals(Some("Topo Lino"), viesti.muokkaaja)
-    assertEquals(Some("Yrjö Kortesniemi"), viesti.vahvistaja)
+    assertEquals(Some("1.2.246.562.24.00000000001"), viesti.muokkaaja)
+    assertEquals(Some("1.2.246.562.24.00000000002"), viesti.vahvistaja)
   }
 }

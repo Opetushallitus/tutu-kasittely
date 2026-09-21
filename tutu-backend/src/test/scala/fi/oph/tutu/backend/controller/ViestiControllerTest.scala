@@ -91,7 +91,7 @@ class ViestiControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit = {
-    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn("test user")
     when(onrService.haeHenkilo("test user"))
       .thenReturn(
         Right(
