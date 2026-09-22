@@ -27,11 +27,7 @@ class YkViestiRepository extends BaseResultHandlers {
         asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
-        vastattu = r.nextTimestampOption().map(_.toLocalDateTime),
-        kysymysLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
-        vastausLuettu = r.nextTimestampOption().map(_.toLocalDateTime),
-        kysymys = Option(r.nextString()),
-        vastaus = Option(r.nextString()),
+        viesti = Option(r.nextString()),
         hakija = r.nextString(),
         luoja = r.nextStringOption(),
         luotu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -51,16 +47,14 @@ class YkViestiRepository extends BaseResultHandlers {
             h.asiatunnus,
             v.lahettaja_oid,
             v.vastaanottaja_oid,
-            v.vastattu,
-            v.kysymys_luettu,
-            v.vastaus_luettu,
-            v.kysymys,
-            v.vastaus,
+            v.viesti,
             COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
             v.luoja,
             v.luotu,
             v.muokkaaja,
-            v.muokattu
+            v.muokattu,
+            v.luettu,
+            v.aihe
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -88,16 +82,13 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.vastattu,
-          v.kysymys_luettu,
-          v.vastaus_luettu,
-          v.kysymys,
-          v.vastaus,
+          v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
           v.muokkaaja,
-          v.muokattu
+          v.muokattu,
+          v.luettu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -125,16 +116,13 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.vastattu,
-          v.kysymys_luettu,
-          v.vastaus_luettu,
-          v.kysymys,
-          v.vastaus,
+          v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
           v.muokkaaja,
-          v.muokattu
+          v.muokattu,
+          v.luettu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
@@ -163,8 +151,7 @@ class YkViestiRepository extends BaseResultHandlers {
               hakemus_oid,
               lahettaja_oid,
               vastaanottaja_oid,
-              kysymys,
-              vastaus,
+              viesti,
               luoja
             )
             VALUES (
@@ -172,8 +159,7 @@ class YkViestiRepository extends BaseResultHandlers {
               ${ykViesti.hakemusOid.toString},
               ${ykViesti.lahettajaOid.map(_.toString).orNull},
               ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
-              ${ykViesti.kysymys.map(_.toString).orNull},
-              ${ykViesti.vastaus.map(_.toString).orNull},
+              ${ykViesti.viesti.map(_.toString).orNull},
               ${ykViesti.luoja.map(_.toString).orNull}
             )
             RETURNING id
@@ -198,10 +184,7 @@ class YkViestiRepository extends BaseResultHandlers {
         sql"""
             UPDATE yk_viesti
             SET
-              vastaus = ${ykViesti.vastaus.map(_.toString).orNull},
-              vastattu = ${ykViesti.vastattu.map(java.sql.Timestamp.valueOf).orNull},
-              vastaus_luettu = ${ykViesti.vastausLuettu.map(java.sql.Timestamp.valueOf).orNull},
-              kysymys_luettu = ${ykViesti.kysymysLuettu.map(java.sql.Timestamp.valueOf).orNull},
+              luettu = ${ykViesti.luettu.map(_.mkString(",")).orNull},
               muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
@@ -210,9 +193,9 @@ class YkViestiRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception =>
-        LOG.error(s"Yhteiskäsittelyn viestin lisäys epäonnistui: $e")
+        LOG.error(s"Yhteiskäsittelyn viestin muokkaus epäonnistui: $e")
         throw new RuntimeException(
-          s"Yhteiskäsittelyn viestin lisäys epäonnistui: ${e.getMessage}",
+          s"Yhteiskäsittelyn viestin muokkaus epäonnistui: ${e.getMessage}",
           e
         )
     }
@@ -231,16 +214,13 @@ class YkViestiRepository extends BaseResultHandlers {
           h.asiatunnus,
           v.lahettaja_oid,
           v.vastaanottaja_oid,
-          v.vastattu,
-          v.kysymys_luettu,
-          v.vastaus_luettu,
-          v.kysymys,
-          v.vastaus,
+          v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
           v.muokkaaja,
-          v.muokattu
+          v.muokattu,
+          v.luettu
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid

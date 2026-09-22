@@ -57,7 +57,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
       asiointikieli = None
     )
     val ykKysymysDto = YkKysymysDTO(
-      kysymys = Some("Kysymys"),
+      viesti = Some("Kysymys"),
       vastaanottajaOid = Some("VastaanottajaOid-1")
     )
 
@@ -90,7 +90,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some("UserOid-1"),
         vastaanottajaOid = Some("VastaanottajaOid-1"),
-        kysymys = Some("Kysymys"),
+        viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
         hakija = null
       )
@@ -130,7 +130,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some("UserOid-1"),
         vastaanottajaOid = Some("VastaanottajaOid-1"),
-        kysymys = Some("Kysymys"),
+        viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
         hakija = null
       )

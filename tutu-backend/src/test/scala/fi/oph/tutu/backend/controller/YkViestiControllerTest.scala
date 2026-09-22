@@ -70,7 +70,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         hakemusOid = HakemusOid("hakemus-333"),
         lahettajaOid = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
-        kysymys = Some("Kysymys body"),
+        viesti = Some("Kysymys body"),
         hakija = null
       )
     )
