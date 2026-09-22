@@ -49,7 +49,8 @@ class PaatosController(
   private def haeNimet(paatos: Paatos): Paatos =
     paatos.copy(
       luoja = paatos.luoja.map(esittelijaService.haeEsittelijaNimi),
-      muokkaaja = paatos.muokkaaja.map(esittelijaService.haeEsittelijaNimi)
+      muokkaaja = paatos.muokkaaja.map(esittelijaService.haeEsittelijaNimi),
+      paatosTiedot = paatos.paatosTiedot.map(haeNimet)
     )
 
   private def haeNimet(paatosteksti: Paatosteksti): Paatosteksti =

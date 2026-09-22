@@ -10,8 +10,7 @@ import java.util.UUID
 @Service
 class TutkintoService(
   tutkintoRepository: TutkintoRepository,
-  perustelumuistioService: IPerustelumuistioService,
-  esittelijaService: EsittelijaService
+  perustelumuistioService: IPerustelumuistioService
 ) {
   def haeTutkinnot(hakemusOid: HakemusOid): Seq[Tutkinto] = {
     tutkintoRepository
