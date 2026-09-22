@@ -254,6 +254,29 @@ test('Tallennetun viestin tyhjennyksestä lähetetään PUT -kutsu backendille',
   );
 });
 
+test('Tallennuksen yhteydessä viestistä tallennetaan oletusviesti ellei viestiä ole editoitu', async ({
+  page,
+}) => {
+  await mockViestiTyoversio(page, uusiViesti);
+  await mockViestiOletussisalto(page);
+  await mockViesti(page, { ...uusiViesti });
+  const sisalto = page.getByTestId('editor-content-editable');
+  await expectRequestData(
+    page,
+    '/viesti/',
+    page
+      .getByTestId('viesti-tyyppi-radio-group')
+      .locator('input[type="radio"][value="muu"]')
+      .click(),
+    {
+      kieli: 'en',
+      tyyppi: 'muu',
+      viesti: '<span style="white-space: pre-wrap;">Oletussisältö en</span>',
+    },
+  );
+  await expect(sisalto).toHaveText('Oletussisältö en');
+});
+
 test('Viestityypin oletussisältö latautuu automaattisesti', async ({
   page,
 }) => {
