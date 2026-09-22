@@ -169,11 +169,11 @@ class PaatosService(
       hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus
     } else { None }
     val vastaavaEhdollinenTutuHakemus: Option[Hakemus] = if (lopullinenPaatos) {
-      hakemusService.haeHakemusAsiatunnuksella(hakemus.asiatunnus)
+      hakemusService.haeHakemusAsiatunnuksella(hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
     } else { None }
 
     val vastaavaEhdollinenFilemakerHakemus: Option[ObjectNode] = if (lopullinenPaatos) {
-      vanhaTutuService.haeHakemusAsiatunnuksella(hakemus.asiatunnus)
+      vanhaTutuService.haeHakemusAsiatunnuksella(hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
     } else { None }
 
     val vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus] =

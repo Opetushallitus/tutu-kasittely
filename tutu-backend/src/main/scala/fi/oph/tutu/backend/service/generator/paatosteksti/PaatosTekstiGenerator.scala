@@ -130,10 +130,10 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     translationService.getTranslation(lang, "paatosteksti.valitusoikeus", Map("hallintoOikeus" -> hallintoOikeusNimi))
   }
 
-  private def getCommonMaksunOikaisuText(lang: Kieli, isPeruutus: Boolean = false): String = {
+  private def getCommonMaksunOikaisuText(lang: Kieli, showPaatosmaksu: Boolean = true): String = {
     val paatosMaksu =
-      if (isPeruutus) ""
-      else translationService.getTranslation(lang, "paatosteksti.maksunOikaisu.paatosMaksu")
+      if (showPaatosmaksu) translationService.getTranslation(lang, "paatosteksti.maksunOikaisu.paatosMaksu")
+      else ""
 
     translationService.getTranslation(lang, "paatosteksti.maksunOikaisu", Map("paatosMaksu" -> paatosMaksu))
   }
@@ -230,11 +230,13 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val hyvaksymispvm: String = vastaavaEhdollinenHakemus.flatMap(_.hyvaksymispvm()).getOrElse("")
     val asiatunnus            = hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.getOrElse("")
 
-    translationService.getTranslation(
+    val content = translationService.getTranslation(
       lang,
       "paatosteksti.rinnastamispaatos.lopullinen",
       Map("hyvaksymispvm" -> hyvaksymispvm, "asiatunnus" -> asiatunnus)
     )
+
+    s"<p>${content}</p>"
   }
 
   private def getSuoritetutToimenpiteet(lang: Kieli, hakemus: Hakemus): String = {
@@ -297,10 +299,11 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
           Map("jarjestaja" -> jarjestaja)
         )
       )
-    ).flatten.mkString("\n")
+    ).flatten.mkString("<br/>")
 
     if (result.nonEmpty) {
-      translationService.getTranslation(lang, "paatosteksti.lopullinen.toimenpiteet.title") + "\n" + result
+      val title = translationService.getTranslation(lang, "paatosteksti.lopullinen.toimenpiteet.title")
+      s"<p>${title}</p><p>${result}</p>"
     } else {
       ""
     }
@@ -331,7 +334,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
       case Some(Ratkaisutyyppi.PeruutusTaiRaukeaminen) =>
         getCommonPaatosHeader(hakemus, tutkinnot, paatos, paatosKieli, maakoodiService)
           ++ generatePeruutusTeksti(paatosKieli, hakemus)
-          ++ getCommonMaksunOikaisuText(paatosKieli, isPeruutus = true)
+          ++ getCommonMaksunOikaisuText(paatosKieli, showPaatosmaksu = false)
       case _ => getTODOText(paatosKieli)
     }
   }
@@ -351,13 +354,19 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val rinnastamisBlock: String       = getRinnastamisBlock(paatosKieli, hakemus, vastaavaEhdollinenHakemus)
     val suoritetutToimenpiteet: String = getSuoritetutToimenpiteet(paatosKieli, hakemus)
 
+    val paatosteksti: String =
+      s"<p>${translationService.getTranslation(paatosKieli, "paatosteksti.lopullinen.uo.paatosteksti")}</p>"
+
     val valitusoikeusBlock = getCommonPaatosValitusoikeusText(paatosKieli, hallintoOikeus.nimi.get(paatosKieli).get)
+    val maksunOikaisuBlock = getCommonMaksunOikaisuText(paatosKieli, showPaatosmaksu = false)
 
     hakijanTiedot
       ++ tutkinnot
       ++ rinnastamisBlock
       ++ suoritetutToimenpiteet
+      ++ paatosteksti
       ++ valitusoikeusBlock
+      ++ maksunOikaisuBlock
   }
 
   def generatePaatosTeksti(

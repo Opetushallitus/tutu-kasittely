@@ -62,7 +62,7 @@ class EhdollinenFileMakerHakemus(hakemus: ObjectNode) extends IEhdollinenHakemus
   def haeTutkinnot(): Option[String] = {
     val jsonNode = hakemus.get("Tutkintotodistusteksti_päätökseen")
     if (jsonNode.isValueNode) {
-      Some(jsonNode.asText)
+      Some(s"<p>${jsonNode.asText}</p>")
     } else {
       None
     }
