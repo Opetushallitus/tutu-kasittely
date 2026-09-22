@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.config.JacksonConfig
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.{Mock, MockitoAnnotations}
@@ -14,7 +15,7 @@ class HakemuspalveluServiceTest extends UnitTestBase {
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-    hakemuspalveluService = new HakemuspalveluService(httpService)
+    hakemuspalveluService = new HakemuspalveluService(httpService, JacksonConfig.mapper)
   }
 
   @Test

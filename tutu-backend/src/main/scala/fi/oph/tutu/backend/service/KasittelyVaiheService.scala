@@ -4,7 +4,6 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.TaydennysPyynto
 import fi.oph.tutu.backend.domain.KasittelyVaihe.AlkukasittelyKesken
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, ValitustiedotRepository}
-import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import org.springframework.stereotype.{Component, Service}
 
 import java.time.LocalDateTime
@@ -48,19 +47,19 @@ class KasittelyVaiheService(
    *
    * @param dbHakemus
    * hakemuksen tiedot
-   * @param ataruHakemuksenTila
-   * Vastaava ataru-hakemus
+   * @param ataruTilaPaivitys
+   * Päivitetyt / viimeisimmät hakemuksen tiedot atarussa
    * @return
    * Ratkaistu käsittelyvaihe
    */
   def resolveKasittelyVaihe(
     dbHakemus: DbHakemus,
-    ataruHakemus: AtaruHakemus
+    ataruTilaPaivitys: AtaruTilaPaivitys
   ): KasittelyVaihe = {
     val valitustiedot = valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid)
     resolveValitusVaihe(valitustiedot).getOrElse {
       asiakirjaRepository.haeKasittelyVaiheTiedot(dbHakemus.asiakirjaId, dbHakemus.id) match {
-        case Some(tiedot) => resolve(tiedot, ataruHakemus, dbHakemus.viimeisinTaydennyspyyntoPvm)
+        case Some(tiedot) => resolve(tiedot, ataruTilaPaivitys, dbHakemus.viimeisinTaydennyspyyntoPvm)
         case None         => AlkukasittelyKesken
       }
     }
@@ -113,20 +112,19 @@ class KasittelyVaiheService(
    */
   private def resolve(
     tiedot: KasittelyVaiheTiedot,
-    ataruHakemus: AtaruHakemus,
+    ataruTilaPaivitys: AtaruTilaPaivitys,
     viimeisinTaydennyspyyntoPvm: Option[LocalDateTime]
   ): KasittelyVaihe = {
-    val submitted = toLocalDateTime(ataruHakemus.submitted)
-    val modified  = toLocalDateTime(ataruHakemus.latestVersionCreated)
+    val hakemusSubmitted = ataruTilaPaivitys.submitted
+    val hakemusModified  = ataruTilaPaivitys.latestVersionCreated
     (
-      ataruHakemus
-        .hakemuksenTila() == TaydennysPyynto && viimeisinTaydennyspyyntoPvm.isDefined && viimeisinTaydennyspyyntoPvm.get
-        .isAfter(modified),
+      ataruTilaPaivitys.tila == TaydennysPyynto && viimeisinTaydennyspyyntoPvm.isDefined && viimeisinTaydennyspyyntoPvm.get
+        .isAfter(hakemusModified),
       tiedot.vahvistusPyyntoLahetetty.isDefined && tiedot.vahvistusSaatu.isEmpty,
       tiedot.lausuntoKesken,
       tiedot.imiPyyntoLahetetty.isDefined && tiedot.imiPyyntoVastattu.isEmpty,
       tiedot.selvityksetSaatu,
-      modified.isAfter(submitted),
+      hakemusModified.isAfter(hakemusSubmitted),
       tiedot.paatosLahetyspaiva.isDefined,
       tiedot.paatosHyvaksymispaiva.isDefined,
       tiedot.paatostekstiVahvistettu.isDefined

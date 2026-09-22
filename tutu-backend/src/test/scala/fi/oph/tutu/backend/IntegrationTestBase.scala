@@ -191,7 +191,7 @@ class IntegrationTestBase {
     when(hakemuspalveluService.haeLomake(any[Long]))
       .thenReturn(Right(loadJson("ataruLomake.json")))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakijaFixture)
-    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content]))
       .thenAnswer { invocation =>
         val uuid = invocation.getArgument[UUID](0)
         createTutkinnotFixture(uuid)

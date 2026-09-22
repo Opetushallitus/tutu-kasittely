@@ -5,6 +5,7 @@ import fi.oph.tutu.backend.repository.*
 import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
+import fi.oph.tutu.backend.config.JacksonConfig
 
 import java.util.UUID
 import fi.oph.tutu.backend.fixture.createTutkinnotFixtureBeforeMuuttuneetTutkinnot
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
+
 import java.util.concurrent.CompletableFuture
 
 class HakemusServiceTest extends UnitTestBase {
@@ -78,26 +80,14 @@ class HakemusServiceTest extends UnitTestBase {
     )
   }
 
-  def makeAtaruHakemus(form_id: Long): AtaruHakemus = {
-    AtaruHakemus(
-      haku = None,
-      etunimet = "Jorma Eero",
-      key = "",
+  def makeAtaruHakemusupdate(form_id: Long): AtaruHakemusUpdate = {
+    AtaruHakemusUpdate(
       form_id = form_id,
       content = Content(answers = Seq()),
-      latestVersionCreated = "2025-05-14T10:59:47.597Z",
-      state = "",
-      modified = "2025-05-14T10:59:47.597Z",
-      submitted = "2025-05-14T10:59:47.597Z",
-      lang = "",
-      sukunimi = "",
-      `application-review-notes` = None,
-      henkilotunnus = None,
-      `person-oid` = "",
-      `application-hakukohde-attachment-reviews` = Seq(),
-      `latest-attachment-reviews` = Seq(),
+      latestVersionCreated = toLocalDateTime("2025-05-14T10:59:47.597Z"),
+      modified = toLocalDateTime("2025-05-14T10:59:47.597Z"),
+      submitted = toLocalDateTime("2025-05-14T10:59:47.597Z"),
       `application-hakukohde-reviews` = Seq(),
-      hakutoiveet = Seq(),
       `information-request-timestamp` = None
     )
   }
@@ -174,7 +164,8 @@ class HakemusServiceTest extends UnitTestBase {
       ataruHakemusParser = ataruHakemusParser,
       userService = userService,
       perustelumuistioService = perustelumuistioService,
-      db = db
+      db = db,
+      JacksonConfig.mapper
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
       .thenReturn(CompletableFuture.completedFuture(None))
@@ -189,22 +180,20 @@ class HakemusServiceTest extends UnitTestBase {
     def paivitaTiedotAtarustaIdentifiesChangedFormId(): Unit = {
 
       // Data
-      val hakemusOid             = HakemusOid("poop")
-      val dbHakemus              = makeDbHakemus(hakemusOid, 5)
-      val ataruHakemus           = makeAtaruHakemus(9)
-      val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
+      val hakemusOid         = HakemusOid("poop")
+      val dbHakemus          = makeDbHakemus(hakemusOid, 5)
+      val ataruHakemusUpdate = makeAtaruHakemusupdate(9)
 
       // Spy variables
       var storedFormId = dbHakemus.formId
 
       // Mock setup
       when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemus))
-      when(hakemuspalveluService.haeHakemus(any[HakemusOid])).thenReturn(Right(ataruHakemusJsonString))
-      when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(1)
-      when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(false)
-      when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruHakemus]))
+      when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(1)
+      when(ataruHakemusParser.onkoHakemusPeruutettu(any[Content])).thenReturn(false)
+      when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruTilaPaivitys]))
         .thenReturn(KasittelyVaihe.ValmisKasiteltavaksi)
-      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content]))
         .thenAnswer { invocation =>
           val uuid = invocation.getArgument[UUID](0)
           createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
@@ -224,32 +213,30 @@ class HakemusServiceTest extends UnitTestBase {
       }
 
       // Act
-      hakemusService.paivitaTiedotAtarusta(hakemusOid)
+      hakemusService.paivitaTiedotAtarusta(hakemusOid, ataruHakemusUpdate)
 
       // Verify
       /* The new form ID should be stored */
-      assertEquals(storedFormId, ataruHakemus.form_id)
+      assertEquals(storedFormId, ataruHakemusUpdate.form_id)
     }
 
     @Test
     def paivitaTiedotAtarustaIgnoresUnchangedFormId(): Unit = {
       // Data
-      val hakemusOid             = HakemusOid("poop")
-      val dbHakemus              = makeDbHakemus(hakemusOid, 5)
-      val ataruHakemus           = makeAtaruHakemus(5)
-      val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
+      val hakemusOid         = HakemusOid("poop")
+      val dbHakemus          = makeDbHakemus(hakemusOid, 5)
+      val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
 
       // Spy variables
       var formUpdateCalled = false
 
       // Mock setup
       when(hakemusRepository.haeHakemus(any[HakemusOid])).thenReturn(Some(dbHakemus))
-      when(hakemuspalveluService.haeHakemus(any[HakemusOid])).thenReturn(Right(ataruHakemusJsonString))
-      when(ataruHakemusParser.parseHakemusKoskee(any[AtaruHakemus])).thenReturn(1)
-      when(ataruHakemusParser.onkoHakemusPeruutettu(any[AtaruHakemus])).thenReturn(false)
-      when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruHakemus]))
+      when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(1)
+      when(ataruHakemusParser.onkoHakemusPeruutettu(any[Content])).thenReturn(false)
+      when(kasittelyVaiheService.resolveKasittelyVaihe(any[DbHakemus], any[AtaruTilaPaivitys]))
         .thenReturn(KasittelyVaihe.ValmisKasiteltavaksi)
-      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus]))
+      when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content]))
         .thenAnswer { invocation =>
           val uuid = invocation.getArgument[UUID](0)
           createTutkinnotFixtureBeforeMuuttuneetTutkinnot(uuid)
@@ -269,7 +256,7 @@ class HakemusServiceTest extends UnitTestBase {
       }
 
       // Act
-      hakemusService.paivitaTiedotAtarusta(hakemusOid)
+      hakemusService.paivitaTiedotAtarusta(hakemusOid, ataruHakemusUpdate)
 
       // Verify
       /* Update function should not be called */
@@ -281,10 +268,22 @@ class HakemusServiceTest extends UnitTestBase {
   def haeHakemusPalauttaaMuokkaajanNimen(): Unit = {
 
     // Data
-    val hakemusOid             = HakemusOid("poop")
-    val dbHakemus              = makeDbHakemus(hakemusOid, 5)
-    val ataruHakemus           = makeAtaruHakemus(5)
-    val ataruHakemusJsonString = mapper.writeValueAsString(ataruHakemus)
+    val hakemusOid         = HakemusOid("poop")
+    val dbHakemus          = makeDbHakemus(hakemusOid, 5)
+    val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
+    val hakemusMap         =
+      ataruHakemusUpdate.productElementNames.toList.zip(ataruHakemusUpdate.productIterator.toList).toMap ++
+        Map(
+          "key"                       -> "",
+          "etunimet"                  -> "Jorma Kerttu",
+          "sukunimi"                  -> "",
+          "state"                     -> "",
+          "lang"                      -> "",
+          "person-oid"                -> "",
+          "latest-attachment-reviews" -> Seq(),
+          "hakutoiveet"               -> Seq()
+        )
+    val ataruHakemusJsonString = mapper.writeValueAsString(hakemusMap)
     val lomakeJsonString       = loadJson("ataruLomake.json")
     val hakija                 = makeHakija()
     val henkilo                = makeOnrUser()
@@ -294,7 +293,7 @@ class HakemusServiceTest extends UnitTestBase {
     when(hakemuspalveluService.haeHakemus(any[HakemusOid])).thenReturn(Right(ataruHakemusJsonString))
     when(hakemuspalveluService.haeLomake(any[Long])).thenReturn(Right(lomakeJsonString))
     when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakija)
-    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[AtaruHakemus])).thenReturn(Seq())
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content])).thenReturn(Seq())
     when(onrService.haeHenkilo(any[String])).thenReturn(Right(henkilo))
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 

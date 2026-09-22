@@ -288,7 +288,9 @@ class SecurityConfig {
           .ignoringRequestMatchers(
             "/tutu-backend/api/healthcheck",
             "/tutu-backend/api/csrf",
-            "/tutu-backend/api/ataru-hakemus"
+            "/tutu-backend/api/ataru-hakemus",
+            "/tutu-backend/api/hakemus-update/**",
+            "/tutu-backend/api/state-change/**"
           )
       )
       .exceptionHandling(exceptionHandling =>
