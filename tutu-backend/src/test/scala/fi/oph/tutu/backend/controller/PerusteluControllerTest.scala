@@ -205,13 +205,13 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mvc: MockMvc                   = null
+  private var mvc: MockMvc                   = _
 
   @MockitoBean
-  private var userService: UserService = _
+  var userService: UserService = _
 
   @MockitoBean
-  private var auditLog: AuditLog = _
+  var auditLog: AuditLog = _
 
   @MockitoBean
   var esittelijaService: EsittelijaService = _
@@ -251,7 +251,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
 
     val perusteluAsMap = perustelu.productElementNames.toList
       .zip(perustelu.productIterator.toList)
-      .toMap -- ignoreFields + (
+      .toMap -- ignoreFields ++ Map(
       "lausuntopyynnot" -> lausuntopyynnotAsMap,
       "uoRoSisalto"     -> uoroAsMap,
       "apSisalto"       -> apAsMap

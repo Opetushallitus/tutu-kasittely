@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))

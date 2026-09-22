@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 

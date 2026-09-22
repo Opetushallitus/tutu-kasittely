@@ -11,8 +11,6 @@ import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import fi.oph.tutu.backend.domain.Kieli.fi
 import org.hamcrest.Matchers.startsWith
-import org.json4s.jvalue2extractable
-import org.json4s.native.JsonMethods
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -44,7 +42,7 @@ class PaatosControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mvc: MockMvc                   = null
+  private var mvc: MockMvc                   = _
 
   @MockitoBean
   var userService: UserService = _
@@ -105,7 +103,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       makeKielteinenPaatosTieto(None)
     )
   private def makePaatos(givenHakemusId: Option[UUID]): Paatos = {
-    val ratkaisutyyppi = pick(Ratkaisutyyppi.values.map(Some(_)) ++ None)
+    val ratkaisutyyppi = pick(Ratkaisutyyppi.values.toIndexedSeq.map(Some(_)) ++ None)
     Paatos(
       hakemusId = givenHakemusId,
       ratkaisutyyppi = ratkaisutyyppi,
@@ -303,26 +301,6 @@ class PaatosControllerTest extends IntegrationTestBase {
           )
         )
       ),
-      hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
-      lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
-    )
-  }
-
-  private def makePaatosWithRatkaisutyyppi(
-    givenHakemusId: Option[UUID],
-    givenPaatosId: Option[UUID],
-    ratkaisutyyppi: Ratkaisutyyppi
-  ): Paatos = {
-    Paatos(
-      id = givenPaatosId,
-      hakemusId = givenHakemusId,
-      ratkaisutyyppi = Some(ratkaisutyyppi),
-      seutArviointi = pickBoolean,
-      peruutuksenTaiRaukeamisenSyy =
-        if (ratkaisutyyppi == Ratkaisutyyppi.PeruutusTaiRaukeaminen)
-          Some(PeruutuksenTaiRaukeamisenSyy(muuSyy = Some(true)))
-        else None,
-      paatosTiedot = Seq.empty,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
       lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
     )
@@ -918,7 +896,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
 
     assert(paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).isEmpty)
-    val result = mvc
+    mvc
       .perform(
         get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
       )
@@ -1002,7 +980,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
   @Order(17)
   def haePaatostekstiPalauttaaKannassaOlevanJosLoytyy(): Unit = {
-    val result = mvc
+    mvc
       .perform(
         get(s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti")
       )
@@ -1059,7 +1037,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleimanJosTekstiJoKannassa(): Unit = {
     val paatosteksti =
       paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)
-    val result = mvc
+    mvc
       .perform(
         put(
           s"/tutu-backend/api/paatos/$hakemusOidWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot/paatosteksti/vahvista"

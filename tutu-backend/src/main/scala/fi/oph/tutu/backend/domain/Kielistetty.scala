@@ -21,8 +21,8 @@ object Kieli:
     if (Option(value).forall(_.isBlank)) None
     else
       fromString(value) match {
-        case fi => Some(fi)
-        case sv => Some(sv)
+        case Kieli.fi => Some(fi)
+        case Kieli.sv => Some(sv)
         case _ => throw new IllegalArgumentException(s"Virheellinen kieli: '$value', ainaostaan 'fi' tai 'sv' sallittu")
       }
 

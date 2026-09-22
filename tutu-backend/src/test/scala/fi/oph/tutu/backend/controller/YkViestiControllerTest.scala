@@ -4,7 +4,6 @@ import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
-import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
@@ -35,18 +34,15 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mvc: MockMvc                   = null
+  private var mvc: MockMvc                   = _
 
   @MockitoBean
-  private var userService: UserService = _
-
-  @MockitoBean
-  private var auditLog: AuditLog = _
+  var userService: UserService = _
 
   @MockitoBean
   var esittelijaService: EsittelijaService = _
 
-  var ykViestiId: UUID = null
+  var ykViestiId: UUID = _
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =

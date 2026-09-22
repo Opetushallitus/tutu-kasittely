@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
@@ -31,8 +30,7 @@ class TutkintoServiceTest extends UnitTestBase {
     MockitoAnnotations.openMocks(this)
     tutkintoService = new TutkintoService(
       tutkintoRepository = tutkintoRepository,
-      perustelumuistioService = perustelumuistioService,
-      esittelijaService = esittelijaService
+      perustelumuistioService = perustelumuistioService
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
       .thenReturn(CompletableFuture.completedFuture(None))

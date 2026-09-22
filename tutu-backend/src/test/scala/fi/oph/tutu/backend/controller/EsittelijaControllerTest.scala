@@ -1,13 +1,11 @@
 package fi.oph.tutu.backend.controller
 
 import fi.oph.tutu.backend.IntegrationTestBase
-import fi.oph.tutu.backend.domain.{Esittelija, UserOid}
+import fi.oph.tutu.backend.domain.UserOid
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.UserService
 import fi.oph.tutu.backend.utils.AuditLog
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -28,7 +26,7 @@ class EsittelijaControllerTest extends IntegrationTestBase {
 
   @Autowired
   private val context: WebApplicationContext = null
-  private var mockMvc: MockMvc               = null
+  private var mockMvc: MockMvc               = _
 
   @MockitoBean
   var auditLog: AuditLog = _

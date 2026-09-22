@@ -3,7 +3,6 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.domain.Kieli
 import fi.oph.tutu.backend.service.oauth.Oauth2Client
-import fi.vm.sade.javautils.nio.cas.CasClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.any

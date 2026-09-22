@@ -50,12 +50,13 @@ class MigrationServiceTest extends UnitTestBase {
       xmlChunker,
       chunkingConfig
     )
+  }
 
-    @Test
-    @DisplayName("Testaa migraation orkestrointi streampohjaisella prosessoinnilla")
-    def testOrchestrateMigrationWithChunkedProcessing(): Unit = {
-      val key        = "test-key"
-      val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
+  @Test
+  @DisplayName("Testaa migraation orkestrointi streampohjaisella prosessoinnilla")
+  def testOrchestrateMigrationWithChunkedProcessing(): Unit = {
+    val key        = "test-key"
+    val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
       <FMPXMLRESULT xmlns="http://www.filemaker.com/fmpxmlresult">
         <ERRORCODE>0</ERRORCODE>
         <METADATA>
@@ -77,82 +78,82 @@ class MigrationServiceTest extends UnitTestBase {
         </RESULTSET>
       </FMPXMLRESULT>"""
 
-      val xmlBytes         = xmlContent.getBytes("UTF-8")
-      val mockObjectEntity = new ObjectEntity(
-        new ByteArrayInputStream(xmlBytes),
-        "application/xml",
-        "test-file.xml",
-        key,
-        xmlBytes.length.toLong,
-        Collections.emptyList[String](),
-        Instant.now()
-      )
+    val xmlBytes         = xmlContent.getBytes("UTF-8")
+    val mockObjectEntity = new ObjectEntity(
+      new ByteArrayInputStream(xmlBytes),
+      "application/xml",
+      "test-file.xml",
+      key,
+      xmlBytes.length.toLong,
+      Collections.emptyList[String](),
+      Instant.now()
+    )
 
-      when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
-      when(vanhaTutuRepository.deleteAll).thenReturn(2)
-      when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
-      when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
-        .thenReturn(Success(UUID.randomUUID()))
-      when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(2))
-      when(chunkProcessor.cleanupProcessedChunks()).thenReturn(Success(2))
+    when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
+    when(vanhaTutuRepository.deleteAll).thenReturn(2)
+    when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
+    when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
+      .thenReturn(Success(UUID.randomUUID()))
+    when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(2))
+    when(chunkProcessor.cleanupProcessedChunks()).thenReturn(Success(2))
 
-      // Mock muistiarviot ja palastus
+    // Mock muistiarviot ja palastus
 
-      when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
-        .thenReturn(Success(2))
+    when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
+      .thenReturn(Success(2))
 
-      val result = migrationService.orchestrateMigration(key)
+    val result = migrationService.orchestrateMigration(key)
 
-      assertTrue(result.isSuccess)
-      verify(dokumenttipalvelu, times(1)).get(key)
-      verify(vanhaTutuRepository, times(1)).deleteAll
-      verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
-      // Varmistetaan että streampohjainen palastusmetodi kutsutaan
-      verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
-      verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
-      verify(chunkProcessor, times(1)).cleanupProcessedChunks()
-    }
+    assertTrue(result.isSuccess)
+    verify(dokumenttipalvelu, times(1)).get(key)
+    verify(vanhaTutuRepository, times(1)).deleteAll
+    verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
+    // Varmistetaan että streampohjainen palastusmetodi kutsutaan
+    verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
+    verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
+    verify(chunkProcessor, times(1)).cleanupProcessedChunks()
+  }
 
-    @Test
-    def testaaOrkestroiMigraatioKäsitteleePoistaKaikkiVirhe(): Unit = {
-      val key       = "test-key"
-      val exception = new RuntimeException("Database error")
+  @Test
+  def testaaOrkestroiMigraatioKasitteleePoistaKaikkiVirhe(): Unit = {
+    val key       = "test-key"
+    val exception = new RuntimeException("Database error")
 
-      when(vanhaTutuRepository.deleteAll).thenThrow(exception)
+    when(vanhaTutuRepository.deleteAll).thenThrow(exception)
 
-      val result = migrationService.orchestrateMigration(key)
+    val result = migrationService.orchestrateMigration(key)
 
-      assertTrue(result.isFailure)
-      assertTrue(result.failed.get == exception)
-      verify(vanhaTutuRepository, times(1)).deleteAll
-      verify(dokumenttipalvelu, times(0)).get(any[String])
-    }
+    assertTrue(result.isFailure)
+    assertTrue(result.failed.get == exception)
+    verify(vanhaTutuRepository, times(1)).deleteAll
+    verify(dokumenttipalvelu, times(0)).get(any[String])
+  }
 
-    @Test
-    def testaaOrkestroiMigraatioKäsitteleeDokumenttipalveluVirhe(): Unit = {
-      val key       = "test-key"
-      val exception = new RuntimeException("Document service error")
+  @Test
+  def testaaOrkestroiMigraatioKasitteleeDokumenttipalveluVirhe(): Unit = {
+    val key       = "test-key"
+    val exception = new RuntimeException("Document service error")
 
-      when(vanhaTutuRepository.deleteAll).thenReturn(0)
-      when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
-      when(dokumenttipalvelu.get(eqTo(key))).thenThrow(exception)
+    when(vanhaTutuRepository.deleteAll).thenReturn(0)
+    when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
+    when(dokumenttipalvelu.get(eqTo(key))).thenThrow(exception)
 
-      val result = migrationService.orchestrateMigration(key)
+    val result = migrationService.orchestrateMigration(key)
 
-      assertTrue(result.isFailure)
-      // Palvelu käärii alkuperäisen poikkeuksen uuteen RuntimeExceptioniin, joten tarkistetaan syy
-      assertTrue(result.failed.get.isInstanceOf[RuntimeException])
-      assertTrue(result.failed.get.getCause == exception)
-      assertTrue(result.failed.get.getMessage.contains("Tiedoston haku epäonnistui avaimella"))
-      verify(vanhaTutuRepository, times(1)).deleteAll
-      verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
-      verify(dokumenttipalvelu, times(1)).get(key)
-    }
+    assertTrue(result.isFailure)
+    // Palvelu käärii alkuperäisen poikkeuksen uuteen RuntimeExceptioniin, joten tarkistetaan syy
+    assertTrue(result.failed.get.isInstanceOf[RuntimeException])
+    assertTrue(result.failed.get.getCause == exception)
+    assertTrue(result.failed.get.getMessage.contains("Tiedoston haku epäonnistui avaimella"))
+    verify(vanhaTutuRepository, times(1)).deleteAll
+    verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
+    verify(dokumenttipalvelu, times(1)).get(key)
+  }
 
-    @Test
-    def testaaOrkestroiMigraatioKäsitteleePalaKäsittelyVirhe(): Unit = {
-      val key        = "test-key"
-      val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
+  @Test
+  def testaaOrkestroiMigraatioKasitteleePalaKasittelyVirhe(): Unit = {
+    val key        = "test-key"
+    val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
       <FMPXMLRESULT xmlns="http://www.filemaker.com/fmpxmlresult">
         <ERRORCODE>0</ERRORCODE>
         <METADATA>
@@ -165,132 +166,130 @@ class MigrationServiceTest extends UnitTestBase {
         </RESULTSET>
       </FMPXMLRESULT>"""
 
-      val xmlBytes         = xmlContent.getBytes("UTF-8")
-      val mockObjectEntity = new ObjectEntity(
-        new ByteArrayInputStream(xmlBytes),
-        "application/xml",
-        "test-file.xml",
-        key,
-        xmlBytes.length.toLong,
-        Collections.emptyList[String](),
-        Instant.now()
-      )
-
-      val exception = new RuntimeException("Chunk processing failed")
-
-      when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
-      when(vanhaTutuRepository.deleteAll).thenReturn(0)
-      when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
-      when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
-        .thenReturn(Success(UUID.randomUUID()))
-      when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
-        .thenReturn(Success(0))
-      when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Failure(exception))
-
-      val result = migrationService.orchestrateMigration(key)
-
-      assertTrue(result.isFailure)
-      assertTrue(result.failed.get == exception)
-      verify(vanhaTutuRepository, times(1)).deleteAll
-      verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
-      // Varmistetaan että streampohjainen palastusmetodi kutsutaan (palauttaa 0 palaa)
-      verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
-      verify(dokumenttipalvelu, times(1)).get(key)
-      verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
-    }
-
-    @Test
-    def testaaJatkaMigraatio(): Unit = {
-      when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(5))
-
-      val result = migrationService.resumeMigration()
-
-      assertTrue(result.isSuccess)
-      assertTrue(result.get == 5)
-      verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
-    }
-
-    @Test
-    def testaaJatkaMigraatioKäsitteleeVirhe(): Unit = {
-      val exception = new RuntimeException("Resume failed")
-      when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Failure(exception))
-
-      val result = migrationService.resumeMigration()
-
-      assertTrue(result.isFailure)
-      assertTrue(result.failed.get == exception)
-      verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
-    }
-
-    @Test
-    def testaaHaeMigraatioTilastot(): Unit = {
-      val stats = Map("totalChunks" -> 10, "processedChunks" -> 5, "unprocessedChunks" -> 5)
-      when(chunkProcessor.getProcessingStats()).thenReturn(Success(stats))
-
-      val result = migrationService.getMigrationStats
-
-      assertTrue(result.isSuccess)
-      assertTrue(result.get == stats)
-      verify(chunkProcessor, times(1)).getProcessingStats()
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings =
-      Array(
-        "vanha_tutu_xs.xml",
-        "vanha_tutu_s.xml",
-        "vanha_tutu_m.xml"
-      )
+    val xmlBytes         = xmlContent.getBytes("UTF-8")
+    val mockObjectEntity = new ObjectEntity(
+      new ByteArrayInputStream(xmlBytes),
+      "application/xml",
+      "test-file.xml",
+      key,
+      xmlBytes.length.toLong,
+      Collections.emptyList[String](),
+      Instant.now()
     )
-    @DisplayName("Testaa suorituskyky erikokoisilla XML-tiedostoilla")
-    def testaaSuorituskykyEriTiedostokokoisilla(): Unit = {
-      val testFiles = Seq(
-        ("vanha_tutu_xs.xml", 280941L),
-        ("vanha_tutu_s.xml", 1833830L),
-        ("vanha_tutu_m.xml", 17526259L)
-      )
 
-      // Mockataan palastus kaikille tiedostokooille
+    val exception = new RuntimeException("Chunk processing failed")
 
-      testFiles.foreach { case (fileName, expectedSize) =>
-        val filePath = s"src/main/resources/filemaker-migration/$fileName"
-        val file     = new java.io.File(filePath)
+    when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
+    when(vanhaTutuRepository.deleteAll).thenReturn(0)
+    when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
+    when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
+      .thenReturn(Success(UUID.randomUUID()))
+    when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
+      .thenReturn(Success(0))
+    when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Failure(exception))
 
-        if (file.exists()) {
-          val inputStream = new FileInputStream(file)
-          try {
-            val fileSizeBytes = file.length()
-            assertTrue(
-              fileSizeBytes == expectedSize,
-              s"Tiedoston koko muuttunut: $fileName. Odotettu $expectedSize, saatu $fileSizeBytes"
-            )
+    val result = migrationService.orchestrateMigration(key)
 
-            val startTime = System.currentTimeMillis()
-            when(xmlChunker.splitXmlStreamIntoChunksAndStore(any[java.io.InputStream], any())).thenReturn(
-              Success(1)
-            )
+    assertTrue(result.isFailure)
+    assertTrue(result.failed.get == exception)
+    verify(vanhaTutuRepository, times(1)).deleteAll
+    verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
+    // Varmistetaan että streampohjainen palastusmetodi kutsutaan (palauttaa 0 palaa)
+    verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
+    verify(dokumenttipalvelu, times(1)).get(key)
+    verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
+  }
 
-            val result   = xmlChunker.splitXmlStreamIntoChunksAndStore(inputStream, (_, _, _) => ())
-            val endTime  = System.currentTimeMillis()
-            val duration = endTime - startTime
+  @Test
+  def testaaJatkaMigraatio(): Unit = {
+    when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(5))
 
-            assertTrue(result.isSuccess)
-            val chunkCount = result.get
+    val result = migrationService.resumeMigration()
 
-            assertTrue(duration < 30000, "Käsittelyn pitäisi valmistua 30 sekunnissa")
+    assertTrue(result.isSuccess)
+    assertTrue(result.get == 5)
+    verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
+  }
 
-          } finally {
-            inputStream.close()
-          }
+  @Test
+  def testaaJatkaMigraatioKasitteleeVirhe(): Unit = {
+    val exception = new RuntimeException("Resume failed")
+    when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Failure(exception))
+
+    val result = migrationService.resumeMigration()
+
+    assertTrue(result.isFailure)
+    assertTrue(result.failed.get == exception)
+    verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
+  }
+
+  @Test
+  def testaaHaeMigraatioTilastot(): Unit = {
+    val stats = Map("totalChunks" -> 10, "processedChunks" -> 5, "unprocessedChunks" -> 5)
+    when(chunkProcessor.getProcessingStats()).thenReturn(Success(stats))
+
+    val result = migrationService.getMigrationStats
+
+    assertTrue(result.isSuccess)
+    assertTrue(result.get == stats)
+    verify(chunkProcessor, times(1)).getProcessingStats()
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings =
+    Array(
+      "vanha_tutu_xs.xml",
+      "vanha_tutu_s.xml",
+      "vanha_tutu_m.xml"
+    )
+  )
+  @DisplayName("Testaa suorituskyky erikokoisilla XML-tiedostoilla")
+  def testaaSuorituskykyEriTiedostokokoisilla(): Unit = {
+    val testFiles = Seq(
+      ("vanha_tutu_xs.xml", 280941L),
+      ("vanha_tutu_s.xml", 1833830L),
+      ("vanha_tutu_m.xml", 17526259L)
+    )
+
+    // Mockataan palastus kaikille tiedostokooille
+
+    testFiles.foreach { case (fileName, expectedSize) =>
+      val filePath = s"src/main/resources/filemaker-migration/$fileName"
+      val file     = new java.io.File(filePath)
+
+      if (file.exists()) {
+        val inputStream = new FileInputStream(file)
+        try {
+          val fileSizeBytes = file.length()
+          assertTrue(
+            fileSizeBytes == expectedSize,
+            s"Tiedoston koko muuttunut: $fileName. Odotettu $expectedSize, saatu $fileSizeBytes"
+          )
+
+          val startTime = System.currentTimeMillis()
+          when(xmlChunker.splitXmlStreamIntoChunksAndStore(any[java.io.InputStream], any())).thenReturn(
+            Success(1)
+          )
+
+          val result   = xmlChunker.splitXmlStreamIntoChunksAndStore(inputStream, (_, _, _) => ())
+          val endTime  = System.currentTimeMillis()
+          val duration = endTime - startTime
+
+          assertTrue(result.isSuccess)
+          assertTrue(duration < 30000, "Käsittelyn pitäisi valmistua 30 sekunnissa")
+
+        } finally {
+          inputStream.close()
         }
       }
     }
+  }
 
-    @Test
-    @DisplayName("Testaa että chunkit saavat oikean total_chunks arvon migraation aikana")
-    def testaaChunkitSaavatOikeanTotalChunksArvon(): Unit = {
-      val key        = "test-key"
-      val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
+  @Test
+  @DisplayName("Testaa että chunkit saavat oikean total_chunks arvon migraation aikana")
+  def testaaChunkitSaavatOikeanTotalChunksArvon(): Unit = {
+    val key        = "test-key"
+    val xmlContent = """<?xml version="1.0" encoding="UTF-8"?>
       <FMPXMLRESULT xmlns="http://www.filemaker.com/fmpxmlresult">
         <ERRORCODE>0</ERRORCODE>
         <METADATA>
@@ -309,43 +308,42 @@ class MigrationServiceTest extends UnitTestBase {
         </RESULTSET>
       </FMPXMLRESULT>"""
 
-      val xmlBytes         = xmlContent.getBytes("UTF-8")
-      val mockObjectEntity = new ObjectEntity(
-        new ByteArrayInputStream(xmlBytes),
-        "application/xml",
-        "test-file.xml",
-        key,
-        xmlBytes.length.toLong,
-        Collections.emptyList[String](),
-        Instant.now()
-      )
+    val xmlBytes         = xmlContent.getBytes("UTF-8")
+    val mockObjectEntity = new ObjectEntity(
+      new ByteArrayInputStream(xmlBytes),
+      "application/xml",
+      "test-file.xml",
+      key,
+      xmlBytes.length.toLong,
+      Collections.emptyList[String](),
+      Instant.now()
+    )
 
-      when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
-      when(vanhaTutuRepository.deleteAll).thenReturn(0)
-      when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
-      when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
-        .thenReturn(Success(UUID.randomUUID()))
-      when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(2))
-      when(chunkProcessor.cleanupProcessedChunks()).thenReturn(Success(2))
+    when(dokumenttipalvelu.get(eqTo(key))).thenReturn(mockObjectEntity)
+    when(vanhaTutuRepository.deleteAll).thenReturn(0)
+    when(vanhaTutuMigrationRepository.deleteAllChunks()).thenReturn(0)
+    when(vanhaTutuMigrationRepository.createChunk(any[Int], any[Int], any[String]))
+      .thenReturn(Success(UUID.randomUUID()))
+    when(chunkProcessor.processMigrationChunksIndividually(eqTo(10))).thenReturn(Success(2))
+    when(chunkProcessor.cleanupProcessedChunks()).thenReturn(Success(2))
 
-      // Mock muistiarviot ja palastus
+    // Mock muistiarviot ja palastus
 
-      when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
-        .thenReturn(Success(2))
+    when(xmlChunker.splitXmlStreamIntoChunksAndStore(any(), any()))
+      .thenReturn(Success(2))
 
-      // Varmistetaan että updateTotalChunksForAllChunks kutsutaan oikealla lukumäärällä
-      when(vanhaTutuMigrationRepository.updateTotalChunksForAllChunks(2)).thenReturn(2)
+    // Varmistetaan että updateTotalChunksForAllChunks kutsutaan oikealla lukumäärällä
+    when(vanhaTutuMigrationRepository.updateTotalChunksForAllChunks(2)).thenReturn(2)
 
-      val result = migrationService.orchestrateMigration(key)
+    val result = migrationService.orchestrateMigration(key)
 
-      assertTrue(result.isSuccess)
-      verify(dokumenttipalvelu, times(1)).get(key)
-      verify(vanhaTutuRepository, times(1)).deleteAll
-      verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
-      verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
-      verify(vanhaTutuMigrationRepository, times(1)).updateTotalChunksForAllChunks(2)
-      verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
-      verify(chunkProcessor, times(1)).cleanupProcessedChunks()
-    }
+    assertTrue(result.isSuccess)
+    verify(dokumenttipalvelu, times(1)).get(key)
+    verify(vanhaTutuRepository, times(1)).deleteAll
+    verify(vanhaTutuMigrationRepository, times(1)).deleteAllChunks()
+    verify(xmlChunker, times(1)).splitXmlStreamIntoChunksAndStore(any(), any())
+    verify(vanhaTutuMigrationRepository, times(1)).updateTotalChunksForAllChunks(2)
+    verify(chunkProcessor, times(1)).processMigrationChunksIndividually(eqTo(10))
+    verify(chunkProcessor, times(1)).cleanupProcessedChunks()
   }
 }

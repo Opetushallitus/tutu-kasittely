@@ -3,7 +3,7 @@ package fi.oph.tutu.backend.service.migration
 import fi.oph.tutu.backend.config.migration.ChunkingConfig
 import fi.oph.tutu.backend.repository.migration.{VanhaTutuMigrationRepository, VanhaTutuRepository}
 import fi.oph.tutu.backend.utils.ErrorHandling
-import fi.oph.tutu.backend.utils.migration.{XmlChunk, XmlChunker}
+import fi.oph.tutu.backend.utils.migration.XmlChunker
 import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu
 import org.json4s.DefaultFormats
 import org.slf4j.{Logger, LoggerFactory}
@@ -148,7 +148,7 @@ class MigrationService(
   private def splitFileIntoChunksAndStore(inputStream: java.io.InputStream): Int = {
     xmlChunker.splitXmlStreamIntoChunksAndStore(inputStream, storeChunk) match {
       case Success(chunkCount) =>
-        LOG.info(s"XML jaettu ${chunkCount} palaan ja tallennettu tietokantaan")
+        LOG.info(s"XML jaettu $chunkCount palaan ja tallennettu tietokantaan")
         chunkCount
       case Failure(exception) =>
         LOG.error("XML-tiedoston jako paloihin ja tallentaminen epäonnistui", exception)
@@ -159,9 +159,9 @@ class MigrationService(
   private def storeChunk(chunkIndex: Int, totalChunks: Int, xmlChunk: String): Unit = {
     vanhaTutuMigrationRepository.createChunk(chunkIndex, totalChunks, xmlChunk) match {
       case scala.util.Success(chunkId) =>
-        LOG.debug(s"Tallennettu pala ${chunkIndex}/${totalChunks} id:llä: $chunkId")
+        LOG.debug(s"Tallennettu pala $chunkIndex/$totalChunks id:llä: $chunkId")
       case scala.util.Failure(exception) =>
-        LOG.error(s"Palan ${chunkIndex} tallennus epäonnistui", exception)
+        LOG.error(s"Palan $chunkIndex tallennus epäonnistui", exception)
         throw exception
     }
   }

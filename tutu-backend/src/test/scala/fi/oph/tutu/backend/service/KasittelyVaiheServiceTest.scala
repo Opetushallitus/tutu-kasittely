@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.fixture.{ataruHakemusFixture, dbHakemusFixture}
+import fi.oph.tutu.backend.fixture.dbHakemusFixture
 import fi.oph.tutu.backend.repository.{AsiakirjaRepository, ValitustiedotRepository}
 import fi.oph.tutu.backend.domain.AtaruHakemuksenTila.{KasittelyMaksettu, TaydennysPyynto}
 import fi.oph.tutu.backend.domain.KasittelyVaihe.OdottaaTaydennysta

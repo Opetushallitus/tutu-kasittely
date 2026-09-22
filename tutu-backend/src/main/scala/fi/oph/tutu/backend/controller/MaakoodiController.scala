@@ -115,7 +115,7 @@ class MaakoodiController(
   ): ResponseEntity[Any] = {
     Try {
       val user            = userService.getEnrichedUserDetails(true)
-      val maakoodit       = mapper.readValue(maakooditBytes, classOf[Array[Maakoodi]])
+      val maakoodit       = mapper.readValue(maakooditBytes, classOf[Seq[Maakoodi]])
       val vanhatMaakoodit = maakoodit.flatMap(m => maakoodiService.getMaakoodiByUri(m.koodiUri))
       maakoodiService.updateMaakoodit(maakoodit, user.userOid)
       (maakoodit, vanhatMaakoodit)

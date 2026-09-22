@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.config.JacksonConfig
@@ -268,8 +267,8 @@ class HakemusServiceTest extends UnitTestBase {
   def haeHakemusPalauttaaMuokkaajanOidin(): Unit = {
 
     // Data
-    val hakemusOid   = HakemusOid("poop")
-    val dbHakemus    = makeDbHakemus(hakemusOid, 5).copy(muokkaaja = Some("1.2.246.562.24.00000000000000006666"))
+    val hakemusOid         = HakemusOid("poop")
+    val dbHakemus          = makeDbHakemus(hakemusOid, 5).copy(muokkaaja = Some("1.2.246.562.24.00000000000000006666"))
     val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
     val hakemusMap         =
       ataruHakemusUpdate.productElementNames.toList.zip(ataruHakemusUpdate.productIterator.toList).toMap ++

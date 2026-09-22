@@ -106,10 +106,10 @@ def bindTraverse(
   def step = bindStep(extract, expand)
   def extractAndExpandAggregate(aggregate: PaatosNodeTypeAggregate): (Option[String], Seq[PaatosNodeTypeAggregate]) = {
     aggregate match {
-      case nodeSeq: Seq[PaatosNodeType] => (None, nodeSeq)   // Flatten lists
-      case Some(node)                   => step(node)
-      case None                         => (None, Seq.empty) // End propagation
-      case node: PaatosNodeType         => step(node)
+      case nodeSeq: Seq[PaatosNodeType] @unchecked => (None, nodeSeq)   // Flatten lists
+      case Some(node)                              => step(node)
+      case None                                    => (None, Seq.empty) // End propagation
+      case node: PaatosNodeType                    => step(node)
     }
   }
 
