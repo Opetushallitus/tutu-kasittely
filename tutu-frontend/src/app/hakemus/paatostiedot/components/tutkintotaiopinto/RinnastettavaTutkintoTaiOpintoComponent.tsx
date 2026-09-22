@@ -18,8 +18,8 @@ import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakem
 import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosSteiner';
 import { MyonteinenPaatosTutkintoTaiOpintoUO } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosTutkintoTaiOpintoUO';
 import {
-  AINEENOPETTAJA_OPTION_KEYS,
-  LUOKANOPETTAJA_OPTION_KEYS,
+  AINEENOPETTAJA_OPTION_KEY,
+  LUOKANOPETTAJA_OPTION_KEY,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import {
   getPaatosTietoDropdownOptions,
@@ -59,8 +59,8 @@ const myonteinenPaatosComponent = (
         .returnType<[FC<MyonteinenPaatosProps>, boolean]>()
         .with(
           P.when((t) =>
-            AINEENOPETTAJA_OPTION_KEYS.concat(LUOKANOPETTAJA_OPTION_KEYS).some(
-              (key) => t?.includes(key),
+            [AINEENOPETTAJA_OPTION_KEY, LUOKANOPETTAJA_OPTION_KEY].some((key) =>
+              t?.includes(key),
             ),
           ),
           () => [MyonteinenPaatosLuokanopettajaTaiAineenopettaja, true],

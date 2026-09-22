@@ -37,7 +37,7 @@ case class Valinta(
 
 case class PaatosTietoOption(
   label: Option[Kielistetty] = None,
-  value: Option[Kielistetty] = None,
+  value: String,
   children: Seq[PaatosTietoOption] = Seq()
 )
 
