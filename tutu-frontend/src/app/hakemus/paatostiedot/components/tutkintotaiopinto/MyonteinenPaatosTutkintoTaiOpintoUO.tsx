@@ -280,8 +280,9 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
   const { selectedEntity, sovellettuTilanneOptions, erotKoulutuksessa } =
     useMemo(() => {
       const entity =
-        KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find((item) =>
-          item.keywords.some((kw) => (tutkintoTaiOpinto ?? '').includes(kw)),
+        KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find(
+          (item) =>
+            item.keyword && (tutkintoTaiOpinto ?? '').includes(item.keyword),
         )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
       const koulutusEroModel = EROT_KOULUTUKSESSA_BY_ENTITY[entity];
       const erotKoulutuksessa = koulutusEroModel

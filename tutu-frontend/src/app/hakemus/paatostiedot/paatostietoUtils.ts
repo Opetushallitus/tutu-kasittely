@@ -35,7 +35,7 @@ export const getPaatosTietoDropdownOptions = (
   return paatostietoOptions.map((option) => {
     const keyOption: TreeOption = {
       label: option.label[lang]!,
-      value: option.value[lang]!,
+      value: option.value!,
     };
 
     if (
@@ -58,16 +58,15 @@ export const getPaatosTietoDropdownOptions = (
 };
 
 export const findOptionByValue = (
-  lang: Language,
   options: TreeOption<TranslatedName>[],
   value: string,
 ): TreeOption<TranslatedName> | null => {
   for (const option of options) {
-    if (option.value[lang] === value) {
+    if (option.value === value) {
       return option;
     }
     if (option.children) {
-      const found = findOptionByValue(lang, option.children, value);
+      const found = findOptionByValue(option.children, value);
       if (found) {
         return found;
       }

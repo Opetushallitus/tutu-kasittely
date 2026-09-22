@@ -721,59 +721,21 @@ export const MONIALAISET_OPINNOT_KEY = 'Monialaiset opinnot';
 export const VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY =
   'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot';
 
-export const AINEENOPETTAJA_OPTION_KEYS = [
-  'Aineenopettaja',
-  'Ämneslärare',
-  'Subject teacher',
-];
-
-export const LUOKANOPETTAJA_OPTION_KEYS = [
-  'Luokanopettaja',
-  'Klasslärare',
-  'Class teacher',
-];
-
-export const OIKEUSTIETEEN_MAISTERI_KEYS = [
-  'Rinnastaminen oikeustieteen maisterin tutkintoon',
-  'Jämställande med juris magisterexamen',
-  'Recognition of studies as comparable to a Master of Laws degree completed in Finland',
-];
-
-export const OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS = [
-  'Opettajan pedagogiset opinnot',
-  'Pedagogiska studier för lärare',
-  'Teacher’s pedagogical studies',
-];
-
-export const OPETETTAVAN_AINEEN_OPINNOT_KEYS = [
-  'Opetettavan aineen opinnot',
-  'Studier i ämnet som ska undervisas',
-  'Studies in a teaching subject',
-];
-
-export const ERITYISOPETUS_OPINNOT_KEYS = [
-  'Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot',
-  'Studier som ger yrkesfärdigheter för uppgifter inom specialundervisning',
-  'Studies providing professional competence for special needs education',
-];
-
-export const OHJAUS_TEHTAVA_OPINNOT = [
-  'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot',
-  'Studier som ger yrkesfärdigheter för uppgifter inom elevhandledning och studiehandledning',
-  'Studies providing professional competence for guidance counselling',
-];
-
-export const KASVATUSTIETEEN_TUTKINTO_KEYS = [
-  'Kasvatustieteellisen alan korkeakoulututkinto',
-  'Examen inom det pedagogiska utbildningsområdet',
-  'Higher education degree in the field of education',
-];
-
-export const SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS = [
-  'Sosiaali- ja terveysalan ammattikorkeakoulututkinto tai ylempi ammattikorkeakoulututkinto',
-  'Yrkeshögskoleexamen eller högre yrkeshögskoleexamen inom social- och hälsoområdet',
-  "Bachelor's or Master's degree in social services and health care",
-];
+export const AINEENOPETTAJA_OPTION_KEY = 'Aineenopettaja';
+export const LUOKANOPETTAJA_OPTION_KEY = 'Luokanopettaja';
+export const OIKEUSTIETEEN_MAISTERI_KEY =
+  'Rinnastaminen oikeustieteen maisterin tutkintoon';
+export const OPETTAJAN_PEDAGOGISET_OPINNOT_KEY =
+  'Opettajan pedagogiset opinnot';
+export const OPETETTAVAN_AINEEN_OPINNOT_KEY = 'Opetettavan aineen opinnot';
+export const ERITYISOPETUS_OPINNOT_KEY =
+  'Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot';
+export const OHJAUS_TEHTAVA_OPINNOT_KEY =
+  'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot';
+export const KASVATUSTIETEEN_TUTKINTO_KEY =
+  'Kasvatustieteellisen alan korkeakoulututkinto';
+export const SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEY =
+  'Sosiaali- ja terveysalan ammattikorkeakoulututkinto tai ylempi ammattikorkeakoulututkinto';
 
 export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'velvoiteOikeus',
