@@ -12,7 +12,7 @@ import fi.oph.tutu.backend.domain.{
   Valitustiedot
 }
 import fi.oph.tutu.backend.exception.ValitustiedotValidationException
-import fi.oph.tutu.backend.service.{HakemusService, UserService, ValitustiedotService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, UserService, ValitustiedotService}
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.utils.AuditOperation.{CreateValitustiedot, UpdateValitustiedot}
 import org.junit.jupiter.api.Assertions.*
@@ -37,6 +37,9 @@ class ValitustiedotControllerTest extends UnitTestBase {
   var userService: UserService = _
 
   @Mock
+  var esittelijaService: EsittelijaService = _
+
+  @Mock
   var auditLog: AuditLog = _
 
   var valitustiedotController: ValitustiedotController = _
@@ -47,8 +50,14 @@ class ValitustiedotControllerTest extends UnitTestBase {
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-    valitustiedotController =
-      new ValitustiedotController(valitustiedotService, hakemusService, userService, mapper, auditLog)
+    valitustiedotController = new ValitustiedotController(
+      valitustiedotService,
+      hakemusService,
+      userService,
+      esittelijaService,
+      mapper,
+      auditLog
+    )
     when(userService.getEnrichedUserDetails(true)).thenReturn(user)
   }
 

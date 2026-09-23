@@ -6,14 +6,10 @@ import org.junit.jupiter.api.*
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.bean.`override`.mockito.MockitoBean
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
 class YkViestiServiceTest extends IntegrationTestBase {
-
-  @MockitoBean
-  var onrService: OnrService = _
 
   var ykViestiService: YkViestiService = _
 
@@ -45,8 +41,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     ykViestiService = new YkViestiService(
-      ykViestiRepository = ykViestiRepository,
-      onrService = onrService
+      ykViestiRepository = ykViestiRepository
     )
   }
 

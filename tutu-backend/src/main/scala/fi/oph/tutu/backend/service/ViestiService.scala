@@ -23,7 +23,7 @@ class ViestiService(
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[ViestiService])
 
-  private def haeEsittelija(esittelijaOid: Option[String]): Option[Esittelija] = {
+  def haeEsittelija(esittelijaOid: Option[String]): Option[Esittelija] = {
     esittelijaOid match {
       case Some(esittelijaOid) =>
         esittelijaRepository
@@ -32,16 +32,6 @@ class ViestiService(
           .orElse(onrService.haeHenkilo(esittelijaOid).toOption.map(_.toEsittelija))
       case _ => None
     }
-  }
-
-  def taytaNimet(viesti: Viesti): Viesti = {
-    val muokkaajaNimi = haeEsittelija(viesti.muokkaaja).map(_.kokoNimi())
-    viesti.copy(
-      muokkaaja = muokkaajaNimi,
-      vahvistaja =
-        if (viesti.muokkaaja == viesti.vahvistaja) muokkaajaNimi
-        else haeEsittelija(viesti.vahvistaja).map(_.kokoNimi())
-    )
   }
 
   def haeViestiLista(hakemusOid: HakemusOid, sortParams: Option[ListSortParam]): Seq[ViestiListItem] = {
@@ -57,7 +47,7 @@ class ViestiService(
     hakemusRepository.haeHakemus(hakemusOid) match {
       case Some(dbHakemus: DbHakemus) =>
         viestiRepository.haeVahvistamatonViesti(dbHakemus.id) match {
-          case Some(viesti) => Some(taytaNimet(viesti))
+          case Some(viesti) => Some(viesti)
           case None         =>
             val ataruHakemus = hakemusService.haeAtaruHakemus(hakemusOid)
             LOG.info(
@@ -72,7 +62,7 @@ class ViestiService(
   }
 
   def haeViesti(id: UUID): Option[Viesti] = {
-    viestiRepository.haeViesti(id).map(taytaNimet)
+    viestiRepository.haeViesti(id)
   }
 
   def tallennaViesti(
@@ -96,7 +86,7 @@ class ViestiService(
           case Some(existing) => viestiRepository.tallennaViesti(existing.id.get, viestiToSave, luojaTaiMuokkaaja)
           case _              => viestiRepository.lisaaViesti(dbHakemus.id, viestiToSave, luojaTaiMuokkaaja)
         }
-        (currentViesti.map(taytaNimet), Some(newOrUpdatedViesti).map(taytaNimet))
+        (currentViesti, Some(newOrUpdatedViesti))
       case _ => (None, None)
     }
   }

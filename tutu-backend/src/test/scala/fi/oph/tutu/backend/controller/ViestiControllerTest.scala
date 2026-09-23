@@ -5,7 +5,7 @@ import fi.oph.tutu.backend.domain.Viestityyppi.ennakkotieto
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.domain.Kieli.en
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{OnrService, TranslationService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, OnrService, TranslationService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -48,6 +48,9 @@ class ViestiControllerTest extends IntegrationTestBase {
   var onrService: OnrService = _
 
   @MockitoBean
+  var esittelijaService: EsittelijaService = _
+
+  @MockitoBean
   var auditLog: AuditLog = _
 
   @MockitoBean
@@ -88,7 +91,7 @@ class ViestiControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupTest(): Unit = {
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("test user"))
+    when(esittelijaService.haeEsittelijaNimi(any[String])).thenReturn("test user")
     when(onrService.haeHenkilo("test user"))
       .thenReturn(
         Right(

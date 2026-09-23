@@ -42,47 +42,28 @@ class PaatosService(
 
           paatosRepository.haePaatosTiedot(paatos.id.get) match {
             case paatostiedot if paatostiedot.nonEmpty =>
-              val paatostiedotWithMuokkaaja = paatostiedot.map { paatosTieto =>
-                paatosTieto.copy(
-                  muokkaaja = onrService.haeNimiOption(paatosTieto.muokkaaja)
-                )
-              }
-              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedotWithMuokkaaja.map { paatosTieto =>
+              val paatostiedotWithRinnastettavatTutkinnotTaiOpinnot = paatostiedot.map { paatosTieto =>
                 paatosRepository.haeTutkinnotTaiOpinnot(paatosTieto.id.get) match {
                   case tutkinnotTaiOpinnot if tutkinnotTaiOpinnot.nonEmpty =>
-                    paatosTieto.copy(
-                      rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot.map { tutkintoTaiOpinto =>
-                        tutkintoTaiOpinto.copy(muokkaaja = onrService.haeNimiOption(tutkintoTaiOpinto.muokkaaja))
-                      }
-                    )
+                    paatosTieto.copy(rinnastettavatTutkinnotTaiOpinnot = tutkinnotTaiOpinnot)
                   case _ => paatosTieto
                 }
               }
               val paatostiedotWithAllData = paatostiedotWithRinnastettavatTutkinnotTaiOpinnot.map { paatosTieto =>
                 paatosRepository.haeKelpoisuudet(paatosTieto.id.get) match {
                   case kelpoisuudet if kelpoisuudet.nonEmpty =>
-                    paatosTieto.copy(
-                      kelpoisuudet = kelpoisuudet.map { kelpoisuus =>
-                        kelpoisuus.copy(muokkaaja = onrService.haeNimiOption(kelpoisuus.muokkaaja))
-                      }
-                    )
+                    paatosTieto.copy(kelpoisuudet = kelpoisuudet)
                   case _ => paatosTieto
                 }
               }
               Some(
                 paatos.copy(
                   paatosTiedot = paatostiedotWithAllData,
-                  paatosTietoOptions = paatosTietoOptions,
-                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
+                  paatosTietoOptions = paatosTietoOptions
                 )
               )
             case _ =>
-              Some(
-                paatos.copy(
-                  paatosTietoOptions = paatosTietoOptions,
-                  muokkaaja = onrService.haeNimiOption(paatos.muokkaaja)
-                )
-              )
+              Some(paatos.copy(paatosTietoOptions = paatosTietoOptions))
           }
         }
       }
@@ -143,8 +124,7 @@ class PaatosService(
               )
             } else {
               latestSavedPaatos.paatosTiedot
-            },
-            muokkaaja = onrService.haeNimiOption(latestSavedPaatos.muokkaaja)
+            }
           )
         )
       case _ => None
@@ -199,17 +179,13 @@ class PaatosService(
       case None               => throw NotFoundException(s"Hakemukselle $hakemusId ei löydy aiempaa päätöstekstiä")
     }
 
-  private def haeMuokkaajaNimi(paatosteksti: Paatosteksti): Paatosteksti = {
-    paatosteksti.copy(muokkaaja = Some(onrService.haeNimi(paatosteksti.muokkaaja)))
-  }
-
   def haeTaiGeneroiPaatosteksti(
     hakemusOid: HakemusOid,
     luoja: String
   ): Paatosteksti = {
     val dbHakemus = haeHakemus(hakemusOid)
     paatosRepository.haePaatosteksti(dbHakemus.id) match {
-      case Some(paatosteksti) => haeMuokkaajaNimi(paatosteksti)
+      case Some(paatosteksti) => paatosteksti
       case None               =>
         val paatosTekstiJaKieli = generatePaatosTeksti(hakemusOid)
         Paatosteksti(
@@ -229,7 +205,7 @@ class PaatosService(
     paatosteksti.id match {
       case Some(id) =>
         val uusiPaatosteksti = paatosRepository.tallennaPaatosteksti(id, paatosteksti, luojaTaiMuokkaaja)
-        (haeAiempiPaatosteksti(dbHakemus.id), haeMuokkaajaNimi(uusiPaatosteksti))
+        (haeAiempiPaatosteksti(dbHakemus.id), uusiPaatosteksti)
 
       case _ =>
         val uusiPaatosteksti =
@@ -252,7 +228,7 @@ class PaatosService(
     val (vanhaPaatosteksti, uusiPaatosteksti) = paatosteksti.id match {
       case Some(id) =>
         val uusiPaatosteksti = paatosRepository.vahvistaPaatosteksti(id, paatosteksti, luojaTaiMuokkaaja)
-        (haeAiempiPaatosteksti(dbHakemus.id), haeMuokkaajaNimi(uusiPaatosteksti))
+        (haeAiempiPaatosteksti(dbHakemus.id), uusiPaatosteksti)
 
       case _ =>
         val uusiPaatosteksti =

@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
 
 import java.util.UUID
@@ -22,7 +21,7 @@ class TutkintoServiceTest extends UnitTestBase {
   @Mock
   var perustelumuistioService: IPerustelumuistioService = _
   @Mock
-  var onrService: OnrService = _
+  var esittelijaService: EsittelijaService = _
 
   var tutkintoService: TutkintoService = _
 
@@ -31,8 +30,7 @@ class TutkintoServiceTest extends UnitTestBase {
     MockitoAnnotations.openMocks(this)
     tutkintoService = new TutkintoService(
       tutkintoRepository = tutkintoRepository,
-      perustelumuistioService = perustelumuistioService,
-      onrService = onrService
+      perustelumuistioService = perustelumuistioService
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
       .thenReturn(CompletableFuture.completedFuture(None))
@@ -41,7 +39,7 @@ class TutkintoServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haeTutkintoPalauttaaMuokkaajanNimen(): Unit = {
+  def haeTutkintoPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusId  = UUID.randomUUID
     val tutkintoId = UUID.randomUUID
@@ -55,17 +53,15 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkintoIdlla(any[UUID])).thenReturn(Some(dbTutkinto))
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
-
     // Act
     val tutkinto = tutkintoService.haeTutkinto(tutkintoId).get
 
     // Verify
-    assertEquals(tutkinto.muokkaaja, Some("Topolino"))
+    assertEquals(tutkinto.muokkaaja, Some("1234"))
   }
 
   @Test
-  def haeTutkinnotPalauttaaMuokkaajanNimen(): Unit = {
+  def haeTutkinnotPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid = HakemusOid("poop")
     val hakemusId  = UUID.randomUUID
@@ -80,13 +76,11 @@ class TutkintoServiceTest extends UnitTestBase {
     // Mock setup
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq(dbTutkinto))
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
-
     // Act
     val tutkinnot = tutkintoService.haeTutkinnot(hakemusOid)
 
     // Verify
-    tutkinnot.foreach(tutkinto => assertEquals(tutkinto.muokkaaja, Some("Topolino")))
+    tutkinnot.foreach(tutkinto => assertEquals(tutkinto.muokkaaja, Some("1234")))
   }
 
 }

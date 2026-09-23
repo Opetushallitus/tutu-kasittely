@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{UserService, YkViestiService}
+import fi.oph.tutu.backend.service.{EsittelijaService, UserService, YkViestiService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
@@ -24,12 +24,19 @@ import scala.util.{Failure, Success, Try}
 class YkViestiController(
   ykViestiService: YkViestiService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(ykViesti: YkViesti): YkViesti =
+    ykViesti.copy(
+      vastaanottaja = ykViesti.vastaanottajaOid.map(esittelijaService.haeEsittelijaNimi),
+      jatkoKasittelyt = ykViesti.jatkoKasittelyt.map(haeNimet)
+    )
 
   @GetMapping(
     path = Array("ykViestiOnkoViesteja"),
@@ -135,7 +142,7 @@ class YkViestiController(
           ykViestiService.haeHakemuksenYkViestit(hakemusOid, user)
         } match {
           case Success(ykViestit) =>
-            val response = mapper.writeValueAsString(ykViestit)
+            val response = mapper.writeValueAsString(ykViestit.map(haeNimet))
             ResponseEntity.status(HttpStatus.OK).body(response)
           case Failure(exception) =>
             LOG.error("Hakemuksen yhteisen käsittelyn viestien haku epäonnistui", exception)

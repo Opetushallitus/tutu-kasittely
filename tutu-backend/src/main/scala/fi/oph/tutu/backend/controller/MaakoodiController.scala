@@ -1,5 +1,6 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.Maakoodi
 import fi.oph.tutu.backend.service.{KoodistoService, MaakoodiService, UserService}
@@ -9,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation._
+import org.springframework.web.bind.annotation.*
 
 import scala.util.{Failure, Success, Try}
 import java.util.UUID
@@ -115,9 +116,9 @@ class MaakoodiController(
   ): ResponseEntity[Any] = {
     Try {
       val user            = userService.getEnrichedUserDetails(true)
-      val maakoodit       = mapper.readValue(maakooditBytes, classOf[Array[Maakoodi]])
+      val maakoodit       = mapper.readValue(maakooditBytes, new TypeReference[Seq[Maakoodi]] {})
       val vanhatMaakoodit = maakoodit.flatMap(m => maakoodiService.getMaakoodiByUri(m.koodiUri))
-      maakoodiService.updateMaakoodit(maakoodit, user.userOid)
+      maakoodiService.updateMaakoodit(maakoodit.toIndexedSeq, user.userOid)
       (maakoodit, vanhatMaakoodit)
     } match {
       case Success((maakoodit, vanhatMaakoodit)) =>

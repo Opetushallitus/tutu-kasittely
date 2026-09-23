@@ -34,10 +34,6 @@ import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 import java.util.UUID
 
-object HakemusControllerTestConstants {
-  final val ESITTELIJA_OID = "1.2.246.562.24.00000000003"
-}
-
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @ActiveProfiles(Array("test"))
@@ -61,10 +57,12 @@ class HakemusControllerTest extends IntegrationTestBase {
   var hakemusService: HakemusService = _
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
-  val dummyUserAgent            = "User-Agent"
-  val dummyUserAgentValue       = "DummyAgent/1.0"
-  val xffOriginalHeaderName     = "XFF_ORIGINAL"
-  val xffOriginalHeaderValue    = "127.0.0.1"
+  final val muokkaajaOidString  = "1.2.246.562.24.00000000003"
+
+  val dummyUserAgent         = "User-Agent"
+  val dummyUserAgentValue    = "DummyAgent/1.0"
+  val xffOriginalHeaderName  = "XFF_ORIGINAL"
+  val xffOriginalHeaderValue = "127.0.0.1"
 
   var esittelija: Option[DbEsittelija] = None
   var maakoodi: Option[DbMaakoodi]     = None
@@ -78,6 +76,8 @@ class HakemusControllerTest extends IntegrationTestBase {
     mockMvc = intermediate.build()
 
     esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOidString), "testi", "Esko", "Esittelijä")
+    esittelijaRepository.insertEsittelija(UserOid(muokkaajaOidString), "testi", "Mikko", "Muokkaaja")
+
     maakoodi = maakoodiRepository.upsertMaakoodi(
       "maatjavaltiot2_752",
       "Ruotsi",
@@ -124,7 +124,7 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(
-    value = HakemusControllerTestConstants.ESITTELIJA_OID,
+    value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def haeHakemusValidRequestReturns404WhenAtaruHakemusNotFound(): Unit = {
@@ -147,14 +147,14 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(
-    value = HakemusControllerTestConstants.ESITTELIJA_OID,
+    value = muokkaajaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def paivitaHakemusMalformedJsonReturns400(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
         User(
-          userOid = HakemusControllerTestConstants.ESITTELIJA_OID,
+          userOid = muokkaajaOidString,
           authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
         )
       )
@@ -419,14 +419,14 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Test
   @Order(6)
   @WithMockUser(
-    value = HakemusControllerTestConstants.ESITTELIJA_OID,
+    value = muokkaajaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
   def paivitaHakemusTimestampWithMillisReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
         User(
-          userOid = HakemusControllerTestConstants.ESITTELIJA_OID,
+          userOid = muokkaajaOidString,
           authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
         )
       )

@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.service.{UserService, ViestipohjaService}
+import fi.oph.tutu.backend.service.{EsittelijaService, UserService, ViestipohjaService}
 import fi.oph.tutu.backend.utils.AuditLog
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.AuditUtil.NO_CHANGES
@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.*
 class ViestipohjaController(
   viestipohjaService: ViestipohjaService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
-) extends TekstipohjaControllerBase(viestipohjaService, userService, auditLog, mapper) {
+) extends TekstipohjaControllerBase(viestipohjaService, userService, esittelijaService, auditLog, mapper) {
 
   def singlePohjaDescGenitiveCase     = "viestipohjan"
   def singleKategoriaDescGenitiveCase = "viestipohjakategorian"

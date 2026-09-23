@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 
@@ -97,7 +96,7 @@ class PaatosServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haePaatosPalauttaaMuokkaajanNimen(): Unit = {
+  def haePaatosPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid       = HakemusOid("poop")
     val dbHakemus        = makeDbHakemus(hakemusOid)
@@ -110,13 +109,11 @@ class PaatosServiceTest extends UnitTestBase {
     when(hakemuspalveluService.haeLomake(any[Long])).thenReturn(Right(lomakeJsonString))
     when(paatosRepository.haePaatosTiedot(any[UUID])).thenReturn(Seq())
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
-
     // Act
     val paatos = paatosService.haePaatos(hakemusOid).get
 
     // Verify
-    assertEquals(paatos.muokkaaja, Some("Topolino"))
+    assertEquals(paatos.muokkaaja, Some("1234"))
   }
 
 }

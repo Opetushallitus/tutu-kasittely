@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{HakemusService, HakemuspalveluService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, HakemuspalveluService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -23,12 +23,18 @@ class HakemusController(
   hakemuspalveluService: HakemuspalveluService,
   hakemusService: HakemusService,
   userService: UserService,
+  esittelijaService: EsittelijaService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
   val LOG: Logger = LoggerFactory.getLogger(classOf[HakemusController])
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
+
+  private def haeNimet(hakemus: Hakemus): Hakemus =
+    hakemus.copy(
+      muokkaaja = esittelijaService.haeEsittelijaNimi(hakemus.muokkaaja)
+    )
 
   @PostMapping(
     path = Array("ataru-hakemus"),
@@ -304,7 +310,7 @@ class HakemusController(
             auditLog.logRead("hakemus", hakemusOid, ReadHakemus, request)
             ResponseEntity
               .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(hakemus))
+              .body(mapper.writeValueAsString(haeNimet(hakemus)))
         }
       case Failure(exception) =>
         LOG.error(s"Hakemuksen haku epäonnistui, hakemusOid: $hakemusOid", exception)
@@ -370,7 +376,7 @@ class HakemusController(
       case Failure(exception: IllegalArgumentException) =>
         LOG.error(s"Virheellinen parametri:", exception)
         errorMessageMapper.mapPlainErrorMessage(
-          exception.getMessage(),
+          exception.getMessage,
           HttpStatus.BAD_REQUEST
         )
       case Failure(exception) =>
@@ -524,7 +530,7 @@ class HakemusController(
         )
         ResponseEntity
           .status(HttpStatus.OK)
-          .body(mapper.writeValueAsString(uusiHakemus))
+          .body(mapper.writeValueAsString(uusiHakemus.map(haeNimet)))
       }
     } catch {
       case e: Exception =>

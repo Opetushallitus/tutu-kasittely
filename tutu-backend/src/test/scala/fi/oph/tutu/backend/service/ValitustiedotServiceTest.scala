@@ -21,8 +21,6 @@ class ValitustiedotServiceTest extends UnitTestBase {
   var hakemusRepository: HakemusRepository = _
   @Mock
   var hakemusService: HakemusService = _
-  @Mock
-  var onrService: OnrService = _
 
   var valitustiedotService: ValitustiedotService = _
 
@@ -72,11 +70,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   @BeforeEach
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
-    valitustiedotService =
-      new ValitustiedotService(valitustiedotRepository, hakemusRepository, hakemusService, onrService)
-    when(onrService.haeNimiOption(any[Option[String]])).thenAnswer(invocation =>
-      invocation.getArgument[Option[String]](0).map(oid => s"Nimi $oid")
-    )
+    valitustiedotService = new ValitustiedotService(valitustiedotRepository, hakemusRepository, hakemusService)
   }
 
   @Test
@@ -95,8 +89,8 @@ class ValitustiedotServiceTest extends UnitTestBase {
 
     assertEquals(None, vanha)
     assertEquals(Some(dbHakemus.id), captor.getValue.hakemusId)
-    assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), uusi.get.luoja)
-    assertEquals(Some("Nimi 1.2.246.562.24.22222222222"), uusi.get.muokkaaja)
+    assertEquals(Some("1.2.246.562.24.11111111111"), uusi.get.luoja)
+    assertEquals(Some("1.2.246.562.24.22222222222"), uusi.get.muokkaaja)
     verify(valitustiedotRepository, never()).paivitaValitustiedot(any[UUID], any[Valitustiedot], any[String])
   }
 
@@ -159,8 +153,8 @@ class ValitustiedotServiceTest extends UnitTestBase {
 
     val (vanhaTulos, uusiTulos) = valitustiedotService.tallennaValitustiedot(hakemusOid, lahetetty, "muokkaaja-oid")
 
-    assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), vanhaTulos.get.luoja)
-    assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), uusiTulos.get.luoja)
+    assertEquals(Some("1.2.246.562.24.11111111111"), vanhaTulos.get.luoja)
+    assertEquals(Some("1.2.246.562.24.11111111111"), uusiTulos.get.luoja)
     assertEquals(Some(ValitusKHORatkaisu.EiValituslupaa), uusiTulos.get.valitusKHO.ratkaisu)
     assertEquals(Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)), uusiTulos.get.valitusKHO.valitusPvm)
     assertEquals(Some("Ei lupaa valittaa"), uusiTulos.get.valitusKHO.ratkaisuLisatieto)
@@ -193,15 +187,15 @@ class ValitustiedotServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haeValitustiedotSisaltaaLuojanJaMuokkaajanNimet(): Unit = {
+  def haeValitustiedotPalauttaaLuojanJaMuokkaajanOidin(): Unit = {
     val valitustiedot = makeValitustiedot(id = Some(UUID.randomUUID()), hakemusId = Some(UUID.randomUUID()))
 
     when(valitustiedotRepository.haeValitustiedot(hakemusOid)).thenReturn(Some(valitustiedot))
 
     val result = valitustiedotService.haeValitustiedot(hakemusOid).get
 
-    assertEquals(Some("Nimi 1.2.246.562.24.11111111111"), result.luoja)
-    assertEquals(Some("Nimi 1.2.246.562.24.22222222222"), result.muokkaaja)
+    assertEquals(Some("1.2.246.562.24.11111111111"), result.luoja)
+    assertEquals(Some("1.2.246.562.24.22222222222"), result.muokkaaja)
   }
 
   @Test

@@ -4,12 +4,9 @@ import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.fixture.KayttooikeusFixture.*
 import fi.oph.tutu.backend.repository.EsittelijaRepository
 import fi.oph.tutu.backend.service.oauth.Oauth2Client
-import fi.vm.sade.javautils.nio.cas.CasClient
-import org.asynchttpclient.RequestBuilder
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers.{any, contains}
-import org.mockito.Mockito
 import org.mockito.Mockito.{mock, times, verify, when}
 
 class KayttooikeusServiceTest extends UnitTestBase {
@@ -73,7 +70,7 @@ class KayttooikeusServiceTest extends UnitTestBase {
   }
 
   @Test
-  def testPoistaaDuplikaatitJaSuodattaaPalvelukäyttäjät(): Unit = {
+  def testPoistaaDuplikaatitJaSuodattaaPalvelukayttajat(): Unit = {
     when(httpService.get(any[Oauth2Client], contains("kayttooikeusryhma/1/henkilot")))
       .thenReturn(Right(henkilotJson(virkailija1Oid, palveluAtaruOid, virkailija1Oid, palveluAtaruOid)))
 

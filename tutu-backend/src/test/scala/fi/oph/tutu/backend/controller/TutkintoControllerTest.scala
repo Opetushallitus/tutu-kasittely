@@ -12,7 +12,7 @@ import fi.oph.tutu.backend.domain.{
   UusiAtaruHakemus
 }
 import fi.oph.tutu.backend.security.SecurityConstants
-import fi.oph.tutu.backend.service.{HakemusService, OnrService, TutkintoService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, OnrService, TutkintoService, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
@@ -50,6 +50,9 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @MockitoBean
   var mockOnrService: OnrService = _
+
+  @MockitoBean
+  var esittelijaService: EsittelijaService = _
 
   @MockitoBean
   var userService: UserService = _
@@ -113,8 +116,8 @@ class TutkintoControllerTest extends IntegrationTestBase {
 
   @BeforeEach
   def setupMocks(): Unit = {
-    when(mockOnrService.haeNimiOption(any()))
-      .thenAnswer(i => i.getArgument(0, classOf[Option[String]]).map(_ => "Muokkaaja"))
+    when(esittelijaService.haeEsittelijaNimi(any[String]))
+      .thenReturn("Muokkaaja")
   }
 
   @Test

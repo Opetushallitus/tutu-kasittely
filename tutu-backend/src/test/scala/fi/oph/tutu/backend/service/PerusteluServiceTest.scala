@@ -89,7 +89,7 @@ class PerusteluServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haePerusteluPalauttaaMuokkaajanNimen(): Unit = {
+  def haePerusteluPalauttaaMuokkaajanOidin(): Unit = {
     // Data
     val hakemusOid  = HakemusOid("poop")
     val dbHakemus   = makeDbHakemus(hakemusOid)
@@ -100,13 +100,10 @@ class PerusteluServiceTest extends UnitTestBase {
     when(perusteluRepository.haePerustelu(any[UUID])).thenReturn(Some(dbPerustelu))
     when(perusteluRepository.haeLausuntopyynnot(any[UUID])).thenReturn(Seq())
 
-    when(onrService.haeNimiOption(any[Option[String]])).thenReturn(Some("Topolino"))
-
     // Act
     val perustelu = perusteluService.haePerustelu(hakemusOid).get
 
-    // Verify
-    assertEquals(perustelu.muokkaaja, Some("Topolino"))
+    assertEquals(perustelu.muokkaaja, Some("1234"))
   }
 
 }

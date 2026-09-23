@@ -28,6 +28,22 @@ class ViestiController(
 
   private val errorMessageMapper = new ErrorMessageMapper(mapper)
 
+  private def taytaNimet(viesti: Viesti): Viesti = {
+    val luojaNimi     = viestiService.haeEsittelija(viesti.luoja).map(_.kokoNimi())
+    val muokkaajaNimi =
+      if (viesti.muokkaaja == viesti.luoja) luojaNimi
+      else viestiService.haeEsittelija(viesti.muokkaaja).map(_.kokoNimi())
+    val vahvistajaNimi =
+      if (viesti.muokkaaja == viesti.vahvistaja) muokkaajaNimi
+      else viestiService.haeEsittelija(viesti.vahvistaja).map(_.kokoNimi())
+
+    viesti.copy(
+      luoja = luojaNimi,
+      muokkaaja = muokkaajaNimi,
+      vahvistaja = vahvistajaNimi
+    )
+  }
+
   @GetMapping(
     path = Array("viestilista/{hakemusOid}"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
@@ -89,7 +105,7 @@ class ViestiController(
             )
             ResponseEntity
               .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(viesti))
+              .body(mapper.writeValueAsString(taytaNimet(viesti)))
         }
       case Failure(exception) =>
         LOG.error(s"Viestin työversion haku epäonnistui, hakemusOid: $hakemusOid", exception)
@@ -125,7 +141,7 @@ class ViestiController(
             )
             ResponseEntity
               .status(HttpStatus.OK)
-              .body(mapper.writeValueAsString(viesti))
+              .body(mapper.writeValueAsString(taytaNimet(viesti)))
         }
       case Failure(exception) =>
         LOG.error(s"Vahvistetun viestin haku epäonnistui, id: $id", exception)
@@ -190,7 +206,7 @@ class ViestiController(
                 Some(mapper.writeValueAsString(newOrUpdated))
               )
             )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(newOrUpdated))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(taytaNimet(newOrUpdated)))
           case (None, Some(newViesti)) =>
             auditLog.logCreate(
               auditLog.getUser(request),
@@ -198,7 +214,7 @@ class ViestiController(
               CreateViesti,
               mapper.writeValueAsString(newViesti)
             )
-            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(newViesti))
+            ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(taytaNimet(newViesti)))
           case _ =>
             LOG.warn(s"Viestin tallennus epäonnistui")
             errorMessageMapper.mapPlainErrorMessage(

@@ -2,7 +2,6 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.*
-import fi.oph.tutu.backend.service.*
 import fi.oph.tutu.backend.utils.Utility.toLocalDateTime
 import fi.oph.tutu.backend.UnitTestBase
 import fi.oph.tutu.backend.config.JacksonConfig
@@ -265,11 +264,11 @@ class HakemusServiceTest extends UnitTestBase {
   }
 
   @Test
-  def haeHakemusPalauttaaMuokkaajanNimen(): Unit = {
+  def haeHakemusPalauttaaMuokkaajanOidin(): Unit = {
 
     // Data
     val hakemusOid         = HakemusOid("poop")
-    val dbHakemus          = makeDbHakemus(hakemusOid, 5)
+    val dbHakemus          = makeDbHakemus(hakemusOid, 5).copy(muokkaaja = Some("1.2.246.562.24.00000000000000006666"))
     val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
     val hakemusMap         =
       ataruHakemusUpdate.productElementNames.toList.zip(ataruHakemusUpdate.productIterator.toList).toMap ++
@@ -297,12 +296,10 @@ class HakemusServiceTest extends UnitTestBase {
     when(onrService.haeHenkilo(any[String])).thenReturn(Right(henkilo))
     when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
 
-    when(onrService.haeNimi(any[Option[String]])).thenReturn("Topolino")
-
     // Act
     val hakemus: Hakemus = hakemusService.haeHakemus(hakemusOid).get
 
     // Verify
-    assertEquals(hakemus.muokkaaja, "Topolino")
+    assertEquals(hakemus.muokkaaja, "1.2.246.562.24.00000000000000006666")
   }
 }

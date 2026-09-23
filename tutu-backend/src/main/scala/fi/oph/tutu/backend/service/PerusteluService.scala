@@ -31,18 +31,9 @@ class PerusteluService(
           {
             perusteluRepository.haeLausuntopyynnot(perustelu.id.get) match {
               case lausuntoPyynnot if lausuntoPyynnot.nonEmpty =>
-                Some(
-                  perustelu.copy(
-                    lausuntopyynnot = lausuntoPyynnot,
-                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
-                  )
-                )
+                Some(perustelu.copy(lausuntopyynnot = lausuntoPyynnot))
               case _ =>
-                Some(
-                  perustelu.copy(
-                    muokkaaja = onrService.haeNimiOption(perustelu.muokkaaja)
-                  )
-                )
+                Some(perustelu)
             }
           }
         }

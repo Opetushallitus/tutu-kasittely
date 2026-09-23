@@ -14,8 +14,7 @@ import java.util.UUID
 class ValitustiedotService(
   valitustiedotRepository: ValitustiedotRepository,
   hakemusRepository: HakemusRepository,
-  hakemusService: HakemusService,
-  onrService: OnrService
+  hakemusService: HakemusService
 ) {
 
   val LOG: Logger = LoggerFactory.getLogger(classOf[ValitustiedotService])
@@ -152,15 +151,8 @@ class ValitustiedotService(
     )
   }
 
-  private def haeNimet(valitustiedot: Valitustiedot): Valitustiedot = {
-    valitustiedot.copy(
-      luoja = onrService.haeNimiOption(valitustiedot.luoja),
-      muokkaaja = onrService.haeNimiOption(valitustiedot.muokkaaja)
-    )
-  }
-
   def haeValitustiedot(hakemusOid: HakemusOid): Option[Valitustiedot] = {
-    valitustiedotRepository.haeValitustiedot(hakemusOid).map(vt => haeNimet(vt))
+    valitustiedotRepository.haeValitustiedot(hakemusOid)
   }
 
   private def lisaaValitustiedot(
@@ -191,11 +183,11 @@ class ValitustiedotService(
     val (vanhatValitustiedot, uudetValitustiedot) = valitustiedotRepository.haeValitustiedot(hakemusOid) match {
       case Some(oldValitustiedot) =>
         (
-          Some(haeNimet(oldValitustiedot)),
-          paivitaValitustiedot(oldValitustiedot.id.get, valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt))
+          Some(oldValitustiedot),
+          paivitaValitustiedot(oldValitustiedot.id.get, valitustiedot, luojaTaiMuokkaaja)
         )
       case None =>
-        (None, lisaaValitustiedot(hakemusOid, valitustiedot, luojaTaiMuokkaaja).map(vt => haeNimet(vt)))
+        (None, lisaaValitustiedot(hakemusOid, valitustiedot, luojaTaiMuokkaaja))
     }
 
     // Valitustiedot voivat vaikuttaa hakemuksen käsittelyvaiheeseen,
