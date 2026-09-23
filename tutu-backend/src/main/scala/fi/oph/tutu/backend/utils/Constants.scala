@@ -95,6 +95,39 @@ object Constants {
     AtaruKysymysId("337b4741-2550-4f21-adb5-69dfdcbb7829", "riittavat-opinnot-options")
   }
 
+  val ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_SOPEUTUMUSAIKA_TYONANATAJA: AtaruKysymysId = {
+    AtaruKysymysId(
+      "0f981e15-8afa-418f-89b4-002ac4ea20d3",
+      "lopullinen-suoritetut-toimenpiteet-sopeutumisaika-tyonantaja"
+    )
+  }
+  val ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_SOPEUTUMUSAIKA_TODISTUSPVM: AtaruKysymysId = {
+    AtaruKysymysId(
+      "c904441f-27b1-4b83-bd39-77ee88532568",
+      "lopullinen-suoritetut-toimenpiteet-sopeutumisaika-todistuspvm"
+    )
+  }
+
+  val ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_KELPOISUUSKOE_JARJESTAJA: AtaruKysymysId = {
+    AtaruKysymysId(
+      "8d416b6e-1739-4c67-a098-86f1106fd239",
+      "lopullinen-suoritetut-toimenpiteet-kelpoisuuskoe-jarjestaja"
+    )
+  }
+  val ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_KELPOISUUSKOE_TODISTUSPVM: AtaruKysymysId = {
+    AtaruKysymysId(
+      "4a0d7e78-7a30-414e-8f72-adab5b6fccff",
+      "lopullinen-suoritetut-toimenpiteet-kelpoisuuskoe-todistuspvm"
+    )
+  }
+
+  val ATARU_LOMAKE_LOPULLINEN_SUORITETUT_TOIMENPITEET_TAYDENTAVAT_OPINNOT_JARJESTAJA: AtaruKysymysId = {
+    AtaruKysymysId(
+      "3af23df4-7255-445e-8c31-fa4f04ffab32",
+      "lopullinen-suoritetut-toimenpiteet-taydentavat-opinnot-jarjestaja"
+    )
+  }
+
   // Kovakoodatut juuritason arvot päätöstiedon kelpoisuusoptioissa
   val KELPOISUUS_AMMATTIIN_OPETUSALA_ROOT_VALUE: PaatosTietoOption =
     PaatosTietoOption(

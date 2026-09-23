@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode
 import java.time.LocalDateTime
 import java.util.UUID
 import scala.annotation.meta.field
+import fi.oph.tutu.backend.utils.Constants.HAKEMUS_KOSKEE_LOPULLINEN_PAATOS
 
 @Schema(name = "Hakemus")
 case class DbHakemus(
@@ -187,7 +188,9 @@ case class Hakemus(
   viimeisinTaydennyspyyntoPvm: Option[LocalDateTime] = None,
   // Täytetty vain kun kasittelyVaihe on OdottaaKHOLausuntoa tai OdottaaHaOLausuntoa.
   lausunnonMaaraaikaPvm: Option[LocalDateTime] = None
-)
+) {
+  def onLopullinenPaatos: Boolean = hakemusKoskee == HAKEMUS_KOSKEE_LOPULLINEN_PAATOS
+}
 
 /**
  * Täysi hakemuksen päivityspyyntö.

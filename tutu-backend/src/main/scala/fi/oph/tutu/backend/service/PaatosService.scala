@@ -2,7 +2,13 @@ package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.repository.{HakemusRepository, PaatosRepository}
-import fi.oph.tutu.backend.service.generator.paatosteksti.PaatosTekstiGenerator
+import fi.oph.tutu.backend.service.generator.paatosteksti.{
+  EhdollinenFileMakerHakemus,
+  EhdollinenTutuHakemus,
+  IEhdollinenHakemus,
+  PaatosTekstiGenerator
+}
+import fi.oph.tutu.backend.service.migration.VanhaTutuService
 import fi.oph.tutu.backend.utils.{Constants, TutuJsonFormats}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jvalue2extractable
@@ -10,6 +16,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
 
 import java.util.UUID
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 @Component
 @Service
@@ -24,6 +31,8 @@ class PaatosService(
   maakoodiService: MaakoodiService,
   onrService: OnrService,
   perustelumuistioService: IPerustelumuistioService,
+  vanhaTutuService: VanhaTutuService,
+  translationService: TranslationService,
   paatosTekstiGenerator: PaatosTekstiGenerator
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[PaatosService])
@@ -154,9 +163,31 @@ class PaatosService(
       case None        => "009"
     }
     val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
+
+    val lopullinenPaatos: Boolean                     = hakemus.onLopullinenPaatos
+    val ehdollisenPaatoksenAsiatunnus: Option[String] = if (lopullinenPaatos) {
+      hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus
+    } else { None }
+    val vastaavaEhdollinenTutuHakemus: Option[Hakemus] = if (lopullinenPaatos) {
+      hakemusService.haeHakemusAsiatunnuksella(hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
+    } else { None }
+
+    val vastaavaEhdollinenFilemakerHakemus: Option[ObjectNode] = if (lopullinenPaatos) {
+      vanhaTutuService.haeHakemusAsiatunnuksella(hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus)
+    } else { None }
+
+    val vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus] =
+      (vastaavaEhdollinenTutuHakemus, vastaavaEhdollinenFilemakerHakemus) match {
+        case (Some(tutuHakemus), _) =>
+          Some(EhdollinenTutuHakemus(tutuHakemus, tutkintoService, paatosKieli, maakoodiService, translationService))
+        case (None, Some(filemakerHakemus)) => Some(EhdollinenFileMakerHakemus(filemakerHakemus))
+        case (_, _)                         => None
+      }
+
     (
       this.paatosTekstiGenerator.generatePaatosTeksti(
         hakemus,
+        vastaavaEhdollinenHakemus,
         tutkinnot,
         paatos,
         paatosKieli,

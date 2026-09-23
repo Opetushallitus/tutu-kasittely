@@ -147,6 +147,66 @@ class HakemusRepository extends BaseResultHandlers {
   /**
    * Palauttaa yksittäisen hakemuksen
    *
+   * @param asiatunnus
+   * hakemuksen asiatunnus
+   * @return
+   * hakemuksen
+   */
+  def haeHakemusAsiatunnuksella(asiatunnus: String): Option[DbHakemus] = {
+    try {
+      db.run(
+        sql"""
+            SELECT
+              h.id,
+              h.hakemus_oid,
+              h.hakemus_koskee,
+              h.form_id,
+              h.esittelija_id,
+              e.esittelija_oid,
+              h.asiakirja_id,
+              h.asiatunnus,
+              h.kasittely_vaihe,
+              h.muokattu,
+              h.yhteistutkinto,
+              h.lopullinen_paatos_ehdollisen_asiatunnus,
+              h.lopullinen_paatos_tutkinnon_suoritus_maakoodiuri,
+              h.esittelijan_huomioita,
+              h.muokkaaja,
+              h.onko_peruutettu,
+              h.peruutus_paiva,
+              h.peruutus_lisatieto,
+              h.viimeisin_taydennyspyynto_paiva,
+              h.saapumis_pvm,
+              h.ataru_hakemus_muokattu,
+              h.hakija_etunimet,
+              h.hakija_sukunimi,
+              h.esittely_pvm,
+              CASE h.kasittely_vaihe
+                WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+                WHEN 'OdottaaHaOLausuntoa' THEN (vt.valitus_hao #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
+                ELSE NULL
+              END AS lausunnon_maaraaika_pvm
+            FROM
+              hakemus h
+            LEFT JOIN esittelija e on e.id = h.esittelija_id
+            LEFT JOIN valitustiedot vt ON vt.hakemus_id = h.id
+            WHERE
+              h.asiatunnus = ${asiatunnus}
+          """.as[DbHakemus].headOption,
+        "hae_hakemus"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Hakemuksen haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
+  /**
+   * Palauttaa yksittäisen hakemuksen
+   *
    * @param hakemusOid
    * hakemuksen oid
    * @return

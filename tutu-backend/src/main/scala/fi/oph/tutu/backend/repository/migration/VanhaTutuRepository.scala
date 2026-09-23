@@ -45,6 +45,25 @@ class VanhaTutuRepository extends BaseResultHandlers {
     }
   }
 
+  def haeAsiatunnuksella(asiatunnus: String): Option[DBFilemakerEntry] = {
+    try {
+      val query = sql"""
+        SELECT id, data_json::text
+        FROM vanha_tutu
+        WHERE data_json->>'Asiatunnus' = ${asiatunnus}
+      """.as[DBFilemakerEntry].headOption
+
+      db.run(query, "vanha-tutu-get")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Vanha tutu haku epäonnistui asiatunnuksella $asiatunnus: ${e}")
+        throw new RuntimeException(
+          s"Vanha tutu haku epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
   def get(id: UUID): Option[DBFilemakerEntry] = {
     try {
       val query = sql"""
