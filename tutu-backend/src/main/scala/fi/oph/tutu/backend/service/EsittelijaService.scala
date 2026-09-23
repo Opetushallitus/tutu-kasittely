@@ -10,7 +10,14 @@ class EsittelijaService(esittelijaRepository: EsittelijaRepository, onrService: 
   def haeEsittelijat: Seq[Esittelija] = {
     esittelijaRepository
       .haeKaikkiEsittelijat()
-      .map(_.toEsittelija)
+      .map(e =>
+        Esittelija(
+          esittelijaOid = e.esittelijaOid.toString,
+          etunimi = e.kutsumanimi.getOrElse(""),
+          sukunimi = e.sukunimi.getOrElse(""),
+          id = Some(e.esittelijaId)
+        )
+      )
   }
 
   def haeEsittelijaNimi(esittelijaOid: String): String = {

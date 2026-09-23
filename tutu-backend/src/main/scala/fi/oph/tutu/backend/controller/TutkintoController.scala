@@ -206,7 +206,7 @@ class TutkintoController(
           val user               = userService.getEnrichedUserDetails(true)
           val tutkinto: Tutkinto = mapper.readValue(tutkintoBytes, classOf[Tutkinto])
           tutkintoService.paivitaTutkinto(tutkinto, UserOid(user.userOid))
-          tutkinto
+          tutkintoService.haeTutkinto(tutkinto.id.get).get
         } match {
           case Success(tutkinto: Tutkinto) =>
             auditLog.logChanges(
