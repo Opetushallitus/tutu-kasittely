@@ -18,7 +18,10 @@ export type Paatostyyppi =
 
 export type SovellettuLaki = 'uo' | 'ap' | 'ap_seut' | 'ro';
 
-export type TutkintoTaso = 'AlempiKorkeakoulu' | 'YlempiKorkeakoulu';
+export type TutkintoTaso =
+  | 'AlempiKorkeakoulu'
+  | 'YlempiKorkeakoulu'
+  | 'AlempiTaiYlempiKorkeakoulu';
 
 export type PeruutuksenTaiRaukeamisenSyy = {
   eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada?: boolean;
