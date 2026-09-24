@@ -1,15 +1,15 @@
 import { SovellettuTilanneOption } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
-  ERITYISOPETUS_OPINNOT_KEYS,
-  KASVATUSTIETEEN_TUTKINTO_KEYS,
+  ERITYISOPETUS_OPINNOT_KEY,
+  KASVATUSTIETEEN_TUTKINTO_KEY,
   KoulutusEroModel,
   KoulutusEroTarkennukset,
   MONIALAISET_OPINNOT_KEY,
-  OHJAUS_TEHTAVA_OPINNOT,
-  OIKEUSTIETEEN_MAISTERI_KEYS,
-  OPETETTAVAN_AINEEN_OPINNOT_KEYS,
-  OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
-  SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS,
+  OHJAUS_TEHTAVA_OPINNOT_KEY,
+  OIKEUSTIETEEN_MAISTERI_KEY,
+  OPETETTAVAN_AINEEN_OPINNOT_KEY,
+  OPETTAJAN_PEDAGOGISET_OPINNOT_KEY,
+  SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEY,
   VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
 } from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -36,41 +36,41 @@ export enum ResolvedEntity {
 export const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
   {
     tutkintoTaiOpinto: ResolvedEntity.oikeustieteenMaisteri,
-    keywords: OIKEUSTIETEEN_MAISTERI_KEYS,
+    keyword: OIKEUSTIETEEN_MAISTERI_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.opetettavaAine,
-    keywords: OPETETTAVAN_AINEEN_OPINNOT_KEYS,
+    keyword: OPETETTAVAN_AINEEN_OPINNOT_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.opettajanPedagogisetOpinnot,
-    keywords: OPETTAJAN_PEDAGOGISET_OPINNOT_KEYS,
+    keyword: OPETTAJAN_PEDAGOGISET_OPINNOT_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.erityisopetus,
-    keywords: ERITYISOPETUS_OPINNOT_KEYS,
+    keyword: ERITYISOPETUS_OPINNOT_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.oppilasJaOpintoOhjaus,
-    keywords: OHJAUS_TEHTAVA_OPINNOT,
+    keyword: OHJAUS_TEHTAVA_OPINNOT_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.kasvatustieteellinenAla,
-    keywords: KASVATUSTIETEEN_TUTKINTO_KEYS,
+    keyword: KASVATUSTIETEEN_TUTKINTO_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.sosiaaliJaTerveysAla,
-    keywords: SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEYS,
+    keyword: SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.monialaisetOpinnot,
-    keywords: [MONIALAISET_OPINNOT_KEY],
+    keyword: MONIALAISET_OPINNOT_KEY,
   },
   {
     tutkintoTaiOpinto: ResolvedEntity.ammatillisetValmiudet,
-    keywords: [VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY],
+    keyword: VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
   },
-  { tutkintoTaiOpinto: ResolvedEntity.muu, keywords: [] },
+  { tutkintoTaiOpinto: ResolvedEntity.muu, keyword: '' },
 ];
 
 export const SOVELLETTU_TILANNE_BY_ENTITY: Record<

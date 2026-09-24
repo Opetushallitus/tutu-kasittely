@@ -472,46 +472,38 @@ class AtaruLomakeParser() {
     result
   }
 
-  private def optionPath(
-    basePath: Option[Kielistetty],
+  private def optionValuePath(
+    basePath: Option[String],
     optionLabel: Kielistetty
-  ): Kielistetty = {
+  ): String = {
     basePath match {
       case Some(basePathVal) =>
-        Map(
-          Kieli.fi -> s"${basePathVal.getOrElse(Kieli.fi, "")}_${optionLabel.getOrElse(Kieli.fi, "")}",
-          Kieli.sv -> s"${basePathVal.getOrElse(Kieli.sv, "")}_${optionLabel.getOrElse(Kieli.sv, "")}",
-          Kieli.en -> s"${basePathVal.getOrElse(Kieli.en, "")}_${optionLabel.getOrElse(Kieli.en, "")}"
-        )
+        s"${basePathVal}_${optionLabel.getOrElse(Kieli.fi, "")}"
       case _ =>
-        Map(
-          Kieli.fi -> optionLabel.getOrElse(Kieli.fi, ""),
-          Kieli.sv -> optionLabel.getOrElse(Kieli.sv, ""),
-          Kieli.en -> optionLabel.getOrElse(Kieli.en, "")
-        )
+        optionLabel.getOrElse(Kieli.fi, "")
     }
   }
 
   private def collectAllOptionsRecursively(
     item: LomakeContentItem,
-    basePath: Option[Kielistetty],
+    basePath: Option[String],
     rootItem: Option[PaatosTietoOption]
   ): Seq[PaatosTietoOption] = {
     rootItem match {
       case Some(rootOption) =>
         Seq(
           rootOption.copy(
-            children = collectAllOptionsRecursively(item, rootOption.label, None)
+            children = collectAllOptionsRecursively(item, Some(rootOption.value), None)
           )
         )
       case _ =>
         item.options.map { option =>
-          val optionPathVal = optionPath(basePath, option.label)
+          val optionValPath = optionValuePath(basePath, option.label)
           PaatosTietoOption(
             label = Some(trimKielistetty(option.label)),
-            value = Some(trimKielistetty(optionPathVal)),
+            value = optionValPath.trim,
             children = option.followups.flatMap { followup =>
-              collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
+              collectAllOptionsRecursivelyFromFollowups(followup, optionValPath)
             }
           )
         }
@@ -520,14 +512,14 @@ class AtaruLomakeParser() {
 
   private def collectAllOptionsRecursivelyFromFollowups(
     item: LomakeContentItem,
-    basePath: Kielistetty
+    basePath: String
   ): Seq[PaatosTietoOption] = {
     item.options.filter(option => !option.hidden.getOrElse(false)).map { option =>
-      val optionPathVal = optionPath(Some(basePath), option.label)
+      val optionPathVal = optionValuePath(Some(basePath), option.label)
 
       PaatosTietoOption(
         label = Some(trimKielistetty(option.label)),
-        value = Some(trimKielistetty(optionPathVal)),
+        value = optionPathVal.trim,
         children = option.followups.flatMap { followup =>
           collectAllOptionsRecursivelyFromFollowups(followup, optionPathVal)
         }

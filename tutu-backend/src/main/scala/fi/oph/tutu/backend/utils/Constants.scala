@@ -133,8 +133,7 @@ object Constants {
     PaatosTietoOption(
       label =
         Some(Map(fi -> "Opetusalan ammatit", sv -> "Uppgifter inom undervisningsområdet", en -> "Teaching positions")),
-      value =
-        Some(Map(fi -> "Opetusalan ammatit", sv -> "Uppgifter inom undervisningsområdet", en -> "Teaching positions")),
+      value = "Opetusalan ammatit",
       children = Seq()
     )
   val KELPOISUUS_AMMATTIIN_VARHAISKASVATUS_ROOT_VALUE: PaatosTietoOption =
@@ -146,13 +145,7 @@ object Constants {
           en -> "Professions in early childhood education and care"
         )
       ),
-      value = Some(
-        Map(
-          fi -> "Varhaiskasvatuksen tehtävät",
-          sv -> "Uppgifter inom småbarnspedagogik",
-          en -> "Professions in early childhood education and care"
-        )
-      ),
+      value = "Varhaiskasvatuksen tehtävät",
       children = Seq()
     )
 }
