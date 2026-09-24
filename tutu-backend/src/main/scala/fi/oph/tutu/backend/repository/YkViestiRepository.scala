@@ -32,7 +32,14 @@ class YkViestiRepository extends BaseResultHandlers {
         luoja = r.nextStringOption(),
         luotu = r.nextTimestampOption().map(_.toLocalDateTime),
         muokkaaja = r.nextStringOption(),
-        muokattu = r.nextTimestampOption().map(_.toLocalDateTime)
+        muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
+        luettu = Option(r.nextString()).map(
+          _.split(",").toSeq.flatMap(s =>
+            try { Some(UUID.fromString(s)) }
+            catch { case _: Exception => None }
+          )
+        ),
+        aihe = Option(r.nextString())
       )
     )
 
@@ -54,10 +61,11 @@ class YkViestiRepository extends BaseResultHandlers {
             v.muokkaaja,
             v.muokattu,
             v.luettu,
-            v.aihe
+            a.avain
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+          LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
           WHERE
             v.vastaanottaja_oid = $userOid
           """.as[YkViesti],
@@ -220,10 +228,12 @@ class YkViestiRepository extends BaseResultHandlers {
           v.luotu,
           v.muokkaaja,
           v.muokattu,
-          v.luettu
+          v.luettu,
+          a.avain
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+        LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
         WHERE
           v.hakemus_oid = $hakemusOid
         ORDER BY v.luotu DESC
