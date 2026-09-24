@@ -66,10 +66,10 @@ case class DbYkViesti(
   )
   viesti: Option[String],
   @(Schema @field)(
-    example = "Viestin alkuperäinen kysymys",
+    example = "Viestin aihe",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  aihe: Option[UUID]
+  aihe: Option[String]
 )
 
 case class YkViesti(
@@ -88,7 +88,7 @@ case class YkViesti(
   muokkaaja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   luettu: Option[Seq[UUID]] = None,
-  aihe: Option[UUID] = None
+  aihe: Option[String] = None
 )
 
 case class YkViestiListItem(
@@ -103,7 +103,7 @@ case class YkViestiListItem(
   luotu: Option[LocalDateTime] = None,
   luettu: Boolean,
   viesti: Option[String] = None,
-  aihe: Option[UUID] = None
+  aihe: Option[String] = None
 )
 
 case class YkKysymysDTO(
