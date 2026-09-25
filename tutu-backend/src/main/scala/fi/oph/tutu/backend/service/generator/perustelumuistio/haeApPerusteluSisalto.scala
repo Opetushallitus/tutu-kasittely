@@ -9,7 +9,7 @@ private val FI = Kieli.fi
 // Käytetään pääosin samoja funktioita kuin haePaatostiedot.scala -tiedostossa.
 // Korvataan tarvittavat funktiot UO/RO-kohtaisilla funktioilla.
 
-def bindHaePaatostiedotUORO(
+def bindHaePaatostiedotAP(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
 ): Option[Paatos] => Option[String] = {
@@ -41,40 +41,39 @@ def bindHaePaatostiedotUORO(
     }
   }
 
-  val haePerustelutUOROPaatostiedoille = bindTraverse(extractNext, expandUORO, combine)
+  val haePerustelutAPPaatostiedoille = bindTraverse(extractNext, expandAP, combine)
 
-  def haePerustelutUORO(paatosMaybe: Option[Paatos]): Option[String] = {
+  def haePerustelutAP(paatosMaybe: Option[Paatos]): Option[String] = {
     val result = paatosMaybe
       .map(_.paatosTiedot)
       .map(
-        _.filter(paatosTieto =>
-          paatosTieto.sovellettuLaki.contains(SovellettuLaki.uo) || paatosTieto.sovellettuLaki.contains(
-            SovellettuLaki.ro
-          )
-        )
+        _.filter(paatosTieto => paatosTieto.sovellettuLaki.contains(SovellettuLaki.ap))
       )
-      .flatMap(haePerustelutUOROPaatostiedoille)
+      .flatMap(haePerustelutAPPaatostiedoille)
       .mkString("\n")
     Option.when(result.nonEmpty)(result)
   }
 
-  haePerustelutUORO
+  haePerustelutAP
 }
 
-def expandUORO(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
+def expandAP(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
   node match {
-    case node: MyonteisenPaatoksenLisavaatimukset => expandMyonteisenPaatoksenLisavaatimuksetUORO(node)
-    case _                                        => expand(node)
+    case node: KelpoisuudenLisavaatimukset => expandKelpoisuudenLisavaatimuksetAP(node)
+    case _                                 => expand(node)
   }
 }
 
-def expandMyonteisenPaatoksenLisavaatimuksetUORO(
-  node: MyonteisenPaatoksenLisavaatimukset
+def expandKelpoisuudenLisavaatimuksetAP(
+  node: KelpoisuudenLisavaatimukset
 ): Seq[PaatosNodeTypeAggregate] = {
   Seq(
     TitleNode(
-      titleKey = Some("perustelumuistio.tutkinnonTaiOpinnonLisavaatimukset.lahtokohtaisetOsaamisenTaydentamisenTavat"),
-      child = node.lahtokohtaisetOsaamisenTaydentamisenTavat
+      titleKey = Some("perustelumuistio.ammattikokemusJaElinikainenOppiminen.lahtokohtaisetKorvaavatToimenpiteet"),
+      child = Seq(
+        node.korvaavaToimenpide,
+        // node.ammattikokemusJaElinikainenOppiminen,
+      ).flatten
     )
   )
 }
