@@ -23,10 +23,14 @@ export type EditableState<T> = {
   discard: () => void;
 };
 
-// Normalizes null values to ""
-// This makes it not a change when a server has null and client has "" (common with form inputs)
+// Normalizes null/false values to ""
+// This makes it not a change when a server has null and client has "" (common
+// with form inputs) or false (common with checkboxes backed by a nullable
+// boolean
 export const normalize = (obj: unknown) =>
-  JSON.parse(JSON.stringify(obj, (_k, v) => (v === null ? '' : v)));
+  JSON.parse(
+    JSON.stringify(obj, (_k, v) => (v === false || v === null ? '' : v)),
+  );
 
 export const useEditableState = <T>(
   serverData: T | undefined,
