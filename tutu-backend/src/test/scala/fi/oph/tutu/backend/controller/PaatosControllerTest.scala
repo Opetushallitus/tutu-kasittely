@@ -280,7 +280,7 @@ class PaatosControllerTest extends IntegrationTestBase {
                     )
                   ),
                   ammattikokemusJaElinikainenOppiminen = Some(
-                    AmmattikomemusJaElinikainenOppiminen(
+                    AmmattikokemusJaElinikainenOppiminen(
                       lisatieto = Some("Lisätietoa"),
                       korvaavuusAmmattikokemus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
                       korvaavuusElinikainenOppiminen = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
