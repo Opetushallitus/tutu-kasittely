@@ -51,8 +51,8 @@ test('KHO valitettu, valintaruutu näyttää ja piilottaa päivämääräkentät
 
   const requestBody = uncheckRequest.postDataJSON();
   expect(requestBody.valitusKHO.valitettu).toBe(false);
-  expect(requestBody.valitusKHO.valitusPvm).toBeUndefined();
-  expect(requestBody.valitusKHO.ratkaisuPvm).toBeUndefined();
+  expect(requestBody.valitusKHO.valitusPvm).toBeNull();
+  expect(requestBody.valitusKHO.ratkaisuPvm).toBeNull();
 
   await expect(valitettuCheckbox).not.toBeChecked();
   await expect(valitusPvmCalendar).toBeHidden();
@@ -148,8 +148,8 @@ test('KHO valitusPvm tyhjentäminen tyhjentää myös ratkaisuPvm', async ({
   ]);
 
   const requestBody = clearRequest.postDataJSON();
-  expect(requestBody.valitusKHO.valitusPvm).toBeUndefined();
-  expect(requestBody.valitusKHO.ratkaisuPvm).toBeUndefined();
+  expect(requestBody.valitusKHO.valitusPvm).toBeNull();
+  expect(requestBody.valitusKHO.ratkaisuPvm).toBeNull();
 
   await expect(valituspvmInput).toHaveValue('');
   await expect(ratkaisupvmInput).toHaveValue('');
@@ -238,7 +238,7 @@ test('KHO:n ratkaisu, radiovalinnat näytetään jos valitettu, valinta tallentu
       await saveButton.click();
     })(),
   ]);
-  expect(clearRequest.postDataJSON().valitusKHO.ratkaisu).toBeUndefined();
+  expect(clearRequest.postDataJSON().valitusKHO.ratkaisu).toBeNull();
 
   await expect(ratkaisuClearButton).toBeHidden();
   for (const value of ratkaisuValues) {
@@ -295,8 +295,8 @@ test('KHO:n lisätietokenttä näytetään kun ratkaisu on valittu, tallentuu ja
   ]);
 
   const requestBody = clearRequest.postDataJSON();
-  expect(requestBody.valitusKHO.ratkaisu).toBeUndefined();
-  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeUndefined();
+  expect(requestBody.valitusKHO.ratkaisu).toBeNull();
+  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeNull();
 
   await expect(ratkaisuLisatietoInput).toBeHidden();
 });
@@ -333,8 +333,8 @@ test('KHO:n ratkaisu piilotetaan ja tyhjennetään kun valitus poistetaan', asyn
   ]);
 
   const requestBody = uncheckRequest.postDataJSON();
-  expect(requestBody.valitusKHO.ratkaisu).toBeUndefined();
-  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeUndefined();
+  expect(requestBody.valitusKHO.ratkaisu).toBeNull();
+  expect(requestBody.valitusKHO.ratkaisuLisatieto).toBeNull();
 
   await expect(ratkaisuRadioGroup).toBeHidden();
   await expect(ratkaisuLisatietoInput).toBeHidden();

@@ -14,9 +14,9 @@ export type ValitusHaORatkaisu =
 
 export type ValitusLausuntopyynto = {
   ashaTunnus?: string;
-  saapumisPvm?: string;
-  maaraAikaPvm?: string;
-  lausuntoAnnettuPvm?: string;
+  saapumisPvm?: string | null;
+  maaraAikaPvm?: string | null;
+  lausuntoAnnettuPvm?: string | null;
 };
 
 export type ValitusHaOValittajanVaatimus = {
@@ -32,13 +32,13 @@ export type ValitusHaOValittajanVaatimus = {
 
 export type ValitusHaO = {
   valitettu?: boolean;
-  valitusPvm?: string;
-  ratkaisuPvm?: string;
+  valitusPvm?: string | null;
+  ratkaisuPvm?: string | null;
   lausuntopyyntoValittu?: boolean;
-  lausuntopyynto?: ValitusLausuntopyynto;
-  valittajanVaatimus?: ValitusHaOValittajanVaatimus;
-  ratkaisu?: ValitusHaORatkaisu;
-  ratkaisuLisatieto?: string;
+  lausuntopyynto?: ValitusLausuntopyynto | null;
+  valittajanVaatimus?: ValitusHaOValittajanVaatimus | null;
+  ratkaisu?: ValitusHaORatkaisu | null;
+  ratkaisuLisatieto?: string | null;
 };
 
 export type ValitusKHORatkaisu =
@@ -50,12 +50,12 @@ export type ValitusKHORatkaisu =
 
 export type ValitusKHO = {
   valitettu?: boolean;
-  valitusPvm?: string;
-  ratkaisuPvm?: string;
+  valitusPvm?: string | null;
+  ratkaisuPvm?: string | null;
   lausuntopyyntoValittu?: boolean;
-  lausuntopyynto?: ValitusLausuntopyynto;
-  ratkaisu?: ValitusKHORatkaisu;
-  ratkaisuLisatieto?: string;
+  lausuntopyynto?: ValitusLausuntopyynto | null;
+  ratkaisu?: ValitusKHORatkaisu | null;
+  ratkaisuLisatieto?: string | null;
 };
 
 export type Valitustiedot = {
