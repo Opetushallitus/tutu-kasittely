@@ -13,7 +13,7 @@ def bindHaePaatostiedotUORO(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
 ): Option[Paatos] => Option[String] = {
-  val extractPaatosTieto = bindExtractPaatosTieto(translationService, tutkinnot)
+  val extractPaatosTieto                        = bindExtractPaatosTieto(translationService, tutkinnot)
   val extractMyonteisenPaatoksenLisavaatimukset =
     bindExtractMyonteisenPaatoksenLisavaatimukset(translationService, tutkinnot)
   val extractErotKoulutuksessa                    = bindExtractErotKoulutuksessa(translationService, tutkinnot)

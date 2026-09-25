@@ -13,7 +13,7 @@ def bindHaePaatostiedotAP(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
 ): Option[Paatos] => Option[String] = {
-  val extractPaatosTieto = bindExtractPaatosTieto(translationService, tutkinnot)
+  val extractPaatosTieto                        = bindExtractPaatosTieto(translationService, tutkinnot)
   val extractMyonteisenPaatoksenLisavaatimukset =
     bindExtractMyonteisenPaatoksenLisavaatimukset(translationService, tutkinnot)
   val extractErotKoulutuksessa                    = bindExtractErotKoulutuksessa(translationService, tutkinnot)
@@ -71,8 +71,8 @@ def expandKelpoisuudenLisavaatimuksetAP(
     TitleNode(
       titleKey = Some("perustelumuistio.ammattikokemusJaElinikainenOppiminen.lahtokohtaisetKorvaavatToimenpiteet"),
       child = Seq(
-        node.korvaavaToimenpide,
-        // node.ammattikokemusJaElinikainenOppiminen,
+        node.korvaavaToimenpide
+          // node.ammattikokemusJaElinikainenOppiminen,
       ).flatten
     )
   )

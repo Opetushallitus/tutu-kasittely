@@ -246,7 +246,7 @@ def expandKelpoisuudenLisavaatimukset(node: KelpoisuudenLisavaatimukset): Seq[Pa
     node.erotKoulutuksessa,
     // node.korvaavaToimenpide,
     node.ammattikokemusJaElinikainenOppiminen,
-    node.lahtokohtaisetOsaamisenTaydentamisenTavat,
+    node.lahtokohtaisetOsaamisenTaydentamisenTavat
   )
 }
 
