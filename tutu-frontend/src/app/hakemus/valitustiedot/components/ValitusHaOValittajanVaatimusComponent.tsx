@@ -12,7 +12,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
   valittajanVaatimus,
   updateValittajanVaatimus,
 }: {
-  valittajanVaatimus?: ValitusHaOValittajanVaatimus;
+  valittajanVaatimus?: ValitusHaOValittajanVaatimus | null;
   updateValittajanVaatimus: (
     valittajanVaatimus: Partial<ValitusHaOValittajanVaatimus>,
   ) => void;
@@ -103,9 +103,7 @@ export const ValitusHaOValittajanVaatimusComponent = ({
               )}
               checked={!!valittajanVaatimus?.muu}
               onChange={() => {
-                updateValittajanVaatimus({
-                  muu: !valittajanVaatimus?.muu,
-                });
+                updateValittajanVaatimus({ muu: !valittajanVaatimus?.muu });
               }}
             ></OphCheckbox>
           </Stack>

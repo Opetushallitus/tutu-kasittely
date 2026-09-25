@@ -12,7 +12,7 @@ export const ValitusLausuntopyyntoComponent = ({
   updateLausuntopyynto,
 }: {
   namespace: 'valituskho' | 'valitushao';
-  lausuntopyynto?: ValitusLausuntopyynto;
+  lausuntopyynto?: ValitusLausuntopyynto | null;
   updateLausuntopyynto: (valitustiedot: Partial<ValitusLausuntopyynto>) => void;
 }) => {
   const { t } = useTranslations();
@@ -55,14 +55,14 @@ export const ValitusLausuntopyyntoComponent = ({
           maxDate={new Date()}
           setDate={(date) => {
             updateLausuntopyynto({
-              saapumisPvm: date ? date.toISOString() : undefined,
+              saapumisPvm: date ? date.toISOString() : null,
               maaraAikaPvm:
                 !date || (maaraaikaPvm && date > maaraaikaPvm)
-                  ? undefined
+                  ? null
                   : lausuntopyynto?.maaraAikaPvm,
               lausuntoAnnettuPvm:
                 !date || (annettuPvm && date > annettuPvm)
-                  ? undefined
+                  ? null
                   : lausuntopyynto?.lausuntoAnnettuPvm,
             });
           }}
@@ -79,7 +79,7 @@ export const ValitusLausuntopyyntoComponent = ({
           maxDate={null}
           setDate={(date) => {
             updateLausuntopyynto({
-              maaraAikaPvm: date ? date.toISOString() : undefined,
+              maaraAikaPvm: date ? date.toISOString() : null,
             });
           }}
           dataTestId={`${namespace}-lausunnonmaaraaikapvm-calendar`}
@@ -93,7 +93,7 @@ export const ValitusLausuntopyyntoComponent = ({
           maxDate={null}
           setDate={(date) => {
             updateLausuntopyynto({
-              lausuntoAnnettuPvm: date ? date.toISOString() : undefined,
+              lausuntoAnnettuPvm: date ? date.toISOString() : null,
             });
           }}
           dataTestId={`${namespace}-lausuntoannettupvm-calendar`}

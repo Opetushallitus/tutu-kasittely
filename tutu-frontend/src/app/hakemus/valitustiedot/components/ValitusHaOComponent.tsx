@@ -12,6 +12,7 @@ import { CalendarComponent } from '@/src/components/calendar-component';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ValitusHaORatkaisu, ValitusHaO } from '@/src/lib/types/valitustiedot';
+import { collapseIfEmpty } from '@/src/lib/utils';
 
 export const ValitusHaOComponent = ({
   valitusHaO,
@@ -49,13 +50,13 @@ export const ValitusHaOComponent = ({
           if (valitusHaO?.valitettu) {
             updateValitusHaO({
               valitettu: false,
-              valitusPvm: undefined,
-              ratkaisuPvm: undefined,
-              lausuntopyyntoValittu: undefined,
-              lausuntopyynto: undefined,
-              valittajanVaatimus: undefined,
-              ratkaisu: undefined,
-              ratkaisuLisatieto: undefined,
+              valitusPvm: null,
+              ratkaisuPvm: null,
+              lausuntopyyntoValittu: false,
+              lausuntopyynto: null,
+              valittajanVaatimus: null,
+              ratkaisu: null,
+              ratkaisuLisatieto: null,
             });
           } else {
             updateValitusHaO({ valitettu: true });
@@ -68,10 +69,10 @@ export const ValitusHaOComponent = ({
             <CalendarComponent
               setDate={(date: Date | null) =>
                 updateValitusHaO({
-                  valitusPvm: date ? date.toISOString() : undefined,
+                  valitusPvm: date ? date.toISOString() : null,
                   ratkaisuPvm:
                     !date || (ratkaisuPvm && date > ratkaisuPvm)
-                      ? undefined
+                      ? null
                       : valitusHaO?.ratkaisuPvm,
                 })
               }
@@ -83,7 +84,7 @@ export const ValitusHaOComponent = ({
             <CalendarComponent
               setDate={(date: Date | null) =>
                 updateValitusHaO({
-                  ratkaisuPvm: date ? date.toISOString() : undefined,
+                  ratkaisuPvm: date ? date.toISOString() : null,
                 })
               }
               disabled={!valitusPvm}
@@ -100,7 +101,7 @@ export const ValitusHaOComponent = ({
               if (valitusHaO?.lausuntopyyntoValittu) {
                 updateValitusHaO({
                   lausuntopyyntoValittu: false,
-                  lausuntopyynto: undefined,
+                  lausuntopyynto: null,
                 });
               } else {
                 updateValitusHaO({ lausuntopyyntoValittu: true });
@@ -114,10 +115,10 @@ export const ValitusHaOComponent = ({
                 lausuntopyynto={valitusHaO.lausuntopyynto}
                 updateLausuntopyynto={(lausuntopyynto) =>
                   updateValitusHaO({
-                    lausuntopyynto: {
+                    lausuntopyynto: collapseIfEmpty({
                       ...valitusHaO?.lausuntopyynto,
                       ...lausuntopyynto,
-                    },
+                    }),
                   })
                 }
               />
@@ -127,10 +128,10 @@ export const ValitusHaOComponent = ({
             valittajanVaatimus={valitusHaO.valittajanVaatimus}
             updateValittajanVaatimus={(valittajanVaatimus) =>
               updateValitusHaO({
-                valittajanVaatimus: {
+                valittajanVaatimus: collapseIfEmpty({
                   ...valitusHaO?.valittajanVaatimus,
                   ...valittajanVaatimus,
-                },
+                }),
               })
             }
           />
@@ -156,8 +157,8 @@ export const ValitusHaOComponent = ({
               }
               onClear={() => {
                 updateValitusHaO({
-                  ratkaisu: undefined,
-                  ratkaisuLisatieto: undefined,
+                  ratkaisu: null,
+                  ratkaisuLisatieto: null,
                 });
               }}
             />

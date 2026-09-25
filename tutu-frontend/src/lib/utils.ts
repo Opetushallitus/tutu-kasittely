@@ -110,6 +110,17 @@ export const handleSuccessMessage = (
 
 export const isDefined = (val: unknown) => val !== undefined && val !== null;
 
+// Nested objektitit tulevat serveriltä nullina jos ne eivät ole kannassa.
+// Jotta useEditableState vertailu toimii oikein, täytyy tyhjät objektit
+// näissä tapauksissa collapsata takaisin nulliksi.
+export const collapseIfEmpty = <T extends object>(obj: T): T | null => {
+  const isEmpty = Object.values(obj).every(
+    (value) =>
+      value === undefined || value === null || value === false || value === '',
+  );
+  return isEmpty ? null : obj;
+};
+
 export { buildHakemusUpdateRequest } from '@/src/lib/utils/hakemusUpdateBuilder';
 
 export const updateTutkintoJarjestys = (
