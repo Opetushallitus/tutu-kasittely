@@ -7,6 +7,7 @@ import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatos
 import { SovellettuLakiComponent } from '@/src/app/hakemus/paatostiedot/components/SovellettuLakiComponent';
 import { RinnastettavatTutkinnotTaiOpinnotList } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/RinnastettavatTutkinnotTaiOpinnotList';
 import {
+  kielteisenPaatoksenTutkinnonTasoOptions,
   paatostyyppiOptions,
   tutkinnonTasoOptions,
   tutkintoOptions,
@@ -153,8 +154,8 @@ export const PaatosTietoComponent = ({
                       ...currentPaatosTieto,
                       ...paatos,
                     };
-                    // If paatos is changed to kielteinen, remove tutkintoTaso
-                    if (paatos.myonteinenPaatos === false) {
+                    // Myönteisellä ja kielteisellä on eri optionsit
+                    if ('myonteinenPaatos' in paatos) {
                       tobePaatostieto.tutkintoTaso = undefined;
                     }
                     updatePaatosTietoAction(tobePaatostieto);
@@ -162,11 +163,15 @@ export const PaatosTietoComponent = ({
                   t={t}
                   paatosTyyppi={currentPaatosTieto.paatosTyyppi}
                 />
-                {currentPaatosTieto.myonteinenPaatos && (
+                {currentPaatosTieto.myonteinenPaatos != null && (
                   <OphSelectFormFieldPatched
                     placeholder={t('yleiset.valitse')}
                     label={t('hakemus.paatos.tutkinto.tutkinnonTaso')}
-                    options={tutkinnonTasoOptions(t)}
+                    options={
+                      currentPaatosTieto.myonteinenPaatos
+                        ? tutkinnonTasoOptions(t)
+                        : kielteisenPaatoksenTutkinnonTasoOptions(t)
+                    }
                     value={currentPaatosTieto.tutkintoTaso || ''}
                     onChange={(event) =>
                       updatePaatosTietoAction({

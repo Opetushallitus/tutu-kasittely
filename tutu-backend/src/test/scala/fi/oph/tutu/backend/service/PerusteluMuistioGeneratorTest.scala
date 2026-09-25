@@ -97,6 +97,7 @@ val translations = Map[String, String](
   "perustelumuistio.myonteinenTaiKielteinen.label"            -> "Päätös on myönteinen:",
   "perustelumuistio.tutkinnonTaso.alempiKorkeakoulu"          -> "Tutkinnon taso: Alempi korkeakoulututkinto",
   "perustelumuistio.tutkinnonTaso.ylempiKorkeakoulu"          -> "Tutkinnon taso: Ylempi korkeakoulututkinto",
+  "perustelumuistio.tutkinnonTaso.alempiTaiYlempiKorkeakoulu" -> "Tutkinnon taso: Alempi tai ylempi korkeakoulututkinto",
   "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenKorkeakoulu" -> "- Epävirallinen korkeakoulu",
   "perustelumuistio.kielteinenPaatos.perustelu.epavirallinenTutkinto"    -> "- Epävirallinen tutkinto",
   "perustelumuistio.kielteinenPaatos.perustelu.eiVastaaTasoltaanSuomalaista" -> "- Ei tasoltaan vastaa Suomessa suoritettavaa korkeakoulututkintoa",
@@ -774,6 +775,17 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
 
     assert(result.get.contains("Tutkinnon taso:"))
     assert(result.get.contains("Ylempi korkeakoulututkinto"))
+  }
+
+  @Test
+  def haeTutkinnonTasoProducesStringForAlempiTaiYlempi(): Unit = {
+    val paatosTiedot = PaatosTieto(
+      tutkintoTaso = Some(TutkintoTaso.AlempiTaiYlempiKorkeakoulu)
+    )
+    val result = haeTutkinnonTaso(translationService, paatosTiedot)
+
+    assert(result.get.contains("Tutkinnon taso:"))
+    assert(result.get.contains("Alempi tai ylempi korkeakoulututkinto"))
   }
 
   @Test

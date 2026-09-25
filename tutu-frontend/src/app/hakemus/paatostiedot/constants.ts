@@ -219,6 +219,14 @@ export const tutkinnonTasoOptions = (t: TFunction) => [
   },
 ];
 
+export const kielteisenPaatoksenTutkinnonTasoOptions = (t: TFunction) => [
+  ...tutkinnonTasoOptions(t),
+  {
+    value: 'AlempiTaiYlempiKorkeakoulu',
+    label: t('hakemus.paatos.tutkinto.alempiTaiYlempiKorkeakoulu'),
+  },
+];
+
 export const direktiivitasoOptions = (t: TFunction) => [
   {
     value: 'a_1384_2015_patevyystaso_1',

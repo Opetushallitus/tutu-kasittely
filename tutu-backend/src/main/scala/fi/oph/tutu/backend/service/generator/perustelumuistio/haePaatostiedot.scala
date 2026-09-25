@@ -915,6 +915,8 @@ def haeTutkinnonTaso(translationService: TranslationService, paatostiedot: Paato
         translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaso.alempiKorkeakoulu")
       case TutkintoTaso.YlempiKorkeakoulu =>
         translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaso.ylempiKorkeakoulu")
+      case TutkintoTaso.AlempiTaiYlempiKorkeakoulu =>
+        translationService.getTranslation(FI, "perustelumuistio.tutkinnonTaso.alempiTaiYlempiKorkeakoulu")
     }
 }
 

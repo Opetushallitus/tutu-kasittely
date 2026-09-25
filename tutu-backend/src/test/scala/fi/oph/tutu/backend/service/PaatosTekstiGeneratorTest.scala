@@ -214,7 +214,8 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
               muuPerustelu = true,
               muuPerusteluKuvaus = Some("Muu perustelu kuvaus")
             )
-          )
+          ),
+          tutkintoTaso = Some(TutkintoTaso.AlempiTaiYlempiKorkeakoulu)
         )
       )
     )

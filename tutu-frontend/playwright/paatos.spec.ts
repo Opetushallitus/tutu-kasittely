@@ -402,13 +402,15 @@ test('Myönteinen päätös tulee näkyviin oikeilla arvoilla, näyttää tutkin
   );
 });
 
-test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja päivitys lähettää kutsun backendille', async ({
+test('Kielteisen päätöksen perustelut ja tutkinnon taso tulevat näkyviin oikeilla arvoilla ja päivitys lähettää kutsun backendille', async ({
   page,
 }) => {
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
   const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
   const tasoText = 'hakemus.paatos.paatostyyppi.options.taso';
+  const alempiTaiYlempiKorkeakouluText =
+    'hakemus.paatos.tutkinto.alempiTaiYlempiKorkeakoulu';
   await expect(ratkaisutyyppiInput).toHaveText(paatosText);
   await expect(paatostyyppiInput).toBeVisible();
 
@@ -470,6 +472,28 @@ test('Kielteisen päätöksen perustelut tulevat näkyviin oikeilla arvoilla ja 
           kielteisenPaatoksenPerustelut: {
             eiVastaaSuomessaSuoritettavaaTutkintoa: true,
           },
+        },
+      ],
+    },
+  );
+
+  const tutkintoTasoDropdown = page.getByTestId('paatos-tutkintotaso-dropdown');
+  await expect(tutkintoTasoDropdown).toBeVisible();
+
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoTasoDropdown,
+    alempiTaiYlempiKorkeakouluText,
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'Taso',
+          myonteinenPaatos: false,
+          kielteisenPaatoksenPerustelut: {
+            eiVastaaSuomessaSuoritettavaaTutkintoa: true,
+          },
+          tutkintoTaso: 'AlempiTaiYlempiKorkeakoulu',
         },
       ],
     },

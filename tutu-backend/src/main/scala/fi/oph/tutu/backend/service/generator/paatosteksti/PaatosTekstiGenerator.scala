@@ -74,10 +74,12 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
 
   private def getKorkeakouluTasoText(lang: Kieli, tutkintoTaso: TutkintoTaso): String = {
     (lang, tutkintoTaso) match {
-      case (Kieli.fi, TutkintoTaso.YlempiKorkeakoulu) => "ylempää"
-      case (_, TutkintoTaso.YlempiKorkeakoulu)        => "högre"
-      case (Kieli.fi, _)                              => "alempaa"
-      case _                                          => "lägre"
+      case (Kieli.fi, TutkintoTaso.YlempiKorkeakoulu)          => "ylempää"
+      case (_, TutkintoTaso.YlempiKorkeakoulu)                 => "högre"
+      case (Kieli.fi, TutkintoTaso.AlempiTaiYlempiKorkeakoulu) => "alempaa tai ylempää"
+      case (_, TutkintoTaso.AlempiTaiYlempiKorkeakoulu)        => "lägre eller högre"
+      case (Kieli.fi, TutkintoTaso.AlempiKorkeakoulu)          => "alempaa"
+      case (_, TutkintoTaso.AlempiKorkeakoulu)                 => "lägre"
     }
   }
 
@@ -166,11 +168,11 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
 
     val tutkintoTexts = tasoPaatosTiedot
       .map { pt =>
-        if (pt.tutkintoTaso.isDefined)
-          getTasoPaatosTutkintoText(lang, pt.tutkintoTaso.get, getTutkintoNimi(lang, tutkinnot, pt))
-        else if (pt.myonteinenPaatos.contains(false)) {
+        if (pt.myonteinenPaatos.contains(false)) {
           translationService.getTranslation(lang, "paatosteksti.tasoPaatos.kielteinen")
-        } else
+        } else if (pt.tutkintoTaso.isDefined)
+          getTasoPaatosTutkintoText(lang, pt.tutkintoTaso.get, getTutkintoNimi(lang, tutkinnot, pt))
+        else
           getSelectTutkintoTasoText(lang)
       }
       .mkString("")
