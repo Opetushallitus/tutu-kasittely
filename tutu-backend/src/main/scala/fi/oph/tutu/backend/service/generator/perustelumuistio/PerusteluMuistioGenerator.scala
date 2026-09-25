@@ -758,6 +758,11 @@ def generate(
     tutkinnot = tutkinnot
   )
 
+  val haePerustelutAP = bindHaePaatostiedotAP(
+    translationService = translationService,
+    tutkinnot = tutkinnot
+  )
+
   val result: Seq[String] = Seq[Option[String]](
     haeEsittelija(translationService, hakemusMaybe, esittelijaService),
     haeKasittelyajat(translationService, hakemusMaybe),
@@ -777,6 +782,7 @@ def generate(
     haePerustelunTutkintokohtaisetTiedot(translationService, tutkinnot),
 
     heaPerustelutUORO(paatosMaybe),
+    haePerustelutAP(paatosMaybe),
 
     haeYleisetPerustelut(translationService, perusteluMaybe),
     haeJatkoOpintoKelpoisuus(translationService, perusteluMaybe),

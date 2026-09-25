@@ -134,7 +134,7 @@ case class KorvaavaToimenpide(
   kelpoisuuskoeJaSopeutumisaikaKestoKk: Option[String] = None
 )
 
-case class AmmattikomemusJaElinikainenOppiminen(
+case class AmmattikokemusJaElinikainenOppiminen(
   lisatieto: Option[String] = None,
   korvaavuusAmmattikokemus: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
   korvaavuusElinikainenOppiminen: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
@@ -146,7 +146,7 @@ case class KelpoisuudenLisavaatimukset(
   olennaisiaEroja: Option[Boolean] = None,
   erotKoulutuksessa: Option[ErotKoulutuksessa] = None,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
-  ammattikokemusJaElinikainenOppiminen: Option[AmmattikomemusJaElinikainenOppiminen] = None,
+  ammattikokemusJaElinikainenOppiminen: Option[AmmattikokemusJaElinikainenOppiminen] = None,
   lahtokohtaisetOsaamisenTaydentamisenTavat: Option[KorvaavaToimenpide] = None,
   sovellettuTilanne: Option[String] = None,
   ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
