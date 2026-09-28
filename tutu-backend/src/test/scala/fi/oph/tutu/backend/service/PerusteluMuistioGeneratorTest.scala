@@ -185,7 +185,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
       muokkaaja = None,
       uoRoSisalto = UoRoSisalto(),
       apSisalto = APSisalto(
-        IMIHalytysTarkastettu = None
+        IMIHalytysTarkastettu = false
       )
     )
   )
@@ -382,21 +382,21 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         koulutuksenSisalto = Some("Koulutuksen sisältö muistio -- body")
       ),
       apSisalto = APSisalto(
-        lakiperusteToisessaJasenmaassaSaannelty = Some(true),
-        lakiperustePatevyysLahtomaanOikeuksilla = Some(true),
-        lakiperusteToinenEUmaaTunnustanut = Some(true),
-        lakiperusteLahtomaassaSaantelematon = Some(true),
+        lakiperusteToisessaJasenmaassaSaannelty = true,
+        lakiperustePatevyysLahtomaanOikeuksilla = true,
+        lakiperusteToinenEUmaaTunnustanut = true,
+        lakiperusteLahtomaassaSaantelematon = true,
         todistusEUKansalaisuuteenRinnasteisestaAsemasta = Some("todistus"),
         ammattiJohonPatevoitynyt = Some("lähihoitaja"),
         ammattitoiminnanPaaAsiallinenSisalto = Some("käytännön työ"),
         koulutuksenKestoJaSisalto = Some("alusta loppuun asti"),
-        selvityksetLahtomaanViranomaiselta = Some(true),
-        selvityksetLahtomaanLainsaadannosta = Some(true),
-        selvityksetAikaisempiTapaus = Some(true),
+        selvityksetLahtomaanViranomaiselta = true,
+        selvityksetLahtomaanLainsaadannosta = true,
+        selvityksetAikaisempiTapaus = true,
         selvityksetAikaisemmanTapauksenAsiaTunnus = Some("asia #6"),
-        selvityksetIlmeneeAsiakirjoista = Some(true),
+        selvityksetIlmeneeAsiakirjoista = true,
         lisatietoja = Some("annetaan pyydettäessä"),
-        IMIHalytysTarkastettu = Some(true),
+        IMIHalytysTarkastettu = true,
         muutAPPerustelut = Some("pätevä on"),
         SEUTArviointi = Some("hyväksi todettu")
       )

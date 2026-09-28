@@ -48,7 +48,7 @@ const Kelpoisuuskoe = ({
   testIdPrefix,
 }: {
   field: keyof KorvaavaToimenpide;
-  sisalto?: KelpoisuuskoeSisalto;
+  sisalto?: KelpoisuuskoeSisalto | null;
   updateKelpoisuuskoeAction: (
     field: keyof KorvaavaToimenpide,
     updatedKelpoisuuskoeSisalto: KelpoisuuskoeSisalto,
@@ -90,7 +90,7 @@ const Kelpoisuuskoe = ({
 };
 
 export type KorvaavaToimenpideProps = {
-  korvaavaToimenpide?: KorvaavaToimenpide;
+  korvaavaToimenpide?: KorvaavaToimenpide | null;
   label: string;
   updateKorvaavaToimenpide: (
     updatedKorvaavaToimenpide: KorvaavaToimenpide,
@@ -121,7 +121,7 @@ export const KorvaavaToimenpideComponent = ({
   const kelpoisuuskoeElement = (
     field: keyof KorvaavaToimenpide,
     testIdPrefix: string,
-    sisalto?: KelpoisuuskoeSisalto,
+    sisalto?: KelpoisuuskoeSisalto | null,
   ) => (
     <Kelpoisuuskoe
       key={field}
@@ -147,7 +147,7 @@ export const KorvaavaToimenpideComponent = ({
   const sopeutumisaikaElement = (
     field: keyof KorvaavaToimenpide,
     testIdPrefix: string,
-    kesto?: string,
+    kesto?: string | null,
   ) => (
     <OphInputFormField
       key={field}

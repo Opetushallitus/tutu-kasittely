@@ -16,20 +16,20 @@ case class Valitustiedot(
 )
 
 case class ValitusOPH(
-  maksu: Option[Boolean] = None,
-  asiavirhe: Option[Boolean] = None,
-  kirjoitusvirhe: Option[Boolean] = None,
-  muu: Option[Boolean] = None,
+  maksu: Boolean = false,
+  asiavirhe: Boolean = false,
+  kirjoitusvirhe: Boolean = false,
+  muu: Boolean = false,
   tasmennys: Option[String] = None
 )
 
 case class ValitusHaO(
-  valitettu: Option[Boolean] = None,
+  valitettu: Boolean = false,
   valitusPvm: Option[LocalDateTime] = None,
   ratkaisuPvm: Option[LocalDateTime] = None,
-  lausuntopyyntoValittu: Option[Boolean] = None,
-  lausuntopyynto: Option[ValitusLausuntopyynto] = None,
-  valittajanVaatimus: Option[ValitusHaOValittajanVaatimus] = None,
+  lausuntopyyntoValittu: Boolean = false,
+  lausuntopyynto: ValitusLausuntopyynto = ValitusLausuntopyynto(),
+  valittajanVaatimus: ValitusHaOValittajanVaatimus = ValitusHaOValittajanVaatimus(),
   ratkaisu: Option[String] = None,
   ratkaisuLisatieto: Option[String] = None
 )
@@ -42,22 +42,22 @@ case class ValitusLausuntopyynto(
 )
 
 case class ValitusHaOValittajanVaatimus(
-  taso: Option[Boolean] = None,
-  suuntautuminen: Option[Boolean] = None,
-  virallisuus: Option[Boolean] = None,
-  tiettyKelpoisuus: Option[Boolean] = None,
-  kompensaationPoistoTaiVahennysAP: Option[Boolean] = None,
-  kompensaationPoistoTaiVahennysUO: Option[Boolean] = None,
-  muu: Option[Boolean] = None,
+  taso: Boolean = false,
+  suuntautuminen: Boolean = false,
+  virallisuus: Boolean = false,
+  tiettyKelpoisuus: Boolean = false,
+  kompensaationPoistoTaiVahennysAP: Boolean = false,
+  kompensaationPoistoTaiVahennysUO: Boolean = false,
+  muu: Boolean = false,
   tasmennys: Option[String] = None
 )
 
 case class ValitusKHO(
-  valitettu: Option[Boolean] = None,
+  valitettu: Boolean = false,
   valitusPvm: Option[LocalDateTime] = None,
   ratkaisuPvm: Option[LocalDateTime] = None,
   ratkaisu: Option[ValitusKHORatkaisu] = None,
   ratkaisuLisatieto: Option[String] = None,
-  lausuntopyyntoValittu: Option[Boolean] = None,
-  lausuntopyynto: Option[ValitusLausuntopyynto] = None
+  lausuntopyyntoValittu: Boolean = false,
+  lausuntopyynto: ValitusLausuntopyynto = ValitusLausuntopyynto()
 )

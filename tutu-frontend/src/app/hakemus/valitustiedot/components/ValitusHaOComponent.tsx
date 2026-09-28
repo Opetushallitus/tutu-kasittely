@@ -12,6 +12,7 @@ import { CalendarComponent } from '@/src/components/calendar-component';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { ValitusHaORatkaisu, ValitusHaO } from '@/src/lib/types/valitustiedot';
+import { clearValues } from '@/src/lib/utils';
 
 export const ValitusHaOComponent = ({
   valitusHaO,
@@ -52,8 +53,8 @@ export const ValitusHaOComponent = ({
               valitusPvm: null,
               ratkaisuPvm: null,
               lausuntopyyntoValittu: false,
-              lausuntopyynto: null,
-              valittajanVaatimus: null,
+              lausuntopyynto: clearValues(valitusHaO.lausuntopyynto),
+              valittajanVaatimus: clearValues(valitusHaO.valittajanVaatimus),
               ratkaisu: null,
               ratkaisuLisatieto: null,
             });
@@ -100,7 +101,7 @@ export const ValitusHaOComponent = ({
               if (valitusHaO?.lausuntopyyntoValittu) {
                 updateValitusHaO({
                   lausuntopyyntoValittu: false,
-                  lausuntopyynto: null,
+                  lausuntopyynto: clearValues(valitusHaO.lausuntopyynto),
                 });
               } else {
                 updateValitusHaO({ lausuntopyyntoValittu: true });

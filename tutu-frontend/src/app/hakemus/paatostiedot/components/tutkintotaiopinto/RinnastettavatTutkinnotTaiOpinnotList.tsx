@@ -3,6 +3,10 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
 import { RinnastettavaTutkintoTaiOpintoComponent } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/RinnastettavaTutkintoTaiOpintoComponent';
+import {
+  emptyKielteisenPaatoksenPerustelut,
+  emptyMyonteisenPaatoksenLisavaatimukset,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   PaatosTieto,
@@ -12,14 +16,8 @@ import {
 
 const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
   paatostietoId: paatostietoId,
-  myonteisenPaatoksenLisavaatimukset: {
-    taydentavatOpinnot: false,
-    kelpoisuuskoe: false,
-    sopeutumisaika: false,
-    opettajuuttaTutkimassa: false,
-    suomalainenKoulu: false,
-    opetusNayte: false,
-  },
+  myonteisenPaatoksenLisavaatimukset: emptyMyonteisenPaatoksenLisavaatimukset(),
+  kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
 });
 
 type RinnastettavatTutkinnotTaiOpinnotListProps = {

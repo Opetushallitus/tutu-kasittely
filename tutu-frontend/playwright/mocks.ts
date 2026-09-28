@@ -11,6 +11,7 @@ import { getLopullinenHakemus } from '@/playwright/fixtures/hakemus2';
 import { getPaatos } from '@/playwright/fixtures/paatos1';
 import { mockTekstipohjatKategorioittain } from '@/playwright/fixtures/tekstipohjat';
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
+import { getValitustiedot } from '@/playwright/fixtures/valitustiedot1';
 import { Language } from '@/src/lib/localization/localizationTypes';
 import { AsiakirjaTieto, Hakemus } from '@/src/lib/types/hakemus';
 import {
@@ -978,11 +979,7 @@ export const mockValituspohjat = (page: Page) => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({
-            valitusOPH: {},
-            valitusHaO: {},
-            valitusKHO: {},
-          }),
+          body: JSON.stringify(getValitustiedot()),
         });
       }
     },

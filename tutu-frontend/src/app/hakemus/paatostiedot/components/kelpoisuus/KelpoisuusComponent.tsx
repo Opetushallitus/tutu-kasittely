@@ -18,6 +18,7 @@ import {
   getKelpoisuusMuuAmmattiDropdownOption,
   getKelpoisuusMuuAmmattiDropdownValue,
   getPaatosTietoDropdownOptions,
+  emptyKielteisenPaatoksenPerustelut,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
@@ -221,8 +222,9 @@ export const KelpoisuusComponent = ({
       tobeKelpoisuus.kansallisestiVaadittavaDirektiivitaso = undefined;
       tobeKelpoisuus.muuAmmattiKuvaus = undefined;
       tobeKelpoisuus.myonteinenPaatos = undefined;
-      tobeKelpoisuus.kielteisenPaatoksenPerustelut = undefined;
-      tobeKelpoisuus.myonteisenPaatoksenLisavaatimukset = undefined;
+      tobeKelpoisuus.kielteisenPaatoksenPerustelut =
+        emptyKielteisenPaatoksenPerustelut();
+      tobeKelpoisuus.myonteisenPaatoksenLisavaatimukset = null;
     }
     updateKelpoisuusAction({ ...tobeKelpoisuus, ...updatedKelpoisuus }, index);
   };

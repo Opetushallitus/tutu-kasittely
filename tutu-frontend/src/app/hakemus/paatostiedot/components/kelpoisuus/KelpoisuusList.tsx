@@ -4,6 +4,7 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
 
 import { KelpoisuusComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/KelpoisuusComponent';
+import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { TreeOption } from '@/src/lib/localization/translationUtils';
@@ -12,8 +13,8 @@ import { Kelpoisuus, PaatosTieto } from '@/src/lib/types/paatos';
 const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
   paatostietoId: paatostietoId,
   opetettavaAine: '',
-  myonteisenPaatoksenLisavaatimukset: undefined,
-  kielteisenPaatoksenPerustelut: undefined,
+  myonteisenPaatoksenLisavaatimukset: null,
+  kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
 });
 
 type KelpoisuusListProps = {

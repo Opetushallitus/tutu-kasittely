@@ -222,8 +222,8 @@ export const SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<Suomess
   ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
 
 export const shouldShowOsaamisenTaydentamisenTavat = (
-  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen,
-  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen,
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null,
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null,
 ) => {
   return (
     ((ammattikokemuksenHuomioiminen &&
@@ -243,7 +243,7 @@ const OPETETTAVA_AINE_SOVELLETUT_TILANTEET_WO_EROT = ['aine1', 'aine4'];
 
 export const shouldShowLisavalinnat = (
   entity: ResolvedEntity,
-  sovellettuTilanne?: string,
+  sovellettuTilanne?: string | null,
 ) => {
   if (
     entity === ResolvedEntity.opetettavaAine &&
@@ -283,11 +283,11 @@ export const translationForEroTarkennus = (t: TFunction, tKey: string) => {
 };
 
 export const newLaajuusValue = (
-  currentValue?: number,
+  currentValue?: number | null,
   numberValue?: number | null,
-): number | undefined => {
+): number | null | undefined => {
   if (numberValue === undefined) return currentValue;
-  return numberValue !== null ? numberValue : undefined;
+  return numberValue;
 };
 
 export const emptyOikeustieteenMaisterinOpinnot =
@@ -325,27 +325,27 @@ export const initOrUpdateOikeustieteenMaisteriOpinnot = (
       tobe.tallinnaOpintojenLaajuus = 10;
     }
   } else {
-    tobe.tallinnaOpintojenLaajuus = undefined;
+    tobe.tallinnaOpintojenLaajuus = null;
     tobe.isTallinnaOpintojenLaajuusModified = false;
   }
 
   if (!tobe.eurooppaOpintojaSisallossa) {
-    tobe.eurooppaOpintojenSisallonLisatieto = undefined;
+    tobe.eurooppaOpintojenSisallonLisatieto = null;
   }
   if (!tobe.eurooppaOpintojaKokonaismaarassa) {
-    tobe.eurooppaOpintojenLaajuus = undefined;
+    tobe.eurooppaOpintojenLaajuus = null;
   }
 
   if (tobe.suomiOpintojaSisallossa) {
     tobe.suomiOpintojenAihealueet =
       tobe.suomiOpintojenAihealueet ?? presetSuomiOpintojenAihealue(false);
   } else {
-    tobe.suomiOpintojenAihealueet = undefined;
-    tobe.suomiOpintojenSisallonLisatieto = undefined;
+    tobe.suomiOpintojenAihealueet = null;
+    tobe.suomiOpintojenSisallonLisatieto = null;
   }
 
   if (!tobe.suomiOpintojaLaajuudessa) {
-    tobe.suomiOpintojenLaajuus = undefined;
+    tobe.suomiOpintojenLaajuus = null;
   }
 
   return tobe;

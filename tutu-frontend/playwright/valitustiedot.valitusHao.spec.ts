@@ -315,9 +315,14 @@ test('HaO:n ratkaisu piilotetaan ja tyhjennetään kun valitus poistetaan', asyn
   await ratkaisuRadioGroup
     .locator('input[type="radio"][value="ErilainenPaatos"]')
     .click();
-  await ratkaisuLisatietoInput
-    .getByRole('textbox')
-    .fill('Tarkempi selitys ratkaisusta');
+  await expectRequestData(
+    page,
+    '/valitustiedot',
+    ratkaisuLisatietoInput
+      .getByRole('textbox')
+      .fill('Tarkempi selitys ratkaisusta'),
+    { valitusHaO: { ratkaisuLisatieto: 'Tarkempi selitys ratkaisusta' } },
+  );
 
   const saveButton = page.getByTestId('save-ribbon-button');
   const [uncheckRequest] = await Promise.all([

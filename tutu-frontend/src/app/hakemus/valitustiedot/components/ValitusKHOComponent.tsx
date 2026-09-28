@@ -15,6 +15,7 @@ import {
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { ValitusKHO, ValitusKHORatkaisu } from '@/src/lib/types/valitustiedot';
+import { clearValues } from '@/src/lib/utils';
 
 const ratkaisuOptions = (t: TFunction) =>
   [
@@ -84,7 +85,7 @@ export const ValitusKHOComponent = ({
                 ratkaisu: null,
                 ratkaisuLisatieto: null,
                 lausuntopyyntoValittu: false,
-                lausuntopyynto: null,
+                lausuntopyynto: clearValues(valitusKHO.lausuntopyynto),
               });
             } else {
               updateValitusKHO({ valitettu: true });
@@ -131,7 +132,7 @@ export const ValitusKHOComponent = ({
                 if (valitusKHO?.lausuntopyyntoValittu) {
                   updateValitusKHO({
                     lausuntopyyntoValittu: false,
-                    lausuntopyynto: null,
+                    lausuntopyynto: clearValues(valitusKHO.lausuntopyynto),
                   });
                 } else {
                   updateValitusKHO({ lausuntopyyntoValittu: true });

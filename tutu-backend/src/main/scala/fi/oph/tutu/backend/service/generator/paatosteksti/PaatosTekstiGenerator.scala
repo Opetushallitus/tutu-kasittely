@@ -150,7 +150,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
 
   private def getTutkintoNimi(lang: Kieli, tutkinnot: Seq[Tutkinto], paatosTieto: PaatosTieto): Option[String] = {
     for {
-      tutkinto <- getTutkinto(tutkinnot, paatosTieto) if paatosTieto.lisaaTutkintoPaatostekstiin.getOrElse(false)
+      tutkinto <- getTutkinto(tutkinnot, paatosTieto) if paatosTieto.lisaaTutkintoPaatostekstiin
       nimi     <-
         if (tutkinto.jarjestys == "MUU")
           Some(translationService.getTranslation(lang, "paatosteksti.muuTutkinto"))
@@ -180,7 +180,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val perusteluBodies = tasoPaatosTiedot
       .flatMap { pt =>
         if (pt.myonteinenPaatos.contains(false)) { // Kielteinen paatos
-          pt.kielteisenPaatoksenPerustelut.toList.flatMap { kp =>
+          List(pt.kielteisenPaatoksenPerustelut).flatMap { kp =>
             kp.productElementNames
               .zip(kp.productIterator)
               .collect {

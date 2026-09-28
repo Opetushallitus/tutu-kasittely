@@ -20,10 +20,13 @@ import { NamedBoolean } from '@/src/lib/types/common';
 import {
   ErotKoulutuksessa,
   KelpoisuudenLisavaatimukset,
+  KielteisenPaatoksenPerustelut,
   KorvaavaToimenpide,
   KorvaavaToimenpideDto,
+  MyonteisenPaatoksenLisavaatimukset,
   Paatos,
   PaatosTieto,
+  PeruutuksenTaiRaukeamisenSyy,
 } from '@/src/lib/types/paatos';
 
 export const getPaatosTietoDropdownOptions = (
@@ -145,14 +148,15 @@ export const emptyErotKoulutuksessaForModel = (
 
   return {
     erot: [...kelpoisuusKohtaiset, ...yleiset],
-    eroTarkennukset: tarkennukset,
-    muuEro: eroModel.sisaltaaMuuEro ? false : undefined,
+    eroTarkennukset: tarkennukset ?? {},
+    muuEro: false,
+    muuEroKuvaus: null,
   };
 };
 
 export const initOrUpdateErotKoulutuksessa = (
   initial: ErotKoulutuksessa,
-  erotKoulutuksessa?: ErotKoulutuksessa,
+  erotKoulutuksessa?: ErotKoulutuksessa | null,
 ): ErotKoulutuksessa => {
   if (erotKoulutuksessa) {
     const erot = (initial.erot ?? []).map((ero) => ({
@@ -169,21 +173,21 @@ export const initOrUpdateErotKoulutuksessa = (
 };
 
 const initOrUpdateKorvaavaToimenpide = (
-  korvaavaToimenpide?: KorvaavaToimenpide,
+  korvaavaToimenpide?: KorvaavaToimenpide | null,
 ): KorvaavaToimenpide => {
   const tobe = korvaavaToimenpide ?? emptyKorvaavaToimenpide();
   tobe.kelpoisuuskoeSisalto = tobe.kelpoisuuskoe
     ? (tobe.kelpoisuuskoeSisalto ?? emptyKelpoisuuskoeSisalto())
-    : undefined;
+    : null;
   tobe.kelpoisuuskoeJaSopeutumisaikaSisalto = tobe.kelpoisuuskoeJaSopeutumisaika
     ? (tobe.kelpoisuuskoeJaSopeutumisaikaSisalto ?? emptyKelpoisuuskoeSisalto())
-    : undefined;
+    : null;
   tobe.sopeutumiusaikaKestoKk = tobe.sopeutumisaika
     ? tobe.sopeutumiusaikaKestoKk
-    : undefined;
+    : null;
   tobe.kelpoisuuskoeJaSopeutumisaikaKestoKk = tobe.kelpoisuuskoeJaSopeutumisaika
     ? tobe.kelpoisuuskoeJaSopeutumisaikaKestoKk
-    : undefined;
+    : null;
 
   return tobe;
 };
@@ -218,12 +222,12 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
           tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide,
         );
     } else {
-      tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide = undefined;
+      tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide = null;
     }
   } else {
-    tobe.erotKoulutuksessa = undefined;
-    tobe.korvaavaToimenpide = undefined;
-    tobe.ammattikokemusJaElinikainenOppiminen = undefined;
+    tobe.erotKoulutuksessa = null;
+    tobe.korvaavaToimenpide = null;
+    tobe.ammattikokemusJaElinikainenOppiminen = null;
   }
 
   return tobe;
@@ -243,13 +247,13 @@ export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
     tobe.erotKoulutuksessa ?? emptyErotKoulutuksessa(kelpoisuusKey);
   tobe.korvaavaToimenpide = showOsaamisenTaydentamisenTavat
     ? initOrUpdateKorvaavaToimenpide(tobe.korvaavaToimenpide)
-    : undefined;
+    : null;
   tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
     initOrUpdateKorvaavaToimenpide(
       tobe.lahtokohtaisetOsaamisenTaydentamisenTavat,
     );
-  tobe.olennaisiaEroja = undefined;
-  tobe.ammattikokemusJaElinikainenOppiminen = undefined;
+  tobe.olennaisiaEroja = null;
+  tobe.ammattikokemusJaElinikainenOppiminen = null;
 
   return tobe;
 };
@@ -320,11 +324,58 @@ export const korvaavaToimenpide2Paatostiedot = (
   return [{}, {}];
 };
 
+export const emptyKielteisenPaatoksenPerustelut =
+  (): KielteisenPaatoksenPerustelut => ({
+    epavirallinenKorkeakoulu: false,
+    epavirallinenTutkinto: false,
+    eiVastaaSuomessaSuoritettavaaTutkintoa: false,
+    tutkintoEiVastaaTasoltaanSuomessaSuoritettavaaTutkintoa: false,
+    tutkintoEiVastaaSisalloltaanSuomessaSuoritettavaaTutkintoa: false,
+    opinnotEiVastaaTasoltaanSuomessaSuoritettaviaOpintoja: false,
+    opinnotEiVastaaSisalloltaanSuomessaSuoritettaviaOpintoja: false,
+    eiEuTaiEtaKansalainenEikaRinnastettavaaAsiakirjaa: false,
+    eiApMukainenTutkintoTaiHaettuaPatevyytta: false,
+    koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla: false,
+    muuPerustelu: false,
+    muuPerusteluKuvaus: null,
+  });
+
+export const emptyMyonteisenPaatoksenLisavaatimukset =
+  (): MyonteisenPaatoksenLisavaatimukset => ({
+    taydentavatOpinnot: false,
+    kelpoisuuskoe: false,
+    sopeutumisaika: false,
+    opettajuuttaTutkimassa: false,
+    suomalainenKoulu: false,
+    opetusNayte: false,
+    sovellettuTilanne: null,
+    erotKoulutuksessa: null,
+    lahtokohtaisetOsaamisenTaydentamisenTavat: null,
+    ammattikokemuksenHuomioiminen: null,
+    suomessaSuoritettujenOpintojenHuomioiminen: null,
+    korvaavaToimenpide: null,
+    oikeustieteenMaisteriLisavaatimukset: null,
+  });
+
+export const emptyPeruutuksenTaiRaukeamisenSyy =
+  (): PeruutuksenTaiRaukeamisenSyy => ({
+    eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada: false,
+    muutenTyytymatonRatkaisuun: false,
+    eiApMukainenTutkintoTaiHaettuaPatevyytta: false,
+    eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa: false,
+    epavirallinenKorkeakouluTaiTutkinto: false,
+    eiEdellytyksiaRoEikaTasopaatokselle: false,
+    eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin: false,
+    hakijallaJoPaatosSamastaKoulutusKokonaisuudesta: false,
+    muuSyy: false,
+  });
+
 export const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   id: undefined,
   paatosId: paatosId,
   paatosTyyppi: undefined,
-  kielteisenPaatoksenPerustelut: undefined,
+  lisaaTutkintoPaatostekstiin: false,
+  kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
   rinnastettavatTutkinnotTaiOpinnot: [],
   kelpoisuudet: [],
 });

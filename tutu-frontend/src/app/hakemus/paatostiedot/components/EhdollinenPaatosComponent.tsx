@@ -6,7 +6,10 @@ import React, { useEffect } from 'react';
 import { PaatosTietoList } from '@/src/app/hakemus/paatostiedot/components/PaatosTietoList';
 import { PeruutuksenTaiRaukeamisenSyyComponent } from '@/src/app/hakemus/paatostiedot/components/PeruutuksenTaiRaukeamisenSyyComponent';
 import { ratkaisutyyppiOptions } from '@/src/app/hakemus/paatostiedot/constants';
-import { emptyPaatosTieto } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+import {
+  emptyPaatosTieto,
+  emptyPeruutuksenTaiRaukeamisenSyy,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatos, PaatosTieto, Ratkaisutyyppi } from '@/src/lib/types/paatos';
@@ -110,7 +113,7 @@ export const EhdollinenPaatosComponent = ({
           updatePaatosField({
             ratkaisutyyppi: event.target.value as Ratkaisutyyppi,
             paatosTiedot: [],
-            peruutuksenTaiRaukeamisenSyy: undefined,
+            peruutuksenTaiRaukeamisenSyy: emptyPeruutuksenTaiRaukeamisenSyy(),
           })
         }
       />

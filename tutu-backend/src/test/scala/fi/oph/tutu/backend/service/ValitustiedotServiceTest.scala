@@ -116,33 +116,29 @@ class ValitustiedotServiceTest extends UnitTestBase {
 
     val paivitetty = vanha.copy(
       valitusHaO = ValitusHaO(
-        valitettu = Some(true),
+        valitettu = true,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 14, 0, 0, 0)),
         ratkaisu = Some("UudelleenKasittely"),
         ratkaisuLisatieto = Some("Palautettu uudelleen käsittelyyn"),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            ashaTunnus = Some("ASHA-321"),
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 17, 0, 0, 0)),
-            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)),
-            lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 24, 0, 0, 0))
-          )
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          ashaTunnus = Some("ASHA-321"),
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 17, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)),
+          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 24, 0, 0, 0))
         )
       ),
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
+        valitettu = true,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisu = Some(ValitusKHORatkaisu.EiValituslupaa),
         ratkaisuLisatieto = Some("Ei lupaa valittaa"),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            ashaTunnus = Some("ASHA-123"),
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
-            lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
-          )
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          ashaTunnus = Some("ASHA-123"),
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
         )
       )
     )
@@ -158,30 +154,30 @@ class ValitustiedotServiceTest extends UnitTestBase {
     assertEquals(Some(ValitusKHORatkaisu.EiValituslupaa), uusiTulos.get.valitusKHO.ratkaisu)
     assertEquals(Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)), uusiTulos.get.valitusKHO.valitusPvm)
     assertEquals(Some("Ei lupaa valittaa"), uusiTulos.get.valitusKHO.ratkaisuLisatieto)
-    assertEquals(Some(true), uusiTulos.get.valitusKHO.lausuntopyyntoValittu)
-    assertEquals(Some("ASHA-123"), uusiTulos.get.valitusKHO.lausuntopyynto.get.ashaTunnus)
+    assertEquals(true, uusiTulos.get.valitusKHO.lausuntopyyntoValittu)
+    assertEquals(Some("ASHA-123"), uusiTulos.get.valitusKHO.lausuntopyynto.ashaTunnus)
     assertEquals(
       Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-      uusiTulos.get.valitusKHO.lausuntopyynto.get.saapumisPvm
+      uusiTulos.get.valitusKHO.lausuntopyynto.saapumisPvm
     )
-    assertEquals(Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)), uusiTulos.get.valitusKHO.lausuntopyynto.get.maaraAikaPvm)
+    assertEquals(Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)), uusiTulos.get.valitusKHO.lausuntopyynto.maaraAikaPvm)
     assertEquals(
       Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0)),
-      uusiTulos.get.valitusKHO.lausuntopyynto.get.lausuntoAnnettuPvm
+      uusiTulos.get.valitusKHO.lausuntopyynto.lausuntoAnnettuPvm
     )
     assertEquals(Some("UudelleenKasittely"), uusiTulos.get.valitusHaO.ratkaisu)
     assertEquals(Some(LocalDateTime.of(2026, 9, 14, 0, 0, 0)), uusiTulos.get.valitusHaO.valitusPvm)
     assertEquals(Some("Palautettu uudelleen käsittelyyn"), uusiTulos.get.valitusHaO.ratkaisuLisatieto)
-    assertEquals(Some(true), uusiTulos.get.valitusHaO.lausuntopyyntoValittu)
-    assertEquals(Some("ASHA-321"), uusiTulos.get.valitusHaO.lausuntopyynto.get.ashaTunnus)
+    assertEquals(true, uusiTulos.get.valitusHaO.lausuntopyyntoValittu)
+    assertEquals(Some("ASHA-321"), uusiTulos.get.valitusHaO.lausuntopyynto.ashaTunnus)
     assertEquals(
       Some(LocalDateTime.of(2026, 9, 17, 0, 0, 0)),
-      uusiTulos.get.valitusHaO.lausuntopyynto.get.saapumisPvm
+      uusiTulos.get.valitusHaO.lausuntopyynto.saapumisPvm
     )
-    assertEquals(Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)), uusiTulos.get.valitusHaO.lausuntopyynto.get.maaraAikaPvm)
+    assertEquals(Some(LocalDateTime.of(2026, 9, 29, 0, 0, 0)), uusiTulos.get.valitusHaO.lausuntopyynto.maaraAikaPvm)
     assertEquals(
       Some(LocalDateTime.of(2026, 9, 24, 0, 0, 0)),
-      uusiTulos.get.valitusHaO.lausuntopyynto.get.lausuntoAnnettuPvm
+      uusiTulos.get.valitusHaO.lausuntopyynto.lausuntoAnnettuPvm
     )
     verify(valitustiedotRepository, never()).lisaaValitustiedot(any[Valitustiedot], any[String])
   }
@@ -211,7 +207,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuRatkaisuPvmIlmanValitusPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
+        valitettu = true,
         valitusPvm = None,
         ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0))
       )
@@ -230,7 +226,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuRatkaisuPvmEnnenValitusPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
+        valitettu = true,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
       )
@@ -248,7 +244,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuValitusPvmKunEiValitettu(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(false),
+        valitettu = false,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisuPvm = None
       )
@@ -266,7 +262,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuRatkaisuPvmKunValitettuPuuttuu(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = None,
+        valitettu = false,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
         ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0))
       )
@@ -284,7 +280,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotOnnistuuEiValitettuIlmanPaivamaaria(): Unit = {
     val dbHakemus = makeDbHakemus(hakemusOid)
     val lahetetty = makeValitustiedot().copy(
-      valitusKHO = ValitusKHO(valitettu = Some(false), valitusPvm = None, ratkaisuPvm = None)
+      valitusKHO = ValitusKHO(valitettu = false, valitusPvm = None, ratkaisuPvm = None)
     )
     val tallennettu = lahetetty.copy(id = Some(UUID.randomUUID()), hakemusId = Some(dbHakemus.id))
 
@@ -300,7 +296,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
   @Test
   def tallennaValitustiedotEpaonnistuuLausuntopyyntoKunEiValitettu(): Unit = {
     val lahetetty = makeValitustiedot().copy(
-      valitusKHO = ValitusKHO(valitettu = Some(false), lausuntopyyntoValittu = Some(true))
+      valitusKHO = ValitusKHO(valitettu = false, lausuntopyyntoValittu = true)
     )
 
     assertThrows(
@@ -315,9 +311,9 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuSaapumisPvmKunLausuntopyyntoPuuttuu(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(false),
-        lausuntopyynto = Some(ValitusLausuntopyynto(saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0))))
+        valitettu = true,
+        lausuntopyyntoValittu = false,
+        lausuntopyynto = ValitusLausuntopyynto(saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)))
       )
     )
 
@@ -333,9 +329,9 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuMaaraaikaPvmIlmanSaapumisPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0))))
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)))
       )
     )
 
@@ -351,13 +347,11 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuMaaraaikaPvmEnnenSaapumisPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
-          )
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
         )
       )
     )
@@ -374,9 +368,9 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuAnnettuPvmIlmanSaapumisPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(ValitusLausuntopyynto(lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))))
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0)))
       )
     )
 
@@ -392,13 +386,11 @@ class ValitustiedotServiceTest extends UnitTestBase {
   def tallennaValitustiedotEpaonnistuuAnnettuPvmEnnenSaapumisPvm(): Unit = {
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
-          )
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
         )
       )
     )
@@ -416,15 +408,13 @@ class ValitustiedotServiceTest extends UnitTestBase {
     val dbHakemus = makeDbHakemus(hakemusOid)
     val lahetetty = makeValitustiedot().copy(
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            ashaTunnus = Some("ASHA-123"),
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0))
-          )
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          ashaTunnus = Some("ASHA-123"),
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0))
         )
       )
     )
@@ -444,7 +434,7 @@ class ValitustiedotServiceTest extends UnitTestBase {
     val dbHakemus = makeDbHakemus(hakemusOid)
     val sama      = LocalDateTime.of(2026, 9, 15, 0, 0, 0)
     val lahetetty = makeValitustiedot().copy(
-      valitusKHO = ValitusKHO(valitettu = Some(true), valitusPvm = Some(sama), ratkaisuPvm = Some(sama))
+      valitusKHO = ValitusKHO(valitettu = true, valitusPvm = Some(sama), ratkaisuPvm = Some(sama))
     )
     val tallennettu = lahetetty.copy(id = Some(UUID.randomUUID()), hakemusId = Some(dbHakemus.id))
 

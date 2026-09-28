@@ -62,36 +62,32 @@ class ValitustiedotControllerTest extends UnitTestBase {
   }
 
   private def valitusHaOWithPvms: ValitusHaO = ValitusHaO(
-    valitettu = Some(true),
+    valitettu = true,
     valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
     ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 10, 12, 30, 0)),
     ratkaisu = Some("VaatimusHylatty"),
     ratkaisuLisatieto = Some("Lisätietoa HaO:n ratkaisusta"),
-    lausuntopyyntoValittu = Some(true),
-    lausuntopyynto = Some(
-      ValitusLausuntopyynto(
-        ashaTunnus = Some("ASHA-456"),
-        saapumisPvm = Some(LocalDateTime.of(2026, 9, 2, 0, 0, 0)),
-        maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 9, 0, 0, 0)),
-        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 8, 0, 0, 0))
-      )
+    lausuntopyyntoValittu = true,
+    lausuntopyynto = ValitusLausuntopyynto(
+      ashaTunnus = Some("ASHA-456"),
+      saapumisPvm = Some(LocalDateTime.of(2026, 9, 2, 0, 0, 0)),
+      maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 9, 0, 0, 0)),
+      lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 8, 0, 0, 0))
     )
   )
 
   private def valitusKHOWithPvms: ValitusKHO = ValitusKHO(
-    valitettu = Some(true),
+    valitettu = true,
     valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
     ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0)),
     ratkaisu = Some(ValitusKHORatkaisu.HakijanVaatimusHylatty),
     ratkaisuLisatieto = Some("Lisätietoa KHO:n ratkaisusta"),
-    lausuntopyyntoValittu = Some(true),
-    lausuntopyynto = Some(
-      ValitusLausuntopyynto(
-        ashaTunnus = Some("ASHA-123"),
-        saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-        maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
-        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
-      )
+    lausuntopyyntoValittu = true,
+    lausuntopyynto = ValitusLausuntopyynto(
+      ashaTunnus = Some("ASHA-123"),
+      saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+      maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+      lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
     )
   )
 
@@ -246,7 +242,7 @@ class ValitustiedotControllerTest extends UnitTestBase {
       valitusOPH = ValitusOPH(),
       valitusHaO = ValitusHaO(),
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
+        valitettu = true,
         valitusPvm = Some(LocalDateTime.of(2026, 9, 15, 0, 0, 0)),
         ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
       )
@@ -273,13 +269,11 @@ class ValitustiedotControllerTest extends UnitTestBase {
       valitusOPH = ValitusOPH(),
       valitusHaO = ValitusHaO(),
       valitusKHO = ValitusKHO(
-        valitettu = Some(true),
-        lausuntopyyntoValittu = Some(true),
-        lausuntopyynto = Some(
-          ValitusLausuntopyynto(
-            saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-            maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
-          )
+        valitettu = true,
+        lausuntopyyntoValittu = true,
+        lausuntopyynto = ValitusLausuntopyynto(
+          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0))
         )
       )
     )
