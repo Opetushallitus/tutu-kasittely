@@ -79,12 +79,12 @@ export const ValitusKHOComponent = ({
             if (valitusKHO?.valitettu) {
               updateValitusKHO({
                 valitettu: false,
-                valitusPvm: undefined,
-                ratkaisuPvm: undefined,
-                ratkaisu: undefined,
-                ratkaisuLisatieto: undefined,
+                valitusPvm: null,
+                ratkaisuPvm: null,
+                ratkaisu: null,
+                ratkaisuLisatieto: null,
                 lausuntopyyntoValittu: false,
-                lausuntopyynto: undefined,
+                lausuntopyynto: null,
               });
             } else {
               updateValitusKHO({ valitettu: true });
@@ -101,10 +101,10 @@ export const ValitusKHOComponent = ({
                 maxDate={new Date()}
                 setDate={(date) => {
                   updateValitusKHO({
-                    valitusPvm: date ? date.toISOString() : undefined,
+                    valitusPvm: date ? date.toISOString() : null,
                     ratkaisuPvm:
                       !date || (khoRatkaisuPvm && date > khoRatkaisuPvm)
-                        ? undefined
+                        ? null
                         : valitusKHO?.ratkaisuPvm,
                   });
                 }}
@@ -118,7 +118,7 @@ export const ValitusKHOComponent = ({
                 maxDate={null}
                 setDate={(date) => {
                   updateValitusKHO({
-                    ratkaisuPvm: date ? date.toISOString() : undefined,
+                    ratkaisuPvm: date ? date.toISOString() : null,
                   });
                 }}
                 dataTestId="valituskho-ratkaisupvm-calendar"
@@ -131,7 +131,7 @@ export const ValitusKHOComponent = ({
                 if (valitusKHO?.lausuntopyyntoValittu) {
                   updateValitusKHO({
                     lausuntopyyntoValittu: false,
-                    lausuntopyynto: undefined,
+                    lausuntopyynto: null,
                   });
                 } else {
                   updateValitusKHO({ lausuntopyyntoValittu: true });
@@ -169,8 +169,8 @@ export const ValitusKHOComponent = ({
                 }}
                 onClear={() => {
                   updateValitusKHO({
-                    ratkaisu: undefined,
-                    ratkaisuLisatieto: undefined,
+                    ratkaisu: null,
+                    ratkaisuLisatieto: null,
                   });
                 }}
               />

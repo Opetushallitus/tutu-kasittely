@@ -49,13 +49,13 @@ export const ValitusHaOComponent = ({
           if (valitusHaO?.valitettu) {
             updateValitusHaO({
               valitettu: false,
-              valitusPvm: undefined,
-              ratkaisuPvm: undefined,
-              lausuntopyyntoValittu: undefined,
-              lausuntopyynto: undefined,
-              valittajanVaatimus: undefined,
-              ratkaisu: undefined,
-              ratkaisuLisatieto: undefined,
+              valitusPvm: null,
+              ratkaisuPvm: null,
+              lausuntopyyntoValittu: false,
+              lausuntopyynto: null,
+              valittajanVaatimus: null,
+              ratkaisu: null,
+              ratkaisuLisatieto: null,
             });
           } else {
             updateValitusHaO({ valitettu: true });
@@ -68,10 +68,10 @@ export const ValitusHaOComponent = ({
             <CalendarComponent
               setDate={(date: Date | null) =>
                 updateValitusHaO({
-                  valitusPvm: date ? date.toISOString() : undefined,
+                  valitusPvm: date ? date.toISOString() : null,
                   ratkaisuPvm:
                     !date || (ratkaisuPvm && date > ratkaisuPvm)
-                      ? undefined
+                      ? null
                       : valitusHaO?.ratkaisuPvm,
                 })
               }
@@ -83,7 +83,7 @@ export const ValitusHaOComponent = ({
             <CalendarComponent
               setDate={(date: Date | null) =>
                 updateValitusHaO({
-                  ratkaisuPvm: date ? date.toISOString() : undefined,
+                  ratkaisuPvm: date ? date.toISOString() : null,
                 })
               }
               disabled={!valitusPvm}
@@ -100,7 +100,7 @@ export const ValitusHaOComponent = ({
               if (valitusHaO?.lausuntopyyntoValittu) {
                 updateValitusHaO({
                   lausuntopyyntoValittu: false,
-                  lausuntopyynto: undefined,
+                  lausuntopyynto: null,
                 });
               } else {
                 updateValitusHaO({ lausuntopyyntoValittu: true });
@@ -156,8 +156,8 @@ export const ValitusHaOComponent = ({
               }
               onClear={() => {
                 updateValitusHaO({
-                  ratkaisu: undefined,
-                  ratkaisuLisatieto: undefined,
+                  ratkaisu: null,
+                  ratkaisuLisatieto: null,
                 });
               }}
             />
