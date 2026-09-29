@@ -8,7 +8,7 @@ private val FI = Kieli.fi
 
 type PaatosNodeType =
   Paatos | PeruutuksenTaiRaukeamisenSyy | PaatosTieto | TutkintoTaiOpinto | MyonteisenPaatoksenLisavaatimukset |
-    ErotKoulutuksessa | KorvaavaToimenpide | AmmattikomemusJaElinikainenOppiminen | KelpoisuudenLisavaatimukset |
+    ErotKoulutuksessa | KorvaavaToimenpide | AmmattikokemusJaElinikainenOppiminen | KelpoisuudenLisavaatimukset |
     KielteisenPaatoksenPerustelut | Kelpoisuus | TitleNode
 
 type PaatosNodeTypeAggregate =
@@ -36,8 +36,8 @@ def bindHaePaatostiedot(
     bindExtractMyonteisenPaatoksenLisavaatimukset(translationService, tutkinnot)
   val extractErotKoulutuksessa                    = bindExtractErotKoulutuksessa(translationService, tutkinnot)
   val extractKorvaavaToimenpide                   = bindExtractKorvaavaToimenpide(translationService, tutkinnot)
-  val extractAmmattikomemusJaElinikainenOppiminen =
-    bindExtractAmmattikomemusJaElinikainenOppiminen(translationService, tutkinnot)
+  val extractAmmattikokemusJaElinikainenOppiminen =
+    bindExtractAmmattikokemusJaElinikainenOppiminen(translationService, tutkinnot)
   val extractKelpoisuudenLisavaatimukset   = bindExtractKelpoisuudenLisavaatimukset(translationService, tutkinnot)
   val extractKielteisenPaatoksenPerustelut = bindExtractKielteisenPaatoksenPerustelut(translationService, tutkinnot)
   val extractKelpoisuus                    = bindExtractKelpoisuus(translationService, tutkinnot)
@@ -53,7 +53,7 @@ def bindHaePaatostiedot(
       case node: MyonteisenPaatoksenLisavaatimukset   => extractMyonteisenPaatoksenLisavaatimukset(node)
       case node: ErotKoulutuksessa                    => extractErotKoulutuksessa(node)
       case node: KorvaavaToimenpide                   => extractKorvaavaToimenpide(node)
-      case node: AmmattikomemusJaElinikainenOppiminen => extractAmmattikomemusJaElinikainenOppiminen(node)
+      case node: AmmattikokemusJaElinikainenOppiminen => extractAmmattikokemusJaElinikainenOppiminen(node)
       case node: KelpoisuudenLisavaatimukset          => extractKelpoisuudenLisavaatimukset(node)
       case node: KielteisenPaatoksenPerustelut        => extractKielteisenPaatoksenPerustelut(node)
       case node: Kelpoisuus                           => extractKelpoisuus(node)
@@ -142,7 +142,7 @@ def expand(node: PaatosNodeType): Seq[PaatosNodeTypeAggregate] = {
     case node: MyonteisenPaatoksenLisavaatimukset   => expandMyonteisenPaatoksenLisavaatimukset(node)
     case node: ErotKoulutuksessa                    => expandErotKoulutuksessa(node)
     case node: KorvaavaToimenpide                   => expandKorvaavaToimenpide(node)
-    case node: AmmattikomemusJaElinikainenOppiminen => expandAmmattikomemusJaElinikainenOppiminen(node)
+    case node: AmmattikokemusJaElinikainenOppiminen => expandAmmattikokemusJaElinikainenOppiminen(node)
     case node: KelpoisuudenLisavaatimukset          => expandKelpoisuudenLisavaatimukset(node)
     case node: KielteisenPaatoksenPerustelut        => expandKielteisenPaatoksenPerustelut(node)
     case node: Kelpoisuus                           => expandKelpoisuus(node)
@@ -219,19 +219,34 @@ def expandKorvaavaToimenpide(node: KorvaavaToimenpide): Seq[PaatosNodeTypeAggreg
   Seq.empty
 }
 
-def expandAmmattikomemusJaElinikainenOppiminen(
-  node: AmmattikomemusJaElinikainenOppiminen
+def expandAmmattikokemusJaElinikainenOppiminen(
+  node: AmmattikokemusJaElinikainenOppiminen
 ): Seq[PaatosNodeTypeAggregate] = {
-  Seq(
-    node.korvaavaToimenpide
-  )
+  if (
+    node.korvaavuusAmmattikokemus == AmmattikokemusElinikainenOppiminenKorvaavuus.Ei &&
+    node.korvaavuusElinikainenOppiminen == AmmattikokemusElinikainenOppiminenKorvaavuus.Ei
+  ) {
+    Seq(
+      TitleNode(
+        titleKey = Some(
+          "perustelumuistio.ammattikokemusJaElinikainenOppiminen.kaytetaanLahtokohtaistaKorvaavaaToimenpidetta"
+        ),
+        child = node.korvaavaToimenpide
+      )
+    )
+  } else {
+    Seq(
+      node.korvaavaToimenpide
+    )
+  }
 }
 
 def expandKelpoisuudenLisavaatimukset(node: KelpoisuudenLisavaatimukset): Seq[PaatosNodeTypeAggregate] = {
   Seq(
     node.erotKoulutuksessa,
-    node.korvaavaToimenpide,
-    node.ammattikokemusJaElinikainenOppiminen
+    // node.korvaavaToimenpide,
+    node.ammattikokemusJaElinikainenOppiminen,
+    node.lahtokohtaisetOsaamisenTaydentamisenTavat
   )
 }
 
@@ -596,11 +611,11 @@ def bindExtractKorvaavaToimenpide(
   next
 }
 
-def bindExtractAmmattikomemusJaElinikainenOppiminen(
+def bindExtractAmmattikokemusJaElinikainenOppiminen(
   translationService: TranslationService,
   tutkinnot: Seq[Tutkinto]
-): AmmattikomemusJaElinikainenOppiminen => Option[String] = {
-  def next(node: AmmattikomemusJaElinikainenOppiminen): Option[String] = {
+): AmmattikokemusJaElinikainenOppiminen => Option[String] = {
+  def next(node: AmmattikokemusJaElinikainenOppiminen): Option[String] = {
 
     val lisatieto = node.lisatieto
       .map(value =>
@@ -634,7 +649,7 @@ def bindExtractAmmattikomemusJaElinikainenOppiminen(
           FI,
           "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemus.title"
         )
-        s"$label:  $value".trim
+        Seq(label, value).mkString("\n")
       )
 
     val korvaavuusElinikainenOppiminen = node.korvaavuusElinikainenOppiminen
@@ -660,7 +675,7 @@ def bindExtractAmmattikomemusJaElinikainenOppiminen(
           FI,
           "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.elinikainenOppiminen.title"
         )
-        s"$label:  $value".trim
+        Seq(label, value).mkString("\n")
       )
 
     val korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa =
@@ -696,7 +711,7 @@ def bindExtractKelpoisuudenLisavaatimukset(
       .map(_ => translationService.getTranslation(FI, "perustelumuistio.kelpoisuudenLisavaatimukset.olennaisiaEroja"))
       .map(content =>
         val label = translationService.getTranslation(FI, "perustelumuistio.kelpoisuudenLisavaatimukset.label")
-        Seq(content, label).mkString("\n")
+        Seq(label, content).mkString("\n")
       )
   }
 
