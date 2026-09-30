@@ -198,11 +198,7 @@ export const KelpoisuusComponent = ({
       kelpoisuus.kelpoisuus &&
       kelpoisuus.kelpoisuus !== getKelpoisuusMuuAmmattiDropdownValue(t)
     ) {
-      return findOptionByValue(
-        asiointikieli,
-        kelpoisuusOptions,
-        kelpoisuus.kelpoisuus,
-      );
+      return findOptionByValue(kelpoisuusOptions, kelpoisuus.kelpoisuus);
     }
     return null;
   }, [asiointikieli, kelpoisuus.kelpoisuus, kelpoisuusOptions, t]);
@@ -292,7 +288,7 @@ export const KelpoisuusComponent = ({
             t={t}
             theme={theme}
             kelpoisuus={kelpoisuus}
-            kelpoisuusKey={selectedKelpoisuusKey?.value?.['fi']}
+            kelpoisuusKey={selectedKelpoisuusKey?.value}
             sovellettuLaki={sovellettuLaki}
             updateAction={updateKelpoisuus}
           />

@@ -34,10 +34,10 @@ export type TranslationNode = {
   children?: TranslationNode[];
 };
 
-export type TreeOption<T = string> = {
-  label: T;
-  value: T;
-  children?: TreeOption<T>[];
+export type TreeOption<L = string, V = string> = {
+  label: L;
+  value: V;
+  children?: TreeOption<L, V>[];
 };
 
 export function buildTreeOptions(
