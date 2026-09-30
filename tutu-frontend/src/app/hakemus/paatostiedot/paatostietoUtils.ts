@@ -321,7 +321,7 @@ export const korvaavaToimenpide2Paatostiedot = (
 };
 
 export const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
-  id: undefined,
+  id: `new-${Date.now()}`,
   paatosId: paatosId,
   paatosTyyppi: undefined,
   kielteisenPaatoksenPerustelut: undefined,

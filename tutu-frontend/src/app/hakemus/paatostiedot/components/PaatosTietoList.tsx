@@ -23,7 +23,7 @@ interface PaatosTietoListProps {
     index: number,
     immediateSave?: boolean,
   ) => void;
-  deletePaatosTieto: (id: string | undefined) => void;
+  deletePaatosTieto: (id: string) => void;
   reorderPaatosTieto: (
     fromIndex: number,
     toIndex: number,

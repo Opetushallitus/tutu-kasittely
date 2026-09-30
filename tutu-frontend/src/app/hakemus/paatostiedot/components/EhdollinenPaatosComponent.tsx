@@ -46,12 +46,12 @@ export const EhdollinenPaatosComponent = ({
     );
   };
 
-  const deletePaatosTieto = (id: string | undefined) => {
+  const deletePaatosTieto = (id: string) => {
     const newPaatosTiedot = id
       ? currentPaatosTiedot.filter((paatostieto) => paatostieto.id !== id)
       : currentPaatosTiedot.slice(0, -1);
     setCurrentPaatosTiedot(newPaatosTiedot);
-    updatePaatosField({ paatosTiedot: newPaatosTiedot }, true);
+    updatePaatosField({ paatosTiedot: newPaatosTiedot });
   };
 
   const reorderPaatosTieto = (
@@ -66,9 +66,7 @@ export const EhdollinenPaatosComponent = ({
     }
 
     const itemAtSource = newPaatosTiedot[fromIndex];
-    const itemAtTarget = newPaatosTiedot[toIndex];
-
-    newPaatosTiedot[fromIndex] = itemAtTarget;
+    newPaatosTiedot[fromIndex] = newPaatosTiedot[toIndex];
     newPaatosTiedot[toIndex] = itemAtSource;
 
     setCurrentPaatosTiedot(newPaatosTiedot);

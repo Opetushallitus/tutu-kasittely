@@ -125,7 +125,7 @@ export const ValitusKHOComponent = ({
               />
             </Stack>
             <OphCheckbox
-              label={t('hakemus.valitustiedot.valitushao.haoLausuntopyynto')}
+              label={t('hakemus.valitustiedot.valituskho.lausuntopyynto')}
               checked={valitusKHO?.lausuntopyyntoValittu ?? false}
               onChange={() => {
                 if (valitusKHO?.lausuntopyyntoValittu) {

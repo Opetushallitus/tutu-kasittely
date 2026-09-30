@@ -55,7 +55,6 @@ export default function Lausuntotiedot() {
     editedData: editedPerustelu,
     hasChanges: hasPerusteluChanges,
     updateLocal,
-    updateImmediately,
     save,
     discard: discardPerustelu,
   } = perusteluState;
@@ -84,7 +83,7 @@ export default function Lausuntotiedot() {
         jarjestys: index + 1,
       }));
 
-    updateImmediately({ lausuntopyynnot: updatedLausuntopyynnot });
+    updateLocal({ lausuntopyynnot: updatedLausuntopyynnot });
   };
 
   return (
