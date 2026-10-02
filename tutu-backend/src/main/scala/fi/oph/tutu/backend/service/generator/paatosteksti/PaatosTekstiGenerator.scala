@@ -321,7 +321,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
 
     val content = translationService.getTranslation(
       lang,
-      "paatosteksti.tunnustamispaatos.lopullinen", // TODO käännös
+      "paatosteksti.tunnustamispaatos.lopullinen",
       Map("hyvaksymispvm" -> hyvaksymispvm, "asiatunnus" -> asiatunnus)
     )
 
@@ -404,7 +404,7 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     val suoritetutToimenpiteet: String = getSuoritetutToimenpiteet(paatosKieli, hakemus)
 
     val paatosteksti: String =
-      s"<p>${translationService.getTranslation(paatosKieli, "paatosteksti.lopullinen.ap.paatosteksti")}</p>" // TODO käännös
+      s"<p>${translationService.getTranslation(paatosKieli, "paatosteksti.lopullinen.ap.paatosteksti")}</p>"
 
     val valitusoikeusBlock = getCommonPaatosValitusoikeusText(paatosKieli, hallintoOikeus.nimi.get(paatosKieli).get)
     val maksunOikaisuBlock = getCommonMaksunOikaisuText(paatosKieli, showPaatosmaksu = false)
