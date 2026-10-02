@@ -311,6 +311,23 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
     }
   }
 
+  private def getTunnustamisBlock(
+    lang: Kieli,
+    hakemus: Hakemus,
+    vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus]
+  ): String = {
+    val hyvaksymispvm: String = vastaavaEhdollinenHakemus.flatMap(_.hyvaksymispvm()).getOrElse("")
+    val asiatunnus            = hakemus.lopullinenPaatosVastaavaEhdollinenAsiatunnus.getOrElse("")
+
+    val content = translationService.getTranslation(
+      lang,
+      "paatosteksti.tunnustamispaatos.lopullinen",
+      Map("hyvaksymispvm" -> hyvaksymispvm, "asiatunnus" -> asiatunnus)
+    )
+
+    s"<p>${content}</p>"
+  }
+
   def generateEhdollinenPaatosteksti(
     hakemus: Hakemus,
     tutkinnot: Seq[Tutkinto],
@@ -371,6 +388,36 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
       ++ maksunOikaisuBlock
   }
 
+  def generateLopullinenAPPaatosteksti(
+    hakemus: Hakemus,
+    vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus],
+    tutkinnot: Seq[Tutkinto],
+    paatos: Paatos,
+    paatosKieli: Kieli,
+    hallintoOikeus: HallintoOikeus,
+    maakoodiService: MaakoodiService
+  ): String = {
+    val hakijanTiedot: String = getHakijanTiedot(hakemus)
+    val tutkinnot: String     = vastaavaEhdollinenHakemus.flatMap(_.haeTutkinnot()).getOrElse("")
+
+    val tunnustamisBlock: String       = getTunnustamisBlock(paatosKieli, hakemus, vastaavaEhdollinenHakemus)
+    val suoritetutToimenpiteet: String = getSuoritetutToimenpiteet(paatosKieli, hakemus)
+
+    val paatosteksti: String =
+      s"<p>${translationService.getTranslation(paatosKieli, "paatosteksti.lopullinen.ap.paatosteksti")}</p>"
+
+    val valitusoikeusBlock = getCommonPaatosValitusoikeusText(paatosKieli, hallintoOikeus.nimi.get(paatosKieli).get)
+    val maksunOikaisuBlock = getCommonMaksunOikaisuText(paatosKieli, showPaatosmaksu = false)
+
+    hakijanTiedot
+      ++ tutkinnot
+      ++ tunnustamisBlock
+      ++ suoritetutToimenpiteet
+      ++ paatosteksti
+      ++ valitusoikeusBlock
+      ++ maksunOikaisuBlock
+  }
+
   def generatePaatosTeksti(
     hakemus: Hakemus,
     vastaavaEhdollinenHakemus: Option[IEhdollinenHakemus],
@@ -385,10 +432,21 @@ class PaatosTekstiGenerator(translationService: TranslationService) {
       // Lopulliset päätöstekstit
       val paatosOnMyonteinen = paatos.paatosTiedot.headOption.flatMap(_.myonteinenPaatos).exists(_ == true)
       val uoLakiaSovellettu  = paatos.paatosTiedot.headOption.flatMap(_.sovellettuLaki).exists(_ == SovellettuLaki.uo)
+      val apLakiaSovellettu  = paatos.paatosTiedot.headOption.flatMap(_.sovellettuLaki).exists(_ == SovellettuLaki.ap)
 
       if (paatosOnMyonteinen && uoLakiaSovellettu) {
         // Lopullinen UO-päätös
         generateLopullinenUOPaatosteksti(
+          hakemus,
+          vastaavaEhdollinenHakemus,
+          tutkinnot,
+          paatos,
+          paatosKieli,
+          hallintoOikeus,
+          maakoodiService
+        )
+      } else if (paatosOnMyonteinen && apLakiaSovellettu) {
+        generateLopullinenAPPaatosteksti(
           hakemus,
           vastaavaEhdollinenHakemus,
           tutkinnot,
