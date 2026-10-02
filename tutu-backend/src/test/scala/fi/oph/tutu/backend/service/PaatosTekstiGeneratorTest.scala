@@ -174,17 +174,17 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
         PaatosTieto(
           paatosTyyppi = Some(PaatosTyyppi.Taso),
           tutkintoId = Some(tutkintoId1),
-          lisaaTutkintoPaatostekstiin = None,
+          lisaaTutkintoPaatostekstiin = false,
           myonteinenPaatos = Some(true),
-          kielteisenPaatoksenPerustelut = None,
+          kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
           tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
         ),
         PaatosTieto(
           paatosTyyppi = Some(PaatosTyyppi.Taso),
           tutkintoId = Some(tutkintoId2),
-          lisaaTutkintoPaatostekstiin = Some(true),
+          lisaaTutkintoPaatostekstiin = true,
           myonteinenPaatos = Some(true),
-          kielteisenPaatoksenPerustelut = None,
+          kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
           tutkintoTaso = Some(TutkintoTaso.AlempiKorkeakoulu)
         )
       )
@@ -204,16 +204,14 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
         PaatosTieto(
           paatosTyyppi = Some(PaatosTyyppi.Taso),
           tutkintoId = Some(tutkintoId1),
-          lisaaTutkintoPaatostekstiin = None,
+          lisaaTutkintoPaatostekstiin = false,
           myonteinenPaatos = Some(false),
-          kielteisenPaatoksenPerustelut = Some(
-            KielteisenPaatoksenPerustelut(
-              epavirallinenKorkeakoulu = true,
-              epavirallinenTutkinto = true,
-              eiVastaaSuomessaSuoritettavaaTutkintoa = true,
-              muuPerustelu = true,
-              muuPerusteluKuvaus = Some("Muu perustelu kuvaus")
-            )
+          kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(
+            epavirallinenKorkeakoulu = true,
+            epavirallinenTutkinto = true,
+            eiVastaaSuomessaSuoritettavaaTutkintoa = true,
+            muuPerustelu = true,
+            muuPerusteluKuvaus = Some("Muu perustelu kuvaus")
           ),
           tutkintoTaso = Some(TutkintoTaso.AlempiTaiYlempiKorkeakoulu)
         )
@@ -289,7 +287,7 @@ class PaatosTekstiGeneratorTest extends UnitTestBase {
   def peruutusTaiRaukeaminenGeneroiOikeanTekstin(): Unit = {
     val paatos = Paatos(
       ratkaisutyyppi = Some(Ratkaisutyyppi.PeruutusTaiRaukeaminen),
-      peruutuksenTaiRaukeamisenSyy = Some(PeruutuksenTaiRaukeamisenSyy(muuSyy = Some(true)))
+      peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(muuSyy = true)
     )
     assertHtml(
       this.paatosTekstiGenerator.generatePaatosTeksti(

@@ -39,7 +39,8 @@ export type MyonteinenTaiKielteinenPaatos = {
   myonteinenPaatos?: boolean | null;
   myonteisenPaatoksenLisavaatimukset?:
     | MyonteisenPaatoksenLisavaatimukset
-    | KelpoisuudenLisavaatimukset;
+    | KelpoisuudenLisavaatimukset
+    | null;
   kielteisenPaatoksenPerustelut?: KielteisenPaatoksenPerustelut;
 };
 
@@ -50,7 +51,7 @@ export type PaatosTieto = {
   sovellettuLaki?: SovellettuLaki;
   tutkintoId?: string;
   lisaaTutkintoPaatostekstiin?: boolean;
-  tutkintoTaso?: TutkintoTaso;
+  tutkintoTaso?: TutkintoTaso | null;
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   kelpoisuudet: Kelpoisuus[];
   esittelijanHuomioitaToimenpiteista?: string;
@@ -92,17 +93,17 @@ export type OikeustieteenSuomiOpintojenAihealue = {
 export type OikeustieteenMaisteriLisavaatimukset = {
   muuSovellettuTilanneLisatieto?: string;
   tallinnassaSuoritettujaOpintoja: boolean;
-  tallinnaOpintojenLaajuus?: number;
+  tallinnaOpintojenLaajuus?: number | null;
   isTallinnaOpintojenLaajuusModified: boolean;
   eurooppaOpintojaSisallossa: boolean;
-  eurooppaOpintojenSisallonLisatieto?: string;
+  eurooppaOpintojenSisallonLisatieto?: string | null;
   eurooppaOpintojaKokonaismaarassa: boolean;
-  eurooppaOpintojenLaajuus?: number;
+  eurooppaOpintojenLaajuus?: number | null;
   suomiOpintojaSisallossa: boolean;
-  suomiOpintojenSisallonLisatieto?: string;
-  suomiOpintojenAihealueet?: OikeustieteenSuomiOpintojenAihealue;
+  suomiOpintojenSisallonLisatieto?: string | null;
+  suomiOpintojenAihealueet?: OikeustieteenSuomiOpintojenAihealue | null;
   suomiOpintojaLaajuudessa: boolean;
-  suomiOpintojenLaajuus?: number;
+  suomiOpintojenLaajuus?: number | null;
 };
 
 export type MyonteisenPaatoksenLisavaatimukset = {
@@ -112,13 +113,13 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   opettajuuttaTutkimassa: boolean;
   suomalainenKoulu: boolean;
   opetusNayte: boolean;
-  sovellettuTilanne?: string;
-  erotKoulutuksessa?: ErotKoulutuksessa;
-  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide;
-  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
-  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen;
-  korvaavaToimenpide?: KorvaavaToimenpide;
-  oikeustieteenMaisteriLisavaatimukset?: OikeustieteenMaisteriLisavaatimukset;
+  sovellettuTilanne?: string | null;
+  erotKoulutuksessa?: ErotKoulutuksessa | null;
+  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide | null;
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null;
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null;
+  korvaavaToimenpide?: KorvaavaToimenpide | null;
+  oikeustieteenMaisteriLisavaatimukset?: OikeustieteenMaisteriLisavaatimukset | null;
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
@@ -129,9 +130,9 @@ export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
 
 export type KelpoisuudenLisavaatimukset = {
   olennaisiaEroja?: boolean | null;
-  erotKoulutuksessa?: ErotKoulutuksessa;
-  korvaavaToimenpide?: KorvaavaToimenpide;
-  ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen;
+  erotKoulutuksessa?: ErotKoulutuksessa | null;
+  korvaavaToimenpide?: KorvaavaToimenpide | null;
+  ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen | null;
   lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide;
   sovellettuTilanne?: string;
   ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
@@ -142,7 +143,7 @@ export type ErotKoulutuksessa = {
   erot?: NamedBoolean[];
   eroTarkennukset?: Record<string, NamedBoolean[]>;
   muuEro?: boolean;
-  muuEroKuvaus?: string;
+  muuEroKuvaus?: string | null;
 };
 
 export type KelpoisuuskoeSisalto = {
@@ -154,12 +155,12 @@ export type KelpoisuuskoeSisalto = {
 export type KorvaavaToimenpide = {
   taydentavatOpinnot?: boolean;
   kelpoisuuskoe?: boolean;
-  kelpoisuuskoeSisalto?: KelpoisuuskoeSisalto;
+  kelpoisuuskoeSisalto?: KelpoisuuskoeSisalto | null;
   sopeutumisaika?: boolean;
-  sopeutumiusaikaKestoKk?: string;
+  sopeutumiusaikaKestoKk?: string | null;
   kelpoisuuskoeJaSopeutumisaika?: boolean;
-  kelpoisuuskoeJaSopeutumisaikaSisalto?: KelpoisuuskoeSisalto;
-  kelpoisuuskoeJaSopeutumisaikaKestoKk?: string;
+  kelpoisuuskoeJaSopeutumisaikaSisalto?: KelpoisuuskoeSisalto | null;
+  kelpoisuuskoeJaSopeutumisaikaKestoKk?: string | null;
 };
 
 export type AmmattikokemuksenHuomioiminen =
@@ -182,11 +183,11 @@ export type AmmattikokemusJaElinikainenOppiminenKorvaavuus =
   | 'Ei';
 
 export type AmmattikokemusJaElinikainenOppiminen = {
-  lisatieto?: string;
+  lisatieto?: string | null;
   korvaavuusAmmattikokemus?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
   korvaavuusElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminenKorvaavuus | null;
   korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa?: boolean;
-  korvaavaToimenpide?: KorvaavaToimenpide;
+  korvaavaToimenpide?: KorvaavaToimenpide | null;
 };
 
 export type KielteisenPaatoksenPerustelut = {
@@ -201,7 +202,7 @@ export type KielteisenPaatoksenPerustelut = {
   eiApMukainenTutkintoTaiHaettuaPatevyytta?: boolean;
   koulutusEiVastaaApMukaistaTutkintoaEikaTaydennettavissaKorvaavillaToimenpiteilla?: boolean;
   muuPerustelu?: boolean;
-  muuPerusteluKuvaus?: string;
+  muuPerusteluKuvaus?: string | null;
 };
 
 export type PaatosTietoOptionGroup = {

@@ -3,7 +3,7 @@ export type ValitusOPH = {
   asiavirhe?: boolean;
   kirjoitusvirhe?: boolean;
   muu?: boolean;
-  tasmennys?: string;
+  tasmennys?: string | null;
 };
 
 export type ValitusHaORatkaisu =
@@ -13,7 +13,7 @@ export type ValitusHaORatkaisu =
   | 'KasittelyRauennut';
 
 export type ValitusLausuntopyynto = {
-  ashaTunnus?: string;
+  ashaTunnus?: string | null;
   saapumisPvm?: string | null;
   maaraAikaPvm?: string | null;
   lausuntoAnnettuPvm?: string | null;
@@ -27,7 +27,7 @@ export type ValitusHaOValittajanVaatimus = {
   kompensaationPoistoTaiVahennysAP?: boolean;
   kompensaationPoistoTaiVahennysUO?: boolean;
   muu?: boolean;
-  tasmennys?: string;
+  tasmennys?: string | null;
 };
 
 export type ValitusHaO = {

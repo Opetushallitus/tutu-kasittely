@@ -13,29 +13,25 @@ class ValitusHaOSerializationTest extends UnitTestBase with TutuJsonFormats {
   @Test
   def valitusHaORoundTripsWithPopulatedLocalDateTimeFields(): Unit = {
     val valitusHaO = ValitusHaO(
-      valitettu = Some(true),
+      valitettu = true,
       valitusPvm = Some(LocalDateTime.of(2026, 9, 1, 0, 0, 0)),
       ratkaisuPvm = Some(LocalDateTime.of(2026, 9, 15, 12, 30, 0)),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(
-        ValitusLausuntopyynto(
-          ashaTunnus = Some("ASHA-123"),
-          saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
-          maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
-          lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
-        )
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(
+        ashaTunnus = Some("ASHA-123"),
+        saapumisPvm = Some(LocalDateTime.of(2026, 9, 16, 0, 0, 0)),
+        maaraAikaPvm = Some(LocalDateTime.of(2026, 9, 30, 0, 0, 0)),
+        lausuntoAnnettuPvm = Some(LocalDateTime.of(2026, 9, 25, 0, 0, 0))
       ),
-      valittajanVaatimus = Some(
-        ValitusHaOValittajanVaatimus(
-          taso = Some(true),
-          suuntautuminen = Some(false),
-          virallisuus = Some(true),
-          tiettyKelpoisuus = Some(false),
-          kompensaationPoistoTaiVahennysAP = Some(true),
-          kompensaationPoistoTaiVahennysUO = Some(false),
-          muu = Some(true),
-          tasmennys = Some("Tarkentava selitys")
-        )
+      valittajanVaatimus = ValitusHaOValittajanVaatimus(
+        taso = true,
+        suuntautuminen = false,
+        virallisuus = true,
+        tiettyKelpoisuus = false,
+        kompensaationPoistoTaiVahennysAP = true,
+        kompensaationPoistoTaiVahennysUO = false,
+        muu = true,
+        tasmennys = Some("Tarkentava selitys")
       ),
       ratkaisu = Some("VaatimusHylatty"),
       ratkaisuLisatieto = Some("Lisätietoa HaO:n ratkaisusta")
@@ -49,11 +45,36 @@ class ValitusHaOSerializationTest extends UnitTestBase with TutuJsonFormats {
 
   @Test
   def valitusHaORoundTripsWithEmptyFields(): Unit = {
-    val valitusHaO = ValitusHaO(valitettu = None, valitusPvm = None, ratkaisuPvm = None)
+    val valitusHaO = ValitusHaO(valitettu = false, valitusPvm = None, ratkaisuPvm = None)
 
     val json   = Serialization.write(valitusHaO)
     val result = Serialization.read[ValitusHaO](json)
 
     assertEquals(valitusHaO, result)
+  }
+
+  @Test
+  def valitusHaOUsesDefaultsForMissingFieldsWhenReadFromDb(): Unit = {
+    assertEquals(ValitusHaO(), Serialization.read[ValitusHaO]("{}"))
+  }
+
+  @Test
+  def valitusHaOUsesDefaultsForNullFieldsWhenReadFromDb(): Unit = {
+    assertEquals(
+      ValitusHaO(),
+      Serialization.read[ValitusHaO]("""{"valitettu": null, "lausuntopyynto": null, "valittajanVaatimus": null}""")
+    )
+  }
+
+  @Test
+  def valitusHaOUsesDefaultsForMissingAndNullFieldsInRequest(): Unit = {
+    assertEquals(ValitusHaO(), mapper.readValue("{}", classOf[ValitusHaO]))
+    assertEquals(
+      ValitusHaO(),
+      mapper.readValue(
+        """{"valitettu": null, "lausuntopyynto": null, "valittajanVaatimus": null}""",
+        classOf[ValitusHaO]
+      )
+    )
   }
 }

@@ -145,21 +145,21 @@ class PerusteluControllerTest extends IntegrationTestBase {
   def makePerusteluWithAP(): Perustelu = {
     makePerustelu().copy(
       apSisalto = APSisalto(
-        Some(false),
-        Some(false),
-        Some(true),
-        Some(false),
+        false,
+        false,
+        true,
+        false,
         Some("todistusEUKansalaisuuteenRinnasteisestaAsemasta"),
         Some("ammattiJohonPatevoitynyt"),
         Some("ammattitoiminnanPaaAsiallinenSisalto"),
         Some("koulutuksenKestoJaSisalto"),
-        Some(false),
-        Some(false),
-        Some(true),
+        false,
+        false,
+        true,
         Some("selvityksetAikaisemmanTapauksenAsiaTunnus"),
-        Some(false),
+        false,
         Some("lisatietoja"),
-        Some(true),
+        true,
         Some("muutAPPerustelut"),
         Some("SEUTArviointi")
       )

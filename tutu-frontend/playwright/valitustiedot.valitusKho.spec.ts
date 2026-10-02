@@ -316,9 +316,14 @@ test('KHO:n ratkaisu piilotetaan ja tyhjennetään kun valitus poistetaan', asyn
   await ratkaisuRadioGroup
     .locator('input[type="radio"][value="KhoErilainenPaatos"]')
     .click();
-  await ratkaisuLisatietoInput
-    .getByRole('textbox')
-    .fill('Tarkempi selitys ratkaisusta');
+  await expectRequestData(
+    page,
+    '/valitustiedot',
+    ratkaisuLisatietoInput
+      .getByRole('textbox')
+      .fill('Tarkempi selitys ratkaisusta'),
+    { valitusKHO: { ratkaisuLisatieto: 'Tarkempi selitys ratkaisusta' } },
+  );
 
   const saveButton = page.getByTestId('save-ribbon-button');
   const [uncheckRequest] = await Promise.all([

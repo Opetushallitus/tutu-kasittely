@@ -21,9 +21,9 @@ class ValitustiedotService(
 
   private def validoiValitusKHOPvm(valitusKHO: ValitusKHO): Unit = {
     (valitusKHO.valitettu, valitusKHO.valitusPvm, valitusKHO.ratkaisuPvm) match {
-      case (valitettu, Some(_), _) if !valitettu.contains(true) =>
+      case (valitettu, Some(_), _) if !valitettu =>
         throw new ValitustiedotValidationException("KHO:n valituspäivä ei voi olla asetettu ilman valitusta")
-      case (valitettu, _, Some(_)) if !valitettu.contains(true) =>
+      case (valitettu, _, Some(_)) if !valitettu =>
         throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla asetettu ilman valitusta")
       case (_, None, Some(_)) =>
         throw new ValitustiedotValidationException("KHO:n ratkaisupäivä ei voi olla asetettu ilman valituspäivää")
@@ -35,9 +35,9 @@ class ValitustiedotService(
 
   private def validoiValitusHaOPvm(valitusHaO: ValitusHaO): Unit = {
     (valitusHaO.valitettu, valitusHaO.valitusPvm, valitusHaO.ratkaisuPvm) match {
-      case (valitettu, Some(_), _) if !valitettu.contains(true) =>
+      case (valitettu, Some(_), _) if !valitettu =>
         throw new ValitustiedotValidationException("HaO:n valituspäivä ei voi olla asetettu ilman valitusta")
-      case (valitettu, _, Some(_)) if !valitettu.contains(true) =>
+      case (valitettu, _, Some(_)) if !valitettu =>
         throw new ValitustiedotValidationException("HaO:n ratkaisupäivä ei voi olla asetettu ilman valitusta")
       case (_, None, Some(_)) =>
         throw new ValitustiedotValidationException("HaO:n ratkaisupäivä ei voi olla asetettu ilman valituspäivää")
@@ -49,11 +49,11 @@ class ValitustiedotService(
 
   private def validoiLausuntopyyntoTila(
     tuomioistuinTunnus: String,
-    valitettu: Option[Boolean],
-    lausuntopyynto: Option[Boolean]
+    valitettu: Boolean,
+    lausuntopyynto: Boolean
   ): Unit = {
     (valitettu, lausuntopyynto) match {
-      case (valitettu, Some(true)) if !valitettu.contains(true) =>
+      case (valitettu, true) if !valitettu =>
         throw new ValitustiedotValidationException(
           s"$tuomioistuinTunnus:n lausuntopyyntö ei voi olla asetettu ilman valitusta"
         )
@@ -63,11 +63,11 @@ class ValitustiedotService(
 
   private def validoiLausuntopyyntoSaapumisPvm(
     tuomioistuinTunnus: String,
-    lausuntopyynto: Option[Boolean],
+    lausuntopyynto: Boolean,
     lausuntopyynnonSaapumisPvm: Option[LocalDateTime]
   ): Unit = {
     (lausuntopyynto, lausuntopyynnonSaapumisPvm) match {
-      case (lausuntopyynto, Some(_)) if !lausuntopyynto.contains(true) =>
+      case (lausuntopyynto, Some(_)) if !lausuntopyynto =>
         throw new ValitustiedotValidationException(
           s"$tuomioistuinTunnus:n lausuntopyynnön saapumispäivä ei voi olla asetettu ilman lausuntopyyntöä"
         )
@@ -113,21 +113,21 @@ class ValitustiedotService(
 
   private def validoiValitusLausuntopyynto(
     tuomioistuinTunnus: String,
-    valitettu: Option[Boolean],
-    lausuntopyyntoValittu: Option[Boolean],
-    lausuntopyynto: Option[ValitusLausuntopyynto]
+    valitettu: Boolean,
+    lausuntopyyntoValittu: Boolean,
+    lausuntopyynto: ValitusLausuntopyynto
   ): Unit = {
     validoiLausuntopyyntoTila(tuomioistuinTunnus, valitettu, lausuntopyyntoValittu)
-    validoiLausuntopyyntoSaapumisPvm(tuomioistuinTunnus, lausuntopyyntoValittu, lausuntopyynto.flatMap(_.saapumisPvm))
+    validoiLausuntopyyntoSaapumisPvm(tuomioistuinTunnus, lausuntopyyntoValittu, lausuntopyynto.saapumisPvm)
     validoiLausuntopyyntoMaaraaikaPvm(
       tuomioistuinTunnus,
-      lausuntopyynto.flatMap(_.saapumisPvm),
-      lausuntopyynto.flatMap(_.maaraAikaPvm)
+      lausuntopyynto.saapumisPvm,
+      lausuntopyynto.maaraAikaPvm
     )
     validoiLausuntoAnnettuPvm(
       tuomioistuinTunnus,
-      lausuntopyynto.flatMap(_.saapumisPvm),
-      lausuntopyynto.flatMap(_.lausuntoAnnettuPvm)
+      lausuntopyynto.saapumisPvm,
+      lausuntopyynto.lausuntoAnnettuPvm
     )
   }
 

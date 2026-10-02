@@ -24,6 +24,7 @@ import {
 import {
   getPaatosTietoDropdownOptions,
   getTiettyTutkintoTaiOpinnotAdditionalOptions,
+  emptyKielteisenPaatoksenPerustelut,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
@@ -130,8 +131,9 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
     if (fieldVal !== null) {
       tobeTutkinto.myonteinenPaatos = undefined;
       tobeTutkinto.opetuskieli = undefined;
-      tobeTutkinto.kielteisenPaatoksenPerustelut = undefined;
-      tobeTutkinto.myonteisenPaatoksenLisavaatimukset = undefined;
+      tobeTutkinto.kielteisenPaatoksenPerustelut =
+        emptyKielteisenPaatoksenPerustelut();
+      tobeTutkinto.myonteisenPaatoksenLisavaatimukset = null;
     }
     updateTutkintoTaiOpintoAction(
       {

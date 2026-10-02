@@ -11,7 +11,7 @@ export type SovellettuTilanneOption = {
 
 export type SovellettuTilanneProps = {
   t: TFunction;
-  sovellettuTilanne?: string;
+  sovellettuTilanne?: string | null;
   sovellettuTilanneOptions: SovellettuTilanneOption[];
   updateCb: (sovellettuTilanne: string) => void;
 };

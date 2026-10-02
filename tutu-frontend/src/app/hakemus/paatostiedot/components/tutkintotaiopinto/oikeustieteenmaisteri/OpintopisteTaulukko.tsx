@@ -83,9 +83,9 @@ export const OpintopisteTaulukko = ({
 }: {
   t: TFunction;
   sovellettuTilanne: string;
-  tallinnaOpintojenLaajuus?: number;
-  eurooppaOpintojenLaajuus?: number;
-  suomiOpintojenLaajuus?: number;
+  tallinnaOpintojenLaajuus?: number | null;
+  eurooppaOpintojenLaajuus?: number | null;
+  suomiOpintojenLaajuus?: number | null;
 }) => {
   const vaadittuKokonaisLaajuus =
     VAADITUT_OPINNOT_BY_SOVELLETTU_TILANNE[sovellettuTilanne].kokonaisLaajuus;

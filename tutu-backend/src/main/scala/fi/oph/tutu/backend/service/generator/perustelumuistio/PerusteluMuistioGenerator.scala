@@ -443,26 +443,20 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
       val apPerusteResult = Seq(
         /////////////////////////////////
         // Peruste AP-lain soveltamiselle
-        apSisalto.lakiperusteToisessaJasenmaassaSaannelty
-          .filter(_.==(true))
-          .map(_ =>
-            translationService
-              .getTranslation(FI, "perustelumuistio.ap.lakiperuste.toisessaJasenmaassaSaanneltyKoulutus")
-          ),
-        apSisalto.lakiperustePatevyysLahtomaanOikeuksilla
-          .filter(_.==(true))
-          .map(_ =>
-            translationService.getTranslation(FI, "perustelumuistio.ap.lakiperuste.lahtomaassaSaavutetutOikeudet")
-          ),
-        apSisalto.lakiperusteToinenEUmaaTunnustanut
-          .filter(_.==(true))
-          .map(_ => translationService.getTranslation(FI, "perustelumuistio.ap.lakiperuste.toinenEUMaaTunnustanut")),
-        apSisalto.lakiperusteLahtomaassaSaantelematon
-          .filter(_.==(true))
-          .map(_ =>
-            translationService
-              .getTranslation(FI, "perustelumuistio.ap.lakiperuste.saantelematonAmmattiJaTyokokemus")
-          ),
+        Option.when(apSisalto.lakiperusteToisessaJasenmaassaSaannelty)(
+          translationService
+            .getTranslation(FI, "perustelumuistio.ap.lakiperuste.toisessaJasenmaassaSaanneltyKoulutus")
+        ),
+        Option.when(apSisalto.lakiperustePatevyysLahtomaanOikeuksilla)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.lakiperuste.lahtomaassaSaavutetutOikeudet")
+        ),
+        Option.when(apSisalto.lakiperusteToinenEUmaaTunnustanut)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.lakiperuste.toinenEUMaaTunnustanut")
+        ),
+        Option.when(apSisalto.lakiperusteLahtomaassaSaantelematon)(
+          translationService
+            .getTranslation(FI, "perustelumuistio.ap.lakiperuste.saantelematonAmmattiJaTyokokemus")
+        ),
 
         // ------- //
         apSisalto.todistusEUKansalaisuuteenRinnasteisestaAsemasta
@@ -496,27 +490,27 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
       val ammattipatevyysResult = Seq(
         //////////////////////////////////////////////////////////////////////////////
         // Ammattipätevyyttä ja ammatin tai koulutuksen sääntelyä koskevat selvitykset
-        apSisalto.selvityksetLahtomaanViranomaiselta
-          .filter(_.==(true))
-          .map(_ => translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.lahtomaanViranomaiselta")),
-        apSisalto.selvityksetLahtomaanLainsaadannosta
-          .filter(_.==(true))
-          .map(_ => translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.lahtomaanLainsaadannosta")),
+        Option.when(apSisalto.selvityksetLahtomaanViranomaiselta)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.lahtomaanViranomaiselta")
+        ),
+        Option.when(apSisalto.selvityksetLahtomaanLainsaadannosta)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.lahtomaanLainsaadannosta")
+        ),
         (apSisalto.selvityksetAikaisempiTapaus, apSisalto.selvityksetAikaisemmanTapauksenAsiaTunnus) match {
-          case (Some(true), Some("")) =>
+          case (true, Some("")) =>
             Some(translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.aikaisempiTapaus"))
-          case (Some(true), None) =>
+          case (true, None) =>
             Some(translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.aikaisempiTapaus"))
-          case (Some(true), Some(asiatunnus)) => {
+          case (true, Some(asiatunnus)) => {
             val label =
               translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.aikaisempiTapausLabel")
             Some(s"$label $asiatunnus".trim)
           }
           case (_, _) => None
         },
-        apSisalto.selvityksetIlmeneeAsiakirjoista
-          .filter(_.==(true))
-          .map(_ => translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.asiakirjoista")),
+        Option.when(apSisalto.selvityksetIlmeneeAsiakirjoista)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.selvitykset.asiakirjoista")
+        ),
 
         // ------- //
         apSisalto.lisatietoja
@@ -525,9 +519,9 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
             val label = translationService.getTranslation(FI, "perustelumuistio.ap.lisatietoja.label")
             s"$label\n$text"
           ),
-        apSisalto.IMIHalytysTarkastettu
-          .filter(_.==(true))
-          .map(_ => translationService.getTranslation(FI, "perustelumuistio.ap.IMIHalytyksetTarkastettu")),
+        Option.when(apSisalto.IMIHalytysTarkastettu)(
+          translationService.getTranslation(FI, "perustelumuistio.ap.IMIHalytyksetTarkastettu")
+        ),
         apSisalto.muutAPPerustelut
           .filter(_.nonEmpty)
           .map(text =>

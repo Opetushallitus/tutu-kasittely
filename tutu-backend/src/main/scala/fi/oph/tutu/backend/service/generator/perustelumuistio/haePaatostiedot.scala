@@ -304,60 +304,50 @@ def bindExtractPeruutuksenTaiRaukeamisenSyy(
   tutkinnot: Seq[Tutkinto]
 ): PeruutuksenTaiRaukeamisenSyy => Option[String] = {
   def next(node: PeruutuksenTaiRaukeamisenSyy): Option[String] = {
-    val eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = node.eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada
-      .filter(_ == true)
-      .map(_ => translationService.getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiSaaHakemaansa"))
-    val muutenTyytymatonRatkaisuun = node.muutenTyytymatonRatkaisuun
-      .filter(_ == true)
-      .map(_ =>
-        translationService
-          .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.muutenTyytymatonRatkaisuun")
-      )
-    val eiApMukainenTutkintoTaiHaettuaPatevyytta = node.eiApMukainenTutkintoTaiHaettuaPatevyytta
-      .filter(_ == true)
-      .map(_ =>
-        translationService
-          .getTranslation(
-            FI,
-            "perustelumuistio.peruutusTaiRaukeaminen.syy.eiAPLainMukainenTaiHaettuaAmmattipatevyytta"
-          )
-      )
-    val eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = node.eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa
-      .filter(_ == true)
-      .map(_ =>
+    val eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada =
+      Option.when(node.eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada) {
+        translationService.getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiSaaHakemaansa")
+      }
+    val muutenTyytymatonRatkaisuun = Option.when(node.muutenTyytymatonRatkaisuun) {
+      translationService
+        .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.muutenTyytymatonRatkaisuun")
+    }
+    val eiApMukainenTutkintoTaiHaettuaPatevyytta = Option.when(node.eiApMukainenTutkintoTaiHaettuaPatevyytta) {
+      translationService
+        .getTranslation(
+          FI,
+          "perustelumuistio.peruutusTaiRaukeaminen.syy.eiAPLainMukainenTaiHaettuaAmmattipatevyytta"
+        )
+    }
+    val eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa =
+      Option.when(node.eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa) {
         translationService
           .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiVastaaTasoltaanSuomalaista")
-      )
-    val epavirallinenKorkeakouluTaiTutkinto = node.epavirallinenKorkeakouluTaiTutkinto
-      .filter(_ == true)
-      .map(_ =>
-        translationService
-          .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.epavirallinenKorkeakouluTaiTutkinto")
-      )
-    val eiEdellytyksiaRoEikaTasopaatokselle = node.eiEdellytyksiaRoEikaTasopaatokselle
-      .filter(_ == true)
-      .map(_ =>
-        translationService
-          .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiEdellytyksiaROTaiTasopaatokselle")
-      )
-    val eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = node.eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin
-      .filter(_ == true)
-      .map(_ =>
+      }
+    val epavirallinenKorkeakouluTaiTutkinto = Option.when(node.epavirallinenKorkeakouluTaiTutkinto) {
+      translationService
+        .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.epavirallinenKorkeakouluTaiTutkinto")
+    }
+    val eiEdellytyksiaRoEikaTasopaatokselle = Option.when(node.eiEdellytyksiaRoEikaTasopaatokselle) {
+      translationService
+        .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiEdellytyksiaROTaiTasopaatokselle")
+    }
+    val eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin =
+      Option.when(node.eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin) {
         translationService
           .getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.eiEdellytyksiaRinnastukselle")
-      )
-    val hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = node.hakijallaJoPaatosSamastaKoulutusKokonaisuudesta
-      .filter(_ == true)
-      .map(_ =>
+      }
+    val hakijallaJoPaatosSamastaKoulutusKokonaisuudesta =
+      Option.when(node.hakijallaJoPaatosSamastaKoulutusKokonaisuudesta) {
         translationService
           .getTranslation(
             FI,
             "perustelumuistio.peruutusTaiRaukeaminen.syy.hakijallaOnJoPaatosKoulutuskokonaisuudesta"
           )
-      )
-    val muuSyy = node.muuSyy
-      .filter(_ == true)
-      .map(_ => translationService.getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.muu"))
+      }
+    val muuSyy = Option.when(node.muuSyy) {
+      translationService.getTranslation(FI, "perustelumuistio.peruutusTaiRaukeaminen.syy.muu")
+    }
 
     val result = Seq(
       eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada,
@@ -547,13 +537,11 @@ def bindExtractErotKoulutuksessa(
   def next(node: ErotKoulutuksessa): Option[String] = {
     val nimetytErot = node.erot.filter(_.value == true).map(ero => s"- ${ero.name}")
 
-    val muuEro = node.muuEro
-      .filter(_ == true)
-      .map(_ =>
-        val label = translationService
-          .getTranslation(FI, "perustelumuistio.kelpoisuudenLisavaatimukset.erotKoulutuksessa.muuLabel")
-        s"$label ${node.muuEroKuvaus.getOrElse("")}".trim
-      )
+    val muuEro = Option.when(node.muuEro) {
+      val label = translationService
+        .getTranslation(FI, "perustelumuistio.kelpoisuudenLisavaatimukset.erotKoulutuksessa.muuLabel")
+      s"$label ${node.muuEroKuvaus.getOrElse("")}".trim
+    }
 
     val kaikkiErot = Seq(nimetytErot, muuEro).flatten
 
@@ -679,14 +667,12 @@ def bindExtractAmmattikokemusJaElinikainenOppiminen(
       )
 
     val korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa =
-      node.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa
-        .filter(_ == true)
-        .map(_ => {
-          translationService.getTranslation(
-            FI,
-            "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title"
-          )
-        })
+      Option.when(node.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa) {
+        translationService.getTranslation(
+          FI,
+          "perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title"
+        )
+      }
 
     Some(
       Seq(

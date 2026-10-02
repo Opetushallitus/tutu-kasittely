@@ -110,20 +110,18 @@ class PaatosControllerTest extends IntegrationTestBase {
       seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy =
         if (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen))
-          Some(
-            PeruutuksenTaiRaukeamisenSyy(
-              eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = pickBooleanOption,
-              muutenTyytymatonRatkaisuun = pickBooleanOption,
-              eiApMukainenTutkintoTaiHaettuaPatevyytta = pickBooleanOption,
-              eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = pickBooleanOption,
-              epavirallinenKorkeakouluTaiTutkinto = pickBooleanOption,
-              eiEdellytyksiaRoEikaTasopaatokselle = pickBooleanOption,
-              eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = pickBooleanOption,
-              hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = pickBooleanOption,
-              muuSyy = pickBooleanOption
-            )
+          PeruutuksenTaiRaukeamisenSyy(
+            eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada = pickBoolean,
+            muutenTyytymatonRatkaisuun = pickBoolean,
+            eiApMukainenTutkintoTaiHaettuaPatevyytta = pickBoolean,
+            eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa = pickBoolean,
+            epavirallinenKorkeakouluTaiTutkinto = pickBoolean,
+            eiEdellytyksiaRoEikaTasopaatokselle = pickBoolean,
+            eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin = pickBoolean,
+            hakijallaJoPaatosSamastaKoulutusKokonaisuudesta = pickBoolean,
+            muuSyy = pickBoolean
           )
-        else None,
+        else PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = Seq.empty,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
       lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
@@ -137,7 +135,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos),
       seutArviointi = pickBoolean,
-      peruutuksenTaiRaukeamisenSyy = None,
+      peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = paatosTiedot,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
       lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
@@ -150,7 +148,7 @@ class PaatosControllerTest extends IntegrationTestBase {
     Paatos(
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos),
-      peruutuksenTaiRaukeamisenSyy = None,
+      peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = kielteisetPaatosTiedot,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
       lahetyspaiva = Some(LocalDateTime.parse("2025-08-23T00:00:00.000"))
@@ -164,9 +162,9 @@ class PaatosControllerTest extends IntegrationTestBase {
       paatosTyyppi = Some(PaatosTyyppi.Kelpoisuus),
       sovellettuLaki = Some(SovellettuLaki.ap_seut),
       tutkintoId = None,
-      lisaaTutkintoPaatostekstiin = None,
+      lisaaTutkintoPaatostekstiin = false,
       myonteinenPaatos = None,
-      kielteisenPaatoksenPerustelut = None,
+      kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
       tutkintoTaso = Some(TutkintoTaso.YlempiKorkeakoulu)
     )
   }
@@ -178,12 +176,10 @@ class PaatosControllerTest extends IntegrationTestBase {
       paatosTyyppi = Some(PaatosTyyppi.Taso),
       sovellettuLaki = None,
       tutkintoId = None,
-      lisaaTutkintoPaatostekstiin = None,
+      lisaaTutkintoPaatostekstiin = false,
       myonteinenPaatos = Some(false),
-      kielteisenPaatoksenPerustelut = Some(
-        KielteisenPaatoksenPerustelut(
-          epavirallinenKorkeakoulu = true
-        )
+      kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(
+        epavirallinenKorkeakoulu = true
       ),
       tutkintoTaso = None
     )
@@ -200,7 +196,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(ratkaisutyyppi),
       seutArviointi = pickBoolean,
-      peruutuksenTaiRaukeamisenSyy = None,
+      peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(
           id = givenPaatosTietoId,
@@ -214,7 +210,7 @@ class PaatosControllerTest extends IntegrationTestBase {
               myonteisenPaatoksenLisavaatimukset = Some(
                 MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true)
               ),
-              kielteisenPaatoksenPerustelut = None
+              kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut()
             )
           )
         )
@@ -236,7 +232,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(ratkaisutyyppi),
       seutArviointi = pickBoolean,
-      peruutuksenTaiRaukeamisenSyy = None,
+      peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(
           id = givenPaatosTietoId,
@@ -264,7 +260,7 @@ class PaatosControllerTest extends IntegrationTestBase {
                         NamedBoolean("ero1", true),
                         NamedBoolean("ero2", false)
                       ),
-                      muuEro = Some(true),
+                      muuEro = true,
                       muuEroKuvaus = Some("Lisäksi muuta eroa")
                     )
                   ),
@@ -284,7 +280,7 @@ class PaatosControllerTest extends IntegrationTestBase {
                       lisatieto = Some("Lisätietoa"),
                       korvaavuusAmmattikokemus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
                       korvaavuusElinikainenOppiminen = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
-                      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa = Some(false),
+                      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa = false,
                       korvaavaToimenpide = Some(
                         KorvaavaToimenpide(
                           kelpoisuuskoeJaSopeutumisaika = true,
@@ -296,7 +292,7 @@ class PaatosControllerTest extends IntegrationTestBase {
                   )
                 )
               ),
-              kielteisenPaatoksenPerustelut = Some(KielteisenPaatoksenPerustelut())
+              kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut()
             )
           )
         )
@@ -585,7 +581,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.id").isString)
       .andExpect(jsonPath("$.paatosTiedot[0].id").isString)
-      .andExpect(jsonPath("$.paatosTiedot[0].lisaaTutkintoPaatostekstiin").isEmpty)
+      .andExpect(jsonPath("$.paatosTiedot[0].lisaaTutkintoPaatostekstiin").value(false))
       .andExpect(jsonPath("$.luoja").isString)
       .andExpect(jsonPath("$.luotu").isString)
       .andExpect(content().json(paatosJSON))

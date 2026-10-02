@@ -110,21 +110,21 @@ case class LausuntopyyntoModifyData(
 )
 
 case class APSisalto(
-  lakiperusteToisessaJasenmaassaSaannelty: Option[Boolean] = None,
-  lakiperustePatevyysLahtomaanOikeuksilla: Option[Boolean] = None,
-  lakiperusteToinenEUmaaTunnustanut: Option[Boolean] = None,
-  lakiperusteLahtomaassaSaantelematon: Option[Boolean] = None,
+  lakiperusteToisessaJasenmaassaSaannelty: Boolean = false,
+  lakiperustePatevyysLahtomaanOikeuksilla: Boolean = false,
+  lakiperusteToinenEUmaaTunnustanut: Boolean = false,
+  lakiperusteLahtomaassaSaantelematon: Boolean = false,
   todistusEUKansalaisuuteenRinnasteisestaAsemasta: Option[String] = None,
   ammattiJohonPatevoitynyt: Option[String] = None,
   ammattitoiminnanPaaAsiallinenSisalto: Option[String] = None,
   koulutuksenKestoJaSisalto: Option[String] = None,
-  selvityksetLahtomaanViranomaiselta: Option[Boolean] = None,
-  selvityksetLahtomaanLainsaadannosta: Option[Boolean] = None,
-  selvityksetAikaisempiTapaus: Option[Boolean] = None,
+  selvityksetLahtomaanViranomaiselta: Boolean = false,
+  selvityksetLahtomaanLainsaadannosta: Boolean = false,
+  selvityksetAikaisempiTapaus: Boolean = false,
   selvityksetAikaisemmanTapauksenAsiaTunnus: Option[String] = None,
-  selvityksetIlmeneeAsiakirjoista: Option[Boolean] = None,
+  selvityksetIlmeneeAsiakirjoista: Boolean = false,
   lisatietoja: Option[String] = None,
-  IMIHalytysTarkastettu: Option[Boolean] = None,
+  IMIHalytysTarkastettu: Boolean = false,
   muutAPPerustelut: Option[String] = None,
   SEUTArviointi: Option[String] = None
 )

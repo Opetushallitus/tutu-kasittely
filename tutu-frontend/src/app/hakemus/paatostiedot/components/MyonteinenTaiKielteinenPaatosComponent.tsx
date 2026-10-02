@@ -3,6 +3,7 @@ import React from 'react';
 
 import { KielteisenPaatoksenPerusteluComponent } from '@/src/app/hakemus/paatostiedot/components/KielteisenPaatoksenPerusteluComponent';
 import { myonteinenPaatosOptions } from '@/src/app/hakemus/paatostiedot/constants';
+import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -48,6 +49,10 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
   ) => {
     updatePaatosAction({ myonteisenPaatoksenLisavaatimukset: lisavaatimukset });
   };
+  // Tason päätöksellä (PaatosTieto) ei ole lisävaatimuksia, joten kenttää ei lisätä siihen
+  const tyhjatLisavaatimukset = MyonteisenPaatoksenLisavaatimusComponent
+    ? { myonteisenPaatoksenLisavaatimukset: null }
+    : {};
   const propsForLisavaatimusComponent: T = {
     ...(lisavaatimusComponentProps as T),
     updateLisavaatimukset: updateMyonteisenPaatoksenLisavaatimukset,
@@ -66,15 +71,15 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
         onChange={(e) =>
           updatePaatosAction({
             myonteinenPaatos: e.target.value === 'true',
-            myonteisenPaatoksenLisavaatimukset: undefined,
-            kielteisenPaatoksenPerustelut: undefined,
+            ...tyhjatLisavaatimukset,
+            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
           })
         }
         onClear={() =>
           updatePaatosAction({
             myonteinenPaatos: null,
-            myonteisenPaatoksenLisavaatimukset: undefined,
-            kielteisenPaatoksenPerustelut: undefined,
+            ...tyhjatLisavaatimukset,
+            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
           })
         }
       />

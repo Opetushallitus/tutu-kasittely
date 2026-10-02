@@ -110,6 +110,14 @@ export const handleSuccessMessage = (
 
 export const isDefined = (val: unknown) => val !== undefined && val !== null;
 
+export const clearValues = <T extends object>(obj: T | null | undefined): T =>
+  Object.fromEntries(
+    Object.entries(obj ?? {}).map(([key, value]) => [
+      key,
+      typeof value === 'boolean' ? false : null,
+    ]),
+  ) as T;
+
 export { buildHakemusUpdateRequest } from '@/src/lib/utils/hakemusUpdateBuilder';
 
 export const updateTutkintoJarjestys = (

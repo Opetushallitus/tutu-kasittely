@@ -67,13 +67,13 @@ class KasittelyVaiheService(
 
   private def resolveValitusVaihe(valitustiedot: Option[Valitustiedot]): Option[KasittelyVaihe] =
     resolveValitusOdottaaVaihe(
-      valitustiedot.flatMap(_.valitusKHO.lausuntopyynto),
+      valitustiedot.map(_.valitusKHO.lausuntopyynto),
       valitustiedot.flatMap(_.valitusKHO.ratkaisuPvm),
       KasittelyVaihe.OdottaaKHOLausuntoa,
       KasittelyVaihe.OdottaaKHORatkaisua
     ).orElse(
       resolveValitusOdottaaVaihe(
-        valitustiedot.flatMap(_.valitusHaO.lausuntopyynto),
+        valitustiedot.map(_.valitusHaO.lausuntopyynto),
         valitustiedot.flatMap(_.valitusHaO.ratkaisuPvm),
         KasittelyVaihe.OdottaaHaOLausuntoa,
         KasittelyVaihe.OdottaaHaORatkaisua

@@ -8,7 +8,7 @@ case class Paatos(
   hakemusId: Option[UUID] = None,
   ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
   seutArviointi: Boolean = false,
-  peruutuksenTaiRaukeamisenSyy: Option[PeruutuksenTaiRaukeamisenSyy] = None,
+  peruutuksenTaiRaukeamisenSyy: PeruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
   paatosTiedot: Seq[PaatosTieto] = Seq(),
   paatosTietoOptions: Option[PaatosTietoOptions] = None,
   hyvaksymispaiva: Option[LocalDateTime] = None,
@@ -21,15 +21,15 @@ case class Paatos(
 )
 
 case class PeruutuksenTaiRaukeamisenSyy(
-  eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada: Option[Boolean] = None,
-  muutenTyytymatonRatkaisuun: Option[Boolean] = None,
-  eiApMukainenTutkintoTaiHaettuaPatevyytta: Option[Boolean] = None,
-  eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa: Option[Boolean] = None,
-  epavirallinenKorkeakouluTaiTutkinto: Option[Boolean] = None,
-  eiEdellytyksiaRoEikaTasopaatokselle: Option[Boolean] = None,
-  eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin: Option[Boolean] = None,
-  hakijallaJoPaatosSamastaKoulutusKokonaisuudesta: Option[Boolean] = None,
-  muuSyy: Option[Boolean] = None
+  eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada: Boolean = false,
+  muutenTyytymatonRatkaisuun: Boolean = false,
+  eiApMukainenTutkintoTaiHaettuaPatevyytta: Boolean = false,
+  eiTasoltaanVastaaSuomessaSuoritettavaaTutkintoa: Boolean = false,
+  epavirallinenKorkeakouluTaiTutkinto: Boolean = false,
+  eiEdellytyksiaRoEikaTasopaatokselle: Boolean = false,
+  eiEdellytyksiaRinnastaaTiettyihinKkOpintoihin: Boolean = false,
+  hakijallaJoPaatosSamastaKoulutusKokonaisuudesta: Boolean = false,
+  muuSyy: Boolean = false
 )
 
 case class PaatosTieto(
@@ -38,9 +38,9 @@ case class PaatosTieto(
   paatosTyyppi: Option[PaatosTyyppi] = None,
   sovellettuLaki: Option[SovellettuLaki] = None,
   tutkintoId: Option[UUID] = None,
-  lisaaTutkintoPaatostekstiin: Option[Boolean] = None,
+  lisaaTutkintoPaatostekstiin: Boolean = false,
   myonteinenPaatos: Option[Boolean] = None,
-  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
+  kielteisenPaatoksenPerustelut: KielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
   tutkintoTaso: Option[TutkintoTaso] = None,
   rinnastettavatTutkinnotTaiOpinnot: Seq[TutkintoTaiOpinto] = Seq(),
   kelpoisuudet: Seq[Kelpoisuus] = Seq(),
@@ -60,7 +60,7 @@ case class TutkintoTaiOpinto(
   opetuskieli: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
   myonteisenPaatoksenLisavaatimukset: Option[MyonteisenPaatoksenLisavaatimukset] = None,
-  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
+  kielteisenPaatoksenPerustelut: KielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None
@@ -113,7 +113,7 @@ case class NamedBoolean(name: String, value: Boolean)
 case class ErotKoulutuksessa(
   erot: Seq[NamedBoolean] = Seq(),
   eroTarkennukset: Map[String, Seq[NamedBoolean]] = Map(),
-  muuEro: Option[Boolean] = None,
+  muuEro: Boolean = false,
   muuEroKuvaus: Option[String] = None
 )
 
@@ -124,7 +124,7 @@ case class KelpoisuuskoeSisalto(
 )
 
 case class KorvaavaToimenpide(
-  taydentavatOpinnot: Option[Boolean] = None,
+  taydentavatOpinnot: Boolean = false,
   kelpoisuuskoe: Boolean = false,
   kelpoisuuskoeSisalto: Option[KelpoisuuskoeSisalto] = None,
   sopeutumisaika: Boolean = false,
@@ -138,7 +138,7 @@ case class AmmattikokemusJaElinikainenOppiminen(
   lisatieto: Option[String] = None,
   korvaavuusAmmattikokemus: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
   korvaavuusElinikainenOppiminen: Option[AmmattikokemusElinikainenOppiminenKorvaavuus] = None,
-  korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: Option[Boolean] = None,
+  korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: Boolean = false,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None
 )
 
@@ -185,7 +185,7 @@ case class Kelpoisuus(
   direktiivitasoLisatiedot: Option[String] = None,
   myonteinenPaatos: Option[Boolean] = None,
   myonteisenPaatoksenLisavaatimukset: Option[KelpoisuudenLisavaatimukset] = None,
-  kielteisenPaatoksenPerustelut: Option[KielteisenPaatoksenPerustelut] = None,
+  kielteisenPaatoksenPerustelut: KielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut(),
   luotu: Option[LocalDateTime] = None,
   luoja: Option[String] = None,
   muokkaaja: Option[String] = None

@@ -611,9 +611,9 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolveReturnsOdottaaKHOLausuntoaWhenMaaraaikaSetAndLausuntoaEiAnnettu(): Unit = {
     val valitusKHO = ValitusKHO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now)))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
@@ -626,9 +626,9 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolveReturnsOdottaaKHORatkaisuaWhenLausuntoAnnettuAndRatkaisuaEiAnnettu(): Unit = {
     val valitusKHO = ValitusKHO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1))))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1)))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
@@ -655,10 +655,9 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val valitusKHO = ValitusKHO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto =
-        Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1)))),
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1))),
       ratkaisuPvm = Some(now.plusDays(2))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
@@ -686,9 +685,9 @@ class KasittelyVaiheServiceTest {
       .thenReturn(Some(tiedot))
 
     val valitusKHO = ValitusKHO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now)))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithKho(valitusKHO)))
@@ -701,9 +700,9 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolveReturnsOdottaaHaOLausuntoaWhenMaaraaikaSetAndLausuntoaEiAnnettu(): Unit = {
     val valitusHaO = ValitusHaO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now)))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithHao(valitusHaO)))
@@ -716,9 +715,9 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolveReturnsOdottaaHaORatkaisuaWhenLausuntoAnnettuAndRatkaisuaEiAnnettu(): Unit = {
     val valitusHaO = ValitusHaO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1))))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1)))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(Some(valitustiedotWithHao(valitusHaO)))
@@ -731,10 +730,9 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolveIgnoresValitusHaOWhenRatkaisuAlreadyAnnettu(): Unit = {
     val valitusHaO = ValitusHaO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto =
-        Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1)))),
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now), lausuntoAnnettuPvm = Some(now.plusDays(1))),
       ratkaisuPvm = Some(now.plusDays(2))
     )
     when(asiakirjaRepository.haeKasittelyVaiheTiedot(Some(asiakirjaId), hakemusId))
@@ -750,14 +748,14 @@ class KasittelyVaiheServiceTest {
   @Test
   def testResolvePrioritizesKHOOverHaOWhenBothOdottavat(): Unit = {
     val valitusKHO = ValitusKHO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now)))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now))
     )
     val valitusHaO = ValitusHaO(
-      valitettu = Some(true),
-      lausuntopyyntoValittu = Some(true),
-      lausuntopyynto = Some(ValitusLausuntopyynto(maaraAikaPvm = Some(now)))
+      valitettu = true,
+      lausuntopyyntoValittu = true,
+      lausuntopyynto = ValitusLausuntopyynto(maaraAikaPvm = Some(now))
     )
     when(valitustiedotRepository.haeValitustiedot(dbHakemus.hakemusOid))
       .thenReturn(

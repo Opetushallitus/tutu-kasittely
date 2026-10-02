@@ -12,6 +12,7 @@ import {
   tutkinnonTasoOptions,
   tutkintoOptions,
 } from '@/src/app/hakemus/paatostiedot/constants';
+import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -55,8 +56,8 @@ export const PaatosTietoComponent = ({
       kelpoisuudet: [],
       rinnastettavatTutkinnotTaiOpinnot: [],
       myonteinenPaatos: undefined,
-      kielteisenPaatoksenPerustelut: undefined,
-      tutkintoTaso: undefined,
+      kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
+      tutkintoTaso: null,
     };
 
     switch (paatosTyyppi) {
@@ -156,7 +157,7 @@ export const PaatosTietoComponent = ({
                     };
                     // Myönteisellä ja kielteisellä on eri optionsit
                     if ('myonteinenPaatos' in paatos) {
-                      tobePaatostieto.tutkintoTaso = undefined;
+                      tobePaatostieto.tutkintoTaso = null;
                     }
                     updatePaatosTietoAction(tobePaatostieto);
                   }}

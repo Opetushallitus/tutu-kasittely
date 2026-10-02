@@ -25,7 +25,8 @@ class PaatosRepository extends BaseResultHandlers {
       hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
       ratkaisutyyppi = Ratkaisutyyppi.optionFromString(r.nextString()),
       seutArviointi = r.nextBoolean(),
-      peruutuksenTaiRaukeamisenSyy = Option(Serialization.read[PeruutuksenTaiRaukeamisenSyy](r.nextString())),
+      peruutuksenTaiRaukeamisenSyy = Option(Serialization.read[PeruutuksenTaiRaukeamisenSyy](r.nextString()))
+        .getOrElse(PeruutuksenTaiRaukeamisenSyy()),
       hyvaksymispaiva = r.nextTimestampOption().map(_.toLocalDateTime),
       lahetyspaiva = r.nextTimestampOption().map(_.toLocalDateTime),
       paatostekstiVahvistettu = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -43,9 +44,10 @@ class PaatosRepository extends BaseResultHandlers {
       paatosTyyppi = PaatosTyyppi.optionFromString(r.nextString()),
       sovellettuLaki = SovellettuLaki.optionFromString(r.nextString()),
       tutkintoId = Some(r.nextObject().asInstanceOf[UUID]),
-      lisaaTutkintoPaatostekstiin = r.nextBooleanOption(),
+      lisaaTutkintoPaatostekstiin = r.nextBooleanOption().getOrElse(false),
       myonteinenPaatos = r.nextBooleanOption(),
-      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString())),
+      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString()))
+        .getOrElse(KielteisenPaatoksenPerustelut()),
       tutkintoTaso = TutkintoTaso.optionFromString(r.nextString()),
       esittelijanHuomioitaToimenpiteista = r.nextStringOption(),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
@@ -62,7 +64,8 @@ class PaatosRepository extends BaseResultHandlers {
       myonteinenPaatos = r.nextBooleanOption(),
       myonteisenPaatoksenLisavaatimukset =
         Option(Serialization.read[MyonteisenPaatoksenLisavaatimukset](r.nextString())),
-      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString())),
+      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString()))
+        .getOrElse(KielteisenPaatoksenPerustelut()),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption(),
@@ -82,7 +85,8 @@ class PaatosRepository extends BaseResultHandlers {
       direktiivitasoLisatiedot = r.nextStringOption(),
       myonteinenPaatos = r.nextBooleanOption(),
       myonteisenPaatoksenLisavaatimukset = Option(Serialization.read[KelpoisuudenLisavaatimukset](r.nextString())),
-      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString())),
+      kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString()))
+        .getOrElse(KielteisenPaatoksenPerustelut()),
       luotu = Some(r.nextTimestamp().toLocalDateTime),
       luoja = Some(r.nextString()),
       muokkaaja = r.nextStringOption()
@@ -117,7 +121,7 @@ class PaatosRepository extends BaseResultHandlers {
    */
   def tallennaPaatosAction(hakemusId: UUID, paatos: Paatos, luojaTaiMuokkaaja: String): DBIO[Paatos] = {
     val ratkaisutyyppiOrNull             = paatos.ratkaisutyyppi.map(_.toString).orNull
-    val peruutuksenTaiRaukeamisenSyyJson = Serialization.write(paatos.peruutuksenTaiRaukeamisenSyy.orNull)
+    val peruutuksenTaiRaukeamisenSyyJson = Serialization.write(paatos.peruutuksenTaiRaukeamisenSyy)
     sql"""
       INSERT INTO paatos (hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luoja)
       VALUES (${hakemusId.toString}::uuid, $ratkaisutyyppiOrNull::ratkaisutyyppi, ${paatos.seutArviointi},
@@ -315,7 +319,7 @@ class PaatosRepository extends BaseResultHandlers {
               ${paatosTieto.tutkintoId.map(_.toString).orNull}::uuid,
               ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
               ${paatosTieto.myonteinenPaatos}::boolean,
-              ${Serialization.write(paatosTieto.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
+              ${Serialization.write(paatosTieto.kielteisenPaatoksenPerustelut)}::jsonb,
               ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
               ${paatosTieto.esittelijanHuomioitaToimenpiteista.orNull}::text,
               $luoja)
@@ -351,7 +355,7 @@ class PaatosRepository extends BaseResultHandlers {
           lisaa_tutkinto_paatostekstiin = ${paatosTieto.lisaaTutkintoPaatostekstiin}::boolean,
           myonteinen_paatos = ${paatosTieto.myonteinenPaatos}::boolean,
           kielteisen_paatoksen_perustelut = ${Serialization.write(
-        paatosTieto.kielteisenPaatoksenPerustelut.orNull
+        paatosTieto.kielteisenPaatoksenPerustelut
       )}::jsonb,
           tutkintotaso = ${paatosTieto.tutkintoTaso.map(_.toString).orNull}::tutkintotaso,
           esittelijan_huomioita_toimenpiteista = ${paatosTieto.esittelijanHuomioitaToimenpiteista.orNull}::text,
@@ -409,7 +413,7 @@ class PaatosRepository extends BaseResultHandlers {
             ${tutkintoTaiOpinto.myonteinenPaatos}::boolean,
             ${Serialization.write(tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
             ${Serialization.write(
-        tutkintoTaiOpinto.kielteisenPaatoksenPerustelut.orNull
+        tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
       )}::jsonb,
             $luoja,
             ${tutkintoTaiOpinto.opetuskieli.orNull}
@@ -428,7 +432,7 @@ class PaatosRepository extends BaseResultHandlers {
         tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset.orNull
       )}::jsonb,
             kielteisen_paatoksen_perustelut = ${Serialization.write(
-        tutkintoTaiOpinto.kielteisenPaatoksenPerustelut.orNull
+        tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
       )}::jsonb,
             muokkaaja = $muokkaaja,
             opetuskieli = ${tutkintoTaiOpinto.opetuskieli.orNull}
@@ -489,7 +493,7 @@ class PaatosRepository extends BaseResultHandlers {
             ${kelpoisuus.direktiivitasoLisatiedot},
             ${kelpoisuus.myonteinenPaatos},
             ${Serialization.write(kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull)}::jsonb,
-            ${Serialization.write(kelpoisuus.kielteisenPaatoksenPerustelut.orNull)}::jsonb,
+            ${Serialization.write(kelpoisuus.kielteisenPaatoksenPerustelut)}::jsonb,
             $luoja
           )"""
 
@@ -513,7 +517,7 @@ class PaatosRepository extends BaseResultHandlers {
         kelpoisuus.myonteisenPaatoksenLisavaatimukset.orNull
       )}::jsonb,
             kielteisen_paatoksen_perustelut = ${Serialization.write(
-        kelpoisuus.kielteisenPaatoksenPerustelut.orNull
+        kelpoisuus.kielteisenPaatoksenPerustelut
       )}::jsonb,
             muokkaaja = $muokkaaja
           WHERE id = ${kelpoisuus.id.get.toString}::uuid

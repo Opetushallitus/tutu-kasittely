@@ -686,11 +686,16 @@ export const korvaavaToimenpideOptions = [
   'kelpoisuuskoeJaSopeutumisaika',
 ] as const satisfies (keyof KorvaavaToimenpide)[];
 
-export const emptyKorvaavaToimenpide = (): KorvaavaToimenpide =>
-  korvaavaToimenpideOptions.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as KorvaavaToimenpide);
+export const emptyKorvaavaToimenpide = (): KorvaavaToimenpide => ({
+  taydentavatOpinnot: false,
+  kelpoisuuskoe: false,
+  kelpoisuuskoeSisalto: null,
+  sopeutumisaika: false,
+  sopeutumiusaikaKestoKk: null,
+  kelpoisuuskoeJaSopeutumisaika: false,
+  kelpoisuuskoeJaSopeutumisaikaSisalto: null,
+  kelpoisuuskoeJaSopeutumisaikaKestoKk: null,
+});
 
 export const korvaavaToimenpideOptionsUO = [
   'taydentavatOpinnot',
@@ -698,11 +703,7 @@ export const korvaavaToimenpideOptionsUO = [
   'sopeutumisaika',
 ] as const satisfies (keyof KorvaavaToimenpide)[];
 
-export const emptyKorvaavaToimenpideUO = (): KorvaavaToimenpide =>
-  korvaavaToimenpideOptionsUO.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as KorvaavaToimenpide);
+export const emptyKorvaavaToimenpideUO = emptyKorvaavaToimenpide;
 
 export const kelpoisuuskoeFields = [
   'aihealue1',
@@ -717,10 +718,13 @@ export const emptyKelpoisuuskoeSisalto = (): KelpoisuuskoeSisalto =>
   }, {} as KelpoisuuskoeSisalto);
 
 export const emptyAmmattikokemusJaElinikainenOppiminen =
-  (): AmmattikokemusJaElinikainenOppiminen =>
-    ({
-      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: false,
-    }) as AmmattikokemusJaElinikainenOppiminen;
+  (): AmmattikokemusJaElinikainenOppiminen => ({
+    lisatieto: null,
+    korvaavuusAmmattikokemus: null,
+    korvaavuusElinikainenOppiminen: null,
+    korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: false,
+    korvaavaToimenpide: null,
+  });
 
 export const MUU_AMMATTI_KEY = 'Muu ammatti';
 
