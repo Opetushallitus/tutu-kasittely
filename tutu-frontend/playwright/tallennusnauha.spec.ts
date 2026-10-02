@@ -6,7 +6,9 @@ import {
 } from '@/playwright/fixtures/paatos1';
 import { apSisalto } from '@/playwright/fixtures/perustelu1/_perusteluApSisalto';
 import { getValitustiedot } from '@/playwright/fixtures/valitustiedot1';
+import { selectOption } from '@/playwright/helpers/testUtils';
 import { mockAll, mockGetAndPut } from '@/playwright/mocks';
+import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { Paatos, PaatosTieto } from '@/src/lib/types/paatos';
 import { Valitustiedot } from '@/src/lib/types/valitustiedot';
 
@@ -217,6 +219,47 @@ test.describe('Päätöstiedot', () => {
     await expect(saveButton(page)).toBeVisible();
 
     await page.getByTestId('myonteinenPaatos-radio-group-clear-button').click();
+    await expect(saveButton(page)).toBeHidden();
+  });
+
+  test('kelpoisuus, myönteinen päätös: direktiivitason valitseminen ja päätöksen tyhjentäminen ei näytä tallennusnauhaa', async ({
+    page,
+  }) => {
+    await gotoPaatos(
+      page,
+      tasoPaatos({
+        paatosTyyppi: 'Kelpoisuus',
+        sovellettuLaki: 'ap_seut',
+        myonteinenPaatos: null,
+        tutkintoTaso: null,
+        kelpoisuudet: [
+          {
+            kelpoisuus: 'Opetusalan ammatit_Aineenopettaja lukiossa',
+            opetettavaAine:
+              'Opetusalan ammatit_Aineenopettaja lukiossa_biologia',
+            direktiivitaso: null,
+            kansallisestiVaadittavaDirektiivitaso: null,
+            direktiivitasoLisatiedot: null,
+            myonteinenPaatos: null,
+            myonteisenPaatoksenLisavaatimukset: null,
+            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
+          },
+        ],
+      }),
+    );
+
+    const radioGroup = page.getByTestId('myonteinenPaatos-radio-group');
+
+    await radioGroup.locator('input[type="radio"][value="true"]').click();
+    await selectOption(
+      page,
+      page.getByTestId('direktiivitaso-select'),
+      'hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2',
+    );
+    await expect(saveButton(page)).toBeVisible();
+
+    await page.getByTestId('myonteinenPaatos-radio-group-clear-button').click();
+    await expect(page.getByTestId('direktiivitaso-select')).toBeHidden();
     await expect(saveButton(page)).toBeHidden();
   });
 

@@ -21,6 +21,7 @@ export type MyonteinenTaiKielteinenPaatosProps<
   },
 > = {
   MyonteisenPaatoksenLisavaatimusComponent?: React.ComponentType<T>;
+  myonteisenPaatoksenKentat?: React.ReactNode;
   lisavaatimusComponentProps?: Omit<T, 'updateLisavaatimukset'>;
   updatePaatosAction: (
     myonteinenTaiKielteinenPaatos: Partial<MyonteinenTaiKielteinenPaatos>,
@@ -36,6 +37,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
   },
 >({
   MyonteisenPaatoksenLisavaatimusComponent,
+  myonteisenPaatoksenKentat,
   lisavaatimusComponentProps,
   myonteinenPaatos,
   kielteisenPaatoksenPerustelut,
@@ -83,6 +85,7 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
           })
         }
       />
+      {myonteinenPaatos && myonteisenPaatoksenKentat}
       {myonteinenPaatos && MyonteisenPaatoksenLisavaatimusComponent && (
         <MyonteisenPaatoksenLisavaatimusComponent
           {...propsForLisavaatimusComponent}
