@@ -122,15 +122,14 @@ test('Päätösten näkyminen, lisäys ja poisto toimii ja lähettää PUT-kutsu
   await page.getByTestId('poista-paatos-button').last().click();
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
-  const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) => req.url().includes('/paatos/') && req.method() === 'PUT',
-    ),
-    await page.getByTestId('modal-confirm-button').click(),
-  ]);
-  expect(request.postDataJSON()).toMatchObject({
-    paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
-  });
+  await expectRequestData(
+    page,
+    '/paatos/',
+    page.getByTestId('modal-confirm-button').click(),
+    {
+      paatosTiedot: [{ paatosTyyppi: 'Taso' }, { paatosTyyppi: 'Kelpoisuus' }],
+    },
+  );
 
   await expectDataFromDropdownSelection(
     page,

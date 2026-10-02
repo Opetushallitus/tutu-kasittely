@@ -29,6 +29,7 @@ export const getPaatosWithPaatosTiedot = (): Paatos => {
     peruutuksenTaiRaukeamisenSyy: emptyPeruutuksenTaiRaukeamisenSyy(),
     paatosTiedot: [
       {
+        id: 'adefawdf-adw3-6354-7452-012awdwad340',
         paatosId: '6befe3df-eac4-4097-9757-031faafeb950',
         paatosTyyppi: 'Taso',
         sovellettuLaki: 'uo',

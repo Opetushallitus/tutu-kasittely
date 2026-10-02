@@ -78,7 +78,7 @@ export const ValitusHaOComponent = ({
               }
               maxDate={new Date()}
               selectedValue={valitusPvm}
-              label={t('hakemus.valitustiedot.valitushao.haoValitusPvm')}
+              label={t('hakemus.valitustiedot.valitushao.valitusPvm')}
               dataTestId="valitushao-valituspvm-calendar"
             />
             <CalendarComponent
@@ -90,12 +90,12 @@ export const ValitusHaOComponent = ({
               disabled={!valitusPvm}
               minDate={valitusPvm}
               selectedValue={ratkaisuPvm}
-              label={t('hakemus.valitustiedot.valitushao.haoRatkaisuPvm')}
+              label={t('hakemus.valitustiedot.valitushao.ratkaisuPvm')}
               dataTestId="valitushao-ratkaisupvm-calendar"
             />
           </Stack>
           <OphCheckbox
-            label={t('hakemus.valitustiedot.valitushao.haoLausuntopyynto')}
+            label={t('hakemus.valitustiedot.valitushao.lausuntopyynto')}
             checked={valitusHaO?.lausuntopyyntoValittu ?? false}
             onChange={() => {
               if (valitusHaO?.lausuntopyyntoValittu) {

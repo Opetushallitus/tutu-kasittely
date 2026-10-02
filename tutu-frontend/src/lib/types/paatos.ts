@@ -45,7 +45,7 @@ export type MyonteinenTaiKielteinenPaatos = {
 };
 
 export type PaatosTieto = {
-  id?: string;
+  id: string;
   paatosId: string;
   paatosTyyppi?: Paatostyyppi;
   sovellettuLaki?: SovellettuLaki;

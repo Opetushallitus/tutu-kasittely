@@ -198,16 +198,18 @@ test('Tutkinnon poisto avaa modaalin ja lähettää oikean datan backendille', a
 
   await expect(page.getByTestId('modal-component')).toBeVisible();
 
+  await page.getByTestId('modal-confirm-button').click();
+
+  const saveButton = page.getByTestId('save-ribbon-button');
+  await expect(saveButton).toBeVisible();
+
   await Promise.all([
     page.waitForRequest(
       (r) =>
-        r
-          .url()
-          .includes(
-            '/hakemus/1.2.246.562.10.00000000001/tutkinto/589038c5-00eb-465b-98bf-3b9ce62bb94d',
-          ) && r.method() === 'DELETE',
+        r.url().includes('/hakemus/1.2.246.562.10.00000000001/tutkinto') &&
+        r.method() === 'PUT',
     ),
-    page.getByTestId('modal-confirm-button').click(),
+    saveButton.click(),
   ]);
 
   await expect(poistaTutkintoButton).toBeHidden();
