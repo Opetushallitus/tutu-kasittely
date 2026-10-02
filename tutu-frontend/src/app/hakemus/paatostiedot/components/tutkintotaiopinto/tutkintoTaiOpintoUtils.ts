@@ -12,9 +12,15 @@ import {
   SOSIAALI_JA_TERVEYSALAN_TUTKINTO_KEY,
   VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
 } from '@/src/app/hakemus/paatostiedot/constants';
+import {
+  emptyErotKoulutuksessaForModel,
+  initOrUpdateErotKoulutuksessa,
+  initOrUpdateKorvaavaToimenpide,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   AmmattikokemuksenHuomioiminen,
+  MyonteisenPaatoksenLisavaatimukset,
   OikeustieteenMaisteriLisavaatimukset,
   OikeustieteenSuomiOpintojenAihealue,
   SuomessaSuoritettujenOpintojenHuomioiminen,
@@ -221,7 +227,7 @@ export const OSITTAINEN_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioimi
 export const SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<SuomessaSuoritettujenOpintojenHuomioiminen> =
   ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
 
-export const shouldShowOsaamisenTaydentamisenTavat = (
+export const shouldShowKorvaavaToimenpide = (
   ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null,
   suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null,
 ) => {
@@ -313,13 +319,11 @@ export const presetSuomiOpintojenAihealue = (
 });
 
 export const initOrUpdateOikeustieteenMaisteriOpinnot = (
-  current: OikeustieteenMaisteriLisavaatimukset,
-  updated: Partial<OikeustieteenMaisteriLisavaatimukset>,
+  lisavaatimukset?: OikeustieteenMaisteriLisavaatimukset,
 ): OikeustieteenMaisteriLisavaatimukset => {
-  const tobe = {
-    ...current,
-    ...updated,
-  };
+  const tobe = lisavaatimukset
+    ? lisavaatimukset
+    : emptyOikeustieteenMaisterinOpinnot();
   if (tobe.tallinnassaSuoritettujaOpintoja) {
     if (!tobe.isTallinnaOpintojenLaajuusModified) {
       tobe.tallinnaOpintojenLaajuus = 10;
@@ -348,5 +352,81 @@ export const initOrUpdateOikeustieteenMaisteriOpinnot = (
     tobe.suomiOpintojenLaajuus = null;
   }
 
+  return tobe;
+};
+
+export const emptyTutkintoTaiOpintoMyonteinenUo =
+  (): MyonteisenPaatoksenLisavaatimukset => ({
+    oikeustieteenMaisteriLisavaatimukset: undefined,
+    opettajuuttaTutkimassa: false,
+    suomalainenKoulu: false,
+    opetusNayte: false,
+    taydentavatOpinnot: false,
+    kelpoisuuskoe: false,
+    sopeutumisaika: false,
+  });
+
+export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
+  currentEntity: ResolvedEntity,
+  updated: Partial<MyonteisenPaatoksenLisavaatimukset>,
+  current?: MyonteisenPaatoksenLisavaatimukset,
+): MyonteisenPaatoksenLisavaatimukset => {
+  if (
+    updated.sovellettuTilanne &&
+    (current?.sovellettuTilanne ?? null) !== updated.sovellettuTilanne
+  ) {
+    const tobe = emptyTutkintoTaiOpintoMyonteinenUo();
+    tobe.sovellettuTilanne = updated.sovellettuTilanne;
+    return tobe;
+  }
+
+  if (currentEntity === ResolvedEntity.oikeustieteenMaisteri) {
+    return {
+      ...emptyTutkintoTaiOpintoMyonteinenUo(),
+      sovellettuTilanne: current?.sovellettuTilanne,
+      oikeustieteenMaisteriLisavaatimukset:
+        initOrUpdateOikeustieteenMaisteriOpinnot({
+          ...emptyOikeustieteenMaisterinOpinnot(),
+          ...current?.oikeustieteenMaisteriLisavaatimukset,
+          ...updated.oikeustieteenMaisteriLisavaatimukset,
+        }),
+    };
+  }
+
+  const tobe = {
+    ...emptyTutkintoTaiOpintoMyonteinenUo(),
+    ...current,
+    ...updated,
+  };
+
+  if (EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity]) {
+    tobe.erotKoulutuksessa = initOrUpdateErotKoulutuksessa(
+      {
+        ...emptyErotKoulutuksessaForModel(
+          EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity],
+        ),
+        ...current?.erotKoulutuksessa,
+      },
+      updated.erotKoulutuksessa,
+    );
+  } else {
+    tobe.erotKoulutuksessa = undefined;
+  }
+  tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
+    initOrUpdateKorvaavaToimenpide(
+      tobe.lahtokohtaisetOsaamisenTaydentamisenTavat,
+    );
+  if (
+    shouldShowKorvaavaToimenpide(
+      tobe.ammattikokemuksenHuomioiminen,
+      tobe.suomessaSuoritettujenOpintojenHuomioiminen,
+    )
+  ) {
+    tobe.korvaavaToimenpide = initOrUpdateKorvaavaToimenpide(
+      tobe.korvaavaToimenpide,
+    );
+  } else {
+    tobe.korvaavaToimenpide = undefined;
+  }
   return tobe;
 };
