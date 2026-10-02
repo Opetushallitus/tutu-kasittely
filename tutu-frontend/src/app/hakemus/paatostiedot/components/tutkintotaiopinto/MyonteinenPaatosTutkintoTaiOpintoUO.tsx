@@ -18,10 +18,10 @@ import { SovellettuTilanneSelection } from '@/src/app/hakemus/paatostiedot/compo
 import {
   AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
   EROT_KOULUTUKSESSA_BY_ENTITY,
+  initOrUpdateTutkintoTaiOpintoMyonteinenUo,
   KEYWORDS_BY_TUTKINTO_TAI_OPINTO,
   ResolvedEntity,
   shouldShowLisavalinnat,
-  shouldShowOsaamisenTaydentamisenTavat,
   SOVELLETTU_TILANNE_BY_ENTITY,
   SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS,
   translationForEroTarkennus,
@@ -62,17 +62,6 @@ const Lisavalinnat = ({
     );
   }, [selectedEntity, lisavaatimukset?.sovellettuTilanne]);
 
-  const showOsaamisenTaydentamisenTavat = useMemo(() => {
-    return shouldShowOsaamisenTaydentamisenTavat(
-      lisavaatimukset?.ammattikokemuksenHuomioiminen,
-      lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
-    );
-  }, [
-    selectedEntity,
-    lisavaatimukset?.ammattikokemuksenHuomioiminen,
-    lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
-  ]);
-
   if (!showLisavalinnat) {
     return (
       <InFoTeksti
@@ -96,15 +85,27 @@ const Lisavalinnat = ({
                     )}
                     checked={ero.value}
                     onChange={(e) => {
+                      const updatedEroValue = e.target.checked;
+                      const tarkennukset =
+                        erotKoulutuksessa.eroTarkennukset?.[ero.name];
                       updateLisavaatimukset({
-                        ...lisavaatimukset,
                         erotKoulutuksessa: {
                           ...erotKoulutuksessa,
                           erot: setKoulutusEroValues(
                             erotKoulutuksessa.erot!,
                             ero.name,
-                            e.target.checked,
+                            updatedEroValue,
                           ),
+                          eroTarkennukset:
+                            !updatedEroValue && tarkennukset
+                              ? {
+                                  ...erotKoulutuksessa.eroTarkennukset,
+                                  [ero.name]: tarkennukset.map((tarkennus) => ({
+                                    ...tarkennus,
+                                    value: false,
+                                  })),
+                                }
+                              : erotKoulutuksessa.eroTarkennukset,
                         },
                       });
                     }}
@@ -124,7 +125,6 @@ const Lisavalinnat = ({
                               checked={tarkennus.value}
                               onChange={(e) => {
                                 updateLisavaatimukset({
-                                  ...lisavaatimukset,
                                   erotKoulutuksessa: {
                                     ...erotKoulutuksessa,
                                     eroTarkennukset: {
@@ -193,7 +193,6 @@ const Lisavalinnat = ({
             value={lisavaatimukset?.ammattikokemuksenHuomioiminen || ''}
             onChange={(event) => {
               updateLisavaatimukset({
-                ...lisavaatimukset,
                 ammattikokemuksenHuomioiminen: event.target
                   .value as AmmattikokemuksenHuomioiminen,
               });
@@ -223,7 +222,6 @@ const Lisavalinnat = ({
             }
             onChange={(event) => {
               updateLisavaatimukset({
-                ...lisavaatimukset,
                 suomessaSuoritettujenOpintojenHuomioiminen: event.target
                   .value as SuomessaSuoritettujenOpintojenHuomioiminen,
               });
@@ -232,7 +230,7 @@ const Lisavalinnat = ({
           />
         )}
       />
-      {showOsaamisenTaydentamisenTavat && (
+      {lisavaatimukset?.korvaavaToimenpide && (
         <KorvaavaToimenpideComponent
           korvaavaToimenpide={lisavaatimukset?.korvaavaToimenpide}
           label={t(
@@ -242,7 +240,6 @@ const Lisavalinnat = ({
             korvaavaToimenpide: KorvaavaToimenpide,
           ) => {
             updateLisavaatimukset({
-              ...lisavaatimukset,
               korvaavaToimenpide: korvaavaToimenpide,
             });
           }}
@@ -295,16 +292,27 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
       return {
         selectedEntity: entity,
         sovellettuTilanneOptions: SOVELLETTU_TILANNE_BY_ENTITY[entity],
-        erotKoulutuksessa: erotKoulutuksessa,
+        erotKoulutuksessa,
       };
     }, [tutkintoTaiOpinto, lisavaatimukset?.erotKoulutuksessa]);
+
+  const updateAction = (
+    updatedData: Partial<MyonteisenPaatoksenLisavaatimukset>,
+  ) => {
+    const toBeLisavaatimukset = initOrUpdateTutkintoTaiOpintoMyonteinenUo(
+      selectedEntity,
+      updatedData,
+      lisavaatimukset,
+    );
+    updateLisavaatimukset(toBeLisavaatimukset);
+  };
 
   if (selectedEntity === ResolvedEntity.muu) {
     return (
       <MyonteinenPaatos
         t={t}
         lisavaatimukset={lisavaatimukset}
-        updateLisavaatimukset={updateLisavaatimukset}
+        updateLisavaatimukset={updateAction}
       />
     );
   }
@@ -317,9 +325,7 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
         t={t}
         sovellettuTilanne={lisavaatimukset?.sovellettuTilanne}
         sovellettuTilanneOptions={sovellettuTilanneOptions}
-        updateCb={(st) =>
-          updateLisavaatimukset({ ...lisavaatimukset, sovellettuTilanne: st })
-        }
+        updateCb={(st) => updateAction({ sovellettuTilanne: st })}
       />
       {sovellettuTilanneSetOrNotNeeded && (
         <>
@@ -327,12 +333,12 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
             <SovellettuTilanneOikeustieteenMaisteri
               t={t}
               lisavaatimukset={lisavaatimukset}
-              updateLisavaatimukset={updateLisavaatimukset}
+              updateLisavaatimukset={updateAction}
             />
           ) : (
             <Lisavalinnat
               lisavaatimukset={lisavaatimukset}
-              updateLisavaatimukset={updateLisavaatimukset}
+              updateLisavaatimukset={updateAction}
               t={t}
               selectedEntity={selectedEntity}
               erotKoulutuksessa={erotKoulutuksessa}

@@ -172,7 +172,7 @@ export const initOrUpdateErotKoulutuksessa = (
   return initial;
 };
 
-const initOrUpdateKorvaavaToimenpide = (
+export const initOrUpdateKorvaavaToimenpide = (
   korvaavaToimenpide?: KorvaavaToimenpide | null,
 ): KorvaavaToimenpide => {
   const tobe = korvaavaToimenpide ?? emptyKorvaavaToimenpide();
