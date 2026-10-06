@@ -33,7 +33,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { AsiakirjaState, useAsiakirjat } from '@/src/hooks/useAsiakirjat';
 import { EditableState } from '@/src/hooks/useEditableState';
 import { useLiitteet } from '@/src/hooks/useLiitteet';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import {
   checkLiitteenTila,
   findSisaltoQuestionAndAnswer,
@@ -94,7 +94,7 @@ export default function AsiakirjaPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [isUpdateSuccess, addToast, t]);

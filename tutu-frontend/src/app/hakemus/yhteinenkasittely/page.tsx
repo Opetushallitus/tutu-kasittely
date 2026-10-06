@@ -18,7 +18,7 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
 import {
   TFunction,
@@ -263,7 +263,7 @@ export default function YhteinenKasittelyPage() {
           key: 'hakemus.yhteinenkasittely.tallennettu.toaster',
           message: t('hakemus.yhteinenkasittely.vastausTallennettu'),
           type: 'success',
-          timeMs: 2500,
+          timeMs: TALLENNA_TOAST_DURATION,
         });
       }
     } catch (error) {

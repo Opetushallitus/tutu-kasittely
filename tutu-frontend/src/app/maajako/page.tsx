@@ -18,7 +18,7 @@ import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { SuccessBox } from '@/src/components/SuccessBox';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { useMaakoodit, useUpdateMaakoodit } from '@/src/hooks/useMaakoodit';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import {
   TFunction,
   useTranslations,
@@ -74,7 +74,7 @@ export default function MaajakoPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [isUpdateSuccess, addToast, t]);

@@ -15,7 +15,7 @@ import {
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { useKoodistoOptions } from '@/src/hooks/useKoodistoOptions';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { lastModifiedInArray } from '@/src/lib/dateUtils';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
@@ -86,7 +86,7 @@ export default function TutkintoPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [isHakemusUpdateSuccess, isTutkinnotUpdateSuccess, addToast, t]);
