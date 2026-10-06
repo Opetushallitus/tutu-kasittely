@@ -1,0 +1,45 @@
+name: Deploy TUTU PRODUCTION
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Build GH Actions number to be deployed to PRODUCTION
+        required: true
+        type: number
+
+run-name: Deploy TUTU revision ${{ inputs.revision }} to production
+
+permissions:
+  id-token: write
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "tutu-infra/.nvmrc"
+          cache: "pnpm"
+          cache-dependency-path: tutu-infra/pnpm-lock.yaml
+      - name: Install infrastructure dependencies
+        working-directory: ./tutu-infra
+        run: pnpm install --prefer-offline
+      - name: Configure AWS role credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_TUTU_PROD_ROLE_ARN }}
+          role-session-name: tutu-deploy-prod
+          aws-region: eu-west-1
+      - name: Deploy backend to ECS
+        working-directory: ./tutu-infra
+        run: |
+          pnpm exec cdk cli-telemetry --disable
+          pnpm exec cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=prod" -c "revision=ga-${{ inputs.revision }}"
