@@ -65,3 +65,4 @@ jobs:
           environment: ${{ inputs.environment == 'prod' && 'sade' || inputs.environment == 'qa' && 'pallero' || 'untuva' }}
           version: ga-${{ inputs.revision }}
         secrets: inherit
+        
