@@ -42,7 +42,6 @@ export default function TutkintoPage() {
     error,
     updateError,
     tutkintoState,
-    poistaTutkinto,
   } = useTutkinnot(hakemusState.editedData?.hakemusOid);
 
   const { maatJaValtiotOptions, koulutusLuokitusOptions } =
@@ -99,15 +98,10 @@ export default function TutkintoPage() {
   };
 
   const deleteTutkinto = async (tutkinto: Tutkinto) => {
-    if (!tutkinto.id || tutkinto.id?.startsWith('new')) {
-      const tutkinnot = editedTutkinnot
-        .filter((t) => t.id !== tutkinto.id)
-        .map((t) => updateTutkintoJarjestys(t, tutkinto.jarjestys));
-      tutkintoState.updateLocal(tutkinnot);
-    } else {
-      // jos tutkintoa ei ole vielä tallennettu tietokantaan, riittää lokaalin tilan päivitys
-      await poistaTutkinto(tutkinto);
-    }
+    const tutkinnot = editedTutkinnot
+      .filter((t) => t.id !== tutkinto.id)
+      .map((t) => updateTutkintoJarjestys(t, tutkinto.jarjestys));
+    tutkintoState.updateLocal(tutkinnot);
   };
 
   const emptyTutkinto = (hakemusId: string, jarjestys: string) => ({
