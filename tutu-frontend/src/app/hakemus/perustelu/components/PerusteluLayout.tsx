@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
 import { EditableState } from '@/src/hooks/useEditableState';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import {
   TFunction,
   useTranslations,
@@ -145,7 +145,7 @@ export const PerusteluLayout = ({
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [

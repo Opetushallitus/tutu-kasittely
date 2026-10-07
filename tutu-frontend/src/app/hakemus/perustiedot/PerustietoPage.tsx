@@ -16,7 +16,7 @@ import {
   paatosKieli,
 } from '@/src/constants/hakemuspalveluSisalto';
 import { useHakemus } from '@/src/context/HakemusContext';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { findSisaltoQuestionAndAnswer } from '@/src/lib/hakemuspalveluUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { HakemusKoskee } from '@/src/lib/types/hakemus';
@@ -53,7 +53,7 @@ export default function PerustietoPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [isUpdateSuccess, addToast, t]);

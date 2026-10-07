@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import {
@@ -80,6 +80,7 @@ export const usePaatospohjat = () => {
         key: 'paatospohjat.kategoriat.tallenna.toast',
         message: t('tekstipohjat.paatospohjat.kategoriat.tallennusOnnistui'),
         type: 'success',
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     },
   });

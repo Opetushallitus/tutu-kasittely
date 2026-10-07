@@ -16,7 +16,7 @@ import { useHakemus } from '@/src/context/HakemusContext';
 import { useShowPreview } from '@/src/context/ShowPreviewContext';
 import { EditableState, useEditableState } from '@/src/hooks/useEditableState';
 import { usePaatos } from '@/src/hooks/usePaatos';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useTutkinnot } from '@/src/hooks/useTutkinnot';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Hakemus, HakemusKoskee } from '@/src/lib/types/hakemus';
@@ -71,7 +71,7 @@ export default function PaatostiedotPage() {
         key: 'yleiset.tallennusOnnistui',
         type: 'success',
         message: t('yleiset.tallennusOnnistui'),
-        timeMs: 2500,
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     }
   }, [isPaatosUpdateSuccess, addToast, t]);

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useEditableState } from '@/src/hooks/useEditableState';
-import useToaster from '@/src/hooks/useToaster';
+import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { doApiFetch, doApiPut } from '@/src/lib/tutu-backend/api';
 import { Valitustiedot } from '@/src/lib/types/valitustiedot';
@@ -55,6 +55,7 @@ export const useValitustiedot = (hakemusOid?: string) => {
         key: 'hakemus.valitustiedot.toast.success',
         message: t('hakemus.valitustiedot.tallennusOnnistui'),
         type: 'success',
+        timeMs: TALLENNA_TOAST_DURATION,
       });
     },
   });

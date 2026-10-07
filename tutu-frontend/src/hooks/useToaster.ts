@@ -11,6 +11,7 @@ import {
 } from 'xstate';
 
 const DEFAULT_TOAST_DURATION = 30000;
+export const TALLENNA_TOAST_DURATION = 2500;
 
 enum ToastEvents {
   REMOVE = 'REMOVE_TOAST',
@@ -66,7 +67,7 @@ const toasterMachine = setup({
                   } else if (type === ToastEvents.LEAVE) {
                     id = setToastTimer(
                       key,
-                      event.timeMs ?? DEFAULT_TOAST_DURATION,
+                      event.toast.timeMs ?? DEFAULT_TOAST_DURATION,
                       sendBack,
                     );
                   }
