@@ -58,10 +58,3 @@ jobs:
         run: |
           pnpm exec cdk cli-telemetry --disable
           pnpm exec cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
-      - name: Update deployment metadata to Dashboard
-        uses: Opetushallitus/.github/.github/workflows/update-deployment-metadata.yml@main
-        with:
-          application: tutu-kasittely
-          environment: ${{ inputs.environment == 'prod' && 'sade' || inputs.environment == 'qa' && 'pallero' || 'untuva' }}
-          version: ga-${{ inputs.revision }}
-        secrets: inherit
