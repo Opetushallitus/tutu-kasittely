@@ -8,7 +8,7 @@ import { Direktiivitaso } from '@/src/lib/types/paatos';
 export type DirektiivitasoProps = {
   t: TFunction;
   label: string;
-  direktiivitaso?: Direktiivitaso;
+  direktiivitaso?: Direktiivitaso | null;
   updateDirektiivitaso: (updatedDirektiivitaso: Direktiivitaso) => void;
   dataTestId?: string;
 };

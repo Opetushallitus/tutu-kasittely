@@ -47,6 +47,51 @@ type kelpoisuusComponentProps = {
   kelpoisuusOptions: TreeOption<TranslatedName>[];
 };
 
+const KelpoisuusDirektiivitasoComponent = ({
+  t,
+  kelpoisuus,
+  updateAction,
+}: {
+  t: TFunction;
+  kelpoisuus: Kelpoisuus;
+  updateAction: KelpoisuusUpdateCallback;
+}) => {
+  return (
+    <Stack spacing={2}>
+      <DirektiivitasoComponent
+        t={t}
+        label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.direktiivitaso`)}
+        direktiivitaso={kelpoisuus.direktiivitaso}
+        updateDirektiivitaso={(taso) => updateAction({ direktiivitaso: taso })}
+        dataTestId={'direktiivitaso-select'}
+      />
+      <OphInputFormField
+        label={t(
+          `hakemus.paatos.paatostyyppi.kelpoisuus.direktiivitasoLisatieto`,
+        )}
+        multiline={true}
+        minRows={3}
+        value={kelpoisuus.direktiivitasoLisatiedot || ''}
+        onChange={(e) =>
+          updateAction({ direktiivitasoLisatiedot: e.target.value })
+        }
+        data-testid={`direktiivitasoLisatieto-input`}
+      />
+      <DirektiivitasoComponent
+        t={t}
+        label={t(
+          `hakemus.paatos.paatostyyppi.kelpoisuus.kansallisestiVaadittavaDirektiivitaso`,
+        )}
+        direktiivitaso={kelpoisuus.kansallisestiVaadittavaDirektiivitaso}
+        updateDirektiivitaso={(taso) =>
+          updateAction({ kansallisestiVaadittavaDirektiivitaso: taso })
+        }
+        dataTestId={'kansallisestiVaadittavaDirektiivitaso-select'}
+      />
+    </Stack>
+  );
+};
+
 const KelpoisuusDirektiiviLiitannaisComponent = ({
   t,
   theme,
@@ -91,43 +136,30 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
           />
         </Stack>
       )}
-      <DirektiivitasoComponent
-        t={t}
-        label={t(`hakemus.paatos.paatostyyppi.kelpoisuus.direktiivitaso`)}
-        direktiivitaso={kelpoisuus.direktiivitaso}
-        updateDirektiivitaso={(taso) => updateAction({ direktiivitaso: taso })}
-        dataTestId={'direktiivitaso-select'}
-      />
-      <OphInputFormField
-        label={t(
-          `hakemus.paatos.paatostyyppi.kelpoisuus.direktiivitasoLisatieto`,
-        )}
-        multiline={true}
-        minRows={3}
-        value={kelpoisuus.direktiivitasoLisatiedot || ''}
-        onChange={(e) =>
-          updateAction({ direktiivitasoLisatiedot: e.target.value })
-        }
-        data-testid={`direktiivitasoLisatieto-input`}
-      />
-      <DirektiivitasoComponent
-        t={t}
-        label={t(
-          `hakemus.paatos.paatostyyppi.kelpoisuus.kansallisestiVaadittavaDirektiivitaso`,
-        )}
-        direktiivitaso={kelpoisuus.kansallisestiVaadittavaDirektiivitaso}
-        updateDirektiivitaso={(taso) =>
-          updateAction({ kansallisestiVaadittavaDirektiivitaso: taso })
-        }
-        dataTestId={'kansallisestiVaadittavaDirektiivitaso-select'}
-      />
       <MyonteinenTaiKielteinenPaatosComponent
         MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatos}
+        myonteisenPaatoksenKentat={
+          <KelpoisuusDirektiivitasoComponent
+            t={t}
+            kelpoisuus={kelpoisuus}
+            updateAction={updateAction}
+          />
+        }
         lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={kelpoisuus.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
         updatePaatosAction={(paatos) => {
-          updateAction({ ...kelpoisuus, ...paatos });
+          const paatosEiDirektiivia =
+            'myonteinenPaatos' in paatos && paatos.myonteinenPaatos !== true;
+          updateAction({
+            ...kelpoisuus,
+            ...paatos,
+            ...(paatosEiDirektiivia && {
+              direktiivitaso: null,
+              direktiivitasoLisatiedot: null,
+              kansallisestiVaadittavaDirektiivitaso: null,
+            }),
+          });
         }}
         t={t}
         paatosTyyppi="Kelpoisuus"

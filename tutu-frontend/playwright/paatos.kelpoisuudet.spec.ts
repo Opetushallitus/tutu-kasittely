@@ -104,9 +104,26 @@ test('Valittaessa 2 Kelpoisuus, ja muutettaessa jatkovalintoja, näytetään kä
     },
   );
 
+  const direktiivitasoSelect = page.getByTestId('direktiivitaso-select');
+  const myonteinenPaatosRadiogroup = page.getByTestId(
+    'myonteinenPaatos-radio-group',
+  );
+  await expect(myonteinenPaatosRadiogroup).toBeVisible();
+  await expect(direktiivitasoSelect).toBeHidden();
+
+  await myonteinenPaatosRadiogroup
+    .locator('input[type="radio"][value="false"]')
+    .click();
+  await expect(direktiivitasoSelect).toBeHidden();
+
+  await myonteinenPaatosRadiogroup
+    .locator('input[type="radio"][value="true"]')
+    .click();
+  await expect(direktiivitasoSelect).toBeVisible();
+
   await expectDataFromDropdownSelection(
     page,
-    page.getByTestId('direktiivitaso-select'),
+    direktiivitasoSelect,
     'hakemus.paatos.direktiivitaso.b_1384_2015_patevyystaso_2',
     '/paatos/',
     {

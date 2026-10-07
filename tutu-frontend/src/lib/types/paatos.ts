@@ -228,9 +228,9 @@ export type Kelpoisuus = {
   kelpoisuus?: string;
   muuAmmattiKuvaus?: string;
   opetettavaAine?: string;
-  direktiivitaso?: Direktiivitaso;
-  kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso;
-  direktiivitasoLisatiedot?: string;
+  direktiivitaso?: Direktiivitaso | null;
+  kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso | null;
+  direktiivitasoLisatiedot?: string | null;
 } & MyonteinenTaiKielteinenPaatos;
 
 export type KorvaavaToimenpideDto = {
