@@ -42,6 +42,9 @@ export default function TekstipohjaLista<
   const [selectedKategoria, setSelectedKategoria] = useState<
     ViestipohjaKategoria | undefined
   >();
+  const [showKategoriaPohjat, setShowKategoriaPohjat] = useState<
+    string | undefined
+  >();
 
   return (
     <>
@@ -96,20 +99,28 @@ export default function TekstipohjaLista<
                     setKategoriaModalOpen(true);
                     setSelectedKategoria(kategoria);
                   }}
+                  setShowKategoriaPohjat={() => {
+                    if (showKategoriaPohjat === kategoria.id) {
+                      setShowKategoriaPohjat(undefined);
+                    } else {
+                      setShowKategoriaPohjat(kategoria.id);
+                    }
+                  }}
                 />
               }
               key={kategoria.id}
             >
-              {pohjat
-                .filter((pohja) => pohja.kategoriaId === kategoria.id)
-                .map((pohja) => (
-                  <TekstipohjaListItem
-                    key={pohja.id}
-                    id={pohja.id}
-                    nimi={pohja.nimi}
-                    onClick={() => setValittuId(pohja.id)}
-                  />
-                ))}
+              {kategoria.id === showKategoriaPohjat &&
+                pohjat
+                  .filter((pohja) => pohja.kategoriaId === kategoria.id)
+                  .map((pohja) => (
+                    <TekstipohjaListItem
+                      key={pohja.id}
+                      id={pohja.id}
+                      nimi={pohja.nimi}
+                      onClick={() => setValittuId(pohja.id)}
+                    />
+                  ))}
             </List>
           ))}
         </Box>

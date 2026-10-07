@@ -6,9 +6,18 @@ import { PaatospohjaKategoria } from '@/src/lib/types/paatosteksti';
 import { ViestipohjaKategoria } from '@/src/lib/types/viesti';
 
 export const clickPohjaOrKategoria = async (page: Page, teksti: string) => {
+  await page.getByText(teksti).first().click();
+};
+
+export const clickPohjaOrKategoriaEdit = async (page: Page, teksti: string) => {
   const pohjaOrKategoria = page.getByText(teksti).first();
   await pohjaOrKategoria.hover();
-  await pohjaOrKategoria.locator('//following-sibling::button').click();
+  await page
+    .getByRole('listitem')
+    .filter({ has: pohjaOrKategoria })
+    .getByRole('button')
+    .last()
+    .click();
 };
 
 const expectToast = async (
@@ -152,12 +161,25 @@ export const mockDeleteVirhe = async (page: Page, url: string) => {
 };
 
 export const expectKategoriaAndPohjaList = async (page: Page) => {
-  await expect(page.getByText('1. Testi kategoria 1')).toBeVisible();
-  await expect(page.getByText('2. Testi kategoria 2')).toBeVisible();
-  await expect(page.getByText('3. Testi kategoria 3')).toBeVisible();
+  const kategoria1 = page.getByText('1. Testi kategoria 1');
+  const kategoria2 = page.getByText('2. Testi kategoria 2');
+  const kategoria3 = page.getByText('3. Testi kategoria 3');
+
+  await expect(kategoria1).toBeVisible();
+  await expect(kategoria2).toBeVisible();
+  await expect(kategoria3).toBeVisible();
+
+  await kategoria1.click();
   await expect(page.getByText('Tekstipohja 1')).toBeVisible();
+  await expect(page.getByText('Tekstipohja 2')).toBeHidden();
+
+  await kategoria2.click();
+  await expect(page.getByText('Tekstipohja 1')).toBeHidden();
   await expect(page.getByText('Tekstipohja 2')).toBeVisible();
   await expect(page.getByText('Tekstipohja 3')).toBeVisible();
+
+  await kategoria3.click();
+  await expect(page.getByText('Tekstipohja 3')).toBeHidden();
   await expect(page.getByText('Tekstipohja 4')).toBeVisible();
   await expect(page.getByText('Tekstipohja 5')).toBeVisible();
   await expect(page.getByText('Tekstipohja 6')).toBeVisible();

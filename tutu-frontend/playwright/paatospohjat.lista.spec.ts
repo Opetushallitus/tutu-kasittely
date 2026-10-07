@@ -3,7 +3,7 @@ import { test } from '@playwright/test';
 import {
   avaaKategoriaModalAndSyotaNimi,
   clickOkInKategoriaModalAndExpectPut,
-  clickPohjaOrKategoria,
+  clickPohjaOrKategoriaEdit,
   expectErrorToast,
   expectKategoriaAndPohjaList,
   expectSuccessToast,
@@ -58,7 +58,7 @@ test('Uuden kategorian luominen epäonnistuu', async ({ page }) => {
 });
 
 test('Olemassaolevan kategorian muokkaus onnistuu', async ({ page }) => {
-  clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, '1. Testi kategoria 1');
   await syotaKategoriaNimiModaliin(
     page,
     'tekstipohjat.kategoriat.muokkaa',
@@ -83,7 +83,7 @@ test('Olemassaolevan kategorian muokkaus epäonnistuu', async ({ page }) => {
     '**/tutu-backend/api/paatospohja/kategoria',
   );
 
-  clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, '1. Testi kategoria 1');
   await syotaKategoriaNimiModaliin(
     page,
     'tekstipohjat.kategoriat.muokkaa',

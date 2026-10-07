@@ -43,16 +43,18 @@ test('Viestipohjalista avautuu ja sulkeutuu onnistuneesti, olemassaolevat pohjat
   await expect(kategoriaContainers).toHaveCount(2);
 
   const kategoria1 = kategoriaContainers.nth(0).locator(':scope > *');
-  await expect(kategoria1).toHaveCount(4);
   await expect(kategoria1.nth(0)).toHaveText('1. Ennakkotiedot');
+  await kategoria1.nth(0).click();
   await expect(kategoria1.nth(1)).toHaveText('Ennakkotieto1');
   await expect(kategoria1.nth(2)).toHaveText('Ennakkotieto2');
   await expect(kategoria1.nth(3)).toHaveText('Ennakkotieto3');
+  await expect(kategoria1).toHaveCount(4);
 
   const kategoria2 = kategoriaContainers.nth(1).locator(':scope > *');
-  await expect(kategoria2).toHaveCount(2);
   await expect(kategoria2.nth(0)).toHaveText('2. Täydennyspyynnöt');
+  await kategoria2.nth(0).click();
   await expect(kategoria2.nth(1)).toHaveText('Täydennyspyyntö1');
+  await expect(kategoria2).toHaveCount(2);
 
   await suljeButton.click();
   await expect(page.getByTestId('tekstipohja-lista')).toBeHidden();
@@ -67,11 +69,10 @@ test('Viestipohjan valinnan yhteydessä sisältö liitetään editorissa näkyv�
   await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();
 
   const sisaltoContainer = page.getByTestId('tekstipohja-lista-sisalto');
-  const firstPohjaButton = sisaltoContainer
-    .locator(':scope > *')
-    .nth(0)
-    .locator(':scope > *')
-    .nth(1);
+  const firstKategoriaButton = sisaltoContainer.locator(':scope > *').nth(0);
+  await firstKategoriaButton.click();
+
+  const firstPohjaButton = firstKategoriaButton.locator(':scope > *').nth(1);
   await firstPohjaButton.click();
   await expect(page.getByTestId('editor-content-editable')).toContainText(
     'Suomi pohjassa',
@@ -108,11 +109,11 @@ test('Viestipohjan latauksen epäonnistuessa näytetään virheteksti', async ({
   await expect(page.getByTestId('tekstipohja-lista-sisalto')).toBeVisible();
 
   const sisaltoContainer = page.getByTestId('tekstipohja-lista-sisalto');
-  const firstPohjaButton = sisaltoContainer
-    .locator(':scope > *')
-    .nth(0)
-    .locator(':scope > *')
-    .nth(1);
+
+  const firstKategoriaButton = sisaltoContainer.locator(':scope > *').nth(0);
+  await firstKategoriaButton.click();
+
+  const firstPohjaButton = firstKategoriaButton.locator(':scope > *').nth(1);
   await firstPohjaButton.click();
 
   await expect(page.getByTestId('toast-alert')).toBeVisible();

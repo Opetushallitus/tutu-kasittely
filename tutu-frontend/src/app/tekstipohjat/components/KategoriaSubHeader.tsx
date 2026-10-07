@@ -8,10 +8,12 @@ export const KategoriaSubHeader = ({
   index,
   nimi,
   onClick,
+  setShowKategoriaPohjat,
 }: {
   index: number;
   nimi: string;
-  onClick: () => void;
+  onClick?: () => void;
+  setShowKategoriaPohjat: () => void;
 }) => {
   return (
     <ListSubheader
@@ -27,15 +29,25 @@ export const KategoriaSubHeader = ({
         },
       }}
     >
-      <OphTypography variant={'label'}>{`${index + 1}. ${nimi}`}</OphTypography>
       <OphButton
-        sx={{
-          display: 'none',
-          height: '24px',
-        }}
-        startIcon={<EditOutlined />}
-        onClick={onClick}
-      ></OphButton>
+        sx={{ padding: 0 }}
+        variant={'text'}
+        onClick={setShowKategoriaPohjat}
+      >
+        <OphTypography
+          variant={'label'}
+        >{`${index + 1}. ${nimi}`}</OphTypography>
+      </OphButton>
+      {onClick && (
+        <OphButton
+          sx={{
+            display: 'none',
+            height: '24px',
+          }}
+          startIcon={<EditOutlined />}
+          onClick={onClick}
+        ></OphButton>
+      )}
     </ListSubheader>
   );
 };

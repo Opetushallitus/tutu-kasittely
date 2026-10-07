@@ -11,7 +11,7 @@ export const TekstipohjaListItem = ({
 }: {
   id: string;
   nimi: string;
-  onClick: () => void;
+  onClick?: () => void;
 }) => {
   return (
     <ListItem
@@ -33,15 +33,17 @@ export const TekstipohjaListItem = ({
       <OphTypography variant={'body1'} id={`list-item-${id}`}>
         {nimi}
       </OphTypography>
-      <OphButton
-        sx={{
-          display: 'none',
-          height: '24px',
-        }}
-        aria-labelledby={`list-item-${id}`}
-        startIcon={<EditOutlined />}
-        onClick={onClick}
-      ></OphButton>
+      {onClick && (
+        <OphButton
+          sx={{
+            display: 'none',
+            height: '24px',
+          }}
+          aria-labelledby={`list-item-${id}`}
+          startIcon={<EditOutlined />}
+          onClick={onClick}
+        ></OphButton>
+      )}
     </ListItem>
   );
 };
