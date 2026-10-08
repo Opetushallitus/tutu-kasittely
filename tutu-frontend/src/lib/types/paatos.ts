@@ -137,6 +137,8 @@ export type KelpoisuudenLisavaatimukset = {
   sovellettuTilanne?: string;
   ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
   suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen;
+  ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan?: boolean;
+  ammattikokemusJaOpinnotYhdessaTasmennys?: string | null;
 };
 
 export type ErotKoulutuksessa = {

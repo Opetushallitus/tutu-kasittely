@@ -1,31 +1,32 @@
-import { Info } from '@mui/icons-material';
-import { FormGroup, Paper, Stack } from '@mui/material';
-import {
-  OphCheckbox,
-  ophColors,
-  OphFormFieldWrapper,
-  OphRadioGroup,
-  OphTypography,
-} from '@opetushallitus/oph-design-system';
+import { Stack } from '@mui/material';
 import React, { useMemo } from 'react';
 
+import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/Info';
+import { AmmattikokemusJaOpinnotYhdessaComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/AmmattikokemusJaOpinnotYhdessaComponent';
+import { ErotKoulutuksessaComponent } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/ErotKoulutuksessaComponent';
+import { HuomioiminenRadioGroup } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/HuomioiminenRadioGroup';
+import {
+  getSovellettuTilanneOptions,
+  initOrUpdateMyonteinenKelpoisuusPaatosUO,
+  shouldShowEiEdellytetaOsaamisenTaydentamista,
+  shouldShowKaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja,
+  shouldShowKelpoisuusKorvaavaToimenpide,
+} from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/kelpoisuusUOUtils';
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
+import {
+  AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
+  SUOMESSA_SUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import {
   emptyErotKoulutuksessa,
   initOrUpdateErotKoulutuksessa,
-  initOrUpdateMyonteinenKelpoisuusPaatosUO,
   koulutusEroModel,
-  setKoulutusEroValues,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
-import { NamedBoolean } from '@/src/lib/types/common';
 import {
-  AmmattikokemuksenHuomioiminen,
   KelpoisuudenLisavaatimukset,
-  KorvaavaToimenpide,
   MyonteisenPaatoksenLisavaatimusUpdateCallback,
-  SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 
 type MyonteinenKelpoisuusPaatosUOProps = {
@@ -33,84 +34,6 @@ type MyonteinenKelpoisuusPaatosUOProps = {
   updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
 };
-
-const getSovellettuTilanneOptions = (
-  kelpoisuusKey?: string,
-): Array<string> | undefined => {
-  switch (kelpoisuusKey) {
-    case 'Opetusalan ammatit_Luokanopettaja_uo':
-      return [
-        'pedagogiset1_ja_monialaiset1',
-        'pedagogiset1_ja_monialaiset2',
-        'pedagogiset1_ja_monialaiset3',
-        'pedagogiset2_ja_monialaiset1',
-        'pedagogiset2_ja_monialaiset2',
-        'pedagogiset2_ja_monialaiset3',
-        'pedagogiset3_ja_monialaiset1',
-        'pedagogiset3_ja_monialaiset2',
-        'pedagogiset3_ja_monialaiset3',
-      ];
-    case 'Opetusalan ammatit_Aineenopettaja perusopetuksessa_uo':
-      return [
-        'pedagogiset1_ja_aine1',
-        'pedagogiset1_ja_aine2',
-        'pedagogiset1_ja_aine3',
-        'pedagogiset2_ja_aine1',
-        'pedagogiset2_ja_aine2',
-        'pedagogiset2_ja_aine3',
-        'pedagogiset3_ja_aine1',
-        'pedagogiset3_ja_aine2',
-        'pedagogiset3_ja_aine3',
-      ];
-    case 'Opetusalan ammatit_Aineenopettaja lukiossa_uo':
-      return [
-        'pedagogiset1_ja_aine1/aine4',
-        'pedagogiset1_ja_aine2',
-        'pedagogiset1_ja_aine3',
-        'pedagogiset1_ja_aine5',
-        'pedagogiset1_ja_aine6',
-        'pedagogiset2_ja_aine1/aine4',
-        'pedagogiset2_ja_aine2',
-        'pedagogiset2_ja_aine3',
-        'pedagogiset2_ja_aine5',
-        'pedagogiset2_ja_aine6',
-        'pedagogiset3_ja_aine1/aine4',
-        'pedagogiset3_ja_aine2',
-        'pedagogiset3_ja_aine3',
-        'pedagogiset3_ja_aine5',
-        'pedagogiset3_ja_aine6',
-      ];
-    default:
-      return undefined;
-  }
-};
-
-const getAmmattikokemuksenHuomioiminenOptions = (
-  kelpoisuusKey?: string,
-): Array<AmmattikokemuksenHuomioiminen> => {
-  switch (kelpoisuusKey) {
-    case 'Opetusalan ammatit_Luokanopettaja_uo':
-      return [
-        'SuomessaHankittuKokonaan',
-        'SuomessaHankittuOsittain',
-        'UlkomaillaHankittuOsittain',
-        'EiHuomioida',
-      ];
-    default:
-      return [
-        'SuomessaHankittuKokonaan',
-        'SuomessaHankittuOsittain',
-        'UlkomaillaHankittuKokonaan',
-        'UlkomaillaHankittuOsittain',
-        'SuomessaJaUlkomaillaHankittuKokonaan',
-        'SuomessaJaUlkomaillaHankittuOsittain',
-        'EiHuomioida',
-      ];
-  }
-};
-
-const suomessaSuoritettujenOpintojenHuomioiminenOptions: Array<SuomessaSuoritettujenOpintojenHuomioiminen> =
-  ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
 
 export const MyonteinenKelpoisuusPaatosUO: React.FC<
   MyonteinenKelpoisuusPaatosUOProps
@@ -125,59 +48,30 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
     () => getSovellettuTilanneOptions(kelpoisuusKey),
     [kelpoisuusKey],
   );
-  const ammattikokemuksenHuomioiminenOptions = useMemo(
-    () => getAmmattikokemuksenHuomioiminenOptions(kelpoisuusKey),
-    [kelpoisuusKey],
-  );
-  const showOsaamisenTaydentamisenTavat = useMemo(() => {
-    return (
-      (lisavaatimukset?.ammattikokemuksenHuomioiminen ===
-        'SuomessaHankittuOsittain' ||
-        lisavaatimukset?.ammattikokemuksenHuomioiminen ===
-          'UlkomaillaHankittuOsittain' ||
-        lisavaatimukset?.ammattikokemuksenHuomioiminen ===
-          'SuomessaJaUlkomaillaHankittuOsittain' ||
-        lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
-          'KorvaavatOsittain') &&
-      !(
-        lisavaatimukset.ammattikokemuksenHuomioiminen ===
-          'SuomessaHankittuKokonaan' ||
-        lisavaatimukset.ammattikokemuksenHuomioiminen ===
-          'UlkomaillaHankittuKokonaan' ||
-        lisavaatimukset.ammattikokemuksenHuomioiminen ===
-          'SuomessaJaUlkomaillaHankittuKokonaan' ||
-        lisavaatimukset.suomessaSuoritettujenOpintojenHuomioiminen ===
-          'KorvaavatKokonaan'
-      )
-    );
-  }, [
-    lisavaatimukset?.ammattikokemuksenHuomioiminen,
-    lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen,
-  ]);
-
-  const updateKelpoisuudenLisavaatimukset = (
-    updatedLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
-  ) => {
-    const tobeVaatimukset = initOrUpdateMyonteinenKelpoisuusPaatosUO(
-      lisavaatimukset ?? {},
-      updatedLisavaatimukset,
-      showOsaamisenTaydentamisenTavat,
-      kelpoisuusKey,
-    );
-    updateLisavaatimukset(tobeVaatimukset);
-  };
-
   const eroModel = useMemo(
     () => koulutusEroModel(kelpoisuusKey),
     [kelpoisuusKey],
   );
+  const erotKoulutuksessa = useMemo(
+    () =>
+      initOrUpdateErotKoulutuksessa(
+        emptyErotKoulutuksessa(kelpoisuusKey),
+        lisavaatimukset?.erotKoulutuksessa,
+      ),
+    [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey],
+  );
 
-  const erotKoulutuksessa = useMemo(() => {
-    return initOrUpdateErotKoulutuksessa(
-      emptyErotKoulutuksessa(kelpoisuusKey),
-      lisavaatimukset?.erotKoulutuksessa,
+  const updateKelpoisuudenLisavaatimukset = (
+    updatedLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
+  ) => {
+    updateLisavaatimukset(
+      initOrUpdateMyonteinenKelpoisuusPaatosUO(
+        lisavaatimukset ?? {},
+        updatedLisavaatimukset,
+        kelpoisuusKey,
+      ),
     );
-  }, [lisavaatimukset?.erotKoulutuksessa, kelpoisuusKey]);
+  };
 
   return (
     <Stack direction="column" spacing={3}>
@@ -193,78 +87,22 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
             `hakemus.paatos.paatostyyppi.kelpoisuus.uo.sovellettuTilanne`,
           )}
           value={lisavaatimukset?.sovellettuTilanne || ''}
-          onChange={(event) => {
+          onChange={(event) =>
             updateKelpoisuudenLisavaatimukset({
               sovellettuTilanne: event.target.value,
-            });
-          }}
+            })
+          }
           data-testid={`uo-sovellettuTilanne-select`}
         />
       )}
       {erotKoulutuksessa && (
-        <OphFormFieldWrapper
-          renderInput={({ labelId }) => (
-            <FormGroup aria-labelledby={labelId}>
-              {erotKoulutuksessa.erot!.map((ero: NamedBoolean) => (
-                <React.Fragment key={ero.name}>
-                  <OphCheckbox
-                    data-testid={`erotKoulutuksessa-${ero.name}`}
-                    label={t(
-                      `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.uo.erotKoulutuksessa.${eroModel.id}.${ero.name}`,
-                    )}
-                    checked={ero.value}
-                    onChange={(e) => {
-                      updateKelpoisuudenLisavaatimukset({
-                        erotKoulutuksessa: {
-                          ...erotKoulutuksessa,
-                          erot: setKoulutusEroValues(
-                            erotKoulutuksessa.erot!,
-                            ero.name,
-                            e.target.checked,
-                          ),
-                        },
-                      });
-                    }}
-                  />
-                  {ero.value &&
-                    erotKoulutuksessa.eroTarkennukset?.[ero.name] && (
-                      <FormGroup sx={{ paddingLeft: 4 }}>
-                        {erotKoulutuksessa.eroTarkennukset![ero.name].map(
-                          (tarkennus: NamedBoolean) => (
-                            <OphCheckbox
-                              key={tarkennus.name}
-                              data-testid={`erotKoulutuksessa-${ero.name}-${tarkennus.name}`}
-                              label={t(
-                                `hakemus.paatos.paatostyyppi.kelpoisuus.paatos.uo.erotKoulutuksessa.${eroModel.id}.${ero.name}.${tarkennus.name}`,
-                              )}
-                              checked={tarkennus.value}
-                              onChange={(e) => {
-                                updateKelpoisuudenLisavaatimukset({
-                                  erotKoulutuksessa: {
-                                    ...erotKoulutuksessa,
-                                    eroTarkennukset: {
-                                      ...erotKoulutuksessa.eroTarkennukset,
-                                      [ero.name]: setKoulutusEroValues(
-                                        erotKoulutuksessa.eroTarkennukset![
-                                          ero.name
-                                        ],
-                                        tarkennus.name,
-                                        e.target.checked,
-                                      ),
-                                    },
-                                  },
-                                });
-                              }}
-                            />
-                          ),
-                        )}
-                      </FormGroup>
-                    )}
-                </React.Fragment>
-              ))}
-            </FormGroup>
-          )}
-          label={t(`hakemus.paatos.myonteinenPaatos.erotKoulutuksessa`)}
+        <ErotKoulutuksessaComponent
+          erotKoulutuksessa={erotKoulutuksessa}
+          eroModelId={eroModel.id}
+          updateErotKoulutuksessa={(erotKoulutuksessa) =>
+            updateKelpoisuudenLisavaatimukset({ erotKoulutuksessa })
+          }
+          t={t}
         />
       )}
       <KorvaavaToimenpideComponent
@@ -274,11 +112,11 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         label={t(
           'hakemus.paatos.paatostyyppi.kelpoisuus.uo.lahtokohtaisetOsaamisenTaydentamisenTavat',
         )}
-        updateKorvaavaToimenpide={(korvaavaToimenpide: KorvaavaToimenpide) => {
+        updateKorvaavaToimenpide={(korvaavaToimenpide) =>
           updateKelpoisuudenLisavaatimukset({
             lahtokohtaisetOsaamisenTaydentamisenTavat: korvaavaToimenpide,
-          });
-        }}
+          })
+        }
         t={t}
         kelpoisuuskoeTransKeyBase={
           'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
@@ -287,73 +125,43 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
         showTaydentavatOpinnot
         kelpoisuuskoeFieldLabelPrefix={eroModel.id}
       />
-      <OphFormFieldWrapper
-        label={t(
-          `hakemus.paatos.paatostyyppi.kelpoisuus.uo.ammattikokemuksenHuomioiminen`,
-        )}
-        renderInput={({ labelId }) => (
-          <OphRadioGroup
-            sx={{ marginTop: 1 }}
-            options={ammattikokemuksenHuomioiminenOptions.map((option) => ({
-              label: t(
-                `hakemus.paatos.paatostyyppi.kelpoisuus.uo.ammattikokemuksenHuomioiminen.${option}`,
-              ),
-              value: option,
-            }))}
-            labelId={labelId}
-            value={lisavaatimukset?.ammattikokemuksenHuomioiminen || ''}
-            onChange={(event) => {
-              updateKelpoisuudenLisavaatimukset({
-                ammattikokemuksenHuomioiminen: event.target
-                  .value as AmmattikokemuksenHuomioiminen,
-              });
-            }}
-            data-testid={`uo-ammattikokemuksenHuomioiminen-radio`}
-          />
-        )}
+      <HuomioiminenRadioGroup
+        field="ammattikokemuksenHuomioiminen"
+        options={AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS}
+        value={lisavaatimukset?.ammattikokemuksenHuomioiminen}
+        updateValue={(ammattikokemuksenHuomioiminen) =>
+          updateKelpoisuudenLisavaatimukset({ ammattikokemuksenHuomioiminen })
+        }
+        t={t}
       />
-      <OphFormFieldWrapper
-        label={t(
-          `hakemus.paatos.paatostyyppi.kelpoisuus.uo.suomessaSuoritettujenOpintojenHuomioiminen`,
-        )}
-        renderInput={({ labelId }) => (
-          <OphRadioGroup
-            options={suomessaSuoritettujenOpintojenHuomioiminenOptions.map(
-              (option) => ({
-                label: t(
-                  `hakemus.paatos.paatostyyppi.kelpoisuus.uo.suomessaSuoritettujenOpintojenHuomioiminen.${option}`,
-                ),
-                value: option,
-              }),
-            )}
-            sx={{ marginTop: 1 }}
-            labelId={labelId}
-            value={
-              lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen || ''
-            }
-            onChange={(event) => {
-              updateKelpoisuudenLisavaatimukset({
-                suomessaSuoritettujenOpintojenHuomioiminen: event.target
-                  .value as SuomessaSuoritettujenOpintojenHuomioiminen,
-              });
-            }}
-            data-testid={`uo-suomessaSuoritettujenOpintojenHuomioiminen-radio`}
-          />
-        )}
+      <HuomioiminenRadioGroup
+        field="suomessaSuoritettujenOpintojenHuomioiminen"
+        options={SUOMESSA_SUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS}
+        value={lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen}
+        updateValue={(suomessaSuoritettujenOpintojenHuomioiminen) =>
+          updateKelpoisuudenLisavaatimukset({
+            suomessaSuoritettujenOpintojenHuomioiminen,
+          })
+        }
+        t={t}
       />
-      {showOsaamisenTaydentamisenTavat && (
+      <AmmattikokemusJaOpinnotYhdessaComponent
+        korvaavatKokonaan={
+          lisavaatimukset?.ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan
+        }
+        tasmennys={lisavaatimukset?.ammattikokemusJaOpinnotYhdessaTasmennys}
+        updateLisavaatimukset={updateKelpoisuudenLisavaatimukset}
+        t={t}
+      />
+      {shouldShowKelpoisuusKorvaavaToimenpide(lisavaatimukset) && (
         <KorvaavaToimenpideComponent
           korvaavaToimenpide={lisavaatimukset?.korvaavaToimenpide}
           label={t(
             'hakemus.paatos.paatostyyppi.kelpoisuus.uo.osaamisenTaydentamisenTavat',
           )}
-          updateKorvaavaToimenpide={(
-            korvaavaToimenpide: KorvaavaToimenpide,
-          ) => {
-            updateKelpoisuudenLisavaatimukset({
-              korvaavaToimenpide: korvaavaToimenpide,
-            });
-          }}
+          updateKorvaavaToimenpide={(korvaavaToimenpide) =>
+            updateKelpoisuudenLisavaatimukset({ korvaavaToimenpide })
+          }
           t={t}
           kelpoisuuskoeTransKeyBase={
             'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
@@ -363,29 +171,22 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
           showTaydentavatOpinnot
         />
       )}
-      {lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
-        'EiHuomioida' &&
-        lisavaatimukset?.ammattikokemuksenHuomioiminen === 'EiHuomioida' && (
-          <Paper
-            square
-            variant={'outlined'}
-            sx={{
-              padding: 2,
-              display: 'flex',
-              gap: 1,
-              flexDirection: 'row',
-              backgroundColor: `${ophColors.blue2}0A`,
-              borderColor: `${ophColors.blue2}0A`,
-            }}
-          >
-            <Info sx={{ color: ophColors.blue2 }} />
-            <OphTypography>
-              {t(
-                'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
-              )}
-            </OphTypography>
-          </Paper>
-        )}
+      {shouldShowEiEdellytetaOsaamisenTaydentamista(lisavaatimukset) && (
+        <InFoTeksti
+          infoTeksti={t(
+            'hakemus.paatos.paatostyyppi.kelpoisuus.uo.eiEdellytetaOsaamisenTaydentamista',
+          )}
+        />
+      )}
+      {shouldShowKaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja(
+        lisavaatimukset,
+      ) && (
+        <InFoTeksti
+          infoTeksti={t(
+            'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
+          )}
+        />
+      )}
     </Stack>
   );
 };

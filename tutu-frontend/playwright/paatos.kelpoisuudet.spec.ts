@@ -969,13 +969,17 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
 
   await Promise.all(
     [
+      'SuomessaHankittuKokonaan',
+      'SuomessaHankittuOsittain',
       'UlkomaillaHankittuKokonaan',
+      'UlkomaillaHankittuOsittain',
       'SuomessaJaUlkomaillaHankittuKokonaan',
       'SuomessaJaUlkomaillaHankittuOsittain',
+      'EiHuomioida',
     ].map(async (option) => {
       await expect(
         ammattikokemuksenHuomioiminenRadiot.locator(`input[value="${option}"]`),
-      ).toBeHidden();
+      ).toBeVisible();
     }),
   );
 
@@ -1061,4 +1065,96 @@ test('Valittaessa 2 Kelpoisuus ja Päätös UO näytetään oikeat jatkokysymysk
       'hakemus.paatos.paatostyyppi.kelpoisuus.uo.kaytetaanLahtokohtaisiaOsaamisenTaydentamisenTapoja',
     ),
   ).toBeVisible();
+});
+
+test('Kelpoisuus ja Päätös UO: näytetään ammattikokemus, opinnot yhdessä ja osaamisen täydentämisen tarve oikein', async ({
+  page,
+}) => {
+  await selectOption(
+    page,
+    page.getByTestId('paatos-paatostyyppi-dropdown'),
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('paatos-sovellettulaki-dropdown'),
+    'hakemus.paatos.sovellettuLaki.uo',
+  );
+  await selectOptionByValue(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Opetusalan ammatit_Aineenopettaja perusopetuksessa',
+  );
+  await page
+    .getByTestId('myonteinenPaatos-radio-group')
+    .getByText('hakemus.paatos.myonteinen')
+    .click();
+
+  const ammattikokemuksenHuomioiminenRadiot = page.getByTestId(
+    'uo-ammattikokemuksenHuomioiminen-radio',
+  );
+  const suomessaSuoritettujenOpintojenHuomioiminenRadiot = page.getByTestId(
+    'uo-suomessaSuoritettujenOpintojenHuomioiminen-radio',
+  );
+  const yhdessaCheckbox = page.getByTestId(
+    'uo-ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan-checkbox',
+  );
+  const tasmennysInput = page.getByTestId(
+    'uo-ammattikokemusJaOpinnotYhdessaTasmennys-input',
+  );
+  const osaamisenTaydentamisenTavat = page.getByText(
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.osaamisenTaydentamisenTavat',
+    { exact: true },
+  );
+  const eiEdellytetaOsaamisenTaydentamista = page.getByText(
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.eiEdellytetaOsaamisenTaydentamista',
+  );
+
+  await expect(yhdessaCheckbox).toBeVisible();
+  await expect(tasmennysInput).toBeHidden();
+  await expect(osaamisenTaydentamisenTavat).toBeHidden();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeHidden();
+
+  await ammattikokemuksenHuomioiminenRadiot
+    .locator('input[value="SuomessaHankittuOsittain"]')
+    .click();
+  await expect(osaamisenTaydentamisenTavat).toBeVisible();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeHidden();
+
+  await yhdessaCheckbox.click();
+  await expect(osaamisenTaydentamisenTavat).toBeHidden();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeVisible();
+  await expect(tasmennysInput).toBeVisible();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    tasmennysInput.getByRole('textbox').fill('Täsmennys'),
+    backendRequestMyonteinenPaatos({
+      ammattikokemuksenHuomioiminen: 'SuomessaHankittuOsittain',
+      ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan: true,
+      ammattikokemusJaOpinnotYhdessaTasmennys: 'Täsmennys',
+      korvaavaToimenpide: null,
+    }),
+  );
+
+  await yhdessaCheckbox.click();
+  await expect(tasmennysInput).toBeHidden();
+  await expect(osaamisenTaydentamisenTavat).toBeVisible();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeHidden();
+
+  await suomessaSuoritettujenOpintojenHuomioiminenRadiot
+    .locator('input[value="KorvaavatKokonaan"]')
+    .click();
+  await expect(osaamisenTaydentamisenTavat).toBeHidden();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeVisible();
+
+  await suomessaSuoritettujenOpintojenHuomioiminenRadiot
+    .locator('input[value="EiHuomioida"]')
+    .click();
+  await ammattikokemuksenHuomioiminenRadiot
+    .locator('input[value="UlkomaillaHankittuKokonaan"]')
+    .click();
+  await expect(osaamisenTaydentamisenTavat).toBeHidden();
+  await expect(eiEdellytetaOsaamisenTaydentamista).toBeVisible();
 });

@@ -6,7 +6,9 @@ import {
   KoulutusEroModel,
   MONIALAISET_OPINNOT_KEY,
   MUU_AMMATTI_KEY,
+  OSITTAINEN_AMMATTIKOKEMUS_OPTIONS,
   oletusKoulutusErot,
+  TAYSI_AMMATTIKOKEMUS_OPTIONS,
   VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/paatostiedot/constants';
@@ -18,6 +20,7 @@ import {
 import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { NamedBoolean } from '@/src/lib/types/common';
 import {
+  AmmattikokemuksenHuomioiminen,
   ErotKoulutuksessa,
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,
@@ -27,6 +30,7 @@ import {
   Paatos,
   PaatosTieto,
   PeruutuksenTaiRaukeamisenSyy,
+  SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 
 export const getPaatosTietoDropdownOptions = (
@@ -233,31 +237,6 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
   return tobe;
 };
 
-export const initOrUpdateMyonteinenKelpoisuusPaatosUO = (
-  currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
-  updatedKelpoisuudenLisavaatimukset: Partial<KelpoisuudenLisavaatimukset>,
-  showOsaamisenTaydentamisenTavat: boolean,
-  kelpoisuusKey?: string,
-): KelpoisuudenLisavaatimukset => {
-  const tobe = {
-    ...currentKelpoisuudenLisavaatimukset,
-    ...updatedKelpoisuudenLisavaatimukset,
-  };
-  tobe.erotKoulutuksessa =
-    tobe.erotKoulutuksessa ?? emptyErotKoulutuksessa(kelpoisuusKey);
-  tobe.korvaavaToimenpide = showOsaamisenTaydentamisenTavat
-    ? initOrUpdateKorvaavaToimenpide(tobe.korvaavaToimenpide)
-    : null;
-  tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
-    initOrUpdateKorvaavaToimenpide(
-      tobe.lahtokohtaisetOsaamisenTaydentamisenTavat,
-    );
-  tobe.olennaisiaEroja = null;
-  tobe.ammattikokemusJaElinikainenOppiminen = null;
-
-  return tobe;
-};
-
 export const koulutusEroModel = (kelpoisuusKey?: string) => {
   const key = kelpoisuusKey;
   const option = kelpoisuusKey
@@ -379,3 +358,21 @@ export const emptyPaatosTieto = (paatosId: string): PaatosTieto => ({
   rinnastettavatTutkinnotTaiOpinnot: [],
   kelpoisuudet: [],
 });
+
+export const shouldShowKorvaavaToimenpide = (
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null,
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null,
+) => {
+  return (
+    ((ammattikokemuksenHuomioiminen &&
+      OSITTAINEN_AMMATTIKOKEMUS_OPTIONS.includes(
+        ammattikokemuksenHuomioiminen,
+      )) ||
+      suomessaSuoritettujenOpintojenHuomioiminen === 'KorvaavatOsittain') &&
+    !(
+      (ammattikokemuksenHuomioiminen &&
+        TAYSI_AMMATTIKOKEMUS_OPTIONS.includes(ammattikokemuksenHuomioiminen)) ||
+      suomessaSuoritettujenOpintojenHuomioiminen === 'KorvaavatKokonaan'
+    )
+  );
+};
