@@ -14,7 +14,6 @@ import { OpintopisteTaulukko } from '@/src/app/hakemus/paatostiedot/components/t
 import { SuomiOpinnot } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/SuomiOpinnot';
 import {
   emptyOikeustieteenMaisterinOpinnot,
-  initOrUpdateOikeustieteenMaisteriOpinnot,
   newLaajuusValue,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
@@ -149,16 +148,12 @@ export const SovellettuTilanneOikeustieteenMaisteri = ({
   const updateAction = (
     updatedData: Partial<OikeustieteenMaisteriLisavaatimukset>,
   ) => {
-    const toBeLisavaatimukset = initOrUpdateOikeustieteenMaisteriOpinnot(
-      {
+    updateLisavaatimukset({
+      oikeustieteenMaisteriLisavaatimukset: {
         ...emptyOikeustieteenMaisterinOpinnot(),
         ...lisavaatimukset?.oikeustieteenMaisteriLisavaatimukset,
+        ...updatedData,
       },
-      updatedData,
-    );
-    updateLisavaatimukset({
-      ...lisavaatimukset,
-      oikeustieteenMaisteriLisavaatimukset: toBeLisavaatimukset,
     });
   };
   const sovellettuTilanne = lisavaatimukset?.sovellettuTilanne ?? '';

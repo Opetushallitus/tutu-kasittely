@@ -113,7 +113,7 @@ test.describe('Valitustiedot', () => {
     await gotoValitustiedot(page, valitustiedotHaOValitettu());
 
     const lausuntopyynto = page.getByLabel(
-      'hakemus.valitustiedot.valitushao.haoLausuntopyynto',
+      'hakemus.valitustiedot.valitushao.lausuntopyynto',
     );
 
     await lausuntopyynto.click();
