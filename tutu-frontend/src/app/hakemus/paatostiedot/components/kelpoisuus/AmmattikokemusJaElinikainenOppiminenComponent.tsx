@@ -3,10 +3,14 @@ import {
   OphCheckbox,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
-import React from 'react';
+
+import { InFoTeksti } from '../tutkintotaiopinto/Info';
 
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
-import { ammattikokemusElinikainenOppiminenKorvaavuusOptions } from '@/src/app/hakemus/paatostiedot/constants';
+import {
+  ammattikokemusKorvaavuusOptions,
+  elinikainenOppiminenKorvaavuusOptions,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -15,14 +19,13 @@ import {
   KorvaavaToimenpide,
 } from '@/src/lib/types/paatos';
 
-const osittainenKorvaavuus = (
+const taysiKorvaavuus = (
   data: AmmattikokemusJaElinikainenOppiminen,
 ): boolean => {
   return (
-    data.korvaavuusAmmattikokemus === 'Osittainen' ||
-    data.korvaavuusAmmattikokemus === 'Ei' ||
-    data.korvaavuusElinikainenOppiminen === 'Osittainen' ||
-    data.korvaavuusElinikainenOppiminen === 'Ei'
+    data.korvaavuusAmmattikokemus === 'Taysi' ||
+    data.korvaavuusElinikainenOppiminen === 'Taysi' ||
+    !!data.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa
   );
 };
 
@@ -43,6 +46,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
     <>
       <Stack spacing={2}>
         <OphRadioGroupWithClear
+          row={false}
           label={t(
             'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemus.title',
           )}
@@ -50,21 +54,26 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             'kelpoisuus-myonteinenPaatos-ammattikokemus-korvaavuus-radio-group-label'
           }
           data-testid={'ammattikokemus-korvaavuus-radio-group'}
-          options={ammattikokemusElinikainenOppiminenKorvaavuusOptions(t)}
+          options={ammattikokemusKorvaavuusOptions(t)}
           value={data.korvaavuusAmmattikokemus?.toString() ?? ''}
           onChange={(e) =>
             updateDataAction({
               ...data,
               korvaavuusAmmattikokemus: e.target
                 .value as AmmattikokemusJaElinikainenOppiminenKorvaavuus,
+              korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: false,
             })
           }
           onClear={() =>
-            updateDataAction({ ...data, korvaavuusAmmattikokemus: null })
+            updateDataAction({
+              ...data,
+              korvaavuusAmmattikokemus: null,
+            })
           }
         />
 
         <OphRadioGroupWithClear
+          row={false}
           label={t(
             'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.elinikainenOppiminen.title',
           )}
@@ -72,17 +81,21 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             'kelpoisuus-myonteinenPaatos-elinikainenOppiminen-korvaavuus-radio-group-label'
           }
           data-testid={'elinikainenOppiminen-korvaavuus-radio-group'}
-          options={ammattikokemusElinikainenOppiminenKorvaavuusOptions(t)}
+          options={elinikainenOppiminenKorvaavuusOptions(t)}
           value={data.korvaavuusElinikainenOppiminen?.toString() ?? ''}
           onChange={(e) =>
             updateDataAction({
               ...data,
               korvaavuusElinikainenOppiminen: e.target
                 .value as AmmattikokemusJaElinikainenOppiminenKorvaavuus,
+              korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: false,
             })
           }
           onClear={() =>
-            updateDataAction({ ...data, korvaavuusElinikainenOppiminen: null })
+            updateDataAction({
+              ...data,
+              korvaavuusElinikainenOppiminen: null,
+            })
           }
         />
         <Stack spacing={2}>
@@ -97,14 +110,20 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             onChange={(e) =>
               updateDataAction({
                 ...data,
-                ['korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa']:
+                korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa:
                   e.target.checked,
+                korvaavuusAmmattikokemus: e.target.checked
+                  ? null
+                  : data['korvaavuusAmmattikokemus'],
+                korvaavuusElinikainenOppiminen: e.target.checked
+                  ? null
+                  : data['korvaavuusElinikainenOppiminen'],
               })
             }
           />
         </Stack>
 
-        {osittainenKorvaavuus(data) && (
+        {data['korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa'] && (
           <OphInputFormField
             label={t(
               'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.ohje',
@@ -123,33 +142,38 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
         )}
       </Stack>
 
-      {osittainenKorvaavuus(data) && (
+      {data.korvaavaToimenpide && (
         <Stack spacing={2} paddingLeft={3}>
-          {data.korvaavaToimenpide && (
-            <KorvaavaToimenpideComponent
-              korvaavaToimenpide={data.korvaavaToimenpide}
-              label={t(
-                'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.korvaavaToimenpide',
-              )}
-              updateKorvaavaToimenpide={(
-                korvaavaToimenpide: KorvaavaToimenpide,
-              ) =>
-                updateDataAction({
-                  ...data,
-                  korvaavaToimenpide: korvaavaToimenpide,
-                })
-              }
-              t={t}
-              testIdPrefix={'ammattikokemusElinikainenOppiminen'}
-              kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
-              showKelpoisuuskoeJaSopeutumisaika
-              showLisatieto
-              kelpoisuuskoeTransKeyBase={
-                'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
-              }
-            />
-          )}
+          <KorvaavaToimenpideComponent
+            korvaavaToimenpide={data.korvaavaToimenpide}
+            label={t(
+              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.korvaavaToimenpide',
+            )}
+            updateKorvaavaToimenpide={(
+              korvaavaToimenpide: KorvaavaToimenpide,
+            ) =>
+              updateDataAction({
+                ...data,
+                korvaavaToimenpide: korvaavaToimenpide,
+              })
+            }
+            t={t}
+            testIdPrefix={'ammattikokemusElinikainenOppiminen'}
+            kelpoisuuskoeFieldLabelPrefix={kelpoisuuskoeFieldLabelPrefix}
+            showKelpoisuuskoeJaSopeutumisaika
+            showLisatieto
+            kelpoisuuskoeTransKeyBase={
+              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.kelpoisuusKoe'
+            }
+          />
         </Stack>
+      )}
+      {taysiKorvaavuus(data) && (
+        <InFoTeksti
+          infoTeksti={t(
+            'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.eiEdellytetaKorvaavaaToimenpidetta',
+          )}
+        />
       )}
     </>
   );

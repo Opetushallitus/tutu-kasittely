@@ -524,16 +524,8 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
   await korvaavuusElinikainenOppiminenRadioGroup
     .locator('input[type="radio"][value="Taysi"]')
     .click();
-  await korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa.click();
 
   await expect(kokemusOppiminenLisatietoInput).toBeHidden();
-
-  lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
-    korvaavuusAmmattikokemus: 'Taysi',
-    korvaavuusElinikainenOppiminen: 'Taysi',
-    korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: true,
-    lisatieto: 'Täsmennä ite',
-  };
 
   lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
     korvaavuusAmmattikokemus: 'Osittainen',
@@ -547,7 +539,16 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
 
+  await korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa.click();
+
   await expect(kokemusOppiminenLisatietoInput).toBeVisible();
+
+  lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
+    korvaavuusAmmattikokemus: null,
+    korvaavuusElinikainenOppiminen: null,
+    korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa: true,
+    lisatieto: 'Täsmennä ite',
+  };
 
   await expectRequestData(
     page,
@@ -555,6 +556,10 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     kokemusOppiminenLisatietoInput.getByRole('textbox').fill('Täsmennä ite'),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
+
+  await korvaavuusAmmattikokemusRadioGroup
+    .locator('input[type="radio"][value="Osittainen"]')
+    .click();
 
   await expect(kokemusJaOppiminenKelpoisuuskoeButton).toBeVisible();
   await expect(kokemusJaOppiminenSopeutumisaikaButton).toBeVisible();
@@ -567,7 +572,7 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
 
   lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
     korvaavuusAmmattikokemus: null,
-    korvaavuusElinikainenOppiminen: 'Taysi',
+    korvaavuusElinikainenOppiminen: null,
   };
   await expectRequestData(
     page,
@@ -581,8 +586,16 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     page.getByTestId('ammattikokemus-korvaavuus-radio-group-clear-button'),
   ).toBeHidden();
 
+  await korvaavuusElinikainenOppiminenRadioGroup
+    .locator('input[type="radio"][value="Taysi"]')
+    .click();
+
+  await korvaavuusAmmattikokemusRadioGroup
+    .locator('input[type="radio"][value="Taysi"]')
+    .click();
+
   lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
-    korvaavuusAmmattikokemus: null,
+    korvaavuusAmmattikokemus: 'Taysi',
     korvaavuusElinikainenOppiminen: null,
   };
   await expectRequestData(
@@ -597,6 +610,22 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
     page.getByTestId(
       'elinikainenOppiminen-korvaavuus-radio-group-clear-button',
     ),
+  ).toBeHidden();
+
+  lisavaatimusRequest.ammattikokemusJaElinikainenOppiminen = {
+    korvaavuusAmmattikokemus: null,
+    korvaavuusElinikainenOppiminen: null,
+  };
+  await expectRequestData(
+    page,
+    '/paatos/',
+    page
+      .getByTestId('ammattikokemus-korvaavuus-radio-group-clear-button')
+      .click(),
+    backendRequestMyonteinenPaatos(lisavaatimusRequest),
+  );
+  await expect(
+    page.getByTestId('ammattikokemus-korvaavuus-radio-group-clear-button'),
   ).toBeHidden();
 
   await expectHiddenOrDetached(kokemusJaOppiminenKelpoisuuskoeButton);
