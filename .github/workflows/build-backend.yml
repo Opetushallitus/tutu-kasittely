@@ -113,3 +113,10 @@ jobs:
           file: tutu-backend/Dockerfile
           push: true
           tags: ${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tutu-backend:ga-${{github.run_number}}
+  update-build-metadata:
+    needs: build-image
+    uses: Opetushallitus/.github/.github/workflows/update-build-metadata.yml@main
+    with:
+      application: tutu-kasittely
+      version: ga-${{github.run_number}}
+    secrets: inherit

@@ -59,9 +59,7 @@ jobs:
           pnpm exec cdk cli-telemetry --disable
           pnpm exec cdk deploy TutuBackendEcsService --require-approval never -c "utility=${{ secrets.AWS_TUTU_UTILITY_ACCOUNT_ID }}" -c "environment=${{ inputs.environment }}" -c "revision=ga-${{ inputs.revision }}"
   update-deployment-metadata:
-    permissions:
-      id-token: write
-      contents: read
+    needs: deploy
     uses: Opetushallitus/.github/.github/workflows/update-deployment-metadata.yml@main
     with:
       application: tutu-kasittely
