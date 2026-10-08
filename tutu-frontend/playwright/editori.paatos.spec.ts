@@ -112,12 +112,13 @@ test('Päätöspohjan valinnan yhteydessä sisältö liitetään editorissa näk
   await expect(page.getByTestId('tekstipohja-lista')).toBeVisible();
 
   const sisaltoContainer = page.getByTestId('tekstipohja-lista-sisalto');
-  const firstPohjaButton = sisaltoContainer
-    .locator(':scope > *')
-    .nth(0)
-    .locator(':scope > *')
-    .nth(1);
+
+  const firstKategoriaButton = sisaltoContainer.locator(':scope > *').nth(0);
+  await firstKategoriaButton.click();
+
+  const firstPohjaButton = firstKategoriaButton.locator(':scope > *').nth(1);
   await firstPohjaButton.click();
+
   await expect(page.getByTestId('editor-content-editable')).toContainText(
     'Suomi pohjassa',
   );

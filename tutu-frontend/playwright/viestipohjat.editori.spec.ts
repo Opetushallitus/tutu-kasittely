@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
   clickLisaapohja,
   clickPohjaOrKategoria,
+  clickPohjaOrKategoriaEdit,
   confirmDelete,
   expectDelete,
   expectErrorToast,
@@ -41,7 +42,8 @@ test.beforeEach(async ({ page }) => {
 
 test('Olemassaolevan viestipohjan lataus onnistuu', async ({ page }) => {
   await mockTekstipohja(page, 'viestipohja');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 });
@@ -50,7 +52,8 @@ test('Viestipohjan latauksen epäonnistuessa näytetään virheteksti', async ({
   page,
 }) => {
   await mockRemoteVirhe(page, '**/tutu-backend/api/viestipohja/1');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectErrorToast(page, 'virhe.viestipohjaLataus');
 });
@@ -59,7 +62,8 @@ test('Viestipohjan muokkaus lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
   await mockTekstipohja(page, 'viestipohja');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
@@ -113,7 +117,8 @@ test('Viestipohjan tallennuksen epäonnistuessa näytetään virheteksti', async
   page,
 }) => {
   await mockTekstipohja(page, 'viestipohja');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
@@ -127,7 +132,8 @@ test('Viestipohjan tallennuksen epäonnistuessa näytetään virheteksti', async
 
 test('Viestipohjan poisto onnistuu', async ({ page }) => {
   await mockTekstipohja(page, 'viestipohja');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 
@@ -151,7 +157,8 @@ test('Viestipohjan poiston epäonnistuessa näytetään virheteksti', async ({
 }) => {
   await mockTekstipohja(page, 'viestipohja');
   await mockDeleteVirhe(page, '**/tutu-backend/api/viestipohja/1');
-  await clickPohjaOrKategoria(page, 'Tekstipohja 1');
+  await clickPohjaOrKategoria(page, '1. Testi kategoria 1');
+  await clickPohjaOrKategoriaEdit(page, 'Tekstipohja 1');
 
   await expectTekstipohjaNimi(page, MOCK_TEKSTIPOHJA.nimi);
 

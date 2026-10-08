@@ -6,10 +6,11 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as R from 'remeda';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
+import { useShowTekstipohjat } from '@/src/context/TekstipohjaContext';
 import {
   useTekstipohjaSelect,
   useTekstipohjat,
@@ -40,6 +41,13 @@ export const TekstipohjaLista = ({
   const { selectTekstipohja, isLoadingPohja, pohjaLoadError } =
     useTekstipohjaSelect(selectPohja, url);
   const { addToast } = useToaster();
+
+  const { setShowTekstipohjaLista } = useShowTekstipohjat();
+
+  useEffect(() => {
+    setShowTekstipohjaLista(true);
+    return () => setShowTekstipohjaLista(false);
+  }, []);
 
   useEffect(() => {
     handleFetchError(
@@ -95,6 +103,10 @@ const ListaSisalto = ({
   lista: KategorianTekstipohjat[];
   selectTekstipohja: (pohjaId: string) => void;
 }) => {
+  const [showKategoriaPohjat, setShowKategoriaPohjat] = useState<
+    string | undefined
+  >();
+
   if (error) {
     return null;
   }
@@ -106,30 +118,43 @@ const ListaSisalto = ({
     <Stack spacing={1} data-testid="tekstipohja-lista-sisalto">
       {R.map(lista, (kategoria, kategoriaIndex) => (
         <Stack key={`kategoriaItem_${kategoriaIndex}`} spacing={1}>
-          <OphTypography variant="h5">
-            {`${kategoriaIndex + 1}. ${kategoria.kategoriaNimi}`}
-          </OphTypography>
-          {R.map(kategoria.pohjat ?? [], (pohja, pohjaIndex) => (
-            <OphButton
-              key={`pohjaItem_${pohjaIndex}`}
-              onClick={() => {
-                selectTekstipohja(pohja.id);
-              }}
-              variant="text"
-              sx={{
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                backgroundColor: ophColors.grey50,
-                fontWeight: 300,
-                paddingTop: '2px',
-                paddingBottom: '2px',
-                paddingLeft: '2px',
-                width: '100%',
-              }}
-            >
-              {pohja.nimi}
-            </OphButton>
-          ))}
+          <OphButton
+            sx={{ padding: 0, justifyContent: 'flex-start', textAlign: 'left' }}
+            variant={'text'}
+            onClick={() => {
+              if (showKategoriaPohjat === kategoria.kategoriaNimi) {
+                setShowKategoriaPohjat(undefined);
+              } else {
+                setShowKategoriaPohjat(kategoria.kategoriaNimi);
+              }
+            }}
+          >
+            <OphTypography variant="h5">
+              {`${kategoriaIndex + 1}. ${kategoria.kategoriaNimi}`}
+            </OphTypography>
+          </OphButton>
+          {kategoria.kategoriaNimi === showKategoriaPohjat &&
+            R.map(kategoria.pohjat ?? [], (pohja, pohjaIndex) => (
+              <OphButton
+                key={`pohjaItem_${pohjaIndex}`}
+                onClick={() => {
+                  selectTekstipohja(pohja.id);
+                }}
+                variant="text"
+                sx={{
+                  justifyContent: 'flex-start',
+                  textAlign: 'left',
+                  backgroundColor: ophColors.grey50,
+                  fontWeight: 300,
+                  paddingTop: '2px',
+                  paddingBottom: '2px',
+                  paddingLeft: '2px',
+                  width: '100%',
+                }}
+              >
+                {pohja.nimi}
+              </OphButton>
+            ))}
         </Stack>
       ))}
     </Stack>
