@@ -7,7 +7,7 @@ def haeKysymyksenTiedot(sisalto: Seq[SisaltoItem], kysymysId: AtaruKysymysId): O
     None
   } else {
     val current: SisaltoItem = sisalto.head
-    if (current.key == kysymysId.generatedId || current.key == kysymysId.definedId) {
+    if (kysymysId.matches(current.key)) {
       Some(current)
     } else {
       val children: Seq[SisaltoItem]           = current.value.flatMap(_.followups) :++ current.children
