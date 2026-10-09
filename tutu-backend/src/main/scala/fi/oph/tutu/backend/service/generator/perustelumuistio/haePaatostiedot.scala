@@ -223,8 +223,8 @@ def expandAmmattikokemusJaElinikainenOppiminen(
   node: AmmattikokemusJaElinikainenOppiminen
 ): Seq[PaatosNodeTypeAggregate] = {
   if (
-    node.korvaavuusAmmattikokemus == AmmattikokemusElinikainenOppiminenKorvaavuus.Ei &&
-    node.korvaavuusElinikainenOppiminen == AmmattikokemusElinikainenOppiminenKorvaavuus.Ei
+    node.korvaavuusAmmattikokemus.contains(AmmattikokemusElinikainenOppiminenKorvaavuus.Ei) &&
+    node.korvaavuusElinikainenOppiminen.contains(AmmattikokemusElinikainenOppiminenKorvaavuus.Ei)
   ) {
     Seq(
       TitleNode(
@@ -232,6 +232,19 @@ def expandAmmattikokemusJaElinikainenOppiminen(
           "perustelumuistio.ammattikokemusJaElinikainenOppiminen.kaytetaanLahtokohtaistaKorvaavaaToimenpidetta"
         ),
         child = node.korvaavaToimenpide
+      )
+    )
+  } else if (
+    node.korvaavuusAmmattikokemus.contains(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi) ||
+    node.korvaavuusElinikainenOppiminen.contains(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi) ||
+    node.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa
+  ) {
+    Seq(
+      TitleNode(
+        titleKey = Some(
+          "perustelumuistio.ammattikokemusJaElinikainenOppiminen.eiEdellytetaKorvaavaaToimenpidetta"
+        ),
+        child = Seq()
       )
     )
   } else {
