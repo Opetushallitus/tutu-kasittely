@@ -255,25 +255,44 @@ export const olennaisiaErojaOptions = (t: TFunction) => [
   { value: 'false', label: t('yleiset.ei') },
 ];
 
-export const ammattikokemusElinikainenOppiminenKorvaavuusOptions = (
-  t: TFunction,
-) => [
+export const ammattikokemusKorvaavuusOptions = (t: TFunction) => [
   {
     value: 'Taysi',
     label: t(
-      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.taysi',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemus.korvaavuus.taysi',
     ),
   },
   {
     value: 'Osittainen',
     label: t(
-      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.osittainen',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemus.korvaavuus.osittainen',
     ),
   },
   {
     value: 'Ei',
     label: t(
-      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.korvaavuus.ei',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemus.korvaavuus.ei',
+    ),
+  },
+];
+
+export const elinikainenOppiminenKorvaavuusOptions = (t: TFunction) => [
+  {
+    value: 'Taysi',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.elinikainenOppiminen.korvaavuus.taysi',
+    ),
+  },
+  {
+    value: 'Osittainen',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.elinikainenOppiminen.korvaavuus.osittainen',
+    ),
+  },
+  {
+    value: 'Ei',
+    label: t(
+      'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.elinikainenOppiminen.korvaavuus.ei',
     ),
   },
 ];
