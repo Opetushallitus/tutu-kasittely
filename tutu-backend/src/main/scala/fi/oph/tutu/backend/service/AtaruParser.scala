@@ -45,14 +45,9 @@ def findAnswerByAtaruKysymysId(
   kysymysId: AtaruKysymysId,
   allAnswers: Seq[Answer]
 ): Option[String] = {
-  findSingleStringAnswer(kysymysId.definedId, allAnswers) match {
-    case Some(answer) => Some(answer)
-    case None         =>
-      findSingleStringAnswer(kysymysId.generatedId, allAnswers) match {
-        case Some(answer) => Some(answer)
-        case None         => None
-      }
-  }
+  (kysymysId.definedIds :+ kysymysId.generatedId).iterator
+    .map(id => findSingleStringAnswer(id, allAnswers))
+    .collectFirst { case Some(answer) => answer }
 }
 
 def traverseContent(
@@ -446,7 +441,7 @@ class AtaruLomakeParser() {
     boundary {
       for (item <- items) {
 
-        if (matchesAtaruKysymysId(item, kysymysId)) {
+        if (kysymysId.matches(item.id)) {
           result = collectAllOptionsRecursively(item, None, rootItem)
           break()
         }
@@ -525,9 +520,5 @@ class AtaruLomakeParser() {
         }
       )
     }
-  }
-
-  private def matchesAtaruKysymysId(item: LomakeContentItem, kysymysId: AtaruKysymysId): Boolean = {
-    item.id == kysymysId.definedId || item.id == kysymysId.generatedId
   }
 }

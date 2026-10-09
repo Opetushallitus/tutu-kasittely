@@ -24,7 +24,7 @@ object Constants {
   val ATARU_TUTKINTO_1_LOPETUS_VUOSI: AtaruKysymysId =
     AtaruKysymysId("b6b2fc1f-2749-42d1-823a-4b4a33fe30b6", "tutu-first-degree-end-year")
   val ATARU_TUTKINTO_1_MAA: AtaruKysymysId =
-    AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "tutu-first-degree-country")
+    AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "hakemus-maakoodi", "tutu-first-degree-country")
   val ATARU_TUTKINTO_1_OPINNAYTETYO: AtaruKysymysId =
     AtaruKysymysId("337c0b08-03d3-4659-9309-aa1bbe731717", "tutu-first-degree-final-project")
   val ATARU_TUTKINTO_1_HARJOITTELU: AtaruKysymysId =
@@ -73,7 +73,7 @@ object Constants {
     AtaruKysymysId("9193dbe1-5cad-44c2-a00d-3669f4dac963", "tutu-application-cancelled")
 
   val ATARU_LOPULLINEN_PAATOS_SUORITUSMAA: AtaruKysymysId =
-    AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "lopullinen-paatos-suoritusmaa")
+    AtaruKysymysId("6e43a241-a3bd-4625-8035-40768a109461", "hakemus-maakoodi", "lopullinen-paatos-suoritusmaa")
   val ATARU_LOPULLINEN_PAATOS_VASTAAVA_EHDOLLINEN: AtaruKysymysId =
     AtaruKysymysId("ea25df4f-52a8-4540-83b7-19dffdd353f7", "lopullinen-paatos-vastaava-ehdollinen")
 

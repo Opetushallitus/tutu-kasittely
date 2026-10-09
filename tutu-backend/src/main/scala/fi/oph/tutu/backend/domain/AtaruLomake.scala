@@ -64,5 +64,8 @@ case class SisaltoValue(
 
 case class AtaruKysymysId(
   generatedId: String,
-  definedId: String
-)
+  definedIds: String*
+) {
+  def matches(other: String): Boolean =
+    definedIds.contains(other) || generatedId == other
+}
