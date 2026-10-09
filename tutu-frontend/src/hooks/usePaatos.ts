@@ -60,7 +60,16 @@ export const usePaatos = (hakemusOid: string | undefined) => {
   });
 
   const updatePaatos = (paatos: Paatos) => {
-    mutate(paatos);
+    const paatosToSave: Paatos = {
+      ...paatos,
+      paatosTiedot: paatos.paatosTiedot?.map((pt) => {
+        if (pt.id && pt.id.startsWith('new')) {
+          return { ...pt, id: undefined };
+        }
+        return pt;
+      }),
+    };
+    mutate(paatosToSave);
   };
 
   return {

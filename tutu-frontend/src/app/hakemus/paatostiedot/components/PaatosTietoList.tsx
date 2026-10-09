@@ -98,7 +98,8 @@ export const PaatosTietoList = ({
                 header: t('hakemus.paatos.modal.otsikko'),
                 content: t('hakemus.paatos.modal.teksti'),
                 confirmButtonText: t('hakemus.paatos.modal.poistaPaatos'),
-                handleConfirmAction: () => deletePaatosTieto(paatosTieto.id),
+                handleConfirmAction: () =>
+                  deletePaatosTieto(paatosTieto.id ?? ''),
               })
             }
           >
