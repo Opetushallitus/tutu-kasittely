@@ -15,7 +15,9 @@ export const sisaltoItemMatches = (
   item: SisaltoItem,
   key: HakemuspalveluSisaltoId,
 ): boolean => {
-  return item && (item.key === key.generatedId || item.key === key.definedId);
+  return (
+    item && (item.key === key.generatedId || key.definedIds.includes(item.key))
+  );
 };
 
 export const sisaltoItemMatchesToAny = (
