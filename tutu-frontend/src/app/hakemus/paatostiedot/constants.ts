@@ -1,5 +1,6 @@
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
+  AmmattikokemuksenHuomioiminen,
   AmmattikokemusJaElinikainenOppiminen,
   KelpoisuuskoeSisalto,
   KielteisenPaatoksenPerustelut,
@@ -7,6 +8,7 @@ import {
   OikeustieteenSuomiOpintojenAihealue,
   Paatostyyppi,
   SovellettuLaki,
+  SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
@@ -777,3 +779,31 @@ export const oikeustieteenSuomiOpintojenAihealueOptions = [
   'valtioSaantooikeus',
   'hallintoOikeus',
 ] as const satisfies (keyof OikeustieteenSuomiOpintojenAihealue)[];
+
+export const TAYSI_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
+  [
+    'SuomessaHankittuKokonaan',
+    'UlkomaillaHankittuKokonaan',
+    'SuomessaJaUlkomaillaHankittuKokonaan',
+  ];
+
+export const OSITTAINEN_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
+  [
+    'SuomessaHankittuOsittain',
+    'UlkomaillaHankittuOsittain',
+    'SuomessaJaUlkomaillaHankittuOsittain',
+  ];
+
+export const AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
+  [
+    'SuomessaHankittuKokonaan',
+    'SuomessaHankittuOsittain',
+    'UlkomaillaHankittuKokonaan',
+    'UlkomaillaHankittuOsittain',
+    'SuomessaJaUlkomaillaHankittuKokonaan',
+    'SuomessaJaUlkomaillaHankittuOsittain',
+    'EiHuomioida',
+  ];
+
+export const SUOMESSA_SUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<SuomessaSuoritettujenOpintojenHuomioiminen> =
+  ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];

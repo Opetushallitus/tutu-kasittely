@@ -16,14 +16,13 @@ import {
   emptyErotKoulutuksessaForModel,
   initOrUpdateErotKoulutuksessa,
   initOrUpdateKorvaavaToimenpide,
+  shouldShowKorvaavaToimenpide,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
-  AmmattikokemuksenHuomioiminen,
   MyonteisenPaatoksenLisavaatimukset,
   OikeustieteenMaisteriLisavaatimukset,
   OikeustieteenSuomiOpintojenAihealue,
-  SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 
 export enum ResolvedEntity {
@@ -197,52 +196,6 @@ export const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
   [ResolvedEntity.monialaisetOpinnot]: eroModel(2),
   [ResolvedEntity.ammatillisetValmiudet]: eroModel(2),
   [ResolvedEntity.muu]: undefined,
-};
-
-export const AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
-  [
-    'SuomessaHankittuKokonaan',
-    'SuomessaHankittuOsittain',
-    'UlkomaillaHankittuKokonaan',
-    'UlkomaillaHankittuOsittain',
-    'SuomessaJaUlkomaillaHankittuKokonaan',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-    'EiHuomioida',
-  ];
-
-export const TAYSI_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
-  [
-    'SuomessaHankittuKokonaan',
-    'UlkomaillaHankittuKokonaan',
-    'SuomessaJaUlkomaillaHankittuKokonaan',
-  ];
-
-export const OSITTAINEN_AMMATTIKOKEMUS_OPTIONS: Array<AmmattikokemuksenHuomioiminen> =
-  [
-    'SuomessaHankittuOsittain',
-    'UlkomaillaHankittuOsittain',
-    'SuomessaJaUlkomaillaHankittuOsittain',
-  ];
-
-export const SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS: Array<SuomessaSuoritettujenOpintojenHuomioiminen> =
-  ['KorvaavatKokonaan', 'KorvaavatOsittain', 'EiHuomioida'];
-
-export const shouldShowKorvaavaToimenpide = (
-  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null,
-  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null,
-) => {
-  return (
-    ((ammattikokemuksenHuomioiminen &&
-      OSITTAINEN_AMMATTIKOKEMUS_OPTIONS.includes(
-        ammattikokemuksenHuomioiminen,
-      )) ||
-      suomessaSuoritettujenOpintojenHuomioiminen === 'KorvaavatOsittain') &&
-    !(
-      (ammattikokemuksenHuomioiminen &&
-        TAYSI_AMMATTIKOKEMUS_OPTIONS.includes(ammattikokemuksenHuomioiminen)) ||
-      suomessaSuoritettujenOpintojenHuomioiminen === 'KorvaavatKokonaan'
-    )
-  );
 };
 
 const OPETETTAVA_AINE_SOVELLETUT_TILANTEET_WO_EROT = ['aine1', 'aine4'];

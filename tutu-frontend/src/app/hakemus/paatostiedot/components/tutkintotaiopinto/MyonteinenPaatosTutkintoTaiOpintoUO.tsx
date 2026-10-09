@@ -8,24 +8,26 @@ import React, { useMemo } from 'react';
 
 import { SovellettuTilanneOikeustieteenMaisteri } from './oikeustieteenmaisteri/SovellettuTilanneOikeustieteenMaisteri';
 
+import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/Info';
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
-import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/Info';
 import {
   MyonteinenPaatos,
   MyonteinenPaatosProps,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatos';
 import { SovellettuTilanneSelection } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/SovellettuTilanneSelection';
 import {
-  AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
   EROT_KOULUTUKSESSA_BY_ENTITY,
   initOrUpdateTutkintoTaiOpintoMyonteinenUo,
   KEYWORDS_BY_TUTKINTO_TAI_OPINTO,
   ResolvedEntity,
   shouldShowLisavalinnat,
   SOVELLETTU_TILANNE_BY_ENTITY,
-  SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS,
   translationForEroTarkennus,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
+import {
+  AMMATTIKOKEMUKSEN_HUOMIOIMINEN_OPTIONS,
+  SUOMESSA_SUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import {
   emptyErotKoulutuksessaForModel,
   initOrUpdateErotKoulutuksessa,
@@ -207,7 +209,7 @@ const Lisavalinnat = ({
         )}
         renderInput={({ labelId }) => (
           <OphRadioGroup
-            options={SUOMESSASUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS.map(
+            options={SUOMESSA_SUORITETTUJEN_OPINTOJEN_HUOMIOIMINEN_OPTIONS.map(
               (option) => ({
                 label: t(
                   `hakemus.paatos.myonteinenPaatos.uo.suomessaSuoritettujenOpintojenHuomioiminen.${option}`,

@@ -150,7 +150,9 @@ case class KelpoisuudenLisavaatimukset(
   lahtokohtaisetOsaamisenTaydentamisenTavat: Option[KorvaavaToimenpide] = None,
   sovellettuTilanne: Option[String] = None,
   ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
-  suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None
+  suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None,
+  ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan: Boolean = false,
+  ammattikokemusJaOpinnotYhdessaTasmennys: Option[String] = None
 )
 
 case class KielteisenPaatoksenPerustelut(

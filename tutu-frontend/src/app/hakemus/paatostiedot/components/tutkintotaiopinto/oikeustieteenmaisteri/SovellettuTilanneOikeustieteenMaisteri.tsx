@@ -7,7 +7,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/Info';
+import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/Info';
 import { EurooppaOpinnot } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/EurooppaOpinnot';
 import { OpintoOptionWithLaajuusInput } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintoOptionWithLaajuusInput';
 import { OpintopisteTaulukko } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/oikeustieteenmaisteri/OpintopisteTaulukko';

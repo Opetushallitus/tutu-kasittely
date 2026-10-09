@@ -4,7 +4,7 @@ import {
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
 
-import { InFoTeksti } from '../tutkintotaiopinto/Info';
+import { InFoTeksti } from '../Info';
 
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
 import {
