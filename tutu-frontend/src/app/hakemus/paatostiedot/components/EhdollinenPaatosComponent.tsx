@@ -44,9 +44,13 @@ export const EhdollinenPaatosComponent = ({
   };
 
   const addPaatosTieto = () => {
-    setCurrentPaatosTiedot((oldPaatosTiedot) =>
-      oldPaatosTiedot.concat([emptyPaatosTieto(paatos.id!)]),
-    );
+    setCurrentPaatosTiedot((oldPaatosTiedot) => {
+      const newPaatosTiedot = oldPaatosTiedot.concat([
+        emptyPaatosTieto(paatos.id!),
+      ]);
+      updatePaatosField({ paatosTiedot: newPaatosTiedot });
+      return newPaatosTiedot;
+    });
   };
 
   const deletePaatosTieto = (id: string) => {
