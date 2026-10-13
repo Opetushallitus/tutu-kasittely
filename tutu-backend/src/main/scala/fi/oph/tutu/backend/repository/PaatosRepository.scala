@@ -43,7 +43,7 @@ class PaatosRepository extends BaseResultHandlers {
       paatosId = Some(r.nextObject().asInstanceOf[UUID]),
       paatosTyyppi = PaatosTyyppi.optionFromString(r.nextString()),
       sovellettuLaki = SovellettuLaki.optionFromString(r.nextString()),
-      tutkintoId = Some(r.nextObject().asInstanceOf[UUID]),
+      tutkintoId = r.nextObjectOption().map(_.asInstanceOf[UUID]),
       lisaaTutkintoPaatostekstiin = r.nextBooleanOption().getOrElse(false),
       myonteinenPaatos = r.nextBooleanOption(),
       kielteisenPaatoksenPerustelut = Option(Serialization.read[KielteisenPaatoksenPerustelut](r.nextString()))

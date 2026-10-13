@@ -119,11 +119,15 @@ export const PaatosTietoComponent = ({
               placeholder={t('yleiset.valitse')}
               label={t('hakemus.paatos.tutkinto.nimi')}
               options={tutkintoOptions(t, tutkinnot)}
+              clearable
               value={currentPaatosTieto.tutkintoId || ''}
               onChange={(event) =>
                 updatePaatosTietoAction({
                   ...currentPaatosTieto,
-                  tutkintoId: event.target.value,
+                  tutkintoId: event.target.value || undefined,
+                  lisaaTutkintoPaatostekstiin: event.target.value
+                    ? currentPaatosTieto.lisaaTutkintoPaatostekstiin
+                    : false,
                 })
               }
               data-testid={'paatos-tutkintonimi-dropdown'}
