@@ -18,8 +18,8 @@ import { SovellettuTilanneSelection } from '@/src/app/hakemus/paatostiedot/compo
 import {
   EROT_KOULUTUKSESSA_BY_ENTITY,
   initOrUpdateTutkintoTaiOpintoMyonteinenUo,
-  KEYWORDS_BY_TUTKINTO_TAI_OPINTO,
   ResolvedEntity,
+  resolveEntity,
   shouldShowLisavalinnat,
   SOVELLETTU_TILANNE_BY_ENTITY,
   translationForEroTarkennus,
@@ -278,11 +278,7 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
 }: MyonteinenPaatosProps) => {
   const { selectedEntity, sovellettuTilanneOptions, erotKoulutuksessa } =
     useMemo(() => {
-      const entity =
-        KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find(
-          (item) =>
-            item.keyword && (tutkintoTaiOpinto ?? '').includes(item.keyword),
-        )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
+      const entity = resolveEntity(tutkintoTaiOpinto);
       const koulutusEroModel = EROT_KOULUTUKSESSA_BY_ENTITY[entity];
       const erotKoulutuksessa = koulutusEroModel
         ? initOrUpdateErotKoulutuksessa(
