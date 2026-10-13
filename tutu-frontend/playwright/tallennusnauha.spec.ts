@@ -8,7 +8,11 @@ import { apSisalto } from '@/playwright/fixtures/perustelu1/_perusteluApSisalto'
 import { getValitustiedot } from '@/playwright/fixtures/valitustiedot1';
 import { selectOption } from '@/playwright/helpers/testUtils';
 import { mockAll, mockGetAndPut } from '@/playwright/mocks';
-import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
+import {
+  emptyKelpoisuudenLisavaatimukset,
+  emptyKielteisenPaatoksenPerustelut,
+  emptyMyonteisenPaatoksenLisavaatimukset,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { Paatos, PaatosTieto } from '@/src/lib/types/paatos';
 import { Valitustiedot } from '@/src/lib/types/valitustiedot';
 
@@ -241,7 +245,8 @@ test.describe('Päätöstiedot', () => {
             kansallisestiVaadittavaDirektiivitaso: null,
             direktiivitasoLisatiedot: null,
             myonteinenPaatos: null,
-            myonteisenPaatoksenLisavaatimukset: null,
+            myonteisenPaatoksenLisavaatimukset:
+              emptyKelpoisuudenLisavaatimukset(),
             kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
           },
         ],
@@ -276,5 +281,115 @@ test.describe('Päätöstiedot', () => {
       .locator('input[type="radio"][value="false"]')
       .click();
     await expect(saveButton(page)).toBeVisible();
+  });
+
+  test.describe('myönteisen päätöksen lisävaatimukset', () => {
+    const valitseMyonteinenJaTallenna = async (page: Page) => {
+      await page
+        .getByTestId('myonteinenPaatos-radio-group')
+        .locator('input[type="radio"][value="true"]')
+        .click();
+      await saveButton(page).click();
+      await expect(saveButton(page)).toBeHidden();
+    };
+
+    const valitseJaPoistaValinta = async (page: Page, testIdPrefix: string) => {
+      const valintaruutu = page
+        .locator(`[data-testid^="${testIdPrefix}"]`)
+        .first();
+      await valintaruutu.click();
+      await expect(saveButton(page)).toBeVisible();
+      await valintaruutu.click();
+    };
+
+    const tutkintoTaiOpintoPaatos = (tutkintoTaiOpinto: string) =>
+      tasoPaatos({
+        paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+        sovellettuLaki: 'uo',
+        myonteinenPaatos: null,
+        tutkintoTaso: null,
+        rinnastettavatTutkinnotTaiOpinnot: [
+          {
+            tutkintoTaiOpinto,
+            myonteinenPaatos: null,
+            myonteisenPaatoksenLisavaatimukset:
+              emptyMyonteisenPaatoksenLisavaatimukset(),
+            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
+          },
+        ],
+      });
+
+    test('kelpoisuus UO: eron valitseminen ja poistaminen tallennetulla myönteisellä päätöksellä ei näytä tallennusnauhaa', async ({
+      page,
+    }) => {
+      await gotoPaatos(
+        page,
+        tasoPaatos({
+          paatosTyyppi: 'Kelpoisuus',
+          sovellettuLaki: 'uo',
+          myonteinenPaatos: null,
+          tutkintoTaso: null,
+          kelpoisuudet: [
+            {
+              kelpoisuus: 'Opetusalan ammatit_Luokanopettaja',
+              direktiivitaso: null,
+              kansallisestiVaadittavaDirektiivitaso: null,
+              direktiivitasoLisatiedot: null,
+              myonteinenPaatos: null,
+              myonteisenPaatoksenLisavaatimukset:
+                emptyKelpoisuudenLisavaatimukset(),
+              kielteisenPaatoksenPerustelut:
+                emptyKielteisenPaatoksenPerustelut(),
+            },
+          ],
+        }),
+      );
+
+      await valitseMyonteinenJaTallenna(page);
+      await valitseJaPoistaValinta(page, 'erotKoulutuksessa-');
+      await expect(saveButton(page)).toBeHidden();
+    });
+
+    test('tutkinto tai opinto UO: eron valitseminen ja poistaminen tallennetulla myönteisellä päätöksellä ei näytä tallennusnauhaa', async ({
+      page,
+    }) => {
+      await gotoPaatos(
+        page,
+        tutkintoTaiOpintoPaatos(
+          'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot',
+        ),
+      );
+
+      await valitseMyonteinenJaTallenna(page);
+      await valitseJaPoistaValinta(
+        page,
+        'myonteinenPaatos-uo-erotKoulutuksessa-',
+      );
+      await expect(saveButton(page)).toBeHidden();
+    });
+
+    test('tutkinto tai opinto UO: eron valitseminen ja poistaminen tallennetun sovelletun tilanteen jälkeen ei näytä tallennusnauhaa', async ({
+      page,
+    }) => {
+      await gotoPaatos(
+        page,
+        tutkintoTaiOpintoPaatos('Opettajan pedagogiset opinnot'),
+      );
+
+      await valitseMyonteinenJaTallenna(page);
+      await selectOption(
+        page,
+        page.getByTestId('myonteinenPaatos-uo-sovellettuTilanne-select'),
+        'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.pedagogiset 1',
+      );
+      await saveButton(page).click();
+      await expect(saveButton(page)).toBeHidden();
+
+      await valitseJaPoistaValinta(
+        page,
+        'myonteinenPaatos-uo-erotKoulutuksessa-',
+      );
+      await expect(saveButton(page)).toBeHidden();
+    });
   });
 });
