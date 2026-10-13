@@ -207,9 +207,7 @@ class PaatosControllerTest extends IntegrationTestBase {
               paatostietoId = givenPaatosTietoId,
               tutkintoTaiOpinto = Some("testi"),
               myonteinenPaatos = None,
-              myonteisenPaatoksenLisavaatimukset = Some(
-                MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true)
-              ),
+              myonteisenPaatoksenLisavaatimukset = MyonteisenPaatoksenLisavaatimukset(taydentavatOpinnot = true),
               kielteisenPaatoksenPerustelut = KielteisenPaatoksenPerustelut()
             )
           )
@@ -249,44 +247,42 @@ class PaatosControllerTest extends IntegrationTestBase {
               kansallisestiVaadittavaDirektiivitaso = Some(b_1384_2015_patevyystaso_2),
               direktiivitasoLisatiedot = randomStringOption,
               myonteinenPaatos = Some(true),
-              myonteisenPaatoksenLisavaatimukset = Some(
-                KelpoisuudenLisavaatimukset(
-                  olennaisiaEroja = Some(true),
-                  erotKoulutuksessa = Some(
-                    ErotKoulutuksessa(
-                      erot = Seq(
-                        NamedBoolean("eroOpetettavanAineenOpinnoissa", true),
-                        NamedBoolean("eroPedagogisissaOpinnoissa", false),
-                        NamedBoolean("ero1", true),
-                        NamedBoolean("ero2", false)
-                      ),
-                      muuEro = true,
-                      muuEroKuvaus = Some("Lisäksi muuta eroa")
-                    )
-                  ),
-                  korvaavaToimenpide = Some(
-                    KorvaavaToimenpide(
-                      kelpoisuuskoe = true,
-                      sopeutumisaika = true,
-                      kelpoisuuskoeJaSopeutumisaika = true,
-                      kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue1 = true)),
-                      sopeutumiusaikaKestoKk = Some("6"),
-                      kelpoisuuskoeJaSopeutumisaikaSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
-                      kelpoisuuskoeJaSopeutumisaikaKestoKk = Some("12")
-                    )
-                  ),
-                  ammattikokemusJaElinikainenOppiminen = Some(
-                    AmmattikokemusJaElinikainenOppiminen(
-                      lisatieto = Some("Lisätietoa"),
-                      korvaavuusAmmattikokemus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
-                      korvaavuusElinikainenOppiminen = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
-                      korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa = false,
-                      korvaavaToimenpide = Some(
-                        KorvaavaToimenpide(
-                          kelpoisuuskoeJaSopeutumisaika = true,
-                          kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
-                          sopeutumiusaikaKestoKk = Some("3")
-                        )
+              myonteisenPaatoksenLisavaatimukset = KelpoisuudenLisavaatimukset(
+                olennaisiaEroja = Some(true),
+                erotKoulutuksessa = Some(
+                  ErotKoulutuksessa(
+                    erot = Seq(
+                      NamedBoolean("eroOpetettavanAineenOpinnoissa", true),
+                      NamedBoolean("eroPedagogisissaOpinnoissa", false),
+                      NamedBoolean("ero1", true),
+                      NamedBoolean("ero2", false)
+                    ),
+                    muuEro = true,
+                    muuEroKuvaus = Some("Lisäksi muuta eroa")
+                  )
+                ),
+                korvaavaToimenpide = Some(
+                  KorvaavaToimenpide(
+                    kelpoisuuskoe = true,
+                    sopeutumisaika = true,
+                    kelpoisuuskoeJaSopeutumisaika = true,
+                    kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue1 = true)),
+                    sopeutumiusaikaKestoKk = Some("6"),
+                    kelpoisuuskoeJaSopeutumisaikaSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
+                    kelpoisuuskoeJaSopeutumisaikaKestoKk = Some("12")
+                  )
+                ),
+                ammattikokemusJaElinikainenOppiminen = Some(
+                  AmmattikokemusJaElinikainenOppiminen(
+                    lisatieto = Some("Lisätietoa"),
+                    korvaavuusAmmattikokemus = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                    korvaavuusElinikainenOppiminen = Some(AmmattikokemusElinikainenOppiminenKorvaavuus.Taysi),
+                    korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa = false,
+                    korvaavaToimenpide = Some(
+                      KorvaavaToimenpide(
+                        kelpoisuuskoeJaSopeutumisaika = true,
+                        kelpoisuuskoeSisalto = Some(KelpoisuuskoeSisalto(aihealue2 = true)),
+                        sopeutumiusaikaKestoKk = Some("3")
                       )
                     )
                   )

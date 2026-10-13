@@ -37,10 +37,6 @@ export type PeruutuksenTaiRaukeamisenSyy = {
 
 export type MyonteinenTaiKielteinenPaatos = {
   myonteinenPaatos?: boolean | null;
-  myonteisenPaatoksenLisavaatimukset?:
-    | MyonteisenPaatoksenLisavaatimukset
-    | KelpoisuudenLisavaatimukset
-    | null;
   kielteisenPaatoksenPerustelut?: KielteisenPaatoksenPerustelut;
 };
 
@@ -55,7 +51,7 @@ export type PaatosTieto = {
   rinnastettavatTutkinnotTaiOpinnot: TutkintoTaiOpinto[];
   kelpoisuudet: Kelpoisuus[];
   esittelijanHuomioitaToimenpiteista?: string;
-} & Omit<MyonteinenTaiKielteinenPaatos, 'myonteisenPaatoksenLisavaatimukset'>;
+} & MyonteinenTaiKielteinenPaatos;
 
 export type Paatos = {
   id?: string;
@@ -78,6 +74,7 @@ export type TutkintoTaiOpinto = {
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
   opetuskieli?: string;
+  myonteisenPaatoksenLisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
 } & MyonteinenTaiKielteinenPaatos;
 
 export type OikeustieteenSuomiOpintojenAihealue = {
@@ -123,9 +120,11 @@ export type MyonteisenPaatoksenLisavaatimukset = {
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
-  lisavaatimukset: Partial<
-    MyonteisenPaatoksenLisavaatimukset | KelpoisuudenLisavaatimukset
-  >,
+  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
+) => void;
+
+export type KelpoisuudenLisavaatimusUpdateCallback = (
+  lisavaatimukset: KelpoisuudenLisavaatimukset,
 ) => void;
 
 export type KelpoisuudenLisavaatimukset = {
@@ -133,10 +132,10 @@ export type KelpoisuudenLisavaatimukset = {
   erotKoulutuksessa?: ErotKoulutuksessa | null;
   korvaavaToimenpide?: KorvaavaToimenpide | null;
   ammattikokemusJaElinikainenOppiminen?: AmmattikokemusJaElinikainenOppiminen | null;
-  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide;
-  sovellettuTilanne?: string;
-  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen;
-  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen;
+  lahtokohtaisetOsaamisenTaydentamisenTavat?: KorvaavaToimenpide | null;
+  sovellettuTilanne?: string | null;
+  ammattikokemuksenHuomioiminen?: AmmattikokemuksenHuomioiminen | null;
+  suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null;
   ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan?: boolean;
   ammattikokemusJaOpinnotYhdessaTasmennys?: string | null;
 };
@@ -233,6 +232,7 @@ export type Kelpoisuus = {
   direktiivitaso?: Direktiivitaso | null;
   kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso | null;
   direktiivitasoLisatiedot?: string | null;
+  myonteisenPaatoksenLisavaatimukset: KelpoisuudenLisavaatimukset;
 } & MyonteinenTaiKielteinenPaatos;
 
 export type KorvaavaToimenpideDto = {

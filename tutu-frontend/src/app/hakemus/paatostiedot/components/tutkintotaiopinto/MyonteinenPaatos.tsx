@@ -15,7 +15,7 @@ export interface MyonteinenPaatosProps {
   t: TFunction;
   tutkintoTaiOpinto?: string;
   updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
-  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
+  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
 }
 
 export const MyonteinenPaatos: React.FC<MyonteinenPaatosProps> = ({

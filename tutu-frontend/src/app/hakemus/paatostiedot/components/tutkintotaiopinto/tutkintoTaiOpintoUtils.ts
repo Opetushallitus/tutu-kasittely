@@ -14,6 +14,7 @@ import {
 } from '@/src/app/hakemus/paatostiedot/constants';
 import {
   emptyErotKoulutuksessaForModel,
+  emptyMyonteisenPaatoksenLisavaatimukset,
   initOrUpdateErotKoulutuksessa,
   initOrUpdateKorvaavaToimenpide,
   shouldShowKorvaavaToimenpide,
@@ -77,6 +78,11 @@ export const KEYWORDS_BY_TUTKINTO_TAI_OPINTO = [
   },
   { tutkintoTaiOpinto: ResolvedEntity.muu, keyword: '' },
 ];
+
+export const resolveEntity = (tutkintoTaiOpinto?: string): ResolvedEntity =>
+  KEYWORDS_BY_TUTKINTO_TAI_OPINTO.find(
+    (item) => item.keyword && (tutkintoTaiOpinto ?? '').includes(item.keyword),
+  )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
 
 export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
   ResolvedEntity,
@@ -308,49 +314,39 @@ export const initOrUpdateOikeustieteenMaisteriOpinnot = (
   return tobe;
 };
 
-export const emptyTutkintoTaiOpintoMyonteinenUo =
-  (): MyonteisenPaatoksenLisavaatimukset => ({
-    oikeustieteenMaisteriLisavaatimukset: undefined,
-    opettajuuttaTutkimassa: false,
-    suomalainenKoulu: false,
-    opetusNayte: false,
-    taydentavatOpinnot: false,
-    kelpoisuuskoe: false,
-    sopeutumisaika: false,
-  });
-
 export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
   currentEntity: ResolvedEntity,
   updated: Partial<MyonteisenPaatoksenLisavaatimukset>,
-  current?: MyonteisenPaatoksenLisavaatimukset,
+  current: MyonteisenPaatoksenLisavaatimukset,
 ): MyonteisenPaatoksenLisavaatimukset => {
   if (
     updated.sovellettuTilanne &&
-    (current?.sovellettuTilanne ?? null) !== updated.sovellettuTilanne
+    (current.sovellettuTilanne ?? null) !== updated.sovellettuTilanne
   ) {
-    const tobe = emptyTutkintoTaiOpintoMyonteinenUo();
-    tobe.sovellettuTilanne = updated.sovellettuTilanne;
-    return tobe;
+    return initOrUpdateTutkintoTaiOpintoMyonteinenUo(
+      currentEntity,
+      {},
+      {
+        ...emptyMyonteisenPaatoksenLisavaatimukset(),
+        sovellettuTilanne: updated.sovellettuTilanne,
+      },
+    );
   }
 
   if (currentEntity === ResolvedEntity.oikeustieteenMaisteri) {
     return {
-      ...emptyTutkintoTaiOpintoMyonteinenUo(),
-      sovellettuTilanne: current?.sovellettuTilanne,
+      ...emptyMyonteisenPaatoksenLisavaatimukset(),
+      sovellettuTilanne: current.sovellettuTilanne ?? null,
       oikeustieteenMaisteriLisavaatimukset:
         initOrUpdateOikeustieteenMaisteriOpinnot({
           ...emptyOikeustieteenMaisterinOpinnot(),
-          ...current?.oikeustieteenMaisteriLisavaatimukset,
+          ...current.oikeustieteenMaisteriLisavaatimukset,
           ...updated.oikeustieteenMaisteriLisavaatimukset,
         }),
     };
   }
 
-  const tobe = {
-    ...emptyTutkintoTaiOpintoMyonteinenUo(),
-    ...current,
-    ...updated,
-  };
+  const tobe = { ...current, ...updated };
 
   if (EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity]) {
     tobe.erotKoulutuksessa = initOrUpdateErotKoulutuksessa(
@@ -358,12 +354,12 @@ export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
         ...emptyErotKoulutuksessaForModel(
           EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity],
         ),
-        ...current?.erotKoulutuksessa,
+        ...current.erotKoulutuksessa,
       },
       updated.erotKoulutuksessa,
     );
   } else {
-    tobe.erotKoulutuksessa = undefined;
+    tobe.erotKoulutuksessa = null;
   }
   tobe.lahtokohtaisetOsaamisenTaydentamisenTavat =
     initOrUpdateKorvaavaToimenpide(
@@ -379,7 +375,7 @@ export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
       tobe.korvaavaToimenpide,
     );
   } else {
-    tobe.korvaavaToimenpide = undefined;
+    tobe.korvaavaToimenpide = null;
   }
   return tobe;
 };

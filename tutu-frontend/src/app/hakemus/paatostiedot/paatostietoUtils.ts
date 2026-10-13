@@ -336,6 +336,20 @@ export const emptyMyonteisenPaatoksenLisavaatimukset =
     oikeustieteenMaisteriLisavaatimukset: null,
   });
 
+export const emptyKelpoisuudenLisavaatimukset =
+  (): KelpoisuudenLisavaatimukset => ({
+    olennaisiaEroja: null,
+    erotKoulutuksessa: null,
+    korvaavaToimenpide: null,
+    ammattikokemusJaElinikainenOppiminen: null,
+    lahtokohtaisetOsaamisenTaydentamisenTavat: null,
+    sovellettuTilanne: null,
+    ammattikokemuksenHuomioiminen: null,
+    suomessaSuoritettujenOpintojenHuomioiminen: null,
+    ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan: false,
+    ammattikokemusJaOpinnotYhdessaTasmennys: null,
+  });
+
 export const emptyPeruutuksenTaiRaukeamisenSyy =
   (): PeruutuksenTaiRaukeamisenSyy => ({
     eiSaaHakemaansaEikaHaluaPaatostaJonkaVoisiSaada: false,

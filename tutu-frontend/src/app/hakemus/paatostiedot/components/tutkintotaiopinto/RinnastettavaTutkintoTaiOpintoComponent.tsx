@@ -18,6 +18,10 @@ import { MyonteinenPaatosLuokanopettajaTaiAineenopettaja } from '@/src/app/hakem
 import { MyonteinenPaatosSteiner } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosSteiner';
 import { MyonteinenPaatosTutkintoTaiOpintoUO } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/MyonteinenPaatosTutkintoTaiOpintoUO';
 import {
+  initOrUpdateTutkintoTaiOpintoMyonteinenUo,
+  resolveEntity,
+} from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
+import {
   AINEENOPETTAJA_OPTION_KEY,
   LUOKANOPETTAJA_OPTION_KEY,
 } from '@/src/app/hakemus/paatostiedot/constants';
@@ -25,6 +29,7 @@ import {
   getPaatosTietoDropdownOptions,
   getTiettyTutkintoTaiOpinnotAdditionalOptions,
   emptyKielteisenPaatoksenPerustelut,
+  emptyMyonteisenPaatoksenLisavaatimukset,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
 import { SelectTreeDropdown } from '@/src/components/SelectTreeDropdown';
@@ -50,32 +55,60 @@ interface RinnastettavaTutkintoTaiOpintoComponentProps {
   deleteTutkintoTaiOpintoAction: (id: string | undefined) => void;
 }
 
-const myonteinenPaatosComponent = (
+type MyonteinenPaatosConfig = {
+  LisavaatimusComponent: FC<MyonteinenPaatosProps>;
+  naytaKielivalinta: boolean;
+  defaultMyonteisetLisavaatimukset?: () => MyonteisenPaatoksenLisavaatimukset;
+};
+
+const myonteinenPaatosConfig = (
   paatosTieto: PaatosTieto,
   tutkintoTaiOpinto: TutkintoTaiOpinto,
-): [FC<MyonteinenPaatosProps>, boolean] => {
+): MyonteinenPaatosConfig => {
   switch (paatosTieto.paatosTyyppi) {
     case 'RiittavatOpinnot':
       return match(tutkintoTaiOpinto.tutkintoTaiOpinto)
-        .returnType<[FC<MyonteinenPaatosProps>, boolean]>()
+        .returnType<MyonteinenPaatosConfig>()
         .with(
           P.when((t) =>
             [AINEENOPETTAJA_OPTION_KEY, LUOKANOPETTAJA_OPTION_KEY].some((key) =>
               t?.includes(key),
             ),
           ),
-          () => [MyonteinenPaatosLuokanopettajaTaiAineenopettaja, true],
+          () => ({
+            LisavaatimusComponent:
+              MyonteinenPaatosLuokanopettajaTaiAineenopettaja,
+            naytaKielivalinta: true,
+          }),
         )
 
         .with(
           P.when((t) => t?.includes('Steiner')),
-          () => [MyonteinenPaatosSteiner, false],
+          () => ({
+            LisavaatimusComponent: MyonteinenPaatosSteiner,
+            naytaKielivalinta: false,
+          }),
         )
-        .otherwise(() => [MyonteinenPaatos, true]);
+        .otherwise(() => ({
+          LisavaatimusComponent: MyonteinenPaatos,
+          naytaKielivalinta: true,
+        }));
     default:
       return paatosTieto.sovellettuLaki === 'uo'
-        ? [MyonteinenPaatosTutkintoTaiOpintoUO, true]
-        : [MyonteinenPaatos, true];
+        ? {
+            LisavaatimusComponent: MyonteinenPaatosTutkintoTaiOpintoUO,
+            naytaKielivalinta: true,
+            defaultMyonteisetLisavaatimukset: () =>
+              initOrUpdateTutkintoTaiOpintoMyonteinenUo(
+                resolveEntity(tutkintoTaiOpinto.tutkintoTaiOpinto),
+                {},
+                emptyMyonteisenPaatoksenLisavaatimukset(),
+              ),
+          }
+        : {
+            LisavaatimusComponent: MyonteinenPaatos,
+            naytaKielivalinta: true,
+          };
   }
 };
 
@@ -91,16 +124,14 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
   const asiointikieli = useAsiointiKieli();
   const { showConfirmation } = useGlobalConfirmationModal();
 
-  const { naytaKielivalinta, LisavaatimusComponent } = useMemo(() => {
-    const [component, naytaKielivalinta] = myonteinenPaatosComponent(
-      paatosTieto,
-      tutkintoTaiOpinto,
-    );
-    return {
-      naytaKielivalinta,
-      LisavaatimusComponent: component,
-    };
-  }, [paatosTieto, tutkintoTaiOpinto]);
+  const {
+    LisavaatimusComponent,
+    naytaKielivalinta,
+    defaultMyonteisetLisavaatimukset = emptyMyonteisenPaatoksenLisavaatimukset,
+  } = useMemo(
+    () => myonteinenPaatosConfig(paatosTieto, tutkintoTaiOpinto),
+    [paatosTieto, tutkintoTaiOpinto],
+  );
 
   const paatosTyyppi =
     paatosTieto.paatosTyyppi === 'RiittavatOpinnot'
@@ -133,7 +164,8 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       tobeTutkinto.opetuskieli = undefined;
       tobeTutkinto.kielteisenPaatoksenPerustelut =
         emptyKielteisenPaatoksenPerustelut();
-      tobeTutkinto.myonteisenPaatoksenLisavaatimukset = null;
+      tobeTutkinto.myonteisenPaatoksenLisavaatimukset =
+        emptyMyonteisenPaatoksenLisavaatimukset();
     }
     updateTutkintoTaiOpintoAction(
       {
@@ -142,13 +174,6 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
       },
       index,
     );
-  };
-
-  const myonteisenPaatoksenLisavaatimusProps = {
-    lisavaatimukset:
-      tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset as MyonteisenPaatoksenLisavaatimukset,
-    t: t,
-    tutkintoTaiOpinto: tutkintoTaiOpinto.tutkintoTaiOpinto,
   };
 
   return (
@@ -221,21 +246,52 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
         ></OphInputFormField>
       )}
       <MyonteinenTaiKielteinenPaatosComponent
-        MyonteisenPaatoksenLisavaatimusComponent={LisavaatimusComponent}
-        lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={tutkintoTaiOpinto.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={
           tutkintoTaiOpinto.kielteisenPaatoksenPerustelut
         }
-        updatePaatosAction={(paatos) =>
+        updateMyonteinenPaatos={(paatos) =>
           updateTutkintoTaiOpintoAction(
-            { ...tutkintoTaiOpinto, ...paatos },
+            {
+              ...tutkintoTaiOpinto,
+              ...paatos,
+              myonteisenPaatoksenLisavaatimukset: paatos.myonteinenPaatos
+                ? defaultMyonteisetLisavaatimukset()
+                : emptyMyonteisenPaatoksenLisavaatimukset(),
+            },
+            index,
+          )
+        }
+        updateKielteisenPaatoksenPerustelut={(perustelut) =>
+          updateTutkintoTaiOpintoAction(
+            {
+              ...tutkintoTaiOpinto,
+              kielteisenPaatoksenPerustelut: perustelut,
+            },
             index,
           )
         }
         t={t}
         paatosTyyppi={paatosTieto.paatosTyyppi}
         sovellettuLaki={paatosTieto.sovellettuLaki}
+        myonteisenPaatoksenKentat={
+          <LisavaatimusComponent
+            t={t}
+            tutkintoTaiOpinto={tutkintoTaiOpinto.tutkintoTaiOpinto}
+            lisavaatimukset={
+              tutkintoTaiOpinto.myonteisenPaatoksenLisavaatimukset
+            }
+            updateLisavaatimukset={(lisavaatimukset) =>
+              updateTutkintoTaiOpintoAction(
+                {
+                  ...tutkintoTaiOpinto,
+                  myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+                },
+                index,
+              )
+            }
+          />
+        }
       />
     </Stack>
   );
