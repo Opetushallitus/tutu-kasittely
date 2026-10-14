@@ -1,16 +1,18 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Button, AccordionDetails, useTheme, Stack } from '@mui/material';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import { Box, Button, AccordionDetails, useTheme } from '@mui/material';
 import {
   OphTypography,
+  ophColors,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
+import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
 interface KasittelyDetailsProps {
   kasittely: YhteinenKasittely;
@@ -21,6 +23,12 @@ interface KasittelyDetailsProps {
   user: User | null;
 }
 
+enum ViestinYTyyppi {
+  kysymys,
+  vastaus,
+  lisakysymys,
+}
+
 const vastaamatonKysymysMinulle = (
   user: User | null,
   kasittely: YhteinenKasittely,
@@ -28,40 +36,54 @@ const vastaamatonKysymysMinulle = (
   if (!user) {
     return false;
   }
-  return !kasittely.vastattu && user.userOid === kasittely.vastaanottajaOid;
+  const viimeinenViestiOnKysymys =
+    kasittely.jatkoKasittelyt?.length &&
+    kasittely.jatkoKasittelyt?.length % 2 === 0;
+
+  const viimeisinViesti =
+    kasittely.jatkoKasittelyt?.length === 0
+      ? kasittely.aloitusViesti
+      : kasittely.jatkoKasittelyt?.at(-1);
+
+  if (
+    viimeinenViestiOnKysymys &&
+    viimeisinViesti?.vastaanottajaOid === user.userOid
+  ) {
+    return true;
+  }
+  return false;
 };
 
 export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   kasittely,
   answers,
   handleOpenModal,
-  handleChange,
   handleSend,
+  handleChange,
   user,
 }) => {
   const theme = useTheme();
   const { t } = useTranslations();
+  const vastaamatta = vastaamatonKysymysMinulle(user, kasittely);
 
   return (
-    <AccordionDetails data-testid={`kasittely-details-${kasittely.id}`}>
-      <KysymysJaVastaus
-        kasittely={kasittely}
-        answers={answers}
-        handleChange={handleChange}
-        handleSend={handleSend}
-        user={user}
-      />
-      {kasittely.jatkoKasittelyt?.map((jatkoKasittely) => (
-        <KysymysJaVastaus
-          key={jatkoKasittely.id}
-          luotu={jatkoKasittely.luotu}
-          kasittely={jatkoKasittely}
+    <AccordionDetails
+      data-testid={`kasittely-details-${kasittely.aloitusViesti.id}`}
+      sx={{ width: '100%' }}
+    >
+      <ViestiBox viesti={kasittely.aloitusViesti} index={-1} />
+      {kasittely.jatkoKasittelyt?.map((jatkoKasittely, index) => (
+        <ViestiBox viesti={jatkoKasittely} index={index} />
+      ))}
+      {vastaamatta && (
+        <VastausInput
+          id={kasittely.aloitusViesti.id || ''}
           answers={answers}
-          handleChange={handleChange}
           handleSend={handleSend}
+          handleChange={handleChange}
           user={user}
         />
-      ))}
+      )}
       <Box
         sx={{
           marginBottom: theme.spacing(2),
@@ -77,113 +99,145 @@ export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
   );
 };
 
-interface KysymysJaVastausProps {
-  luotu?: string;
-  kasittely: YhteinenKasittely;
+interface VastausInputProps {
+  id: string;
   answers: Record<string, string>;
-  handleChange: (id: string, value: string) => void;
   handleSend: (id: string, laheta?: boolean) => void;
+  handleChange: (id: string, value: string) => void;
   user: User | null;
 }
 
-const KysymysJaVastaus: React.FC<KysymysJaVastausProps> = ({
-  luotu,
-  kasittely,
+const VastausInput: React.FC<VastausInputProps> = ({
+  id,
   answers,
-  handleChange,
   handleSend,
+  handleChange,
   user,
 }) => {
-  const theme = useTheme();
   const { t } = useTranslations();
+  const { data: esittelijat } = useEsittelijat();
 
-  const vastausToShow: string | undefined =
-    answers[kasittely.id!] ?? kasittely.vastaus;
+  const vastaaja = esittelijat.find(
+    (esittelija) => esittelija.esittelijaOid === user?.userOid,
+  );
+  const name = `${vastaaja?.etunimi} ${vastaaja?.sukunimi}`;
+  const vastausToShow: string | undefined = answers[id];
 
   return (
-    <React.Fragment key={kasittely.id}>
+    <React.Fragment key={id}>
       <Box
         sx={{
-          borderBottom: DEFAULT_BOX_BORDER,
-          paddingBottom: theme.spacing(4),
-          paddingLeft: theme.spacing(0.5),
+          border: DEFAULT_BOX_BORDER,
+          borderRadius: '4px',
+          padding: '16px',
+          width: '85%',
+          marginBottom: '24px',
+          marginLeft: '20px',
+          backgroundColor: `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(ophColors.lightBlue2.slice(3, 5), 16)}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.25)`,
         }}
       >
-        <Stack direction="row">
-          <Box style={{ flex: 3, overflow: 'hidden' }}>
-            <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-              {t('hakemus.yhteinenkasittely.kysymysTyoparille')}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+            {t('hakemus.yhteinenkasittely.tyoparinVastaus')}
+          </OphTypography>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <OphTypography
+              variant="body1"
+              sx={{ color: ophColors.grey700, paddingRight: '5px' }}
+            >
+              {name}
+            </OphTypography>
+            <AccessTimeFilledIcon sx={{ color: ophColors.yellow1 }} />
+            <OphTypography
+              variant="body1"
+              sx={{ color: ophColors.grey700, paddingLeft: '5px' }}
+            >
+              {t('yhteinenKasittely.vastaamatta')}
             </OphTypography>
           </Box>
-          {luotu !== undefined ? (
-            <Box style={{ flex: 1 }}>
-              <OphTypography
-                variant="body2"
-                sx={{ paddingLeft: theme.spacing(1.5) }}
-              >
-                {formatHelsinki(luotu, 'd.M.yyyy')}
-              </OphTypography>
-            </Box>
-          ) : null}
-        </Stack>
-        <OphTypography
-          variant="body1"
-          sx={{ marginBottom: theme.spacing(4) }}
-          data-testid={`kysymys-details-${kasittely.id}`}
-        >
-          {kasittely.kysymys}
-        </OphTypography>
-        <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-          {t('hakemus.yhteinenkasittely.tyopari')}
-        </OphTypography>
-        <OphTypography variant="body1">{kasittely.vastaanottaja}</OphTypography>
-        {vastaamatonKysymysMinulle(user, kasittely) ? (
-          <OphInputFormField
-            label={`${t('hakemus.yhteinenkasittely.tyoparinVastaus')} *`}
-            fullWidth
-            multiline
-            minRows={4}
-            value={vastausToShow ?? ''}
-            onChange={(e) => handleChange(kasittely.id!, e.target.value)}
-            sx={{ width: '90%', marginTop: theme.spacing(4) }}
-            data-testid={`kysymys-details-${kasittely.id}__vastaus-field`}
-          />
-        ) : (
-          kasittely.vastattu && (
-            <>
-              <OphTypography sx={{ marginTop: theme.spacing(4) }}>
-                {kasittely.vastaus ?? ''}
-              </OphTypography>
-              <Stack direction="row" sx={{ mt: 2 }}>
-                <InfoOutlinedIcon sx={{ mr: 1 }} />
-                <OphTypography sx={{ mr: 1 }}>
-                  {t('hakemus.yhteinenkasittely.vastauksenLahetti.label')}
-                </OphTypography>
-                <OphTypography
-                  sx={{ mr: 1 }}
-                >{`${kasittely.vastaanottaja},`}</OphTypography>
-                <OphTypography sx={{ mr: 1 }}>
-                  {kasittely.vastattu
-                    ? formatHelsinki(kasittely.vastattu, 'd.M.yyyy HH:mm')
-                    : ''}
-                </OphTypography>
-              </Stack>
-            </>
-          )
-        )}
+        </Box>
+        <OphInputFormField
+          fullWidth
+          multiline
+          minRows={4}
+          value={vastausToShow ?? ''}
+          onChange={(e) => handleChange(id!, e.target.value)}
+          sx={{ width: '100%', marginTop: '5px' }}
+          data-testid={`kysymys-details-${id}__vastaus-field`}
+        />
+        <Box sx={{ marginTop: '16px' }}>
+          <Button
+            variant="contained"
+            onClick={() => handleSend(id!, true)}
+            data-testid={`kysymys-details-${id}__vastaus-send`}
+          >
+            {t('hakemus.yhteinenkasittely.lahetaVastaus')}
+          </Button>
+        </Box>
+      </Box>
+    </React.Fragment>
+  );
+};
 
-        {vastaamatonKysymysMinulle(user, kasittely) ? (
-          <Box sx={{ marginTop: theme.spacing(4) }}>
-            <Button
-              variant="contained"
-              disabled={!vastausToShow}
-              onClick={() => handleSend(kasittely.id!, true)}
-              data-testid={`kysymys-details-${kasittely.id}__vastaus-send`}
-            >
-              {t('hakemus.yhteinenkasittely.lahetaVastaus')}
-            </Button>
-          </Box>
-        ) : null}
+interface ViestiProps {
+  viesti: Viesti;
+  index: number;
+}
+
+const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
+  useTheme();
+  const { t } = useTranslations();
+
+  const nameDate = `${viesti.lahettaja} ${formatHelsinki(viesti.luotu || '', 'd.M.yyyy HH:mm')}`;
+  const tyyppi =
+    index < 0
+      ? ViestinYTyyppi.kysymys
+      : index % 2 === 0
+        ? ViestinYTyyppi.vastaus
+        : ViestinYTyyppi.lisakysymys;
+
+  return (
+    <React.Fragment key={viesti.id}>
+      <Box
+        sx={{
+          border: DEFAULT_BOX_BORDER,
+          borderRadius: '4px',
+          padding: '16px',
+          width: '85%',
+          marginBottom: '24px',
+          marginLeft:
+            tyyppi === ViestinYTyyppi.kysymys ||
+            tyyppi === ViestinYTyyppi.lisakysymys
+              ? 0
+              : '20px',
+          backgroundColor:
+            tyyppi === ViestinYTyyppi.vastaus
+              ? `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(ophColors.lightBlue2.slice(3, 5), 16)}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.75)`
+              : ophColors.white,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+            marginBottom: '16px',
+          }}
+        >
+          <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
+            {t(`hakemus.yhteinenkasittely.tyyppi.${ViestinYTyyppi[tyyppi]}`)}
+          </OphTypography>
+          <OphTypography variant="body1" sx={{ color: ophColors.grey700 }}>
+            {nameDate}
+          </OphTypography>
+        </Box>
+        {viesti.viesti}
       </Box>
     </React.Fragment>
   );
