@@ -183,13 +183,13 @@ class YkViestiService(
       )
   }
 
-  def luoHakemuksenYkViesti(
+  def tallennaHakemuksenYkViesti(
     hakemusOid: String,
     user: User,
     ykKysymys: YkKysymysDTO
   ): Unit = {
 
-    ykViestiRepository.luoHakemuksenYkViesti(
+    ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         parentId = ykKysymys.parentId.map(UUID.fromString),

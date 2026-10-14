@@ -61,7 +61,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
     )
 
     // Act
-    ykViestiService.luoHakemuksenYkViesti(
+    ykViestiService.tallennaHakemuksenYkViesti(
       hakemusOid = hakemusOid,
       user = user,
       ykKysymys = ykKysymysDto
@@ -83,7 +83,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
       authorities = List.empty,
       asiointikieli = None
     )
-    val existingYkViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val existingYkViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
@@ -123,7 +123,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
       authorities = List.empty,
       asiointikieli = None
     )
-    val existingYkViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val existingYkViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
