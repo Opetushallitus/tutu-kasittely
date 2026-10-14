@@ -644,7 +644,7 @@ def haeAsiakirjat(
 
   val esittelijanHuomiotMaybe: Option[String] = hakemusMaybe
     .flatMap(_.asiakirja)
-    .flatMap(_.esittelijanHuomioita)
+    .flatMap(_.huomiotMuistioon)
     .map(sisalto =>
       val label = translationService.getTranslation(FI, "perustelumuistio.asiakirjat.esittelijanHuomiot.label")
       s"$label\n$sisalto".trim
