@@ -26,6 +26,7 @@ class YkViestiRepository extends BaseResultHandlers {
         hakemusOid = HakemusOid(r.nextString()),
         asiatunnus = Option(r.nextString()),
         lahettajaOid = Option(r.nextString()),
+        lahettaja = Option(r.nextString()),
         vastaanottajaOid = Option(r.nextString()),
         viesti = Option(r.nextString()),
         hakija = r.nextString(),
@@ -148,7 +149,7 @@ class YkViestiRepository extends BaseResultHandlers {
     }
   }
 
-  def luoHakemuksenYkViesti(
+  def tallennaHakemuksenYkViesti(
     ykViesti: YkViesti
   ): UUID = {
     try {
@@ -221,6 +222,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.hakemus_oid,
           h.asiatunnus,
           v.lahettaja_oid,
+          COALESCE(e.kutsumanimi, '') || ' ' || COALESCE(e.sukunimi, ''),
           v.vastaanottaja_oid,
           v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
@@ -232,6 +234,7 @@ class YkViestiRepository extends BaseResultHandlers {
           a.avain
         FROM
           yk_viesti v
+        LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
         WHERE

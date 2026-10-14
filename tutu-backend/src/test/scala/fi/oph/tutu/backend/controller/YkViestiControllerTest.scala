@@ -63,7 +63,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
       "testi"
     )
 
-    ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    ykViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         parentId = None,
