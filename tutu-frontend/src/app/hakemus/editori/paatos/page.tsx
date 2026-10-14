@@ -27,7 +27,16 @@ import { Paatospohja } from '@/src/lib/types/paatosteksti';
 import { handleFetchError } from '@/src/lib/utils';
 
 const copy2Clipboard = (editor: LexicalEditor) =>
-  navigator.clipboard.writeText(exportMarkdown(editor)).finally(() => {});
+  navigator.clipboard
+    .write([
+      new ClipboardItem({
+        'text/html': new Blob([exportHtml(editor)], { type: 'text/html' }),
+        'text/plain': new Blob([exportMarkdown(editor)], {
+          type: 'text/plain',
+        }),
+      }),
+    ])
+    .finally(() => {});
 
 export default function PaatosEditorPage() {
   const { t } = useTranslations();
