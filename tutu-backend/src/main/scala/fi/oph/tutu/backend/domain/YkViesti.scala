@@ -55,27 +55,21 @@ case class DbYkViesti(
   )
   luotu: Option[LocalDateTime],
   @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
+    example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 50
+    maxLength = 36
   )
-  kysymys_luettu: Option[LocalDateTime],
-  @(Schema @field)(
-    example = "2025-06-14T10:59:47.597",
-    requiredMode = RequiredMode.NOT_REQUIRED,
-    maxLength = 50
-  )
-  vastaus_luettu: Option[LocalDateTime],
+  luettu: Option[Seq[UUID]],
   @(Schema @field)(
     example = "Viestin alkuperäinen kysymys",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  kysymys: Option[String],
+  viesti: Option[String],
   @(Schema @field)(
-    example = "Työparin vastaus",
+    example = "Viestin aihe",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  vastaus: Option[String]
+  aihe: Option[String]
 )
 
 case class YkViesti(
@@ -84,19 +78,18 @@ case class YkViesti(
   hakemusOid: HakemusOid,
   asiatunnus: Option[String] = None,
   lahettajaOid: Option[String] = None,
+  lahettaja: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   vastaanottaja: Option[String] = None,
-  vastattu: Option[LocalDateTime] = None,
-  kysymysLuettu: Option[LocalDateTime] = None,
-  vastausLuettu: Option[LocalDateTime] = None,
-  kysymys: Option[String] = None,
-  vastaus: Option[String] = None,
+  viesti: Option[String] = None,
   hakija: String,
   jatkoKasittelyt: Seq[YkViesti] = Seq.empty,
   luoja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
-  muokattu: Option[LocalDateTime] = None
+  muokattu: Option[LocalDateTime] = None,
+  luettu: Option[Seq[UUID]] = None,
+  aihe: Option[String] = None
 )
 
 case class YkViestiListItem(
@@ -107,17 +100,17 @@ case class YkViestiListItem(
   hakija: String,
   status: ViestinTila,
   lahettajaOid: Option[String] = None,
+  lahettaja: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
-  kysymysLuettu: Option[LocalDateTime] = None,
-  vastausLuettu: Option[LocalDateTime] = None,
-  kysymys: Option[String] = None,
-  vastaus: Option[String] = None
+  luettu: Boolean,
+  viesti: Option[String] = None,
+  aihe: Option[String] = None
 )
 
 case class YkKysymysDTO(
   parentId: Option[String] = None,
-  kysymys: Option[String] = None,
+  viesti: Option[String] = None,
   vastaanottajaOid: Option[String] = None
 )
 
@@ -125,4 +118,9 @@ case class YkVastausDTO(
   id: Option[String] = None,
   vastaus: Option[String] = None,
   laheta: Option[Boolean] = None
+)
+
+case class YkViestiKetju(
+  aloitusViesti: YkViesti,
+  jatkoKasittelyt: Seq[YkViesti] = Seq.empty
 )

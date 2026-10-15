@@ -1,11 +1,13 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionSummary, Box } from '@mui/material';
+import { useTheme } from '@mui/system';
 import { OphTypography, ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { KasittelyDetails } from './KasittelyDetails';
 
 import { formatHelsinki } from '@/src/lib/dateUtils';
+import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { User } from '@/src/lib/types/user';
 import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
@@ -32,6 +34,8 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
   handleClosePanel,
   user,
 }) => {
+  const { t } = useTranslations();
+  const theme = useTheme();
   const handleAccordionChange =
     (panelId?: string) => (_event: React.SyntheticEvent, expanded: boolean) => {
       if (expanded) {
@@ -43,61 +47,82 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
 
   return (
     <>
-      {kasittelyt.map((kasittely) => (
-        <Accordion
-          key={kasittely.id}
-          expanded={
-            kasittely.id ? expandedPanels.includes(kasittely.id) : false
-          }
-          onChange={handleAccordionChange(kasittely.id)}
-        >
-          <AccordionSummary
-            expandIcon={
-              <ExpandMoreIcon
-                fontSize="small"
-                sx={{ color: ophColors.black }}
-              />
+      {kasittelyt.map((kasittely) => {
+        const aihe = kasittely.aloitusViesti?.aihe
+          ? t(`hakemus.yhteinenkasittely.aihe.${kasittely.aloitusViesti?.aihe}`)
+          : '';
+        return (
+          <Accordion
+            key={kasittely.aloitusViesti?.id}
+            expanded={
+              kasittely.aloitusViesti?.id
+                ? expandedPanels.includes(kasittely.aloitusViesti?.id)
+                : false
             }
-            sx={{
-              '& .MuiAccordionSummary-expandIconWrapper': { order: -1 },
-              padding: 0,
-              display: 'flex',
-              width: '100%',
-            }}
+            onChange={handleAccordionChange(kasittely.aloitusViesti?.id)}
           >
-            <Box style={{ flex: 3, overflow: 'hidden' }}>
-              <OphTypography
-                variant="body1"
-                sx={{
-                  color: ophColors.blue2,
-                  fontWeight: 400,
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                }}
-                data-testid={`kysymys-${kasittely.id}`}
-              >
-                {kasittely.kysymys}
-              </OphTypography>
-            </Box>
-            <Box style={{ flex: 1 }}>
-              <OphTypography variant="body2">
-                {kasittely.luotu
-                  ? formatHelsinki(kasittely.luotu, 'd.M.yyyy')
-                  : ''}
-              </OphTypography>
-            </Box>
-          </AccordionSummary>
-          <KasittelyDetails
-            kasittely={kasittely}
-            answers={answers}
-            handleOpenModal={handleOpenModal}
-            handleChange={handleChange}
-            handleSend={handleSend}
-            user={user}
-          />
-        </Accordion>
-      ))}
+            <AccordionSummary
+              expandIcon={
+                <ExpandMoreIcon
+                  fontSize="small"
+                  sx={{ color: ophColors.black }}
+                />
+              }
+              sx={{
+                '& .MuiAccordionSummary-expandIconWrapper': { order: -1 },
+                padding: 0,
+                display: 'flex',
+                width: '100%',
+              }}
+            >
+              <Box style={{ flex: 3, overflow: 'hidden' }}>
+                <OphTypography
+                  variant="body1"
+                  sx={{
+                    color: ophColors.blue2,
+                    fontWeight: 400,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                  data-testid={`kysymys-${kasittely.aloitusViesti?.id}`}
+                >
+                  {aihe}
+                </OphTypography>
+              </Box>
+              <Box style={{ flex: 1 }}>
+                <OphTypography
+                  variant="body1"
+                  sx={{ color: ophColors.grey700 }}
+                >
+                  {kasittely.aloitusViesti?.lahettaja}
+                </OphTypography>
+              </Box>
+              <Box style={{ flex: 2, marginLeft: theme.spacing(2) }}>
+                <OphTypography
+                  variant="body1"
+                  sx={{ color: ophColors.grey700 }}
+                >
+                  {kasittely.aloitusViesti?.luotu
+                    ? formatHelsinki(
+                        kasittely.aloitusViesti?.luotu,
+                        'd.M.yyyy HH:mm',
+                      )
+                    : ''}
+                </OphTypography>
+              </Box>
+            </AccordionSummary>
+            <KasittelyDetails
+              kasittely={kasittely}
+              answers={answers}
+              handleOpenModal={handleOpenModal}
+              handleChange={handleChange}
+              handleSend={handleSend}
+              user={user}
+            />
+          </Accordion>
+        );
+      })}
     </>
   );
 };

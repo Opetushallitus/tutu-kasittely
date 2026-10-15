@@ -56,12 +56,12 @@ class YkViestiServiceTest extends IntegrationTestBase {
       asiointikieli = None
     )
     val ykKysymysDto = YkKysymysDTO(
-      kysymys = Some("Kysymys"),
+      viesti = Some("Kysymys"),
       vastaanottajaOid = Some("VastaanottajaOid-1")
     )
 
     // Act
-    ykViestiService.luoHakemuksenYkViesti(
+    ykViestiService.tallennaHakemuksenYkViesti(
       hakemusOid = hakemusOid,
       user = user,
       ykKysymys = ykKysymysDto
@@ -83,13 +83,13 @@ class YkViestiServiceTest extends IntegrationTestBase {
       authorities = List.empty,
       asiointikieli = None
     )
-    val existingYkViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val existingYkViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some("UserOid-1"),
         vastaanottajaOid = Some("VastaanottajaOid-1"),
-        kysymys = Some("Kysymys"),
+        viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
         hakija = null
       )
@@ -123,13 +123,13 @@ class YkViestiServiceTest extends IntegrationTestBase {
       authorities = List.empty,
       asiointikieli = None
     )
-    val existingYkViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val existingYkViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some("UserOid-1"),
         vastaanottajaOid = Some("VastaanottajaOid-1"),
-        kysymys = Some("Kysymys"),
+        viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
         hakija = null
       )

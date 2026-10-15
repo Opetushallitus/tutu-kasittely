@@ -113,6 +113,7 @@ interface JatkoKasittelyModalProps {
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
+  setParentId: (id: string) => void;
 }
 
 export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
@@ -123,12 +124,16 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
   handleSend,
   setTyopari,
   setKysymys,
+  setParentId,
 }) => {
   const { t } = useTranslations();
 
+  setParentId(parentKasittely.aloitusViesti.id ?? '');
+  const jatkokysymys = parentKasittely.jatkoKasittelyt?.at(-1);
   const filteredEsittelijat = esittelijat.filter(
     (esittelija) =>
-      esittelija.esittelijaOid !== parentKasittely.vastaanottajaOid,
+      esittelija.esittelijaOid !==
+      parentKasittely.aloitusViesti.vastaanottajaOid,
   );
 
   return (
@@ -173,9 +178,7 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
           <OphTypography variant="h2">
             {t('hakemus.yhteinenkasittely.jatkoKasittely.alkuperainenKysymys')}
           </OphTypography>
-          <OphTypography variant="body1">
-            {parentKasittely.kysymys}
-          </OphTypography>
+          <OphTypography variant="body1">{jatkokysymys?.viesti}</OphTypography>
 
           <OphInputFormField
             multiline
@@ -210,6 +213,7 @@ interface KasittelyModalProps {
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
+  setParentId: (id: string) => void;
 }
 
 export const KasittelyModal: React.FC<KasittelyModalProps> = ({
@@ -220,6 +224,7 @@ export const KasittelyModal: React.FC<KasittelyModalProps> = ({
   handleSend,
   setTyopari,
   setKysymys,
+  setParentId,
 }) => {
   return !parentKasittely ? (
     <UusiKasittelyModal
@@ -239,6 +244,7 @@ export const KasittelyModal: React.FC<KasittelyModalProps> = ({
       handleSend={handleSend}
       setTyopari={setTyopari}
       setKysymys={setKysymys}
+      setParentId={setParentId}
     />
   );
 };

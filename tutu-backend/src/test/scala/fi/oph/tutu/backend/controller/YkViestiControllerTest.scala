@@ -62,14 +62,14 @@ class YkViestiControllerTest extends IntegrationTestBase {
       "testi"
     )
 
-    ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    ykViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         parentId = None,
         hakemusOid = HakemusOid("hakemus-333"),
         lahettajaOid = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
-        kysymys = Some("Kysymys body"),
+        viesti = Some("Kysymys body"),
         hakija = null
       )
     )

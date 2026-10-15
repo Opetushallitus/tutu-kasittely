@@ -1,31 +1,31 @@
-export type YhteinenKasittely = {
+export type Viesti = {
   id?: string;
   parentId?: string;
-  kysymys?: string;
-  vastaus?: string;
-  kysymysLuettu?: string | null;
-  vastausLuettu?: string | null;
+  asiatunnus?: string;
   lahettajaOid?: string;
+  lahettaja?: string;
   vastaanottajaOid?: string;
   vastaanottaja?: string;
   luotu?: string;
-  vastattu?: string;
-  jatkoKasittelyt?: YhteinenKasittely[];
+  luettu?: string[] | null;
+  viesti: string;
+  hakija?: string;
+  aihe?: string;
+};
+
+export type LahtevaViesti = {
+  parentId: string;
+  viesti: string;
+  vastaanottajOid: string;
+  aihe?: string;
+};
+
+export type YhteinenKasittely = {
+  aloitusViesti: Viesti;
+  jatkoKasittelyt?: Viesti[];
 };
 
 export type YhteinenKasittelyDTO = {
-  id: string;
-  parentId?: string;
-  asiatunnus?: string;
-  lahettajaOid: string;
-  vastaanottajaOid?: string;
-  vastaanottaja?: string;
-  luotu: string;
-  vastattu?: string;
-  kysymysLuettu?: string | null;
-  vastausLuettu?: string | null;
-  kysymys: string;
-  vastaus?: string;
-  hakija: string;
-  jatkoKasittelyt?: YhteinenKasittely[];
+  aloitusViesti: Viesti;
+  jatkoKasittelyt?: Viesti[];
 };

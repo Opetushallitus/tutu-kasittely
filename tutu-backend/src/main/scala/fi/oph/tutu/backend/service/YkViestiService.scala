@@ -23,13 +23,28 @@ class YkViestiService(
     val lahetetyt = ykViestiRepository.haeYkLahetetytViestit(userOid)
 
     // Suodatetaan uudet saapuneet viestit
-    val uudetViestit = saapuneet.count(viesti => viesti.kysymysLuettu.isEmpty)
+    val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
     // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    val uudetVastaukset = lahetetyt
-      .count(viesti => viesti.vastaus.nonEmpty && viesti.vastausLuettu.isEmpty)
+    // val uudetVastaukset = lahetetyt
+    // .count(viesti => viesti.vastaus.nonEmpty && viesti.vastausLuettu.isEmpty)
 
-    uudetViestit > 0 || uudetVastaukset > 0
+    uudetViestit > 0 // || uudetVastaukset > 0
+  }
+
+  def haeHakemuksenYkViestiketjut(
+    hakemusOid: String
+  ): Seq[YkViestiKetju] = {
+    val ykViestit      = ykViestiRepository.haeHakemuksenYkViestit(hakemusOid)
+    val aloitusViestit = ykViestit.filter(_.parentId.isEmpty).sortBy(_.luotu)
+
+    aloitusViestit.map { viesti =>
+      val jatkoKasittelyt = ykViestit.filter(_.parentId.contains(viesti.id)).sortBy(_.luotu)
+      YkViestiKetju(
+        aloitusViesti = viesti,
+        jatkoKasittelyt = jatkoKasittelyt
+      )
+    }
   }
 
   def haeYkSaapuneetViestit(
@@ -41,9 +56,8 @@ class YkViestiService(
     val ykViestiList = saapuneetViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val status: ViestinTila =
-          if (viesti.vastattu.isEmpty) ViestinTila.vastaamatta
-          else ViestinTila.vastattu
+        val status: ViestinTila = ViestinTila.vastattu
+        val olenLukenut         = viesti.luettu.contains(userOid)
         Some(
           YkViestiListItem(
             id = viesti.id,
@@ -54,11 +68,10 @@ class YkViestiService(
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
-            kysymysLuettu = viesti.kysymysLuettu,
-            vastausLuettu = viesti.vastausLuettu,
-            kysymys = viesti.kysymys,
-            vastaus = viesti.vastaus,
-            status = status
+            luettu = olenLukenut,
+            viesti = viesti.viesti,
+            status = status,
+            aihe = viesti.aihe
           )
         )
       }
@@ -97,13 +110,11 @@ class YkViestiService(
     val ykViestiList = lahetetytViestit
       .filter(viesti => viesti.parentId.isEmpty)
       .flatMap { viesti =>
-        val vastattu      = viesti.vastattu.nonEmpty
-        val vastausLuettu = viesti.vastausLuettu.nonEmpty
-
-        val status: ViestinTila =
-          if (vastattu && !vastausLuettu) ViestinTila.uusiVastaus
-          else if (vastattu) ViestinTila.vastattu
-          else ViestinTila.vastaamatta
+        val status: ViestinTila = ViestinTila.vastattu
+        val luettu              = viesti.luettu.contains(viesti.vastaanottajaOid)
+        // if (vastattu && !vastausLuettu) ViestinTila.uusiVastaus
+        // else if (vastattu) ViestinTila.vastattu
+        // else ViestinTila.vastaamatta
 
         Some(
           YkViestiListItem(
@@ -115,10 +126,8 @@ class YkViestiService(
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
-            kysymysLuettu = viesti.kysymysLuettu,
-            vastausLuettu = viesti.vastausLuettu,
-            kysymys = viesti.kysymys,
-            vastaus = viesti.vastaus,
+            luettu = luettu,
+            viesti = viesti.viesti,
             status = status
           )
         )
@@ -157,9 +166,7 @@ class YkViestiService(
       .haeHakemuksenYkViestit(hakemusOid)
       .map(ykViesti =>
         ykViesti.copy(
-          vastaus =
-            if ykViesti.vastattu.nonEmpty || ykViesti.vastaanottajaOid.contains(user.userOid) then ykViesti.vastaus
-            else None
+          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
         )
       )
 
@@ -176,20 +183,20 @@ class YkViestiService(
       )
   }
 
-  def luoHakemuksenYkViesti(
+  def tallennaHakemuksenYkViesti(
     hakemusOid: String,
     user: User,
     ykKysymys: YkKysymysDTO
   ): Unit = {
 
-    ykViestiRepository.luoHakemuksenYkViesti(
+    ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         parentId = ykKysymys.parentId.map(UUID.fromString),
         hakemusOid = HakemusOid(hakemusOid),
         lahettajaOid = Some(user.userOid),
         vastaanottajaOid = ykKysymys.vastaanottajaOid,
-        kysymys = ykKysymys.kysymys,
+        viesti = ykKysymys.viesti,
         hakija = null,
         luoja = Some(user.userOid)
       )
@@ -205,13 +212,10 @@ class YkViestiService(
       throw NotFoundException(s"Yhteiskäsittelyn viesti id is null")
     }
 
-    ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
-      case Some(ykViesti) =>
-        val vastattu = if ykVastaus.laheta.getOrElse(false) then Some(LocalDateTime.now()) else ykViesti.vastattu
+    val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
+      case Some(ykViesti) => {
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
-            vastaus = ykVastaus.vastaus,
-            vastattu = vastattu,
             muokkaaja = Some(user.userOid)
           )
         )
@@ -224,26 +228,27 @@ class YkViestiService(
     viestiId: String,
     user: User
   ): Unit = {
-    ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
-      case Some(ykViesti) =>
-        val vastausLuettavissa = ykViesti.vastattu.nonEmpty
-        val vastaustaEiLuettu  = ykViesti.vastausLuettu.isEmpty
+    val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
+      case Some(ykViesti) => {
+        val vastausLuettavissa = false
+        val vastaustaEiLuettu  = false
         val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
 
-        val kysymysLuettavissa    = ykViesti.kysymys.nonEmpty
-        val kysymystaEiLuettu     = ykViesti.kysymysLuettu.isEmpty
+        val viestiLuettavissa     = ykViesti.viesti.nonEmpty
+        val viestistäEiLuettu     = ykViesti.luettu.isEmpty || !ykViesti.luettu.contains(user.userOid)
         val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
 
         val vastausLuettuMaybe =
           if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) Some(LocalDateTime.now()) else None
         val kysymysLuettuMaybe =
-          if (kysymystaEiLuettu && kysymysLuettavissa && vastaanottajaLukijana) Some(LocalDateTime.now()) else None
+          if (viestistäEiLuettu && viestiLuettavissa && vastaanottajaLukijana)
+            Some(ykViesti.luettu.getOrElse(Seq.empty) :+ UUID.fromString(user.userOid))
+          else None
 
-        if (vastausLuettuMaybe.nonEmpty || kysymysLuettuMaybe.nonEmpty) {
+        if (vastausLuettuMaybe.nonEmpty || ykViesti.luettu.nonEmpty) {
           ykViestiRepository.muokkaaHakemuksenYkViestia(
             ykViesti.copy(
-              vastausLuettu = vastausLuettuMaybe,
-              kysymysLuettu = kysymysLuettuMaybe,
+              luettu = kysymysLuettuMaybe,
               muokkaaja = Some(user.userOid)
             )
           )

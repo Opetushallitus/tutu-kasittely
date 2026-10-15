@@ -124,7 +124,7 @@ class YkViestiController(
     path = Array("hakemus/{hakemusOid}/yhteinenkasittely"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
-  def haeHakemuksenYkViestit(
+  def haeHakemuksenYkViestiketjut(
     @PathVariable("hakemusOid") hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
@@ -139,7 +139,7 @@ class YkViestiController(
         )
       } else {
         Try {
-          ykViestiService.haeHakemuksenYkViestit(hakemusOid, user)
+          ykViestiService.haeHakemuksenYkViestiketjut(hakemusOid)
         } match {
           case Success(ykViestit) =>
             val response = mapper.writeValueAsString(ykViestit.map(haeNimet))
@@ -185,8 +185,7 @@ class YkViestiController(
               HttpStatus.BAD_REQUEST
             )
         }
-
-        if (ykKysymys.vastaanottajaOid.isEmpty || ykKysymys.kysymys.isEmpty) {
+        if (ykKysymys.vastaanottajaOid.isEmpty || ykKysymys.viesti.isEmpty) {
           LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit")
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
@@ -195,7 +194,7 @@ class YkViestiController(
         }
 
         Try {
-          ykViestiService.luoHakemuksenYkViesti(
+          ykViestiService.tallennaHakemuksenYkViesti(
             hakemusOid,
             user,
             ykKysymys
@@ -215,8 +214,72 @@ class YkViestiController(
     }
   }
 
-  @PatchMapping(
+  @PostMapping(
     path = Array("hakemus/{hakemusOid}/yhteinenkasittely/{viestiId}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def vastausviestiYkViestiin(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("viestiId") viestiId: String,
+    @RequestBody ykVastausBytes: Array[Byte],
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        var ykVastaus: YkVastausDTO = null
+        try ykVastaus = mapper.readValue(ykVastausBytes, classOf[YkVastausDTO])
+        catch {
+          case e: Exception =>
+            LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
+            return errorMessageMapper.mapPlainErrorMessage(
+              RESPONSE_400_DESCRIPTION,
+              HttpStatus.BAD_REQUEST
+            )
+        }
+
+        if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
+          LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
+          )
+        }
+
+        Try {
+          ykViestiService.tallennaHakemuksenYkViesti(
+            hakemusOid,
+            user,
+            ykKysymys = YkKysymysDTO(
+              parentId = Some(viestiId),
+              viesti = ykVastaus.vastaus,
+              vastaanottajaOid = None
+            )
+          )
+        } match {
+          case Success(_) =>
+            ResponseEntity.noContent().build()
+          case Failure(exception) =>
+            LOG.error("Yhteisen käsittelyn viestiin vastaaminen epäonnistui", exception)
+            errorMessageMapper.mapErrorMessage(exception)
+        }
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+
+  @PatchMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely/{viestiId}/obsolete"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def vastaaHakemuksenYkViestiin(
