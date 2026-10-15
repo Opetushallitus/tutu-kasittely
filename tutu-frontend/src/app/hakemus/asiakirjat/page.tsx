@@ -79,6 +79,7 @@ export default function AsiakirjaPage() {
     isSaving,
     isUpdateSuccess,
     updateError,
+    deleteError,
   } = useAsiakirjat(hakemusState.editedData!.hakemusOid);
 
   /* ----------------------------------------- */
@@ -86,7 +87,8 @@ export default function AsiakirjaPage() {
   useEffect(() => {
     handleFetchError(addToast, hakemusError, 'virhe.hakemuksenLataus', t);
     handleFetchError(addToast, updateError, 'virhe.tallennus', t);
-  }, [hakemusError, updateError, addToast, t]);
+    handleFetchError(addToast, deleteError, 'virhe.tallennus', t);
+  }, [hakemusError, updateError, deleteError, addToast, t]);
 
   useEffect(() => {
     if (isUpdateSuccess) {
