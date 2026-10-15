@@ -273,7 +273,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
             imiPyyntoLahetetty = Some(LocalDateTime.of(2020, 5, 15, 0, 0)),
             imiPyyntoVastattu = Some(LocalDateTime.of(2020, 6, 1, 0, 0))
           ),
-          esittelijanHuomioita = Some("Muistioon merkittävää tekstiä asiakirjoista -- body")
+          huomiotMuistioon = Some("Muistioon merkittävää tekstiä asiakirjoista -- body")
         )
       ),
       esittelijanHuomioita = None
