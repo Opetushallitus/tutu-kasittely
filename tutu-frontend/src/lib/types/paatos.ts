@@ -74,7 +74,7 @@ export type TutkintoTaiOpinto = {
   paatostietoId?: string;
   tutkintoTaiOpinto?: string;
   opetuskieli?: string;
-  myonteisenPaatoksenLisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
+  myonteisenPaatoksenLisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
 } & MyonteinenTaiKielteinenPaatos;
 
 export type OikeustieteenSuomiOpintojenAihealue = {
@@ -120,7 +120,7 @@ export type MyonteisenPaatoksenLisavaatimukset = {
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
-  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
+  lisavaatimukset: Partial<MyonteisenPaatoksenLisavaatimukset>,
 ) => void;
 
 export type KelpoisuudenLisavaatimusUpdateCallback = (
@@ -232,7 +232,7 @@ export type Kelpoisuus = {
   direktiivitaso?: Direktiivitaso | null;
   kansallisestiVaadittavaDirektiivitaso?: Direktiivitaso | null;
   direktiivitasoLisatiedot?: string | null;
-  myonteisenPaatoksenLisavaatimukset: KelpoisuudenLisavaatimukset;
+  myonteisenPaatoksenLisavaatimukset?: KelpoisuudenLisavaatimukset;
 } & MyonteinenTaiKielteinenPaatos;
 
 export type KorvaavaToimenpideDto = {

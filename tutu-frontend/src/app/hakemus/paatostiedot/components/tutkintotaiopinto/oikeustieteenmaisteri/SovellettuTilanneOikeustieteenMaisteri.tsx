@@ -19,15 +19,14 @@ import {
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   MyonteisenPaatoksenLisavaatimukset,
+  MyonteisenPaatoksenLisavaatimusUpdateCallback,
   OikeustieteenMaisteriLisavaatimukset,
 } from '@/src/lib/types/paatos';
 
 interface SovellettuTilanneOikeustieteenMaisteriProps {
   t: TFunction;
-  updateLisavaatimukset: (
-    updated: Partial<MyonteisenPaatoksenLisavaatimukset>,
-  ) => void;
-  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
+  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
+  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
 }
 
 const SOVELLETUT_TILANTEET_FOR_TALLINNA_OPINNOT = ['1', '1a', '1b', '2', '2a'];

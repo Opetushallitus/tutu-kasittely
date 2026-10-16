@@ -285,7 +285,10 @@ export const RinnastettavaTutkintoTaiOpintoComponent = ({
               updateTutkintoTaiOpintoAction(
                 {
                   ...tutkintoTaiOpinto,
-                  myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+                  myonteisenPaatoksenLisavaatimukset: {
+                    ...emptyMyonteisenPaatoksenLisavaatimukset(),
+                    ...lisavaatimukset,
+                  },
                 },
                 index,
               )

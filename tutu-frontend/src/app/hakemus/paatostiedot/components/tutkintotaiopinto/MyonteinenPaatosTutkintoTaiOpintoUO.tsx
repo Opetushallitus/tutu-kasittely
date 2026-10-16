@@ -40,6 +40,7 @@ import {
   ErotKoulutuksessa,
   KorvaavaToimenpide,
   MyonteisenPaatoksenLisavaatimukset,
+  MyonteisenPaatoksenLisavaatimusUpdateCallback,
   SuomessaSuoritettujenOpintojenHuomioiminen,
 } from '@/src/lib/types/paatos';
 
@@ -50,10 +51,8 @@ const Lisavalinnat = ({
   selectedEntity,
   erotKoulutuksessa,
 }: {
-  updateLisavaatimukset: (
-    updated: Partial<MyonteisenPaatoksenLisavaatimukset>,
-  ) => void;
-  lisavaatimukset: MyonteisenPaatoksenLisavaatimukset;
+  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
+  lisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
   t: TFunction;
   selectedEntity: ResolvedEntity;
   erotKoulutuksessa: ErotKoulutuksessa | undefined;

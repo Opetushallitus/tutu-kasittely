@@ -27,7 +27,7 @@ import {
 } from '@/src/lib/types/paatos';
 
 export type MyonteinenKelpoisuusPaatosProps = {
-  lisavaatimukset: KelpoisuudenLisavaatimukset;
+  lisavaatimukset?: KelpoisuudenLisavaatimukset | null;
   updateLisavaatimukset: KelpoisuudenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
   t: TFunction;

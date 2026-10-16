@@ -317,11 +317,11 @@ export const initOrUpdateOikeustieteenMaisteriOpinnot = (
 export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
   currentEntity: ResolvedEntity,
   updated: Partial<MyonteisenPaatoksenLisavaatimukset>,
-  current: MyonteisenPaatoksenLisavaatimukset,
+  current?: MyonteisenPaatoksenLisavaatimukset,
 ): MyonteisenPaatoksenLisavaatimukset => {
   if (
     updated.sovellettuTilanne &&
-    (current.sovellettuTilanne ?? null) !== updated.sovellettuTilanne
+    (current?.sovellettuTilanne ?? null) !== updated.sovellettuTilanne
   ) {
     return initOrUpdateTutkintoTaiOpintoMyonteinenUo(
       currentEntity,
@@ -336,17 +336,21 @@ export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
   if (currentEntity === ResolvedEntity.oikeustieteenMaisteri) {
     return {
       ...emptyMyonteisenPaatoksenLisavaatimukset(),
-      sovellettuTilanne: current.sovellettuTilanne ?? null,
+      sovellettuTilanne: current?.sovellettuTilanne ?? null,
       oikeustieteenMaisteriLisavaatimukset:
         initOrUpdateOikeustieteenMaisteriOpinnot({
           ...emptyOikeustieteenMaisterinOpinnot(),
-          ...current.oikeustieteenMaisteriLisavaatimukset,
+          ...current?.oikeustieteenMaisteriLisavaatimukset,
           ...updated.oikeustieteenMaisteriLisavaatimukset,
         }),
     };
   }
 
-  const tobe = { ...current, ...updated };
+  const tobe = {
+    ...emptyMyonteisenPaatoksenLisavaatimukset(),
+    ...current,
+    ...updated,
+  };
 
   if (EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity]) {
     tobe.erotKoulutuksessa = initOrUpdateErotKoulutuksessa(
@@ -354,7 +358,7 @@ export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
         ...emptyErotKoulutuksessaForModel(
           EROT_KOULUTUKSESSA_BY_ENTITY[currentEntity],
         ),
-        ...current.erotKoulutuksessa,
+        ...current?.erotKoulutuksessa,
       },
       updated.erotKoulutuksessa,
     );

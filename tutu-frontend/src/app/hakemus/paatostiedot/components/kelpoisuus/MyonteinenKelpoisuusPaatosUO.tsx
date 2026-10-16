@@ -30,7 +30,7 @@ import {
 } from '@/src/lib/types/paatos';
 
 type MyonteinenKelpoisuusPaatosUOProps = {
-  lisavaatimukset: KelpoisuudenLisavaatimukset;
+  lisavaatimukset?: KelpoisuudenLisavaatimukset | null;
   updateLisavaatimukset: KelpoisuudenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
 };
@@ -66,7 +66,7 @@ export const MyonteinenKelpoisuusPaatosUO: React.FC<
   ) => {
     updateLisavaatimukset(
       initOrUpdateMyonteinenKelpoisuusPaatosUO(
-        lisavaatimukset,
+        lisavaatimukset ?? {},
         updatedLisavaatimukset,
         kelpoisuusKey,
       ),
