@@ -154,17 +154,20 @@ export const PaatosTietoComponent = ({
                   kielteisenPaatoksenPerustelut={
                     paatosTieto.kielteisenPaatoksenPerustelut
                   }
-                  updatePaatosAction={(paatos) => {
-                    const tobePaatostieto = {
+                  updateMyonteinenPaatos={(paatos) =>
+                    updatePaatosTietoAction({
                       ...currentPaatosTieto,
                       ...paatos,
-                    };
-                    // Myönteisellä ja kielteisellä on eri optionsit
-                    if ('myonteinenPaatos' in paatos) {
-                      tobePaatostieto.tutkintoTaso = null;
-                    }
-                    updatePaatosTietoAction(tobePaatostieto);
-                  }}
+                      // Myönteisellä ja kielteisellä on eri optionsit
+                      tutkintoTaso: null,
+                    })
+                  }
+                  updateKielteisenPaatoksenPerustelut={(perustelut) =>
+                    updatePaatosTietoAction({
+                      ...currentPaatosTieto,
+                      kielteisenPaatoksenPerustelut: perustelut,
+                    })
+                  }
                   t={t}
                   paatosTyyppi={currentPaatosTieto.paatosTyyppi}
                 />

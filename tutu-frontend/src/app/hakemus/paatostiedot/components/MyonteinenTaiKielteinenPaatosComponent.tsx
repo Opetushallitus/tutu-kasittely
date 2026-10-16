@@ -7,58 +7,43 @@ import { emptyKielteisenPaatoksenPerustelut } from '@/src/app/hakemus/paatostied
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
-  MyonteisenPaatoksenLisavaatimusUpdateCallback,
-  MyonteisenPaatoksenLisavaatimukset,
   MyonteinenTaiKielteinenPaatos,
   KielteisenPaatoksenPerustelut,
   Paatostyyppi,
   SovellettuLaki,
 } from '@/src/lib/types/paatos';
 
-export type MyonteinenTaiKielteinenPaatosProps<
-  T extends {
-    updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
-  },
-> = {
-  MyonteisenPaatoksenLisavaatimusComponent?: React.ComponentType<T>;
+export type MyonteinenPaatosChange = {
+  myonteinenPaatos: boolean | null;
+  kielteisenPaatoksenPerustelut: KielteisenPaatoksenPerustelut;
+};
+
+export type MyonteinenTaiKielteinenPaatosProps = {
   myonteisenPaatoksenKentat?: React.ReactNode;
-  lisavaatimusComponentProps?: Omit<T, 'updateLisavaatimukset'>;
-  updatePaatosAction: (
-    myonteinenTaiKielteinenPaatos: Partial<MyonteinenTaiKielteinenPaatos>,
+  updateMyonteinenPaatos: (paatos: MyonteinenPaatosChange) => void;
+  updateKielteisenPaatoksenPerustelut: (
+    perustelut: KielteisenPaatoksenPerustelut,
   ) => void;
   t: TFunction;
   paatosTyyppi?: Paatostyyppi;
   sovellettuLaki?: SovellettuLaki;
 } & MyonteinenTaiKielteinenPaatos;
 
-export const MyonteinenTaiKielteinenPaatosComponent = <
-  T extends {
-    updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
-  },
->({
-  MyonteisenPaatoksenLisavaatimusComponent,
+export const MyonteinenTaiKielteinenPaatosComponent = ({
   myonteisenPaatoksenKentat,
-  lisavaatimusComponentProps,
   myonteinenPaatos,
   kielteisenPaatoksenPerustelut,
-  updatePaatosAction,
+  updateMyonteinenPaatos,
+  updateKielteisenPaatoksenPerustelut,
   t,
   paatosTyyppi,
   sovellettuLaki,
-}: MyonteinenTaiKielteinenPaatosProps<T>) => {
-  const updateMyonteisenPaatoksenLisavaatimukset = (
-    lisavaatimukset: MyonteisenPaatoksenLisavaatimukset,
-  ) => {
-    updatePaatosAction({ myonteisenPaatoksenLisavaatimukset: lisavaatimukset });
-  };
-  // Tason päätöksellä (PaatosTieto) ei ole lisävaatimuksia, joten kenttää ei lisätä siihen
-  const tyhjatLisavaatimukset = MyonteisenPaatoksenLisavaatimusComponent
-    ? { myonteisenPaatoksenLisavaatimukset: null }
-    : {};
-  const propsForLisavaatimusComponent: T = {
-    ...(lisavaatimusComponentProps as T),
-    updateLisavaatimukset: updateMyonteisenPaatoksenLisavaatimukset,
-  };
+}: MyonteinenTaiKielteinenPaatosProps) => {
+  const changeMyonteinenPaatos = (myonteinen: boolean | null) =>
+    updateMyonteinenPaatos({
+      myonteinenPaatos: myonteinen,
+      kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
+    });
   return (
     <Stack spacing={3}>
       <OphRadioGroupWithClear
@@ -70,38 +55,19 @@ export const MyonteinenTaiKielteinenPaatosComponent = <
         options={myonteinenPaatosOptions(t)}
         row
         value={myonteinenPaatos?.toString() || ''}
-        onChange={(e) =>
-          updatePaatosAction({
-            myonteinenPaatos: e.target.value === 'true',
-            ...tyhjatLisavaatimukset,
-            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
-          })
-        }
-        onClear={() =>
-          updatePaatosAction({
-            myonteinenPaatos: null,
-            ...tyhjatLisavaatimukset,
-            kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
-          })
-        }
+        onChange={(e) => changeMyonteinenPaatos(e.target.value === 'true')}
+        onClear={() => changeMyonteinenPaatos(null)}
       />
       {myonteinenPaatos && myonteisenPaatoksenKentat}
-      {myonteinenPaatos && MyonteisenPaatoksenLisavaatimusComponent && (
-        <MyonteisenPaatoksenLisavaatimusComponent
-          {...propsForLisavaatimusComponent}
-        ></MyonteisenPaatoksenLisavaatimusComponent>
-      )}
       {myonteinenPaatos === false && (
         <KielteisenPaatoksenPerusteluComponent
           perustelut={kielteisenPaatoksenPerustelut || undefined}
           updatePerustelutAction={(
             perustelut: Partial<KielteisenPaatoksenPerustelut>,
           ) => {
-            updatePaatosAction({
-              kielteisenPaatoksenPerustelut: {
-                ...kielteisenPaatoksenPerustelut,
-                ...perustelut,
-              },
+            updateKielteisenPaatoksenPerustelut({
+              ...kielteisenPaatoksenPerustelut,
+              ...perustelut,
             });
           }}
           t={t}

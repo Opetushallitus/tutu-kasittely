@@ -26,12 +26,12 @@ import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPa
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import {
   KelpoisuudenLisavaatimukset,
-  MyonteisenPaatoksenLisavaatimusUpdateCallback,
+  KelpoisuudenLisavaatimusUpdateCallback,
 } from '@/src/lib/types/paatos';
 
 type MyonteinenKelpoisuusPaatosUOProps = {
   lisavaatimukset?: KelpoisuudenLisavaatimukset | null;
-  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
+  updateLisavaatimukset: KelpoisuudenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
 };
 
