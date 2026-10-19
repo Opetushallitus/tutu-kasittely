@@ -1,13 +1,13 @@
 export type HakemuspalveluSisaltoId = {
   generatedId: string;
-  definedId: string;
+  definedIds: string[];
 };
 
 const createId = (
   generatedId: string,
-  definedId: string,
+  ...definedIds: string[]
 ): HakemuspalveluSisaltoId => {
-  return { generatedId, definedId };
+  return { generatedId, definedIds };
 };
 
 export const paatosJaAsiointikieli: HakemuspalveluSisaltoId = createId(
@@ -84,6 +84,7 @@ export const tutkintoMaaKeys = {
   tutkinto1: createId(
     '6e43a241-a3bd-4625-8035-40768a109461',
     'tutu-first-degree-country',
+    'hakemus-maakoodi',
   ),
   tutkinto2: createId(
     '38a35cad-743b-43b8-96d1-e75c9674cc5e',
