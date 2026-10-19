@@ -96,7 +96,6 @@ export default function YhteinenKasittelyPage() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tyopari, setTyopari] = useState<string | undefined>();
   const [kysymys, setKysymys] = useState<string>('');
-  const [parentId, setParentId] = useState<string>('');
 
   const user = useAuthorizedUser();
 
@@ -226,7 +225,7 @@ export default function YhteinenKasittelyPage() {
   const handleCreateKasittely = async () => {
     try {
       const kasittely: Viesti = {
-        parentId: parentId,
+        parentId: modalParent?.aloitusViesti.id,
         viesti: kysymys,
         vastaanottajaOid: tyopari,
       };
@@ -381,7 +380,6 @@ export default function YhteinenKasittelyPage() {
         handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
-        setParentId={setParentId}
       />
       <SaveRibbon
         onSave={save}

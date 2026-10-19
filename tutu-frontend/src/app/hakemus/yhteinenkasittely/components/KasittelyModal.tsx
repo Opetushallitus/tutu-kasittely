@@ -113,7 +113,6 @@ interface JatkoKasittelyModalProps {
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
-  setParentId: (id: string) => void;
 }
 
 export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
@@ -124,11 +123,9 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
   handleSend,
   setTyopari,
   setKysymys,
-  setParentId,
 }) => {
   const { t } = useTranslations();
 
-  setParentId(parentKasittely.aloitusViesti.id ?? '');
   const jatkokysymys = parentKasittely.jatkoKasittelyt?.at(-1);
   const filteredEsittelijat = esittelijat.filter(
     (esittelija) =>
@@ -213,7 +210,6 @@ interface KasittelyModalProps {
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
-  setParentId: (id: string) => void;
 }
 
 export const KasittelyModal: React.FC<KasittelyModalProps> = ({
@@ -224,7 +220,6 @@ export const KasittelyModal: React.FC<KasittelyModalProps> = ({
   handleSend,
   setTyopari,
   setKysymys,
-  setParentId,
 }) => {
   return !parentKasittely ? (
     <UusiKasittelyModal
@@ -244,7 +239,6 @@ export const KasittelyModal: React.FC<KasittelyModalProps> = ({
       handleSend={handleSend}
       setTyopari={setTyopari}
       setKysymys={setKysymys}
-      setParentId={setParentId}
     />
   );
 };
