@@ -248,7 +248,7 @@ test.describe('OpintopisteTaulukko', () => {
       .getByTestId('opintopiste-taulukko-rivi-kokonaislaajuus')
       .getByRole('cell');
     await expect(kokonaislaajuusSolut.nth(2)).toHaveText('45 op');
-    await expect(kokonaislaajuusSolut.nth(3)).toHaveText('20 op');
+    await expect(kokonaislaajuusSolut.nth(3)).toHaveText('20-50 op');
 
     const perusjaainetasoisetSolut = page
       .getByTestId('opintopiste-taulukko-rivi-perusjaainetasoiset')
@@ -260,7 +260,7 @@ test.describe('OpintopisteTaulukko', () => {
       .getByTestId('opintopiste-taulukko-rivi-eurooppaOpinnot')
       .getByRole('cell');
     await expect(eurooppaOpintojenSolut.nth(2)).toHaveText('15 op');
-    await expect(eurooppaOpintojenSolut.nth(3)).toHaveText('0 op');
+    await expect(eurooppaOpintojenSolut.nth(3)).toHaveText('0-5 op');
   });
 });
 
