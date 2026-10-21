@@ -40,8 +40,7 @@ const kayttajaLukenutViestin = (user: User | null) => (viesti: Viesti) => {
     return false;
   }
   const luettu =
-    viesti.luettu &&
-    viesti.luettu?.filter((oid) => oid === user.userOid).length > 0;
+    viesti.luettu && viesti.luettu?.some((oid) => oid === user.userOid);
 
   return luettu || false;
 };
@@ -119,7 +118,7 @@ export default function YhteinenKasittelyPage() {
   } = useYhteinenKasittely(hakemusOid ?? '', sortKey);
 
   const answersFromServer = useMemo(() => {
-    return [].reduce(
+    return (kasittelyt ?? []).reduce(
       (acc: Record<string, string>, kasittely: YhteinenKasittely) => {
         acc[kasittely.aloitusViesti.id!] = kasittely.aloitusViesti.viesti ?? '';
         return acc;
