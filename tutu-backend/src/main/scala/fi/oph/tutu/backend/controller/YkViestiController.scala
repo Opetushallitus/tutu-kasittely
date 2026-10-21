@@ -7,6 +7,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
 import org.springframework.web.bind.annotation.{
+  DeleteMapping,
   GetMapping,
   PatchMapping,
   PathVariable,
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.{
 }
 
 import scala.util.{Failure, Success, Try}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 
 @RestController
 @RequestMapping(path = Array("api"))
@@ -311,6 +314,69 @@ class YkViestiController(
     } catch {
       case e: Exception =>
         LOG.error(s"Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui: ${e.getMessage}", e)
+        errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+
+  @DeleteMapping(
+    path = Array("hakemus/{hakemusOid}/yhteinenkasittely/{viestiId}")
+  )
+  @Operation(
+    summary =
+      "Poistaa yhteisen käsittelyn viestin, jos viestiä ei ole lähetetty ja poistaja on viestin alkuperäinen luoja",
+    tags = Array("External"),
+    description = "",
+    responses = Array(
+      new ApiResponse(
+        responseCode = "200",
+        description = RESPONSE_200_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = RESPONSE_400_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "403",
+        description = RESPONSE_403_DESCRIPTION
+      ),
+      new ApiResponse(
+        responseCode = "500",
+        description = RESPONSE_500_DESCRIPTION
+      )
+    )
+  )
+  def poistaYkViesti(
+    @PathVariable("hakemusOid") hakemusOid: String,
+    @PathVariable("viestiId") viestiId: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    try {
+      val user        = userService.getEnrichedUserDetails(true)
+      val authorities = user.authorities
+
+      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_403_DESCRIPTION,
+          HttpStatus.FORBIDDEN
+        )
+      } else {
+        Try {
+          ykViestiService.poistaYkViesti(
+            HakemusOid(hakemusOid),
+            viestiId,
+            UserOid(user.userOid)
+          )
+        } match {
+          case Success(_) =>
+            ResponseEntity.noContent().build()
+          case Failure(exception) =>
+            LOG.error("Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui", exception)
+            errorMessageMapper.mapErrorMessage(exception)
+        }
+      }
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Yhteisen käsittelyn viestin poistaminen epäonnistui: ${e.getMessage}", e)
         errorMessageMapper.mapErrorMessage(e)
     }
   }
