@@ -60,7 +60,6 @@ export type PaatosTieto = {
 export type Paatos = {
   id?: string;
   ratkaisutyyppi?: Ratkaisutyyppi | null;
-  seutArviointi: boolean;
   peruutuksenTaiRaukeamisenSyy?: PeruutuksenTaiRaukeamisenSyy;
   paatosTiedot?: PaatosTieto[];
   paatosTietoOptions: PaatosTietoOptionGroup;

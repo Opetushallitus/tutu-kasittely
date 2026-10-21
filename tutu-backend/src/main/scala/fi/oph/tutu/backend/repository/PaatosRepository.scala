@@ -24,7 +24,6 @@ class PaatosRepository extends BaseResultHandlers {
       id = Some(r.nextObject().asInstanceOf[UUID]),
       hakemusId = Some(r.nextObject().asInstanceOf[UUID]),
       ratkaisutyyppi = Ratkaisutyyppi.optionFromString(r.nextString()),
-      seutArviointi = r.nextBoolean(),
       peruutuksenTaiRaukeamisenSyy = Option(Serialization.read[PeruutuksenTaiRaukeamisenSyy](r.nextString()))
         .getOrElse(PeruutuksenTaiRaukeamisenSyy()),
       hyvaksymispaiva = r.nextTimestampOption().map(_.toLocalDateTime),
@@ -123,20 +122,19 @@ class PaatosRepository extends BaseResultHandlers {
     val ratkaisutyyppiOrNull             = paatos.ratkaisutyyppi.map(_.toString).orNull
     val peruutuksenTaiRaukeamisenSyyJson = Serialization.write(paatos.peruutuksenTaiRaukeamisenSyy)
     sql"""
-      INSERT INTO paatos (hakemus_id, ratkaisutyyppi, seut_arviointi_tehty, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luoja)
-      VALUES (${hakemusId.toString}::uuid, $ratkaisutyyppiOrNull::ratkaisutyyppi, ${paatos.seutArviointi},
+      INSERT INTO paatos (hakemus_id, ratkaisutyyppi, peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, luoja)
+      VALUES (${hakemusId.toString}::uuid, $ratkaisutyyppiOrNull::ratkaisutyyppi,
         $peruutuksenTaiRaukeamisenSyyJson::jsonb, ${paatos.hyvaksymispaiva
         .map(java.sql.Timestamp.valueOf)
         .orNull}, ${paatos.lahetyspaiva.map(java.sql.Timestamp.valueOf).orNull}, $luojaTaiMuokkaaja)
       ON CONFLICT (hakemus_id)
       DO UPDATE SET
         ratkaisutyyppi = $ratkaisutyyppiOrNull::ratkaisutyyppi,
-        seut_arviointi_tehty = ${paatos.seutArviointi},
         peruutus_tai_raukeaminen_lisatiedot = $peruutuksenTaiRaukeamisenSyyJson::jsonb,
         hyvaksymispaiva = ${paatos.hyvaksymispaiva.map(java.sql.Timestamp.valueOf).orNull},
         lahetyspaiva = ${paatos.lahetyspaiva.map(java.sql.Timestamp.valueOf).orNull},
         muokkaaja = $luojaTaiMuokkaaja
-      RETURNING id, hakemus_id, ratkaisutyyppi, seut_arviointi_tehty,
+      RETURNING id, hakemus_id, ratkaisutyyppi,
         peruutus_tai_raukeaminen_lisatiedot, hyvaksymispaiva, lahetyspaiva, null, luotu, luoja, muokattu, muokkaaja
     """.as[Paatos].head
   }
@@ -161,7 +159,7 @@ class PaatosRepository extends BaseResultHandlers {
     try {
       db.run(
         sql"""
-          SELECT p.id, p.hakemus_id, p.ratkaisutyyppi, p.seut_arviointi_tehty,
+          SELECT p.id, p.hakemus_id, p.ratkaisutyyppi,
             p.peruutus_tai_raukeaminen_lisatiedot, p.hyvaksymispaiva, p.lahetyspaiva,
             pt.vahvistettu, p.luotu, p.luoja, p.muokattu, p.muokkaaja
           FROM paatos p

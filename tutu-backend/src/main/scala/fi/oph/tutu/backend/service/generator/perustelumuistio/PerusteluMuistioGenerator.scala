@@ -528,7 +528,11 @@ def haeApPerustelu(translationService: TranslationService, perusteluMaybe: Optio
             val label = translationService.getTranslation(FI, "perustelumuistio.ap.muutPerustelut.label")
             s"$label\n$text"
           ),
+        Option.when(apSisalto.SEUTArviointiTehty)(
+          translationService.getTranslation(FI, "perustelumuistio.SEUTArviointi")
+        ),
         apSisalto.SEUTArviointi
+          .filter(_ => apSisalto.SEUTArviointiTehty)
           .filter(_.nonEmpty)
           .map(text =>
             val label = translationService.getTranslation(FI, "perustelumuistio.ap.SEUTArviointi.label")

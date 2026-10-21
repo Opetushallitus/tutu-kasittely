@@ -398,6 +398,7 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
         lisatietoja = Some("annetaan pyydettäessä"),
         IMIHalytysTarkastettu = true,
         muutAPPerustelut = Some("pätevä on"),
+        SEUTArviointiTehty = true,
         SEUTArviointi = Some("hyväksi todettu")
       )
     )
@@ -659,7 +660,8 @@ class PerusteluMuistioGeneratorTest extends UnitTestBase {
     assert(result.get.contains("Lisätietoja"))
     assert(result.get.contains("IMI-hälytykset tarkistettu"))
     assert(result.get.contains("Muut AP-päätöksen perustelut"))
-    assert(result.get.contains("SEUT-arviointi"))
+    assert(result.get.contains("SEUT-arviointi tehty"))
+    assert(result.get.contains("SEUT-arviointi:\nhyväksi todettu"))
   }
 
   @Test

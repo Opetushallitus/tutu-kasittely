@@ -296,14 +296,11 @@ def bindExtractPaatos(
 ): Paatos => Option[String] = {
   def next(node: Paatos): Option[String] = {
     val ratkaisutyyppi: Option[String] = haeRatkaisutyyppi(translationService, node)
-    val seutArviointi: Option[String]  =
-      Option.when(node.seutArviointi)(translationService.getTranslation(FI, "perustelumuistio.SEUTArviointi"))
 
     val label  = translationService.getTranslation(FI, "perustelumuistio.paatosEsitys.label")
     val result = Seq(
       Some(label),
-      ratkaisutyyppi,
-      seutArviointi
+      ratkaisutyyppi
     ).flatten.mkString("\n").trim
 
     if result.nonEmpty then Some(result) else None

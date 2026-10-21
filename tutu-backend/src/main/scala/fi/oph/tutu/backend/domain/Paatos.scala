@@ -7,7 +7,6 @@ case class Paatos(
   id: Option[UUID] = None,
   hakemusId: Option[UUID] = None,
   ratkaisutyyppi: Option[Ratkaisutyyppi] = None,
-  seutArviointi: Boolean = false,
   peruutuksenTaiRaukeamisenSyy: PeruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
   paatosTiedot: Seq[PaatosTieto] = Seq(),
   paatosTietoOptions: Option[PaatosTietoOptions] = None,

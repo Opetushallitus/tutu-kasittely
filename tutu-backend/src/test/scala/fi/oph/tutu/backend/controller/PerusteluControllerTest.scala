@@ -161,6 +161,7 @@ class PerusteluControllerTest extends IntegrationTestBase {
         Some("lisatietoja"),
         true,
         Some("muutAPPerustelut"),
+        true,
         Some("SEUTArviointi")
       )
     )
