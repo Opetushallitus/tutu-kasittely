@@ -63,6 +63,7 @@ class YkViestiRepository extends BaseResultHandlers {
             v.hakemus_oid,
             h.asiatunnus,
             v.lahettaja_oid,
+            COALESCE(e.kutsumanimi, '') || ' ' || COALESCE(e.sukunimi, ''),
             v.vastaanottaja_oid,
             v.viesti,
             COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
@@ -75,6 +76,7 @@ class YkViestiRepository extends BaseResultHandlers {
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+          LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
           LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
           WHERE
             v.vastaanottaja_oid = $userOid
