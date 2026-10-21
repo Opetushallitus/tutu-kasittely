@@ -210,13 +210,13 @@ class YkViestiService(
         val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
 
         val viestiLuettavissa     = ykViesti.viesti.nonEmpty
-        val viestistäEiLuettu     = ykViesti.luettu.isEmpty || !ykViesti.luettu.contains(user.userOid)
+        val viestiaEiLuettu       = ykViesti.luettu.isEmpty || !ykViesti.luettu.contains(user.userOid)
         val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
 
         val vastausLuettuMaybe =
           if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) Some(LocalDateTime.now()) else None
         val kysymysLuettuMaybe =
-          if (viestistäEiLuettu && viestiLuettavissa && vastaanottajaLukijana)
+          if (viestiaEiLuettu && viestiLuettavissa && vastaanottajaLukijana)
             Some(ykViesti.luettu.getOrElse(Seq.empty) :+ UUID.fromString(user.userOid))
           else None
 
