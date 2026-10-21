@@ -158,31 +158,6 @@ class YkViestiService(
     }
   }
 
-  def haeHakemuksenYkViestit(
-    hakemusOid: String,
-    user: User
-  ): Seq[YkViesti] = {
-    val ykViestit = ykViestiRepository
-      .haeHakemuksenYkViestit(hakemusOid)
-      .map(ykViesti =>
-        ykViesti.copy(
-          vastaanottaja = onrService.haeNimiOption(ykViesti.vastaanottajaOid)
-        )
-      )
-
-    val ketjunEnsimmaiset = ykViestit.filter(viesti => viesti.parentId.isEmpty)
-
-    ketjunEnsimmaiset
-      .map(viesti =>
-        val jatkoKasittelyt = ykViestit
-          .filter(jatkoKasittely => jatkoKasittely.parentId.exists(_.equals(viesti.id)))
-          .reverse
-        viesti.copy(
-          jatkoKasittelyt = jatkoKasittelyt
-        )
-      )
-  }
-
   def tallennaHakemuksenYkViesti(
     hakemusOid: String,
     user: User,
@@ -213,7 +188,7 @@ class YkViestiService(
     }
 
     val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
-      case Some(ykViesti) => {
+      case Some(ykViesti) =>
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
             muokkaaja = Some(user.userOid)
@@ -229,7 +204,7 @@ class YkViestiService(
     user: User
   ): Unit = {
     val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
-      case Some(ykViesti) => {
+      case Some(ykViesti) =>
         val vastausLuettavissa = false
         val vastaustaEiLuettu  = false
         val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
