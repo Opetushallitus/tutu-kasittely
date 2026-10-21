@@ -88,7 +88,7 @@ case class YkViesti(
   luotu: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
-  luettu: Option[Seq[UUID]] = None,
+  luettu: Seq[String] = Seq.empty,
   aihe: Option[String] = None
 )
 

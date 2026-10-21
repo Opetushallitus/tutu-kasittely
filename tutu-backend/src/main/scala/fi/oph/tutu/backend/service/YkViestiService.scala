@@ -203,31 +203,22 @@ class YkViestiService(
     viestiId: String,
     user: User
   ): Unit = {
-    val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
+    ykViestiRepository.haeYkViesti(hakemusOid, viestiId) match {
       case Some(ykViesti) =>
-        val vastausLuettavissa = false
-        val vastaustaEiLuettu  = false
-        val lahettajaLukijana  = ykViesti.lahettajaOid.contains(user.userOid)
-
         val viestiLuettavissa     = ykViesti.viesti.nonEmpty
-        val viestistäEiLuettu     = ykViesti.luettu.isEmpty || !ykViesti.luettu.contains(user.userOid)
-        val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
+        val viestistäEiLuettu     = !ykViesti.luettu.contains(user.userOid)
+        val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid) || true
 
-        val vastausLuettuMaybe =
-          if (vastaustaEiLuettu && vastausLuettavissa && lahettajaLukijana) Some(LocalDateTime.now()) else None
-        val kysymysLuettuMaybe =
-          if (viestistäEiLuettu && viestiLuettavissa && vastaanottajaLukijana)
-            Some(ykViesti.luettu.getOrElse(Seq.empty) :+ UUID.fromString(user.userOid))
-          else None
-
-        if (vastausLuettuMaybe.nonEmpty || ykViesti.luettu.nonEmpty) {
+        if (viestistäEiLuettu && viestiLuettavissa && vastaanottajaLukijana) {
+          val luettu = ykViesti.luettu :+ user.userOid
           ykViestiRepository.muokkaaHakemuksenYkViestia(
             ykViesti.copy(
-              luettu = kysymysLuettuMaybe,
+              luettu = luettu,
               muokkaaja = Some(user.userOid)
             )
           )
         }
+
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
     }
   }
