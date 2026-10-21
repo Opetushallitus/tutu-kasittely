@@ -145,7 +145,14 @@ class YkViestiController(
           ykViestiService.haeHakemuksenYkViestiketjut(hakemusOid)
         } match {
           case Success(ykViestit) =>
-            val response = mapper.writeValueAsString(ykViestit.map(haeNimet))
+            val response = mapper.writeValueAsString(
+              ykViestit.map { ketju =>
+                ketju.copy(
+                  aloitusViesti = haeNimet(ketju.aloitusViesti),
+                  jatkoKasittelyt = ketju.jatkoKasittelyt.map(haeNimet)
+                )
+              }
+            )
             ResponseEntity.status(HttpStatus.OK).body(response)
           case Failure(exception) =>
             LOG.error("Hakemuksen yhteisen käsittelyn viestien haku epäonnistui", exception)
