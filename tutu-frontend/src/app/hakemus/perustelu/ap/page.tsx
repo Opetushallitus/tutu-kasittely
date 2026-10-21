@@ -310,31 +310,33 @@ export default function ApPage() {
           }}
           data-testid={'lisatietoja'}
         ></OphInputFormField>
-        <OphFormFieldWrapper
-          label={t('hakemus.perustelu.ap.IMIhalytykset')}
-          renderInput={({ labelId }) => (
-            <OphCheckbox
-              aria-labelledby={labelId}
-              label={t('hakemus.perustelu.ap.IMIHalytysTarkastettu')}
-              checked={!!apSisalto?.IMIHalytysTarkastettu}
-              onChange={(event) => {
-                updateCheckbox('IMIHalytysTarkastettu', event.target.checked);
-              }}
-              data-testid={'IMIHalytysTarkastettu'}
-            ></OphCheckbox>
-          )}
-        ></OphFormFieldWrapper>
-        <OphFormFieldWrapper
-          label={t('hakemus.perustiedot.henkilotiedot.syntymaaika')}
-          renderInput={({ labelId }) => (
-            <OphTypography
-              aria-labelledby={labelId}
-              data-testid={'syntymaaika'}
-            >
-              {hakija?.syntymaaika}
-            </OphTypography>
-          )}
-        ></OphFormFieldWrapper>
+        <Box sx={{ display: 'flex', gap: theme.spacing(4) }}>
+          <OphFormFieldWrapper
+            label={t('hakemus.perustelu.ap.IMIhalytykset')}
+            renderInput={({ labelId }) => (
+              <OphCheckbox
+                aria-labelledby={labelId}
+                label={t('hakemus.perustelu.ap.IMIHalytysTarkastettu')}
+                checked={!!apSisalto?.IMIHalytysTarkastettu}
+                onChange={(event) => {
+                  updateCheckbox('IMIHalytysTarkastettu', event.target.checked);
+                }}
+                data-testid={'IMIHalytysTarkastettu'}
+              ></OphCheckbox>
+            )}
+          ></OphFormFieldWrapper>
+          <OphFormFieldWrapper
+            label={t('hakemus.perustiedot.henkilotiedot.syntymaaika')}
+            renderInput={({ labelId }) => (
+              <OphTypography
+                aria-labelledby={labelId}
+                data-testid={'syntymaaika'}
+              >
+                {hakija?.syntymaaika}
+              </OphTypography>
+            )}
+          ></OphFormFieldWrapper>
+        </Box>
         <OphInputFormField
           label={t('hakemus.perustelu.ap.muutAPPerustelut')}
           multiline={true}
@@ -345,17 +347,33 @@ export default function ApPage() {
           }}
           data-testid={'muutAPPerustelut'}
         ></OphInputFormField>
-        <OphInputFormField
-          label={t('hakemus.perustelu.ap.SEUTarviointi')}
-          helperText={t('hakemus.perustelu.ap.SEUTarviointiHelperText')}
-          multiline={true}
-          minRows={3}
-          value={apSisalto?.SEUTArviointi ?? ''}
+        <OphCheckbox
+          label={t('hakemus.paatos.seut')}
+          checked={!!apSisalto?.SEUTArviointiTehty}
           onChange={(event) => {
-            updateTextField('SEUTArviointi', event.target.value);
+            updateLocal({
+              apSisalto: {
+                ...apSisalto,
+                SEUTArviointiTehty: event.target.checked,
+                ...(!event.target.checked && { SEUTArviointi: null }),
+              },
+            });
           }}
-          data-testid={'SEUTArviointi'}
-        ></OphInputFormField>
+          data-testid={'SEUTArviointiTehty'}
+        />
+        {apSisalto?.SEUTArviointiTehty && (
+          <OphInputFormField
+            label={t('hakemus.perustelu.ap.SEUTarviointi')}
+            helperText={t('hakemus.perustelu.ap.SEUTarviointiHelperText')}
+            multiline={true}
+            minRows={3}
+            value={apSisalto?.SEUTArviointi ?? ''}
+            onChange={(event) => {
+              updateTextField('SEUTArviointi', event.target.value);
+            }}
+            data-testid={'SEUTArviointi'}
+          ></OphInputFormField>
+        )}
       </PerusteluLayout>
       <SaveRibbon
         onSave={handleSave}

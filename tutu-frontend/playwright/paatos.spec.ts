@@ -18,8 +18,6 @@ test.beforeEach(async ({ page }) => {
 test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää PUT-kutsun backendille', async ({
   page,
 }) => {
-  const seutCheckbox = page.getByTestId('paatos-seut');
-  await expect(seutCheckbox).not.toBeChecked();
   const ratkaisutyyppiInput = page.getByTestId('paatos-ratkaisutyyppi');
   const paatosText = 'hakemus.paatos.ratkaisutyyppi.paatos';
   const peruutusTaiRaukeaminenText =
@@ -28,10 +26,6 @@ test('Päätöskentät näkyvät oikein ja kenttien muutos lähettää PUT-kutsu
   await expect(
     page.getByTestId('peruutuksenTaiRaukeamisenSyyComponent'),
   ).toBeHidden();
-
-  await expectRequestData(page, '/paatos/', seutCheckbox.click(), {
-    seutArviointi: true,
-  });
 
   await expectDataFromDropdownSelection(
     page,

@@ -19,5 +19,6 @@ export const apSisalto: APSisalto = {
   lisatietoja: 'lisatietoja',
   IMIHalytysTarkastettu: true,
   muutAPPerustelut: 'muutAPPerustelut',
+  SEUTArviointiTehty: true,
   SEUTArviointi: 'SEUTArviointi',
 };

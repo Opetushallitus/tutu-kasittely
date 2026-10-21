@@ -47,6 +47,31 @@ test('AP-päätöksen selvityksetAikaisemmanTapauksenAsiaTunnus kenttä näkyy v
   await expect(selvityksetAikaisemmanTapauksenAsiaTunnus).toBeHidden();
 });
 
+test('AP-päätöksen SEUTArviointi kenttä näkyy vain jos SEUTArviointiTehty valittu', async ({
+  page,
+}) => {
+  const SEUTArviointiTehty = page.getByTestId('SEUTArviointiTehty');
+  const SEUTArviointi = page.getByTestId('SEUTArviointi');
+  await expect(SEUTArviointiTehty).toBeChecked();
+  await expect(SEUTArviointi).toBeVisible();
+
+  await SEUTArviointiTehty.click();
+  await expect(SEUTArviointi).toBeHidden();
+
+  const [req] = await Promise.all([
+    page.waitForRequest(
+      (r) =>
+        r.url().includes('/tutu-backend/api/perustelu') && r.method() === 'PUT',
+    ),
+    page.getByTestId('save-ribbon-button').click(),
+  ]);
+  expect(req.postDataJSON().apSisalto).toEqual({
+    ...apSisalto,
+    SEUTArviointiTehty: false,
+    SEUTArviointi: null,
+  });
+});
+
 test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST-kutsun backendille', async ({
   page,
 }) => {
@@ -147,6 +172,8 @@ test('AP-perustelun kentät näkyvät oikein ja kenttien muutos lähettää POST
     .locator('textarea')
     .first();
   await expect(muutAPPerustelut).toHaveText('muutAPPerustelut');
+
+  await expect(page.getByTestId('SEUTArviointiTehty')).toBeChecked();
 
   const SEUTArviointi = page
     .getByTestId('SEUTArviointi')

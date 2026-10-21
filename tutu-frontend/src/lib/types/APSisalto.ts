@@ -15,5 +15,6 @@ export type APSisalto = Partial<{
   lisatietoja?: string;
   IMIHalytysTarkastettu?: boolean;
   muutAPPerustelut?: string;
-  SEUTArviointi?: string;
+  SEUTArviointiTehty?: boolean;
+  SEUTArviointi?: string | null;
 }>;
