@@ -200,7 +200,7 @@ class YkViestiService(
       case Some(ykViesti) =>
         val viestiLuettavissa     = ykViesti.viesti.nonEmpty
         val viestistaEiLuettu     = !ykViesti.luettu.contains(user.userOid)
-        val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid) || true
+        val vastaanottajaLukijana = ykViesti.vastaanottajaOid.contains(user.userOid)
 
         if (viestistaEiLuettu && viestiLuettavissa && vastaanottajaLukijana) {
           val luettu = ykViesti.luettu :+ user.userOid
