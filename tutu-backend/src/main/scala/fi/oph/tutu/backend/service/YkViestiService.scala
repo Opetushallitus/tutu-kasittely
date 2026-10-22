@@ -25,10 +25,6 @@ class YkViestiService(
     // Suodatetaan uudet saapuneet viestit
     val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
-    // Suodatetaan lähetettyihin viesteihin tulleet uudet vastaukset
-    // val uudetVastaukset = lahetetyt
-    // .count(viesti => viesti.vastaus.nonEmpty && viesti.vastausLuettu.isEmpty)
-
     uudetViestit > 0 // || uudetVastaukset > 0
   }
 
@@ -112,9 +108,6 @@ class YkViestiService(
       .flatMap { viesti =>
         val status: ViestinTila = ViestinTila.vastattu
         val luettu              = viesti.luettu.contains(viesti.vastaanottajaOid)
-        // if (vastattu && !vastausLuettu) ViestinTila.uusiVastaus
-        // else if (vastattu) ViestinTila.vastattu
-        // else ViestinTila.vastaamatta
 
         Some(
           YkViestiListItem(
