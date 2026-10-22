@@ -369,7 +369,7 @@ class YkViestiController(
           case Success(_) =>
             ResponseEntity.noContent().build()
           case Failure(exception) =>
-            LOG.error("Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui", exception)
+            LOG.error("Yhteisen käsittelyn viestin poistaminen epäonnistui", exception)
             errorMessageMapper.mapErrorMessage(exception)
         }
       }

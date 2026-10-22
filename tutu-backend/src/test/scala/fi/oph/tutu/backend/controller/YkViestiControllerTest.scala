@@ -313,7 +313,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "poistaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @WithMockUser(value = "lahettaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(8)
   def poistaYKViestiPalauttaa204(): Unit = {
     ////////
@@ -325,7 +325,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         id = null,
         parentId = None,
         hakemusOid = HakemusOid("hakemus-333"),
-        lahettajaOid = Some("poistaja-oid"),
+        lahettajaOid = Some("lahettaja-oid"),
+        luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         kysymys = Some("Kysymys body"),
         hakija = null
@@ -337,7 +338,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
       userService.getEnrichedUserDetails(any)
     ).thenReturn(
       User(
-        userOid = "poistaja-oid",
+        userOid = "lahettaja-oid",
         authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
       )
     )
@@ -348,13 +349,11 @@ class YkViestiControllerTest extends IntegrationTestBase {
     // Varmistetaan että hakemus löytyy tietokannasta
     val viestiBefore = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
     assertTrue(viestiBefore.nonEmpty)
-    println("---")
-    println(ykViestiId.toString)
-    println("---")
+
     // Suoritetaan poistokutsu
     mvc
       .perform(
-        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
+        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}").`with`(csrf())
       )
       .andExpect(status().isNoContent)
 
@@ -364,8 +363,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "poistaja-oid", authorities = Array())
-  @Order(8)
+  @WithMockUser(value = "lahettaja-oid", authorities = Array())
+  @Order(9)
   def poistaYKViestiPalauttaa403KunEiKäyttöoikeuksia(): Unit = {
     ////////
     // Setup
@@ -376,7 +375,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         id = null,
         parentId = None,
         hakemusOid = HakemusOid("hakemus-333"),
-        lahettajaOid = Some("poistaja-oid"),
+        lahettajaOid = Some("lahettaja-oid"),
+        luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         kysymys = Some("Kysymys body"),
         hakija = null
@@ -388,7 +388,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
       userService.getEnrichedUserDetails(any)
     ).thenReturn(
       User(
-        userOid = "poistaja-oid",
+        userOid = "lahettaja-oid",
         authorities = List()
       )
     )
@@ -403,7 +403,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
     // Suoritetaan poistokutsu
     mvc
       .perform(
-        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
+        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}").`with`(csrf())
       )
       .andExpect(status().isForbidden)
 
