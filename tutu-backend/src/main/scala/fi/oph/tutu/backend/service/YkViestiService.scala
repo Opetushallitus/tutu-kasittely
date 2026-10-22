@@ -264,10 +264,10 @@ class YkViestiService(
         // vastaanottajalle. Kun välitallennus toteutetaan, muutetaan tätä logiikkaa siten
         // ettei lähetetyt viestit päädy poistettaviksi
 
-        val viestiaEiLahatatty       = /* Puuttuva logiikka välitallennuksesta */ true
+        val viestiaEiLahetetty       = /* Puuttuva logiikka välitallennuksesta */ true
         val kysyjaPoistaaOmaaViestia = ykViesti.luoja.contains(userOid.toString)
 
-        if (viestiaEiLahatatty && kysyjaPoistaaOmaaViestia) {
+        if (viestiaEiLahetetty && kysyjaPoistaaOmaaViestia) {
           ykViestiRepository.suoritaPoistaYkViesti(ykViesti.id)
         } else {
           throw Exception(s"Yhteiskäsittelyn viestiä $viestiId ei voida poistaa")

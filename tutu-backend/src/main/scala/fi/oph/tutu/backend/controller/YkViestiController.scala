@@ -328,7 +328,7 @@ class YkViestiController(
     description = "",
     responses = Array(
       new ApiResponse(
-        responseCode = "200",
+        responseCode = "204",
         description = RESPONSE_200_DESCRIPTION
       ),
       new ApiResponse(
@@ -353,7 +353,6 @@ class YkViestiController(
     try {
       val user        = userService.getEnrichedUserDetails(true)
       val authorities = user.authorities
-
       if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
         errorMessageMapper.mapPlainErrorMessage(
           RESPONSE_403_DESCRIPTION,

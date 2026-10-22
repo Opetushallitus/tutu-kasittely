@@ -148,4 +148,10 @@ class YkViestiServiceTest extends IntegrationTestBase {
     assert(result.muokkaaja.get == "VastaanottajaOid-1")
     assert(result.muokattu.nonEmpty)
   }
+
+  @Test
+  def ykViestinPoistoEstetaanKunPoistajaOnEriKuinViestinLuoja(): Unit = {}
+
+  @Test
+  def ykViestinPoistoEstetaanKunVietiOnJoLahetetty(): Unit = {}
 }

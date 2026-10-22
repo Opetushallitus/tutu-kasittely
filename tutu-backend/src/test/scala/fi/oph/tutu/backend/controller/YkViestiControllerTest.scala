@@ -5,11 +5,12 @@ import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.security.SecurityConstants
 import fi.oph.tutu.backend.service.*
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
-import org.hamcrest.Matchers.{equalTo, hasKey, hasSize}
+import org.hamcrest.Matchers.{empty, equalTo, hasKey, hasSize, not}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -309,5 +310,105 @@ class YkViestiControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$", hasSize(2)))
       .andExpect(jsonPath("$[1]", hasKey("vastausLuettu")))
+  }
+
+  @Test
+  @WithMockUser(value = "poistaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(8)
+  def poistaYKViestiPalauttaa204(): Unit = {
+    ////////
+    // Setup
+
+    // Luodaan poistettava viesti
+    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+      YkViesti(
+        id = null,
+        parentId = None,
+        hakemusOid = HakemusOid("hakemus-333"),
+        lahettajaOid = Some("poistaja-oid"),
+        vastaanottajaOid = Some("vastaanottaja-oid"),
+        kysymys = Some("Kysymys body"),
+        hakija = null
+      )
+    )
+
+    // Poistajan oikeudet
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "poistaja-oid",
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    ////////////////////////
+    // Verify - Act - Verify
+
+    // Varmistetaan että hakemus löytyy tietokannasta
+    val viestiBefore = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
+    assertTrue(viestiBefore.nonEmpty)
+    println("---")
+    println(ykViestiId.toString)
+    println("---")
+    // Suoritetaan poistokutsu
+    mvc
+      .perform(
+        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
+      )
+      .andExpect(status().isNoContent)
+
+    // Varmistetaan että hakemus ei löydy enää tietokannasta
+    val viestiAfter = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
+    assertTrue(viestiAfter.isEmpty)
+  }
+
+  @Test
+  @WithMockUser(value = "poistaja-oid", authorities = Array())
+  @Order(8)
+  def poistaYKViestiPalauttaa403KunEiKäyttöoikeuksia(): Unit = {
+    ////////
+    // Setup
+
+    // Luodaan poistettava viesti
+    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+      YkViesti(
+        id = null,
+        parentId = None,
+        hakemusOid = HakemusOid("hakemus-333"),
+        lahettajaOid = Some("poistaja-oid"),
+        vastaanottajaOid = Some("vastaanottaja-oid"),
+        kysymys = Some("Kysymys body"),
+        hakija = null
+      )
+    )
+
+    // Poistajan oikeudet
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = "poistaja-oid",
+        authorities = List()
+      )
+    )
+
+    ///////////////
+    // Verify - Act - Verify
+
+    // Varmistetaan että hakemus löytyy tietokannasta
+    val viestiBefore = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
+    assertTrue(viestiBefore.nonEmpty)
+
+    // Suoritetaan poistokutsu
+    mvc
+      .perform(
+        delete(s"/tutu-backend/api/hakemus/hakemus-333/yhteinenkasittely/${ykViestiId.toString}")
+      )
+      .andExpect(status().isForbidden)
+
+    // Varmistetaan että hakemus löytyy tietokannasta
+    val viestiAfter = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
+    assertTrue(viestiAfter.nonEmpty)
   }
 }
