@@ -538,6 +538,8 @@ test('Myönteisen päätöksen jatkovalinnat näytetään oikein, ja vastaavat P
       .click(),
     backendRequestMyonteinenPaatos(lisavaatimusRequest),
   );
+  // Elinikäinen oppiminen korvaa kokonaan, joten osittainen ammattikokemus ei tuo korvaavaa toimenpidettä
+  await expectHiddenOrDetached(kokemusJaOppiminenKelpoisuuskoeButton);
 
   await korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa.click();
 

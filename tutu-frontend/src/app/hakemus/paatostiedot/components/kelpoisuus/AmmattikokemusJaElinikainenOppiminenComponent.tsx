@@ -1,6 +1,7 @@
 import { Stack } from '@mui/material';
 import {
   OphCheckbox,
+  OphFormFieldWrapper,
   OphInputFormField,
 } from '@opetushallitus/oph-design-system';
 
@@ -11,6 +12,10 @@ import {
   ammattikokemusKorvaavuusOptions,
   elinikainenOppiminenKorvaavuusOptions,
 } from '@/src/app/hakemus/paatostiedot/constants';
+import {
+  ammattikokemusJaElinikainenOppiminenKorvaavatKokonaan,
+  shouldShowAmmattikokemusJaElinikainenOppiminenKorvaavaToimenpide,
+} from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { OphRadioGroupWithClear } from '@/src/components/OphRadioGroupWithClear';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
@@ -18,16 +23,6 @@ import {
   AmmattikokemusJaElinikainenOppiminenKorvaavuus,
   KorvaavaToimenpide,
 } from '@/src/lib/types/paatos';
-
-const taysiKorvaavuus = (
-  data: AmmattikokemusJaElinikainenOppiminen,
-): boolean => {
-  return (
-    data.korvaavuusAmmattikokemus === 'Taysi' ||
-    data.korvaavuusElinikainenOppiminen === 'Taysi' ||
-    !!data.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa
-  );
-};
 
 export type AmmattikokemusJaElinikainenOppiminenProps = {
   data: AmmattikokemusJaElinikainenOppiminen;
@@ -98,52 +93,62 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
             })
           }
         />
-        <Stack spacing={2}>
-          <OphCheckbox
-            data-testid={`ammattikokemusJalinikainenOppiminenYhdessa-checkbox`}
-            label={t(
-              'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title',
-            )}
-            checked={
-              data['korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa']
-            }
-            onChange={(e) =>
-              updateDataAction({
-                ...data,
-                korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa:
-                  e.target.checked,
-                korvaavuusAmmattikokemus: e.target.checked
-                  ? null
-                  : data['korvaavuusAmmattikokemus'],
-                korvaavuusElinikainenOppiminen: e.target.checked
-                  ? null
-                  : data['korvaavuusElinikainenOppiminen'],
-              })
-            }
-          />
-        </Stack>
-
-        {data['korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa'] && (
-          <OphInputFormField
-            label={t(
-              'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.ohje',
-            )}
-            multiline={true}
-            minRows={3}
-            value={data.lisatieto ?? ''}
-            onChange={(e) =>
-              updateDataAction({
-                ...data,
-                lisatieto: e.target.value,
-              })
-            }
-            data-testid={`ammattikokemusElinikainenOppiminen-lisatieto-input`}
-          />
-        )}
+        <OphFormFieldWrapper
+          label={t(
+            'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title',
+          )}
+          renderInput={() => (
+            <Stack spacing={2}>
+              <OphCheckbox
+                data-testid={`ammattikokemusJalinikainenOppiminenYhdessa-checkbox`}
+                label={t(
+                  'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title',
+                )}
+                checked={
+                  data['korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa']
+                }
+                onChange={(e) =>
+                  updateDataAction({
+                    ...data,
+                    korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa:
+                      e.target.checked,
+                    korvaavuusAmmattikokemus: e.target.checked
+                      ? null
+                      : data['korvaavuusAmmattikokemus'],
+                    korvaavuusElinikainenOppiminen: e.target.checked
+                      ? null
+                      : data['korvaavuusElinikainenOppiminen'],
+                  })
+                }
+              />
+              {data[
+                'korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa'
+              ] && (
+                <OphInputFormField
+                  label={t(
+                    'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.ohje',
+                  )}
+                  multiline={true}
+                  minRows={3}
+                  value={data.lisatieto ?? ''}
+                  onChange={(e) =>
+                    updateDataAction({
+                      ...data,
+                      lisatieto: e.target.value,
+                    })
+                  }
+                  data-testid={`ammattikokemusElinikainenOppiminen-lisatieto-input`}
+                />
+              )}
+            </Stack>
+          )}
+        />
       </Stack>
 
-      {data.korvaavaToimenpide && (
-        <Stack spacing={2} paddingLeft={3}>
+      {shouldShowAmmattikokemusJaElinikainenOppiminenKorvaavaToimenpide(
+        data,
+      ) && (
+        <Stack spacing={2}>
           <KorvaavaToimenpideComponent
             korvaavaToimenpide={data.korvaavaToimenpide}
             label={t(
@@ -168,7 +173,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
           />
         </Stack>
       )}
-      {taysiKorvaavuus(data) && (
+      {ammattikokemusJaElinikainenOppiminenKorvaavatKokonaan(data) && (
         <InFoTeksti
           infoTeksti={t(
             'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.eiEdellytetaKorvaavaaToimenpidetta',
