@@ -251,4 +251,29 @@ class YkViestiService(
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
     }
   }
+
+  def poistaYkViesti(
+    hakemusOid: HakemusOid,
+    viestiId: String,
+    userOid: UserOid
+  ): Unit = {
+    ykViestiRepository.haeYkViesti(hakemusOid.toString, viestiId) match {
+      case Some(ykViesti) => {
+        // TODO: Välitallennusta ei toteutettu (OPHTUTU-509)
+        // Tässä tulisi tarkistaa että viesti on vain "välitallennettu", eikä vielä lähetetty
+        // vastaanottajalle. Kun välitallennus toteutetaan, muutetaan tätä logiikkaa siten
+        // ettei lähetetyt viestit päädy poistettaviksi
+
+        val viestiaEiLahetetty       = /* Puuttuva logiikka välitallennuksesta */ true
+        val kysyjaPoistaaOmaaViestia = ykViesti.luoja.contains(userOid.toString)
+
+        if (viestiaEiLahetetty && kysyjaPoistaaOmaaViestia) {
+          ykViestiRepository.suoritaPoistaYkViesti(ykViesti.id)
+        } else {
+          throw Exception(s"Yhteiskäsittelyn viestiä $viestiId ei voida poistaa")
+        }
+      }
+      case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
+    }
+  }
 }

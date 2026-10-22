@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.service
 import fi.oph.tutu.backend.IntegrationTestBase
 import fi.oph.tutu.backend.domain.*
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.{assertThrows, assertTrue}
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.ActiveProfiles
@@ -147,5 +148,79 @@ class YkViestiServiceTest extends IntegrationTestBase {
 
     assert(result.muokkaaja.get == "VastaanottajaOid-1")
     assert(result.muokattu.nonEmpty)
+  }
+
+  @Test
+  def ykViestinPoistoEstetaanKunPoistajaOnEriKuinViestinLuoja(): Unit = {
+    ////////
+    // Setup
+    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+      YkViesti(
+        id = null,
+        parentId = None,
+        hakemusOid = HakemusOid("HakemusOid-1"),
+        lahettajaOid = Some("lahettaja-oid"),
+        luoja = Some("lahettaja-oid"),
+        vastaanottajaOid = Some("vastaanottaja-oid"),
+        kysymys = Some("Kysymys body"),
+        hakija = null
+      )
+    )
+
+    //////
+    // Act
+    val exception: Exception = assertThrows(
+      classOf[Exception],
+      () => {
+        ykViestiService.poistaYkViesti(
+          HakemusOid("HakemusOid-1"),
+          ykViestiId.toString,
+          UserOid("epa-lahettaja-oid")
+        )
+      }
+    )
+
+    /////////
+    // Verify
+    val viesti = ykViestiRepository.haeYkViesti("HakemusOid-1", ykViestiId.toString)
+    assertTrue(viesti.nonEmpty)
+  }
+
+  @Test
+  @Disabled("Feature not fully implemented")
+  def ykViestinPoistoEstetaanKunVietiOnJoLahetetty(): Unit = {
+    ////////
+    // Setup
+    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+      YkViesti(
+        // lahetetty = true,  // NOT IMPLEMENTED
+        id = null,
+        parentId = None,
+        hakemusOid = HakemusOid("HakemusOid-1"),
+        lahettajaOid = Some("lahettaja-oid"),
+        luoja = Some("lahettaja-oid"),
+        vastaanottajaOid = Some("vastaanottaja-oid"),
+        kysymys = Some("Kysymys body"),
+        hakija = null
+      )
+    )
+
+    //////
+    // Act
+    val exception: Exception = assertThrows(
+      classOf[Exception],
+      () => {
+        ykViestiService.poistaYkViesti(
+          HakemusOid("HakemusOid-1"),
+          ykViestiId.toString,
+          UserOid("lahettaja-oid")
+        )
+      }
+    )
+
+    /////////
+    // Verify
+    val viesti = ykViestiRepository.haeYkViesti("HakemusOid-1", ykViestiId.toString)
+    assertTrue(viesti.nonEmpty)
   }
 }

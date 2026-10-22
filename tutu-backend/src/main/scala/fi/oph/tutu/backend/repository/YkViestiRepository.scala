@@ -258,4 +258,31 @@ class YkViestiRepository extends BaseResultHandlers {
         )
     }
   }
+
+  /**
+   * Poistaa yhteiskäsittelyn viestin
+   *
+   * @param id
+   * YK-viestin id
+   */
+  private def poistaYkViesti(
+    id: UUID
+  ): DBIO[Int] =
+    sqlu"""
+      DELETE FROM yk_viesti
+      WHERE id = ${id.toString}::uuid
+    """
+
+  def suoritaPoistaYkViesti(id: UUID): Int = {
+    try {
+      db.run(poistaYkViesti(id), "poista_yk_viesti")
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Yhteiskäsittelyn viestin poistaminen epäonnistui: $e")
+        throw new RuntimeException(
+          s"Yhteiskäsittelyn viestin poistaminen epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
 }
