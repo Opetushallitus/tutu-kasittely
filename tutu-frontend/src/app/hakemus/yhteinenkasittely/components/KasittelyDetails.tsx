@@ -37,7 +37,7 @@ const vastaamatonKysymysMinulle = (
     return false;
   }
   const viimeinenViestiOnKysymys =
-    kasittely.jatkoKasittelyt?.length &&
+    kasittely.jatkoKasittelyt?.length === 0 &&
     kasittely.jatkoKasittelyt?.length % 2 === 0;
 
   const viimeisinViesti =
@@ -122,6 +122,10 @@ const VastausInput: React.FC<VastausInputProps> = ({
   );
   const name = `${vastaaja?.etunimi} ${vastaaja?.sukunimi}`;
   const vastausToShow: string | undefined = answers[id];
+  const backgroundColor = `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(
+    ophColors.lightBlue2.slice(3, 5),
+    16,
+  )}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.25)`;
 
   return (
     <React.Fragment key={id}>
@@ -133,7 +137,7 @@ const VastausInput: React.FC<VastausInputProps> = ({
           width: '85%',
           marginBottom: '24px',
           marginLeft: '20px',
-          backgroundColor: `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(ophColors.lightBlue2.slice(3, 5), 16)}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.25)`,
+          backgroundColor: backgroundColor,
         }}
       >
         <Box
@@ -195,12 +199,20 @@ const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
   const { t } = useTranslations();
 
   const nameDate = `${viesti.lahettaja} ${formatHelsinki(viesti.luotu || '', 'd.M.yyyy HH:mm')}`;
-  const tyyppi =
-    index < 0
-      ? ViestinYTyyppi.kysymys
-      : index % 2 === 0
-        ? ViestinYTyyppi.vastaus
-        : ViestinYTyyppi.lisakysymys;
+  let tyyppi: ViestinYTyyppi;
+
+  if (index < 0) {
+    tyyppi = ViestinYTyyppi.kysymys;
+  } else if (index % 2 === 0) {
+    tyyppi = ViestinYTyyppi.vastaus;
+  } else {
+    tyyppi = ViestinYTyyppi.lisakysymys;
+  }
+
+  const viestiMargin =
+    tyyppi === ViestinYTyyppi.kysymys || tyyppi === ViestinYTyyppi.lisakysymys
+      ? 0
+      : '20px';
 
   return (
     <React.Fragment key={viesti.id}>
@@ -211,11 +223,7 @@ const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
           padding: '16px',
           width: '85%',
           marginBottom: '24px',
-          marginLeft:
-            tyyppi === ViestinYTyyppi.kysymys ||
-            tyyppi === ViestinYTyyppi.lisakysymys
-              ? 0
-              : '20px',
+          marginLeft: viestiMargin,
           backgroundColor:
             tyyppi === ViestinYTyyppi.vastaus
               ? `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(ophColors.lightBlue2.slice(3, 5), 16)}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.75)`
