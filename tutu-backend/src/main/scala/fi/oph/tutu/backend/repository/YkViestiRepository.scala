@@ -9,6 +9,20 @@ import slick.jdbc.PostgresProfile.api.*
 
 import java.time.LocalDateTime
 import java.util.UUID
+import slick.jdbc.PositionedResult
+
+def nextStringArray(r: PositionedResult): Seq[String] = {
+  try {
+    r.rs
+      .getArray(r.skip.currentPos)
+      .getArray
+      .asInstanceOf[Array[Any]]
+      .toList
+      .map(_.toString())
+  } catch {
+    case e: Exception => Seq.empty
+  }
+}
 
 @Component
 @Repository
@@ -34,12 +48,7 @@ class YkViestiRepository extends BaseResultHandlers {
         luotu = r.nextTimestampOption().map(_.toLocalDateTime),
         muokkaaja = r.nextStringOption(),
         muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
-        luettu = Option(r.nextString()).map(
-          _.split(",").toSeq.flatMap(s =>
-            try { Some(UUID.fromString(s)) }
-            catch { case _: Exception => None }
-          )
-        ),
+        luettu = nextStringArray(r),
         aihe = Option(r.nextString())
       )
     )
@@ -54,6 +63,7 @@ class YkViestiRepository extends BaseResultHandlers {
             v.hakemus_oid,
             h.asiatunnus,
             v.lahettaja_oid,
+            COALESCE(e.kutsumanimi, '') || ' ' || COALESCE(e.sukunimi, ''),
             v.vastaanottaja_oid,
             v.viesti,
             COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
@@ -66,6 +76,7 @@ class YkViestiRepository extends BaseResultHandlers {
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+          LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
           LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
           WHERE
             v.vastaanottaja_oid = $userOid
@@ -90,6 +101,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.hakemus_oid,
           h.asiatunnus,
           v.lahettaja_oid,
+          COALESCE(e.kutsumanimi, '') || ' ' || COALESCE(e.sukunimi, ''),
           v.vastaanottaja_oid,
           v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
@@ -97,10 +109,13 @@ class YkViestiRepository extends BaseResultHandlers {
           v.luotu,
           v.muokkaaja,
           v.muokattu,
-          v.luettu
+          v.luettu,
+          a.avain
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+        LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
+        LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
         WHERE
           v.lahettaja_oid = $userOid
         """.as[YkViesti],
@@ -124,6 +139,7 @@ class YkViestiRepository extends BaseResultHandlers {
           v.hakemus_oid,
           h.asiatunnus,
           v.lahettaja_oid,
+          COALESCE(e.kutsumanimi, '') || ' ' || COALESCE(e.sukunimi, ''),
           v.vastaanottaja_oid,
           v.viesti,
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
@@ -131,10 +147,13 @@ class YkViestiRepository extends BaseResultHandlers {
           v.luotu,
           v.muokkaaja,
           v.muokattu,
-          v.luettu
+          v.luettu,
+          a.avain
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
+        LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
+        LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
         WHERE
           v.id = $id::uuid AND v.hakemus_oid = $hakemusOid
         """.as[YkViesti].headOption,
@@ -193,7 +212,7 @@ class YkViestiRepository extends BaseResultHandlers {
         sql"""
             UPDATE yk_viesti
             SET
-              luettu = ${ykViesti.luettu.map(_.mkString(",")).orNull},
+              luettu = ${ykViesti.luettu},
               muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
