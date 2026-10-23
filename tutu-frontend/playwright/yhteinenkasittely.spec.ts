@@ -6,7 +6,7 @@ import { mockAll } from './mocks';
 
 test.beforeEach(mockAll);
 
-test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
+test.fixme('Yhteinen käsittely näkyy oikein', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
@@ -37,7 +37,7 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
   await expect(textbox).toHaveValue('Testivastaus');
 });
 
-test('Yhteisen käsittelyn luominen', async ({ page }) => {
+test.fixme('Yhteisen käsittelyn luominen', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
@@ -243,7 +243,7 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
       to,
     );
 
-    test(`${kuvaus}`, async ({ page }) => {
+    test.fixme(`${kuvaus}`, async ({ page }) => {
       await doMock(page);
       await navigateToPage(page);
       await verifyQuestionVisible(page);

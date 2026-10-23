@@ -288,8 +288,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
   private def yhteinenKasittelyBranches(word: String, wordPat: String): Seq[SQLActionBuilder] =
     Seq(sql"""SELECT h.id AS id FROM yk_viesti yv
               JOIN hakemus h ON h.hakemus_oid = yv.hakemus_oid
-              WHERE yv.kysymys ILIKE $wordPat
-              OR yv.vastaus ILIKE $wordPat""")
+              WHERE yv.viesti ILIKE $wordPat""")
 
   private def viestitBranches(word: String, wordPat: String): Seq[SQLActionBuilder] =
     Seq(sql"""SELECT hakemus_id AS id FROM viesti
@@ -440,8 +439,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
   private def scoreYhteinenKasittely(word: String): SQLActionBuilder =
     sql"""COALESCE((
       SELECT MAX(
-        word_similarity($word, COALESCE(yv.kysymys, '')) +
-        word_similarity($word, COALESCE(yv.vastaus, ''))
+        word_similarity($word, COALESCE(yv.viesti, ''))
       )
       FROM yk_viesti yv
       WHERE yv.hakemus_oid = h.hakemus_oid

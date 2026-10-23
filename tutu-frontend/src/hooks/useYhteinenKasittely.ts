@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  Viesti,
   YhteinenKasittely,
   YhteinenKasittelyDTO,
 } from '../lib/types/yhteinenkasittely';
@@ -21,24 +22,14 @@ const getYhteinenKasittely = async (
     'no-store',
   );
   return yhteiskasittelyt.map((ykDto: YhteinenKasittelyDTO) => ({
-    id: ykDto.id,
-    parentId: ykDto.parentId,
-    kysymys: ykDto.kysymys,
-    vastaus: ykDto.vastaus,
-    kysymysLuettu: ykDto.kysymysLuettu,
-    vastausLuettu: ykDto.vastausLuettu,
-    lahettajaOid: ykDto.lahettajaOid,
-    vastaanottajaOid: ykDto.vastaanottajaOid,
-    vastaanottaja: ykDto.vastaanottaja,
-    luotu: ykDto.luotu,
-    vastattu: ykDto.vastattu,
-    jatkoKasittelyt: ykDto.jatkoKasittelyt,
+    aloitusViesti: ykDto.aloitusViesti,
+    jatkoKasittelyt: ykDto.jatkoKasittelyt || [],
   }));
 };
 
 const postYhteinenKasittely = async (
   hakemusOid: string,
-  kasittely: YhteinenKasittely,
+  kasittely: Viesti,
 ): Promise<unknown> => {
   return doApiPost(`hakemus/${hakemusOid}/yhteinenkasittely`, kasittely);
 };
@@ -47,7 +38,7 @@ const patchYhteinenKasittelyVastaus = async (
   hakemusOid: string,
   payload: { id: string; vastaus?: string; laheta?: boolean },
 ): Promise<unknown> => {
-  return doApiPatch(
+  return doApiPost(
     `hakemus/${hakemusOid}/yhteinenkasittely/${payload.id}`,
     payload,
   );
@@ -79,7 +70,7 @@ export const useYhteinenKasittely = (
   });
 
   const createMutation = useMutation({
-    mutationFn: (kasittely: YhteinenKasittely) =>
+    mutationFn: (kasittely: Viesti) =>
       postYhteinenKasittely(hakemusOid, kasittely),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey });
@@ -106,7 +97,7 @@ export const useYhteinenKasittely = (
     ...query,
     kasittelyt: query.data,
     isKasittelytLoading: query.isLoading,
-    luoUusiKasittely: (k: YhteinenKasittely) => createMutation.mutate(k),
+    luoUusiKasittely: (k: Viesti) => createMutation.mutate(k),
     vastaaKasittelyyn: (p: {
       id: string;
       vastaus?: string;

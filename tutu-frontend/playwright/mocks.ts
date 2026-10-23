@@ -565,38 +565,44 @@ export const mockTutkinnot = async (page: Page) => {
 export const mockYhteinenKasittely = async (page: Page) => {
   const yhteinenkasittelydata: YhteinenKasittely[] = [
     {
-      id: 'q1',
-      vastaanottaja: 'Testi esittelijä',
-      vastaanottajaOid: '1.2.246.562.24.999999999999',
-      kysymys: 'Voisitko tarkistaa liitteen A tiedot?',
-      luotu: '2026-02-04T09:12:00.000Z',
+      aloitusViesti: {
+        id: 'q1',
+        vastaanottaja: 'Testi esittelijä',
+        vastaanottajaOid: '1.2.246.562.24.999999999999',
+        viesti: 'Voisitko tarkistaa liitteen A tiedot?',
+        luotu: '2026-02-04T09:12:00.000Z',
+      },
     },
     {
-      id: 'q2',
-      vastaanottaja: 'Kalle Päätalo',
-      vastaanottajaOid: '1.2.246.562.24.999999999998',
-      kysymys: 'Onko tämä päätös valmis allekirjoitettavaksi?',
-      luotu: '2026-02-03T14:30:00.000Z',
+      aloitusViesti: {
+        id: 'q2',
+        vastaanottaja: 'Kalle Päätalo',
+        vastaanottajaOid: '1.2.246.562.24.999999999998',
+        viesti: 'Onko tämä päätös valmis allekirjoitettavaksi?',
+        luotu: '2026-02-03T14:30:00.000Z',
+      },
     },
     {
-      id: 'q3',
-      vastaanottaja: 'Otto Kehittäjä',
-      vastaanottajaOid: '1.2.246.562.24.999999999997',
-      kysymys: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
-      luotu: '2026-02-01T08:05:00.000Z',
+      aloitusViesti: {
+        id: 'q3',
+        vastaanottaja: 'Otto Kehittäjä',
+        vastaanottajaOid: '1.2.246.562.24.999999999997',
+        viesti: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
+        luotu: '2026-02-01T08:05:00.000Z',
+      },
       jatkoKasittelyt: [
         {
           id: 'q4',
           vastaanottaja: 'Toinen Tyyppi',
           vastaanottajaOid: '1.2.246.562.24.999999999996',
-          kysymys: 'Tarvitaanko lisätietoja ???',
+          viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
         },
         {
           id: 'q5',
           vastaanottaja: 'Vastaaja Esittelijä',
           vastaanottajaOid: '1.2.246.562.24.999999999995',
-          kysymys: 'Tarvitaanko lisätietoja ???',
+          viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
         },
       ],
@@ -615,11 +621,13 @@ export const mockYhteinenKasittely = async (page: Page) => {
       if (method === 'POST') {
         const data = route.request().postDataJSON() as YhteinenKasittely;
         yhteinenkasittelydata.push({
-          id: `${nextId()}`,
-          vastaanottaja: data.vastaanottajaOid,
-          vastaanottajaOid: data.vastaanottajaOid,
-          kysymys: data.kysymys,
-          luotu: new Date().toISOString(),
+          aloitusViesti: {
+            id: `${nextId()}`,
+            vastaanottaja: data.aloitusViesti.vastaanottajaOid,
+            vastaanottajaOid: data.aloitusViesti.vastaanottajaOid,
+            viesti: data.aloitusViesti.viesti,
+            luotu: new Date().toISOString(),
+          },
         });
 
         await route.fulfill({
@@ -641,10 +649,12 @@ export const mockYhteinenKasittely = async (page: Page) => {
           vastaus?: string;
         };
         const id = path.split('/').pop() || data.id;
-        const item = yhteinenkasittelydata.find((i) => i.id === id);
+        const item = yhteinenkasittelydata.find(
+          (i) => i.aloitusViesti.id === id,
+        );
 
         if (item) {
-          item.vastaus = data.vastaus;
+          item.aloitusViesti.viesti = data.vastaus || '';
         }
 
         await route.fulfill({

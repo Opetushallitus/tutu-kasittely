@@ -1,3 +1,5 @@
+'use client';
+
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -26,34 +28,22 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 function not<T>(predicate: (arg: T) => boolean) {
   return (arg: T) => !predicate(arg);
 }
 
-const kayttajaLukenutViestin =
-  (user: User | null) => (kasittely: YhteinenKasittely) => {
-    if (!user) {
-      return false;
-    }
-    const kayttajaOnKysyja = user.userOid === kasittely.lahettajaOid;
-    const kayttajaOnVastaaja = user.userOid === kasittely.vastaanottajaOid;
-    const vastausAnnettu = !!kasittely.vastattu;
-    const kysymysLuettu = !!kasittely.kysymysLuettu;
-    const vastausLuettu = !!kasittely.vastausLuettu;
+const kayttajaLukenutViestin = (user: User | null) => (viesti: Viesti) => {
+  if (!user) {
+    return false;
+  }
+  const luettu =
+    viesti.luettu && viesti.luettu?.some((oid) => oid === user.userOid);
 
-    const kayttajaOnKysyjaJaLukenutVastauksen =
-      kayttajaOnKysyja && vastausAnnettu && vastausLuettu;
-    const kayttajaOnVastaajaJaLukenutKysymyksen =
-      kayttajaOnVastaaja && kysymysLuettu;
-
-    return (
-      kayttajaOnKysyjaJaLukenutVastauksen ||
-      kayttajaOnVastaajaJaLukenutKysymyksen
-    );
-  };
+  return luettu || false;
+};
 
 const EmptyList: React.FC<{ t: TFunction; theme: Theme }> = ({ t, theme }) => {
   return (
@@ -130,7 +120,7 @@ export default function YhteinenKasittelyPage() {
   const answersFromServer = useMemo(() => {
     return (kasittelyt ?? []).reduce(
       (acc: Record<string, string>, kasittely: YhteinenKasittely) => {
-        acc[kasittely.id!] = kasittely.vastaus ?? '';
+        acc[kasittely.aloitusViesti.id!] = kasittely.aloitusViesti.viesti ?? '';
         return acc;
       },
       {},
@@ -164,10 +154,13 @@ export default function YhteinenKasittelyPage() {
   }, [kasittelyError, esittelijatError, updateError, addToast, t]);
 
   const merkitseLuetuksi = (panelId?: string) => {
-    const kasittely = kasittelyt?.find((kasittely) => kasittely.id === panelId);
+    const kasittely = kasittelyt?.find(
+      (kasittely) => kasittely.aloitusViesti.id === panelId,
+    );
     if (kasittely) {
       const jatkoKasittelyt = kasittely.jatkoKasittelyt || [];
-      const viestiIdt: string[] = [kasittely, ...jatkoKasittelyt]
+      const aloitusViesti = kasittely.aloitusViesti;
+      const viestiIdt: string[] = [aloitusViesti, ...jatkoKasittelyt]
         .filter(not(kayttajaLukenutViestin(user)))
         .map(({ id }) => id)
         .filter(Boolean) as string[];
@@ -230,9 +223,9 @@ export default function YhteinenKasittelyPage() {
 
   const handleCreateKasittely = async () => {
     try {
-      const kasittely: YhteinenKasittely = {
-        parentId: modalParent?.id,
-        kysymys: kysymys,
+      const kasittely: Viesti = {
+        parentId: modalParent?.aloitusViesti.id,
+        viesti: kysymys,
         vastaanottajaOid: tyopari,
       };
       luoUusiKasittely(kasittely);
@@ -314,7 +307,25 @@ export default function YhteinenKasittelyPage() {
                   >
                     {t('hakemus.yhteinenkasittely.kysymys')}
                   </OphTypography>
-                  <Stack direction="row" sx={{ flex: 1 }}>
+                  <OphTypography
+                    variant="body1"
+                    sx={{
+                      flex: 1,
+                      fontWeight: 600,
+                      paddingLeft: theme.spacing(1.5),
+                      userSelect: 'none',
+                    }}
+                  >
+                    {t('hakemus.yhteinenkasittely.lahettaja')}
+                  </OphTypography>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      flex: 2,
+                      marginLeft: theme.spacing(2),
+                      paddingLeft: theme.spacing(2),
+                    }}
+                  >
                     <Button
                       onClick={handleSort}
                       aria-label={t(

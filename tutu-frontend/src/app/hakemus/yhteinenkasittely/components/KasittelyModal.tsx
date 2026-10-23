@@ -126,9 +126,11 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
 }) => {
   const { t } = useTranslations();
 
+  const jatkokysymys = parentKasittely.jatkoKasittelyt?.at(-1);
   const filteredEsittelijat = esittelijat.filter(
     (esittelija) =>
-      esittelija.esittelijaOid !== parentKasittely.vastaanottajaOid,
+      esittelija.esittelijaOid !==
+      parentKasittely.aloitusViesti.vastaanottajaOid,
   );
 
   return (
@@ -173,9 +175,7 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
           <OphTypography variant="h2">
             {t('hakemus.yhteinenkasittely.jatkoKasittely.alkuperainenKysymys')}
           </OphTypography>
-          <OphTypography variant="body1">
-            {parentKasittely.kysymys}
-          </OphTypography>
+          <OphTypography variant="body1">{jatkokysymys?.viesti}</OphTypography>
 
           <OphInputFormField
             multiline
