@@ -25,7 +25,7 @@ class YkViestiService(
     // Suodatetaan uudet saapuneet viestit
     val uudetViestit = saapuneet.count(viesti => viesti.luettu.isEmpty)
 
-    uudetViestit > 0 // || uudetVastaukset > 0
+    uudetViestit > 0
   }
 
   def haeHakemuksenYkViestiketjut(
@@ -180,7 +180,7 @@ class YkViestiService(
       throw NotFoundException(s"Yhteiskäsittelyn viesti id is null")
     }
 
-    val ykViesti: Unit = ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
+    ykViestiRepository.haeYkViesti(hakemusOid, ykVastaus.id.get) match {
       case Some(ykViesti) =>
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
