@@ -126,6 +126,7 @@ case class APSisalto(
   lisatietoja: Option[String] = None,
   IMIHalytysTarkastettu: Boolean = false,
   muutAPPerustelut: Option[String] = None,
+  SEUTArviointiTehty: Boolean = false,
   SEUTArviointi: Option[String] = None
 )
 

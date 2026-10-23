@@ -1,6 +1,6 @@
 import { Add } from '@mui/icons-material';
 import { Divider } from '@mui/material';
-import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import React, { useEffect } from 'react';
 
 import { PaatosTietoList } from '@/src/app/hakemus/paatostiedot/components/PaatosTietoList';
@@ -92,16 +92,6 @@ export const EhdollinenPaatosComponent = ({
 
   return (
     <>
-      <OphCheckbox
-        label={t('hakemus.paatos.seut')}
-        checked={paatos.seutArviointi}
-        onChange={() => {
-          updatePaatosField({
-            seutArviointi: !paatos.seutArviointi,
-          });
-        }}
-        data-testid={'paatos-seut'}
-      />
       <OphSelectFormFieldPatched
         placeholder={t('yleiset.valitse')}
         label={t('hakemus.paatos.ratkaisutyyppi.otsikko')}
