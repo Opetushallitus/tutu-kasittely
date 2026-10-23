@@ -154,7 +154,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def ykViestinPoistoEstetaanKunPoistajaOnEriKuinViestinLuoja(): Unit = {
     ////////
     // Setup
-    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val ykViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         id = null,
         parentId = None,
@@ -162,7 +162,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
         lahettajaOid = Some("lahettaja-oid"),
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
-        kysymys = Some("Kysymys body"),
+        viesti = Some("Kysymys body"),
         hakija = null
       )
     )
@@ -191,7 +191,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def ykViestinPoistoEstetaanKunVietiOnJoLahetetty(): Unit = {
     ////////
     // Setup
-    val ykViestiId = ykViestiRepository.luoHakemuksenYkViesti(
+    val ykViestiId = ykViestiRepository.tallennaHakemuksenYkViesti(
       YkViesti(
         // lahetetty = true,  // NOT IMPLEMENTED
         id = null,
@@ -200,7 +200,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
         lahettajaOid = Some("lahettaja-oid"),
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
-        kysymys = Some("Kysymys body"),
+        viesti = Some("Kysymys body"),
         hakija = null
       )
     )
