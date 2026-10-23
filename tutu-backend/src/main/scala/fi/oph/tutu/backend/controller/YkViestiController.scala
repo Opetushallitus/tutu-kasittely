@@ -132,32 +132,22 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        Try {
-          ykViestiService.haeHakemuksenYkViestiketjut(hakemusOid)
-        } match {
-          case Success(ykViestit) =>
-            val response = mapper.writeValueAsString(
-              ykViestit.map { ketju =>
-                ketju.copy(
-                  aloitusViesti = haeNimet(ketju.aloitusViesti),
-                  jatkoKasittelyt = ketju.jatkoKasittelyt.map(haeNimet)
-                )
-              }
-            )
-            ResponseEntity.status(HttpStatus.OK).body(response)
-          case Failure(exception) =>
-            LOG.error("Hakemuksen yhteisen käsittelyn viestien haku epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+      Try {
+        ykViestiService.haeHakemuksenYkViestiketjut(hakemusOid)
+      } match {
+        case Success(ykViestit) =>
+          val response = mapper.writeValueAsString(
+            ykViestit.map { ketju =>
+              ketju.copy(
+                aloitusViesti = haeNimet(ketju.aloitusViesti),
+                jatkoKasittelyt = ketju.jatkoKasittelyt.map(haeNimet)
+              )
+            }
+          )
+          ResponseEntity.status(HttpStatus.OK).body(response)
+        case Failure(exception) =>
+          LOG.error("Hakemuksen yhteisen käsittelyn viestien haku epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
@@ -176,46 +166,37 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var ykKysymys: YkKysymysDTO = null
-        try ykKysymys = mapper.readValue(ykKysymysBytes, classOf[YkKysymysDTO])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-        if (ykKysymys.vastaanottajaOid.isEmpty || ykKysymys.viesti.isEmpty) {
-          LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit")
+      val user                    = userService.getEnrichedUserDetails(true)
+      var ykKysymys: YkKysymysDTO = null
+      try ykKysymys = mapper.readValue(ykKysymysBytes, classOf[YkKysymysDTO])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: ${e.getMessage}", e)
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
           )
-        }
+      }
+      if (ykKysymys.vastaanottajaOid.isEmpty || ykKysymys.viesti.isEmpty) {
+        LOG.error(s"Yhteisen käsittelyn viestin luominen epäonnistui: virheelliset parametrit")
+        return errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
+      }
 
-        Try {
-          ykViestiService.tallennaHakemuksenYkViesti(
-            hakemusOid,
-            user,
-            ykKysymys
-          )
-        } match {
-          case Success(_) =>
-            ResponseEntity.noContent().build()
-          case Failure(exception) =>
-            LOG.error("Yhteisen käsittelyn viestin luominen epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+      Try {
+        ykViestiService.tallennaHakemuksenYkViesti(
+          hakemusOid,
+          user,
+          ykKysymys
+        )
+      } match {
+        case Success(_) =>
+          ResponseEntity.noContent().build()
+        case Failure(exception) =>
+          LOG.error("Yhteisen käsittelyn viestin luominen epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
@@ -235,51 +216,42 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var ykVastaus: YkVastausDTO = null
-        try ykVastaus = mapper.readValue(ykVastausBytes, classOf[YkVastausDTO])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-
-        if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
-          LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
+      val user                    = userService.getEnrichedUserDetails(true)
+      var ykVastaus: YkVastausDTO = null
+      try ykVastaus = mapper.readValue(ykVastausBytes, classOf[YkVastausDTO])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
           )
-        }
+      }
 
-        Try {
-          ykViestiService.tallennaHakemuksenYkViesti(
-            hakemusOid,
-            user,
-            ykKysymys = YkKysymysDTO(
-              parentId = Some(viestiId),
-              viesti = ykVastaus.vastaus,
-              vastaanottajaOid = None
-            )
+      if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
+        LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
+        return errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
+      }
+
+      Try {
+        ykViestiService.tallennaHakemuksenYkViesti(
+          hakemusOid,
+          user,
+          ykKysymys = YkKysymysDTO(
+            parentId = Some(viestiId),
+            viesti = ykVastaus.vastaus,
+            vastaanottajaOid = None
           )
-        } match {
-          case Success(_) =>
-            ResponseEntity.noContent().build()
-          case Failure(exception) =>
-            LOG.error("Yhteisen käsittelyn viestiin vastaaminen epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+        )
+      } match {
+        case Success(_) =>
+          ResponseEntity.noContent().build()
+        case Failure(exception) =>
+          LOG.error("Yhteisen käsittelyn viestiin vastaaminen epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
@@ -299,47 +271,38 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var ykVastaus: YkVastausDTO = null
-        try ykVastaus = mapper.readValue(ykVastausBytes, classOf[YkVastausDTO])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-
-        if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
-          LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
+      val user                    = userService.getEnrichedUserDetails(true)
+      var ykVastaus: YkVastausDTO = null
+      try ykVastaus = mapper.readValue(ykVastausBytes, classOf[YkVastausDTO])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: ${e.getMessage}", e)
           return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
           )
-        }
+      }
 
-        Try {
-          ykViestiService.vastaaHakemuksenYkViestiin(
-            hakemusOid,
-            user,
-            ykVastaus
-          )
-        } match {
-          case Success(_) =>
-            ResponseEntity.noContent().build()
-          case Failure(exception) =>
-            LOG.error("Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+      if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
+        LOG.error(s"Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
+        return errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
+      }
+
+      Try {
+        ykViestiService.vastaaHakemuksenYkViestiin(
+          hakemusOid,
+          user,
+          ykVastaus
+        )
+      } match {
+        case Success(_) =>
+          ResponseEntity.noContent().build()
+        case Failure(exception) =>
+          LOG.error("Hakemuksen yhteisen käsittelyn viestiin vastaaminen epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
@@ -358,28 +321,19 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
+      val user = userService.getEnrichedUserDetails(true)
+      Try {
+        ykViestiService.merkitseYkViestiLuetuksi(
+          hakemusOid,
+          viestiId,
+          user
         )
-      } else {
-        Try {
-          ykViestiService.merkitseYkViestiLuetuksi(
-            hakemusOid,
-            viestiId,
-            user
-          )
-        } match {
-          case Success(_) =>
-            ResponseEntity.noContent().build()
-          case Failure(exception) =>
-            LOG.error("Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+      } match {
+        case Success(_) =>
+          ResponseEntity.noContent().build()
+        case Failure(exception) =>
+          LOG.error("Yhteisen käsittelyn viestiin luetuksi merkitseminen epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
@@ -420,27 +374,19 @@ class YkViestiController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
+      val user = userService.getEnrichedUserDetails(true)
+      Try {
+        ykViestiService.poistaYkViesti(
+          HakemusOid(hakemusOid),
+          viestiId,
+          UserOid(user.userOid)
         )
-      } else {
-        Try {
-          ykViestiService.poistaYkViesti(
-            HakemusOid(hakemusOid),
-            viestiId,
-            UserOid(user.userOid)
-          )
-        } match {
-          case Success(_) =>
-            ResponseEntity.noContent().build()
-          case Failure(exception) =>
-            LOG.error("Yhteisen käsittelyn viestin poistaminen epäonnistui", exception)
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+      } match {
+        case Success(_) =>
+          ResponseEntity.noContent().build()
+        case Failure(exception) =>
+          LOG.error("Yhteisen käsittelyn viestin poistaminen epäonnistui", exception)
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
