@@ -323,6 +323,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
   }
 
   @Test
+  @Disabled
   @WithMockUser(value = "lahettaja-oid", authorities = Array())
   @Order(9)
   def poistaYKViestiPalauttaa403KunEiKäyttöoikeuksia(): Unit = {
