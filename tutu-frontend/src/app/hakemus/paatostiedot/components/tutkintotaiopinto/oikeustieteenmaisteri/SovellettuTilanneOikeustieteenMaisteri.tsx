@@ -190,15 +190,15 @@ export const SovellettuTilanneOikeustieteenMaisteri = ({
           <OpintopisteTaulukko
             t={t}
             sovellettuTilanne={lisavaatimukset?.sovellettuTilanne ?? ''}
-            tallinnaOpintojenLaajuus={
+            suoritetutTallinnaOpinnot={
               lisavaatimukset?.oikeustieteenMaisteriLisavaatimukset
                 ?.tallinnaOpintojenLaajuus
             }
-            eurooppaOpintojenLaajuus={
+            suoritetutEurooppaOpinnot={
               lisavaatimukset?.oikeustieteenMaisteriLisavaatimukset
                 ?.eurooppaOpintojenLaajuus
             }
-            suomiOpintojenLaajuus={
+            suoritetutSuomiOpinnot={
               lisavaatimukset?.oikeustieteenMaisteriLisavaatimukset
                 ?.suomiOpintojenLaajuus
             }

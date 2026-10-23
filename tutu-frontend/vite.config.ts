@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
     "default-src 'self'",
     `connect-src 'self' app.tolgee.io ${env.TUTU_BACKEND} ${env.VIRKAILIJA_URL} https://cdn.jsdelivr.net`,
     "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-    `script-src-elem 'self' 'unsafe-inline' ${env.VIRKAILIJA_URL} https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js`,
+    `script-src-elem 'self' 'unsafe-inline' ${env.VIRKAILIJA_URL} https://cdn.jsdelivr.net/npm/@tolgee/web@7.2.1/dist/tolgee-in-context-tools.umd.min.js`,
     "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
     "img-src 'self' blob: data:",
     "font-src 'self' fonts.gstatic.com data:",
