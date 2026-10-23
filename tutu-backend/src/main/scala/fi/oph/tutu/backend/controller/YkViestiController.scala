@@ -324,7 +324,6 @@ class YkViestiController(
   @Operation(
     summary =
       "Poistaa yhteisen käsittelyn viestin, jos viestiä ei ole lähetetty ja poistaja on viestin alkuperäinen luoja",
-    tags = Array("External"),
     description = "",
     responses = Array(
       new ApiResponse(
