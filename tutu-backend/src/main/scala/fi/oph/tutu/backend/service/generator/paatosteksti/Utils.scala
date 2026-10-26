@@ -5,6 +5,28 @@ import fi.oph.tutu.backend.domain.Kieli
 import fi.oph.tutu.backend.service.MaakoodiService
 import fi.oph.tutu.backend.service.TranslationService
 
+val tutkintoOtsikkoKeyMap: Map[String, String] = Map(
+  "tutkintotodistus"             -> "tutkintotodistus",
+  "tutkintotodistukset"          -> "tutkintotodistukset",
+  "todistus"                     -> "todistus",
+  "todistukset"                  -> "todistukset",
+  "examensbevis"                 -> "tutkintotodistus",
+  "bevis"                        -> "todistus",
+  "muutodistus"                  -> "muutodistus",
+  "muuttodistukset"              -> "muuttodistukset",
+  "edeltaneetkorkeakouluopinnot" -> "edeltaneetkorkeakouluopinnot",
+  "ovrigbevis"                   -> "muutodistus",
+  "ovrigabevis"                  -> "muuttodistukset",
+  "foregaendehogskolestudier"    -> "edeltaneetkorkeakouluopinnot"
+)
+
+def getTutkintoOtsikko(tutkintoOtsikko: String, lang: Kieli, translationService: TranslationService): String = {
+  val translationKeyParam = tutkintoOtsikkoKeyMap.getOrElse(tutkintoOtsikko, "todistus")
+  val translationKey      = s"paatosteksti.todistusOtsikko.${translationKeyParam}"
+
+  translationService.getTranslation(lang, translationKey)
+}
+
 def getTutkintoBlocks(
   tutkinnot: Seq[Tutkinto],
   lang: Kieli,
@@ -15,7 +37,7 @@ def getTutkintoBlocks(
     .map { tutkinto =>
       val tutkintoOtsikko =
         tutkinto.todistusOtsikko
-          .map(o => tutkintoOtsikkoLabelMap.getOrElse(o, o))
+          .map(o => getTutkintoOtsikko(o, lang, translationService))
           .getOrElse("")
 
       val tutkintoNimi     = tutkinto.nimi.getOrElse("")

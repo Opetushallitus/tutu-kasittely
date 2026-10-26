@@ -7,22 +7,6 @@ import fi.oph.tutu.backend.service.TranslationService
 import org.springframework.stereotype.{Component, Service}
 import fi.oph.tutu.backend.utils.{Constants, haeKysymyksenTiedot}
 
-// See TutkintoComponent.tsx
-val tutkintoOtsikkoLabelMap: Map[String, String] = Map(
-  "tutkintotodistus"             -> "Tutkintotodistus",
-  "tutkintotodistukset"          -> "Tutkintotodistukset",
-  "todistus"                     -> "Todistus",
-  "todistukset"                  -> "Todistukset",
-  "examensbevis"                 -> "Examensbevis",
-  "bevis"                        -> "Bevis",
-  "muutodistus"                  -> "Muu todistus",
-  "muuttodistukset"              -> "Muut todistukset",
-  "edeltaneetkorkeakouluopinnot" -> "Edeltäneet korkeakouluopinnot",
-  "ovrigbevis"                   -> "Övrig bevis",
-  "ovrigabevis"                  -> "Övriga bevis",
-  "foregaendehogskolestudier"    -> "Föregående högskolestudier"
-)
-
 @Component
 @Service
 class PaatosTekstiGenerator(translationService: TranslationService) {
