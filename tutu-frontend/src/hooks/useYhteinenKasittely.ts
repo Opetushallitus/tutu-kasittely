@@ -4,7 +4,6 @@ import {
   Viesti,
   YhteinenKasittely,
   YhteinenKasittelyDTO,
-  YkViestiAihe,
 } from '../lib/types/yhteinenkasittely';
 
 import { SortOrder } from '@/src/app/components/types';
@@ -26,10 +25,6 @@ const getYhteinenKasittely = async (
     aloitusViesti: ykDto.aloitusViesti,
     jatkoKasittelyt: ykDto.jatkoKasittelyt || [],
   }));
-};
-
-const getYhteinenKasittelyAiheet = async (): Promise<YkViestiAihe[]> => {
-  return doApiFetch('/ykViestiAiheet', {}, 'no-store');
 };
 
 const postYhteinenKasittely = async (
@@ -98,14 +93,6 @@ export const useYhteinenKasittely = (
     },
   });
 
-  const aiheetQuery = useQuery({
-    queryKey: ['getYhteinenKasittelyAiheet'],
-    queryFn: getYhteinenKasittelyAiheet,
-    enabled: !!hakemusOid,
-    throwOnError: false,
-    refetchOnMount: 'always',
-  });
-
   return {
     ...query,
     kasittelyt: query.data,
@@ -119,7 +106,5 @@ export const useYhteinenKasittely = (
     viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error ?? answerMutation.error,
     answerIsPending: answerMutation.isPending,
-    aiheet: aiheetQuery.data,
-    isAiheetLoading: aiheetQuery.isLoading,
   };
 };
