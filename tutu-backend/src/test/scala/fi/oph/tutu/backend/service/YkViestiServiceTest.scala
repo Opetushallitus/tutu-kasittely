@@ -7,12 +7,16 @@ import org.junit.jupiter.api.Assertions.{assertThrows, assertTrue}
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.ActiveProfiles
+import fi.oph.tutu.backend.repository.YkViestiAiheRepository
+import org.springframework.beans.factory.annotation.Autowired
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
 class YkViestiServiceTest extends IntegrationTestBase {
 
   var ykViestiService: YkViestiService = _
+  @Autowired
+  var ykViestiAiheRepository: YkViestiAiheRepository = _
 
   @BeforeAll
   def setupOnce(): Unit = {
@@ -42,7 +46,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     ykViestiService = new YkViestiService(
-      ykViestiRepository = ykViestiRepository
+      ykViestiRepository = ykViestiRepository,
+      ykViestiAiheRepository = ykViestiAiheRepository
     )
   }
 
