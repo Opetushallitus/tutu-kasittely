@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.YkViestiRepository
+import fi.oph.tutu.backend.repository.{YkViestiAiheRepository, YkViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
@@ -12,7 +12,8 @@ import java.util.UUID
 @Component
 @Service
 class YkViestiService(
-  ykViestiRepository: YkViestiRepository
+  ykViestiRepository: YkViestiRepository,
+  ykViestiAiheRepository: YkViestiAiheRepository
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiService])
 
@@ -223,5 +224,9 @@ class YkViestiService(
       }
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
     }
+  }
+
+  def haeYkViestiAiheet(): Seq[YkViestiAihe] = {
+    ykViestiAiheRepository.haeYkViestinAiheet()
   }
 }
