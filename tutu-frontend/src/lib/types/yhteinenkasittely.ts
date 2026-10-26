@@ -29,3 +29,8 @@ export type YhteinenKasittelyDTO = {
   aloitusViesti: Viesti;
   jatkoKasittelyt?: Viesti[];
 };
+
+export type YkViestiAihe = {
+  id: string;
+  aihe: string;
+};
