@@ -102,18 +102,21 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
     const serverAsiakirjat = query.data?.pyydettavatAsiakirjat;
     if (!serverAsiakirjat || !localAsiakirja) return;
 
-    // Poistetaan tallentamaton pyyntö vain lokaalisti
-    if (!serverAsiakirjat.some((pyynto) => pyynto.id === poistettava.id)) {
+    const asiakirjaOnTallennettu = serverAsiakirjat.some(
+      (pyynto) => pyynto.id === poistettava.id,
+    );
+
+    if (asiakirjaOnTallennettu) {
+      mutationPoista.mutate(poistettava);
+    } else {
+      // Tallentamaton asiakirja poistetaan vain lokaalisti
       setLocalAsiakirja({
         ...localAsiakirja,
         pyydettavatAsiakirjat: localAsiakirja.pyydettavatAsiakirjat.filter(
           (pyynto) => pyynto.id !== poistettava.id,
         ),
       });
-      return;
     }
-
-    mutationPoista.mutate(poistettava);
   };
 
   return {
