@@ -86,6 +86,13 @@ test.describe('Asiakirjapyynnöt', () => {
       });
     });
 
+    await page.route(
+      '**/tutu-backend/api/hakemus/*/asiakirjat/test-id',
+      async (route) => {
+        await route.fulfill({ status: 204 });
+      },
+    );
+
     await page.goto(
       '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
     );
@@ -129,6 +136,114 @@ test.describe('Asiakirjapyynnöt', () => {
     await expect(page.getByTestId('pyyda-asiakirja-select')).toBeHidden();
 
     await expect(saveButton).toBeHidden();
+  });
+
+  const mockTallennettuAsiakirjapyynto = async (
+    page: Page,
+    deleteStatus: number,
+  ) => {
+    const asiakirjat = getHakemus().asiakirja;
+    const tallennettu = {
+      id: 'tallennettu-id',
+      asiakirjanTyyppi: 'nimenmuutos',
+    };
+    let pyydettavatAsiakirjat = [tallennettu];
+    const deleteRequests: string[] = [];
+
+    await mockUser(page);
+    await mockHakemus(page);
+    await mockLiitteet(page);
+
+    await page.route(
+      '**/tutu-backend/api/hakemus/*/asiakirjat',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ ...asiakirjat, pyydettavatAsiakirjat }),
+        });
+      },
+    );
+
+    await page.route(
+      '**/tutu-backend/api/hakemus/*/asiakirjat/*',
+      async (route) => {
+        deleteRequests.push(route.request().url());
+        if (deleteStatus < 400) {
+          pyydettavatAsiakirjat = [];
+        }
+        await route.fulfill({ status: deleteStatus });
+      },
+    );
+
+    await page.goto(
+      '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/asiakirjat',
+    );
+    await expect(page.getByTestId('pyyda-asiakirja-select')).toHaveText(
+      'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.nimenmuutos',
+    );
+
+    return deleteRequests;
+  };
+
+  test('Tallentamattoman asiakirjapyynnön poisto ei jätä tallennusnauhaa tallennustilaan', async ({
+    page,
+  }) => {
+    const deleteRequests = await mockTallennettuAsiakirjapyynto(page, 404);
+
+    await page.getByTestId('pyyda-asiakirja-button').click();
+    await page.getByTestId('pyyda-asiakirja-select').last().click();
+    await page
+      .getByRole('option', {
+        name: 'hakemus.asiakirjat.asiakirjapyynnot.asiakirjat.kansalaisuus',
+      })
+      .click();
+
+    const saveButton = page.getByTestId('save-ribbon-button');
+    await expect(saveButton).toHaveText('yleiset.tallenna');
+
+    await page.getByTestId('poista-asiakirja-button-1').click();
+    await page.getByTestId('modal-confirm-button').click();
+
+    await expect(page.getByTestId('pyyda-asiakirja-select')).toHaveCount(1);
+    await expect(saveButton).toBeHidden();
+    expect(deleteRequests).toHaveLength(0);
+  });
+
+  test('Tallennetun asiakirjapyynnön poistosta näytetään onnistumistoast', async ({
+    page,
+  }) => {
+    const deleteRequests = await mockTallennettuAsiakirjapyynto(page, 204);
+
+    await page.getByTestId('poista-asiakirja-button-0').click();
+    await page.getByTestId('modal-confirm-button').click();
+
+    await expect(page.getByTestId('pyyda-asiakirja-select')).toHaveCount(0);
+    await expect(page.getByTestId('toast-message')).toHaveText(
+      'yleiset.tallennusOnnistui',
+    );
+    await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+      'data-severity',
+      'success',
+    );
+    expect(deleteRequests).toHaveLength(1);
+    expect(deleteRequests[0]).toContain('/asiakirjat/tallennettu-id');
+  });
+
+  test('Tallennetun asiakirjapyynnön poiston epäonnistuessa näytetään virhetoast', async ({
+    page,
+  }) => {
+    await mockTallennettuAsiakirjapyynto(page, 500);
+
+    await page.getByTestId('poista-asiakirja-button-0').click();
+    await page.getByTestId('modal-confirm-button').click();
+
+    await expect(page.getByText('virhe.tallennus')).toBeVisible();
+    await expect(page.getByTestId('toast-alert')).toHaveAttribute(
+      'data-severity',
+      'error',
+    );
+    await expect(page.getByTestId('save-ribbon-button')).toBeHidden();
   });
 
   test('Lopullisen päätöksen asiakirjapyyntöjen lisäys, disablointi ja keskimmäisen poisto', async ({

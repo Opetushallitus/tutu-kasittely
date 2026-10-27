@@ -42,7 +42,6 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
   });
 
   const [localAsiakirja, setLocalAsiakirja] = useState(query.data);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | undefined>(
     undefined,
   );
@@ -83,19 +82,41 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
     }
   };
 
-  const poistaPyydettavaAsiakirja = async (poistettava: AsiakirjaPyynto) => {
-    setIsDeleting(true);
-    const serverAsiakirjat = query.data?.pyydettavatAsiakirjat;
-    const oldLocalAsiakirjat = localAsiakirja?.pyydettavatAsiakirjat;
-    if (!serverAsiakirjat || !oldLocalAsiakirjat) return;
-    await deletePyydettavaAsiakirja(hakemusOid!, poistettava.id!);
+  const mutationPoista = useMutation({
+    mutationFn: (poistettava: AsiakirjaPyynto) =>
+      deletePyydettavaAsiakirja(hakemusOid!, poistettava.id),
+    onMutate: () => {
+      setIsUpdateSuccess(undefined);
+    },
+    onSuccess: async () => {
+      const { data } = await query.refetch();
+      await queryClient.invalidateQueries({
+        queryKey: ['getHakemus', hakemusOid],
+      });
+      setLocalAsiakirja(data!);
+      setIsUpdateSuccess(true);
+    },
+  });
 
-    const { data } = await query.refetch();
-    await queryClient.invalidateQueries({
-      queryKey: ['getHakemus', hakemusOid],
-    });
-    setLocalAsiakirja(data!);
-    setIsDeleting(false);
+  const poistaPyydettavaAsiakirja = (poistettava: AsiakirjaPyynto) => {
+    const serverAsiakirjat = query.data?.pyydettavatAsiakirjat;
+    if (!serverAsiakirjat || !localAsiakirja) return;
+
+    const asiakirjaOnTallennettu = serverAsiakirjat.some(
+      (pyynto) => pyynto.id === poistettava.id,
+    );
+
+    if (asiakirjaOnTallennettu) {
+      mutationPoista.mutate(poistettava);
+    } else {
+      // Tallentamaton asiakirja poistetaan vain lokaalisti
+      setLocalAsiakirja({
+        ...localAsiakirja,
+        pyydettavatAsiakirjat: localAsiakirja.pyydettavatAsiakirjat.filter(
+          (pyynto) => pyynto.id !== poistettava.id,
+        ),
+      });
+    }
   };
 
   return {
@@ -109,8 +130,9 @@ export const useAsiakirjat = (hakemusOid: string | undefined) => {
     } as AsiakirjaState,
     poistaPyydettavaAsiakirja,
     isLoading: query.isLoading,
-    isSaving: mutationTallenna.isPending || isDeleting,
+    isSaving: mutationTallenna.isPending || mutationPoista.isPending,
     isUpdateSuccess: isUpdateSuccess,
     updateError: mutationTallenna.error,
+    deleteError: mutationPoista.error,
   };
 };
