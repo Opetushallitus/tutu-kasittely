@@ -10,7 +10,10 @@ import React from 'react';
 import { OphSelectFormFieldPatched } from '@/src/components/OphSelectFormFieldPatched';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Esittelija } from '@/src/lib/types/esittelija';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  YhteinenKasittely,
+  YkViestiAihe,
+} from '@/src/lib/types/yhteinenkasittely';
 
 const modalStyle = {
   position: 'absolute',
@@ -26,20 +29,24 @@ const modalStyle = {
 
 interface UusiKasittelyModalProps {
   esittelijat: Esittelija[];
+  aiheet: YkViestiAihe[];
   open: boolean;
   handleClose: () => void;
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
+  setAihe: (aiheId?: string) => void;
 }
 
 export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
   esittelijat,
+  aiheet,
   open,
   handleClose,
   handleSend,
   setTyopari,
   setKysymys,
+  setAihe,
 }) => {
   const { t } = useTranslations();
   return (
@@ -78,6 +85,16 @@ export const UusiKasittelyModal: React.FC<UusiKasittelyModalProps> = ({
             options={esittelijat.map((esittelija) => ({
               value: esittelija.esittelijaOid,
               label: `${esittelija.etunimi} ${esittelija.sukunimi}`.trim(),
+            }))}
+          />
+          <OphSelectFormFieldPatched
+            label={t('hakemus.yhteinenkasittely.uusiKasittely.aihe')}
+            placeholder={t('yleiset.valitse')}
+            onChange={(e) => setAihe(e.target.value)}
+            data-testid="yhteinenkasittely-uusiKasittely-aihe"
+            options={aiheet.map((aihe) => ({
+              value: aihe.id,
+              label: t(`hakemus.yhteinenkasittely.aihe.${aihe.avain}`).trim(),
             }))}
           />
           <OphInputFormField
@@ -205,30 +222,36 @@ export const JatkoKasittelyModal: React.FC<JatkoKasittelyModalProps> = ({
 interface KasittelyModalProps {
   parentKasittely?: YhteinenKasittely;
   esittelijat: Esittelija[];
+  aiheet: YkViestiAihe[];
   open: boolean;
   handleClose: () => void;
   handleSend: () => void;
   setTyopari: (tyopariId?: string) => void;
   setKysymys: (kysymys: string) => void;
+  setAihe: (aiheId?: string) => void;
 }
 
 export const KasittelyModal: React.FC<KasittelyModalProps> = ({
   parentKasittely,
   esittelijat,
+  aiheet,
   open,
   handleClose,
   handleSend,
   setTyopari,
   setKysymys,
+  setAihe,
 }) => {
   return !parentKasittely ? (
     <UusiKasittelyModal
       esittelijat={esittelijat}
+      aiheet={aiheet}
       open={open}
       handleClose={handleClose}
       handleSend={handleSend}
       setTyopari={setTyopari}
       setKysymys={setKysymys}
+      setAihe={setAihe}
     />
   ) : (
     <JatkoKasittelyModal
