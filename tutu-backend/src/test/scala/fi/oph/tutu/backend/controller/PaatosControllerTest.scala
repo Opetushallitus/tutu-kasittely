@@ -107,7 +107,6 @@ class PaatosControllerTest extends IntegrationTestBase {
     Paatos(
       hakemusId = givenHakemusId,
       ratkaisutyyppi = ratkaisutyyppi,
-      seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy =
         if (ratkaisutyyppi.contains(PeruutusTaiRaukeaminen))
           PeruutuksenTaiRaukeamisenSyy(
@@ -134,7 +133,6 @@ class PaatosControllerTest extends IntegrationTestBase {
     Paatos(
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(Ratkaisutyyppi.Paatos),
-      seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = paatosTiedot,
       hyvaksymispaiva = Some(LocalDateTime.parse("2025-08-15T00:00:00.000")),
@@ -195,7 +193,6 @@ class PaatosControllerTest extends IntegrationTestBase {
       id = givenPaatosId,
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(ratkaisutyyppi),
-      seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(
@@ -231,7 +228,6 @@ class PaatosControllerTest extends IntegrationTestBase {
       id = givenPaatosId,
       hakemusId = givenHakemusId,
       ratkaisutyyppi = Some(ratkaisutyyppi),
-      seutArviointi = pickBoolean,
       peruutuksenTaiRaukeamisenSyy = PeruutuksenTaiRaukeamisenSyy(),
       paatosTiedot = Seq(
         makePaatosTieto(givenPaatosId).copy(

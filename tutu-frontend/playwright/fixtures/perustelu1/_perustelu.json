@@ -47,6 +47,7 @@
       "lisatietoja": null,
       "IMIHalytysTarkastettu": null,
       "muutAPPerustelut": null,
+      "SEUTArviointiTehty": false,
       "SEUTArviointi": null
     },
     "lausuntoPyyntojenLisatiedot": null,
