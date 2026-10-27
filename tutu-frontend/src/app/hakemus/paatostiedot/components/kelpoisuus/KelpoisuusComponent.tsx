@@ -1,6 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { Stack, useTheme } from '@mui/material';
-import { Theme } from '@mui/material/styles';
+import { Stack } from '@mui/material';
 import {
   OphButton,
   OphInputFormField,
@@ -11,6 +10,7 @@ import React, { useMemo } from 'react';
 import { DirektiivitasoComponent } from '@/src/app/hakemus/paatostiedot/components/DirektiivitasoComponent';
 import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
 import { MyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatosUO';
+import { initOrUpdateMyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/kelpoisuusUOUtils';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
 import { MUU_AMMATTI_KEY } from '@/src/app/hakemus/paatostiedot/constants';
 import {
@@ -18,6 +18,7 @@ import {
   getKelpoisuusMuuAmmattiDropdownOption,
   getKelpoisuusMuuAmmattiDropdownValue,
   getPaatosTietoDropdownOptions,
+  emptyKelpoisuudenLisavaatimukset,
   emptyKielteisenPaatoksenPerustelut,
 } from '@/src/app/hakemus/paatostiedot/paatostietoUtils';
 import { useGlobalConfirmationModal } from '@/src/components/ConfirmationModal';
@@ -28,7 +29,6 @@ import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { ophColors } from '@/src/lib/theme';
 import {
-  KelpoisuudenLisavaatimukset,
   Kelpoisuus,
   KelpoisuusUpdateCallback,
   SovellettuLaki,
@@ -94,26 +94,17 @@ const KelpoisuusDirektiivitasoComponent = ({
 
 const KelpoisuusDirektiiviLiitannaisComponent = ({
   t,
-  theme,
   kelpoisuus,
   kelpoisuusKey,
   sovellettuLaki,
   updateAction,
 }: {
   t: TFunction;
-  theme: Theme;
   kelpoisuus: Kelpoisuus;
   kelpoisuusKey?: string;
   sovellettuLaki?: SovellettuLaki;
   updateAction: KelpoisuusUpdateCallback;
 }) => {
-  const myonteisenPaatoksenLisavaatimusProps = {
-    lisavaatimukset:
-      kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
-    kelpoisuusKey,
-    t: t,
-    theme: theme,
-  };
   return (
     <>
       {kelpoisuus.kelpoisuus === MUU_AMMATTI_KEY && (
@@ -137,30 +128,47 @@ const KelpoisuusDirektiiviLiitannaisComponent = ({
         </Stack>
       )}
       <MyonteinenTaiKielteinenPaatosComponent
-        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatos}
         myonteisenPaatoksenKentat={
-          <KelpoisuusDirektiivitasoComponent
-            t={t}
-            kelpoisuus={kelpoisuus}
-            updateAction={updateAction}
-          />
+          <>
+            <KelpoisuusDirektiivitasoComponent
+              t={t}
+              kelpoisuus={kelpoisuus}
+              updateAction={updateAction}
+            />
+            <MyonteinenKelpoisuusPaatos
+              lisavaatimukset={kelpoisuus.myonteisenPaatoksenLisavaatimukset}
+              updateLisavaatimukset={(lisavaatimukset) =>
+                updateAction({
+                  ...kelpoisuus,
+                  myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+                })
+              }
+              kelpoisuusKey={kelpoisuusKey}
+              t={t}
+            />
+          </>
         }
-        lisavaatimusComponentProps={myonteisenPaatoksenLisavaatimusProps}
         myonteinenPaatos={kelpoisuus.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
-        updatePaatosAction={(paatos) => {
-          const paatosEiDirektiivia =
-            'myonteinenPaatos' in paatos && paatos.myonteinenPaatos !== true;
+        updateMyonteinenPaatos={(paatos) => {
           updateAction({
             ...kelpoisuus,
             ...paatos,
-            ...(paatosEiDirektiivia && {
+            myonteisenPaatoksenLisavaatimukset:
+              emptyKelpoisuudenLisavaatimukset(),
+            ...(paatos.myonteinenPaatos !== true && {
               direktiivitaso: null,
               direktiivitasoLisatiedot: null,
               kansallisestiVaadittavaDirektiivitaso: null,
             }),
           });
         }}
+        updateKielteisenPaatoksenPerustelut={(perustelut) =>
+          updateAction({
+            ...kelpoisuus,
+            kielteisenPaatoksenPerustelut: perustelut,
+          })
+        }
         t={t}
         paatosTyyppi="Kelpoisuus"
         sovellettuLaki={sovellettuLaki}
@@ -180,23 +188,46 @@ const KelpoisuusUOLiitannaisComponent = ({
   sovellettuLaki?: SovellettuLaki;
   updateAction: KelpoisuusUpdateCallback;
 }) => {
+  const kelpoisuusKey = `${kelpoisuus.kelpoisuus}_uo`;
   return (
     <>
       <MyonteinenTaiKielteinenPaatosComponent
         myonteinenPaatos={kelpoisuus.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
-        updatePaatosAction={(paatos) => {
-          updateAction({ ...kelpoisuus, ...paatos });
+        updateMyonteinenPaatos={(paatos) => {
+          updateAction({
+            ...kelpoisuus,
+            ...paatos,
+            myonteisenPaatoksenLisavaatimukset: paatos.myonteinenPaatos
+              ? initOrUpdateMyonteinenKelpoisuusPaatosUO(
+                  emptyKelpoisuudenLisavaatimukset(),
+                  {},
+                  kelpoisuusKey,
+                )
+              : emptyKelpoisuudenLisavaatimukset(),
+          });
         }}
-        MyonteisenPaatoksenLisavaatimusComponent={MyonteinenKelpoisuusPaatosUO}
-        lisavaatimusComponentProps={{
-          kelpoisuusKey: `${kelpoisuus.kelpoisuus}_uo`,
-          lisavaatimukset:
-            kelpoisuus.myonteisenPaatoksenLisavaatimukset as KelpoisuudenLisavaatimukset,
-        }}
+        updateKielteisenPaatoksenPerustelut={(perustelut) =>
+          updateAction({
+            ...kelpoisuus,
+            kielteisenPaatoksenPerustelut: perustelut,
+          })
+        }
         t={t}
         paatosTyyppi="Kelpoisuus"
         sovellettuLaki={sovellettuLaki}
+        myonteisenPaatoksenKentat={
+          <MyonteinenKelpoisuusPaatosUO
+            kelpoisuusKey={kelpoisuusKey}
+            lisavaatimukset={kelpoisuus.myonteisenPaatoksenLisavaatimukset}
+            updateLisavaatimukset={(lisavaatimukset) =>
+              updateAction({
+                ...kelpoisuus,
+                myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+              })
+            }
+          />
+        }
       />
     </>
   );
@@ -211,7 +242,6 @@ export const KelpoisuusComponent = ({
   deleteKelpoisuusAction,
   kelpoisuusOptions,
 }: kelpoisuusComponentProps) => {
-  const theme = useTheme();
   const { showConfirmation } = useGlobalConfirmationModal();
   const asiointikieli = useAsiointiKieli();
   const showDirektiivitasoFields =
@@ -256,7 +286,8 @@ export const KelpoisuusComponent = ({
       tobeKelpoisuus.myonteinenPaatos = undefined;
       tobeKelpoisuus.kielteisenPaatoksenPerustelut =
         emptyKielteisenPaatoksenPerustelut();
-      tobeKelpoisuus.myonteisenPaatoksenLisavaatimukset = null;
+      tobeKelpoisuus.myonteisenPaatoksenLisavaatimukset =
+        emptyKelpoisuudenLisavaatimukset();
     }
     updateKelpoisuusAction({ ...tobeKelpoisuus, ...updatedKelpoisuus }, index);
   };
@@ -320,7 +351,6 @@ export const KelpoisuusComponent = ({
         {showDirektiivitasoFields && (
           <KelpoisuusDirektiiviLiitannaisComponent
             t={t}
-            theme={theme}
             kelpoisuus={kelpoisuus}
             kelpoisuusKey={selectedKelpoisuusKey?.value}
             sovellettuLaki={sovellettuLaki}

@@ -9,7 +9,7 @@ import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 type HuomioiminenRadioGroupProps<T extends string> = {
   field: string;
   options: Array<T>;
-  value?: T;
+  value?: T | null;
   updateValue: (value: T) => void;
   t: TFunction;
 };

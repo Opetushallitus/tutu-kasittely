@@ -23,12 +23,12 @@ import {
   AmmattikokemusJaElinikainenOppiminen,
   KelpoisuudenLisavaatimukset,
   KorvaavaToimenpide,
-  MyonteisenPaatoksenLisavaatimusUpdateCallback,
+  KelpoisuudenLisavaatimusUpdateCallback,
 } from '@/src/lib/types/paatos';
 
 export type MyonteinenKelpoisuusPaatosProps = {
   lisavaatimukset?: KelpoisuudenLisavaatimukset | null;
-  updateLisavaatimukset: MyonteisenPaatoksenLisavaatimusUpdateCallback;
+  updateLisavaatimukset: KelpoisuudenLisavaatimusUpdateCallback;
   kelpoisuusKey?: string;
   t: TFunction;
 };
