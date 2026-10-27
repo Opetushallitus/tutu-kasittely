@@ -32,5 +32,5 @@ export type YhteinenKasittelyDTO = {
 
 export type YkViestiAihe = {
   id: string;
-  aihe: string;
+  avain: string;
 };
