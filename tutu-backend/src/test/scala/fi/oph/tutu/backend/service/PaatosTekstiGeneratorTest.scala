@@ -43,12 +43,12 @@ val paatostekstiTranslations = Map[String, String](
   "paatosteksti.tutkinnonTaso.valitse" -> "<p>Valitse tutkinnon taso.</p>",
   "paatosteksti.todo"                  -> "<p>Tällä hetkellä esikatselua ei ole saatavilla.</p>",
 
-  "paatosteksti.todistusOtsikko.tutkintotodistus" -> "Tutkintotodistus",
-  "paatosteksti.todistusOtsikko.tutkintotodistukset" -> "Tutkintotodistukset",
-  "paatosteksti.todistusOtsikko.todistus" -> "Todistus",
-  "paatosteksti.todistusOtsikko.todistukset" -> "Todistukset",
-  "paatosteksti.todistusOtsikko.muutodistus" -> "Muu todistus",
-  "paatosteksti.todistusOtsikko.muuttodistukset" -> "Muut todistukset",
+  "paatosteksti.todistusOtsikko.tutkintotodistus"             -> "Tutkintotodistus",
+  "paatosteksti.todistusOtsikko.tutkintotodistukset"          -> "Tutkintotodistukset",
+  "paatosteksti.todistusOtsikko.todistus"                     -> "Todistus",
+  "paatosteksti.todistusOtsikko.todistukset"                  -> "Todistukset",
+  "paatosteksti.todistusOtsikko.muutodistus"                  -> "Muu todistus",
+  "paatosteksti.todistusOtsikko.muuttodistukset"              -> "Muut todistukset",
   "paatosteksti.todistusOtsikko.edeltaneetkorkeakouluopinnot" -> "Edeltäneet korkeakouluopinnot"
 )
 
