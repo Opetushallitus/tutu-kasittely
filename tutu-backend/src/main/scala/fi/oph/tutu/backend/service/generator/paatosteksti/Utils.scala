@@ -21,7 +21,7 @@ val tutkintoOtsikkoKeyMap: Map[String, String] = Map(
 )
 
 def getTutkintoOtsikko(tutkintoOtsikko: String, lang: Kieli, translationService: TranslationService): String = {
-  val translationKeyParam = tutkintoOtsikkoKeyMap.getOrElse(tutkintoOtsikko, "todistus")
+  val translationKeyParam = tutkintoOtsikkoKeyMap.getOrElse(tutkintoOtsikko, "muutodistus")
   val translationKey      = s"paatosteksti.todistusOtsikko.${translationKeyParam}"
 
   translationService.getTranslation(lang, translationKey)
@@ -60,13 +60,9 @@ def getTutkintoBlocks(
           .mkString("<br>")
 
       val todistuksenPaivamaara = tutkinto.todistuksenPaivamaara.getOrElse("")
-      val tutkintoOtsikkoLabel  = tutkintoOtsikkoLabelMap.getOrElse(
-        tutkintoOtsikko,
-        tutkintoOtsikko
-      )
 
       if (tutkintoParts.nonEmpty) { // Filtteröi esim. Muut tutkinnot pois
-        s"""<p>${tutkintoOtsikkoLabel}:</p><p>$tutkintoParts<br>"""
+        s"""<p>${tutkintoOtsikko}:</p><p>$tutkintoParts<br>"""
           + translationService.getTranslation(
             lang,
             "paatosteksti.todistuksenPaivamaara",
