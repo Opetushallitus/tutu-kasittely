@@ -183,7 +183,8 @@ class YkViestiRepository extends BaseResultHandlers {
               lahettaja_oid,
               vastaanottaja_oid,
               viesti,
-              luoja
+              luoja,
+              lahetetty
             )
             VALUES (
               ${ykViesti.parentId.map(_.toString).orNull}::uuid,
@@ -191,7 +192,8 @@ class YkViestiRepository extends BaseResultHandlers {
               ${ykViesti.lahettajaOid.map(_.toString).orNull},
               ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
               ${ykViesti.viesti.map(_.toString).orNull},
-              ${ykViesti.luoja.map(_.toString).orNull}
+              ${ykViesti.luoja.map(_.toString).orNull},
+              ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
             )
             RETURNING id
           """.as[UUID].head,
@@ -216,7 +218,8 @@ class YkViestiRepository extends BaseResultHandlers {
             UPDATE yk_viesti
             SET
               luettu = ${ykViesti.luettu},
-              muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull}
+              muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull},
+              lahetetty = ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
           """.as[UUID].head,
