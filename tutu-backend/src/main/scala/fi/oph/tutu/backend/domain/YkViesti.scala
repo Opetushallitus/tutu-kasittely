@@ -120,7 +120,8 @@ case class YkKysymysDTO(
   parentId: Option[String] = None,
   viesti: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
-  laheta: Option[Boolean] = None
+  laheta: Option[Boolean] = None,
+  aihe: Option[String] = None
 )
 
 case class YkVastausDTO(

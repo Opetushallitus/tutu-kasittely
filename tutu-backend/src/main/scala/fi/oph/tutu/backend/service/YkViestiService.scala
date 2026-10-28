@@ -150,7 +150,8 @@ class YkViestiService(
         viesti = ykKysymys.viesti,
         hakija = null,
         luoja = Some(user.userOid),
-        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now())
+        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
+        aihe = ykKysymys.aihe
       )
     )
   }

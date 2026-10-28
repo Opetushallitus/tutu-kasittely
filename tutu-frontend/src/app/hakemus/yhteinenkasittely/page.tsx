@@ -22,6 +22,7 @@ import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
+import { useYkViestiAiheet } from '@/src/hooks/useYkViestiAiheet';
 import {
   TFunction,
   useTranslations,
@@ -95,6 +96,7 @@ export default function YhteinenKasittelyPage() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tyopari, setTyopari] = useState<string | undefined>();
   const [kysymys, setKysymys] = useState<string>('');
+  const [aihe, setAihe] = useState<string | undefined>();
 
   const user = useAuthorizedUser();
 
@@ -105,6 +107,8 @@ export default function YhteinenKasittelyPage() {
     isLoading: esittelijatIsLoading,
     error: esittelijatError,
   } = useEsittelijat();
+
+  const { aiheet, aiheetIsLoading, aiheetError } = useYkViestiAiheet();
 
   const {
     kasittelyt,
@@ -147,6 +151,12 @@ export default function YhteinenKasittelyPage() {
     handleFetchError(
       addToast,
       esittelijatError,
+      'virhe.yhteisenkasittelynLataus',
+      t,
+    );
+    handleFetchError(
+      addToast,
+      aiheetError,
       'virhe.yhteisenkasittelynLataus',
       t,
     );
@@ -195,7 +205,7 @@ export default function YhteinenKasittelyPage() {
     return null;
   }
 
-  if (isKasittelytLoading || esittelijatIsLoading) {
+  if (isKasittelytLoading || esittelijatIsLoading || aiheetIsLoading) {
     return <FullSpinner />;
   }
 
@@ -227,6 +237,7 @@ export default function YhteinenKasittelyPage() {
         parentId: modalParent?.aloitusViesti.id,
         viesti: kysymys,
         vastaanottajaOid: tyopari,
+        aihe: aihe,
       };
       luoUusiKasittely(kasittely);
       addToast({
@@ -373,12 +384,14 @@ export default function YhteinenKasittelyPage() {
       </Box>
       <KasittelyModal
         esittelijat={esittelijat}
+        aiheet={aiheet}
         open={modalOpen}
         parentKasittely={modalParent}
         handleClose={() => handleModalClose()}
         handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
+        setAihe={setAihe}
       />
       <SaveRibbon
         onSave={save}

@@ -194,7 +194,8 @@ class YkViestiRepository extends BaseResultHandlers {
               vastaanottaja_oid,
               viesti,
               luoja,
-              lahetetty
+              lahetetty,
+              aihe
             )
             VALUES (
               ${ykViesti.parentId.map(_.toString).orNull}::uuid,
@@ -203,7 +204,8 @@ class YkViestiRepository extends BaseResultHandlers {
               ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
               ${ykViesti.viesti.map(_.toString).orNull},
               ${ykViesti.luoja.map(_.toString).orNull},
-              ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
+              ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
+              ${ykViesti.aihe.map(_.toString).orNull}::uuid
             )
             RETURNING id
           """.as[UUID].head,
