@@ -574,6 +574,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999999',
         viesti: 'Voisitko tarkistaa liitteen A tiedot?',
         luotu: '2026-02-04T09:12:00.000Z',
+        aihe: 'asiakirjat',
       },
     },
     {
@@ -583,6 +584,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999998',
         viesti: 'Onko tämä päätös valmis allekirjoitettavaksi?',
         luotu: '2026-02-03T14:30:00.000Z',
+        aihe: 'asiakirjat',
       },
     },
     {
@@ -592,6 +594,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999997',
         viesti: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
         luotu: '2026-02-01T08:05:00.000Z',
+        aihe: 'asiakirjat',
       },
       jatkoKasittelyt: [
         {
@@ -600,6 +603,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
           vastaanottajaOid: '1.2.246.562.24.999999999996',
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
+          aihe: 'asiakirjat',
         },
         {
           id: 'q5',
@@ -607,6 +611,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
           vastaanottajaOid: '1.2.246.562.24.999999999995',
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
+          aihe: 'asiakirjat',
         },
       ],
     },
