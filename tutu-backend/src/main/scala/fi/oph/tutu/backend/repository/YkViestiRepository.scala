@@ -49,7 +49,8 @@ class YkViestiRepository extends BaseResultHandlers {
         muokkaaja = r.nextStringOption(),
         muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
         luettu = nextStringArray(r),
-        aihe = Option(r.nextString())
+        aihe = Option(r.nextString()),
+        esittelija = Option(r.nextString())
       )
     )
 
@@ -72,12 +73,14 @@ class YkViestiRepository extends BaseResultHandlers {
             v.muokkaaja,
             v.muokattu,
             v.luettu,
-            a.avain
+            a.avain,
+            COALESCE(he.kutsumanimi, '') || ' ' || COALESCE(he.sukunimi, '')
           FROM
             yk_viesti v
           LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
           LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
           LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
+          LEFT JOIN esittelija he on he.id = h.esittelija_id
           WHERE
             v.vastaanottaja_oid = $userOid
           """.as[YkViesti],
@@ -110,12 +113,14 @@ class YkViestiRepository extends BaseResultHandlers {
           v.muokkaaja,
           v.muokattu,
           v.luettu,
-          a.avain
+          a.avain,
+          COALESCE(he.kutsumanimi, '') || ' ' || COALESCE(he.sukunimi, '')
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
         LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
+        LEFT JOIN esittelija he on he.id = h.esittelija_id
         WHERE
           v.lahettaja_oid = $userOid
         """.as[YkViesti],
@@ -148,12 +153,14 @@ class YkViestiRepository extends BaseResultHandlers {
           v.muokkaaja,
           v.muokattu,
           v.luettu,
-          a.avain
+          a.avain,
+          COALESCE(he.kutsumanimi, '') || ' ' || COALESCE(he.sukunimi, '')
         FROM
           yk_viesti v
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
         LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
+        LEFT JOIN esittelija he on he.id = h.esittelija_id
         WHERE
           v.id = $id::uuid AND v.hakemus_oid = $hakemusOid
         """.as[YkViesti].headOption,
@@ -250,12 +257,14 @@ class YkViestiRepository extends BaseResultHandlers {
           v.muokkaaja,
           v.muokattu,
           v.luettu,
-          a.avain
+          a.avain,
+          COALESCE(he.kutsumanimi, '') || ' ' || COALESCE(he.sukunimi, '')
         FROM
           yk_viesti v
         LEFT JOIN esittelija e on e.esittelija_oid = v.lahettaja_oid
         LEFT JOIN hakemus h on h.hakemus_oid = v.hakemus_oid
         LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
+        LEFT JOIN esittelija he on he.id = h.esittelija_id
         WHERE
           v.hakemus_oid = $hakemusOid
         ORDER BY v.luotu DESC

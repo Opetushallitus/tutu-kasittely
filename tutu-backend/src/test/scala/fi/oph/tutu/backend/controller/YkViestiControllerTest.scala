@@ -45,6 +45,10 @@ class YkViestiControllerTest extends IntegrationTestBase {
 
   var ykViestiId: UUID = _
 
+  // Viestilistan sarakkeiden testeille omat käyttäjät, jotta muiden testien listat eivät muutu
+  private val listaLahettajaOid     = "lista-lahettaja-oid"
+  private val listaVastaanottajaOid = "lista-vastaanottaja-oid"
+
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
       SecurityMockMvcConfigurers.springSecurity()
@@ -71,6 +75,42 @@ class YkViestiControllerTest extends IntegrationTestBase {
         lahettajaOid = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
+        hakija = null
+      )
+    )
+
+    luoListanHakemusJaViesti("hakemus-444", "OPH-444-2026", "1.2.246.562.24.00000000444", "Aino", "Aaltonen")
+    luoListanHakemusJaViesti("hakemus-555", "OPH-555-2026", "1.2.246.562.24.00000000555", "Veikko", "Virtanen")
+  }
+
+  private def luoListanHakemusJaViesti(
+    hakemusOid: String,
+    asiatunnus: String,
+    esittelijaOid: String,
+    kutsumanimi: String,
+    sukunimi: String
+  ): Unit = {
+    val esittelija = esittelijaRepository.insertEsittelija(UserOid(esittelijaOid), "testi", kutsumanimi, sukunimi).get
+    hakemusRepository.tallennaHakemus(
+      HakemusOid(hakemusOid),
+      1,
+      1,
+      Some(esittelija.esittelijaId),
+      asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+      None,
+      None,
+      "testi"
+    )
+    hakemusRepository.suoritaPaivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus, "testi")
+
+    ykViestiRepository.tallennaHakemuksenYkViesti(
+      YkViesti(
+        id = null,
+        parentId = None,
+        hakemusOid = HakemusOid(hakemusOid),
+        lahettajaOid = Some(listaLahettajaOid),
+        vastaanottajaOid = Some(listaVastaanottajaOid),
+        viesti = Some(s"Kysymys hakemukselle $hakemusOid"),
         hakija = null
       )
     )
@@ -371,5 +411,85 @@ class YkViestiControllerTest extends IntegrationTestBase {
     // Varmistetaan että hakemus löytyy tietokannasta
     val viestiAfter = ykViestiRepository.haeYkViesti("hakemus-333", ykViestiId.toString)
     assertTrue(viestiAfter.nonEmpty)
+  }
+
+  @Test
+  @WithMockUser(value = "lista-vastaanottaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(10)
+  def haeYkSaapuneetViestitPalauttaaAsiatunnuksenJaEsittelijan(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = listaVastaanottajaOid,
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/tutu-backend/api/ykSaapuneetViestit?sort=asiatunnus:asc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$", hasSize(2)))
+      .andExpect(jsonPath("$[0].asiatunnus", equalTo("OPH-444-2026")))
+      .andExpect(jsonPath("$[0].esittelija", equalTo("Aino Aaltonen")))
+      .andExpect(jsonPath("$[1].asiatunnus", equalTo("OPH-555-2026")))
+      .andExpect(jsonPath("$[1].esittelija", equalTo("Veikko Virtanen")))
+  }
+
+  @Test
+  @WithMockUser(value = "lista-lahettaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(11)
+  def haeYkLahetetytViestitPalauttaaAsiatunnuksenJaEsittelijan(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = listaLahettajaOid,
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/tutu-backend/api/ykLahetetytViestit?sort=asiatunnus:asc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$", hasSize(2)))
+      .andExpect(jsonPath("$[0].asiatunnus", equalTo("OPH-444-2026")))
+      .andExpect(jsonPath("$[0].esittelija", equalTo("Aino Aaltonen")))
+      .andExpect(jsonPath("$[1].asiatunnus", equalTo("OPH-555-2026")))
+      .andExpect(jsonPath("$[1].esittelija", equalTo("Veikko Virtanen")))
+  }
+
+  @Test
+  @WithMockUser(value = "lista-lahettaja-oid", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(12)
+  def haeYkLahetetytViestitJarjestaaEsittelijanMukaan(): Unit = {
+    when(
+      userService.getEnrichedUserDetails(any)
+    ).thenReturn(
+      User(
+        userOid = listaLahettajaOid,
+        authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+      )
+    )
+
+    mvc
+      .perform(
+        get(s"/tutu-backend/api/ykLahetetytViestit?sort=esittelija:asc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$[0].esittelija", equalTo("Aino Aaltonen")))
+      .andExpect(jsonPath("$[1].esittelija", equalTo("Veikko Virtanen")))
+
+    mvc
+      .perform(
+        get(s"/tutu-backend/api/ykLahetetytViestit?sort=esittelija:desc")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$[0].esittelija", equalTo("Veikko Virtanen")))
+      .andExpect(jsonPath("$[1].esittelija", equalTo("Aino Aaltonen")))
   }
 }
