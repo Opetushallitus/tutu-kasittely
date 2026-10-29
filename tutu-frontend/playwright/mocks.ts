@@ -576,6 +576,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         luotu: '2026-02-04T09:12:00.000Z',
         aihe: 'asiakirjat',
       },
+      jatkoKasittelyt: [],
     },
     {
       aloitusViesti: {
@@ -627,15 +628,34 @@ export const mockYhteinenKasittely = async (page: Page) => {
     async (route: Route) => {
       const method = route.request().method();
       if (method === 'POST') {
-        const data = route.request().postDataJSON() as YhteinenKasittely;
+        const data = route.request().postDataJSON() as {
+          id?: string;
+          vastaus?: string;
+          viesti?: string;
+          vastaanottajaOid?: string;
+          aihe?: string;
+        };
+
+        // Keep the answer-post branch above this.
+
+        if (
+          typeof data.viesti !== 'string' ||
+          typeof data.vastaanottajaOid !== 'string'
+        ) {
+          await route.fulfill({ status: 400 });
+          return;
+        }
+
         yhteinenkasittelydata.push({
           aloitusViesti: {
             id: `${nextId()}`,
-            vastaanottaja: data.aloitusViesti.vastaanottajaOid,
-            vastaanottajaOid: data.aloitusViesti.vastaanottajaOid,
-            viesti: data.aloitusViesti.viesti,
+            vastaanottaja: data.vastaanottajaOid,
+            vastaanottajaOid: data.vastaanottajaOid,
+            viesti: data.viesti,
             luotu: new Date().toISOString(),
+            aihe: data.aihe,
           },
+          jatkoKasittelyt: [],
         });
 
         await route.fulfill({
@@ -645,6 +665,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         });
       }
       if (method === 'PUT' || method === 'PATCH') {
+        console.log('PUT/PATCH yhteinenkasittely');
         const path = new URL(route.request().url()).pathname;
         const isLuettu = path.endsWith('/luettu');
         if (isLuettu) {

@@ -6,7 +6,7 @@ import { mockAll } from './mocks';
 
 test.beforeEach(mockAll);
 
-test.fixme('Yhteinen käsittely näkyy oikein', async ({ page }) => {
+test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
@@ -24,7 +24,19 @@ test.fixme('Yhteinen käsittely näkyy oikein', async ({ page }) => {
 
   await expect(page.getByTestId('kysymys-q1')).toBeVisible();
 
+  const readRequest = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'PATCH' &&
+      response.url().includes('/yhteinenkasittely/q1/luettu'),
+  );
+  const refetch = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'GET' &&
+      response.url().includes('/yhteinenkasittely'),
+  );
+
   await page.getByTestId('kysymys-q1').click();
+  await Promise.all([readRequest, refetch]);
 
   const textbox = page.getByTestId('kasittely-details-q1').getByRole('textbox');
   await expect(textbox).toBeVisible();
