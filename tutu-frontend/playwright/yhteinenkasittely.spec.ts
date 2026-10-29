@@ -49,7 +49,7 @@ test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
   await expect(textbox).toHaveValue('Testivastaus');
 });
 
-test.fixme('Yhteisen käsittelyn luominen', async ({ page }) => {
+test('Yhteisen käsittelyn luominen', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/yhteinenkasittely',
   );
@@ -75,6 +75,13 @@ test.fixme('Yhteisen käsittelyn luominen', async ({ page }) => {
   );
   await tyopariOption.click();
 
+  const aiheSelect = page.getByTestId('yhteinenkasittely-uusiKasittely-aihe');
+  await aiheSelect.click();
+
+  await page
+    .getByRole('option', { name: 'hakemus.yhteinenkasittely.aihe.kelpoisuus' })
+    .click();
+
   const kysymysInput = page
     .getByTestId('yhteinenkasittely-uusiKasittely-kysymys')
     .locator('textarea')
@@ -86,7 +93,7 @@ test.fixme('Yhteisen käsittelyn luominen', async ({ page }) => {
 
   // Verify
   const uusiKasittelyRivi = page
-    .locator("xpath=//p[text()='Kysymys content']")
+    .locator("xpath=//p[text()='hakemus.yhteinenkasittely.aihe.kelpoisuus']")
     .first();
   await expect(uusiKasittelyRivi).toBeVisible();
 });

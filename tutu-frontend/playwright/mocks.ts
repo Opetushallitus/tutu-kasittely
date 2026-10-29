@@ -624,6 +624,17 @@ export const mockYhteinenKasittely = async (page: Page) => {
   })();
 
   await page.route(
+    '**/tutu-backend/api/ykViestiAiheet',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'kelpoisuus', avain: 'kelpoisuus' }]),
+      });
+    },
+  );
+
+  await page.route(
     '**/tutu-backend/api/hakemus/*/yhteinenkasittely**',
     async (route: Route) => {
       const method = route.request().method();
