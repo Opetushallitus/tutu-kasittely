@@ -1,7 +1,9 @@
 package fi.oph.tutu.backend.domain
 
-enum TutkintoTaso:
-  case AlempiKorkeakoulu, YlempiKorkeakoulu, AlempiTaiYlempiKorkeakoulu
+enum TutkintoTaso(val numeroKoodi: Int):
+  case AlempiKorkeakoulu          extends TutkintoTaso(4)
+  case YlempiKorkeakoulu          extends TutkintoTaso(5)
+  case AlempiTaiYlempiKorkeakoulu extends TutkintoTaso(-1)
 
 object TutkintoTaso:
   def optionFromString(value: String): Option[TutkintoTaso] = value match

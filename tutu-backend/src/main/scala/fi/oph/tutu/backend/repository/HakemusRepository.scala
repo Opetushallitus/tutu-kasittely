@@ -49,6 +49,7 @@ class HakemusRepository extends BaseResultHandlers {
         ataruHakemusMuokattu = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         hakijaEtunimet = r.nextStringOption(),
         hakijaSukunimi = r.nextStringOption(),
+        hakijaOid = r.nextStringOption().map(PersonOid(_)),
         esittelyPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime),
         lausunnonMaaraaikaPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
@@ -75,6 +76,7 @@ class HakemusRepository extends BaseResultHandlers {
     ataruHakemusMuokattu: Option[java.sql.Timestamp] = None,
     hakijaEtunimet: Option[String] = None,
     hakijaSukunimi: Option[String] = None,
+    hakijaOid: Option[String] = None,
     viimeisinTaydennyspyyntoPvm: Option[java.sql.Timestamp] = None
   ): DBIO[UUID] =
     val hakemusOidString                                   = hakemusOid.toString
@@ -87,6 +89,7 @@ class HakemusRepository extends BaseResultHandlers {
     val ataruHakemusMuokattuOrNull        = ataruHakemusMuokattu.orNull
     val hakijaEtunimetOrNull              = hakijaEtunimet.orNull
     val hakijaSukunimiOrNull              = hakijaSukunimi.orNull
+    val hakijaOidOrNull                   = hakijaOid.orNull
     val viimeisinTaydennyspyyntoPvmOrNull = viimeisinTaydennyspyyntoPvm.orNull
 
     sql"""
@@ -94,12 +97,12 @@ class HakemusRepository extends BaseResultHandlers {
         asiakirja_id, lopullinen_paatos_ehdollisen_asiatunnus,
         lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja,
         saapumis_pvm, ataru_hakemus_muokattu, hakija_etunimet, hakija_sukunimi,
-        viimeisin_taydennyspyynto_paiva)
+        hakija_oid, viimeisin_taydennyspyynto_paiva)
       VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid,
         $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
         $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja,
         $saapumisPvmOrNull, $ataruHakemusMuokattuOrNull, $hakijaEtunimetOrNull, $hakijaSukunimiOrNull,
-        $viimeisinTaydennyspyyntoPvmOrNull)
+        $hakijaOidOrNull, $viimeisinTaydennyspyyntoPvmOrNull)
       RETURNING id
     """.as[UUID].head
 
@@ -180,6 +183,7 @@ class HakemusRepository extends BaseResultHandlers {
               h.ataru_hakemus_muokattu,
               h.hakija_etunimet,
               h.hakija_sukunimi,
+              h.hakija_oid,
               h.esittely_pvm,
               CASE h.kasittely_vaihe
                 WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
@@ -240,6 +244,7 @@ class HakemusRepository extends BaseResultHandlers {
               h.ataru_hakemus_muokattu,
               h.hakija_etunimet,
               h.hakija_sukunimi,
+              h.hakija_oid,
               h.esittely_pvm,
               CASE h.kasittely_vaihe
                 WHEN 'OdottaaKHOLausuntoa' THEN (vt.valitus_kho #>> '{lausuntopyynto,maaraAikaPvm}')::timestamp
@@ -304,6 +309,7 @@ class HakemusRepository extends BaseResultHandlers {
     val ataruHakemusMuokattuOpt     = hakemus.ataruHakemusMuokattu.map(java.sql.Timestamp.valueOf).orNull
     val hakijaEtunimetOpt           = hakemus.hakijaEtunimet.orNull
     val hakijaSukunimiOpt           = hakemus.hakijaSukunimi.orNull
+    val hakijaOidOpt                = hakemus.hakijaOid.map(_.toString).orNull
 
     try
       db.run(
@@ -328,7 +334,8 @@ class HakemusRepository extends BaseResultHandlers {
           saapumis_pvm =$saapumisPvmOpt,
           ataru_hakemus_muokattu = $ataruHakemusMuokattuOpt,
           hakija_etunimet = $hakijaEtunimetOpt,
-          hakija_sukunimi = $hakijaSukunimiOpt
+          hakija_sukunimi = $hakijaSukunimiOpt,
+          hakija_oid = $hakijaOidOpt
         WHERE hakemus_oid = $hakemusOidString
         RETURNING
           hakemus_oid

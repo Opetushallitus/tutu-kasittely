@@ -70,6 +70,14 @@ export default function MainPageLayout({
                 >
                   {t('maajako.otsikko')}
                 </OphButton>
+                <OphButton
+                  component={Link}
+                  to={'/tilastot'}
+                  variant="text"
+                  sx={{ fontWeight: 400 }}
+                >
+                  {t('tilastot.otsikko')}
+                </OphButton>
               </Stack>
             </Box>
           </BoxWrapper>
