@@ -21,6 +21,7 @@ import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { NamedBoolean } from '@/src/lib/types/common';
 import {
   AmmattikokemuksenHuomioiminen,
+  AmmattikokemusJaElinikainenOppiminen,
   ErotKoulutuksessa,
   KelpoisuudenLisavaatimukset,
   KielteisenPaatoksenPerustelut,
@@ -196,6 +197,19 @@ export const initOrUpdateKorvaavaToimenpide = (
   return tobe;
 };
 
+export const ammattikokemusJaElinikainenOppiminenKorvaavatKokonaan = (
+  data?: AmmattikokemusJaElinikainenOppiminen | null,
+): boolean =>
+  data?.korvaavuusAmmattikokemus === 'Taysi' ||
+  data?.korvaavuusElinikainenOppiminen === 'Taysi' ||
+  !!data?.korvaavuusAmmattikokemusJaElinikainenOppiminenYhdessa;
+
+export const shouldShowAmmattikokemusJaElinikainenOppiminenKorvaavaToimenpide =
+  (data?: AmmattikokemusJaElinikainenOppiminen | null): boolean =>
+    (data?.korvaavuusAmmattikokemus === 'Osittainen' ||
+      data?.korvaavuusElinikainenOppiminen === 'Osittainen') &&
+    !ammattikokemusJaElinikainenOppiminenKorvaavatKokonaan(data);
+
 export const initOrUpdateMyonteinenKelpoisuusPaatos = (
   currentKelpoisuudenLisavaatimukset: KelpoisuudenLisavaatimukset,
   updatedKelpoisuudenLisavaatimuket: Partial<KelpoisuudenLisavaatimukset>,
@@ -216,10 +230,9 @@ export const initOrUpdateMyonteinenKelpoisuusPaatos = (
       emptyAmmattikokemusJaElinikainenOppiminen();
 
     if (
-      tobe.ammattikokemusJaElinikainenOppiminen.korvaavuusAmmattikokemus ===
-        'Osittainen' ||
-      tobe.ammattikokemusJaElinikainenOppiminen
-        .korvaavuusElinikainenOppiminen === 'Osittainen'
+      shouldShowAmmattikokemusJaElinikainenOppiminenKorvaavaToimenpide(
+        tobe.ammattikokemusJaElinikainenOppiminen,
+      )
     ) {
       tobe.ammattikokemusJaElinikainenOppiminen.korvaavaToimenpide =
         initOrUpdateKorvaavaToimenpide(
