@@ -82,6 +82,8 @@ class YkViestiRepository extends BaseResultHandlers {
           LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
           WHERE
             v.vastaanottaja_oid = $userOid
+          AND
+            v.lahetetty IS NOT NULL
           """.as[YkViesti],
         "hae_yksaapuneetViestit"
       )
@@ -148,6 +150,7 @@ class YkViestiRepository extends BaseResultHandlers {
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
+          v.lahetetty,
           v.muokkaaja,
           v.muokattu,
           v.luettu,

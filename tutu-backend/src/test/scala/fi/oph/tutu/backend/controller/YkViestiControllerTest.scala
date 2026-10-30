@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMv
 import org.springframework.web.context.WebApplicationContext
 
 import java.util.UUID
+import java.time.LocalDateTime
 
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -71,6 +72,7 @@ class YkViestiControllerTest extends IntegrationTestBase {
         lahettajaOid = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
+        lahetetty = Some(LocalDateTime.parse("2026-10-30T00:00:00.000")),
         hakija = null
       )
     )
@@ -120,7 +122,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
     val postBody = Map(
       "parentId"         -> None,
       "viesti"           -> Some("Toinen kyssäri"),
-      "vastaanottajaOid" -> Some("vastaanottaja-oid")
+      "vastaanottajaOid" -> Some("vastaanottaja-oid"),
+      "laheta"           -> Some(true)
     )
     val postBodyAsJson = mapper.writeValueAsString(postBody)
 

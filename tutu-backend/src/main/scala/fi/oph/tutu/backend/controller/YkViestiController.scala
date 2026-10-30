@@ -133,7 +133,9 @@ class YkViestiController(
   ): ResponseEntity[Any] = {
     try {
       Try {
-        ykViestiService.haeHakemuksenYkViestiketjut(hakemusOid)
+        val user    = userService.getEnrichedUserDetails(true)
+        val userOid = user.userOid
+        ykViestiService.haeHakemuksenYkViestiketjut(userOid, hakemusOid)
       } match {
         case Success(ykViestit) =>
           val response = mapper.writeValueAsString(
