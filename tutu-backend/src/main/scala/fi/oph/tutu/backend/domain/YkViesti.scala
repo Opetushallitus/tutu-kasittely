@@ -96,7 +96,8 @@ case class YkViesti(
   muokkaaja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   luettu: Seq[String] = Seq.empty,
-  aihe: Option[String] = None
+  aihe: Option[String] = None,
+  esittelija: Option[String] = None
 )
 
 case class YkViestiListItem(
@@ -104,7 +105,7 @@ case class YkViestiListItem(
   parentId: Option[UUID] = None,
   hakemusOid: String,
   asiatunnus: Option[String] = None,
-  hakija: String,
+  esittelija: Option[String] = None,
   status: ViestinTila,
   lahettajaOid: Option[String] = None,
   lahettaja: Option[String] = None,
