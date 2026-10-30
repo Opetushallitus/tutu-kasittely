@@ -570,8 +570,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
           )
       }
 
-      // Yhdistetty päätöstieto-filtteri: tutkinto-ehdot korreloituvat pt.tutkinto_id:n kautta
-      // kun muita päätöstietoon liittyviä ehtoja on samanaikaisesti.
+      // Päätöstieto-filtteri: tutkinto-ehdot yhdistetään hakemustasolla.
       val paatostietoFilter: Option[SQLActionBuilder] = {
         val hasPaatostietoConditions =
           kelpoisuusClauses.nonEmpty || paatosTietoClauses.nonEmpty || myonteinenPaatosClause.isDefined
@@ -580,23 +579,21 @@ class HakemusSearchRepository extends BaseResultHandlers {
           None
         } else {
           val allClauses =
-            paatosTietoClauses ++ kelpoisuusClauses ++ tutkintoClauses ++ myonteinenPaatosClause.toSeq
+            paatosTietoClauses ++ kelpoisuusClauses ++ myonteinenPaatosClause.toSeq
           Some(
             sql"""SELECT p.hakemus_id AS id
                   FROM paatos p
                   JOIN paatostieto pt ON pt.paatos_id = p.id
                   LEFT JOIN kelpoisuus k ON k.paatostieto_id = pt.id
                   LEFT JOIN tutkinto_tai_opinto tto ON tto.paatostieto_id = pt.id
-                  LEFT JOIN tutkinto t ON t.id = pt.tutkinto_id
                   WHERE """ ++ allClauses.reduce(_ ++ sql" AND " ++ _)
           )
         }
       }
 
-      // Pelkät tutkinto-ehdot ilman päätöstietokorrelointia – käytetään vain kun
-      // päätöstietoon liittyviä ehtoja ei ole.
+      // Tutkinto-filtteri: riittää että jokin hakemuksen tutkinnoista täyttää ehdot.
       val tutkintoFilter: Option[SQLActionBuilder] =
-        if (tutkintoClauses.nonEmpty && paatostietoFilter.isEmpty)
+        if (tutkintoClauses.nonEmpty)
           Some(sql"""SELECT hakemus_id AS id
                      FROM tutkinto t
                      WHERE """ ++ tutkintoClauses.reduce(_ ++ sql" AND " ++ _))
@@ -654,7 +651,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
       val dataAction = (sql"""
         WITH candidates AS (""" ++ candidateSet ++ sql"""),
           filtered AS (
-            SELECT id FROM candidates
+            SELECT DISTINCT id FROM candidates
             LIMIT 1000
           ),
           ranked AS (
