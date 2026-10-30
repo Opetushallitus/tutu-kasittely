@@ -341,6 +341,10 @@ object AuditOperation {
     val name = "VALITUSTIEDOT_LUKU"
   }
 
+  case object ReadTilastokeskusCsv extends AuditOperation {
+    val name = "TILASTOKESKUS_CSV_LUKU"
+  }
+
   // Poisto operaatiot
 
   case object DeleteViesti extends AuditOperation {

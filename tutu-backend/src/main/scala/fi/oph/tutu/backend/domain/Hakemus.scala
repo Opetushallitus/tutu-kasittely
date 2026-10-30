@@ -147,6 +147,12 @@ case class DbHakemus(
   )
   hakijaSukunimi: Option[String],
   @(Schema @field)(
+    example = "1.2.246.562.24.00000000000000006666",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 40
+  )
+  hakijaOid: Option[PersonOid],
+  @(Schema @field)(
     example = "2025-06-14T10:59:47.597Z",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 50

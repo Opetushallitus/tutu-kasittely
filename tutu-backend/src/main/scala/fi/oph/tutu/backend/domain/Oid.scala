@@ -11,7 +11,7 @@ sealed trait Oid {
 
   override def toString: String = s
 
-  def isValid: Boolean = OidPattern.matcher(s).matches()
+  def isValid: Boolean = s != null && OidPattern.matcher(s).matches()
 }
 
 case class HakemusOid(s: String) extends Oid {
@@ -20,6 +20,10 @@ case class HakemusOid(s: String) extends Oid {
 
 case class UserOid(s: String) extends Oid {
   override val OidPattern: Pattern = Pattern.compile("""^1\.2\.246\.562\.24\.\d{11}$""")
+}
+
+case class PersonOid(s: String) extends Oid {
+  override val OidPattern: Pattern = Pattern.compile("""^1\.2\.246\.562\.(24|198)\.\d{11}$""")
 }
 
 class HakemusOidDeserializer extends JsonDeserializer[HakemusOid] {
