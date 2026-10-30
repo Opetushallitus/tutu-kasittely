@@ -65,11 +65,12 @@ const trackDownloads = (page: Page) => {
   return () => count;
 };
 
-const localDate = (iso: string | null) => {
-  const d = new Date(iso!);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-};
+// Muotoillaan selaimen aikavyöhykkeellä (playwright.config.ts: timezoneId),
+// ei Node-prosessin, joka on CI:ssä UTC
+const localDate = (iso: string | null) =>
+  new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Helsinki' }).format(
+    new Date(iso!),
+  );
 
 const dayLocator = (page: Page, paiva: string) =>
   page.locator(
