@@ -55,6 +55,12 @@ case class DbYkViesti(
   )
   luotu: Option[LocalDateTime],
   @(Schema @field)(
+    example = "2025-06-14T10:59:47.597",
+    requiredMode = RequiredMode.NOT_REQUIRED,
+    maxLength = 50
+  )
+  lahetetty: Option[LocalDateTime],
+  @(Schema @field)(
     example = "de4ffbea-1763-4a43-a24d-50ee48b81ff1",
     requiredMode = RequiredMode.NOT_REQUIRED,
     maxLength = 36
@@ -86,6 +92,7 @@ case class YkViesti(
   jatkoKasittelyt: Seq[YkViesti] = Seq.empty,
   luoja: Option[String] = None,
   luotu: Option[LocalDateTime] = None,
+  lahetetty: Option[LocalDateTime] = None,
   muokkaaja: Option[String] = None,
   muokattu: Option[LocalDateTime] = None,
   luettu: Seq[String] = Seq.empty,
@@ -111,7 +118,8 @@ case class YkViestiListItem(
 case class YkKysymysDTO(
   parentId: Option[String] = None,
   viesti: Option[String] = None,
-  vastaanottajaOid: Option[String] = None
+  vastaanottajaOid: Option[String] = None,
+  laheta: Option[Boolean] = None
 )
 
 case class YkVastausDTO(

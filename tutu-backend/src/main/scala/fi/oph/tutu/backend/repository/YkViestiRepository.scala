@@ -46,6 +46,7 @@ class YkViestiRepository extends BaseResultHandlers {
         hakija = r.nextString(),
         luoja = r.nextStringOption(),
         luotu = r.nextTimestampOption().map(_.toLocalDateTime),
+        lahetetty = r.nextTimestampOption().map(_.toLocalDateTime),
         muokkaaja = r.nextStringOption(),
         muokattu = r.nextTimestampOption().map(_.toLocalDateTime),
         luettu = nextStringArray(r),
@@ -69,6 +70,7 @@ class YkViestiRepository extends BaseResultHandlers {
             COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
             v.luoja,
             v.luotu,
+            v.lahetetty,
             v.muokkaaja,
             v.muokattu,
             v.luettu,
@@ -80,6 +82,8 @@ class YkViestiRepository extends BaseResultHandlers {
           LEFT JOIN yk_viesti_aihe a on a.id = v.aihe
           WHERE
             v.vastaanottaja_oid = $userOid
+          AND
+            v.lahetetty IS NOT NULL
           """.as[YkViesti],
         "hae_yksaapuneetViestit"
       )
@@ -107,6 +111,7 @@ class YkViestiRepository extends BaseResultHandlers {
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
+          v.lahetetty,
           v.muokkaaja,
           v.muokattu,
           v.luettu,
@@ -145,6 +150,7 @@ class YkViestiRepository extends BaseResultHandlers {
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
+          v.lahetetty,
           v.muokkaaja,
           v.muokattu,
           v.luettu,
@@ -180,7 +186,8 @@ class YkViestiRepository extends BaseResultHandlers {
               lahettaja_oid,
               vastaanottaja_oid,
               viesti,
-              luoja
+              luoja,
+              lahetetty
             )
             VALUES (
               ${ykViesti.parentId.map(_.toString).orNull}::uuid,
@@ -188,7 +195,8 @@ class YkViestiRepository extends BaseResultHandlers {
               ${ykViesti.lahettajaOid.map(_.toString).orNull},
               ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
               ${ykViesti.viesti.map(_.toString).orNull},
-              ${ykViesti.luoja.map(_.toString).orNull}
+              ${ykViesti.luoja.map(_.toString).orNull},
+              ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
             )
             RETURNING id
           """.as[UUID].head,
@@ -213,7 +221,8 @@ class YkViestiRepository extends BaseResultHandlers {
             UPDATE yk_viesti
             SET
               luettu = ${ykViesti.luettu},
-              muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull}
+              muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull},
+              lahetetty = ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
             WHERE
               id = ${ykViesti.id.toString}::uuid
           """.as[UUID].head,
@@ -247,6 +256,7 @@ class YkViestiRepository extends BaseResultHandlers {
           COALESCE(h.hakija_etunimet, '') || ' ' || COALESCE(h.hakija_sukunimi, ''),
           v.luoja,
           v.luotu,
+          v.lahetetty,
           v.muokkaaja,
           v.muokattu,
           v.luettu,

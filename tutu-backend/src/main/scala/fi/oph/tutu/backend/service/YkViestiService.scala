@@ -29,13 +29,19 @@ class YkViestiService(
   }
 
   def haeHakemuksenYkViestiketjut(
+    userOid: String,
     hakemusOid: String
   ): Seq[YkViestiKetju] = {
-    val ykViestit      = ykViestiRepository.haeHakemuksenYkViestit(hakemusOid)
-    val aloitusViestit = ykViestit.filter(_.parentId.isEmpty).sortBy(_.luotu)
+    val ykViestit = ykViestiRepository.haeHakemuksenYkViestit(hakemusOid)
+
+    val filteredYkViestit = ykViestit.filter(ykViesti => {
+      ykViesti.lahettajaOid.contains(userOid) || ykViesti.lahetetty.nonEmpty
+    })
+
+    val aloitusViestit = filteredYkViestit.filter(_.parentId.isEmpty).sortBy(_.luotu)
 
     aloitusViestit.map { viesti =>
-      val jatkoKasittelyt = ykViestit.filter(_.parentId.contains(viesti.id)).sortBy(_.luotu)
+      val jatkoKasittelyt = filteredYkViestit.filter(_.parentId.contains(viesti.id)).sortBy(_.luotu)
       YkViestiKetju(
         aloitusViesti = viesti,
         jatkoKasittelyt = jatkoKasittelyt
@@ -166,7 +172,8 @@ class YkViestiService(
         vastaanottajaOid = ykKysymys.vastaanottajaOid,
         viesti = ykKysymys.viesti,
         hakija = null,
-        luoja = Some(user.userOid)
+        luoja = Some(user.userOid),
+        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now())
       )
     )
   }
@@ -184,6 +191,7 @@ class YkViestiService(
       case Some(ykViesti) =>
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
+            lahetetty = Option.when(ykVastaus.laheta.contains(true))(LocalDateTime.now()),
             muokkaaja = Some(user.userOid)
           )
         )
