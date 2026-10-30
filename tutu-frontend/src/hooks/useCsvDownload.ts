@@ -32,7 +32,9 @@ export const useCsvDownload = (alkuPvm: Date | null, loppuPvm: Date | null) => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(downloadUrl);
+      // Firefox aloittaa latauksen asynkronisesti: heti perään tehty revoke voi
+      // mitätöidä blobin ennen kuin lataus on alkanut
+      setTimeout(() => URL.revokeObjectURL(downloadUrl), 10_000);
     } catch (error) {
       handleFetchError(addToast, error, 'virhe.tilastoCsvLataus', t);
     } finally {

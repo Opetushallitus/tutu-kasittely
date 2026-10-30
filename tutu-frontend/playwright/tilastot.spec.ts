@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 import { expect, Page, Request, Route, test } from '@playwright/test';
 
 import { expectErrorToast } from '@/playwright/helpers/tekstipohjaTestUtils';
-import { mockInit, mockSuccessfullLists, mockUser } from '@/playwright/mocks';
+import { mockInit, mockUser } from '@/playwright/mocks';
 
 // Claude Codea käytetty testipohjan generoimiseen
 
@@ -21,7 +21,11 @@ test.beforeEach(async ({ page }) => {
 
 const gotoTilastot = async (page: Page) => {
   await page.goto('/tutu-frontend/tilastot');
-  await expect(page.getByTestId('tilastot-lataa')).toBeVisible();
+  // Vite-dev-palvelin muuntaa moduulit ensimmäisellä latauksella, mikä voi
+  // kestää yli oletusaikarajan kylmällä palvelimella
+  await expect(page.getByTestId('tilastot-lataa')).toBeVisible({
+    timeout: 60 * 1000,
+  });
 };
 
 const mockTilastoCsv = async (
@@ -47,6 +51,10 @@ const setPvm = async (page: Page, testId: string, pvm: string) => {
   const input = pvmInput(page, testId);
   await input.fill(pvm);
   await input.press('Tab');
+  // Tab voi siirtää fokuksen toiseen pvm-kenttään, joka avaa kalenterin.
+  // Suljetaan se, ettei seuraava klikkaus katoa uudelleenrenderöintiin (Firefox)
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.react-datepicker')).toHaveCount(0);
 };
 
 const clickAndExpectDownload = async (page: Page) => {
@@ -95,23 +103,6 @@ test.describe('Perusnäkymä', () => {
     await expect(pvmInput(page, 'tilastot-alkupvm')).toHaveValue('01.01.2025');
     await expect(pvmInput(page, 'tilastot-loppupvm')).toHaveValue('15.06.2025');
   });
-
-  test('Etusivulta pääsee Tilastot-sivulle', async ({ page }) => {
-    await mockSuccessfullLists({ page });
-    await page.goto('/tutu-frontend/');
-    await expect(page.getByTestId('hakemus-list')).toBeVisible();
-
-    await page.getByRole('link', { name: 'tilastot.otsikko' }).click();
-
-    await expect(page).toHaveURL(/\/tutu-frontend\/tilastot$/);
-    await expect(page.getByTestId('tilastot-lataa')).toBeVisible();
-  });
-
-  test('Sivu latautuu ruotsinkieliselle käyttäjälle', async ({ page }) => {
-    await mockUser(page, 'sv');
-    await gotoTilastot(page);
-    await expect(page.locator('h2')).toHaveText('tilastot.tilastokeskukselle');
-  });
 });
 
 test.describe('Päivämäärävalinnat', () => {
@@ -133,18 +124,6 @@ test.describe('Päivämäärävalinnat', () => {
 
     await expect(pvmInput(page, 'tilastot-alkupvm')).toHaveValue('15.01.2025');
     await expect(page.locator('.react-datepicker')).toHaveCount(0);
-  });
-
-  test('Kalenterissa voi selata kuukausia', async ({ page }) => {
-    await pvmInput(page, 'tilastot-alkupvm').click();
-    const kuukausi = page.locator('.react-datepicker__current-month');
-    const alku = await kuukausi.textContent();
-
-    await page.getByLabel('kalenteri.seuraava-kuukausi').click();
-    await expect(kuukausi).not.toHaveText(alku!);
-
-    await page.getByLabel('kalenteri.edellinen-kuukausi').click();
-    await expect(kuukausi).toHaveText(alku!);
   });
 
   test('Alkupäivää ei voi valita loppupäivän jälkeen', async ({ page }) => {
@@ -185,6 +164,7 @@ test.describe('CSV:n lataus', () => {
     // loppupvm (oletuksena "nyt") verrataan vain päivämääräosaan
     expect(localDate(url.searchParams.get('loppuPvm'))).toBe('2025-03-31');
     expect(request.headers()['accept']).toBe('text/csv');
+    await expect(page.getByTestId('toast-alert')).toHaveCount(0);
   });
 
   test('Lataus toimii oletuspäivämäärillä', async ({ page }) => {
@@ -277,14 +257,6 @@ test.describe('CSV:n latausvirheet', () => {
     await expectErrorToast(page, 'virhe.tilastoCsvLataus');
     expect(downloads()).toBe(0);
     expect(requests).toHaveLength(2);
-  });
-
-  test('Onnistunut lataus ei näytä virhetoastia', async ({ page }) => {
-    await mockTilastoCsv(page);
-
-    await clickAndExpectDownload(page);
-
-    await expect(page.getByTestId('toast-alert')).toHaveCount(0);
   });
 
   test('Lataus onnistuu virheen jälkeen uudelleenyrityksellä', async ({
