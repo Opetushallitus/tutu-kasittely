@@ -179,9 +179,7 @@ test.describe('CSV:n lataus', () => {
     const url = new URL(request.url());
     expect(request.method()).toBe('GET');
     expect(url.pathname).toMatch(/\/tilastot\/tilastokeskus-csv$/);
-    expect(url.searchParams.get('alkuPvm')).toBe(
-      new Date(2025, 0, 1).toISOString(),
-    );
+    expect(localDate(url.searchParams.get('alkuPvm'))).toBe('2025-01-01');
     // react-datepicker säilyttää aiemmin valitun päivän kellonajan, joten
     // loppupvm (oletuksena "nyt") verrataan vain päivämääräosaan
     expect(localDate(url.searchParams.get('loppuPvm'))).toBe('2025-03-31');
@@ -194,9 +192,7 @@ test.describe('CSV:n lataus', () => {
     await clickAndExpectDownload(page);
 
     const url = new URL(requests[0].url());
-    expect(url.searchParams.get('alkuPvm')).toBe(
-      new Date(2025, 0, 1).toISOString(),
-    );
+    expect(localDate(url.searchParams.get('alkuPvm'))).toBe('2025-01-01');
     expect(url.searchParams.has('loppuPvm')).toBe(true);
   });
 
@@ -220,9 +216,9 @@ test.describe('CSV:n lataus', () => {
     await clickAndExpectDownload(page);
 
     expect(requests).toHaveLength(2);
-    expect(new URL(requests[1].url()).searchParams.get('alkuPvm')).toBe(
-      new Date(2025, 2, 15).toISOString(),
-    );
+    expect(
+      localDate(new URL(requests[1].url()).searchParams.get('alkuPvm')),
+    ).toBe('2025-03-15');
   });
 
   test('Tyhjä CSV (vain otsikkorivi) latautuu', async ({ page }) => {
