@@ -49,6 +49,41 @@ class OnrService(oauth2Client: Oauth2Client, httpService: HttpService, mapper: O
     }
   }
 
+  def haeHenkilot(personOids: Seq[String]): Either[Throwable, Seq[OnrUser]] = {
+    val henkiloCache = cacheManager.getCache("henkilo")
+    val oids         = personOids.distinct
+    val cached       = oids.flatMap(oid => Option(henkiloCache.get(oid, classOf[OnrUser])))
+    val cachedOids   = cached.map(_.oidHenkilo).toSet
+    val missingOids  = oids.filterNot(cachedOids.contains)
+
+    if (missingOids.isEmpty) {
+      Right(cached)
+    } else {
+      LOG.info(s"Fetching ${missingOids.size} henkilö(s) from oppijanumerorekisteri")
+      httpService.post(
+        oauth2Client,
+        s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/henkilo/henkilotByHenkiloOidList",
+        mapper.writeValueAsString(missingOids.toArray)
+      ) match {
+        case Left(e) =>
+          LOG.error(
+            s"Error fetching henkilot with OIDs: ${missingOids.mkString(", ")} from oppijanumerorekisteri: ${e.getMessage}"
+          )
+          Left(OnrServiceException("", e))
+        case Right(response) =>
+          try {
+            val fetched = mapper.readValue(response, classOf[Array[OnrUser]]).toSeq
+            fetched.foreach(henkilo => henkiloCache.put(henkilo.oidHenkilo, henkilo))
+            Right(cached ++ fetched)
+          } catch {
+            case e: Exception =>
+              LOG.error(s"Error parsing henkilot response from oppijanumerorekisteri: ${e.getMessage}")
+              Left(OnrServiceException("", e))
+          }
+      }
+    }
+  }
+
   @CacheEvict(value = Array("asiointikieli"), allEntries = true)
   @Scheduled(fixedRateString = "${caching.spring.dayTTL}")
   def emptyAsiointikieliCache(): Unit =

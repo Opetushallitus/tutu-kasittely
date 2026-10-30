@@ -38,9 +38,7 @@ class HakemusService(
   kasittelyVaiheService: KasittelyVaiheService,
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
-  onrService: OnrService,
   ataruHakemusParser: AtaruHakemusParser,
-  userService: UserService,
   @Lazy perustelumuistioService: IPerustelumuistioService,
   db: TutuDatabase,
   objectMapper: ObjectMapper
@@ -73,6 +71,7 @@ class HakemusService(
         ataruHakemusMuokattu = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.latestVersionCreated))),
         hakijaEtunimet = Some(ataruHakemus.etunimet),
         hakijaSukunimi = Some(ataruHakemus.sukunimi),
+        hakijaOid = Some(ataruHakemus.`person-oid`),
         viimeisinTaydennyspyyntoPvm = ataruHakemus.`information-request-timestamp`
           .map(ts => java.sql.Timestamp.valueOf(toLocalDateTime(ts)))
       )
@@ -127,6 +126,7 @@ class HakemusService(
         ataruHakemusMuokattu = Some(java.sql.Timestamp.valueOf(toLocalDateTime(ataruHakemus.latestVersionCreated))),
         hakijaEtunimet = Some(ataruHakemus.etunimet),
         hakijaSukunimi = Some(ataruHakemus.sukunimi),
+        hakijaOid = Some(ataruHakemus.`person-oid`),
         viimeisinTaydennyspyyntoPvm = ataruHakemus.`information-request-timestamp`
           .map(ts => java.sql.Timestamp.valueOf(toLocalDateTime(ts)))
       )
@@ -316,11 +316,11 @@ class HakemusService(
   }
 
   def haeHakemusAsiatunnuksella(asiatunnus: String): Option[Hakemus] = {
-    hakemusRepository.haeHakemusAsiatunnuksella(asiatunnus).map(dbHakemus => haeHakemus(dbHakemus.hakemusOid)).flatten
+    hakemusRepository.haeHakemusAsiatunnuksella(asiatunnus).flatMap(dbHakemus => haeHakemus(dbHakemus.hakemusOid))
   }
 
   def haeHakemusAsiatunnuksella(asiatunnus: Option[String]): Option[Hakemus] = {
-    asiatunnus.map(haeHakemusAsiatunnuksella).flatten
+    asiatunnus.flatMap(haeHakemusAsiatunnuksella)
   }
 
   def haeHakemusLista(

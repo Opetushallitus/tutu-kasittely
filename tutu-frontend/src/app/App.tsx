@@ -30,6 +30,7 @@ import MainPage from '@/src/app/MainPage';
 import TekstipohjatLayout from '@/src/app/tekstipohjat/layout';
 import PaatospohjatPage from '@/src/app/tekstipohjat/paatospohjat/page';
 import ViestipohjatPage from '@/src/app/tekstipohjat/viestipohjat/page';
+import TilastotPage from '@/src/app/tilastot/page';
 import YkPage from '@/src/app/yhteinenKasittely/page';
 import { ConfirmationModalProvider } from '@/src/components/ConfirmationModal';
 import { AuthorizedUserProvider } from '@/src/components/providers/AuthorizedUserProvider';
@@ -104,6 +105,7 @@ const router = createBrowserRouter(
         <Route path="paatospohjat" element={<PaatospohjatPage />} />
       </Route>
       <Route path="/maajako" element={<MaajakoPage />} />
+      <Route path="/tilastot" element={<TilastotPage />} />
       <Route path="/filemaker" element={<FilemakerListViewPage />} />
       <Route path="/filemaker-hakemus/:id" element={<FilemakerHakemus />} />
       <Route path="/yhteinenKasittely" element={<YkPage />} />
