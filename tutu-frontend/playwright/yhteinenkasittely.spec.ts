@@ -147,13 +147,16 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
             contentType: 'application/json',
             body: JSON.stringify([
               {
-                id: 'q-1',
-                lahettaja: names[firstLahettajaOid],
-                lahettajaOid: firstLahettajaOid,
-                vastaanottaja: names[firstVastaanottajaOid],
-                vastaanottajaOid: firstVastaanottajaOid,
-                kysymys: 'Ensimmäinen kysymys',
-                luotu: '2026-02-01T08:05:00.000Z',
+                aloitusViesti: {
+                  id: 'q-1',
+                  lahettaja: names[firstLahettajaOid],
+                  lahettajaOid: firstLahettajaOid,
+                  vastaanottaja: names[firstVastaanottajaOid],
+                  vastaanottajaOid: firstVastaanottajaOid,
+                  viesti: 'Ensimmäinen kysymys',
+                  luotu: '2026-02-01T08:05:00.000Z',
+                  aihe: 'kelpoisuus',
+                },
                 jatkoKasittelyt: [
                   {
                     id: 'q-2',
@@ -161,9 +164,9 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
                     lahettajaOid: followupLahettajaOid,
                     vastaanottaja: names[followupVastaanottajaOid],
                     vastaanottajaOid: followupVastaanottajaOid,
-                    kysymys: 'Jatkokysymys',
+                    viesti: 'Jatkokysymys',
                     luotu: '2026-02-01T08:05:00.000Z',
-                    jatkoKasittelyt: [],
+                    aihe: 'kelpoisuus',
                   },
                 ],
               },
@@ -190,7 +193,9 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
 
     // Lue kysymykset
     await expect(
-      page.getByTestId(`kysymys-details-q-1`).getByText('Ensimmäinen kysymys'),
+      page
+        .getByTestId(`kasittely-details-q-1`)
+        .getByText('Ensimmäinen kysymys'),
     ).toBeVisible();
     await expect(page.getByText('Jatkokysymys')).toBeVisible();
   };
@@ -262,7 +267,7 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
       to,
     );
 
-    test.fixme(`${kuvaus}`, async ({ page }) => {
+    test(`${kuvaus}`, async ({ page }) => {
       await doMock(page);
       await navigateToPage(page);
       await verifyQuestionVisible(page);
