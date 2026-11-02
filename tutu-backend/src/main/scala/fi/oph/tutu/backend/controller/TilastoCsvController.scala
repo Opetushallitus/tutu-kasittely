@@ -3,6 +3,7 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.service.TilastoCsvService
 import fi.oph.tutu.backend.utils.AuditOperation.ReadTilastokeskusCsv
+import fi.oph.tutu.backend.utils.Utility.validateAikavali
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper, Utility}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpHeaders, HttpStatus, MediaType, ResponseEntity}
@@ -54,27 +55,5 @@ class TilastoCsvController(mapper: ObjectMapper, val auditLog: AuditLog, tilasto
             errorMessageMapper.mapErrorMessage(exception)
         }
     }
-  }
-
-  private def validateAikavali(alkuPvm: Option[String], loppuPvm: Option[String]): Option[String] = {
-    def parse(nimi: String, arvo: Option[String]): Either[String, Option[ZonedDateTime]] =
-      arvo match {
-        case None    => Right(None)
-        case Some(s) =>
-          Try(Utility.toUtcDateTime(s)) match {
-            case Success(dt) => Right(Some(dt))
-            case Failure(_)  => Left(s"Virheellinen $nimi: '$s' (odotettu ISO 8601, esim. 2025-01-01T00:00:00Z)")
-          }
-      }
-
-    val tulos = for {
-      alku  <- parse("alkuPvm", alkuPvm)
-      loppu <- parse("loppuPvm", loppuPvm)
-      _     <- (alku, loppu) match {
-        case (Some(a), Some(l)) if a.isAfter(l) => Left("alkuPvm ei voi olla loppuPvm:n jälkeen")
-        case _                                  => Right(())
-      }
-    } yield ()
-    tulos.left.toOption
   }
 }
