@@ -70,7 +70,6 @@ export type Paatos = {
 
 export type TutkintoTaiOpinto = {
   id?: string;
-  paatostietoId?: string;
   tutkintoTaiOpinto?: string;
   opetuskieli?: string;
   myonteisenPaatoksenLisavaatimukset?: MyonteisenPaatoksenLisavaatimukset;
@@ -224,7 +223,6 @@ export type KelpoisuusUpdateCallback = (
 
 export type Kelpoisuus = {
   id?: string;
-  paatostietoId?: string;
   kelpoisuus?: string;
   muuAmmattiKuvaus?: string;
   opetettavaAine?: string;
