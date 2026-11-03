@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.{GetMapping, PathVariable, RequestMapping, RestController}
 
 import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class KoodistoController(
   koodistoService: KoodistoService,
   mapper: ObjectMapper

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.{ApiResponse, ApiResponses}
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.{GetMapping, PathVariable, RequestMapping, RestController}
 
 import scala.util.{Failure, Success, Try}
@@ -18,6 +19,7 @@ import scala.util.{Failure, Success, Try}
 @RestController
 @RequestMapping(path = Array("api/hallinto-oikeus"))
 @Tag(name = "Hallinto-oikeus", description = "Hallinto-oikeuksien tietojen hallinta")
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class HallintoOikeusController(
   hallintoOikeusService: HallintoOikeusService,
   mapper: ObjectMapper,

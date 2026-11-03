@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.{MediaType, ResponseEntity}
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class ViestipohjaController(
   viestipohjaService: ViestipohjaService,
   userService: UserService,

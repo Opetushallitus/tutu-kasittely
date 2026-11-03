@@ -451,7 +451,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(1)
   def tallennaPaatosPalauttaa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja")
@@ -469,7 +469,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(2)
   def haePaatosPalauttaa200(): Unit = {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
@@ -494,7 +494,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(3)
   def haePaatosPalauttaa404KunPaatosEiKannassa(): Unit = {
     mvc
@@ -506,7 +506,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(4)
   def tallennaPaatosPalauttaa500KunHakemusEiKannassa(): Unit = {
     val paatosJSON = paatos2Json(paatos, "id", "luoja", "luotu", "muokattu", "muokkaaja", "paatosTietoOptions")
@@ -522,7 +522,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(5)
   def tallennaPaatosPalauttaaPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
@@ -551,7 +551,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(6)
   def haePaatosPalauttaaPaatosTiedonKanssa200(): Unit = {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
@@ -581,7 +581,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(7)
   def tallennaPaatosPalauttaaPaatosTiedonJaRinnastettavienTutkintojenTaiOpintoKanssa200JaKantaanTallennetunDatan()
     : Unit = {
@@ -617,7 +617,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(8)
   def haePaatosPalauttaaPaatosTiedonJaRinnastettavienTutkintojenTaiOpintoKanssa200(): Unit = {
     paatosRepository.haePaatos(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get).get.id
@@ -641,7 +641,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(9)
   def tallennaPaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
@@ -682,7 +682,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(10)
   def haePaatosPalauttaaPaatosTiedonJaKelpoisuudenKanssa200(): Unit = {
     mvc
@@ -711,7 +711,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(11)
   def tallennaPaatosUudenPaatosTiedonJaTutkinnonJaKelpoisuudenKanssaTallentaaJaPalauttaaKaikenDatan(): Unit = {
     val paatosJSON =
@@ -754,7 +754,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(12)
   def tallennaPaatosPalauttaaKielteisenPaatosTiedonKanssa200JaKantaanTallennetunDatan(): Unit = {
     val paatosJSON =
@@ -784,7 +784,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(13)
   def haePaatosPalauttaaKielteisenPaatosTiedonKanssa200(): Unit = {
     val paatosId   = paatosRepository.haePaatos(hakemusId.get).get.id
@@ -813,7 +813,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(14)
   def haePaatostekstiPalauttaaGeneroidunPaatostekstinJosEiLoydyKannasta(): Unit = {
     // Common mocks for generation
@@ -902,7 +902,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(15)
   def tallennaPaatostekstiLisaaUudenTekstinJosEiLoydyKannasta(): Unit = {
     val paatostekstiJson = s"""{
@@ -937,7 +937,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(16)
   def tallennaPaatostekstiPaivittaaSisallonJosTekstiJoKannassa(): Unit = {
     val paatosteksti =
@@ -965,7 +965,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(17)
   def haePaatostekstiPalauttaaKannassaOlevanJosLoytyy(): Unit = {
     mvc
@@ -986,7 +986,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(18)
   def vahvistaPaatosLuoUudenSisallonJaLisaaVahvistusAikaleimanJosEiLoydyKannasta(): Unit = {
     val paatostekstiJson =
@@ -1020,7 +1020,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(19)
   def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleimanJosTekstiJoKannassa(): Unit = {
     val paatosteksti =
@@ -1046,7 +1046,7 @@ class PaatosControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_ESITTELIJA_FULL))
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(20)
   def haePaatosPalauttaaVahvistetunPaatoksen(): Unit = {
     val paatosteksti = paatosRepository

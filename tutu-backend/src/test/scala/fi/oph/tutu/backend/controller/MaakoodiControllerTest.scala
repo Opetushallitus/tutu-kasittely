@@ -78,7 +78,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def listMaakooditReturns200AndExpectedData(): Unit = {
     mockMvc
       .perform(get("/tutu-backend/api/maakoodi"))
@@ -100,7 +100,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def updateMaakoodiValidRequestReturns200(): Unit = {
     maakoodiRepository.upsertMaakoodi("maatjavaltiot2_100", "Testimaa", "Test bönden", "TestCountry", "testi", None)
     val maakoodi = maakoodiRepository.listAll().find(_.koodiUri == "maatjavaltiot2_100").get
@@ -184,7 +184,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def updateMaakoodiInvalidIdReturns404(): Unit = {
     val invalidId = UUID.randomUUID()
 

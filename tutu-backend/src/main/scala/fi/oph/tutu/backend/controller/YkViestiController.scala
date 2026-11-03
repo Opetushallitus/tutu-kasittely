@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.{
 import scala.util.{Failure, Success, Try}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.springframework.security.access.prepost.PreAuthorize
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class YkViestiController(
   ykViestiService: YkViestiService,
   userService: UserService,

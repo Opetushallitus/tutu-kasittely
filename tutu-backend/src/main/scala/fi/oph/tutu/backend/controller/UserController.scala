@@ -10,6 +10,7 @@ import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.http.MediaType
+import org.springframework.security.access.prepost.PreAuthorize
 
 @RestController
 @RequestMapping(path = Array("api"))
