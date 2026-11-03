@@ -13,8 +13,7 @@ import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { Kelpoisuus, PaatosTieto } from '@/src/lib/types/paatos';
 
-const emptyKelpoisuus = (paatostietoId: string): Kelpoisuus => ({
-  paatostietoId: paatostietoId,
+const emptyKelpoisuus = (): Kelpoisuus => ({
   opetettavaAine: '',
   myonteisenPaatoksenLisavaatimukset: emptyKelpoisuudenLisavaatimukset(),
   kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
@@ -43,7 +42,7 @@ export const KelpoisuusList = ({
     setCurrentKelpoisuudet(
       paatosTieto.kelpoisuudet.length
         ? paatosTieto.kelpoisuudet
-        : [emptyKelpoisuus(paatosTieto.id!)],
+        : [emptyKelpoisuus()],
     );
   }, [paatosTieto.id, paatosTieto.kelpoisuudet]);
 
@@ -58,7 +57,7 @@ export const KelpoisuusList = ({
   };
 
   const addKelpoisuus = ({ kelpoisuus }: Partial<Kelpoisuus> = {}) => {
-    const uusiKelpoisuus = emptyKelpoisuus(paatosTieto.id!);
+    const uusiKelpoisuus = emptyKelpoisuus();
     if (kelpoisuus !== undefined) {
       uusiKelpoisuus.kelpoisuus = kelpoisuus;
     }

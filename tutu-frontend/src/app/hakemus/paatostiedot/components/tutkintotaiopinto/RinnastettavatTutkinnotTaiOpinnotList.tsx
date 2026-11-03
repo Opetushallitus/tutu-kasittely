@@ -14,8 +14,7 @@ import {
   TutkintoTaiOpinto,
 } from '@/src/lib/types/paatos';
 
-const emptyTutkintoTaiOpinto = (paatostietoId: string): TutkintoTaiOpinto => ({
-  paatostietoId: paatostietoId,
+const emptyTutkintoTaiOpinto = (): TutkintoTaiOpinto => ({
   myonteisenPaatoksenLisavaatimukset: emptyMyonteisenPaatoksenLisavaatimukset(),
   kielteisenPaatoksenPerustelut: emptyKielteisenPaatoksenPerustelut(),
 });
@@ -44,7 +43,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
 
   useEffect(() => {
     if (!rinnastettavatTutkinnotTaiOpinnot.length) {
-      setTutkinnotTaiOpinnot([emptyTutkintoTaiOpinto(paatosTieto.id!)]);
+      setTutkinnotTaiOpinnot([emptyTutkintoTaiOpinto()]);
     } else {
       setTutkinnotTaiOpinnot(rinnastettavatTutkinnotTaiOpinnot);
     }
@@ -69,7 +68,7 @@ export const RinnastettavatTutkinnotTaiOpinnotList = ({
 
   const addTutkintoTaiOpinto = () => {
     setTutkinnotTaiOpinnot((oldTutkinnotTaiOpinnot) =>
-      oldTutkinnotTaiOpinnot.concat([emptyTutkintoTaiOpinto(paatosTieto.id!)]),
+      oldTutkinnotTaiOpinnot.concat([emptyTutkintoTaiOpinto()]),
     );
   };
 

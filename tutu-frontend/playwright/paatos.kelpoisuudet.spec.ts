@@ -273,6 +273,23 @@ test('Kelpoisuuksien lisääminen ja poistaminen toimivat odotetusti, ja lähett
   });
 });
 
+test('Uuden päätöstiedon placeholder id:tä ei lähetetä backendille', async ({
+  page,
+}) => {
+  await makeInitialKelpoisuusSelections(page);
+
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) => req.url().includes('/paatos/') && req.method() === 'PUT',
+    ),
+    page.getByTestId('save-ribbon-button').click(),
+  ]);
+  const paatosTieto = request.postDataJSON().paatosTiedot[0];
+  expect(paatosTieto.id).toBeUndefined();
+  expect(paatosTieto.kelpoisuudet).toHaveLength(1);
+  expect(paatosTieto.kelpoisuudet[0].paatostietoId).toBeUndefined();
+});
+
 const backendRequestMyonteinenPaatos = (
   lisavaatimukset?: KelpoisuudenLisavaatimukset,
 ): Record<string, unknown> => {
