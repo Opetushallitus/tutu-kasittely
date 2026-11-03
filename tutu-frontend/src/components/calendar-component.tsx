@@ -124,7 +124,7 @@ interface CalendarInputProps {
 export type CalendarProps = {
   selectedValue: Date | null;
   setDate: (value: Date | null) => void;
-  label: string;
+  label?: string;
   minDate?: Date | null;
   maxDate?: Date | null;
   disabled?: boolean;

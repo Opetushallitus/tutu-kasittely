@@ -59,6 +59,7 @@ class ViestiServiceTest extends UnitTestBase {
       ataruHakemusMuokattu = Some(toLocalDateTime("2025-05-14T10:59:47.597Z")),
       hakijaEtunimet = Some("Jorma Eero"),
       hakijaSukunimi = Some(""),
+      hakijaOid = Some(PersonOid("1.2.246.562.198.00000000000000006666")),
       esittelyPvm = None,
       lausunnonMaaraaikaPvm = None
     )

@@ -27,6 +27,7 @@ val dbHakemusFixture = DbHakemus(
   ataruHakemusMuokattu = None,
   hakijaEtunimet = None,
   hakijaSukunimi = None,
+  hakijaOid = None,
   esittelyPvm = None,
   lausunnonMaaraaikaPvm = None
 )
