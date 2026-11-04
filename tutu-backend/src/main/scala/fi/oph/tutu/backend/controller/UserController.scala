@@ -5,13 +5,13 @@ import fi.oph.tutu.backend.domain.UserResponse
 import fi.oph.tutu.backend.service.UserService
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.ResponseEntity
+import org.springframework.http.{MediaType, ResponseEntity}
 import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
 import org.springframework.web.servlet.view.RedirectView
-import org.springframework.http.MediaType
-import org.springframework.security.access.prepost.PreAuthorize
 
+// Kontrolleri ei sisällä autorisointia, endpointit käsittelevät joko käyttäjän omia tietoja, tai palauttavat
+// yleisen tason tietoa (healthcheck).
 @RestController
 @RequestMapping(path = Array("api"))
 class UserController(

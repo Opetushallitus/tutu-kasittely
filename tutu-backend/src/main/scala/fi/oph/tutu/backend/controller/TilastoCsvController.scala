@@ -7,6 +7,7 @@ import fi.oph.tutu.backend.utils.Utility.validateAikavali
 import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper, Utility}
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpHeaders, HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RequestParam, RestController}
 
 import java.nio.charset.StandardCharsets
@@ -15,6 +16,7 @@ import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class TilastoCsvController(mapper: ObjectMapper, val auditLog: AuditLog, tilastoCsvService: TilastoCsvService) {
   val LOG: Logger                = LoggerFactory.getLogger(classOf[TilastoCsvController])
   private val errorMessageMapper = new ErrorMessageMapper(mapper)

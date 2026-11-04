@@ -536,6 +536,30 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   @Test
   @Order(6)
+  @WithMockUser(value = esittelijaOidString, authorities = Array("ROLE_APP_TUTU_NADA"))
+  def paivitaAsiatunnusReturns403(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(userOid = esittelijaOidString, authorities = List("ROLE_APP_TUTU_NADA"))
+      )
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006667")
+
+    val requestJson = """{"asiatunnus": "OPH-4321-2025"}"""
+
+    mockMvc
+      .perform(
+        patch(s"/tutu-backend/api/hakemus/${hakemusOid.toString}/asiatunnus")
+          .`with`(csrf())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(requestJson)
+          .header(dummyUserAgent, dummyUserAgentValue)
+          .header(xffOriginalHeaderName, xffOriginalHeaderValue)
+      )
+      .andExpect(status().isForbidden)
+  }
+  @Test
+  @Order(7)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaHakemuksenTiedotAtarustaReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -620,7 +644,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(7)
+  @Order(8)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaHakemuksenTilaAtarustaReturns200(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -652,7 +676,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(8)
+  @Order(9)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaHakemuksenTilaAtarustaPalauttaa400JosTilatietoVirheellinen(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -679,7 +703,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuslistaHakemusKoskee1And4ReturnsOnly1AndAp(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -720,7 +744,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(10)
+  @Order(11)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuslistaHakuMatchesNameAndAsiatunnus(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -750,7 +774,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaEsittelyPvmWithDateReturns204(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -787,7 +811,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def paivitaEsittelyPvmWithoutDateReturns204(): Unit = {
     def isToday(dateString: String): Boolean = {
@@ -835,7 +859,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(13)
+  @Order(14)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaLoytyy(): Unit = {
     // "Testi Toka Hakija"
@@ -855,7 +879,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(14)
+  @Order(15)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTutkintoFilterLoytyy(): Unit = {
     // Kaikille hakemuksille on luotu tutkinnot, joilla oppilaitos = "Butan Amattikoulu".
@@ -879,7 +903,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(15)
+  @Order(16)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaTyhjaHakuPalauttaaTyhjanTuloksen(): Unit = {
     mockMvc
@@ -890,7 +914,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(16)
+  @Order(17)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetHaullaNakymaMaaritteleeHakualueen(): Unit = {
     mockMvc
@@ -961,7 +985,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(17)
+  @Order(18)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetSuoritusmaaFilter(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -987,7 +1011,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(18)
+  @Order(19)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetMyonteinenJaKielteinenPaatosFilter(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -1021,7 +1045,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(19)
+  @Order(20)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetKelpoisuusJaOpetettavatAineetFilter(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
@@ -1077,7 +1101,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   }
 
   @Test
-  @Order(20)
+  @Order(21)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemuksetSuoritusmaaJaKelpoisuusKorreloidutFilter(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
