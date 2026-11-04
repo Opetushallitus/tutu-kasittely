@@ -11,10 +11,11 @@ import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynVies
 import { setYkViestilistaQueryState } from '@/src/lib/utils';
 
 const FIELD_KEYS = {
-  lahetetty: 'lahetetty',
-  tila: 'tila',
-  hakija: 'hakija',
   asiatunnus: 'asiatunnus',
+  aihe: 'aihe',
+  tila: 'tila',
+  esittelija: 'esittelija',
+  lahetetty: 'lahetetty',
 };
 
 export default function SentMessages({

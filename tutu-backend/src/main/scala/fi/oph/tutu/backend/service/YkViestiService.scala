@@ -66,7 +66,7 @@ class YkViestiService(
             parentId = viesti.parentId,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
-            hakija = viesti.hakija,
+            esittelija = viesti.esittelija,
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
@@ -77,30 +77,7 @@ class YkViestiService(
           )
         )
       }
-    sortParam match {
-      case None                                => ykViestiList
-      case Some(ListSortParam(param, sortDef)) =>
-        given Ordering[ViestinTila] = Ordering.by(_.ordinal)
-        sortDef match {
-          case SortDef.Asc =>
-            param match {
-              case "lahetetty"  => ykViestiList.sortBy(_.luotu)
-              case "hakija"     => ykViestiList.sortBy(_.hakija)
-              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
-              case "tila"       => ykViestiList.sortBy(_.status)
-              case _            => ykViestiList
-            }
-          case SortDef.Desc =>
-            param match {
-              case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
-              case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
-              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
-              case "tila"       => ykViestiList.sortBy(_.status).reverse
-              case _            => ykViestiList
-            }
-          case _ => ykViestiList
-        }
-    }
+    jarjestaViestilista(ykViestiList, sortParam)
   }
 
   def haeYkLahetetytViestit(
@@ -121,39 +98,38 @@ class YkViestiService(
             parentId = viesti.parentId,
             hakemusOid = viesti.hakemusOid.toString,
             asiatunnus = viesti.asiatunnus,
-            hakija = viesti.hakija,
+            esittelija = viesti.esittelija,
             lahettajaOid = viesti.lahettajaOid,
             vastaanottajaOid = viesti.vastaanottajaOid,
             luotu = viesti.luotu,
             luettu = luettu,
             viesti = viesti.viesti,
-            status = status
+            status = status,
+            aihe = viesti.aihe
           )
         )
       }
+    jarjestaViestilista(ykViestiList, sortParam)
+  }
+
+  private def jarjestaViestilista(
+    ykViestiList: Seq[YkViestiListItem],
+    sortParam: Option[ListSortParam]
+  ): Seq[YkViestiListItem] = {
     sortParam match {
-      case None                                => ykViestiList
-      case Some(ListSortParam(param, sortDef)) =>
+      case Some(ListSortParam(param, sortDef @ (SortDef.Asc | SortDef.Desc))) =>
         given Ordering[ViestinTila] = Ordering.by(_.ordinal)
-        sortDef match {
-          case SortDef.Asc =>
-            param match {
-              case "lahetetty"  => ykViestiList.sortBy(_.luotu)
-              case "hakija"     => ykViestiList.sortBy(_.hakija)
-              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
-              case "tila"       => ykViestiList.sortBy(_.status)
-              case _            => ykViestiList
-            }
-          case SortDef.Desc =>
-            param match {
-              case "lahetetty"  => ykViestiList.sortBy(_.luotu).reverse
-              case "hakija"     => ykViestiList.sortBy(_.hakija).reverse
-              case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus).reverse
-              case "tila"       => ykViestiList.sortBy(_.status).reverse
-              case _            => ykViestiList
-            }
-          case _ => ykViestiList
+        // Aihe järjestetään avaimen mukaan, ei käännetyn tekstin
+        val jarjestetty = param match {
+          case "lahetetty"  => ykViestiList.sortBy(_.luotu)
+          case "aihe"       => ykViestiList.sortBy(_.aihe)
+          case "esittelija" => ykViestiList.sortBy(_.esittelija)
+          case "asiatunnus" => ykViestiList.sortBy(_.asiatunnus)
+          case "tila"       => ykViestiList.sortBy(_.status)
+          case _            => ykViestiList
         }
+        if (sortDef == SortDef.Desc) jarjestetty.reverse else jarjestetty
+      case _ => ykViestiList
     }
   }
 

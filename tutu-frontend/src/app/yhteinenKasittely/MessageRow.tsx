@@ -3,6 +3,7 @@ import { Grid2, styled, TableCell, TableRow } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 
 import { StyledLink } from '@/src/components/StyledLink';
+import { DATE_PLACEHOLDER } from '@/src/constants/constants';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { YhteisenKasittelynViesti } from '@/src/lib/types/yhteisenKasittelynViesti';
@@ -35,7 +36,8 @@ export default function MessageRow({
   sentMessage: boolean;
 }) {
   const { t } = useTranslations();
-  const { id, luotu, asiatunnus, hakija, hakemusOid, status } = message;
+  const { id, luotu, asiatunnus, aihe, esittelija, hakemusOid, status } =
+    message;
 
   const TagVastaamatta = () => (
     <>
@@ -87,8 +89,17 @@ export default function MessageRow({
   return (
     <TableRow data-testid={'yhteisen-kasittelyn-viesti-row'}>
       <StyledTableCell>
-        <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
-          {formatHelsinki(luotu ?? '', 'd.M.yyyy')}
+        <StyledLink
+          to={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
+          data-testid={'asiatunnus'}
+          sx={{ fontWeight: 'normal' }}
+        >
+          {asiatunnus}
+        </StyledLink>
+      </StyledTableCell>
+      <StyledTableCell>
+        <OphTypography variant="body1" data-testid={'aihe'}>
+          {aihe && t(`yhteinenKasittely.aihe.${aihe}`)}
         </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
@@ -99,17 +110,13 @@ export default function MessageRow({
         </Grid2>
       </StyledTableCell>
       <StyledTableCell>
-        <StyledLink
-          to={`/hakemus/${hakemusOid}/yhteinenkasittely?viestiId=${id}`}
-          data-testid={'hakijan-nimi'}
-          sx={{ fontWeight: 'normal' }}
-        >
-          {hakija}
-        </StyledLink>
+        <OphTypography variant="body1" data-testid={'esittelija'}>
+          {esittelija}
+        </OphTypography>
       </StyledTableCell>
       <StyledTableCell>
-        <OphTypography variant="body1" data-testid={'asiatunnus'}>
-          {asiatunnus}
+        <OphTypography variant="body1" data-testid={'viestin-lahetysaika'}>
+          {formatHelsinki(luotu ?? '', DATE_PLACEHOLDER)}
         </OphTypography>
       </StyledTableCell>
     </TableRow>
