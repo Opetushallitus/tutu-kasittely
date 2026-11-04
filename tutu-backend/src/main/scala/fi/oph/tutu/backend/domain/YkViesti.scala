@@ -10,6 +10,9 @@ import java.util.UUID
 enum ViestinTila:
   case vastaamatta, vastattu, uusiVastaus
 
+enum Tyyppi:
+  case kysymys, jatkokysymys, vastaus
+
 @Schema(name = "YkViesti")
 case class DbYkViesti(
   @(Schema @field)(
@@ -75,7 +78,12 @@ case class DbYkViesti(
     example = "Viestin aihe",
     requiredMode = RequiredMode.NOT_REQUIRED
   )
-  aihe: Option[String]
+  aihe: Option[String],
+  @(Schema @field)(
+    example = "kysymys",
+    requiredMode = RequiredMode.NOT_REQUIRED
+  )
+  tyyppi: Option[Tyyppi] = None
 )
 
 case class YkViesti(
@@ -97,7 +105,8 @@ case class YkViesti(
   muokattu: Option[LocalDateTime] = None,
   luettu: Seq[String] = Seq.empty,
   aihe: Option[String] = None,
-  esittelija: Option[String] = None
+  esittelija: Option[String] = None,
+  tyyppi: Option[Tyyppi] = None
 )
 
 case class YkViestiListItem(
@@ -113,7 +122,8 @@ case class YkViestiListItem(
   luotu: Option[LocalDateTime] = None,
   luettu: Boolean,
   viesti: Option[String] = None,
-  aihe: Option[String] = None
+  aihe: Option[String] = None,
+  tyyppi: Option[Tyyppi] = None
 )
 
 case class YkKysymysDTO(
@@ -121,7 +131,8 @@ case class YkKysymysDTO(
   viesti: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
   laheta: Option[Boolean] = None,
-  aihe: Option[String] = None
+  aihe: Option[String] = None,
+  tyyppi: Option[Tyyppi] = None
 )
 
 case class YkVastausDTO(

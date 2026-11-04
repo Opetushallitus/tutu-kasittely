@@ -74,7 +74,8 @@ class YkViestiService(
             luettu = olenLukenut,
             viesti = viesti.viesti,
             status = status,
-            aihe = viesti.aihe
+            aihe = viesti.aihe,
+            tyyppi = viesti.tyyppi
           )
         )
       }
@@ -151,7 +152,8 @@ class YkViestiService(
         hakija = null,
         luoja = Some(user.userOid),
         lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
-        aihe = ykKysymys.aihe
+        aihe = ykKysymys.aihe,
+        tyyppi = ykKysymys.tyyppi
       )
     )
   }
