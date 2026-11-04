@@ -78,7 +78,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
         lahetetty = Some(LocalDateTime.parse("2026-10-30T00:00:00.000")),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -334,7 +335,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -385,7 +387,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 

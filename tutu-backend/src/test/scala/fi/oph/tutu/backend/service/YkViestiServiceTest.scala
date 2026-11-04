@@ -63,7 +63,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
     )
     val ykKysymysDto = YkKysymysDTO(
       viesti = Some("Kysymys"),
-      vastaanottajaOid = Some("VastaanottajaOid-1")
+      vastaanottajaOid = Some("VastaanottajaOid-1"),
+      tyyppi = YkViestiTyyppi.kysymys
     )
 
     // Act
@@ -97,13 +98,15 @@ class YkViestiServiceTest extends IntegrationTestBase {
         vastaanottajaOid = Some("VastaanottajaOid-1"),
         viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
     val ykVastausDto = YkVastausDTO(
       id = Some(existingYkViestiId.toString),
       vastaus = Some("Vastaus"),
-      laheta = Some(true)
+      laheta = Some(true),
+      tyyppi = YkViestiTyyppi.vastaus
     )
 
     // Act
@@ -137,7 +140,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         vastaanottajaOid = Some("VastaanottajaOid-1"),
         viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -168,7 +172,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -206,7 +211,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 

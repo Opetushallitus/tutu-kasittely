@@ -107,7 +107,8 @@ class YkViestiService(
             luettu = luettu,
             viesti = viesti.viesti,
             status = status,
-            aihe = viesti.aihe
+            aihe = viesti.aihe,
+            tyyppi = viesti.tyyppi
           )
         )
       }
@@ -172,7 +173,8 @@ class YkViestiService(
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
             lahetetty = Option.when(ykVastaus.laheta.contains(true))(LocalDateTime.now()),
-            muokkaaja = Some(user.userOid)
+            muokkaaja = Some(user.userOid),
+            tyyppi = ykVastaus.tyyppi
           )
         )
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id.get} not found")

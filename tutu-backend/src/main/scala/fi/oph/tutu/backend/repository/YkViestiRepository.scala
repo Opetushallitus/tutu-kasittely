@@ -52,7 +52,7 @@ class YkViestiRepository extends BaseResultHandlers {
         luettu = nextStringArray(r),
         aihe = Option(r.nextString()),
         esittelija = Option(r.nextString()),
-        tyyppi = Option(r.nextString()).map(Tyyppi.valueOf)
+        tyyppi = Option(r.nextString()).map(YkViestiTyyppi.valueOf).getOrElse(YkViestiTyyppi.vastaus)
       )
     )
 
@@ -211,7 +211,7 @@ class YkViestiRepository extends BaseResultHandlers {
               ${ykViesti.luoja.map(_.toString).orNull},
               ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
               ${ykViesti.aihe.map(_.toString).orNull}::uuid,
-              ${ykViesti.tyyppi.map(_.toString).orNull}
+              ${ykViesti.tyyppi.toString}::viesti_tyyppi
             )
             RETURNING id
           """.as[UUID].head,
