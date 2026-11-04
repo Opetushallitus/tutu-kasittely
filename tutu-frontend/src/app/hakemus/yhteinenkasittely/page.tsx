@@ -29,7 +29,11 @@ import {
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
-import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  Viesti,
+  YhteinenKasittely,
+  YkViestiTyyppi,
+} from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 function not<T>(predicate: (arg: T) => boolean) {
@@ -238,6 +242,9 @@ export default function YhteinenKasittelyPage() {
         viesti: kysymys,
         vastaanottajaOid: tyopari,
         aihe: aihe,
+        tyyppi: modalParent
+          ? YkViestiTyyppi.jatkokysymys
+          : YkViestiTyyppi.kysymys,
       };
       luoUusiKasittely(kasittely);
       addToast({
@@ -254,7 +261,12 @@ export default function YhteinenKasittelyPage() {
 
   const handleSendAnswer = async (id: string, laheta: boolean = false) => {
     try {
-      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '', laheta });
+      vastaaKasittelyyn({
+        id,
+        vastaus: answers[id] ?? '',
+        laheta,
+        tyyppi: YkViestiTyyppi.vastaus,
+      });
       if (laheta) {
         addToast({
           key: 'hakemus.yhteinenkasittely.vastattu.toaster',

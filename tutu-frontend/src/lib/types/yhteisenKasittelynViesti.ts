@@ -1,3 +1,5 @@
+import { YkViestiTyyppi } from '@/src/lib/types/yhteinenkasittely';
+
 export type YhteisenKasittelynViesti = {
   id: string;
   hakemusOid: string;
@@ -11,4 +13,5 @@ export type YhteisenKasittelynViesti = {
   viesti?: string | null;
   luettu?: boolean;
   status?: string | null;
+  tyyppi: YkViestiTyyppi;
 };

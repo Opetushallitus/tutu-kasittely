@@ -12,7 +12,11 @@ import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
-import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  Viesti,
+  YhteinenKasittely,
+  YkViestiTyyppi,
+} from '@/src/lib/types/yhteinenkasittely';
 
 interface KasittelyDetailsProps {
   kasittely: YhteinenKasittely;
@@ -23,12 +27,6 @@ interface KasittelyDetailsProps {
   user: User | null;
 }
 
-enum ViestinYTyyppi {
-  kysymys,
-  vastaus,
-  lisakysymys,
-}
-
 const vastaamatonKysymysMinulle = (
   user: User | null,
   kasittely: YhteinenKasittely,
@@ -36,22 +34,11 @@ const vastaamatonKysymysMinulle = (
   if (!user) {
     return false;
   }
-  const viimeinenViestiOnKysymys =
-    kasittely.jatkoKasittelyt?.length === 0 &&
-    kasittely.jatkoKasittelyt?.length % 2 === 0;
-
-  const viimeisinViesti =
-    kasittely.jatkoKasittelyt?.length === 0
-      ? kasittely.aloitusViesti
-      : kasittely.jatkoKasittelyt?.at(-1);
-
-  if (
-    viimeinenViestiOnKysymys &&
-    viimeisinViesti?.vastaanottajaOid === user.userOid
-  ) {
-    return true;
+  if (!kasittely.jatkoKasittelyt || kasittely.jatkoKasittelyt.length === 0) {
+    return kasittely.aloitusViesti?.vastaanottajaOid === user.userOid;
   }
-  return false;
+  const viimeisinKasittely = kasittely.jatkoKasittelyt.at(-1);
+  return viimeisinKasittely?.vastaanottajaOid === user.userOid;
 };
 
 export const KasittelyDetails: React.FC<KasittelyDetailsProps> = ({
@@ -194,23 +181,14 @@ interface ViestiProps {
   index: number;
 }
 
-const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
+const ViestiBox: React.FC<ViestiProps> = ({ viesti }) => {
   useTheme();
   const { t } = useTranslations();
 
   const nameDate = `${viesti.lahettaja} ${formatHelsinki(viesti.luotu || '', 'd.M.yyyy HH:mm')}`;
-  let tyyppi: ViestinYTyyppi;
-
-  if (index < 0) {
-    tyyppi = ViestinYTyyppi.kysymys;
-  } else if (index % 2 === 0) {
-    tyyppi = ViestinYTyyppi.vastaus;
-  } else {
-    tyyppi = ViestinYTyyppi.lisakysymys;
-  }
-
   const viestiMargin =
-    tyyppi === ViestinYTyyppi.kysymys || tyyppi === ViestinYTyyppi.lisakysymys
+    viesti.tyyppi === YkViestiTyyppi.kysymys ||
+    viesti.tyyppi === YkViestiTyyppi.jatkokysymys
       ? 0
       : '20px';
 
@@ -225,7 +203,7 @@ const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
           marginBottom: '24px',
           marginLeft: viestiMargin,
           backgroundColor:
-            tyyppi === ViestinYTyyppi.vastaus
+            viesti.tyyppi === YkViestiTyyppi.vastaus
               ? `rgba(${parseInt(ophColors.lightBlue2.slice(1, 3), 16)}, ${parseInt(ophColors.lightBlue2.slice(3, 5), 16)}, ${parseInt(ophColors.lightBlue2.slice(5, 7), 16)}, 0.75)`
               : ophColors.white,
         }}
@@ -239,7 +217,9 @@ const ViestiBox: React.FC<ViestiProps> = ({ viesti, index }) => {
           }}
         >
           <OphTypography variant="body1" sx={{ fontWeight: 600 }}>
-            {t(`hakemus.yhteinenkasittely.tyyppi.${ViestinYTyyppi[tyyppi]}`)}
+            {t(
+              `hakemus.yhteinenkasittely.tyyppi.${YkViestiTyyppi[viesti.tyyppi]}`,
+            )}
           </OphTypography>
           <OphTypography variant="body1" sx={{ color: ophColors.grey700 }}>
             {nameDate}

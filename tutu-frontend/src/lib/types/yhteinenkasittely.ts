@@ -1,3 +1,9 @@
+export enum YkViestiTyyppi {
+  kysymys = 'kysymys',
+  jatkokysymys = 'jatkokysymys',
+  vastaus = 'vastaus',
+}
+
 export type Viesti = {
   id?: string;
   parentId?: string;
@@ -11,6 +17,7 @@ export type Viesti = {
   viesti: string;
   hakija?: string;
   aihe?: string;
+  tyyppi: YkViestiTyyppi;
 };
 
 export type LahtevaViesti = {
@@ -18,6 +25,7 @@ export type LahtevaViesti = {
   viesti: string;
   vastaanottajOid: string;
   aihe?: string;
+  tyyppi: YkViestiTyyppi;
 };
 
 export type YhteinenKasittely = {
