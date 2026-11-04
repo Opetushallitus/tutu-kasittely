@@ -1,7 +1,8 @@
 package fi.oph.tutu.backend.service
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import fi.oph.tutu.backend.domain.OnrUser
+import fi.oph.tutu.backend.domain.{HenkiloViiteDto, OnrUser, PersonOid}
 import fi.oph.tutu.backend.service.oauth.Oauth2Client
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -104,5 +105,21 @@ class OnrService(oauth2Client: Oauth2Client, httpService: HttpService, mapper: O
   def updateCached(personOid: String, value: OnrUser): Unit = {
     val henkiloCache = cacheManager.getCache("henkilo")
     henkiloCache.put(personOid, value)
+  }
+
+  def haeLinkedOids(personOid: PersonOid): Either[Throwable, Seq[PersonOid]] = {
+    LOG.info(s"Fetching linked oids from oppijanumerorekisteri $personOid")
+    httpService.post(
+      oauth2Client,
+      s"$opintopolku_virkailija_domain/oppijanumerorekisteri-service/s2s/duplicateHenkilos",
+      mapper.writeValueAsString(Map("henkiloOids" -> Seq(personOid.s)))
+    ) match {
+      case Left(e) =>
+        LOG.error(s"Error fetching linked oids with OID: $personOid from oppijanumerorekisteri: ${e.getMessage}")
+        Left(OnrServiceException("", e))
+      case Right(response) =>
+        val result = mapper.readValue(response, new TypeReference[Seq[HenkiloViiteDto]] {})
+        Right(result.map(_.henkiloOid))
+    }
   }
 }

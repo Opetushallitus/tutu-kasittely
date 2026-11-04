@@ -15,7 +15,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
   var ykViestiService: YkViestiService = _
 
   @BeforeAll
-  def setupOnce: Unit = {
+  def setupOnce(): Unit = {
     val esittelijaIdMaybe = esittelijaRepository
       .insertEsittelija(
         esittelijaOid = UserOid("EsittelijaOid-1"),
@@ -169,7 +169,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
 
     //////
     // Act
-    val exception: Exception = assertThrows(
+    assertThrows(
       classOf[Exception],
       () => {
         ykViestiService.poistaYkViesti(
@@ -207,7 +207,7 @@ class YkViestiServiceTest extends IntegrationTestBase {
 
     //////
     // Act
-    val exception: Exception = assertThrows(
+    assertThrows(
       classOf[Exception],
       () => {
         ykViestiService.poistaYkViesti(

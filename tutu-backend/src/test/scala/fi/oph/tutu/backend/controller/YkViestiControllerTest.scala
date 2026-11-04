@@ -10,7 +10,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
-import org.hamcrest.Matchers.{empty, equalTo, hasKey, hasSize, not}
+import org.hamcrest.Matchers.{hasKey, hasSize}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType

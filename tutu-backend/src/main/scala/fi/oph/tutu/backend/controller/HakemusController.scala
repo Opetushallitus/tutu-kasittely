@@ -2,7 +2,7 @@ package fi.oph.tutu.backend.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, HakemuspalveluService, UserService}
+import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, HakemuspalveluService, OnrService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
 import io.swagger.v3.oas.annotations.Operation
@@ -26,6 +26,7 @@ class HakemusController(
   hakemusService: HakemusService,
   userService: UserService,
   esittelijaService: EsittelijaService,
+  onrService: OnrService,
   mapper: ObjectMapper,
   val auditLog: AuditLog
 ) {
@@ -833,5 +834,26 @@ class HakemusController(
         LOG.error(s"Virhe esittelypäivän asettamisessa: ${e.getMessage}", e)
         errorMessageMapper.mapErrorMessage(e)
     }
+  }
+
+  @GetMapping(
+    path = Array("hakemus/muut/{hakijaOid}"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeMuutHakemukset(
+    @PathVariable("hakijaOid") hakijaOid: String,
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      hakemusService.haeMuutHakemukset(PersonOid(hakijaOid))
+    } match {
+      case Success(result) =>
+        auditLog.logRead("hakemus/muut/{hakijaOid}", hakijaOid, ReadMuutHakemukset, request)
+        ResponseEntity.ok().body(result)
+      case Failure(exception) =>
+        LOG.error(s"Virhe hakijan muiden hakemusten hakemisessa: ${exception.getMessage}", exception)
+        errorMessageMapper.mapErrorMessage(exception)
+    }
+
   }
 }

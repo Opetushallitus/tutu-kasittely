@@ -5,8 +5,6 @@ import {
   isDev,
   isTest,
   lokalisointiUrl,
-  tolgeeApiKey,
-  tolgeeApiUrl,
 } from '@/src/lib/configuration/configuration';
 
 const NAMESPACE = 'tutu-kasittely';
@@ -36,9 +34,6 @@ export function TolgeeBase() {
     });
   }
 
-  const apiKey = tolgeeApiKey();
-  const apiUrl = tolgeeApiUrl();
-
   return tolgee
     .use(
       BackendFetch({
@@ -48,9 +43,5 @@ export function TolgeeBase() {
       }),
     )
     .use(DevTools())
-    .updateDefaults(
-      apiKey?.trim() && apiUrl?.trim()
-        ? { ...defaultSettings, apiKey, apiUrl, projectId: 11100 }
-        : defaultSettings,
-    );
+    .updateDefaults({ ...defaultSettings, projectId: 11100 });
 }

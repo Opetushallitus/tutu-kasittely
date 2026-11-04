@@ -44,7 +44,7 @@ export function ColorPicker({
   useCloseOnClickOutside(ref, () => setOpen(false));
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box ref={ref} sx={{ position: 'relative' }}>
       <OphButton
         onClick={() => {
           setOpen(!open);
@@ -62,7 +62,6 @@ export function ColorPicker({
       />
       {open && (
         <Box
-          ref={ref}
           sx={{
             position: 'absolute',
             top: '36px',

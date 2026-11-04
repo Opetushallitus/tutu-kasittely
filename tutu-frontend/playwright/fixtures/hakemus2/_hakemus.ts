@@ -5,6 +5,7 @@ export const _hakemus: Hakemus = {
   lomakeOid: '1b4c352d-8f7f-499b-a8f1-82f17bd6a03a',
   lomakeId: 1824368,
   hakija: {
+    henkiloOid: '1.2.246.562.198.12341234',
     etunimet: 'Heikki Hemuli',
     kutsumanimi: 'Hessu',
     sukunimi: 'Heittotähti',
