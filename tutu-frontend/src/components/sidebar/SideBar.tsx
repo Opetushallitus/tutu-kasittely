@@ -5,6 +5,7 @@ import { ophColors } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { HakemusKoskee } from '@/src/components/sidebar/HakemusKoskee';
+import { MuutHakemukset } from '@/src/components/sidebar/MuutHakemukset';
 import { Paatos } from '@/src/components/sidebar/Paatos';
 import { AvaaPerusteluMuistioButton } from '@/src/components/sidebar/PerusteluMuistio';
 import { ToimintoLinkki } from '@/src/components/sidebar/ToimintoLinkki';
@@ -50,6 +51,7 @@ export const SideBar = () => {
       <SidebarInfoStack direction="column" spacing={2}>
         <HakemusKoskee />
         <Paatos />
+        <MuutHakemukset />
       </SidebarInfoStack>
       <ToimintoLinkki
         path={`/hakemus/${hakemusOid}/editori/viesti`}

@@ -50,6 +50,7 @@ export type Hakemus = {
   peruutusLisatieto?: string;
   viimeisinTaydennyspyyntoPvm?: string;
   lausunnonMaaraaikaPvm?: string | null;
+  hakijaOid?: string;
 };
 
 /**
@@ -181,4 +182,11 @@ export type ValmistumisenVahvistus = {
   valmistumisenVahvistusSaatu: string | null;
   valmistumisenVahvistusVastaus: ValmistumisenVahvistusVastaus | null;
   valmistumisenVahvistusLisatieto: string | null;
+};
+
+export type MuuHakemus = {
+  hakemusOid: string;
+  asiatunnus?: string;
+  hakijaEtunimet?: string;
+  hakijaSukunimi?: string;
 };

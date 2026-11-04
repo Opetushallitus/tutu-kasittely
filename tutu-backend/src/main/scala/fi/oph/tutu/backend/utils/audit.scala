@@ -345,6 +345,10 @@ object AuditOperation {
     val name = "TILASTOKESKUS_CSV_LUKU"
   }
 
+  case object ReadMuutHakemukset extends AuditOperation {
+    val name = "MUUT_HAKEMUKSET_LUKU"
+  }
+
   // Poisto operaatiot
 
   case object DeleteViesti extends AuditOperation {

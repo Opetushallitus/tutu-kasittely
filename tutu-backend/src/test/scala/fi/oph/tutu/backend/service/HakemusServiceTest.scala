@@ -162,8 +162,9 @@ class HakemusServiceTest extends UnitTestBase {
       hakemuspalveluService = hakemuspalveluService,
       ataruHakemusParser = ataruHakemusParser,
       perustelumuistioService = perustelumuistioService,
+      onrService = onrService,
       db = db,
-      JacksonConfig.mapper
+      objectMapper = JacksonConfig.mapper
     )
     when(perustelumuistioService.paivitaPerustelumuistio(any[HakemusOid], any[String]))
       .thenReturn(CompletableFuture.completedFuture(None))
