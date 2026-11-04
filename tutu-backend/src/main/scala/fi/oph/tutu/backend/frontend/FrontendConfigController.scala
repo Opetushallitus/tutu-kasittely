@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, Rest
 
 @RestController
 @RequestMapping(path = Array("tutu-frontend"))
+// Kontrolleri ei sisällä autorisointia, palauttaa ainoastaan ei-sensitiivistä tietoa.
 class FrontendConfigController(mapper: ObjectMapper, environment: Environment) {
   @Value("${opintopolku.virkailija.url}")
   private val virkailijaUrl: String = null

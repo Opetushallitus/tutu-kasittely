@@ -76,7 +76,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Test
   @DisplayName("Aloittaa migraation onnistuneesti")
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def testStartMigrationSuccess(): Unit = {
     Mockito
       .`when`(migrationService.orchestrateMigration(eqTo("test-key")))
@@ -119,7 +119,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Test
   @DisplayName("Käsittelee migraation aloituksen virheen")
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def testStartMigrationServerError(): Unit = {
     val exception = new RuntimeException("Service error")
 
@@ -141,7 +141,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Test
   @DisplayName("Hakee vanha tutu -tiedot ID:n perusteella onnistuneesti")
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def testGetVanhaTutuByIdSuccess(): Unit = {
     val testData1 = Map(
       "name"        -> "John Doe",
@@ -189,7 +189,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Test
   @DisplayName("Palauttaa 404 kun tietuetta ei löydy")
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def testGetVanhaTutuByIdNotFound(): Unit = {
     val nonExistentId = java.util.UUID.randomUUID()
     mockMvc
@@ -206,7 +206,7 @@ class VanhaTutuControllerTest extends IntegrationTestBase {
 
   @Test
   @DisplayName("Palauttaa 500 kun ID-muoto on virheellinen")
-  @WithMockUser(username = "testuser", roles = Array("USER"))
+  @WithMockUser(username = "testuser", roles = Array("APP_TUTU_CRUD"))
   def testGetVanhaTutuByIdInvalidId(): Unit = {
     mockMvc
       .perform(

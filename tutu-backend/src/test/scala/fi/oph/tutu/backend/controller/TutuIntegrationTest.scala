@@ -173,9 +173,12 @@ class TutuIntegrationTest extends IntegrationTestBase {
     value = esittelijaOidString,
     authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
   )
-  def luoHakemusValidRequestReturns500WhenHakemusAlreadyExists(): Unit = {
-    val hakemus     = UusiAtaruHakemus(HakemusOid("1.2.246.562.11.00000000000000006666"), 1)
-    val requestJson = mapper.writeValueAsString(hakemus)
+  def luoHakemusValidRequestReturns204WhenHakemusAlreadyExists(): Unit = {
+    val requestJson =
+      """{
+          "hakemusOid": "1.2.246.562.11.00000000000000006666",
+          "hakemusKoskee": 1
+          }"""
     when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
     mockMvc
       .perform(
@@ -185,7 +188,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
           .content(requestJson)
           .header("XFF_ORIGINAL", "127.0.0.1")
       )
-      .andExpect(status().isInternalServerError)
+      .andExpect(status().isNoContent)
   }
 
   @Test

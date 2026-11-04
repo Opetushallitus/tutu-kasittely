@@ -10,13 +10,15 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation._
+import org.springframework.web.bind.annotation.*
 
 import scala.util.{Failure, Success, Try}
 import fi.oph.tutu.backend.domain.FilemakerHakemusListResult
+import org.springframework.security.access.prepost.PreAuthorize
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class VanhaTutuController(
   migrationService: MigrationService,
   vanhaTutuService: VanhaTutuService,

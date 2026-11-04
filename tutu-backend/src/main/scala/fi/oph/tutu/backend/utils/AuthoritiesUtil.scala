@@ -16,7 +16,4 @@ object AuthoritiesUtil {
     allAuthorities.asScala.toList
       .flatMap(role => tutuAuthoritiesRegex.findFirstIn(role.getAuthority))
   }
-
-  def hasTutuAuthorities(allAuthorities: List[String]): Boolean =
-    allAuthorities.exists(role => role.startsWith(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
 }

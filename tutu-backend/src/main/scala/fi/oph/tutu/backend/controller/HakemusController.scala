@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 import java.time.LocalDateTime
@@ -19,6 +20,7 @@ import scala.util.{Failure, Success, Try}
 
 @RestController
 @RequestMapping(path = Array("api"))
+@PreAuthorize("@authFacade.hasTutuAuthorities")
 class HakemusController(
   hakemuspalveluService: HakemuspalveluService,
   hakemusService: HakemusService,
@@ -77,65 +79,55 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var hakemus: UusiAtaruHakemus = null
-        try hakemus = mapper.readValue(hakemusBytes, classOf[UusiAtaruHakemus])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Hakemuksen luonti epäonnistui: ${e.getMessage}")
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-        if (hakemus.hakemusOid.isValid) {
-          if (!hakemusService.onkoHakemusJoOlemassa(hakemus.hakemusOid)) {
-            val (hakemusId, paatos): (UUID, Paatos) = if (hakemus.onLopullinenPaatos) {
-              hakemusService.luoLopullisenPaatoksenHakemus(hakemus)
-            } else {
-              val (hakemusId, perustelu, paatos) = hakemusService.tallennaAtaruHakemus(hakemus)
-              auditLog.logCreate(
-                auditLog.getUser(request),
-                Map("perusteluId" -> perustelu.id.toString),
-                CreatePerustelu,
-                perustelu.toString
-              )
-              (hakemusId, paatos)
-            }
-
-            auditLog.logCreate(
-              auditLog.getUser(request),
-              Map("paatosId" -> paatos.id.toString),
-              CreatePaatos,
-              paatos.toString
-            )
-            auditLog.logCreate(
-              auditLog.getUser(request),
-              Map("hakemusId" -> hakemusId.toString),
-              CreateHakemus,
-              hakemus.toString
-            )
-            ResponseEntity.status(HttpStatus.OK).body(hakemusId)
-          } else {
-            ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
-          }
-        } else {
-          LOG.error(
-            s"Hakemuksen luonti epäonnistui, virheellinen hakemusOid: ${hakemus.hakemusOid}"
-          )
-          errorMessageMapper.mapPlainErrorMessage(
+      var hakemus: UusiAtaruHakemus = null
+      try hakemus = mapper.readValue(hakemusBytes, classOf[UusiAtaruHakemus])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Hakemuksen luonti epäonnistui: ${e.getMessage}")
+          return errorMessageMapper.mapPlainErrorMessage(
             RESPONSE_400_DESCRIPTION,
             HttpStatus.BAD_REQUEST
           )
+      }
+      if (hakemus.hakemusOid.isValid) {
+        if (!hakemusService.onkoHakemusJoOlemassa(hakemus.hakemusOid)) {
+          val (hakemusId, paatos): (UUID, Paatos) = if (hakemus.onLopullinenPaatos) {
+            hakemusService.luoLopullisenPaatoksenHakemus(hakemus)
+          } else {
+            val (hakemusId, perustelu, paatos) = hakemusService.tallennaAtaruHakemus(hakemus)
+            auditLog.logCreate(
+              auditLog.getUser(request),
+              Map("perusteluId" -> perustelu.id.toString),
+              CreatePerustelu,
+              perustelu.toString
+            )
+            (hakemusId, paatos)
+          }
+
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("paatosId" -> paatos.id.toString),
+            CreatePaatos,
+            paatos.toString
+          )
+          auditLog.logCreate(
+            auditLog.getUser(request),
+            Map("hakemusId" -> hakemusId.toString),
+            CreateHakemus,
+            hakemus.toString
+          )
+          ResponseEntity.status(HttpStatus.OK).body(hakemusId)
+        } else {
+          ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
         }
+      } else {
+        LOG.error(
+          s"Hakemuksen luonti epäonnistui, virheellinen hakemusOid: ${hakemus.hakemusOid}"
+        )
+        errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
       }
     } catch {
       case e: Exception =>
@@ -181,35 +173,25 @@ class HakemusController(
     @RequestBody hakemusBytes: Array[Byte],
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    val user        = userService.getEnrichedUserDetails(true)
-    val authorities = user.authorities
-
-    if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-      errorMessageMapper.mapPlainErrorMessage(
-        RESPONSE_403_DESCRIPTION,
-        HttpStatus.FORBIDDEN
-      )
-    } else {
-      var hakemusUpdate: AtaruHakemusUpdate = null
-      try hakemusUpdate = mapper.readValue(hakemusBytes, classOf[AtaruHakemusUpdate])
-      catch {
-        case e: Exception =>
-          LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui: ${e.getMessage}")
-          return errorMessageMapper.mapPlainErrorMessage(
-            RESPONSE_400_DESCRIPTION,
-            HttpStatus.BAD_REQUEST
-          )
-      }
-      Try {
-        hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid), hakemusUpdate)
-      } match {
-        case Success(_) =>
-          LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
-          ResponseEntity.status(HttpStatus.OK).body("")
-        case Failure(exception) =>
-          LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui, hakemusOid: $hakemusOid", exception)
-          errorMessageMapper.mapErrorMessage(exception)
-      }
+    var hakemusUpdate: AtaruHakemusUpdate = null
+    try hakemusUpdate = mapper.readValue(hakemusBytes, classOf[AtaruHakemusUpdate])
+    catch {
+      case e: Exception =>
+        LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui: ${e.getMessage}")
+        return errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
+    }
+    Try {
+      hakemusService.paivitaTiedotAtarusta(HakemusOid(hakemusOid), hakemusUpdate)
+    } match {
+      case Success(_) =>
+        LOG.info(s"Vastaanotettu päivitys hakemukselle $hakemusOid atarusta")
+        ResponseEntity.status(HttpStatus.OK).body("")
+      case Failure(exception) =>
+        LOG.error(s"Atarun suorittama hakemuksen päivitys epäonnistui, hakemusOid: $hakemusOid", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 
@@ -250,40 +232,30 @@ class HakemusController(
     @PathVariable("hakemusOid") hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
-    val user        = userService.getEnrichedUserDetails(true)
-    val authorities = user.authorities
-
-    if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-      errorMessageMapper.mapPlainErrorMessage(
-        RESPONSE_403_DESCRIPTION,
-        HttpStatus.FORBIDDEN
-      )
-    } else {
-      var tilaPaivitys: AtaruTilaPaivitys = null
-      try tilaPaivitys = mapper.readValue(tilaBytes, classOf[AtaruTilaPaivitys])
-      catch {
-        case e: Exception =>
-          LOG.error(s"Tilapäivitys atarusta epäonnistui: ${e.getMessage}")
-          return errorMessageMapper.mapPlainErrorMessage(
-            RESPONSE_400_DESCRIPTION,
-            HttpStatus.BAD_REQUEST
-          )
-      }
-      Try {
-        hakemusService.paivitaKasittelyVaiheAtarusta(HakemusOid(hakemusOid), tilaPaivitys)
-      } match {
-        case Success(_) =>
-          LOG.info(
-            s"Vastaanotettu tilapäivitys hakemukselle ${hakemusOid} atarusta, tila ${tilaPaivitys.tila}, täydennyspyyntö-aikaleima ${tilaPaivitys.timestamp}"
-          )
-          ResponseEntity.status(HttpStatus.OK).body("")
-        case Failure(exception) =>
-          LOG.error(
-            s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: ${hakemusOid}, tila ${tilaPaivitys.tila}",
-            exception
-          )
-          errorMessageMapper.mapErrorMessage(exception)
-      }
+    var tilaPaivitys: AtaruTilaPaivitys = null
+    try tilaPaivitys = mapper.readValue(tilaBytes, classOf[AtaruTilaPaivitys])
+    catch {
+      case e: Exception =>
+        LOG.error(s"Tilapäivitys atarusta epäonnistui: ${e.getMessage}")
+        return errorMessageMapper.mapPlainErrorMessage(
+          RESPONSE_400_DESCRIPTION,
+          HttpStatus.BAD_REQUEST
+        )
+    }
+    Try {
+      hakemusService.paivitaKasittelyVaiheAtarusta(HakemusOid(hakemusOid), tilaPaivitys)
+    } match {
+      case Success(_) =>
+        LOG.info(
+          s"Vastaanotettu tilapäivitys hakemukselle ${hakemusOid} atarusta, tila ${tilaPaivitys.tila}, täydennyspyyntö-aikaleima ${tilaPaivitys.timestamp}"
+        )
+        ResponseEntity.status(HttpStatus.OK).body("")
+      case Failure(exception) =>
+        LOG.error(
+          s"Hakemuksen tilapäivitys atarusta epäonnistui, hakemusOid: ${hakemusOid}, tila ${tilaPaivitys.tila}",
+          exception
+        )
+        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 
@@ -493,45 +465,36 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] =
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var hakemusUpdateRequest: HakemusUpdateRequest = null
-        try hakemusUpdateRequest = mapper.readValue(hakemusBytes, classOf[HakemusUpdateRequest])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-        val vanhaHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
-        hakemusService.tallennaHakemus(
-          HakemusOid(hakemusOid),
-          hakemusUpdateRequest,
-          UserOid(user.userOid)
-        )
-        val uusiHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
-        auditLog.logChanges(
-          auditLog.getUser(request),
-          Map("hakemusOid" -> hakemusOid),
-          UpdateHakemus,
-          AuditUtil.getChanges(
-            vanhaHakemus.map(h => mapper.writeValueAsString(h)),
-            uusiHakemus.map(h => mapper.writeValueAsString(h))
+      val user                                       = userService.getEnrichedUserDetails(true)
+      var hakemusUpdateRequest: HakemusUpdateRequest = null
+      try hakemusUpdateRequest = mapper.readValue(hakemusBytes, classOf[HakemusUpdateRequest])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
           )
-        )
-        ResponseEntity
-          .status(HttpStatus.OK)
-          .body(mapper.writeValueAsString(uusiHakemus.map(haeNimet)))
       }
+      val vanhaHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
+      hakemusService.tallennaHakemus(
+        HakemusOid(hakemusOid),
+        hakemusUpdateRequest,
+        UserOid(user.userOid)
+      )
+      val uusiHakemus = hakemusService.haeHakemus(HakemusOid(hakemusOid))
+      auditLog.logChanges(
+        auditLog.getUser(request),
+        Map("hakemusOid" -> hakemusOid),
+        UpdateHakemus,
+        AuditUtil.getChanges(
+          vanhaHakemus.map(h => mapper.writeValueAsString(h)),
+          uusiHakemus.map(h => mapper.writeValueAsString(h))
+        )
+      )
+      ResponseEntity
+        .status(HttpStatus.OK)
+        .body(mapper.writeValueAsString(uusiHakemus.map(haeNimet)))
     } catch {
       case e: Exception =>
         LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
@@ -575,45 +538,36 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
-
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var asiakirjaRequest: Asiakirja = null
-        try asiakirjaRequest = mapper.readValue(asiakirjatBytes, classOf[Asiakirja])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Asiakirjojen tallennus epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
-            )
-        }
-        val vanhaAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
-        hakemusService.tallennaAsiakirjat(
-          HakemusOid(hakemusOid),
-          asiakirjaRequest,
-          UserOid(user.userOid)
-        )
-        val uusiAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
-        auditLog.logChanges(
-          auditLog.getUser(request),
-          Map("hakemusOid" -> hakemusOid),
-          UpdateAsiakirjat,
-          AuditUtil.getChanges(
-            vanhaAsiakirjat.map(h => mapper.writeValueAsString(h)),
-            uusiAsiakirjat.map(h => mapper.writeValueAsString(h))
+      val user                        = userService.getEnrichedUserDetails(true)
+      var asiakirjaRequest: Asiakirja = null
+      try asiakirjaRequest = mapper.readValue(asiakirjatBytes, classOf[Asiakirja])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Asiakirjojen tallennus epäonnistui: ${e.getMessage}", e)
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
           )
-        )
-        ResponseEntity
-          .status(HttpStatus.OK)
-          .body(mapper.writeValueAsString(uusiAsiakirjat))
       }
+      val vanhaAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
+      hakemusService.tallennaAsiakirjat(
+        HakemusOid(hakemusOid),
+        asiakirjaRequest,
+        UserOid(user.userOid)
+      )
+      val uusiAsiakirjat = hakemusService.haeAsiakirjat(HakemusOid(hakemusOid))
+      auditLog.logChanges(
+        auditLog.getUser(request),
+        Map("hakemusOid" -> hakemusOid),
+        UpdateAsiakirjat,
+        AuditUtil.getChanges(
+          vanhaAsiakirjat.map(h => mapper.writeValueAsString(h)),
+          uusiAsiakirjat.map(h => mapper.writeValueAsString(h))
+        )
+      )
+      ResponseEntity
+        .status(HttpStatus.OK)
+        .body(mapper.writeValueAsString(uusiAsiakirjat))
     } catch {
       case e: Exception =>
         LOG.error(s"Hakemuksen tallennus epäonnistui: ${e.getMessage}", e)
@@ -772,41 +726,34 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user              = userService.getEnrichedUserDetails(true)
-      val authorities       = user.authorities
+      val user = userService.getEnrichedUserDetails(true)
+
       val asiatunnusPattern = Pattern.compile("""OPH-\d+-\d{4}$""")
 
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        val asiatunnusUpdateRequest: AsiatunnusUpdateRequest =
-          mapper.readValue(asiatunnusBytes, classOf[AsiatunnusUpdateRequest])
-        val asiatunnus = asiatunnusUpdateRequest.asiatunnus
-        if (asiatunnusPattern.matcher(asiatunnus).matches) {
-          Try {
-            hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus, user.userOid)
-          } match {
-            case Success(result) =>
-              if (result == 0)
-                errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
-              else {
-                auditLog.logChanges(
-                  AuditLog.getUser(request),
-                  Map("asiatunnus" -> asiatunnus),
-                  UpdateAsiatunnus,
-                  AuditUtil.getChanges(None, Some(asiatunnus))
-                )
-                ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
-              }
-            case Failure(exception) =>
-              errorMessageMapper.mapErrorMessage(exception)
-          }
-        } else {
-          errorMessageMapper.mapPlainErrorMessage("Virheellinen asiatunnus", HttpStatus.BAD_REQUEST)
+      val asiatunnusUpdateRequest: AsiatunnusUpdateRequest =
+        mapper.readValue(asiatunnusBytes, classOf[AsiatunnusUpdateRequest])
+      val asiatunnus = asiatunnusUpdateRequest.asiatunnus
+      if (asiatunnusPattern.matcher(asiatunnus).matches) {
+        Try {
+          hakemusService.paivitaAsiatunnus(HakemusOid(hakemusOid), asiatunnus, user.userOid)
+        } match {
+          case Success(result) =>
+            if (result == 0)
+              errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+            else {
+              auditLog.logChanges(
+                AuditLog.getUser(request),
+                Map("asiatunnus" -> asiatunnus),
+                UpdateAsiatunnus,
+                AuditUtil.getChanges(None, Some(asiatunnus))
+              )
+              ResponseEntity.status(HttpStatus.NO_CONTENT).body("")
+            }
+          case Failure(exception) =>
+            errorMessageMapper.mapErrorMessage(exception)
         }
+      } else {
+        errorMessageMapper.mapPlainErrorMessage("Virheellinen asiatunnus", HttpStatus.BAD_REQUEST)
       }
     } catch {
       case e: Exception =>
@@ -849,46 +796,37 @@ class HakemusController(
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     try {
-      val user        = userService.getEnrichedUserDetails(true)
-      val authorities = user.authorities
+      val user                                               = userService.getEnrichedUserDetails(true)
+      var esittelyPvmUpdateRequest: EsittelyPvmUpdateRequest = null
+      try esittelyPvmUpdateRequest = mapper.readValue(esittelyPvmBytes, classOf[EsittelyPvmUpdateRequest])
+      catch {
+        case e: Exception =>
+          LOG.error(s"Esittelypäivän asettaminen epäonnistui: ${e.getMessage}", e)
+          return errorMessageMapper.mapPlainErrorMessage(
+            RESPONSE_400_DESCRIPTION,
+            HttpStatus.BAD_REQUEST
+          )
+      }
+      val esittelyPvmMaybe: Option[LocalDateTime] = esittelyPvmUpdateRequest.esittelyPvm
+      val esittelyPvm: LocalDateTime              = esittelyPvmMaybe.getOrElse(LocalDateTime.now)
 
-      if (!AuthoritiesUtil.hasTutuAuthorities(authorities)) {
-        errorMessageMapper.mapPlainErrorMessage(
-          RESPONSE_403_DESCRIPTION,
-          HttpStatus.FORBIDDEN
-        )
-      } else {
-        var esittelyPvmUpdateRequest: EsittelyPvmUpdateRequest = null
-        try esittelyPvmUpdateRequest = mapper.readValue(esittelyPvmBytes, classOf[EsittelyPvmUpdateRequest])
-        catch {
-          case e: Exception =>
-            LOG.error(s"Esittelypäivän asettaminen epäonnistui: ${e.getMessage}", e)
-            return errorMessageMapper.mapPlainErrorMessage(
-              RESPONSE_400_DESCRIPTION,
-              HttpStatus.BAD_REQUEST
+      Try {
+        hakemusService.asetaEsittelypaiva(HakemusOid(hakemusOid), esittelyPvm, user.userOid)
+      } match {
+        case Success(result) =>
+          if (result == 0)
+            errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
+          else {
+            auditLog.logChanges(
+              AuditLog.getUser(request),
+              Map("esittelyPvm" -> esittelyPvm.toString),
+              UpdateEsittelyPvm,
+              AuditUtil.getChanges(None, Some(esittelyPvm.toString))
             )
-        }
-        val esittelyPvmMaybe: Option[LocalDateTime] = esittelyPvmUpdateRequest.esittelyPvm
-        val esittelyPvm: LocalDateTime              = esittelyPvmMaybe.getOrElse(LocalDateTime.now)
-
-        Try {
-          hakemusService.asetaEsittelypaiva(HakemusOid(hakemusOid), esittelyPvm, user.userOid)
-        } match {
-          case Success(result) =>
-            if (result == 0)
-              errorMessageMapper.mapPlainErrorMessage("Hakemusta ei löytynyt", HttpStatus.NOT_FOUND)
-            else {
-              auditLog.logChanges(
-                AuditLog.getUser(request),
-                Map("esittelyPvm" -> esittelyPvm.toString),
-                UpdateEsittelyPvm,
-                AuditUtil.getChanges(None, Some(esittelyPvm.toString))
-              )
-              ResponseEntity.noContent().build()
-            }
-          case Failure(exception) =>
-            errorMessageMapper.mapErrorMessage(exception)
-        }
+            ResponseEntity.noContent().build()
+          }
+        case Failure(exception) =>
+          errorMessageMapper.mapErrorMessage(exception)
       }
     } catch {
       case e: Exception =>
