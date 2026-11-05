@@ -575,6 +575,29 @@ class PaatosRepository extends BaseResultHandlers {
     }
   }
 
+  def poistaPaatoksenPeruutus(hakemusId: UUID, muokkaaja: String): Int = {
+    try {
+      db.run(
+        sql"""
+            UPDATE paatos
+            SET ratkaisutyyppi = NULL,
+                muokkaaja = $muokkaaja
+             WHERE hakemus_id = ${hakemusId.toString}::uuid
+               AND ratkaisutyyppi =
+        ${Ratkaisutyyppi.PeruutusTaiRaukeaminen.toString}::ratkaisutyyppi
+           """.asUpdate,
+        "poista_paatoksen_peruutus"
+      )
+    } catch {
+      case e: Exception =>
+        LOG.error(s"Päätöksen peruutuksen poistaminen epäonnistui: $e")
+        throw new RuntimeException(
+          s"Päätöksen peruutuksen poistaminen epäonnistui: ${e.getMessage}",
+          e
+        )
+    }
+  }
+
   def haePaatosteksti(hakemusId: UUID): Option[Paatosteksti] = {
     try {
       db.run(

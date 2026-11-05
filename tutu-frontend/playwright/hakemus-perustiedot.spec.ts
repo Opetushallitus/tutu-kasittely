@@ -167,12 +167,13 @@ test('Hakemuksen peruutustiedot näkyvät oikein, ja muutoksista lähetetään P
   const peruutusLisatieto = page.getByTestId('peruutus-lisatieto');
 
   await expect(peruutusCheckbox).toBeVisible();
-  await expect(peruutuspPvm).toBeVisible();
+  await expect(peruutuspPvm).toBeHidden();
   await expect(peruutusLisatieto).toBeHidden();
 
   await expectRequestData(page, '/hakemus/', peruutusCheckbox.click(), {
     onkoPeruutettu: true,
   });
+  await expect(peruutuspPvm).toBeVisible();
   await expect(peruutusLisatieto).toBeVisible();
 
   await peruutuspPvm.click();
@@ -188,4 +189,12 @@ test('Hakemuksen peruutustiedot näkyvät oikein, ja muutoksista lähetetään P
       peruutusLisatieto: 'Lisää tietoa',
     },
   );
+
+  await expectRequestData(page, '/hakemus/', peruutusCheckbox.click(), {
+    onkoPeruutettu: false,
+    peruutusPvm: null,
+    peruutusLisatieto: null,
+  });
+  await expect(peruutuspPvm).toBeHidden();
+  await expect(peruutusLisatieto).toBeHidden();
 });

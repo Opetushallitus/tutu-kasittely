@@ -433,12 +433,16 @@ class HakemusService(
             hakemusUpdateRequest.lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUri,
           esittelijanHuomioita = hakemusUpdateRequest.esittelijanHuomioita,
           onkoPeruutettu = hakemusUpdateRequest.onkoPeruutettu,
-          peruutusPvm = hakemusUpdateRequest.peruutusPvm,
-          peruutusLisatieto = hakemusUpdateRequest.peruutusLisatieto
+          // Peruutuksen poistaminen tyhjentää myös peruutuksen tiedot
+          peruutusPvm = if (hakemusUpdateRequest.onkoPeruutettu) hakemusUpdateRequest.peruutusPvm else None,
+          peruutusLisatieto =
+            if (hakemusUpdateRequest.onkoPeruutettu) hakemusUpdateRequest.peruutusLisatieto else None
         )
 
         if (!dbHakemus.onkoPeruutettu && hakemusUpdateRequest.onkoPeruutettu)
           paatosRepository.asetaPaatosPeruutetuksi(dbHakemus.id, userOid.toString)
+        else if (dbHakemus.onkoPeruutettu && !hakemusUpdateRequest.onkoPeruutettu)
+          paatosRepository.poistaPaatoksenPeruutus(dbHakemus.id, userOid.toString)
 
         val result = hakemusRepository.paivitaHakemus(
           hakemusOid,

@@ -11,7 +11,7 @@ import fi.oph.tutu.backend.utils.{AuditLog, AuditOperation}
 import org.hamcrest.CustomMatcher
 import org.hamcrest.Matchers.hasItems
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -58,6 +58,29 @@ class HakemusControllerTest extends IntegrationTestBase {
 
   final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
   final val muokkaajaOidString  = "1.2.246.562.24.00000000003"
+
+  // Asiakirja on pakollinen hakemuksen päivityspyynnössä
+  val asiakirjaJson = """{
+            "apHakemus": false,
+            "suostumusVahvistamiselleSaatu": false,
+            "pyydettavatAsiakirjat" : [ {
+              "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
+            }, {
+              "asiakirjanTyyppi" : "tyotodistukset"
+            } ],
+            "asiakirjamallitTutkinnoista" : {
+              "ece" : {
+                "lahde" : "ece",
+                "vastaavuus" : true,
+                "kuvaus" : "Jotain kuvausta"
+              },
+              "aacrao" : {
+                "lahde" : "aacrao",
+                "vastaavuus" : false,
+                "kuvaus" : "Jotain muuta kuvausta"
+              }
+            }
+          }"""
 
   val dummyUserAgent         = "User-Agent"
   val dummyUserAgentValue    = "DummyAgent/1.0"
@@ -436,30 +459,9 @@ class HakemusControllerTest extends IntegrationTestBase {
     val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006668")
 
     // Testataan että frontend toISOString()-muoto deserialisoidaan oikein.
-    // Asiakirja on pakollinen.
     val requestJson =
       s"""{"peruutusPvm": "2026-04-01T21:00:00.000Z", "onkoPeruutettu": true,
-          "asiakirja": {
-            "apHakemus": false,
-            "suostumusVahvistamiselleSaatu": false,
-            "pyydettavatAsiakirjat" : [ {
-              "asiakirjanTyyppi" : "tutkintotodistustenjaljennokset"
-            }, {
-              "asiakirjanTyyppi" : "tyotodistukset"
-            } ],
-            "asiakirjamallitTutkinnoista" : {
-              "ece" : {
-                "lahde" : "ece",
-                "vastaavuus" : true,
-                "kuvaus" : "Jotain kuvausta"
-              },
-              "aacrao" : {
-                "lahde" : "aacrao",
-                "vastaavuus" : false,
-                "kuvaus" : "Jotain muuta kuvausta"
-              }
-            }
-          }}"""
+          "asiakirja": $asiakirjaJson}"""
 
     mockMvc
       .perform(
@@ -470,6 +472,55 @@ class HakemusControllerTest extends IntegrationTestBase {
       )
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.peruutusPvm").value("2026-04-01T21:00:00.000Z"))
+  }
+
+  @Test
+  @Order(6)
+  @WithMockUser(
+    value = muokkaajaOidString,
+    authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+  )
+  def peruutuksenPoistaminenTyhjentaaPeruutustiedot(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(
+        User(
+          userOid = muokkaajaOidString,
+          authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
+        )
+      )
+    initAtaruHakemusRequests("ataruHakemus6666.json")
+    when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(0)
+
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006668")
+    val hakemusId  = hakemusRepository.haeHakemus(hakemusOid).get.id
+
+    def paivitaPeruutus(requestJson: String): Unit =
+      mockMvc
+        .perform(
+          put(s"/tutu-backend/api/hakemus/$hakemusOid")
+            .`with`(csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestJson)
+        )
+        .andExpect(status().isOk)
+
+    paivitaPeruutus(
+      s"""{"onkoPeruutettu": true, "peruutusPvm": "2026-04-01T21:00:00.000Z",
+          "peruutusLisatieto": "Hakija peruutti", "asiakirja": $asiakirjaJson}"""
+    )
+    assertEquals(Ratkaisutyyppi.PeruutusTaiRaukeaminen, paatosRepository.haePaatos(hakemusId).get.ratkaisutyyppi.get)
+
+    // Peruutuksen poisto tyhjentää päivämäärän ja lisätiedon, vaikka frontend lähettäisi vanhat arvot
+    paivitaPeruutus(
+      s"""{"onkoPeruutettu": false, "peruutusPvm": "2026-04-01T21:00:00.000Z",
+          "peruutusLisatieto": "Hakija peruutti", "asiakirja": $asiakirjaJson}"""
+    )
+
+    val paivitettyHakemus = hakemusRepository.haeHakemus(hakemusOid).get
+    assertFalse(paivitettyHakemus.onkoPeruutettu)
+    assertEquals(None, paivitettyHakemus.peruutusPvm)
+    assertEquals(None, paivitettyHakemus.peruutusLisatieto)
+    assertEquals(None, paatosRepository.haePaatos(hakemusId).get.ratkaisutyyppi)
   }
 
   @Test
