@@ -899,18 +899,18 @@ class HakemusController(
   }
 
   @GetMapping(
-    path = Array("hakemus/muut/{hakijaOid}"),
+    path = Array("hakemus/{hakemusOid}/muut/"),
     produces = Array(MediaType.APPLICATION_JSON_VALUE)
   )
   def haeMuutHakemukset(
-    @PathVariable("hakijaOid") hakijaOid: String,
+    @PathVariable("hakemusOid") hakemusOid: String,
     request: jakarta.servlet.http.HttpServletRequest
   ): ResponseEntity[Any] = {
     Try {
-      hakemusService.haeMuutHakemukset(PersonOid(hakijaOid))
+      hakemusService.haeMuutHakemukset(HakemusOid(hakemusOid))
     } match {
       case Success(result) =>
-        auditLog.logRead("hakemus/muut/{hakijaOid}", hakijaOid, ReadMuutHakemukset, request)
+        auditLog.logRead("hakemus/{hakemusOid}/muut/", hakemusOid, ReadMuutHakemukset, request)
         ResponseEntity.ok().body(result)
       case Failure(exception) =>
         LOG.error(s"Virhe hakijan muiden hakemusten hakemisessa: ${exception.getMessage}", exception)

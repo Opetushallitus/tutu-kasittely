@@ -14,7 +14,7 @@ export const MuutHakemukset = () => {
   const { t } = useTranslations();
   const { hakemusState } = useHakemus();
   const { muutHakemukset, error, isLoading } = useMuutHakemukset(
-    hakemusState.editedData?.hakija.henkiloOid,
+    hakemusState.editedData?.hakemusOid,
   );
   const { pathname } = useLocation();
   const { addToast } = useToaster();
@@ -47,9 +47,9 @@ export const MuutHakemukset = () => {
           {t('hakemus.sivupalkki.muuthakemukset.eiMuitaHakemuksia')}
         </OphTypography>
       )}
-      {muutHakemukset.map((mh) => {
+      {muutHakemukset.map((mh, index) => {
         return (
-          <Stack direction="column" key={mh.hakemusOid}>
+          <Stack direction="column" key={`${index}-${mh.hakemusOid}`}>
             <StyledLink
               to={replaceOid(mh.hakemusOid)}
               sx={{ fontWeight: '400' }}
