@@ -33,25 +33,35 @@ export const Peruutus = ({ hakemus, updateHakemus, t }: PeruutusProps) => {
         label={t('hakemus.perustiedot.peruutus.peruutettu')}
         checked={hakemus.onkoPeruutettu}
         onChange={() => {
-          updateHakemus({ onkoPeruutettu: !hakemus.onkoPeruutettu });
+          updateHakemus(
+            hakemus.onkoPeruutettu
+              ? {
+                  onkoPeruutettu: false,
+                  peruutusPvm: null,
+                  peruutusLisatieto: undefined,
+                }
+              : { onkoPeruutettu: true },
+          );
         }}
       />
-      <CalendarComponent
-        setDate={updatePeruutusPvm}
-        selectedValue={peruutusPvm}
-        label={t('hakemus.perustiedot.peruutus.paivamaara')}
-        dataTestId="peruutus-calendar"
-      />
       {hakemus.onkoPeruutettu && (
-        <Muistio
-          label={t('hakemus.perustiedot.peruutus.lisatieto')}
-          helperText={t('hakemus.perustiedot.peruutus.lisatietoTarkenne')}
-          sisalto={hakemus.peruutusLisatieto}
-          testId="peruutus-lisatieto"
-          updateMuistio={(value) => {
-            updateHakemus({ peruutusLisatieto: value });
-          }}
-        />
+        <>
+          <CalendarComponent
+            setDate={updatePeruutusPvm}
+            selectedValue={peruutusPvm}
+            label={t('hakemus.perustiedot.peruutus.paivamaara')}
+            dataTestId="peruutus-calendar"
+          />
+          <Muistio
+            label={t('hakemus.perustiedot.peruutus.lisatieto')}
+            helperText={t('hakemus.perustiedot.peruutus.lisatietoTarkenne')}
+            sisalto={hakemus.peruutusLisatieto}
+            testId="peruutus-lisatieto"
+            updateMuistio={(value) => {
+              updateHakemus({ peruutusLisatieto: value });
+            }}
+          />
+        </>
       )}
     </Stack>
   );
