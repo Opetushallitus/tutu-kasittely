@@ -30,7 +30,9 @@ class TilastoCsvService(
   )
   private val SuomiZone = ZoneId.of("Europe/Helsinki")
 
-  private def quoteCsv(value: String): String =
+  private val YleissivistavaKoulutusalaKoodiValue = "00"
+  private val MuuKoulutusalaKoodiValue            = "99"
+  private def quoteCsv(value: String): String     =
     "\"" + value.replace("\"", "\"\"") + "\""
 
   private def escapeCsv(value: String): String =
@@ -38,13 +40,18 @@ class TilastoCsvService(
       "\"" + value.replace("\"", "\"\"") + "\""
     else value
 
+  private def handleYleissivistavaKoulutusala(koulutusAlaKoodi: String): String = {
+    if (koulutusAlaKoodi == YleissivistavaKoulutusalaKoodiValue) MuuKoulutusalaKoodiValue else koulutusAlaKoodi
+  }
+
   private def toCsvRow(item: TilastoCsvItem, maanimiByKoodiuri: Map[String, String]): String = {
     val maa             = item.suoritusMaaKoodiUri.flatMap(maanimiByKoodiuri.get).getOrElse("")
     val hyvaksymisVuosi = item.hyvaksymisPvm
       .atZone(ZoneOffset.UTC)         // interpret the stored value as UTC
       .withZoneSameInstant(SuomiZone) // convert to Suomi time
       .getYear
-    val koulutusAlaKoodi = item.koulutusAlaKoodiUri.map(uri => uri.substring(uri.lastIndexOf('_') + 1))
+    val koulutusAlaKoodi =
+      item.koulutusAlaKoodiUri.map(uri => uri.substring(uri.lastIndexOf('_') + 1)).map(handleYleissivistavaKoulutusala)
     Seq(
       escapeCsv(hyvaksymisVuosi.toString),
       escapeCsv(item.henkilotunnus.getOrElse("")),

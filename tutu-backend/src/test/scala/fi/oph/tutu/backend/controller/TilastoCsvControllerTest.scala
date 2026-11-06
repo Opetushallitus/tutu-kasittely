@@ -64,12 +64,12 @@ class TilastoCsvControllerTest extends IntegrationTestBase {
   // Hakemus B: hyväksytty 2025-03, alempi korkeakoulu, Tansania
   val hakijaOidB = "1.2.246.562.24.00000000002"
   val hetuB      = "020280-123A"
-  // Hakemus C: hyväksytty 2025-11, hakijalla ei hetua ONR:ssä
+  // Hakemus C: hyväksytty 2025-11, hakijalla ei hetua ONR:ssä, koulutusala 00 (yleissivistävä) raportoidaan koodina 99
   val hakijaOidC = "1.2.246.562.24.00000000003"
 
   val rowA = s"""2024,$hetuA,Ruotsi,1.6.2010,"72",5"""
   val rowB = s"""2025,$hetuB,Tansania,2.2.2015,"34",4"""
-  val rowC = s"""2025,,Ruotsi,3.3.2020,"72",4"""
+  val rowC = s"""2025,,Ruotsi,3.3.2020,"99",4"""
 
   @BeforeAll def setup(): Unit = {
     val configurer: MockMvcConfigurer =
@@ -102,7 +102,7 @@ class TilastoCsvControllerTest extends IntegrationTestBase {
       Some(LocalDateTime.parse("2025-11-20T12:00:00")),
       "maatjavaltiot2_752",
       "3.3.2020",
-      "koulutusalaoph2002_72",
+      "koulutusalaoph2002_00",
       TutkintoTaso.AlempiKorkeakoulu
     )
     // Päätöstä ei ole hyväksytty, joten tämän ei pitäisi koskaan päätyä CSV:hen
@@ -226,6 +226,21 @@ class TilastoCsvControllerTest extends IntegrationTestBase {
     assertEquals(3, lines.tail.size)
 
     verify(onrService, times(1)).haeHenkilot(any[Seq[String]])
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def downloadTilastokeskusCsvMapsYleissivistavaKoulutusalaToMuu(): Unit = {
+    val result = mockMvc
+      .perform(get(url).param("alkuPvm", "2025-06-01T00:00:00Z"))
+      .andExpect(status().isOk)
+      .andReturn()
+
+    val lines = csvLines(new String(result.getResponse.getContentAsByteArray, StandardCharsets.UTF_8))
+    // Koulutusala 00 (yleissivistävä koulutus) raportoidaan koodina 99 (muu)
+    assertEquals(Seq(rowC), lines.tail)
+    assertTrue(lines.tail.head.contains(""","99","""))
+    assertTrue(!lines.tail.head.contains(""","00","""))
   }
 
   @Test

@@ -90,7 +90,7 @@ export const useKoodistoOptions = () => {
   const koulutusLuokitusOptions = getKoodistoOptions(
     koulutusLuokitus,
     lang,
-  ).filter((option) => option.value !== '00');
+  ).filter((option) => !option.value.endsWith('_00'));
   const korkeakouluOptions = getKorkeakouluOptions(
     korkeakoulut,
     lang,
