@@ -151,7 +151,8 @@ case class KelpoisuudenLisavaatimukset(
   ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
   suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None,
   ammattikokemusJaOpinnotYhdessaKorvaavatKokonaan: Boolean = false,
-  ammattikokemusJaOpinnotYhdessaTasmennys: Option[String] = None
+  ammattikokemusJaOpinnotYhdessaTasmennys: Option[String] = None,
+  muuAmmattiTilannekuvaus: Option[String] = None
 )
 
 case class KielteisenPaatoksenPerustelut(
