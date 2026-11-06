@@ -109,12 +109,12 @@ class HakemusRepository extends BaseResultHandlers {
         asiakirja_id, lopullinen_paatos_ehdollisen_asiatunnus,
         lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja,
         saapumis_pvm, ataru_hakemus_muokattu, hakija_etunimet, hakija_sukunimi, hakija_oid,
-        hakija_oid, viimeisin_taydennyspyynto_paiva)
+        viimeisin_taydennyspyynto_paiva)
       VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid,
         $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
         $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja,
         $saapumisPvmOrNull, $ataruHakemusMuokattuOrNull, $hakijaEtunimetOrNull, $hakijaSukunimiOrNull, $hakijaOidOrNull,
-        $hakijaOidOrNull, $viimeisinTaydennyspyyntoPvmOrNull)
+        $viimeisinTaydennyspyyntoPvmOrNull)
       RETURNING id
     """.as[UUID].head
 
@@ -428,12 +428,13 @@ class HakemusRepository extends BaseResultHandlers {
     }
   }
 
-  def haeMuutHakemukset(hakijaOids: Seq[PersonOid]): Seq[MuuHakemus] = {
+  def haeMuutHakemukset(hakemusOid: HakemusOid, hakijaOids: Seq[PersonOid]): Seq[MuuHakemus] = {
     try {
       db.run(
         sql"""
              SELECT hakemus_oid, asiatunnus, hakija_etunimet, hakija_sukunimi FROM hakemus
              WHERE hakija_oid = ANY(${hakijaOids.map(_.s)})
+             AND hakemus_oid != ${hakemusOid.s}
            """.as[MuuHakemus],
         "hae_muut_hakemukset"
       )

@@ -4,18 +4,18 @@ import { doApiFetch } from '@/src/lib/tutu-backend/api';
 import { MuuHakemus } from '@/src/lib/types/hakemus';
 
 const getMuutHakemukset = async (
-  hakijaOid?: string,
+  hakemusOid?: string,
 ): Promise<Array<MuuHakemus>> => {
-  return await doApiFetch(`hakemus/muut/${hakijaOid}`, undefined, 'no-store');
+  return await doApiFetch(`hakemus/${hakemusOid}/muut/`, undefined, 'no-store');
 };
 
-export const useMuutHakemukset = (hakijaOid?: string) => {
-  const queryKey = ['muut_hakemukset', hakijaOid];
+export const useMuutHakemukset = (hakemusOid?: string) => {
+  const queryKey = ['muut_hakemukset', hakemusOid];
 
   const { data, isLoading, error } = useQuery({
     queryKey,
-    queryFn: () => getMuutHakemukset(hakijaOid),
-    enabled: !!hakijaOid,
+    queryFn: () => getMuutHakemukset(hakemusOid),
+    enabled: !!hakemusOid,
     throwOnError: false,
   });
 

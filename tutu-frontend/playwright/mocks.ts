@@ -999,18 +999,25 @@ export const mockValituspohjat = (page: Page) => {
 };
 
 const defaultMuutHakemukset: Array<MuuHakemus> = [
-  { hakemusOid: '1.2.246.562.10.00000000001' },
+  {
+    hakemusOid: '1.2.246.562.11.00000000001',
+    asiatunnus: 'OPH-2026-1111',
+    hakijaEtunimet: 'Harri Heikki',
+    hakijaSukunimi: 'Hakija',
+  },
+  { hakemusOid: '1.2.246.562.11.00000000002', asiatunnus: 'OPH-2026-2222' },
+  { hakemusOid: '1.2.246.562.11.00000000003' },
 ];
 
 export const mockMuutHakemukset = (page: Page) => {
   return page.route(
-    '**/tutu-backend/api/hakemus/muut/**',
+    '**/tutu-backend/api/hakemus/*/muut**',
     async (route: Route) => {
       if (route.request().method() === 'GET') {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify([defaultMuutHakemukset]),
+          body: JSON.stringify(defaultMuutHakemukset),
         });
       }
     },

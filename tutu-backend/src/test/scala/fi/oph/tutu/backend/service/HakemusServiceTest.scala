@@ -11,6 +11,7 @@ import fi.oph.tutu.backend.fixture.createTutkinnotFixtureBeforeMuuttuneetTutkinn
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.eq as eqTo
 import org.mockito.Mockito.*
 import org.mockito.{Mock, MockitoAnnotations}
 
@@ -302,4 +303,156 @@ class HakemusServiceTest extends UnitTestBase {
     // Verify
     assertEquals(hakemus.muokkaaja, "1.2.246.562.24.00000000000000006666")
   }
+
+  @Test
+  def haeMuutHakemuksetPalauttaaKaksiHakemustaSamalleHakijaOidille(): Unit = {
+    // Data
+    val hakemusOid  = HakemusOid("1.2.246.562.11.00000000000000006679")
+    val hakijaOid   = PersonOid("1.2.246.562.24.00000000000000006666")
+    val dbHakemus   = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = Some(hakijaOid))
+    val muuHakemus1 = MuuHakemus(
+      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006680"),
+      asiatunnus = None,
+      hakijaEtunimet = Some("Testi Viides"),
+      hakijaSukunimi = Some("Hakija")
+    )
+    val muuHakemus2 = MuuHakemus(
+      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006681"),
+      asiatunnus = Some("OPH-123-2025"),
+      hakijaEtunimet = Some("Testi Kuudes"),
+      hakijaSukunimi = Some("Hakija")
+    )
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(eqTo(hakemusOid))).thenReturn(Some(dbHakemus))
+    when(onrService.haeLinkedOids(eqTo(hakijaOid))).thenReturn(Right(Seq()))
+    when(hakemusRepository.haeMuutHakemukset(eqTo(hakemusOid), eqTo(Seq(hakijaOid))))
+      .thenReturn(Seq(muuHakemus1, muuHakemus2))
+
+    // Act
+    val result = hakemusService.haeMuutHakemukset(hakemusOid)
+
+    // Verify
+    assertEquals(2, result.size)
+    assertTrue(result.contains(muuHakemus1))
+    assertTrue(result.contains(muuHakemus2))
+  }
+
+  @Test
+  def haeMuutHakemuksetHakeeHakemuksetKaikillaOnrPalauttamillaDuplikaattiOideilla(): Unit = {
+    // Data
+    val hakemusOid           = HakemusOid("1.2.246.562.11.00000000000000006690")
+    val hakijaOid            = PersonOid("1.2.246.562.198.00000000000000006667")
+    val duplikaattiHakijaOid = PersonOid("1.2.246.562.24.00000000000000009999")
+    val dbHakemus            = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = Some(hakijaOid))
+    val muuHakemus           = MuuHakemus(
+      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006682"),
+      asiatunnus = None,
+      hakijaEtunimet = Some("Testi Seitsemäs"),
+      hakijaSukunimi = Some("Hakija")
+    )
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(eqTo(hakemusOid))).thenReturn(Some(dbHakemus))
+    when(onrService.haeLinkedOids(eqTo(hakijaOid)))
+      .thenReturn(Right(Seq(duplikaattiHakijaOid)))
+    when(hakemusRepository.haeMuutHakemukset(eqTo(hakemusOid), eqTo(Seq(duplikaattiHakijaOid, hakijaOid))))
+      .thenReturn(Seq(muuHakemus))
+
+    // Act
+    val result = hakemusService.haeMuutHakemukset(hakemusOid)
+
+    // Verify
+    assertEquals(Seq(muuHakemus), result)
+    verify(hakemusRepository).haeMuutHakemukset(eqTo(hakemusOid), eqTo(Seq(duplikaattiHakijaOid, hakijaOid)))
+  }
+
+  @Test
+  def haeMuutHakemuksetKayttaaAtaruHakemuksenHakijaaJosDbHakijaOidPuuttuu(): Unit = {
+    // Data
+    val hakemusOid      = HakemusOid("1.2.246.562.11.00000000000000006693")
+    val hakijaOidString = "1.2.246.562.24.00000000000000007777"
+    val hakijaOid       = PersonOid(hakijaOidString)
+    val dbHakemus       = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = None)
+
+    val ataruHakemusUpdate = makeAtaruHakemusupdate(5)
+    val hakemusMap         =
+      ataruHakemusUpdate.productElementNames.toList.zip(ataruHakemusUpdate.productIterator.toList).toMap ++
+        Map(
+          "key"                       -> "",
+          "etunimet"                  -> "",
+          "sukunimi"                  -> "",
+          "state"                     -> "",
+          "lang"                      -> "",
+          "person-oid"                -> "",
+          "latest-attachment-reviews" -> Seq(),
+          "hakutoiveet"               -> Seq()
+        )
+    val ataruHakemusJsonString = mapper.writeValueAsString(hakemusMap)
+    val lomakeJsonString       = loadJson("ataruLomake.json")
+    val hakija                 = makeHakija(henkiloOid = hakijaOidString)
+    val muuHakemus             = MuuHakemus(
+      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006694"),
+      asiatunnus = None,
+      hakijaEtunimet = Some("Testi Kahdeksas"),
+      hakijaSukunimi = Some("Hakija")
+    )
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(eqTo(hakemusOid))).thenReturn(Some(dbHakemus))
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid))).thenReturn(Right(ataruHakemusJsonString))
+    when(hakemuspalveluService.haeLomake(any[Long])).thenReturn(Right(lomakeJsonString))
+    when(ataruHakemusParser.parseHakija(any[AtaruHakemus])).thenReturn(hakija)
+    when(ataruHakemusParser.parseTutkinnot(any[UUID], any[Content])).thenReturn(Seq())
+    when(tutkintoRepository.haeTutkinnotHakemusOidilla(any[HakemusOid])).thenReturn(Seq())
+    when(onrService.haeLinkedOids(eqTo(hakijaOid))).thenReturn(Right(Seq()))
+    when(hakemusRepository.haeMuutHakemukset(eqTo(hakemusOid), eqTo(Seq(hakijaOid))))
+      .thenReturn(Seq(muuHakemus))
+
+    // Act
+    val result = hakemusService.haeMuutHakemukset(hakemusOid)
+
+    // Verify
+    assertEquals(Seq(muuHakemus), result)
+  }
+
+  @Test
+  def haeMuutHakemuksetHeittaaPoikkeuksenJosOnrServiceEpaonnistuu(): Unit = {
+    // Data
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006695")
+    val hakijaOid  = PersonOid("1.2.246.562.24.00000000000000006668")
+    val dbHakemus  = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = Some(hakijaOid))
+    val exception  = OnrServiceException("Duplikaattien haku epäonnistui")
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(eqTo(hakemusOid))).thenReturn(Some(dbHakemus))
+    when(onrService.haeLinkedOids(eqTo(hakijaOid))).thenReturn(Left(exception))
+
+    // Act & Verify
+    val thrown = assertThrows(
+      classOf[OnrServiceException],
+      () => hakemusService.haeMuutHakemukset(hakemusOid)
+    )
+    assertEquals(exception, thrown)
+    verify(hakemusRepository, never()).haeMuutHakemukset(any[HakemusOid], any[Seq[PersonOid]])
+  }
+
+  @Test
+  def haeMuutHakemuksetHeittaaNotFoundExceptionJosHakemustaEiLoydyMissaan(): Unit = {
+    // Data
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006696")
+
+    // Mock setup
+    when(hakemusRepository.haeHakemus(eqTo(hakemusOid))).thenReturn(None)
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid))).thenReturn(Left(NotFoundException()))
+
+    // Act & Verify
+    assertThrows(
+      classOf[NotFoundException],
+      () => hakemusService.haeMuutHakemukset(hakemusOid)
+    )
+    verify(onrService, never()).haeLinkedOids(any[PersonOid])
+    verify(hakemusRepository, never()).haeMuutHakemukset(any[HakemusOid], any[Seq[PersonOid]])
+  }
+
 }
