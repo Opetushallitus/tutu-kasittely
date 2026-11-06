@@ -9,10 +9,14 @@ import React, { useMemo } from 'react';
 
 import { DirektiivitasoComponent } from '@/src/app/hakemus/paatostiedot/components/DirektiivitasoComponent';
 import { MyonteinenKelpoisuusPaatos } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatos';
-import { MyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/MyonteinenKelpoisuusPaatosUO';
 import { initOrUpdateMyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/kelpoisuusUOUtils';
+import { MyonteinenKelpoisuusPaatosUO } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/MyonteinenKelpoisuusPaatosUO';
+import { MyonteinenPaatosUOMuuAmmatti } from '@/src/app/hakemus/paatostiedot/components/kelpoisuus/uo/MyonteinenPaatosUOMuuAmmatti';
 import { MyonteinenTaiKielteinenPaatosComponent } from '@/src/app/hakemus/paatostiedot/components/MyonteinenTaiKielteinenPaatosComponent';
-import { MUU_AMMATTI_KEY } from '@/src/app/hakemus/paatostiedot/constants';
+import {
+  MUU_AMMATTI_KEY,
+  MUU_AMMATTI_KEY_UO,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import {
   findOptionByValue,
   getKelpoisuusMuuAmmattiDropdownOption,
@@ -29,6 +33,7 @@ import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 import { TreeOption } from '@/src/lib/localization/translationUtils';
 import { ophColors } from '@/src/lib/theme';
 import {
+  KelpoisuudenLisavaatimukset,
   Kelpoisuus,
   KelpoisuusUpdateCallback,
   SovellettuLaki,
@@ -189,8 +194,30 @@ const KelpoisuusUOLiitannaisComponent = ({
   updateAction: KelpoisuusUpdateCallback;
 }) => {
   const kelpoisuusKey = `${kelpoisuus.kelpoisuus}_uo`;
+  const muuAmmattiSelected = kelpoisuusKey === MUU_AMMATTI_KEY_UO;
+  const updateLisavaatimukset = (
+    lisavaatimukset: KelpoisuudenLisavaatimukset,
+  ) => {
+    updateAction({
+      ...kelpoisuus,
+      myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
+    });
+  };
   return (
     <>
+      {muuAmmattiSelected && (
+        <OphInputFormField
+          label={t('hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu')}
+          helperText={t(
+            'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.yksiloi',
+          )}
+          multiline={true}
+          minRows={4}
+          value={kelpoisuus.muuAmmattiKuvaus || ''}
+          onChange={(e) => updateAction({ muuAmmattiKuvaus: e.target.value })}
+          data-testid={`muuAmmattikuvausUo-input`}
+        />
+      )}
       <MyonteinenTaiKielteinenPaatosComponent
         myonteinenPaatos={kelpoisuus.myonteinenPaatos}
         kielteisenPaatoksenPerustelut={kelpoisuus.kielteisenPaatoksenPerustelut}
@@ -217,16 +244,18 @@ const KelpoisuusUOLiitannaisComponent = ({
         paatosTyyppi="Kelpoisuus"
         sovellettuLaki={sovellettuLaki}
         myonteisenPaatoksenKentat={
-          <MyonteinenKelpoisuusPaatosUO
-            kelpoisuusKey={kelpoisuusKey}
-            lisavaatimukset={kelpoisuus.myonteisenPaatoksenLisavaatimukset}
-            updateLisavaatimukset={(lisavaatimukset) =>
-              updateAction({
-                ...kelpoisuus,
-                myonteisenPaatoksenLisavaatimukset: lisavaatimukset,
-              })
-            }
-          />
+          muuAmmattiSelected ? (
+            <MyonteinenPaatosUOMuuAmmatti
+              updateLisavaatimukset={updateLisavaatimukset}
+              lisavaatimukset={kelpoisuus.myonteisenPaatoksenLisavaatimukset}
+            />
+          ) : (
+            <MyonteinenKelpoisuusPaatosUO
+              kelpoisuusKey={kelpoisuusKey}
+              lisavaatimukset={kelpoisuus.myonteisenPaatoksenLisavaatimukset}
+              updateLisavaatimukset={updateLisavaatimukset}
+            />
+          )
         }
       />
     </>

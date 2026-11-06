@@ -748,6 +748,7 @@ export const emptyAmmattikokemusJaElinikainenOppiminen =
   });
 
 export const MUU_AMMATTI_KEY = 'Muu ammatti';
+export const MUU_AMMATTI_KEY_UO = 'Muu ammatti_uo';
 
 export const MONIALAISET_OPINNOT_KEY = 'Monialaiset opinnot';
 

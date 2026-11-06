@@ -1177,3 +1177,70 @@ test('Kelpoisuus ja Päätös UO: näytetään ammattikokemus, opinnot yhdessä 
   await expect(osaamisenTaydentamisenTavat).toBeHidden();
   await expect(eiEdellytetaOsaamisenTaydentamista).toBeVisible();
 });
+
+test('Kelpoisuus ja Päätös UO: Muu ammatti myönteisellä päätöksellä näytetään tilannekuvauksen kuvaus ja kenttä, ja kuvaus tallennetaan backendille', async ({
+  page,
+}) => {
+  await selectOption(
+    page,
+    page.getByTestId('paatos-paatostyyppi-dropdown'),
+    '2 hakemus.paatos.paatostyyppi.options.kelpoisuus',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('paatos-sovellettulaki-dropdown'),
+    'hakemus.paatos.sovellettuLaki.uo',
+  );
+  await selectOption(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'hakemus.paatos.paatostyyppi.kelpoisuus.additionalKelpoisuudet.muuAmmatti',
+  );
+
+  const tilannekuvausInput = page.getByTestId('muuAmmattiTilannekuvaus-input');
+  const sovellettuTilanneSelect = page.getByTestId(
+    'uo-sovellettuTilanne-select',
+  );
+  const kuvailuOtsikko = page.getByText(
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.otsikko',
+  );
+  await expect(tilannekuvausInput).toBeHidden();
+
+  await page
+    .getByTestId('myonteinenPaatos-radio-group')
+    .locator('input[type="radio"][value="true"]')
+    .click();
+
+  await expect(kuvailuOtsikko).toBeVisible();
+  for (const key of [
+    'erot',
+    'lahtokohtaisetTaydennysTavat',
+    'opintojenHuomioiminen',
+    'taydennysTavatPaatokseen',
+  ]) {
+    await expect(
+      page.getByText(
+        `hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.${key}`,
+      ),
+    ).toBeVisible();
+  }
+  await expect(tilannekuvausInput).toBeVisible();
+  await expect(sovellettuTilanneSelect).toBeHidden();
+
+  await expectRequestData(
+    page,
+    '/paatos/',
+    tilannekuvausInput.getByRole('textbox').first().fill('Tilannekuvaus'),
+    backendRequestMyonteinenPaatos({
+      muuAmmattiTilannekuvaus: 'Tilannekuvaus',
+    }),
+  );
+
+  // Vaihto toiseen kelpoisuuteen piilottaa muu ammatti -kentän
+  await selectOptionByValue(
+    page,
+    page.getByTestId('kelpoisuus-select'),
+    'Opetusalan ammatit_Aineenopettaja perusopetuksessa',
+  );
+  await expect(tilannekuvausInput).toBeHidden();
+});
