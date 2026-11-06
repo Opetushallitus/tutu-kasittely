@@ -991,17 +991,18 @@ class HakemusControllerTest extends IntegrationTestBase {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
 
-    // Kaikilla hakemuksilla on tutkinnot joilla maakoodiuri = "maatjavaltiot2_762"
+    // Kaikilla 4 hakemuksella on 3 tutkintoa joilla maakoodiuri = "maatjavaltiot2_762",
+    // jokainen hakemus palautuu silti vain kerran
     mockMvc
       .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762"))
       .andExpect(status().isOk)
-      .andExpect(jsonPath("$.totalCount").value(12))
+      .andExpect(jsonPath("$.totalCount").value(4))
 
     // Lista maita
     mockMvc
       .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&suoritusmaa=maatjavaltiot2_762"))
       .andExpect(status().isOk)
-      .andExpect(jsonPath("$.totalCount").value(12))
+      .andExpect(jsonPath("$.totalCount").value(4))
 
     // Tuntematon suoritusmaa -> 0 tulosta
     mockMvc
@@ -1103,10 +1104,34 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Test
   @Order(21)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  def haeHakemuksetSuoritusmaaJaKelpoisuusKorreloidutFilter(): Unit = {
+  def haeHakemuksetSuoritusmaaJaKelpoisuusFilter(): Unit = {
     when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
     ensurePaatostiedotData()
+
+    // Hakemus 6666: paatostieto on linkitetty 762-tutkintoon, lisätään toinen tutkinto Ruotsista
+    val hakemus6666 = hakemusRepository.haeHakemus(HakemusOid("1.2.246.562.11.00000000000000006666")).get
+    tutkintoRepository.suoritaLisaaTutkinto(
+      Tutkinto(
+        id = None,
+        hakemusId = hakemus6666.id,
+        jarjestys = "9",
+        nimi = Some("Ruotsalainen tutkinto"),
+        maakoodiUri = Some("maatjavaltiot2_752")
+      ),
+      esittelijaOidString
+    )
+
+    // Päätöstiedon linkitetty tutkinto ei vaikuta hakuun: riittää että hakemuksella on tutkinto haetusta maasta
+    mockMvc
+      .perform(
+        get(
+          "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_752&kelpoisuus=Opetusalan ammatit_Aineenopettaja perusopetuksessa"
+        )
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
     mockMvc
       .perform(
@@ -1118,11 +1143,30 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(jsonPath("$.totalCount").value(1))
       .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006666"))
 
-    // Hakemus 6665: mutta paatostiedolla ei tutkintoId
+    // Hakemus 6665: paatostiedolla ei tutkintoId:tä
     mockMvc
       .perform(
         get(
           "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"
+        )
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    mockMvc
+      .perform(
+        get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_762&opetettavatAineet=vieras kieli_englanti")
+      )
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$.totalCount").value(1))
+      .andExpect(jsonPath("$.items[0].hakemusOid").value("1.2.246.562.11.00000000000000006665"))
+
+    // Hakemuksella 6665 ei ole tutkintoa haetusta suoritusmaasta -> 0 tulosta
+    mockMvc
+      .perform(
+        get(
+          "/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000&kelpoisuus=Opetusalan ammatit_Aineenopettaja lukiossa"
         )
       )
       .andExpect(status().isOk)
