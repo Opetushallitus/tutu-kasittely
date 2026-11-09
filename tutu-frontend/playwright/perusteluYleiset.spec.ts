@@ -418,3 +418,39 @@ test.describe('Yleiset perustelut', () => {
     });
   });
 });
+
+test.describe('Yleiset perustelut -välilehdet', () => {
+  test('Välilehden vaihto tallentamattomilla muutoksilla näyttää varmistusdialogin', async ({
+    page,
+  }) => {
+    await page.goto(
+      '/tutu-frontend/hakemus/1.2.246.562.10.00000000001/perustelu/yleiset/perustelut',
+    );
+
+    const muuPerustelu = page
+      .getByTestId('yleiset-perustelut__muu-perustelu')
+      .getByRole('textbox');
+    await muuPerustelu.fill('Tallentamaton muutos');
+
+    const lausuntoTab = page.getByRole('link', {
+      name: 'hakemus.perustelu.yleiset.tab.lausunto',
+    });
+
+    // Peruuta: pysytään välilehdellä ja muutos säilyy
+    await lausuntoTab.click();
+    await expect(page.getByTestId('modal-component')).toBeVisible();
+    await page.getByTestId('modal-peruuta-button').click();
+    await expect(page.getByTestId('modal-component')).toBeHidden();
+    await expect(page).toHaveURL(/\/perustelu\/yleiset\/perustelut/);
+    await expect(muuPerustelu).toHaveValue('Tallentamaton muutos');
+
+    // Jatka tallentamatta: siirrytään lausuntovälilehdelle
+    await lausuntoTab.click();
+    await expect(page.getByTestId('modal-component')).toBeVisible();
+    await page.getByTestId('modal-confirm-button').click();
+    await expect(page).toHaveURL(/\/perustelu\/yleiset\/lausunto/);
+    await expect(page.getByTestId('perustelu-otsikko')).toHaveText(
+      'hakemus.perustelu.lausuntotiedot.lausuntopyynnot',
+    );
+  });
+});

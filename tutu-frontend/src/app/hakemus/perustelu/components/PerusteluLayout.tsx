@@ -5,7 +5,7 @@ import {
   ophColors,
 } from '@opetushallitus/oph-design-system';
 import { ReactNode, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { Muistio } from '@/src/components/Muistio';
@@ -27,7 +27,7 @@ const InactiveButton = styled(OphButton)({
   fontWeight: 'normal',
   height: TAB_BUTTON_HEIGHT,
   color: 'black',
-});
+}) as typeof OphButton;
 
 const ActiveButton = styled(OphButton)({
   borderRadius: 0,
@@ -52,16 +52,22 @@ const TabButton = ({
   tabName: string;
 }) => {
   const { t } = useTranslations();
+  const { search } = useLocation();
   const activeTabName = useActiveHakuTabName();
+  const label = t(`hakemus.perustelu.yleiset.tab.${tabName}`);
 
-  const StyledButton =
-    activeTabName === tabName ? ActiveButton : InactiveButton;
-  const useLinkPath = activeTabName === tabName ? undefined : linkPath;
+  if (activeTabName === tabName) {
+    return <ActiveButton>{label}</ActiveButton>;
+  }
 
   return (
-    <StyledButton href={useLinkPath}>
-      {t(`hakemus.perustelu.yleiset.tab.${tabName}`)}
-    </StyledButton>
+    <InactiveButton
+      component={Link}
+      to={{ pathname: linkPath, search }}
+      relative="path"
+    >
+      {label}
+    </InactiveButton>
   );
 };
 
@@ -79,8 +85,8 @@ const Tabs = () => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton linkPath="../yleiset/perustelut" tabName="perustelut" />
-      <TabButton linkPath="../yleiset/lausunto" tabName="lausunto" />
+      <TabButton linkPath="../perustelut" tabName="perustelut" />
+      <TabButton linkPath="../lausunto" tabName="lausunto" />
     </Stack>
   );
 };
