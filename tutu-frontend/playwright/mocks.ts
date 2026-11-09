@@ -69,6 +69,7 @@ export const mockBasicForHakemus = async ({ page }: { page: Page }) => {
     mockInit(page),
     mockEsittelijat(page),
     mockValituspohjat(page),
+    mockMuutHakemukset(page),
   ]);
 };
 

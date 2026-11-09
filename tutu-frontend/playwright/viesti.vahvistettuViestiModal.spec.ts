@@ -3,6 +3,7 @@ import { expect, Page, Route, test } from '@playwright/test';
 import {
   mockEsittelijat,
   mockHakemus,
+  mockMuutHakemukset,
   mockInit,
   mockPaatos,
   mockUser,
@@ -38,6 +39,7 @@ test.beforeEach(async ({ page }) => {
   await mockViestiTyoversio(page, uusiViesti);
   await mockViestiLista(page);
   await mockPaatos(page);
+  await mockMuutHakemukset(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );
