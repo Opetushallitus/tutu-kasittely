@@ -1233,4 +1233,114 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$.totalCount").value(0))
   }
+
+  @Test
+  @Order(21)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeMuutHakemuksetReturns200AndFiltersOutHakemusItselfWhenSameHakijaOid(): Unit = {
+    initAtaruHakemusRequests()
+    val hakijaOid   = PersonOid("1.2.246.562.24.00000000991")
+    val hakemusOid1 = HakemusOid("1.2.246.562.11.00000000000000006680")
+    val hakemusOid2 = HakemusOid("1.2.246.562.11.00000000000000006681")
+
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid1)))
+      .thenReturn(Right(loadJson("ataruHakemus6680.json")))
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid2)))
+      .thenReturn(Right(loadJson("ataruHakemus6681.json")))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
+    when(ataruHakemusParser.onkoApHakemus(any())).thenReturn(None)
+
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid1, 0))
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid2, 0))
+
+    when(mockOnrService.haeLinkedOids(eqTo(hakijaOid)))
+      .thenReturn(Right(Seq(hakijaOid)))
+
+    // Haetaan hakemusOid1:n "muut hakemukset" - pitäisi löytyä vain hakemusOid2, ei hakemusOid1 itseään
+    mockMvc
+      .perform(get(s"/tutu-backend/api/hakemus/${hakemusOid1.s}/muut/"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.length()").value(1))
+      .andExpect(jsonPath("$[0].hakemusOid.s").value(hakemusOid2.s))
+      .andExpect(jsonPath("$[0].hakijaEtunimet").value("Testi Kuudes"))
+      .andExpect(jsonPath("$[0].hakijaSukunimi").value("Hakija"))
+
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadMuutHakemukset), any())
+  }
+
+  @Test
+  @Order(22)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeMuutHakemuksetMergesHakemuksetAcrossLinkedDuplikaattiHakijaOids(): Unit = {
+    initAtaruHakemusRequests()
+    val hakijaOid1  = PersonOid("1.2.246.562.198.00000000992")
+    val hakijaOid2  = PersonOid("1.2.246.562.24.00000000996")
+    val hakemusOid1 = HakemusOid("1.2.246.562.11.00000000000000006682")
+    val hakemusOid2 = HakemusOid("1.2.246.562.11.00000000000000006683")
+
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid1)))
+      .thenReturn(Right(loadJson("ataruHakemus6682.json")))
+    when(hakemuspalveluService.haeHakemus(eqTo(hakemusOid2)))
+      .thenReturn(Right(loadJson("ataruHakemus6683.json")))
+    when(ataruHakemusParser.parseTutkinto1MaakoodiUri(any())).thenReturn(Some("maatjavaltiot2_834"))
+    when(ataruHakemusParser.onkoApHakemus(any())).thenReturn(None)
+
+    // Hakijalla on kaksi eri henkilö-oidia (duplikaatti), ja kummallakin oidilla omat hakemuksensa
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid1, 0))
+    hakemusService.tallennaAtaruHakemus(UusiAtaruHakemus(hakemusOid2, 0))
+
+    when(mockOnrService.haeLinkedOids(eqTo(hakijaOid1)))
+      .thenReturn(Right(Seq(hakijaOid1, hakijaOid2)))
+
+    // Haetaan hakemusOid1:n "muut hakemukset" - pitäisi löytyä duplikaattioidin hakemusOid2, ei hakemusOid1 itseään
+    mockMvc
+      .perform(get(s"/tutu-backend/api/hakemus/${hakemusOid1.s}/muut/"))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.length()").value(1))
+      .andExpect(jsonPath("$[0].hakemusOid.s").value(hakemusOid2.s))
+  }
+
+  @Test
+  @Order(23)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeMuutHakemuksetReturns500WhenOnrServiceEpaonnistuu(): Unit = {
+    // Käytetään order(21):ssä jo tallennettua hakemusta ja hakijaOidia
+    val hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006680")
+    val hakijaOid  = PersonOid("1.2.246.562.24.00000000991")
+
+    when(mockOnrService.haeLinkedOids(eqTo(hakijaOid)))
+      .thenReturn(Left(OnrServiceException("Duplikaattien haku epäonnistui")))
+
+    mockMvc
+      .perform(get(s"/tutu-backend/api/hakemus/${hakemusOid.s}/muut/"))
+      .andExpect(status().isInternalServerError)
+      .andExpect(content().contentType(MediaType.valueOf("application/json;charset=UTF-8")))
+      .andExpect(
+        content().json(
+          """{"origin":"oppijanumerorekisteri","message":"Duplikaattien haku epäonnistui"}"""
+        )
+      )
+  }
+
+  @Test
+  @Order(24)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeMuutHakemuksetReturns500WhenHakemustaEiLoydy(): Unit = {
+    val tuntematonHakemusOid = HakemusOid("1.2.246.562.11.00000000000000006699")
+
+    when(hakemuspalveluService.haeHakemus(eqTo(tuntematonHakemusOid)))
+      .thenReturn(Left(NotFoundException()))
+
+    mockMvc
+      .perform(get(s"/tutu-backend/api/hakemus/${tuntematonHakemusOid.s}/muut/"))
+      .andExpect(status().isInternalServerError)
+      .andExpect(content().contentType(MediaType.valueOf("application/json;charset=UTF-8")))
+      .andExpect(
+        content().json(
+          """{"origin":"","message":"Hakemus ei löytynyt"}"""
+        )
+      )
+  }
 }

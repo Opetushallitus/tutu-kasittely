@@ -1,6 +1,7 @@
 import { TranslatedName } from '@/src/lib/localization/localizationTypes';
 
 export type Hakija = {
+  henkiloOid: string;
   etunimet: string;
   kutsumanimi: string;
   sukunimi: string;

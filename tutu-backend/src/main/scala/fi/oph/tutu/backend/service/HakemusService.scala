@@ -39,6 +39,7 @@ class HakemusService(
   paatosRepository: PaatosRepository,
   hakemuspalveluService: HakemuspalveluService,
   ataruHakemusParser: AtaruHakemusParser,
+  onrService: OnrService,
   @Lazy perustelumuistioService: IPerustelumuistioService,
   db: TutuDatabase,
   objectMapper: ObjectMapper
@@ -688,5 +689,32 @@ class HakemusService(
 
   def hakemusIdToOid(hakemusId: UUID): Option[HakemusOid] = {
     hakemusRepository.hakemusIdToOid(hakemusId)
+  }
+
+  private def haeHakijaOid(hakemusOid: HakemusOid): PersonOid = {
+    hakemusRepository.haeHakemus(hakemusOid) match {
+      case Some(hakemus) => hakemus.hakijaOid
+      case None          => None
+    } match {
+      case Some(hakijaOid) => hakijaOid
+      case None            =>
+        haeHakemus(hakemusOid) match {
+          case Some(hakemus) =>
+            PersonOid(hakemus.hakija.henkiloOid)
+          case None =>
+            throw NotFoundException("Hakemus ei löytynyt")
+        }
+    }
+  }
+
+  def haeMuutHakemukset(hakemusOid: HakemusOid): Seq[MuuHakemus] = {
+    val hakijaOid = haeHakijaOid(hakemusOid)
+    onrService.haeLinkedOids(hakijaOid) match {
+      case Right(hakijaOids) =>
+        hakemusRepository.haeMuutHakemukset(hakemusOid, hakijaOids :+ hakijaOid)
+      case Left(exception) =>
+        LOG.error(s"Asiakirjojen haku epäonnistui, hakemusOid: $hakijaOid", exception)
+        throw exception
+    }
   }
 }

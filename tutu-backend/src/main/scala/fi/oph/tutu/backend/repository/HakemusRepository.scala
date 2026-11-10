@@ -23,7 +23,7 @@ class HakemusRepository extends BaseResultHandlers {
   implicit val getHakemusOidResult: GetResult[HakemusOid] =
     GetResult(r => HakemusOid(r.nextString()))
 
-  implicit val getHakemusResult: GetResult[DbHakemus] =
+  implicit val getHakemusResult: GetResult[DbHakemus] = {
     GetResult(r =>
       DbHakemus(
         id = UUID.fromString(r.nextString()),
@@ -54,6 +54,18 @@ class HakemusRepository extends BaseResultHandlers {
         lausunnonMaaraaikaPvm = Option(r.nextTimestamp()).map(_.toLocalDateTime)
       )
     )
+  }
+
+  implicit val getMuuHakemusResult: GetResult[MuuHakemus] = {
+    GetResult(r =>
+      MuuHakemus(
+        hakemusOid = HakemusOid(r.nextString()),
+        asiatunnus = r.nextStringOption(),
+        hakijaEtunimet = r.nextStringOption(),
+        hakijaSukunimi = r.nextStringOption()
+      )
+    )
+  }
 
   /**
    * Tallentaa uuden hakemuksen (palauttaa DBIO-actionin transaktioita varten)
@@ -96,13 +108,13 @@ class HakemusRepository extends BaseResultHandlers {
       INSERT INTO hakemus (hakemus_oid, hakemus_koskee, form_id, esittelija_id,
         asiakirja_id, lopullinen_paatos_ehdollisen_asiatunnus,
         lopullinen_paatos_tutkinnon_suoritus_maakoodiuri, luoja,
-        saapumis_pvm, ataru_hakemus_muokattu, hakija_etunimet, hakija_sukunimi,
-        hakija_oid, viimeisin_taydennyspyynto_paiva)
+        saapumis_pvm, ataru_hakemus_muokattu, hakija_etunimet, hakija_sukunimi, hakija_oid,
+        viimeisin_taydennyspyynto_paiva)
       VALUES ($hakemusOidString, $hakemusKoskee, $formId, $esittelijaIdOrNull::uuid, ${asiakirjaId.toString}::uuid,
         $lopullinenPaatosVastaavaEhdollinenAsiatunnusOrNull,
         $lopullinenPaatosVastaavaEhdollinenSuoritusmaaKoodiUriOrNull, $luoja,
-        $saapumisPvmOrNull, $ataruHakemusMuokattuOrNull, $hakijaEtunimetOrNull, $hakijaSukunimiOrNull,
-        $hakijaOidOrNull, $viimeisinTaydennyspyyntoPvmOrNull)
+        $saapumisPvmOrNull, $ataruHakemusMuokattuOrNull, $hakijaEtunimetOrNull, $hakijaSukunimiOrNull, $hakijaOidOrNull,
+        $viimeisinTaydennyspyyntoPvmOrNull)
       RETURNING id
     """.as[UUID].head
 
@@ -195,7 +207,7 @@ class HakemusRepository extends BaseResultHandlers {
             LEFT JOIN esittelija e on e.id = h.esittelija_id
             LEFT JOIN valitustiedot vt ON vt.hakemus_id = h.id
             WHERE
-              h.asiatunnus = ${asiatunnus}
+              h.asiatunnus = $asiatunnus
           """.as[DbHakemus].headOption,
         "hae_hakemus"
       )
@@ -413,6 +425,25 @@ class HakemusRepository extends BaseResultHandlers {
       )
     } catch {
       case e: Exception => None
+    }
+  }
+
+  def haeMuutHakemukset(hakemusOid: HakemusOid, hakijaOids: Seq[PersonOid]): Seq[MuuHakemus] = {
+    try {
+      db.run(
+        sql"""
+             SELECT hakemus_oid, asiatunnus, hakija_etunimet, hakija_sukunimi FROM hakemus
+             WHERE hakija_oid = ANY(${hakijaOids.map(_.s)})
+             AND hakemus_oid != ${hakemusOid.s}
+           """.as[MuuHakemus],
+        "hae_muut_hakemukset"
+      )
+    } catch {
+      case e: Exception =>
+        throw new RuntimeException(
+          s"Hakijan muiden hakemusten haku epäonnistui: ${e.getMessage}",
+          e
+        )
     }
   }
 }

@@ -13,7 +13,7 @@ import { mockTekstipohjatKategorioittain } from '@/playwright/fixtures/tekstipoh
 import { getMockTutkinnot } from '@/playwright/fixtures/tutkinnot';
 import { getValitustiedot } from '@/playwright/fixtures/valitustiedot1';
 import { Language } from '@/src/lib/localization/localizationTypes';
-import { AsiakirjaTieto, Hakemus } from '@/src/lib/types/hakemus';
+import { AsiakirjaTieto, Hakemus, MuuHakemus } from '@/src/lib/types/hakemus';
 import {
   Paatospohja,
   PaatospohjaListItem,
@@ -48,6 +48,7 @@ export const mockAll = async ({ page }: { page: Page }) => {
     mockTekstipohjaLista(page, 'viestipohja'),
     mockTekstipohjaKategoriat(page, 'viestipohja'),
     mockValituspohjat(page),
+    mockMuutHakemukset(page),
   ]);
 };
 
@@ -68,6 +69,7 @@ export const mockBasicForHakemus = async ({ page }: { page: Page }) => {
     mockInit(page),
     mockEsittelijat(page),
     mockValituspohjat(page),
+    mockMuutHakemukset(page),
   ]);
 };
 
@@ -228,6 +230,7 @@ export const mockHakemus = async (
         lomakkeenKieli: lomakkeenKieli,
         hakemusKoskee: 1,
         hakija: {
+          henkiloOid: '1.2.246.562.24.123456789',
           etunimet: 'Heikki Hemuli',
           kutsumanimi: 'Hessu',
           sukunimi: 'Heittotähti',
@@ -990,6 +993,32 @@ export const mockValituspohjat = (page: Page) => {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(getValitustiedot()),
+        });
+      }
+    },
+  );
+};
+
+const defaultMuutHakemukset: Array<MuuHakemus> = [
+  {
+    hakemusOid: '1.2.246.562.11.00000000001',
+    asiatunnus: 'OPH-2026-1111',
+    hakijaEtunimet: 'Harri Heikki',
+    hakijaSukunimi: 'Hakija',
+  },
+  { hakemusOid: '1.2.246.562.11.00000000002', asiatunnus: 'OPH-2026-2222' },
+  { hakemusOid: '1.2.246.562.11.00000000003' },
+];
+
+export const mockMuutHakemukset = (page: Page) => {
+  return page.route(
+    '**/tutu-backend/api/hakemus/*/muut**',
+    async (route: Route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(defaultMuutHakemukset),
         });
       }
     },

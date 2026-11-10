@@ -117,3 +117,31 @@ test('Päätös näkyy kun päätösteksti on vahvistettu', async ({ page }) => 
 
   await expect(page.getByTestId('hakemus-sidebar-paatos-item')).toHaveCount(1);
 });
+
+test('Muut hakemukset näkyvät oikein', async ({ page }) => {
+  await page.goto(
+    '/tutu-frontend/hakemus/1.2.246.562.11.99999999999/perustiedot',
+  );
+
+  const muu1 = page.getByText('OPH-2026-1111');
+  const muu2 = page.getByText('OPH-2026-2222');
+  const muu3 = page.getByText('1.2.246.562.11.00000000003');
+
+  await expect(muu1).toBeVisible();
+  await expect(muu2).toBeVisible();
+  await expect(muu3).toBeVisible();
+  await expect(page.getByText('Harri Heikki Hakija')).toBeVisible();
+
+  await expect(muu1).toHaveAttribute(
+    'href',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/perustiedot',
+  );
+  await expect(muu2).toHaveAttribute(
+    'href',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000002/perustiedot',
+  );
+  await expect(muu3).toHaveAttribute(
+    'href',
+    '/tutu-frontend/hakemus/1.2.246.562.11.00000000003/perustiedot',
+  );
+});

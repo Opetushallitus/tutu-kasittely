@@ -226,3 +226,10 @@ case class AsiatunnusUpdateRequest(
 case class EsittelyPvmUpdateRequest(
   esittelyPvm: Option[LocalDateTime]
 )
+
+case class MuuHakemus(
+  hakemusOid: HakemusOid,
+  asiatunnus: Option[String] = None,
+  hakijaEtunimet: Option[String] = None,
+  hakijaSukunimi: Option[String] = None
+)

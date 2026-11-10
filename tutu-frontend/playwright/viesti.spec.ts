@@ -18,6 +18,7 @@ import {
   mockViestiOletussisalto,
   tallennettuTyoversio,
   mockPaatos,
+  mockMuutHakemukset,
 } from '@/playwright/mocks';
 
 test.beforeEach(async ({ page }) => {
@@ -26,6 +27,7 @@ test.beforeEach(async ({ page }) => {
   await mockUser(page);
   await mockHakemus(page);
   await mockPaatos(page);
+  await mockMuutHakemukset(page);
   await page.goto(
     '/tutu-frontend/hakemus/1.2.246.562.11.00000000001/editori/viesti',
   );

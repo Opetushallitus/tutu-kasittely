@@ -4,7 +4,6 @@ import React from 'react';
 
 import { KielteinenBadge, MyonteinenBadge } from '../Badges';
 
-import { StyledLink } from '@/src/components/StyledLink';
 import { useHakemus } from '@/src/context/HakemusContext';
 import { usePaatos } from '@/src/hooks/usePaatos';
 import {
@@ -59,30 +58,6 @@ const mapMyonteinenPaatos = (paatosTieto: PaatosTieto, t: TFunction) => {
   );
 };
 
-const AikaisempiPaatos = ({
-  t,
-  asiatunnus,
-  gap,
-}: {
-  t: TFunction;
-  asiatunnus: string;
-  gap: number;
-}) => {
-  return (
-    <Stack direction="column" spacing={gap}>
-      <OphTypography variant={'label'} sx={{ fontWeight: 'bold' }}>
-        {t('hakemus.sivupalkki.paatos.otsikkoAikaisempi')}
-      </OphTypography>
-      <OphTypography variant={'body1'}>
-        {t('hakemus.sivupalkki.paatos.seliteAikaisempi')}
-      </OphTypography>
-      <StyledLink to={'/'} sx={{ fontWeight: '400' }}>
-        {asiatunnus}
-      </StyledLink>
-    </Stack>
-  );
-};
-
 export const Paatos = () => {
   const theme = useTheme();
   const { t } = useTranslations();
@@ -111,19 +86,16 @@ export const Paatos = () => {
               })}
             </OphTypography>
             <span>{mapPaatostyyppi(tiedot.paatosTyyppi, t)}</span>
-            <span>
-              {t(
-                `hakemus.sivupalkki.paatos.sovellettuLaki.${tiedot.sovellettuLaki}`,
-              )}
-            </span>
+            {tiedot.sovellettuLaki && (
+              <span>
+                {t(
+                  `hakemus.sivupalkki.paatos.sovellettuLaki.${tiedot.sovellettuLaki}`,
+                )}
+              </span>
+            )}
             {mapMyonteinenPaatos(tiedot, t)}
           </Box>
         ))}
-      <AikaisempiPaatos
-        t={t}
-        asiatunnus="OPH-1234-5678"
-        gap={1}
-      ></AikaisempiPaatos>
     </Stack>
   );
 };
