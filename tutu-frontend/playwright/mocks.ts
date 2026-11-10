@@ -27,7 +27,10 @@ import {
   ViestipohjaKategoria,
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  YhteinenKasittely,
+  YkViestiTyyppi,
+} from '@/src/lib/types/yhteinenkasittely';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([
@@ -575,6 +578,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         viesti: 'Voisitko tarkistaa liitteen A tiedot?',
         luotu: '2026-02-04T09:12:00.000Z',
         aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
       jatkoKasittelyt: [],
     },
@@ -586,6 +590,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         viesti: 'Onko tämä päätös valmis allekirjoitettavaksi?',
         luotu: '2026-02-03T14:30:00.000Z',
         aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
     },
     {
@@ -596,6 +601,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         viesti: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
         luotu: '2026-02-01T08:05:00.000Z',
         aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
       jatkoKasittelyt: [
         {
@@ -605,6 +611,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
           aihe: 'asiakirjat',
+          tyyppi: YkViestiTyyppi.vastaus,
         },
         {
           id: 'q5',
@@ -613,6 +620,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
           aihe: 'asiakirjat',
+          tyyppi: YkViestiTyyppi.jatkokysymys,
         },
       ],
     },
@@ -665,6 +673,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
             viesti: data.viesti,
             luotu: new Date().toISOString(),
             aihe: data.aihe,
+            tyyppi: YkViestiTyyppi.kysymys,
           },
           jatkoKasittelyt: [],
         });

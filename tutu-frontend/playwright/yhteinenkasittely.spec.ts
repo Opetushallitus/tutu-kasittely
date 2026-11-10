@@ -4,6 +4,8 @@ import { test, expect, Route, Page } from '@playwright/test';
 
 import { mockAll } from './mocks';
 
+import { YkViestiTyyppi } from '@/src/lib/types/yhteinenkasittely';
+
 test.beforeEach(mockAll);
 
 test('Yhteinen käsittely näkyy oikein', async ({ page }) => {
@@ -99,76 +101,63 @@ test('Yhteisen käsittelyn luominen', async ({ page }) => {
 });
 
 test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () => {
-  const mockData = (kysymysId: string, from: string, to: string) => {
-    const meOid = '1.2.246.562.24.999999999999';
-    const otherOid = '1.2.246.562.24.999999999998';
-    const someoneOid = '1.2.246.562.24.999999999997';
+  const participants = {
+    me: { oid: '1.2.246.562.24.999999999999', name: 'Minä' },
+    other: { oid: '1.2.246.562.24.999999999998', name: 'Sinä' },
+    someone: { oid: '1.2.246.562.24.999999999997', name: 'Hän' },
+  };
 
-    const names: { [key: string]: string } = {
-      meOid: 'Minä',
-      otherOid: 'Sinä',
-      someoneOid: 'Hän',
-    };
+  type Participant = keyof typeof participants;
+  type MessageParties = { from: Participant; to: Participant };
 
-    const firstLahettajaOid =
-      kysymysId === 'q-1' && from === 'me'
-        ? meOid
-        : kysymysId === 'q-1' && from === 'other'
-          ? otherOid
-          : someoneOid;
-
-    const firstVastaanottajaOid =
-      kysymysId === 'q-1' && to === 'me'
-        ? meOid
-        : kysymysId === 'q-1' && to === 'other'
-          ? otherOid
-          : someoneOid;
-
-    const followupLahettajaOid =
-      kysymysId === 'q-2' && from === 'me'
-        ? meOid
-        : kysymysId === 'q-2' && from === 'other'
-          ? otherOid
-          : someoneOid;
-
-    const followupVastaanottajaOid =
-      kysymysId === 'q-2' && to === 'me'
-        ? meOid
-        : kysymysId === 'q-2' && to === 'other'
-          ? otherOid
-          : someoneOid;
+  const mockData = (initial: MessageParties, followUp?: MessageParties) => {
+    const makeMessage = (
+      id: string,
+      parties: MessageParties,
+      viesti: string,
+      tyyppi: YkViestiTyyppi,
+    ) => ({
+      id,
+      lahettaja: participants[parties.from].name,
+      lahettajaOid: participants[parties.from].oid,
+      vastaanottaja: participants[parties.to].name,
+      vastaanottajaOid: participants[parties.to].oid,
+      viesti,
+      luotu: '2026-02-01T08:05:00.000Z',
+      aihe: 'kelpoisuus',
+      tyyppi,
+    });
 
     return async (page: Page) => {
       await page.route(
         '**/tutu-backend/api/hakemus/*/yhteinenkasittely*',
         async (route: Route) => {
+          if (route.request().method() !== 'GET') {
+            await route.fallback();
+            return;
+          }
+
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify([
               {
-                aloitusViesti: {
-                  id: 'q-1',
-                  lahettaja: names[firstLahettajaOid],
-                  lahettajaOid: firstLahettajaOid,
-                  vastaanottaja: names[firstVastaanottajaOid],
-                  vastaanottajaOid: firstVastaanottajaOid,
-                  viesti: 'Ensimmäinen kysymys',
-                  luotu: '2026-02-01T08:05:00.000Z',
-                  aihe: 'kelpoisuus',
-                },
-                jatkoKasittelyt: [
-                  {
-                    id: 'q-2',
-                    lahettaja: names[followupLahettajaOid],
-                    lahettajaOid: followupLahettajaOid,
-                    vastaanottaja: names[followupVastaanottajaOid],
-                    vastaanottajaOid: followupVastaanottajaOid,
-                    viesti: 'Jatkokysymys',
-                    luotu: '2026-02-01T08:05:00.000Z',
-                    aihe: 'kelpoisuus',
-                  },
-                ],
+                aloitusViesti: makeMessage(
+                  'q-1',
+                  initial,
+                  'Ensimmäinen kysymys',
+                  YkViestiTyyppi.kysymys,
+                ),
+                jatkoKasittelyt: followUp
+                  ? [
+                      makeMessage(
+                        'q-2',
+                        followUp,
+                        'Jatkokysymys',
+                        YkViestiTyyppi.jatkokysymys,
+                      ),
+                    ]
+                  : [],
               },
             ]),
           });
@@ -186,93 +175,79 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
     ).toBeVisible();
   };
 
-  const verifyQuestionVisible = async (page: Page) => {
-    // Avaa kysymys
+  const verifyQuestionVisible = async (page: Page, hasFollowUp: boolean) => {
     await expect(page.getByTestId('kysymys-q-1')).toBeVisible();
     await page.getByTestId('kysymys-q-1').click();
 
-    // Lue kysymykset
+    const details = page.getByTestId('kasittely-details-q-1');
     await expect(
-      page
-        .getByTestId(`kasittely-details-q-1`)
-        .getByText('Ensimmäinen kysymys'),
+      details.getByText('Ensimmäinen kysymys').first(),
     ).toBeVisible();
-    await expect(page.getByText('Jatkokysymys')).toBeVisible();
-  };
 
-  const verifyAnswerEditable = (
-    kysymysId: string,
-    _from: string,
-    to: string,
-  ) => {
-    if (to === 'me') {
-      return async (page: Page) => {
-        const locator = page.getByTestId(
-          `kysymys-details-${kysymysId}__vastaus-field`,
-        );
-
-        await locator.scrollIntoViewIfNeeded();
-        await expect(locator).toBeVisible();
-      };
+    if (hasFollowUp) {
+      await expect(details.getByText('Jatkokysymys')).toBeVisible();
     } else {
-      return async (page: Page) => {
-        const locator = page.getByTestId(
-          `kysymys-details-${kysymysId}__vastaus-field`,
-        );
-        await expect(locator).toBeHidden();
-      };
+      await expect(details.getByText('Jatkokysymys')).toHaveCount(0);
     }
   };
 
-  const verifySendButtonVisible = (
-    kysymysId: string,
-    _from: string,
-    to: string,
-  ) => {
-    if (to === 'me') {
-      return async (page: Page) => {
-        const locator = page.getByTestId(
-          `kysymys-details-${kysymysId}__vastaus-send`,
-        );
+  const verifyAnswerAvailability = async (page: Page, canAnswer: boolean) => {
+    const field = page.getByTestId('kysymys-details-q-1__vastaus-field');
+    const sendButton = page.getByTestId('kysymys-details-q-1__vastaus-send');
 
-        await locator.scrollIntoViewIfNeeded();
-        await expect(locator).toBeVisible();
-      };
+    if (canAnswer) {
+      await field.scrollIntoViewIfNeeded();
+      await expect(field).toBeVisible();
+      await expect(sendButton).toBeVisible();
     } else {
-      return async (page: Page) => {
-        const locator = page.getByTestId(
-          `kysymys-details-${kysymysId}__vastaus-send`,
-        );
-        await expect(locator).toBeHidden();
-      };
+      await expect(field).toBeHidden();
+      await expect(sendButton).toBeHidden();
     }
   };
 
-  // [testikuvaus, kysymyksen id, from, to]
-  const cases = [
-    ['Ensimmäinen kysymys minulta toiselle', 'q-1', 'me', 'other'],
-    ['Ensimmäinen kysymys toiselta minulle', 'q-1', 'other', 'me'],
-    ['Ensimmäinen kysymys toiselta toiselle', 'q-1', 'other', 'other'],
-    ['Toinen kysymys minulta toiselle', 'q-2', 'me', 'other'],
-    ['Toinen kysymys toiselta minulle', 'q-2', 'other', 'me'],
-    ['Toinen kysymys toiselta toiselle', 'q-2', 'other', 'other'],
+  const cases: {
+    description: string;
+    initial: MessageParties;
+    followUp?: MessageParties;
+  }[] = [
+    {
+      description: 'Aloituskysymys minulta toiselle',
+      initial: { from: 'me', to: 'other' },
+    },
+    {
+      description: 'Aloituskysymys toiselta minulle',
+      initial: { from: 'other', to: 'me' },
+    },
+    {
+      description: 'Aloituskysymys toiselta kolmannelle',
+      initial: { from: 'other', to: 'someone' },
+    },
+    {
+      description: 'Jatkokysymys minulta toiselle',
+      initial: { from: 'someone', to: 'other' },
+      followUp: { from: 'me', to: 'other' },
+    },
+    {
+      description: 'Jatkokysymys toiselta minulle',
+      initial: { from: 'someone', to: 'other' },
+      followUp: { from: 'other', to: 'me' },
+    },
+    {
+      description: 'Jatkokysymys toiselta kolmannelle',
+      initial: { from: 'someone', to: 'other' },
+      followUp: { from: 'other', to: 'someone' },
+    },
   ];
 
-  cases.forEach(([kuvaus, kysymysId, from, to]) => {
-    const doMock = mockData(kysymysId, from, to);
-    const doVerifyAnswerEditable = verifyAnswerEditable(kysymysId, from, to);
-    const doVerifySendButtonVisible = verifySendButtonVisible(
-      kysymysId,
-      from,
-      to,
-    );
-
-    test(`${kuvaus}`, async ({ page }) => {
-      await doMock(page);
+  cases.forEach(({ description, initial, followUp }) => {
+    test(description, async ({ page }) => {
+      await mockData(initial, followUp)(page);
       await navigateToPage(page);
-      await verifyQuestionVisible(page);
-      await doVerifyAnswerEditable(page);
-      await doVerifySendButtonVisible(page);
+      await verifyQuestionVisible(page, !!followUp);
+      await verifyAnswerAvailability(
+        page,
+        (followUp?.to ?? initial.to) === 'me',
+      );
     });
   });
 });
