@@ -116,7 +116,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         vastaanottajaOid = Some(listaVastaanottajaOid),
         viesti = Some(s"Kysymys hakemukselle $hakemusOid"),
         lahetetty = Some(LocalDateTime.parse("2026-10-30T00:00:00.000")),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
   }
