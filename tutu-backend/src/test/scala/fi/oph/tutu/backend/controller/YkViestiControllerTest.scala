@@ -167,7 +167,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
       "parentId"         -> None,
       "viesti"           -> Some("Toinen kyssäri"),
       "vastaanottajaOid" -> Some("vastaanottaja-oid"),
-      "laheta"           -> Some(true)
+      "laheta"           -> Some(true),
+      "aihe"             -> None,
+      "tyyppi"           -> YkViestiTyyppi.kysymys.toString
     )
     val postBodyAsJson = mapper.writeValueAsString(postBody)
 
