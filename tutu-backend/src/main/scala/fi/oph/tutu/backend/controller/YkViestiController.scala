@@ -3,20 +3,12 @@ package fi.oph.tutu.backend.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.{EsittelijaService, UserService, YkViestiService}
-import fi.oph.tutu.backend.utils.{AuditLog, AuthoritiesUtil, ErrorMessageMapper}
+import fi.oph.tutu.backend.utils.{AuditLog, ErrorMessageMapper}
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{
-  DeleteMapping,
-  GetMapping,
-  PatchMapping,
-  PathVariable,
-  PostMapping,
-  RequestBody,
-  RequestMapping,
-  RequestParam,
-  RestController
-}
+import org.springframework.web.bind.annotation.*
 
 import scala.util.{Failure, Success, Try}
 import io.swagger.v3.oas.annotations.Operation
@@ -247,7 +239,8 @@ class YkViestiController(
           ykKysymys = YkKysymysDTO(
             parentId = Some(viestiId),
             viesti = ykVastaus.vastaus,
-            vastaanottajaOid = None
+            vastaanottajaOid = None,
+            tyyppi = ykVastaus.tyyppi
           )
         )
       } match {
@@ -396,6 +389,24 @@ class YkViestiController(
       case e: Exception =>
         LOG.error(s"Yhteisen käsittelyn viestin poistaminen epäonnistui: ${e.getMessage}", e)
         errorMessageMapper.mapErrorMessage(e)
+    }
+  }
+  @GetMapping(
+    path = Array("ykViestiAiheet"),
+    produces = Array(MediaType.APPLICATION_JSON_VALUE)
+  )
+  def haeYkViestiAiheet(
+    request: jakarta.servlet.http.HttpServletRequest
+  ): ResponseEntity[Any] = {
+    Try {
+      ykViestiService.haeYkViestiAiheet()
+    } match {
+      case Success(aiheet) =>
+        val response = mapper.writeValueAsString(aiheet)
+        ResponseEntity.status(HttpStatus.OK).body(response)
+      case Failure(exception) =>
+        LOG.error("Yhteisen käsittelyn viestien aiheiden haku epäonnistui", exception)
+        errorMessageMapper.mapErrorMessage(exception)
     }
   }
 }

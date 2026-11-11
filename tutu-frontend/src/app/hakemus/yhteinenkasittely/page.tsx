@@ -22,13 +22,18 @@ import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
 import useToaster, { TALLENNA_TOAST_DURATION } from '@/src/hooks/useToaster';
 import { useYhteinenKasittely } from '@/src/hooks/useYhteinenKasittely';
+import { useYkViestiAiheet } from '@/src/hooks/useYkViestiAiheet';
 import {
   TFunction,
   useTranslations,
 } from '@/src/lib/localization/hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '@/src/lib/theme';
 import { User } from '@/src/lib/types/user';
-import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  Viesti,
+  YhteinenKasittely,
+  YkViestiTyyppi,
+} from '@/src/lib/types/yhteinenkasittely';
 import { handleFetchError } from '@/src/lib/utils';
 
 function not<T>(predicate: (arg: T) => boolean) {
@@ -95,6 +100,7 @@ export default function YhteinenKasittelyPage() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tyopari, setTyopari] = useState<string | undefined>();
   const [kysymys, setKysymys] = useState<string>('');
+  const [aihe, setAihe] = useState<string | undefined>();
 
   const user = useAuthorizedUser();
 
@@ -105,6 +111,8 @@ export default function YhteinenKasittelyPage() {
     isLoading: esittelijatIsLoading,
     error: esittelijatError,
   } = useEsittelijat();
+
+  const { aiheet, aiheetIsLoading, aiheetError } = useYkViestiAiheet();
 
   const {
     kasittelyt,
@@ -147,6 +155,12 @@ export default function YhteinenKasittelyPage() {
     handleFetchError(
       addToast,
       esittelijatError,
+      'virhe.yhteisenkasittelynLataus',
+      t,
+    );
+    handleFetchError(
+      addToast,
+      aiheetError,
       'virhe.yhteisenkasittelynLataus',
       t,
     );
@@ -195,7 +209,7 @@ export default function YhteinenKasittelyPage() {
     return null;
   }
 
-  if (isKasittelytLoading || esittelijatIsLoading) {
+  if (isKasittelytLoading || esittelijatIsLoading || aiheetIsLoading) {
     return <FullSpinner />;
   }
 
@@ -227,6 +241,10 @@ export default function YhteinenKasittelyPage() {
         parentId: modalParent?.aloitusViesti.id,
         viesti: kysymys,
         vastaanottajaOid: tyopari,
+        aihe: aihe,
+        tyyppi: modalParent
+          ? YkViestiTyyppi.jatkokysymys
+          : YkViestiTyyppi.kysymys,
       };
       luoUusiKasittely(kasittely);
       addToast({
@@ -243,7 +261,12 @@ export default function YhteinenKasittelyPage() {
 
   const handleSendAnswer = async (id: string, laheta: boolean = false) => {
     try {
-      vastaaKasittelyyn({ id, vastaus: answers[id] ?? '', laheta });
+      vastaaKasittelyyn({
+        id,
+        vastaus: answers[id] ?? '',
+        laheta,
+        tyyppi: YkViestiTyyppi.vastaus,
+      });
       if (laheta) {
         addToast({
           key: 'hakemus.yhteinenkasittely.vastattu.toaster',
@@ -373,12 +396,14 @@ export default function YhteinenKasittelyPage() {
       </Box>
       <KasittelyModal
         esittelijat={esittelijat}
+        aiheet={aiheet}
         open={modalOpen}
         parentKasittely={modalParent}
         handleClose={() => handleModalClose()}
         handleSend={handleCreateKasittely}
         setTyopari={setTyopari}
         setKysymys={setKysymys}
+        setAihe={setAihe}
       />
       <SaveRibbon
         onSave={save}

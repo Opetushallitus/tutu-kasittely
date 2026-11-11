@@ -1,7 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
-import fi.oph.tutu.backend.repository.YkViestiRepository
+import fi.oph.tutu.backend.repository.{YkViestiAiheRepository, YkViestiRepository}
 import fi.oph.tutu.backend.utils.TutuJsonFormats
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.stereotype.{Component, Service}
@@ -12,7 +12,8 @@ import java.util.UUID
 @Component
 @Service
 class YkViestiService(
-  ykViestiRepository: YkViestiRepository
+  ykViestiRepository: YkViestiRepository,
+  ykViestiAiheRepository: YkViestiAiheRepository
 ) extends TutuJsonFormats {
   val LOG: Logger = LoggerFactory.getLogger(classOf[YkViestiService])
 
@@ -73,7 +74,8 @@ class YkViestiService(
             luettu = olenLukenut,
             viesti = viesti.viesti,
             status = status,
-            aihe = viesti.aihe
+            aihe = viesti.aihe,
+            tyyppi = viesti.tyyppi
           )
         )
       }
@@ -105,7 +107,8 @@ class YkViestiService(
             luettu = luettu,
             viesti = viesti.viesti,
             status = status,
-            aihe = viesti.aihe
+            aihe = viesti.aihe,
+            tyyppi = viesti.tyyppi
           )
         )
       }
@@ -149,7 +152,9 @@ class YkViestiService(
         viesti = ykKysymys.viesti,
         hakija = null,
         luoja = Some(user.userOid),
-        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now())
+        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
+        aihe = ykKysymys.aihe,
+        tyyppi = ykKysymys.tyyppi
       )
     )
   }
@@ -168,7 +173,8 @@ class YkViestiService(
         ykViestiRepository.muokkaaHakemuksenYkViestia(
           ykViesti.copy(
             lahetetty = Option.when(ykVastaus.laheta.contains(true))(LocalDateTime.now()),
-            muokkaaja = Some(user.userOid)
+            muokkaaja = Some(user.userOid),
+            tyyppi = ykVastaus.tyyppi
           )
         )
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykVastaus.id.get} not found")
@@ -223,5 +229,9 @@ class YkViestiService(
       }
       case None => throw NotFoundException(s"Yhteiskäsittelyn viesti $viestiId not found")
     }
+  }
+
+  def haeYkViestiAiheet(): Seq[YkViestiAihe] = {
+    ykViestiAiheRepository.haeYkViestinAiheet()
   }
 }

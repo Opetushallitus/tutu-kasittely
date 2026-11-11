@@ -4,6 +4,7 @@ import {
   Viesti,
   YhteinenKasittely,
   YhteinenKasittelyDTO,
+  YkViestiTyyppi,
 } from '../lib/types/yhteinenkasittely';
 
 import { SortOrder } from '@/src/app/components/types';
@@ -102,6 +103,7 @@ export const useYhteinenKasittely = (
       id: string;
       vastaus?: string;
       laheta?: boolean;
+      tyyppi: YkViestiTyyppi;
     }) => answerMutation.mutate(p),
     viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error ?? answerMutation.error,

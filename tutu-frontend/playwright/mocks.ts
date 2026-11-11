@@ -27,7 +27,10 @@ import {
   ViestipohjaKategoria,
   ViestipohjaListItem,
 } from '@/src/lib/types/viesti';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import {
+  YhteinenKasittely,
+  YkViestiTyyppi,
+} from '@/src/lib/types/yhteinenkasittely';
 
 export const mockAll = async ({ page }: { page: Page }) => {
   await Promise.all([
@@ -574,7 +577,10 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999999',
         viesti: 'Voisitko tarkistaa liitteen A tiedot?',
         luotu: '2026-02-04T09:12:00.000Z',
+        aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
+      jatkoKasittelyt: [],
     },
     {
       aloitusViesti: {
@@ -583,6 +589,8 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999998',
         viesti: 'Onko tämä päätös valmis allekirjoitettavaksi?',
         luotu: '2026-02-03T14:30:00.000Z',
+        aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
     },
     {
@@ -592,6 +600,8 @@ export const mockYhteinenKasittely = async (page: Page) => {
         vastaanottajaOid: '1.2.246.562.24.999999999997',
         viesti: 'Tarvitaanko lisätietoja hakijan opintosuunnasta?',
         luotu: '2026-02-01T08:05:00.000Z',
+        aihe: 'asiakirjat',
+        tyyppi: YkViestiTyyppi.kysymys,
       },
       jatkoKasittelyt: [
         {
@@ -600,6 +610,8 @@ export const mockYhteinenKasittely = async (page: Page) => {
           vastaanottajaOid: '1.2.246.562.24.999999999996',
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
+          aihe: 'asiakirjat',
+          tyyppi: YkViestiTyyppi.vastaus,
         },
         {
           id: 'q5',
@@ -607,6 +619,8 @@ export const mockYhteinenKasittely = async (page: Page) => {
           vastaanottajaOid: '1.2.246.562.24.999999999995',
           viesti: 'Tarvitaanko lisätietoja ???',
           luotu: '2026-02-01T08:05:00.000Z',
+          aihe: 'asiakirjat',
+          tyyppi: YkViestiTyyppi.jatkokysymys,
         },
       ],
     },
@@ -618,19 +632,50 @@ export const mockYhteinenKasittely = async (page: Page) => {
   })();
 
   await page.route(
+    '**/tutu-backend/api/ykViestiAiheet',
+    async (route: Route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'kelpoisuus', avain: 'kelpoisuus' }]),
+      });
+    },
+  );
+
+  await page.route(
     '**/tutu-backend/api/hakemus/*/yhteinenkasittely**',
     async (route: Route) => {
       const method = route.request().method();
       if (method === 'POST') {
-        const data = route.request().postDataJSON() as YhteinenKasittely;
+        const data = route.request().postDataJSON() as {
+          id?: string;
+          vastaus?: string;
+          viesti?: string;
+          vastaanottajaOid?: string;
+          aihe?: string;
+        };
+
+        // Keep the answer-post branch above this.
+
+        if (
+          typeof data.viesti !== 'string' ||
+          typeof data.vastaanottajaOid !== 'string'
+        ) {
+          await route.fulfill({ status: 400 });
+          return;
+        }
+
         yhteinenkasittelydata.push({
           aloitusViesti: {
             id: `${nextId()}`,
-            vastaanottaja: data.aloitusViesti.vastaanottajaOid,
-            vastaanottajaOid: data.aloitusViesti.vastaanottajaOid,
-            viesti: data.aloitusViesti.viesti,
+            vastaanottaja: data.vastaanottajaOid,
+            vastaanottajaOid: data.vastaanottajaOid,
+            viesti: data.viesti,
             luotu: new Date().toISOString(),
+            aihe: data.aihe,
+            tyyppi: YkViestiTyyppi.kysymys,
           },
+          jatkoKasittelyt: [],
         });
 
         await route.fulfill({
@@ -640,6 +685,7 @@ export const mockYhteinenKasittely = async (page: Page) => {
         });
       }
       if (method === 'PUT' || method === 'PATCH') {
+        console.log('PUT/PATCH yhteinenkasittely');
         const path = new URL(route.request().url()).pathname;
         const isLuettu = path.endsWith('/luettu');
         if (isLuettu) {

@@ -24,7 +24,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.{DefaultMockMvcBuilder, MockMvcBuilders, MockMvcConfigurer}
 import org.springframework.web.context.WebApplicationContext
-
+import org.hamcrest.Matchers.{containsInAnyOrder, empty, equalTo, hasKey, hasSize, not}
+import slick.jdbc.PostgresProfile.api.*
 import java.util.UUID
 import java.time.LocalDateTime
 
@@ -77,7 +78,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
         lahetetty = Some(LocalDateTime.parse("2026-10-30T00:00:00.000")),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -114,7 +116,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         vastaanottajaOid = Some(listaVastaanottajaOid),
         viesti = Some(s"Kysymys hakemukselle $hakemusOid"),
         lahetetty = Some(LocalDateTime.parse("2026-10-30T00:00:00.000")),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
   }
@@ -164,7 +167,9 @@ class YkViestiControllerTest extends IntegrationTestBase {
       "parentId"         -> None,
       "viesti"           -> Some("Toinen kyssäri"),
       "vastaanottajaOid" -> Some("vastaanottaja-oid"),
-      "laheta"           -> Some(true)
+      "laheta"           -> Some(true),
+      "aihe"             -> None,
+      "tyyppi"           -> YkViestiTyyppi.kysymys.toString
     )
     val postBodyAsJson = mapper.writeValueAsString(postBody)
 
@@ -333,7 +338,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -384,7 +390,8 @@ class YkViestiControllerTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -495,5 +502,34 @@ class YkViestiControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(jsonPath("$[0].esittelija", equalTo("Veikko Virtanen")))
       .andExpect(jsonPath("$[1].esittelija", equalTo("Aino Aaltonen")))
+  }
+
+  @Test
+  @WithMockUser(value = "test-user", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeYkViestiAiheetPalauttaaAiheet(): Unit = {
+    ykViestiRepository.db.run(
+      sqlu"""
+        INSERT INTO yk_viesti_aihe (avain) VALUES
+          ('asiakirjat'),
+          ('kelpoisuus'),
+          ('muotoilu'),
+          ('taso'),
+          ('lisavaatimukset'),
+          ('ennakkoviesti'),
+          ('muu')
+      """,
+      "seedYkViestiAiheetTestiin"
+    )
+
+    mvc
+      .perform(get("/tutu-backend/api/ykViestiAiheet"))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("$", hasSize(7)))
+      .andExpect(
+        jsonPath(
+          "$[*].avain",
+          containsInAnyOrder("asiakirjat", "kelpoisuus", "muotoilu", "taso", "lisavaatimukset", "ennakkoviesti", "muu")
+        )
+      )
   }
 }

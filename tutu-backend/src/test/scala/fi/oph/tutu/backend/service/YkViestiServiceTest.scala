@@ -7,12 +7,16 @@ import org.junit.jupiter.api.Assertions.{assertThrows, assertTrue}
 import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.ActiveProfiles
+import fi.oph.tutu.backend.repository.YkViestiAiheRepository
+import org.springframework.beans.factory.annotation.Autowired
 
 @AutoConfigureMockMvc
 @ActiveProfiles(Array("test"))
 class YkViestiServiceTest extends IntegrationTestBase {
 
   var ykViestiService: YkViestiService = _
+  @Autowired
+  var ykViestiAiheRepository: YkViestiAiheRepository = _
 
   @BeforeAll
   def setupOnce(): Unit = {
@@ -42,7 +46,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
   def setup(): Unit = {
     MockitoAnnotations.openMocks(this)
     ykViestiService = new YkViestiService(
-      ykViestiRepository = ykViestiRepository
+      ykViestiRepository = ykViestiRepository,
+      ykViestiAiheRepository = ykViestiAiheRepository
     )
   }
 
@@ -58,7 +63,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
     )
     val ykKysymysDto = YkKysymysDTO(
       viesti = Some("Kysymys"),
-      vastaanottajaOid = Some("VastaanottajaOid-1")
+      vastaanottajaOid = Some("VastaanottajaOid-1"),
+      tyyppi = YkViestiTyyppi.kysymys
     )
 
     // Act
@@ -92,13 +98,15 @@ class YkViestiServiceTest extends IntegrationTestBase {
         vastaanottajaOid = Some("VastaanottajaOid-1"),
         viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
     val ykVastausDto = YkVastausDTO(
       id = Some(existingYkViestiId.toString),
       vastaus = Some("Vastaus"),
-      laheta = Some(true)
+      laheta = Some(true),
+      tyyppi = YkViestiTyyppi.vastaus
     )
 
     // Act
@@ -132,7 +140,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         vastaanottajaOid = Some("VastaanottajaOid-1"),
         viesti = Some("Kysymys"),
         luoja = Some("LahettajaOid-1"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -163,7 +172,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
@@ -201,7 +211,8 @@ class YkViestiServiceTest extends IntegrationTestBase {
         luoja = Some("lahettaja-oid"),
         vastaanottajaOid = Some("vastaanottaja-oid"),
         viesti = Some("Kysymys body"),
-        hakija = null
+        hakija = null,
+        tyyppi = YkViestiTyyppi.kysymys
       )
     )
 
