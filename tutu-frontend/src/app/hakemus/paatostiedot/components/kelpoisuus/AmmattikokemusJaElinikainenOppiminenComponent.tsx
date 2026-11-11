@@ -95,7 +95,7 @@ export const AmmattikokemusJaElinikainenOppiminenComponent = ({
         />
         <OphFormFieldWrapper
           label={t(
-            'perustelumuistio.kelpoisuudenLisavaatimukset.ammattikokemusJaElinikainenOppiminen.korvaavuus.ammattikokemusJaElinikainenOppiminenYhdessa.title',
+            'hakemus.paatos.paatostyyppi.kelpoisuus.paatos.ammattikokemusElinikainenOppiminen.yhdessa.otsikko',
           )}
           renderInput={() => (
             <Stack spacing={2}>
