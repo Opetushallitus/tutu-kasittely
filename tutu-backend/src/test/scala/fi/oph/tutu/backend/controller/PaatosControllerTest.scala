@@ -1004,6 +1004,69 @@ class PaatosControllerTest extends IntegrationTestBase {
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   @Order(19)
+  def generoiPaatostekstiKayttaaHelsinginHallintoOikeuttaKunHakijanKuntaOn999(): Unit = {
+    val hakemusOid6670 = HakemusOid("1.2.246.562.11.00000000000000006670")
+    val hakemusId6670  = hakemusRepository.tallennaHakemus(
+      hakemusOid6670,
+      1,
+      lomakeId,
+      None,
+      asiakirjaRepository.tallennaUudetAsiakirjatiedot(Asiakirja(), "testi"),
+      None,
+      None,
+      "testi"
+    )
+    paatosRepository.tallennaPaatos(hakemusId6670, makePaatosWithPaatosTiedot(Some(hakemusId6670)), "test user")
+
+    val helsinginHallintoOikeus = HallintoOikeus(
+      Some(UUID.fromString("9d36433f-c391-4f45-81e7-d14f95236ce8")),
+      "HELSINKI",
+      Map(
+        Kieli.fi -> "Helsingin hallinto-oikeus",
+        Kieli.sv -> "Helsingfors förvaltningsdomstol",
+        Kieli.en -> "Helsinki Administrative Court"
+      ),
+      Some(
+        Map(
+          Kieli.fi -> "Radanrakentajantie 5, 00520 Helsinki",
+          Kieli.sv -> "Banbyggarvägen 5, 00520 Helsingfors",
+          Kieli.en -> "Radanrakentajantie 5, 00520 Helsinki"
+        )
+      ),
+      Some("029 56 42000"),
+      Some("helsinki.ho@oikeus.fi"),
+      Some(
+        Map(
+          Kieli.fi -> "https://oikeus.fi/helsinki",
+          Kieli.sv -> "https://oikeus.fi/helsinki/sv",
+          Kieli.en -> "https://oikeus.fi/helsinki/en"
+        )
+      )
+    )
+
+    when(hakemuspalveluService.haeHakemus(any[HakemusOid]))
+      .thenReturn(Right(loadJson("ataruHakemus6670.json")))
+    when(hakemuspalveluService.haeJaParsiHakemus(any[HakemusOid]))
+      .thenReturn(Right(objectMapper.readValue(loadJson("ataruHakemus6670.json"), classOf[AtaruHakemus])))
+    when(hallintoOikeusService.haeHallintoOikeusByKoodi("HELSINKI")).thenReturn(helsinginHallintoOikeus)
+    clearInvocations(hallintoOikeusService)
+
+    mvc
+      .perform(
+        get(s"/tutu-backend/api/paatos/$hakemusOid6670/paatosteksti/generate")
+      )
+      .andExpect(status().isOk)
+      .andExpect(content().string(startsWith("<p>")))
+
+    verify(hallintoOikeusService, times(1)).haeHallintoOikeusByKoodi("HELSINKI")
+    verify(hallintoOikeusService, never()).haeHallintoOikeusByKunta(any[String])
+    verify(auditLog, times(1)).logRead(any(), any(), eqTo(AuditOperation.ReadPaatosPreview), any())
+    reset(auditLog)
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(20)
   def vahvistaPaatosLuoUudenSisallonJaLisaaVahvistusAikaleimanJosEiLoydyKannasta(): Unit = {
     val paatostekstiJson =
       s"""{
@@ -1037,7 +1100,7 @@ class PaatosControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(20)
+  @Order(21)
   def vahvistaPaatosPaivittaaSisallonJaLisaaVahvistusAikaleimanJosTekstiJoKannassa(): Unit = {
     val paatosteksti =
       paatosRepository.haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)
@@ -1063,7 +1126,7 @@ class PaatosControllerTest extends IntegrationTestBase {
 
   @Test
   @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
-  @Order(21)
+  @Order(22)
   def haePaatosPalauttaaVahvistetunPaatoksen(): Unit = {
     val paatosteksti = paatosRepository
       .haePaatosteksti(hakemusIdWithPaatosTiedotJaRinnastettavatTutkinnotTaiOpinnot.get)

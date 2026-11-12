@@ -30,6 +30,13 @@ class HallintoOikeusService(
     hallintoOikeus
   }
 
+  def haeHallintoOikeusByKoodi(koodi: String): HallintoOikeus = {
+    val hallintoOikeus = hallintoOikeusRepository.findByKoodi(koodi)
+    hallintoOikeus.getOrElse(
+      throw new HallintoOikeusNotFoundException(s"Hallinto-oikeutta ei löytynyt koodilla: $koodi")
+    )
+  }
+
   def haeKaikkiHallintoOikeudet(): Seq[HallintoOikeus] = {
     try {
       hallintoOikeusRepository.findAll()
