@@ -354,4 +354,85 @@ trait TekstipohjaControllerTestBase extends IntegrationTestBase {
       .andReturn()
     verify(auditLog, times(1)).logRead(any(), any(), eqTo(pohjaListAuditOperation), any())
   }
+
+  // --- Virheellinen sisältö, PUT /tutu-backend/api/XXXXXpohja ja /tutu-backend/api/XXXXXpohja/kategoria ---
+
+  private def tallennaPohja(json: String) =
+    mvc.perform(
+      put(pohjaSavePath)
+        .`with`(csrf())
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json)
+    )
+
+  private def tallennaKategoria(json: String) =
+    mvc.perform(
+      put(kategoriaSavePath)
+        .`with`(csrf())
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json)
+    )
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(14)
+  def tallennaTekstipohjaRikkinaisellaJsonillaPalauttaa400(): Unit = {
+    tallennaPohja("""{"nimi": "Rikki", "sisalto": {"fi": "Sisältö""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value(RESPONSE_400_DESCRIPTION))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(15)
+  def tallennaTekstipohjaTuntemattomallaKielellaPalauttaa400(): Unit = {
+    tallennaPohja("""{"nimi": "Väärä kieli", "sisalto": {"de": "Inhalt"}}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value(RESPONSE_400_DESCRIPTION))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(16)
+  def tallennaTekstipohjaIlmanNimeaPalauttaa400(): Unit = {
+    tallennaPohja("""{"sisalto": {"fi": "Sisältö"}}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value("Nimi on pakollinen"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(17)
+  def tallennaTekstipohjaTuntemattomallaKategoriallaPalauttaa400(): Unit = {
+    tallennaPohja(s"""{"nimi": "Pohja", "kategoriaId": "${UUID.randomUUID()}", "sisalto": {"fi": "Sisältö"}}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value("Kategoriaa ei löydy"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(18)
+  def tallennaTekstipohjaIlmanKategoriaaPalauttaa400(): Unit = {
+    tallennaPohja("""{"nimi": "Pohja", "sisalto": {"fi": "Sisältö"}}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value("Kategoria on pakollinen"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(19)
+  def tallennaTekstipohjaKategoriaTyhjallaNimellaPalauttaa400(): Unit = {
+    tallennaKategoria("""{"nimi": "  "}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value("Nimi on pakollinen"))
+  }
+
+  @Test
+  @WithMockUser(value = "kayttaja", authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  @Order(20)
+  def tallennaTekstipohjaKategoriaOlemassaolevallaNimellaPalauttaa400(): Unit = {
+    tallennaKategoria("""{"nimi": "Uusi kategoria"}""")
+      .andExpect(status().isBadRequest)
+      .andExpect(jsonPath("$.message").value("Kategoria on jo olemassa"))
+  }
 }

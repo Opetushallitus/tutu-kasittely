@@ -1,13 +1,15 @@
 package fi.oph.tutu.backend.controller
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.{Tekstipohja, TekstipohjaKategoria}
+import fi.oph.tutu.backend.exception.TekstipohjaValidationException
 import fi.oph.tutu.backend.service.{EsittelijaService, TekstipohjaServiceBase, UserService}
 import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, ErrorMessageMapper}
 import fi.vm.sade.auditlog.{Changes, User}
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.http.HttpStatus.{NOT_FOUND, NO_CONTENT, OK}
+import org.springframework.http.HttpStatus.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT, OK}
 import org.springframework.http.ResponseEntity
 
 import java.util.UUID
@@ -148,9 +150,18 @@ trait TekstipohjaControllerBase(
       case Success(None) =>
         LOG.error(s"Päivitettävän $singleKategoriaDescGenitiveCase tietoja ei löytynyt")
         ResponseEntity.status(NOT_FOUND).build()
+      case Failure(exception: TekstipohjaValidationException) =>
+        LOG.warn(s"$singleKategoriaDescGenitiveCase tallennus epäonnistui: ${exception.getMessage}")
+        errorMessageMapper.mapErrorMessage(exception, BAD_REQUEST)
+      case Failure(exception: JsonProcessingException) =>
+        LOG.warn(s"$singleKategoriaDescGenitiveCase tallennus epäonnistui, virheellinen pyyntö", exception)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, BAD_REQUEST)
       case Failure(exception) =>
         LOG.error(s"$singleKategoriaDescGenitiveCase tallennus epäonnistui", exception)
-        errorMessageMapper.mapErrorMessage(exception)
+        errorMessageMapper.mapPlainErrorMessage(
+          s"${singleKategoriaDescGenitiveCase.capitalize} tallennus epäonnistui",
+          INTERNAL_SERVER_ERROR
+        )
     }
   }
 
@@ -193,9 +204,18 @@ trait TekstipohjaControllerBase(
       case Success(None) =>
         LOG.error(s"Päivitettävän $singlePohjaDescGenitiveCase tietoja ei löytynyt")
         ResponseEntity.status(NOT_FOUND).build()
+      case Failure(exception: TekstipohjaValidationException) =>
+        LOG.warn(s"$singlePohjaDescGenitiveCase tallennus epäonnistui: ${exception.getMessage}")
+        errorMessageMapper.mapErrorMessage(exception, BAD_REQUEST)
+      case Failure(exception: JsonProcessingException) =>
+        LOG.warn(s"$singlePohjaDescGenitiveCase tallennus epäonnistui, virheellinen pyyntö", exception)
+        errorMessageMapper.mapPlainErrorMessage(RESPONSE_400_DESCRIPTION, BAD_REQUEST)
       case Failure(exception) =>
         LOG.error(s"$singlePohjaDescGenitiveCase tallennus epäonnistui", exception)
-        errorMessageMapper.mapErrorMessage(exception)
+        errorMessageMapper.mapPlainErrorMessage(
+          s"${singlePohjaDescGenitiveCase.capitalize} tallennus epäonnistui",
+          INTERNAL_SERVER_ERROR
+        )
     }
   }
 

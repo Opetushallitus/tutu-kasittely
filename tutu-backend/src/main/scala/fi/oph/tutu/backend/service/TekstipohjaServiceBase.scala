@@ -1,6 +1,7 @@
 package fi.oph.tutu.backend.service
 
 import fi.oph.tutu.backend.domain.*
+import fi.oph.tutu.backend.exception.TekstipohjaValidationException
 import fi.oph.tutu.backend.repository.TekstipohjaRepositoryBase
 
 import java.util.UUID
@@ -32,11 +33,11 @@ trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase) {
   }
 
   def lisaaTekstipohja(tekstipohja: Tekstipohja, luoja: String): Tekstipohja = {
-    repository.lisaaTekstipohja(tekstipohja, luoja)
+    repository.lisaaTekstipohja(validoi(tekstipohja), luoja)
   }
 
   def paivitaTekstipohja(tekstipohjaId: UUID, tekstipohja: Tekstipohja, muokkaaja: String): Option[Tekstipohja] = {
-    repository.paivitaTekstipohja(tekstipohjaId, tekstipohja, muokkaaja)
+    repository.paivitaTekstipohja(tekstipohjaId, validoi(tekstipohja), muokkaaja)
   }
 
   def poistaTekstipohja(viestipohjaId: UUID): Int = {
@@ -52,7 +53,7 @@ trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase) {
   }
 
   def lisaaTekstipohjaKategoria(tekstipohjaKategoria: TekstipohjaKategoria, luoja: String): TekstipohjaKategoria = {
-    repository.lisaaTekstipohjaKategoria(tekstipohjaKategoria, luoja)
+    repository.lisaaTekstipohjaKategoria(validoi(tekstipohjaKategoria), luoja)
   }
 
   def paivitaTekstipohjaKategoria(
@@ -60,6 +61,35 @@ trait TekstipohjaServiceBase(repository: TekstipohjaRepositoryBase) {
     tekstipohjaKategoria: TekstipohjaKategoria,
     muokkaaja: String
   ): Option[TekstipohjaKategoria] = {
-    repository.paivitaTekstipohjaKategoria(tekstipohjaKategoriaId, tekstipohjaKategoria, muokkaaja)
+    repository.paivitaTekstipohjaKategoria(tekstipohjaKategoriaId, validoi(tekstipohjaKategoria), muokkaaja)
+  }
+
+  private def validoiNimi(nimi: String): Unit = {
+    if (nimi == null || nimi.isBlank) {
+      throw new TekstipohjaValidationException("Nimi on pakollinen")
+    }
+  }
+
+  private def validoi(tekstipohja: Tekstipohja): Tekstipohja = {
+    validoiNimi(tekstipohja.nimi)
+    if (tekstipohja.sisalto == null) {
+      throw new TekstipohjaValidationException("Sisältö on pakollinen")
+    }
+    tekstipohja.kategoriaId match {
+      case None =>
+        throw new TekstipohjaValidationException("Kategoria on pakollinen")
+      case Some(kategoriaId) if repository.haeTekstipohjaKategoria(kategoriaId).isEmpty =>
+        throw new TekstipohjaValidationException("Kategoriaa ei löydy")
+      case _ =>
+    }
+    tekstipohja
+  }
+
+  private def validoi(kategoria: TekstipohjaKategoria): TekstipohjaKategoria = {
+    validoiNimi(kategoria.nimi)
+    if (repository.haeTekstipohjaKategoriat().exists(k => k.nimi == kategoria.nimi && k.id != kategoria.id)) {
+      throw new TekstipohjaValidationException("Kategoria on jo olemassa")
+    }
+    kategoria
   }
 }
