@@ -1003,11 +1003,12 @@ export const mockTekstipohjanValinta = (
           ),
         });
       } else {
+        const id = new URL(route.request().url()).pathname.split('/').pop();
         const tekstipohja: Viestipohja | Paatospohja = {
           ...MOCK_TEKSTIPOHJA,
           sisalto: {
-            fi: 'Suomi pohjassa',
-            sv: 'Finland pohjassa',
+            fi: `Suomi pohjassa: ${id}`,
+            sv: `Finland pohjassa: ${id}`,
           },
         };
         await route.fulfill({
