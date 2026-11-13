@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { doApiFetch } from '@/src/lib/tutu-backend/api';
@@ -26,26 +26,29 @@ export const useTekstipohjaSelect = (
   selectCb: (viestipohja: Viestipohja | Paatospohja) => void,
   url: string,
 ) => {
-  const [pohjaId, setPohjaId] = useState<string | undefined>(undefined);
+  const queryClient = useQueryClient();
+  const [isLoadingPohja, setIsLoadingPohja] = useState(false);
+  const [pohjaLoadError, setPohjaLoadError] = useState<Error | null>(null);
 
-  const query = useQuery({
-    queryKey: [url, pohjaId],
-    queryFn: async (): Promise<Viestipohja | undefined> =>
-      await doApiFetch(`${url}/${pohjaId}`, undefined, 'no-store').then(
-        (viestipohja: Viestipohja) => {
-          selectCb(viestipohja);
-          return viestipohja;
-        },
-      ),
-    enabled: !!pohjaId,
-    throwOnError: false,
-  });
   return {
     selectTekstipohja: async (pohjaId: string) => {
-      setPohjaId(pohjaId);
-      await query.refetch();
+      setIsLoadingPohja(true);
+      setPohjaLoadError(null);
+      try {
+        const pohja = await queryClient.fetchQuery({
+          queryKey: [url, pohjaId],
+          queryFn: (): Promise<Viestipohja | Paatospohja> =>
+            doApiFetch(`${url}/${pohjaId}`, undefined, 'no-store'),
+          staleTime: 0,
+        });
+        selectCb(pohja);
+      } catch (error) {
+        setPohjaLoadError(error as Error);
+      } finally {
+        setIsLoadingPohja(false);
+      }
     },
-    isLoadingPohja: query.isLoading,
-    pohjaLoadError: query.error,
+    isLoadingPohja,
+    pohjaLoadError,
   };
 };
