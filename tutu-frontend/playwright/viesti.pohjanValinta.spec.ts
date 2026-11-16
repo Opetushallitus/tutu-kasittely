@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { mockTekstipohjatKategorioittain } from '@/playwright/fixtures/tekstipohjat';
 import {
   mockEsittelijat,
   mockHakemus,
@@ -82,6 +83,37 @@ test('Viestipohjan valinnan yhteydessä sisältö liitetään editorissa näkyv�
     'data-severity',
     'success',
   );
+});
+
+test('Kahden viestipohjan peräkkäinen valinta hakee ja liittää kummankin pohjan kerran', async ({
+  page,
+}) => {
+  await mockTekstipohjanValinta(page, 'viestipohja');
+  const [pohja1, pohja2] = mockTekstipohjatKategorioittain()[0].pohjat;
+  const pohjaHaut: Array<string | undefined> = [];
+  page.on('request', (request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (
+      pathname.startsWith('/tutu-backend/api/viestipohja/') &&
+      !pathname.endsWith('kategorioittain')
+    ) {
+      pohjaHaut.push(pathname.split('/').pop());
+    }
+  });
+
+  await page.getByTestId('add-tekstipohja-button').click();
+  await page.getByRole('button', { name: '1. Ennakkotiedot' }).click();
+  const editori = page.getByTestId('editor-content-editable');
+
+  await page.getByRole('button', { name: pohja1.nimi, exact: true }).click();
+  await expect(editori).toContainText(`Suomi pohjassa: ${pohja1.id}`);
+
+  await page.getByRole('button', { name: pohja2.nimi, exact: true }).click();
+  await expect(editori).toContainText(`Suomi pohjassa: ${pohja2.id}`);
+
+  const teksti = (await editori.textContent()) ?? '';
+  expect(teksti.split(`Suomi pohjassa: ${pohja1.id}`)).toHaveLength(2);
+  expect(pohjaHaut).toEqual([pohja1.id, pohja2.id]);
 });
 
 test('Viestipohjalistan latauksen epäonnistuessa näytetään virheteksti', async ({
