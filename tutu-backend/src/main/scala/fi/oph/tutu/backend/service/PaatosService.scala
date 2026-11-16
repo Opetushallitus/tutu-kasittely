@@ -158,11 +158,11 @@ class PaatosService(
       findAnswerByAtaruKysymysId(Constants.ATARU_PAATOS_KIELI, ataruHakemus.content.answers)
         .flatMap(Kieli.fiOrSvFromString)
         .getOrElse(Kieli.fi)
-    val hakijanKunta = findSingleStringAnswer("home-town", ataruHakemus.content.answers) match {
-      case Some(kunta) => kunta
-      case None        => "009"
+    val hakijanKunta                   = findSingleStringAnswer("home-town", ataruHakemus.content.answers)
+    val hallintoOikeus: HallintoOikeus = hakijanKunta match {
+      case Some(kuntaKoodi) if kuntaKoodi != "999" => hallintoOikeusService.haeHallintoOikeusByKunta(kuntaKoodi)
+      case _                                       => hallintoOikeusService.haeHallintoOikeusByKoodi("HELSINKI")
     }
-    val hallintoOikeus: HallintoOikeus = hallintoOikeusService.haeHallintoOikeusByKunta(hakijanKunta)
 
     val lopullinenPaatos: Boolean                     = hakemus.onLopullinenPaatos
     val ehdollisenPaatoksenAsiatunnus: Option[String] = if (lopullinenPaatos) {
