@@ -9,6 +9,7 @@ import {
   OSITTAINEN_AMMATTIKOKEMUS_OPTIONS,
   oletusKoulutusErot,
   TAYSI_AMMATTIKOKEMUS_OPTIONS,
+  VARHAISKASVATUKSEN_LASTENHOITAJA_OPINNOT_KEY,
   VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
   yleinenKoulutusEroTranslationKeys,
 } from '@/src/app/hakemus/paatostiedot/constants';
@@ -113,6 +114,12 @@ export const getTiettyTutkintoTaiOpinnotAdditionalOptions = (
       'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatusJaEsiopetusValmiusOpinnot',
     ),
     value: VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY,
+  },
+  {
+    label: t(
+      'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatuksenLastenhoitajaOpinnot',
+    ),
+    value: VARHAISKASVATUKSEN_LASTENHOITAJA_OPINNOT_KEY,
   },
 ];
 
