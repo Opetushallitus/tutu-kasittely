@@ -12,6 +12,8 @@ import {
   OphButton,
   OphFormFieldWrapper,
   OphInputFormField,
+  OphTypography,
+  ophColors,
 } from '@opetushallitus/oph-design-system';
 
 import {
@@ -82,6 +84,7 @@ type SearchFiltersProps = {
   setAsiatunnus: (v: string) => void;
   onClearAll: () => void;
   onSubmit: () => void;
+  actionsRef?: React.Ref<HTMLDivElement>;
 };
 
 export const SearchFilters = ({
@@ -105,6 +108,7 @@ export const SearchFilters = ({
   setAsiatunnus,
   onClearAll,
   onSubmit,
+  actionsRef,
 }: SearchFiltersProps) => {
   const { t } = useTranslations();
 
@@ -151,7 +155,22 @@ export const SearchFilters = ({
     : null;
 
   return (
-    <Grid container spacing={2} sx={{ paddingTop: 1 }} size={12}>
+    <Grid
+      container
+      spacing={2}
+      size={12}
+      sx={{
+        borderTop: `1px solid ${ophColors.grey50}`,
+        marginTop: 1,
+        paddingTop: 2,
+      }}
+    >
+      <Grid size={12}>
+        <OphTypography variant="h4" component="h2">
+          {t('haku.tarkatHakuehdot')}
+        </OphTypography>
+      </Grid>
+
       {/* ── Tutkinto-filtterit ── */}
       <Grid size={4}>
         <SelectTreeDropdown
@@ -459,15 +478,31 @@ export const SearchFilters = ({
           )}
         />
       </Grid>
-
-      {/* ── Tyhjennä-nappi ── */}
-      <Grid size={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      {/* ── Tyhjennä-nappi ja hae-nappi ── */}
+      <Grid
+        ref={actionsRef}
+        size={12}
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 3,
+        }}
+      >
         <OphButton
           variant="text"
           sx={{ fontWeight: 400, px: 0 }}
           onClick={onClearAll}
+          data-testid="tarkat-hakuehdot-tyhjenna"
         >
-          {t('haku.tyhjennaHakuehdot')}
+          {t('haku.tyhjennaTarkatHakuehdot')}
+        </OphButton>
+        <OphButton
+          variant="contained"
+          onClick={onSubmit}
+          data-testid="tarkat-hakuehdot-hae"
+        >
+          {t('haku.hae')}
         </OphButton>
       </Grid>
     </Grid>

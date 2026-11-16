@@ -34,7 +34,9 @@ export const HakemusDetailLayout = ({ hakemusOid }: { hakemusOid: string }) => {
     return <></>;
   }
 
-  if (isLoading || !hakemus) return <FullSpinner></FullSpinner>;
+  // Varataan sivulle korkeutta latauksen ajaksi.
+  // Muuten sivu lyhenee haussa, ja selain katkaisee scrollauksen.
+  if (isLoading || !hakemus) return <FullSpinner minHeight="100vh" />;
 
   return (
     <Stack direction="row" spacing={3}>
