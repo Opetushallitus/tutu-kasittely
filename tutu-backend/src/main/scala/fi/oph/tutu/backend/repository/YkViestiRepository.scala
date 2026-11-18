@@ -237,7 +237,10 @@ class YkViestiRepository extends BaseResultHandlers {
             SET
               luettu = ${ykViesti.luettu},
               muokkaaja =  ${ykViesti.muokkaaja.map(_.toString).orNull},
-              lahetetty = ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull}
+              lahetetty = ${ykViesti.lahetetty.map(java.sql.Timestamp.valueOf).orNull},
+              vastaanottaja_oid = ${ykViesti.vastaanottajaOid.map(_.toString).orNull},
+              viesti = ${ykViesti.viesti.map(_.toString).orNull},
+              aihe = ${ykViesti.aihe.map(_.toString).orNull}::uuid
             WHERE
               id = ${ykViesti.id.toString}::uuid
           """.as[UUID].head,
@@ -286,7 +289,7 @@ class YkViestiRepository extends BaseResultHandlers {
         LEFT JOIN esittelija he on he.id = h.esittelija_id
         WHERE
           v.hakemus_oid = $hakemusOid
-        ORDER BY v.luotu DESC
+        ORDER BY v.lahetetty DESC NULLS LAST
         """.as[YkViesti],
         "hae_yk_viestit"
       )

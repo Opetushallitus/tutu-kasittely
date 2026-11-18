@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
-  Viesti,
   YhteinenKasittely,
   YhteinenKasittelyDTO,
-  YkViestiTyyppi,
 } from '../lib/types/yhteinenkasittely';
+import {
+  YKKysymysDTO,
+  YKVastausDTO,
+} from '../lib/types/yhteisenKasittelynViesti';
 
 import { SortOrder } from '@/src/app/components/types';
 import { doApiFetch, doApiPatch, doApiPost } from '@/src/lib/tutu-backend/api';
@@ -30,17 +32,17 @@ const getYhteinenKasittely = async (
 
 const postYhteinenKasittely = async (
   hakemusOid: string,
-  kasittely: Viesti,
+  kasittely: YKKysymysDTO,
 ): Promise<unknown> => {
   return doApiPost(`hakemus/${hakemusOid}/yhteinenkasittely`, kasittely);
 };
 
 const patchYhteinenKasittelyVastaus = async (
   hakemusOid: string,
-  payload: { id: string; vastaus?: string; laheta?: boolean },
+  payload: YKVastausDTO,
 ): Promise<unknown> => {
   return doApiPost(
-    `hakemus/${hakemusOid}/yhteinenkasittely/${payload.id}`,
+    `hakemus/${hakemusOid}/yhteinenkasittely/${payload.parentId}`,
     payload,
   );
 };
@@ -71,7 +73,7 @@ export const useYhteinenKasittely = (
   });
 
   const createMutation = useMutation({
-    mutationFn: (kasittely: Viesti) =>
+    mutationFn: (kasittely: YKKysymysDTO) =>
       postYhteinenKasittely(hakemusOid, kasittely),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey });
@@ -79,7 +81,7 @@ export const useYhteinenKasittely = (
   });
 
   const answerMutation = useMutation({
-    mutationFn: (payload: { id: string; vastaus?: string; laheta?: boolean }) =>
+    mutationFn: (payload: YKVastausDTO) =>
       patchYhteinenKasittelyVastaus(hakemusOid, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey });
@@ -98,13 +100,8 @@ export const useYhteinenKasittely = (
     ...query,
     kasittelyt: query.data,
     isKasittelytLoading: query.isLoading,
-    luoUusiKasittely: (k: Viesti) => createMutation.mutate(k),
-    vastaaKasittelyyn: (p: {
-      id: string;
-      vastaus?: string;
-      laheta?: boolean;
-      tyyppi: YkViestiTyyppi;
-    }) => answerMutation.mutate(p),
+    luoUusiKasittely: (k: YKKysymysDTO) => createMutation.mutate(k),
+    vastaaKasittelyyn: (p: YKVastausDTO) => answerMutation.mutate(p),
     viestiLuettu: (viestiId: string) => messagesReadMutation.mutate(viestiId),
     updateError: createMutation.error ?? answerMutation.error,
     answerIsPending: answerMutation.isPending,

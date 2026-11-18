@@ -124,6 +124,7 @@ test.describe('Vastauksen lähettäminen mahdollista vain vastaanottajalle', () 
       vastaanottajaOid: participants[parties.to].oid,
       viesti,
       luotu: '2026-02-01T08:05:00.000Z',
+      lahetetty: '2026-02-01T08:05:00.000Z',
       aihe: 'kelpoisuus',
       tyyppi,
     });
