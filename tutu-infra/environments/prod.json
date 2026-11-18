@@ -8,8 +8,8 @@
     "web_backend": {
       "cpu_limit": "512",
       "memory_limit": "1024",
-      "min_count": 0,
-      "max_count": 0,
+      "min_count": 1,
+      "max_count": 1,
       "allow_ecs_exec": true,
       "env_vars": {
         "LOG_LEVEL": "error",
@@ -26,8 +26,8 @@
     "web_backend": {
       "version": "16.11",
       "min_size_acu": 0.5,
-      "max_size_acu": 2,
-      "performance_insights": false,
+      "max_size_acu": 4,
+      "performance_insights": true,
       "database_name": "tutu"
     }
   },
