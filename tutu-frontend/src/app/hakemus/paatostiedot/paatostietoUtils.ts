@@ -354,6 +354,7 @@ export const emptyMyonteisenPaatoksenLisavaatimukset =
     suomessaSuoritettujenOpintojenHuomioiminen: null,
     korvaavaToimenpide: null,
     oikeustieteenMaisteriLisavaatimukset: null,
+    muuTilannekuvaus: null,
   });
 
 export const emptyKelpoisuudenLisavaatimukset =

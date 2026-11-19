@@ -10,6 +10,7 @@ import { SovellettuTilanneOikeustieteenMaisteri } from './oikeustieteenmaisteri/
 
 import { InFoTeksti } from '@/src/app/hakemus/paatostiedot/components/Info';
 import { KorvaavaToimenpideComponent } from '@/src/app/hakemus/paatostiedot/components/KorvaavaToimenpide';
+import { Tilannekuvaus } from '@/src/app/hakemus/paatostiedot/components/Tilannekuvaus';
 import {
   MyonteinenPaatos,
   MyonteinenPaatosProps,
@@ -21,6 +22,7 @@ import {
   ResolvedEntity,
   resolveEntity,
   shouldShowLisavalinnat,
+  shouldShowTilannekuvaus,
   SOVELLETTU_TILANNE_BY_ENTITY,
   translationForEroTarkennus,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
@@ -332,6 +334,16 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
               t={t}
               lisavaatimukset={lisavaatimukset}
               updateLisavaatimukset={updateAction}
+            />
+          ) : shouldShowTilannekuvaus(
+              selectedEntity,
+              lisavaatimukset?.sovellettuTilanne,
+            ) ? (
+            <Tilannekuvaus
+              t={t}
+              value={lisavaatimukset?.muuTilannekuvaus}
+              onChange={(value) => updateAction({ muuTilannekuvaus: value })}
+              testId={'myonteinenPaatos-uo-muuTilannekuvaus-input'}
             />
           ) : (
             <Lisavalinnat

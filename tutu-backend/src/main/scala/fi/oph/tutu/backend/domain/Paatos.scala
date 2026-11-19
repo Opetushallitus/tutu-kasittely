@@ -104,7 +104,8 @@ case class MyonteisenPaatoksenLisavaatimukset(
   ammattikokemuksenHuomioiminen: Option[AmmattikokemuksenHuomioiminen] = None,
   suomessaSuoritettujenOpintojenHuomioiminen: Option[SuomessaSuoritettujenOpintojenHuomioiminen] = None,
   korvaavaToimenpide: Option[KorvaavaToimenpide] = None,
-  oikeustieteenMaisteriLisavaatimukset: Option[OikeustieteenMaisteriLisavaatimukset] = None
+  oikeustieteenMaisteriLisavaatimukset: Option[OikeustieteenMaisteriLisavaatimukset] = None,
+  muuTilannekuvaus: Option[String] = None
 )
 
 case class NamedBoolean(name: String, value: Boolean)

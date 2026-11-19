@@ -84,6 +84,8 @@ export const resolveEntity = (tutkintoTaiOpinto?: string): ResolvedEntity =>
     (item) => item.keyword && (tutkintoTaiOpinto ?? '').includes(item.keyword),
   )?.tutkintoTaiOpinto ?? ResolvedEntity.muu;
 
+export const MUU_SOVELLETTU_TILANNE = 'muu';
+
 export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
   ResolvedEntity,
   SovellettuTilanneOption[]
@@ -97,7 +99,7 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
     { value: '3' },
     { value: '4' },
     { value: '4a' },
-    { value: 'muu', tKey: 'muuOikeustieteenMaisteri' },
+    { value: MUU_SOVELLETTU_TILANNE, tKey: 'muuOikeustieteenMaisteri' },
   ],
   [ResolvedEntity.opetettavaAine]: [
     { value: 'aine1', tKey: 'aine', ordinal: '1' },
@@ -144,6 +146,9 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
   [ResolvedEntity.monialaisetOpinnot]: [
     { value: 'monialaiset1', tKey: 'monialaiset', ordinal: '1' },
     { value: 'monialaiset2', tKey: 'monialaiset', ordinal: '2' },
+    { value: 'monialaiset3', tKey: 'monialaiset', ordinal: '3' },
+    { value: 'monialaiset0', tKey: 'monialaiset', ordinal: '0' },
+    { value: MUU_SOVELLETTU_TILANNE, tKey: 'muuMonialaiset' },
   ],
   [ResolvedEntity.ammatillisetValmiudet]: [
     {
@@ -204,21 +209,32 @@ export const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
   [ResolvedEntity.muu]: undefined,
 };
 
-const OPETETTAVA_AINE_SOVELLETUT_TILANTEET_WO_EROT = ['aine1', 'aine4'];
+const SOVELLETUT_TILANTEET_WO_EROT_BY_ENTITY: Partial<
+  Record<ResolvedEntity, string[]>
+> = {
+  [ResolvedEntity.opetettavaAine]: ['aine1', 'aine4'],
+  [ResolvedEntity.monialaisetOpinnot]: ['monialaiset0'],
+};
 
 export const shouldShowLisavalinnat = (
   entity: ResolvedEntity,
   sovellettuTilanne?: string | null,
 ) => {
   if (
-    entity === ResolvedEntity.opetettavaAine &&
     sovellettuTilanne &&
-    OPETETTAVA_AINE_SOVELLETUT_TILANTEET_WO_EROT.includes(sovellettuTilanne)
+    SOVELLETUT_TILANTEET_WO_EROT_BY_ENTITY[entity]?.includes(sovellettuTilanne)
   ) {
     return false;
   }
   return entity !== ResolvedEntity.oikeustieteenMaisteri;
 };
+
+export const shouldShowTilannekuvaus = (
+  entity: ResolvedEntity,
+  sovellettuTilanne?: string | null,
+) =>
+  entity === ResolvedEntity.monialaisetOpinnot &&
+  sovellettuTilanne === MUU_SOVELLETTU_TILANNE;
 
 const KOULUTUSERO_TARKENNUS_KIINTEAT_KAANNOSAVAIMET: Record<
   string,
@@ -343,6 +359,15 @@ export const initOrUpdateTutkintoTaiOpintoMyonteinenUo = (
           ...current?.oikeustieteenMaisteriLisavaatimukset,
           ...updated.oikeustieteenMaisteriLisavaatimukset,
         }),
+    };
+  }
+
+  if (shouldShowTilannekuvaus(currentEntity, current?.sovellettuTilanne)) {
+    return {
+      ...emptyMyonteisenPaatoksenLisavaatimukset(),
+      sovellettuTilanne: current?.sovellettuTilanne ?? null,
+      muuTilannekuvaus:
+        updated.muuTilannekuvaus ?? current?.muuTilannekuvaus ?? null,
     };
   }
 

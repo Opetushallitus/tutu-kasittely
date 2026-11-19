@@ -115,6 +115,7 @@ export type MyonteisenPaatoksenLisavaatimukset = {
   suomessaSuoritettujenOpintojenHuomioiminen?: SuomessaSuoritettujenOpintojenHuomioiminen | null;
   korvaavaToimenpide?: KorvaavaToimenpide | null;
   oikeustieteenMaisteriLisavaatimukset?: OikeustieteenMaisteriLisavaatimukset | null;
+  muuTilannekuvaus?: string | null;
 };
 
 export type MyonteisenPaatoksenLisavaatimusUpdateCallback = (
