@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.tutu.backend.domain.*
 import fi.oph.tutu.backend.service.{EsittelijaService, HakemusService, HakemuspalveluService, OnrService, UserService}
 import fi.oph.tutu.backend.utils.AuditOperation.*
-import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper}
+import fi.oph.tutu.backend.utils.Utility.toIntOption
+import fi.oph.tutu.backend.utils.{AuditLog, AuditUtil, AuthoritiesUtil, ErrorMessageMapper, Utility}
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.{Content, Schema}
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -317,8 +318,11 @@ class HakemusController(
         case "kaikki"      =>
           esittelija match {
             case null => None
-            case _    => Option(esittelija)
+            case oid  =>
+              require(UserOidValidator.isValid(oid), s"Virheellinen esittelija: $oid")
+              Some(oid)
           }
+        case _ => throw new IllegalArgumentException(s"Virheellinen nayta-parametri: $nayta")
       }
 
       hakemusService.haeHakemusLista(
@@ -391,21 +395,27 @@ class HakemusController(
       require(pagesize >= 0 && pagesize <= 10000, "pagesize must be >= 0 and <= 10000")
       val hakuNakyma = HakemusNakyma.fromString(nakyma)
       val filters    = HakemusSearchFilters(
-        suoritusmaa = Option(suoritusmaa).filter(_.nonEmpty).map(_.toSeq),
-        paattymisVuosi = Option(paattymisVuosi).filter(_.nonEmpty).flatMap(_.toIntOption),
-        todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty),
+        suoritusmaa = Option(suoritusmaa).filter(_.nonEmpty).map(_.toSeq).getOrElse(Seq.empty).map { maakoodi =>
+          require(Utility.isValidMaakoodiUri(maakoodi), s"Virheellinen maakoodi: $maakoodi")
+          maakoodi
+        },
+        paattymisVuosi = Option(paattymisVuosi).filter(_.nonEmpty).flatMap(v => toIntOption(v, Some("paattymisVuosi"))),
+        todistusVuosi = Option(todistusVuosi).filter(_.nonEmpty).flatMap(v => toIntOption(v, Some("todistusVuosi"))),
         oppilaitos = Option(oppilaitos).filter(_.nonEmpty),
         tutkinnonNimi = Option(tutkinnonNimi).filter(_.nonEmpty),
         paaAine = Option(paaAine).filter(_.nonEmpty),
         kelpoisuus = Option(kelpoisuus).filter(_.nonEmpty),
-        opetettavatAineet = Option(opetettavatAineet).filter(_.nonEmpty).map(_.toSeq),
-        ratkaisutyyppi = Option(ratkaisutyyppi).filter(_.nonEmpty),
-        paatostyyppi = Option(paatostyyppi).filter(_.nonEmpty),
-        sovellettuLaki = Option(sovellettuLaki).filter(_.nonEmpty),
-        tutkinnonTaso = Option(tutkinnonTaso).filter(_.nonEmpty),
+        opetettavatAineet = Option(opetettavatAineet).filter(_.nonEmpty).map(_.toSeq).getOrElse(Seq.empty),
+        ratkaisutyyppi = Option(ratkaisutyyppi).filter(_.nonEmpty).flatMap(Ratkaisutyyppi.optionFromString),
+        paatostyyppi = Option(paatostyyppi).filter(_.nonEmpty).flatMap(PaatosTyyppi.optionFromString),
+        sovellettuLaki = Option(sovellettuLaki).filter(_.nonEmpty).flatMap(SovellettuLaki.optionFromString),
+        tutkinnonTaso = Option(tutkinnonTaso).filter(_.nonEmpty).flatMap(TutkintoTaso.optionFromString),
         kielteinen = Option(kielteinen).filter(_.nonEmpty),
         myonteinen = Option(myonteinen).filter(_.nonEmpty),
-        esittelijaOid = Option(esittelijaOid).filter(_.nonEmpty),
+        esittelijaOid = Option(esittelijaOid).filter(_.nonEmpty).map { oid =>
+          require(UserOidValidator.isValid(oid), s"Virheellinen esittelijaOid: $oid")
+          oid
+        },
         hakijanNimi = Option(hakijanNimi).filter(_.nonEmpty),
         asiatunnus = Option(asiatunnus).filter(_.nonEmpty)
       )

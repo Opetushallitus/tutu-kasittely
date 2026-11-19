@@ -6,8 +6,8 @@ import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 import scala.util.{Failure, Success, Try}
 
 object Utility {
-  def stringToSeq(s: String): Seq[String] = s.split(",").map(_.trim).toSeq
-  def stringToIntSeq(s: String): Seq[Int] = s.split(",").map(_.trim.toInt).toSeq
+  def stringToSeq(s: String): Seq[String]                          = s.split(",").map(_.trim).toSeq
+  def stringToIntSeq(s: String, fieldId: Option[String]): Seq[Int] = s.split(",").flatMap(v => toIntOption(v, fieldId))
 
   def toLocalDateTime(dateTime: String): LocalDateTime =
     ZonedDateTime.parse(dateTime).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime
@@ -42,5 +42,22 @@ object Utility {
       }
     } yield ()
     tulos.left.toOption
+  }
+
+  private val MaakoodiUriPattern = "^maatjavaltiot2_\\d+$".r
+
+  def isValidMaakoodiUri(maakoodiUri: String): Boolean =
+    MaakoodiUriPattern.matches(maakoodiUri)
+
+  def toIntOption(s: String, fieldId: Option[String]): Option[Int] = {
+    val intVal = Try(s.toInt).toOption
+    intVal match {
+      case Some(_) => intVal
+      case _       =>
+        fieldId match {
+          case Some(id) => throw new IllegalArgumentException(s"Virheellinen $id: $s")
+          case _        => throw new IllegalArgumentException(s"Virheellinen numeroarvo: $s")
+        }
+    }
   }
 }

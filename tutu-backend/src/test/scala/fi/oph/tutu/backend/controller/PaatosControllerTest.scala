@@ -426,16 +426,16 @@ class PaatosControllerTest extends IntegrationTestBase {
       userService.getEnrichedUserDetails(any)
     ).thenReturn(
       User(
-        userOid = "1.2.246.562.24.00000000000000006666",
+        userOid = "1.2.246.562.24.00000006666",
         authorities = List()
       )
     )
     initAtaruHakemusRequests()
-    when(onrService.haeHenkilo("1.2.246.562.24.00000000000000006666"))
+    when(onrService.haeHenkilo("1.2.246.562.24.00000006666"))
       .thenReturn(
         Right(
           OnrUser(
-            oidHenkilo = "1.2.246.562.24.00000000000000006666",
+            oidHenkilo = "1.2.246.562.24.00000006666",
             kutsumanimi = "Esko",
             sukunimi = "Esittelijä",
             kansalaisuus = Seq(KansalaisuusKoodi("123")),
@@ -447,7 +447,7 @@ class PaatosControllerTest extends IntegrationTestBase {
       )
     when(esittelijaService.haeEsittelijaNimi(any[String]))
       .thenAnswer(invocation => invocation.getArgument(0, classOf[String]))
-    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000000000000006666")).thenReturn("Esko Esittelijä")
+    when(esittelijaService.haeEsittelijaNimi("1.2.246.562.24.00000006666")).thenReturn("Esko Esittelijä")
   }
 
   @Test

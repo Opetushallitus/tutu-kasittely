@@ -46,7 +46,7 @@ class MaakoodiControllerTest extends IntegrationTestBase {
   @Autowired
   var maakoodiService: MaakoodiService = _
 
-  val esittelijaOid                    = "1.2.246.562.24.00000000000000006666"
+  val esittelijaOid                    = "1.2.246.562.24.00000006666"
   var esittelija: Option[DbEsittelija] = None
   val mockUser                         = User(esittelijaOid, List("ROLE_USER"), Some("fi"))
 

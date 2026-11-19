@@ -2,20 +2,20 @@ package fi.oph.tutu.backend.domain
 
 case class HakemusSearchFilters(
   // Tutkinto-filtterit
-  suoritusmaa: Option[Seq[String]],
+  suoritusmaa: Seq[String],
   paattymisVuosi: Option[Int],
-  todistusVuosi: Option[String],
+  todistusVuosi: Option[Int],
   oppilaitos: Option[String],
   tutkinnonNimi: Option[String],
   paaAine: Option[String],
   // Kelpoisuus-filtterit (korreloituu tutkintoon kun molemmat annettu)
   kelpoisuus: Option[String],
-  opetettavatAineet: Option[Seq[String]],
+  opetettavatAineet: Seq[String],
   // Päätösfiltterit (korreloituu tutkintoon)
-  ratkaisutyyppi: Option[String],
-  paatostyyppi: Option[String],
-  sovellettuLaki: Option[String],
-  tutkinnonTaso: Option[String],
+  ratkaisutyyppi: Option[Ratkaisutyyppi],
+  paatostyyppi: Option[PaatosTyyppi],
+  sovellettuLaki: Option[SovellettuLaki],
+  tutkinnonTaso: Option[TutkintoTaso],
   kielteinen: Option[String],
   myonteinen: Option[String],
   // Hakija/esittelijä-filtterit

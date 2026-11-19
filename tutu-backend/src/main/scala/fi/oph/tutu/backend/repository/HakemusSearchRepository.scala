@@ -156,6 +156,17 @@ class HakemusSearchRepository extends BaseResultHandlers {
     }
   }
 
+  val sortableHakemusListFields: Set[String] = Set(
+    "saapumisPvm",
+    "hakija",
+    "asiatunnus",
+    "esittelija",
+    "kasittelyvaihe",
+    "hakemusKoskee",
+    "kokonaisaika",
+    "hakijanaika"
+  )
+
   private def buildOrderBy(sortParam: Option[ListSortParam]): String =
     sortParam match {
       case None                                => "h.saapumis_pvm DESC NULLS LAST"
@@ -519,7 +530,7 @@ class HakemusSearchRepository extends BaseResultHandlers {
 
       val tutkintoClauses: Seq[SQLActionBuilder] = {
         val c = Seq.newBuilder[SQLActionBuilder]
-        filters.suoritusmaa.foreach(v => c += sql"t.maakoodiuri = ANY($v)")
+        if (filters.suoritusmaa.nonEmpty) c += sql"t.maakoodiuri = ANY(${filters.suoritusmaa})"
         filters.paattymisVuosi.foreach(v => c += sql"t.paattymis_vuosi = $v")
         filters.todistusVuosi.foreach(v => c += sql"t.todistuksen_paivamaara ILIKE ${s"%$v%"}")
         filters.oppilaitos.foreach(v => c += sql"t.oppilaitos %> $v")
@@ -531,22 +542,22 @@ class HakemusSearchRepository extends BaseResultHandlers {
       val kelpoisuusClauses: Seq[SQLActionBuilder] = {
         val c = Seq.newBuilder[SQLActionBuilder]
         filters.kelpoisuus.foreach(v => c += sql"k.kelpoisuus = $v")
-        filters.opetettavatAineet.foreach(aineet => {
-          val aineClauses = aineet
+        if (filters.opetettavatAineet.nonEmpty) {
+          val aineClauses = filters.opetettavatAineet
             .map(aine => sql"""k.opetettava_aine ILIKE ${s"%$aine%"}
                                 OR tto.tutkinto_tai_opinto ILIKE ${s"%$aine%"}""")
             .reduce(_ ++ sql" OR " ++ _)
           c += sql"(" ++ aineClauses ++ sql")"
-        })
+        }
         c.result()
       }
 
       val paatosTietoClauses: Seq[SQLActionBuilder] = {
         val c = Seq.newBuilder[SQLActionBuilder]
-        filters.ratkaisutyyppi.foreach(v => c += sql"p.ratkaisutyyppi = $v::ratkaisutyyppi")
-        filters.paatostyyppi.foreach(v => c += sql"pt.paatostyyppi = $v::paatostyyppi")
-        filters.sovellettuLaki.foreach(v => c += sql"pt.sovellettulaki = $v::sovellettulaki")
-        filters.tutkinnonTaso.foreach(v => c += sql"pt.tutkintotaso = $v::tutkintotaso")
+        filters.ratkaisutyyppi.foreach(v => c += sql"p.ratkaisutyyppi = ${v.toString}::ratkaisutyyppi")
+        filters.paatostyyppi.foreach(v => c += sql"pt.paatostyyppi = ${v.toString}::paatostyyppi")
+        filters.sovellettuLaki.foreach(v => c += sql"pt.sovellettulaki = ${v.toString}::sovellettulaki")
+        filters.tutkinnonTaso.foreach(v => c += sql"pt.tutkintotaso = ${v.toString}::tutkintotaso")
         c.result()
       }
 
