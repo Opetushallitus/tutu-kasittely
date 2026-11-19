@@ -35,6 +35,8 @@ export class VpcStack extends cdk.Stack {
       ]
     })
 
+    this.vpc.addFlowLog('FlowLog')
+
     // Add CDK outputs for the VPC ID and subnet IDs
     //   new cdk.CfnOutput(this, 'VpcId', { value: vpc.vpcId });
     //   new cdk.CfnOutput(this, 'PublicSubnetIds', { value: vpc.publicSubnets.map(subnet => subnet.subnetId).join(',') });

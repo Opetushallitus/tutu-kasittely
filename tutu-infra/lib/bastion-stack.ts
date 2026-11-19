@@ -63,14 +63,15 @@ export class BastionStack extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       blockDevices: [
         {
-          deviceName: '/dev/sdh',
+          deviceName: '/dev/xvda',
           volume: ec2.BlockDeviceVolume.ebs(10, {
             encrypted: true,
             kmsKey: props.kmsKey
           })
         }
       ],
-      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+      requireImdsv2: true,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     })
 
     const userDataScript = readFileSync('./scripts/bastion_userdata.sh', 'utf8')

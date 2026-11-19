@@ -63,6 +63,6 @@ jobs:
     uses: Opetushallitus/.github/.github/workflows/update-deployment-metadata.yml@main
     with:
       application: tutu-kasittely
-      environment: ${{ inputs.environment == 'prod' && 'sade' || inputs.environment == 'qa' && 'pallero' || 'untuva' }}
+      environment: ${{ inputs.environment == 'qa' && 'pallero' || 'untuva' }}
       version: ga-${{ inputs.revision }}
     secrets: inherit
