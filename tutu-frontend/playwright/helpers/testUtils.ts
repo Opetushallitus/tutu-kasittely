@@ -102,6 +102,7 @@ export async function navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
   page: Page,
   tutkintoTaiOpinto: string,
   sovellettuTilanne?: string,
+  labels?: { tutkintoTaiOpinto?: string; sovellettuTilanne?: string },
 ): Promise<void> {
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
   await paatostyyppiInput.click();
@@ -126,7 +127,7 @@ export async function navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
   await expectDataFromDropdownSelection(
     page,
     tutkintoDropdown,
-    tutkintoTaiOpinto.split('_').pop()!,
+    labels?.tutkintoTaiOpinto ?? tutkintoTaiOpinto.split('_').pop()!,
     '/paatos/',
     {
       paatosTiedot: [
@@ -171,8 +172,9 @@ export async function navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
     await expect(sovellettuTilanneDropdown).toBeVisible();
 
     const tKeyOrdinalMatch = sovellettuTilanne.match(/^([a-zA-Z]+)(\d+)$/);
-    const optionLabel =
-      sovellettuTilanne === 'muu'
+    const optionLabel = labels?.sovellettuTilanne
+      ? labels.sovellettuTilanne
+      : sovellettuTilanne === 'muu'
         ? 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuOikeustieteenMaisteri'
         : tKeyOrdinalMatch
           ? `hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.${tKeyOrdinalMatch[1]} ${tKeyOrdinalMatch[2]}`
