@@ -127,6 +127,7 @@ case class YkViestiListItem(
 )
 
 case class YkKysymysDTO(
+  id: Option[String] = None,
   parentId: Option[String] = None,
   viesti: Option[String] = None,
   vastaanottajaOid: Option[String] = None,
@@ -137,6 +138,7 @@ case class YkKysymysDTO(
 
 case class YkVastausDTO(
   id: Option[String] = None,
+  parentId: Option[String] = None,
   vastaus: Option[String] = None,
   laheta: Option[Boolean] = None,
   tyyppi: YkViestiTyyppi

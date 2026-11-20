@@ -141,22 +141,43 @@ class YkViestiService(
     user: User,
     ykKysymys: YkKysymysDTO
   ): Unit = {
-
-    ykViestiRepository.tallennaHakemuksenYkViesti(
-      YkViesti(
-        id = null,
-        parentId = ykKysymys.parentId.map(UUID.fromString),
-        hakemusOid = HakemusOid(hakemusOid),
-        lahettajaOid = Some(user.userOid),
-        vastaanottajaOid = ykKysymys.vastaanottajaOid,
-        viesti = ykKysymys.viesti,
-        hakija = null,
-        luoja = Some(user.userOid),
-        lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
-        aihe = ykKysymys.aihe,
-        tyyppi = ykKysymys.tyyppi
-      )
-    )
+    ykKysymys.id match {
+      case None => {
+        ykViestiRepository.tallennaHakemuksenYkViesti(
+          YkViesti(
+            id = null,
+            parentId = ykKysymys.parentId.map(UUID.fromString),
+            hakemusOid = HakemusOid(hakemusOid),
+            lahettajaOid = Some(user.userOid),
+            vastaanottajaOid = ykKysymys.vastaanottajaOid,
+            viesti = ykKysymys.viesti,
+            hakija = null,
+            luoja = Some(user.userOid),
+            lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
+            aihe = ykKysymys.aihe,
+            tyyppi = ykKysymys.tyyppi
+          )
+        )
+      }
+      case Some(idStr) => {
+        ykViestiRepository.haeYkViesti(hakemusOid, idStr) match {
+          case Some(ykViesti) => {
+            ykViestiRepository.muokkaaHakemuksenYkViestia(
+              ykViesti.copy(
+                vastaanottajaOid = ykKysymys.vastaanottajaOid,
+                viesti = ykKysymys.viesti,
+                lahetetty = Option.when(ykKysymys.laheta.contains(true))(LocalDateTime.now()),
+                aihe = ykKysymys.aihe,
+                muokkaaja = Some(user.userOid)
+              )
+            )
+          }
+          case None => {
+            throw NotFoundException(s"Yhteiskäsittelyn viesti ${ykKysymys.id.get} not found")
+          }
+        }
+      }
+    }
   }
 
   def vastaaHakemuksenYkViestiin(

@@ -13,6 +13,7 @@ export type Viesti = {
   vastaanottajaOid?: string;
   vastaanottaja?: string;
   luotu?: string;
+  lahetetty?: string;
   luettu?: string[] | null;
   viesti: string;
   hakija?: string;

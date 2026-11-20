@@ -15,3 +15,21 @@ export type YhteisenKasittelynViesti = {
   status?: string | null;
   tyyppi: YkViestiTyyppi;
 };
+
+export type YKKysymysDTO = {
+  id?: string;
+  parentId?: string;
+  viesti?: string;
+  vastaanottajaOid?: string;
+  laheta?: boolean;
+  aihe?: string;
+  tyyppi: YkViestiTyyppi;
+};
+
+export type YKVastausDTO = {
+  id?: string;
+  parentId?: string;
+  vastaus?: string;
+  laheta?: boolean;
+  tyyppi: YkViestiTyyppi;
+};

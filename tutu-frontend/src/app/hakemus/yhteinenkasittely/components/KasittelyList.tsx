@@ -9,14 +9,20 @@ import { KasittelyDetails } from './KasittelyDetails';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { User } from '@/src/lib/types/user';
-import { YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
+import { Viesti, YhteinenKasittely } from '@/src/lib/types/yhteinenkasittely';
 
 interface KasittelyListProps {
   kasittelyt: YhteinenKasittely[];
-  answers: Record<string, string>;
-  handleOpenModal: (parent?: YhteinenKasittely) => void;
-  handleChange: (id: string, value: string) => void;
-  handleSend: (id: string) => void;
+  handleOpenModal: (parent?: YhteinenKasittely, viesti?: Viesti) => void;
+  handleOpenEditModal: (viesti?: Viesti) => void;
+  handleChange: (
+    { id, parentId }: { id?: string; parentId?: string },
+    value: string,
+  ) => void;
+  handleSend: (
+    { id, parentId }: { id?: string; parentId?: string },
+    laheta?: boolean,
+  ) => void;
   expandedPanels: string[];
   handleOpenPanel: (panelId?: string) => void;
   handleClosePanel: (panelId?: string) => void;
@@ -25,8 +31,8 @@ interface KasittelyListProps {
 
 export const KasittelyList: React.FC<KasittelyListProps> = ({
   kasittelyt,
-  answers,
   handleOpenModal,
+  handleOpenEditModal,
   handleChange,
   handleSend,
   expandedPanels,
@@ -114,8 +120,8 @@ export const KasittelyList: React.FC<KasittelyListProps> = ({
             </AccordionSummary>
             <KasittelyDetails
               kasittely={kasittely}
-              answers={answers}
               handleOpenModal={handleOpenModal}
+              handleOpenEditModal={handleOpenEditModal}
               handleChange={handleChange}
               handleSend={handleSend}
               user={user}

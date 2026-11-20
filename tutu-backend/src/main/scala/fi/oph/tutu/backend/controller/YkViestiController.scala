@@ -224,7 +224,7 @@ class YkViestiController(
           )
       }
 
-      if (ykVastaus.id.isEmpty || ykVastaus.vastaus.isEmpty) {
+      if (ykVastaus.vastaus.isEmpty) {
         LOG.error(s"Yhteisen käsittelyn viestiin vastaaminen epäonnistui: virheelliset parametrit")
         return errorMessageMapper.mapPlainErrorMessage(
           RESPONSE_400_DESCRIPTION,
@@ -237,8 +237,10 @@ class YkViestiController(
           hakemusOid,
           user,
           ykKysymys = YkKysymysDTO(
+            id = ykVastaus.id,
             parentId = Some(viestiId),
             viesti = ykVastaus.vastaus,
+            laheta = ykVastaus.laheta,
             vastaanottajaOid = None,
             tyyppi = ykVastaus.tyyppi
           )
