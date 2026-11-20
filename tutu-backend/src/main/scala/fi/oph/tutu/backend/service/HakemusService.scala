@@ -335,11 +335,31 @@ class HakemusService(
   ): HakemusListResult = {
     val vaiheet: Seq[String]          = vaihe.map(stringToSeq).getOrElse(Seq())
     val userOids: Seq[String]         = userOid.map(stringToSeq).getOrElse(Seq())
-    val hakemusKoskeeParams: Seq[Int] = hakemuskoskee.map(stringToIntSeq).getOrElse(Seq())
+    val hakemusKoskeeParams: Seq[Int] = hakemuskoskee match {
+      case Some(hakemusKoskee) if hakemusKoskee.nonEmpty =>
+        stringToIntSeq(hakemusKoskee, Some("hakemuskoskee"))
+      case _ => Seq()
+    }
+    vaiheet.foreach(v => require(KasittelyVaihe.isValidKasittelyvaihe(v), s"Virheellinen käsittelyvaihe: $v"))
+    sortParam.foreach(sp =>
+      require(
+        hakemusSearchRepository.sortableHakemusListFields.contains(sp.param),
+        s"Virheellinen lajitteluparametri: ${sp.param}"
+      )
+    )
 
     // Jos hakemusKoskee = 4, kyseessä on Kelpoisuus ammattiin (AP-hakemus) -hakemus (hakemusKoskee = 1, apHakemus = true):
-    val hakemusKoskeeQueryParams = hakemusKoskeeParams.filter(param => param != 4)
-    val apHakemusQueryParam      = hakemusKoskeeParams.contains(4)
+    val (hakemusKoskeeQueryParams, apHakemusQueryParam) = hakemusKoskeeParams.find(!isValidHakemusKoskee(_)) match {
+      case Some(invalidParam) =>
+        throw new IllegalArgumentException(
+          s"Virheellinen hakemusKoskee-parametri: $invalidParam"
+        )
+      case None =>
+        (
+          hakemusKoskeeParams.filter(param => param != HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN_AP_HAKEMUS),
+          hakemusKoskeeParams.contains(HAKEMUS_KOSKEE_KELPOISUUS_AMMATTIIN_AP_HAKEMUS)
+        )
+    }
 
     val (items, totalCount) = hakemusSearchRepository.haeHakemusLista(
       userOids,

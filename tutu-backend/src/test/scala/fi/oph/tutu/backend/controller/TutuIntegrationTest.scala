@@ -48,7 +48,7 @@ class TutuIntegrationTest extends IntegrationTestBase {
   @Autowired
   var hakemusService: HakemusService = _
 
-  final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
+  final val esittelijaOidString = "1.2.246.562.24.00000006666"
   val dummyUserAgent            = "User-Agent"
   val dummyUserAgentValue       = "DummyAgent/1.0"
   val xffOriginalHeaderName     = "XFF_ORIGINAL"

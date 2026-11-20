@@ -124,7 +124,7 @@ class TilastoCsvControllerTest extends IntegrationTestBase {
       .when(userService.getEnrichedUserDetails(any[Boolean]))
       .thenReturn(
         User(
-          userOid = "1.2.246.562.24.00000000000000006666",
+          userOid = "1.2.246.562.24.00000006666",
           authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)
         )
       )

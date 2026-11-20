@@ -56,7 +56,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Autowired
   var hakemusService: HakemusService = _
 
-  final val esittelijaOidString = "1.2.246.562.24.00000000000000006666"
+  final val esittelijaOidString = "1.2.246.562.24.00000006666"
   final val muokkaajaOidString  = "1.2.246.562.24.00000000003"
 
   // Asiakirja on pakollinen hakemuksen päivityspyynnössä
@@ -225,7 +225,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006668",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaOid" : "1.2.246.562.24.00000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken"
@@ -235,7 +235,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "saapumisPvm" : "$saapumisPvmStr6665",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006665",
                                 "hakemusKoskee" : 0,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaOid" : "1.2.246.562.24.00000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken"
@@ -245,7 +245,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006666",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaOid" : "1.2.246.562.24.00000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken"
@@ -255,7 +255,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "saapumisPvm" : "$saapumisPvmStr",
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaOid" : "1.2.246.562.24.00000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken"
@@ -284,7 +284,7 @@ class HakemusControllerTest extends IntegrationTestBase {
   @Order(2)
   @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
   def haeHakemusValidRequestReturns200(): Unit = {
-    val virkailijaOid = UserOid("1.2.246.562.24.00000000000000006666")
+    val virkailijaOid = UserOid("1.2.246.562.24.00000006666")
     val hakemusOid    = HakemusOid("1.2.246.562.11.00000000000000006667")
     val asiakirjaId   = addAsiakirjaStuffToHakemus(virkailijaOid)
     val dbHakemus     = hakemusRepository.haeHakemus(hakemusOid).get
@@ -325,7 +325,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "saapumisPvm": "2025-05-14T10:59:47.597Z",
                                 "esittelyPvm": null,
                                 "paatosPvm": null,
-                                "esittelijaOid": 1.2.246.562.24.00000000000000006666,
+                                "esittelijaOid": 1.2.246.562.24.00000006666,
                                 "ataruHakemuksenTila": "KasittelyMaksettu",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
                                 "muutosHistoria": [],
@@ -399,7 +399,7 @@ class HakemusControllerTest extends IntegrationTestBase {
                                 "hakemusOid" : "1.2.246.562.11.00000000000000006667",
                                 "hakemusKoskee" : 1,
                                 "apHakemus": true,
-                                "esittelijaOid" : "1.2.246.562.24.00000000000000006666",
+                                "esittelijaOid" : "1.2.246.562.24.00000006666",
                                 "esittelijaKutsumanimi": "Esko",
                                 "esittelijaSukunimi": "Esittelijä",
                                 "kasittelyVaihe": "AlkukasittelyKesken",
@@ -647,7 +647,7 @@ class HakemusControllerTest extends IntegrationTestBase {
         kasittelyVaihe = KasittelyVaihe.OdottaaTaydennysta,
         viimeisinTaydennyspyyntoPvm = Some(LocalDateTime.parse("2026-01-10T18:30:45.597"))
       ),
-      "1.2.246.562.24.00000000000000006666"
+      "1.2.246.562.24.00000006666"
     )
 
     when(ataruHakemusParser.parseHakemusKoskee(any[Content])).thenReturn(2)
@@ -1342,5 +1342,66 @@ class HakemusControllerTest extends IntegrationTestBase {
           """{"origin":"","message":"Hakemus ei löytynyt"}"""
         )
       )
+  }
+
+  @Test
+  @Order(25)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def listaaHakemuksetReturns400WhenParametersAreInvalid(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+
+    val invalidQueries = Seq(
+      "page=0",
+      "pagesize=-1",
+      "pagesize=10001",
+      "sort=saapumisPvm:desK",
+      "sort=virheellinen:desc",
+      "nayta=virheellinen",
+      "hakemuskoskee=virheellinen",
+      "hakemuskoskee=999",
+      "nayta=kaikki&esittelija=virheellinen",
+      "vaihe=virheellinen"
+    )
+    invalidQueries.foreach { query =>
+      mockMvc
+        .perform(get(s"/tutu-backend/api/hakemuslista?$query"))
+        .andExpect(status().isBadRequest)
+    }
+  }
+
+  @Test
+  @Order(26)
+  @WithMockUser(value = esittelijaOidString, authorities = Array(SecurityConstants.SECURITY_ROOLI_CRUD_FULL))
+  def haeHakemuksetHaullaReturns400WhenParametersAreInvalid(): Unit = {
+    when(userService.getEnrichedUserDetails(any[Boolean]))
+      .thenReturn(User(userOid = esittelijaOidString, authorities = List(SecurityConstants.SECURITY_ROOLI_CRUD_FULL)))
+
+    val invalidQueries = Seq(
+      "page=0",
+      "pagesize=-1",
+      "pagesize=10001",
+      "suoritusmaa=maatjavaltiot2_abc",
+      "suoritusmaa=maatjavaltiot2_",
+      "suoritusmaa=foo_762",
+      "suoritusmaa=maatjavaltiot2_762&suoritusmaa=virheellinen",
+      "esittelijaOid=virheellinen",
+      "paattymisVuosi=abc",
+      "todistusVuosi=abc",
+      "ratkaisutyyppi=virheellinen",
+      "paatostyyppi=virheellinen",
+      "sovellettuLaki=virheellinen",
+      "tutkinnonTaso=virheellinen"
+    )
+    invalidQueries.foreach { query =>
+      mockMvc
+        .perform(get(s"/tutu-backend/api/hakemus/haku?$query"))
+        .andExpect(status().isBadRequest)
+    }
+
+    // Etunollallinen maakoodi on validi
+    mockMvc
+      .perform(get("/tutu-backend/api/hakemus/haku?suoritusmaa=maatjavaltiot2_000"))
+      .andExpect(status().isOk)
   }
 }
