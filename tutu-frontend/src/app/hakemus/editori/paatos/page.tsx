@@ -24,7 +24,7 @@ import useToaster from '@/src/hooks/useToaster';
 import { formatHelsinki } from '@/src/lib/dateUtils';
 import { useTranslations } from '@/src/lib/localization/hooks/useTranslations';
 import { Paatospohja } from '@/src/lib/types/paatosteksti';
-import { handleFetchError } from '@/src/lib/utils';
+import { handleFetchError, handleSuccessMessage } from '@/src/lib/utils';
 
 const copy2Clipboard = (editor: LexicalEditor) =>
   navigator.clipboard
@@ -94,6 +94,12 @@ export default function PaatosEditorPage() {
   const vahvistaPainikeAction = async () => {
     if (paatosteksti.vahvistettu) {
       await copy2Clipboard(editorRef.current!);
+      handleSuccessMessage(
+        true,
+        addToast,
+        'hakemus.editori.paatos.paatostekstiKopioituLeikepoydalle',
+        t,
+      );
       return;
     }
 
