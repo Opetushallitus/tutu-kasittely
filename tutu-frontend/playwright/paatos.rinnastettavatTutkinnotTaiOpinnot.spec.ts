@@ -184,7 +184,7 @@ test('Rinnastettavien tutkintojen tai opintojen lisäys ja poisto toimii ja läh
   );
 });
 
-test('Tietty tutkinto tai opinnot, monialaiset opinnot ja varhaiskasvatuksen valmiusopinnot ovat valittavissa', async ({
+test('Tietty tutkinto tai opinnot, monialaiset opinnot, varhaiskasvatuksen valmiusopinnot ja lastenhoitajan valmiusopinnot ovat valittavissa', async ({
   page,
 }) => {
   const paatostyyppiInput = page.getByTestId('paatos-paatostyyppi-dropdown');
@@ -234,6 +234,25 @@ test('Tietty tutkinto tai opinnot, monialaiset opinnot ja varhaiskasvatuksen val
             {
               tutkintoTaiOpinto:
                 'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot',
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  await expectDataFromDropdownSelection(
+    page,
+    tutkintoDropdown,
+    'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatuksenLastenhoitajaOpinnot',
+    '/paatos/',
+    {
+      paatosTiedot: [
+        {
+          paatosTyyppi: 'TiettyTutkintoTaiOpinnot',
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              tutkintoTaiOpinto: 'Vaka-lastenhoitajaopinnot',
             },
           ],
         },

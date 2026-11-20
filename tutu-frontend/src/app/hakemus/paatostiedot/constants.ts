@@ -755,6 +755,9 @@ export const MONIALAISET_OPINNOT_KEY = 'Monialaiset opinnot';
 export const VARHAISKASVATUS_JA_ESIOPETUS_VALMIUS_OPINNOT_KEY =
   'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot';
 
+export const VARHAISKASVATUKSEN_LASTENHOITAJA_OPINNOT_KEY =
+  'Vaka-lastenhoitajaopinnot';
+
 export const AINEENOPETTAJA_OPTION_KEY = 'Aineenopettaja';
 export const LUOKANOPETTAJA_OPTION_KEY = 'Luokanopettaja';
 export const OIKEUSTIETEEN_MAISTERI_KEY =
