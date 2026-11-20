@@ -149,11 +149,7 @@ const mockHakemus = async (page: Page) => {
 };
 
 const searchButtonClick = async (page: Page) => {
-  const haeButton = page.getByRole('button', {
-    name: 'haku.hae',
-  });
-
-  await haeButton.click();
+  await page.getByTestId('haku-hae').click();
 };
 
 const closeButtonClick = async (page: Page) => {
@@ -292,6 +288,34 @@ test('Tarkat hakuehdot: oppilaitos-suodatin lähettää parametrin pyyntöön', 
     'Butan Amattikoulu',
   );
   await expect(page.getByTestId('search-results-ribbon')).toBeVisible();
+});
+
+test('Tarkat hakuehdot: alempi hae-painike hakee myös pääkentän arvolla, tyhjennys koskee vain tarkkoja hakuehtoja', async ({
+  page,
+}) => {
+  await mockHakemusHaku(page);
+  await page.goto(`/tutu-frontend/hakemus/${HAKEMUS_OID}/perustiedot`);
+
+  await page.getByTestId('hakukentta').locator('input').fill('Aalt');
+  await page.getByTestId('tarkat-hakuehdot').click();
+  const oppilaitos = page.getByTestId('haku-oppilaitos').locator('input');
+  await oppilaitos.fill('Butan Amattikoulu');
+
+  const [request] = await Promise.all([
+    page.waitForRequest((req) => req.url().includes('hakemus/haku')),
+    page.getByTestId('tarkat-hakuehdot-hae').click(),
+  ]);
+
+  const params = new URL(request.url()).searchParams;
+  expect(params.get('haku')).toBe('Aalt');
+  expect(params.get('oppilaitos')).toBe('Butan Amattikoulu');
+  await expect(page.getByTestId('search-results-ribbon')).toBeInViewport();
+
+  await page.getByTestId('tarkat-hakuehdot-tyhjenna').click();
+  await expect(oppilaitos).toHaveValue('');
+  await expect(page.getByTestId('hakukentta').locator('input')).toHaveValue(
+    'Aalt',
+  );
 });
 
 test('Tarkat hakuehdot: kelpoisuus-suodatin lähettää parametrin pyyntöön', async ({

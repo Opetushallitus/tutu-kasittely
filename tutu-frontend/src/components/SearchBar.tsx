@@ -15,7 +15,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { SearchFilters } from './SearchFilters';
@@ -191,6 +191,7 @@ export const SearchBar = () => {
   const [filtersOpen, setFiltersOpen] = useState(() =>
     Object.values(committed.filters).some(hasFilterValue),
   );
+  const filterActionsRef = useRef<HTMLDivElement>(null);
 
   const {
     data: hakemukset,
@@ -344,6 +345,11 @@ export const SearchBar = () => {
     setSelectedIndex(null);
     setSelectedOid(null);
     setRibbonVisible(true);
+    // Null kun tarkat hakuehdot ei ole näkyvillä.
+    filterActionsRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
     setCommitted({
       haku,
       nakyma,
@@ -400,7 +406,7 @@ export const SearchBar = () => {
             }
             inputProps={{ 'aria-label': t('haku.nakymaValinta') }}
           />
-          <OphButton variant="contained" type="submit">
+          <OphButton variant="contained" type="submit" data-testid="haku-hae">
             {t('haku.hae')}
           </OphButton>
         </Stack>
@@ -455,6 +461,7 @@ export const SearchBar = () => {
           setHakijanNimi={setHakijanNimi}
           setAsiatunnus={setAsiatunnus}
           onSubmit={handleHae}
+          actionsRef={filterActionsRef}
           onClearAll={() => {
             setSuoritusmaa(null);
             setPaattymisVuosi('');
