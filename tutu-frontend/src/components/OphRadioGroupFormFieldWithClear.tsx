@@ -2,11 +2,11 @@ import { Stack } from '@mui/material';
 import {
   OphRadioGroupFormField,
   OphTypography,
+  OphButton,
 } from '@opetushallitus/oph-design-system';
 import React, { ChangeEvent } from 'react';
 
 import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
-import { IconButton } from '@/src/components/IconButton';
 import { OphRadioOption } from '@/src/lib/types/common';
 
 type RadioGroupFormFieldChangeEventHandler = {
@@ -60,16 +60,15 @@ export const OphRadioGroupFormFieldWithClear = <T extends string>({
           </OphTypography>
         )}
         {shouldShowClearButton && (
-          <IconButton
+          <OphButton
+            size="small"
             data-testid={`${dataTestId}-clear-button`}
             onClick={onClear}
             disabled={disabled}
-            aria-label={
-              label ? `Tyhjennä valinta: ${label}` : 'Tyhjennä valinta'
-            }
+            startIcon={<ClearSelectionIcon />}
           >
-            <ClearSelectionIcon />
-          </IconButton>
+            Tyhjennä
+          </OphButton>
         )}
       </Stack>
       <OphRadioGroupFormField

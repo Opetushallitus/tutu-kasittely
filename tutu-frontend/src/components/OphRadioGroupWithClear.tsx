@@ -3,11 +3,11 @@ import {
   OphFormFieldWrapper,
   OphRadioGroup,
   OphTypography,
+  OphButton,
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
 import { ClearSelectionIcon } from '@/src/components/ClearSelectionIcon';
-import { IconButton } from '@/src/components/IconButton';
 import { OphRadioOption } from '@/src/lib/types/common';
 
 interface OphRadioGroupWithClearProps<T extends string> {
@@ -18,7 +18,7 @@ interface OphRadioGroupWithClearProps<T extends string> {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClear: () => void;
   showClearButton?: boolean;
-  clearButtonPlacement?: 'header' | 'inline';
+  clearButtonPlacement?: 'header' | 'inline' | 'below';
   row?: boolean;
   disabled?: boolean;
   error?: boolean;
@@ -48,14 +48,15 @@ export const OphRadioGroupWithClear = <T extends string>({
   const shouldShowClearButton = showClearButton ?? value !== '';
 
   const clearButton = shouldShowClearButton && (
-    <IconButton
+    <OphButton
+      size="small"
       data-testid={`${dataTestId}-clear-button`}
       onClick={onClear}
       disabled={disabled}
-      aria-label={label ? `Tyhjennä valinta: ${label}` : 'Tyhjennä valinta'}
+      startIcon={<ClearSelectionIcon />}
     >
-      <ClearSelectionIcon />
-    </IconButton>
+      Tyhjennä
+    </OphButton>
   );
 
   const inlineSx = {
@@ -114,8 +115,8 @@ export const OphRadioGroupWithClear = <T extends string>({
   return (
     <OphFormFieldWrapper
       sx={{ flexDirection: 'column' }}
-      renderInput={() => (
-        <div>
+      renderInput={() => {
+        const wrappedClearButton = (
           <OphFormFieldWrapper
             sx={{
               flexDirection: 'row',
@@ -125,9 +126,15 @@ export const OphRadioGroupWithClear = <T extends string>({
             label={label ? label : undefined}
             renderInput={() => <div>{clearButton}</div>}
           />
-          {radioGroup}
-        </div>
-      )}
+        );
+
+        const components = [wrappedClearButton, radioGroup];
+        if (clearButtonPlacement === 'below') {
+          components.reverse();
+        }
+
+        return <div>{components}</div>;
+      }}
     />
   );
 };
