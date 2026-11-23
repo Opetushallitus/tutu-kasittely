@@ -142,7 +142,9 @@ export default function FilemakerHakemus() {
                     variant={'h2'}
                     data-testid="filemaker-hakemus-otsikko"
                   >
-                    {t('hakemus.filemaker.otsikko')}
+                    {tab === 'perustelumuistio'
+                      ? t('hakemus.filemaker.otsikko.perustelumuistio')
+                      : t('hakemus.filemaker.otsikko.paatosteksti')}
                   </OphTypography>
                   <Content>
                     {tab === 'perustelumuistio'
