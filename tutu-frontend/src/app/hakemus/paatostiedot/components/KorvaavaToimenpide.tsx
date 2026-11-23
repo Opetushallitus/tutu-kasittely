@@ -7,11 +7,15 @@ import {
 } from '@opetushallitus/oph-design-system';
 import React from 'react';
 
-import { kelpoisuuskoeFields } from '@/src/app/hakemus/paatostiedot/constants';
+import {
+  kelpoisuuskoeFields,
+  taydentavienOpintojenAiheetFields,
+} from '@/src/app/hakemus/paatostiedot/constants';
 import { TFunction } from '@/src/lib/localization/hooks/useTranslations';
 import {
   KelpoisuuskoeSisalto,
   KorvaavaToimenpide,
+  TaydentavienOpintojenAiheet,
 } from '@/src/lib/types/paatos';
 
 const IndentedStack: React.FC<{
@@ -89,6 +93,47 @@ const Kelpoisuuskoe = ({
   );
 };
 
+const TaydentavienOpintojenAiheetValinta = ({
+  aiheet,
+  updateAiheet,
+  t,
+  testIdPrefix,
+}: {
+  aiheet?: TaydentavienOpintojenAiheet | null;
+  updateAiheet: (updatedAiheet: TaydentavienOpintojenAiheet) => void;
+  t: TFunction;
+  testIdPrefix: string;
+}) => {
+  return (
+    <Stack spacing={1}>
+      <OphTypography variant="h5">
+        {t(
+          'hakemus.paatos.myonteinenPaatos.taydentavienOpintojenAiheet.otsikko',
+        )}
+      </OphTypography>
+      <OphTypography variant="body1">
+        {t('hakemus.paatos.myonteinenPaatos.taydentavienOpintojenAiheet.info')}
+      </OphTypography>
+      {taydentavienOpintojenAiheetFields.map((key) => (
+        <OphCheckbox
+          key={key}
+          data-testid={`${testIdPrefix}-taydentavienOpintojenAiheet-${key}`}
+          label={t(
+            `hakemus.paatos.myonteinenPaatos.taydentavienOpintojenAiheet.${key}`,
+          )}
+          checked={aiheet?.[key] || false}
+          onChange={(e) => {
+            updateAiheet({
+              ...aiheet,
+              [key]: e.target.checked,
+            });
+          }}
+        />
+      ))}
+    </Stack>
+  );
+};
+
 export type KorvaavaToimenpideProps = {
   korvaavaToimenpide?: KorvaavaToimenpide | null;
   label: string;
@@ -101,6 +146,7 @@ export type KorvaavaToimenpideProps = {
   kelpoisuuskoeFieldLabelPrefix?: string;
   useOrdinalForKelpoisuuskoeLabels?: boolean;
   showTaydentavatOpinnot?: boolean;
+  showTaydentavienOpintojenAiheet?: boolean;
   showKelpoisuuskoeJaSopeutumisaika?: boolean;
   showLisatieto?: boolean;
 };
@@ -112,6 +158,7 @@ export const KorvaavaToimenpideComponent = ({
   updateKorvaavaToimenpide,
   showKelpoisuuskoeJaSopeutumisaika,
   showTaydentavatOpinnot,
+  showTaydentavienOpintojenAiheet,
   showLisatieto,
   kelpoisuuskoeFieldLabelPrefix,
   useOrdinalForKelpoisuuskoeLabels,
@@ -192,6 +239,23 @@ export const KorvaavaToimenpideComponent = ({
           }}
         />
       )}
+      {showTaydentavatOpinnot &&
+        showTaydentavienOpintojenAiheet &&
+        korvaavaToimenpide?.taydentavatOpinnot && (
+          <IndentedStack>
+            <TaydentavienOpintojenAiheetValinta
+              aiheet={korvaavaToimenpide.taydentavienOpintojenAiheet}
+              updateAiheet={(updatedAiheet) => {
+                updateKorvaavaToimenpide({
+                  ...korvaavaToimenpide,
+                  taydentavienOpintojenAiheet: updatedAiheet,
+                });
+              }}
+              t={t}
+              testIdPrefix={testIdPrefix}
+            />
+          </IndentedStack>
+        )}
       <OphCheckbox
         data-testid={`${testIdPrefix}-korvaavaToimenpide-kelpoisuuskoe`}
         label={t('hakemus.paatos.myonteinenPaatos.kelpoisuuskoe')}

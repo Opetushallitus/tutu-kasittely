@@ -153,8 +153,20 @@ export type KelpoisuuskoeSisalto = {
   aihealue3?: boolean;
 };
 
+export type TaydentavienOpintojenAiheet = {
+  kielikasvatus?: boolean;
+  matematiikka?: boolean;
+  alle3VuotiaidenKasvatus?: boolean;
+  ilmaisuJaTaidekasvatus?: boolean;
+  ymparistokasvatus?: boolean;
+  esiJaAlkuopetus?: boolean;
+  katsomusJaEettinenKasvatus?: boolean;
+  teknologiakasvatus?: boolean;
+};
+
 export type KorvaavaToimenpide = {
   taydentavatOpinnot?: boolean;
+  taydentavienOpintojenAiheet?: TaydentavienOpintojenAiheet | null;
   kelpoisuuskoe?: boolean;
   kelpoisuuskoeSisalto?: KelpoisuuskoeSisalto | null;
   sopeutumisaika?: boolean;

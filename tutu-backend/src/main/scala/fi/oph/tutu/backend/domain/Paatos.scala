@@ -123,8 +123,20 @@ case class KelpoisuuskoeSisalto(
   aihealue3: Boolean = false
 )
 
+case class TaydentavienOpintojenAiheet(
+  kielikasvatus: Boolean = false,
+  matematiikka: Boolean = false,
+  alle3VuotiaidenKasvatus: Boolean = false,
+  ilmaisuJaTaidekasvatus: Boolean = false,
+  ymparistokasvatus: Boolean = false,
+  esiJaAlkuopetus: Boolean = false,
+  katsomusJaEettinenKasvatus: Boolean = false,
+  teknologiakasvatus: Boolean = false
+)
+
 case class KorvaavaToimenpide(
   taydentavatOpinnot: Boolean = false,
+  taydentavienOpintojenAiheet: Option[TaydentavienOpintojenAiheet] = None,
   kelpoisuuskoe: Boolean = false,
   kelpoisuuskoeSisalto: Option[KelpoisuuskoeSisalto] = None,
   sopeutumisaika: Boolean = false,

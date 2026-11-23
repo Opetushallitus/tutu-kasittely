@@ -188,6 +188,9 @@ export const initOrUpdateKorvaavaToimenpide = (
   korvaavaToimenpide?: KorvaavaToimenpide | null,
 ): KorvaavaToimenpide => {
   const tobe = korvaavaToimenpide ?? emptyKorvaavaToimenpide();
+  tobe.taydentavienOpintojenAiheet = tobe.taydentavatOpinnot
+    ? tobe.taydentavienOpintojenAiheet
+    : null;
   tobe.kelpoisuuskoeSisalto = tobe.kelpoisuuskoe
     ? (tobe.kelpoisuuskoeSisalto ?? emptyKelpoisuuskoeSisalto())
     : null;

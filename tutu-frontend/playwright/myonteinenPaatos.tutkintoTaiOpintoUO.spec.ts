@@ -16,6 +16,8 @@ const OPETETTAVAN_AINEEN_OPINNOT_MATEMATIIKKA =
 const OHJAUSTEHTAVAN_OPINNOT =
   'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot';
 const MONIALAISET_OPINNOT = 'Monialaiset opinnot';
+const VAKA_VALMIUS_OPINNOT =
+  'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot';
 const MUU_OPINTOSUORITUS =
   'Muu opetustehtävään tai varhaiskasvatuksen tehtävään vaadittava korkeakoulun opintosuoritus';
 
@@ -76,6 +78,25 @@ async function navigateToMyonteinenPaatosUOMonialaiset(
       sovellettuTilanne:
         sovellettuTilanne === 'muu'
           ? 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuMonialaiset'
+          : undefined,
+    },
+  );
+}
+
+async function navigateToMyonteinenPaatosUOVaka(
+  page: Page,
+  sovellettuTilanne?: string,
+): Promise<void> {
+  await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
+    page,
+    VAKA_VALMIUS_OPINNOT,
+    sovellettuTilanne,
+    {
+      tutkintoTaiOpinto:
+        'hakemus.paatos.paatostyyppi.tiettyTutkintoTaiOpinnot.varhaiskasvatusJaEsiopetusValmiusOpinnot',
+      sovellettuTilanne:
+        sovellettuTilanne === 'muu'
+          ? 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuVaka'
           : undefined,
     },
   );
@@ -1229,6 +1250,227 @@ test.describe('Monialaiset opinnot: sovellettu tilanne', () => {
                 myonteisenPaatoksenLisavaatimukset: {
                   sovellettuTilanne: 'muu',
                   muuTilannekuvaus: 'Tilannekuvaus',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+});
+
+test.describe('Vaka- ja esiopetuksen valmiusopinnot: sovellettu tilanne', () => {
+  test('Sovellettu tilanne -dropdownissa viisi vaihtoehtoa', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOVaka(page);
+
+    await page
+      .getByTestId('myonteinenPaatos-uo-sovellettuTilanne-select')
+      .click();
+    const options = page.locator(
+      'ul[role="listbox"] li[role="option"]:visible',
+    );
+    await expect(options).toHaveText([
+      'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vaka 1',
+      'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vaka 2',
+      'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vaka 3',
+      'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.vaka 0',
+      'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuVaka',
+    ]);
+  });
+
+  test('vaka0: näytetään eiKoulutusEroja-ilmoitus', async ({ page }) => {
+    await navigateToMyonteinenPaatosUOVaka(page, 'vaka0');
+
+    await expect(
+      page.getByText('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja'),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+    ).toBeHidden();
+  });
+
+  test('muu: näytetään tilannekuvaus ja tallennetaan se', async ({ page }) => {
+    await navigateToMyonteinenPaatosUOVaka(page, 'muu');
+
+    await expect(
+      page.getByText(
+        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.otsikko',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1'),
+    ).toBeHidden();
+    await expect(
+      page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+    ).toBeHidden();
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId('myonteinenPaatos-uo-muuTilannekuvaus-input')
+        .getByRole('textbox')
+        .first()
+        .fill('Tilannekuvaus'),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  sovellettuTilanne: 'muu',
+                  muuTilannekuvaus: 'Tilannekuvaus',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+});
+
+test.describe('Vaka- ja esiopetuksen valmiusopinnot: täydentävien opintojen aiheet', () => {
+  const AIHEET = [
+    'kielikasvatus',
+    'matematiikka',
+    'alle3VuotiaidenKasvatus',
+    'ilmaisuJaTaidekasvatus',
+    'ymparistokasvatus',
+    'esiJaAlkuopetus',
+    'katsomusJaEettinenKasvatus',
+    'teknologiakasvatus',
+  ];
+
+  test('lähtökohtaiset: aiheet näytetään vasta täydentävät opinnot -valinnan jälkeen ja tallennetaan', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOVaka(page, 'vaka1');
+
+    const prefix = 'lahtokohtaisetOsaamisenTaydentamisenTavat';
+    await expect(
+      page.getByTestId(`${prefix}-taydentavienOpintojenAiheet-kielikasvatus`),
+    ).toBeHidden();
+
+    await page
+      .getByTestId(`${prefix}-korvaavaToimenpide-taydentavatOpinnot`)
+      .click();
+
+    await expect(
+      page.getByText(
+        'hakemus.paatos.myonteinenPaatos.taydentavienOpintojenAiheet.otsikko',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        'hakemus.paatos.myonteinenPaatos.taydentavienOpintojenAiheet.info',
+      ),
+    ).toBeVisible();
+    for (const aihe of AIHEET) {
+      await expect(
+        page.getByTestId(`${prefix}-taydentavienOpintojenAiheet-${aihe}`),
+      ).toBeVisible();
+    }
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(`${prefix}-taydentavienOpintojenAiheet-kielikasvatus`)
+        .click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  lahtokohtaisetOsaamisenTaydentamisenTavat: {
+                    taydentavatOpinnot: true,
+                    taydentavienOpintojenAiheet: { kielikasvatus: true },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+
+  test('lähtökohtaiset: täydentävät opinnot -valinnan poisto tyhjentää aiheet', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOVaka(page, 'vaka1');
+
+    const prefix = 'lahtokohtaisetOsaamisenTaydentamisenTavat';
+    const taydentavatOpinnot = page.getByTestId(
+      `${prefix}-korvaavaToimenpide-taydentavatOpinnot`,
+    );
+    await taydentavatOpinnot.click();
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(`${prefix}-taydentavienOpintojenAiheet-matematiikka`)
+        .click(),
+      {},
+    );
+
+    await expectRequestData(page, PAATOS_URL, taydentavatOpinnot.click(), {
+      paatosTiedot: [
+        {
+          rinnastettavatTutkinnotTaiOpinnot: [
+            {
+              myonteisenPaatoksenLisavaatimukset: {
+                lahtokohtaisetOsaamisenTaydentamisenTavat: {
+                  taydentavatOpinnot: false,
+                  taydentavienOpintojenAiheet: null,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    await expect(
+      page.getByTestId(`${prefix}-taydentavienOpintojenAiheet-matematiikka`),
+    ).toBeHidden();
+  });
+
+  test('osaamisen täydentämisen tavat: aiheet näytetään täydentävät opinnot -valinnan jälkeen', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOVaka(page, 'vaka1');
+
+    await page
+      .getByTestId('uo-ammattikokemuksenHuomioiminen-radio')
+      .locator('input[value="SuomessaHankittuOsittain"]')
+      .click();
+
+    const prefix = 'osaamisenTaydentamisenTavat';
+    await page
+      .getByTestId(`${prefix}-korvaavaToimenpide-taydentavatOpinnot`)
+      .click();
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId(`${prefix}-taydentavienOpintojenAiheet-teknologiakasvatus`)
+        .click(),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  korvaavaToimenpide: {
+                    taydentavatOpinnot: true,
+                    taydentavienOpintojenAiheet: { teknologiakasvatus: true },
+                  },
                 },
               },
             ],
