@@ -29,7 +29,7 @@ test('Saavutettavuus filemaker hakemus ok', async ({ page }) => {
   await page.goto(
     '/tutu-frontend/filemaker-hakemus/257acdfc-06c9-44b5-b76d-6c5d06200aa6',
   );
-  const otsikko = 'hakemus.filemaker.otsikko';
+  const otsikko = 'hakemus.filemaker.otsikko.perustelumuistio';
   await expect(page.getByTestId('filemaker-hakemus-otsikko')).toHaveText(
     otsikko,
   );
