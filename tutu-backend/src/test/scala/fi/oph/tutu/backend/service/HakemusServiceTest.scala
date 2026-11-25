@@ -311,13 +311,13 @@ class HakemusServiceTest extends UnitTestBase {
     val hakijaOid   = PersonOid("1.2.246.562.24.00000000000000006666")
     val dbHakemus   = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = Some(hakijaOid))
     val muuHakemus1 = MuuHakemus(
-      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006680"),
+      hakemusOid = "1.2.246.562.11.00000000000000006680",
       asiatunnus = None,
       hakijaEtunimet = Some("Testi Viides"),
       hakijaSukunimi = Some("Hakija")
     )
     val muuHakemus2 = MuuHakemus(
-      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006681"),
+      hakemusOid = "1.2.246.562.11.00000000000000006681",
       asiatunnus = Some("OPH-123-2025"),
       hakijaEtunimet = Some("Testi Kuudes"),
       hakijaSukunimi = Some("Hakija")
@@ -346,7 +346,7 @@ class HakemusServiceTest extends UnitTestBase {
     val duplikaattiHakijaOid = PersonOid("1.2.246.562.24.00000000000000009999")
     val dbHakemus            = makeDbHakemus(hakemusOid, 5).copy(hakijaOid = Some(hakijaOid))
     val muuHakemus           = MuuHakemus(
-      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006682"),
+      hakemusOid = "1.2.246.562.11.00000000000000006682",
       asiatunnus = None,
       hakijaEtunimet = Some("Testi Seitsemäs"),
       hakijaSukunimi = Some("Hakija")
@@ -392,7 +392,7 @@ class HakemusServiceTest extends UnitTestBase {
     val lomakeJsonString       = loadJson("ataruLomake.json")
     val hakija                 = makeHakija(henkiloOid = hakijaOidString)
     val muuHakemus             = MuuHakemus(
-      hakemusOid = HakemusOid("1.2.246.562.11.00000000000000006694"),
+      hakemusOid = "1.2.246.562.11.00000000000000006694",
       asiatunnus = None,
       hakijaEtunimet = Some("Testi Kahdeksas"),
       hakijaSukunimi = Some("Hakija")

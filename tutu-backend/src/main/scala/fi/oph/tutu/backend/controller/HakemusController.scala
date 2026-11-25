@@ -864,6 +864,5 @@ class HakemusController(
         LOG.error(s"Virhe hakijan muiden hakemusten hakemisessa: ${exception.getMessage}", exception)
         errorMessageMapper.mapErrorMessage(exception)
     }
-
   }
 }
