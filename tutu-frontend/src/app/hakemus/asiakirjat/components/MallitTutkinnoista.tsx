@@ -102,7 +102,7 @@ const RadioGroup = ({
         value={vastaavuus?.toString() ?? ''}
         onChange={(e) => setVastaavuus(e.target.value === 'true')}
         onClear={onClear}
-        clearButtonPlacement="inline"
+        clearButtonPlacement="below"
         inlineLabelMinWidth={60}
       />
     </TableCell>
