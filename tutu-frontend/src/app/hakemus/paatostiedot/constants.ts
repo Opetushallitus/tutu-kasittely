@@ -9,6 +9,7 @@ import {
   Paatostyyppi,
   SovellettuLaki,
   SuomessaSuoritettujenOpintojenHuomioiminen,
+  TaydentavienOpintojenAiheet,
 } from '@/src/lib/types/paatos';
 import { Tutkinto } from '@/src/lib/types/tutkinto';
 
@@ -709,6 +710,7 @@ export const korvaavaToimenpideOptions = [
 
 export const emptyKorvaavaToimenpide = (): KorvaavaToimenpide => ({
   taydentavatOpinnot: false,
+  taydentavienOpintojenAiheet: null,
   kelpoisuuskoe: false,
   kelpoisuuskoeSisalto: null,
   sopeutumisaika: false,
@@ -731,6 +733,17 @@ export const kelpoisuuskoeFields = [
   'aihealue2',
   'aihealue3',
 ] as const satisfies (keyof KelpoisuuskoeSisalto)[];
+
+export const taydentavienOpintojenAiheetFields = [
+  'kielikasvatus',
+  'matematiikka',
+  'alle3VuotiaidenKasvatus',
+  'ilmaisuJaTaidekasvatus',
+  'ymparistokasvatus',
+  'esiJaAlkuopetus',
+  'katsomusJaEettinenKasvatus',
+  'teknologiakasvatus',
+] as const satisfies (keyof TaydentavienOpintojenAiheet)[];
 
 export const emptyKelpoisuuskoeSisalto = (): KelpoisuuskoeSisalto =>
   kelpoisuuskoeFields.reduce((acc, key) => {

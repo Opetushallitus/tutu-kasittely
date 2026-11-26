@@ -151,26 +151,11 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
     { value: MUU_SOVELLETTU_TILANNE, tKey: 'muuMonialaiset' },
   ],
   [ResolvedEntity.ammatillisetValmiudet]: [
-    {
-      value: 'vakaJaErityisopetusA',
-      tKey: 'vakaJaErityisopetus',
-      ordinal: 'A',
-    },
-    {
-      value: 'vakaJaErityisopetusB',
-      tKey: 'vakaJaErityisopetus',
-      ordinal: 'B',
-    },
-    {
-      value: 'vakaJaErityisopetusC',
-      tKey: 'vakaJaErityisopetus',
-      ordinal: 'C',
-    },
-    {
-      value: 'vakaJaErityisopetusD',
-      tKey: 'vakaJaErityisopetus',
-      ordinal: 'D',
-    },
+    { value: 'vaka1', tKey: 'vaka', ordinal: '1' },
+    { value: 'vaka2', tKey: 'vaka', ordinal: '2' },
+    { value: 'vaka3', tKey: 'vaka', ordinal: '3' },
+    { value: 'vaka0', tKey: 'vaka', ordinal: '0' },
+    { value: MUU_SOVELLETTU_TILANNE, tKey: 'muuVaka' },
   ],
   [ResolvedEntity.muu]: [],
 };
@@ -214,6 +199,7 @@ const SOVELLETUT_TILANTEET_WO_EROT_BY_ENTITY: Partial<
 > = {
   [ResolvedEntity.opetettavaAine]: ['aine1', 'aine4'],
   [ResolvedEntity.monialaisetOpinnot]: ['monialaiset0'],
+  [ResolvedEntity.ammatillisetValmiudet]: ['vaka0'],
 };
 
 export const shouldShowLisavalinnat = (
@@ -229,12 +215,20 @@ export const shouldShowLisavalinnat = (
   return entity !== ResolvedEntity.oikeustieteenMaisteri;
 };
 
+const ENTITIES_WITH_MUU_TILANNEKUVAUS = [
+  ResolvedEntity.monialaisetOpinnot,
+  ResolvedEntity.ammatillisetValmiudet,
+];
+
 export const shouldShowTilannekuvaus = (
   entity: ResolvedEntity,
   sovellettuTilanne?: string | null,
 ) =>
-  entity === ResolvedEntity.monialaisetOpinnot &&
+  ENTITIES_WITH_MUU_TILANNEKUVAUS.includes(entity) &&
   sovellettuTilanne === MUU_SOVELLETTU_TILANNE;
+
+export const shouldShowTaydentavienOpintojenAiheet = (entity: ResolvedEntity) =>
+  entity === ResolvedEntity.ammatillisetValmiudet;
 
 const KOULUTUSERO_TARKENNUS_KIINTEAT_KAANNOSAVAIMET: Record<
   string,

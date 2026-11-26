@@ -22,6 +22,7 @@ import {
   ResolvedEntity,
   resolveEntity,
   shouldShowLisavalinnat,
+  shouldShowTaydentavienOpintojenAiheet,
   shouldShowTilannekuvaus,
   SOVELLETTU_TILANNE_BY_ENTITY,
   translationForEroTarkennus,
@@ -65,6 +66,8 @@ const Lisavalinnat = ({
       lisavaatimukset?.sovellettuTilanne,
     );
   }, [selectedEntity, lisavaatimukset?.sovellettuTilanne]);
+  const showTaydentavienOpintojenAiheet =
+    shouldShowTaydentavienOpintojenAiheet(selectedEntity);
 
   if (!showLisavalinnat) {
     return (
@@ -177,6 +180,7 @@ const Lisavalinnat = ({
         }
         testIdPrefix={'lahtokohtaisetOsaamisenTaydentamisenTavat'}
         showTaydentavatOpinnot
+        showTaydentavienOpintojenAiheet={showTaydentavienOpintojenAiheet}
         kelpoisuuskoeFieldLabelPrefix={ResolvedEntity[selectedEntity]}
         useOrdinalForKelpoisuuskoeLabels={true}
       />
@@ -255,6 +259,7 @@ const Lisavalinnat = ({
           kelpoisuuskoeFieldLabelPrefix={ResolvedEntity[selectedEntity]}
           useOrdinalForKelpoisuuskoeLabels={true}
           showTaydentavatOpinnot
+          showTaydentavienOpintojenAiheet={showTaydentavienOpintojenAiheet}
         />
       )}
       {lisavaatimukset?.suomessaSuoritettujenOpintojenHuomioiminen ===
