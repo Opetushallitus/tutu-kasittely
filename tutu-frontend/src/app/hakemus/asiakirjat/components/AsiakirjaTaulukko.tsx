@@ -6,11 +6,13 @@ import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined';
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 import {
   Stack,
+  SxProps,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Theme,
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
@@ -123,10 +125,10 @@ const AsiakirjaTableHeader = () => {
 
 const AsiakirjaTableRow = ({
   data,
-  mask,
+  rowSx,
 }: {
   data: AsiakirjaTaulukkoData;
-  mask?: string;
+  rowSx?: SxProps<Theme>;
 }) => {
   const { t } = useTranslations();
   const uusiLiite = isUusiLiite(data);
@@ -134,7 +136,7 @@ const AsiakirjaTableRow = ({
     <TableRow
       className="asiakirja-row"
       id={`asiakirja__${data.key}`}
-      sx={{ maskImage: mask }}
+      sx={rowSx}
     >
       <TableCell sx={{ paddingLeft: '8px', paddingRight: '10px' }}>
         <Stack sx={{ width: '100%' }} spacing={1}>
@@ -198,12 +200,17 @@ export const AsiakirjaTaulukko = ({
         <TableBody>
           {asiakirjatToShow.map((data, index) => {
             // Mask if this is the last item and there are hidden items
-            const mask =
+            const maskSx = {
+              maskImage:
+                'linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0))',
+            };
+            const useMask =
               hiddenAsiakirjaCount !== 0 &&
-              index === asiakirjatToShow.length - 1
-                ? 'linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0))'
-                : '';
-            return <AsiakirjaTableRow key={data.key} data={data} mask={mask} />;
+              index === asiakirjatToShow.length - 1;
+            const rowSx = useMask ? maskSx : undefined;
+            return (
+              <AsiakirjaTableRow key={data.key} data={data} rowSx={rowSx} />
+            );
           })}
         </TableBody>
       </Table>
