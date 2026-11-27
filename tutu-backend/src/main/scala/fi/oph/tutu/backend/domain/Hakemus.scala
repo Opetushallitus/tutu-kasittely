@@ -228,7 +228,7 @@ case class EsittelyPvmUpdateRequest(
 )
 
 case class MuuHakemus(
-  hakemusOid: HakemusOid,
+  hakemusOid: String,
   asiatunnus: Option[String] = None,
   hakijaEtunimet: Option[String] = None,
   hakijaSukunimi: Option[String] = None

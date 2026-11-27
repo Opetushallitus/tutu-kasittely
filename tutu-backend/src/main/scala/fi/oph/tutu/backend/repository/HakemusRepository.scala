@@ -59,7 +59,7 @@ class HakemusRepository extends BaseResultHandlers {
   implicit val getMuuHakemusResult: GetResult[MuuHakemus] = {
     GetResult(r =>
       MuuHakemus(
-        hakemusOid = HakemusOid(r.nextString()),
+        hakemusOid = r.nextString(),
         asiatunnus = r.nextStringOption(),
         hakijaEtunimet = r.nextStringOption(),
         hakijaSukunimi = r.nextStringOption()

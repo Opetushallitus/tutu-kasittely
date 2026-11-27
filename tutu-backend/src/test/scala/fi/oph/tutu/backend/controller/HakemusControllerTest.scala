@@ -1262,7 +1262,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.length()").value(1))
-      .andExpect(jsonPath("$[0].hakemusOid.s").value(hakemusOid2.s))
+      .andExpect(jsonPath("$[0].hakemusOid").value(hakemusOid2.s))
       .andExpect(jsonPath("$[0].hakijaEtunimet").value("Testi Kuudes"))
       .andExpect(jsonPath("$[0].hakijaSukunimi").value("Hakija"))
 
@@ -1299,7 +1299,7 @@ class HakemusControllerTest extends IntegrationTestBase {
       .andExpect(status().isOk)
       .andExpect(content().contentType(MediaType.APPLICATION_JSON))
       .andExpect(jsonPath("$.length()").value(1))
-      .andExpect(jsonPath("$[0].hakemusOid.s").value(hakemusOid2.s))
+      .andExpect(jsonPath("$[0].hakemusOid").value(hakemusOid2.s))
   }
 
   @Test
