@@ -77,7 +77,6 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     environment: environmentName
   })
 
-  // Remember to update KMS key removal policy
   const Kms = new KmsStack(app, 'KmsStack', {
     env: envEU,
     stackName: `${environmentName}-kms`,
@@ -215,8 +214,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
         AWS_REGION: envEU.region
       }
     },
-    parameter_store_secrets: ['ESITTELIJA_KAYTTOOIKEUSRYHMA_IDS', 'CAS_PASS', 'CAS_USER', 'AWS_BUCKET_NAME', 'OAUTH2_CLIENT', 'OAUTH2_SECRET'],
-    secrets_manager_secrets: [Secrets.secrets.PG_PASS, Secrets.secrets.SESSION_SECRET],
+    parameter_store_secrets: ['CAS_PASS', 'CAS_USER', 'AWS_BUCKET_NAME', 'OAUTH2_CLIENT', 'OAUTH2_SECRET'],
+    secrets_manager_secrets: [Secrets.secrets.SESSION_SECRET],
     ecrAccountId: utilityConfig.accountId,
     listener: Alb.albListener,
     listenerPathPatterns: ['/tutu-backend/*', '/tutu-frontend', '/tutu-frontend/*'],
@@ -226,7 +225,8 @@ if (environmentName === 'dev' || environmentName === 'qa' || environmentName ===
     healthCheckTimeout: 2,
     albPriority: 120,
     privateDnsNamespace: namespace.privateDnsNamespace,
-    alarmSnsTopic: Monitor.topic
+    alarmSnsTopic: Monitor.topic,
+    kmsKeyArns: [Kms.parameterStoreKey.keyArn, Kms.secretsManagerKey.keyArn]
   })
 
 } else if (environmentName === 'utility') {

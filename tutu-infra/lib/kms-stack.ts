@@ -23,46 +23,45 @@ export class KmsStack extends Stack {
   constructor(scope: Construct, id: string, props: KmsStackProps) {
     super(scope, id, props)
 
-    // Change removal policies to something sensible when stacks are more mature
     this.mskKmsKey = new Key(this, 'mskKmsKey', {
       alias: `alias/${props.environment}-msk-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.openSearchKmsKey = new Key(this, 'openSearchKmsKey', {
       alias: `alias/${props.environment}-opensearch-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.documentDbKmsKey = new Key(this, 'documentDbKmsKey', {
       alias: `alias/${props.environment}-documentdb-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.rdsKmsKey = new Key(this, 'rdsKmsKey', {
       alias: `alias/${props.environment}-rds-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.redisKmsKey = new Key(this, 'redisKmsKey', {
       alias: `alias/${props.environment}-redis-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.s3KmsKey = new Key(this, 's3KmsKey', {
       alias: `alias/${props.environment}-s3-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.cloudwatchLogsKmsKey = new Key(this, 'cloudwatchLogsKmsKey', {
       alias: `alias/${props.environment}-cloudwatch-logs-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
@@ -70,20 +69,20 @@ export class KmsStack extends Stack {
 
     this.ebsKmsKey = new Key(this, 'ebsKmsKey', {
       alias: `alias/${props.environment}-ebs-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.parameterStoreKey = new Key(this, 'parameterStoreKmsKey', {
       alias: `alias/${props.environment}-parameter-store-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
       enableKeyRotation: true
     })
 
     this.secretsManagerKey = new Key(this, 'secretsManagerKmsKey', {
       alias: `alias/${props.environment}-secrets-manager-key`,
-      removalPolicy: RemovalPolicy.DESTROY,
-      enableKeyRotation: true,
+      removalPolicy: RemovalPolicy.RETAIN,
+      enableKeyRotation: true
     })
   }
 }

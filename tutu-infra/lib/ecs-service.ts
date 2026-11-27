@@ -40,6 +40,7 @@ import { Volume } from 'aws-cdk-lib/aws-ecs/lib/base/task-definition'
 import { MountPoint } from 'aws-cdk-lib/aws-ecs/lib/container-definition'
 import { SecretEntry } from './secrets-manager-stack'
 import { DatabaseCluster } from 'aws-cdk-lib/aws-rds'
+import {Effect, PolicyStatement} from "aws-cdk-lib/aws-iam";
 
 interface EcsServiceStackProps extends StackProps {
   environment: string
@@ -75,6 +76,7 @@ interface EcsServiceStackProps extends StackProps {
     volume: Volume
   }
   alarmSnsTopic: sns.Topic
+  kmsKeyArns: string[]
 }
 
 export class EcsServiceStack extends Stack {
@@ -136,6 +138,14 @@ export class EcsServiceStack extends Stack {
         taskDefinition.addToTaskRolePolicy(statement)
       })
     }
+
+    taskDefinition.addToExecutionRolePolicy(
+      new PolicyStatement({
+        sid: "AllowKMSDecrypt",
+        effect: Effect.ALLOW,
+        actions: ["kms:Decrypt"],
+        resources: props.kmsKeyArns
+      }))
 
     props.databaseCluster.grantConnect(taskDefinition.taskRole, props.env_vars.PG_USER)
 
