@@ -216,6 +216,7 @@ export const AsiakirjaTaulukko = ({
       </Table>
       {hiddenAsiakirjaCount > 0 ? (
         <OphButton
+          data-testid="nayta-kaikki-toimitetut-asiakirjat"
           startIcon={<ExpandMoreOutlinedIcon />}
           onClick={() => {
             setNaytaKaikki(true);

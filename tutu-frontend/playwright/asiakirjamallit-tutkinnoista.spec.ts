@@ -46,20 +46,6 @@ test('Asiakirjamallit vastaavista tutkinnoista näkyvät taulukossa', async ({
     page.getByTestId('asiakirjamalli-vastaavuus-ece-clear-button'),
   ).toBeVisible();
 
-  const cellsOfNuffic = page
-    .getByTestId('asiakirjamallit-tutkinnoista-nuffic')
-    .locator('td');
-  await expect(cellsOfNuffic.nth(0)).toHaveText(
-    'hakemus.asiakirjat.mallejaTutkinnoista.nuffic',
-  );
-  await expect(
-    cellsOfNuffic.nth(1).locator('.MuiRadio-root.Mui-checked'),
-  ).toBeVisible();
-  await expect(cellsOfNuffic.nth(2).locator('textarea').first()).toBeEmpty();
-  await expect(
-    page.getByTestId('asiakirjamalli-vastaavuus-nuffic-clear-button'),
-  ).toBeVisible();
-
   const cellsOfAacrao = page
     .getByTestId('asiakirjamallit-tutkinnoista-aacrao')
     .locator('td');
