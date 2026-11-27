@@ -263,17 +263,6 @@ const AsiakirjaPagePure = ({
       <OphTypography variant={'h2'} data-testid="asiakirjat-otsikko">
         {t('hakemus.asiakirjat.otsikko')}
       </OphTypography>
-      <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
-      <AsiakirjaPyynnot
-        asiakirjaPyynnot={asiakirjat.pyydettavatAsiakirjat}
-        updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
-        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
-        hakemusKoskee={hakemus.hakemusKoskee}
-      ></AsiakirjaPyynnot>
-      <Divider orientation={'horizontal'} />
-      <OphTypography variant={'h3'}>
-        {t('hakemus.asiakirjat.asiakirjojenTarkistukset')}
-      </OphTypography>
       <KaikkiSelvityksetSaatu
         asiakirjaTieto={asiakirjat}
         hakemusKoskee={hakemus.hakemusKoskee}
@@ -294,6 +283,13 @@ const AsiakirjaPagePure = ({
         }}
         testId={'muistio-asiakirjat-sisainen'}
       />
+      <AsiakirjaTaulukko asiakirjat={completeAsiakirjaData} />
+      <AsiakirjaPyynnot
+        asiakirjaPyynnot={asiakirjat.pyydettavatAsiakirjat}
+        updateAsiakirjaTietoAction={asiakirjaTietoUpdateAction}
+        poistaPyydettavaAsiakirja={poistaPyydettavaAsiakirja}
+        hakemusKoskee={hakemus.hakemusKoskee}
+      ></AsiakirjaPyynnot>
       {hakemus.hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
         <Muistio
           label={t('hakemus.asiakirjat.muistio.muistioOtsake')}

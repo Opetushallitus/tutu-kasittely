@@ -1,3 +1,4 @@
+import { Stack } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
 
@@ -44,18 +45,7 @@ export const KaikkiSelvityksetSaatu = ({
   }, [asiakirjaTieto.viimeinenAsiakirjaHakijalta]);
 
   return (
-    <>
-      <OphCheckbox
-        label={t('hakemus.asiakirjat.kaikkiSelvityksetSaatu')}
-        checked={selvityksetSaatu}
-        onChange={() => {
-          setSelvityksetSaatu(!selvityksetSaatu);
-          updateAsiakirjaTieto({
-            selvityksetSaatu: !selvityksetSaatu,
-          });
-        }}
-        data-testid={'kaikki-selvitykset-saatu'}
-      />
+    <Stack direction="row" gap={2} sx={{ alignItems: 'center' }}>
       {hakemusKoskee !== HakemusKoskee.LOPULLINEN_PAATOS && (
         <CalendarComponent
           selectedValue={viimeinenAsiakirjaHakijalta}
@@ -73,6 +63,20 @@ export const KaikkiSelvityksetSaatu = ({
           minDate={new Date(saapumisPvm)}
         />
       )}
-    </>
+      <Stack>
+        <span>&nbsp;</span>
+        <OphCheckbox
+          label={t('hakemus.asiakirjat.kaikkiSelvityksetSaatu')}
+          checked={selvityksetSaatu}
+          onChange={() => {
+            setSelvityksetSaatu(!selvityksetSaatu);
+            updateAsiakirjaTieto({
+              selvityksetSaatu: !selvityksetSaatu,
+            });
+          }}
+          data-testid={'kaikki-selvitykset-saatu'}
+        />
+      </Stack>
+    </Stack>
   );
 };

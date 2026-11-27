@@ -39,7 +39,6 @@ const LahdeOptionsWoMuut: LahdeOption[] = [
     id: 'naric_portal',
     lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.naricPortal',
   },
-  { id: 'nuffic', lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.nuffic' },
   { id: 'aacrao', lKey: 'hakemus.asiakirjat.mallejaTutkinnoista.aacrao' },
 ];
 
