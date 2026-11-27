@@ -15,6 +15,8 @@ const OPETETTAVAN_AINEEN_OPINNOT_MATEMATIIKKA =
   'Opetettavan aineen opinnot_matematiikka';
 const OHJAUSTEHTAVAN_OPINNOT =
   'Oppilaanohjauksen ja opinto-ohjauksen tehtäviin ammatillisia valmiuksia antavat opinnot';
+const ERITYISOPETUKSEN_OPINNOT =
+  'Erityisopetuksen tehtäviin ammatillisia valmiuksia antavat opinnot';
 const MONIALAISET_OPINNOT = 'Monialaiset opinnot';
 const VAKA_VALMIUS_OPINNOT =
   'Varhaiskasvatuksen tehtäviin ja esiopetukseen ammatillisia valmiuksia antavat opinnot';
@@ -61,6 +63,32 @@ async function navigateToMyonteinenPaatosUOOhjausTehtava(
   await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
     page,
     OHJAUSTEHTAVAN_OPINNOT,
+  );
+}
+
+const ERITYISOPETUS_SOVELLETTU_TILANNE_LABELS: Record<string, string> = {
+  erityisopetus1:
+    'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.erityisopetus 1',
+  erityisopetus234:
+    'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.erityisopetus 2/3/4',
+  erityisopetus0:
+    'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.erityisopetus 0',
+  muu: 'hakemus.paatos.myonteinenPaatos.uo.sovellettuTilanne.muuErityisopetus',
+};
+
+async function navigateToMyonteinenPaatosUOErityisopetus(
+  page: Page,
+  sovellettuTilanne?: string,
+): Promise<void> {
+  await navigateToSovellettuTilanneOfMyonteinenTutkintoTaiOpinto(
+    page,
+    ERITYISOPETUKSEN_OPINNOT,
+    sovellettuTilanne,
+    {
+      sovellettuTilanne: sovellettuTilanne
+        ? ERITYISOPETUS_SOVELLETTU_TILANNE_LABELS[sovellettuTilanne]
+        : undefined,
+    },
   );
 }
 
@@ -1137,6 +1165,109 @@ test.describe('Muu opetustehtävään tai varhaiskasvatuksen tehtävään vaadit
               {
                 myonteisenPaatoksenLisavaatimukset: {
                   sopeutumisaika: true,
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+  });
+});
+
+test.describe('Erityisopetuksen opinnot: sovellettu tilanne', () => {
+  test('Sovellettu tilanne -dropdownissa neljä vaihtoehtoa', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOErityisopetus(page);
+
+    await page
+      .getByTestId('myonteinenPaatos-uo-sovellettuTilanne-select')
+      .click();
+    const options = page.locator(
+      'ul[role="listbox"] li[role="option"]:visible',
+    );
+    await expect(options).toHaveText(
+      Object.values(ERITYISOPETUS_SOVELLETTU_TILANNE_LABELS),
+    );
+  });
+
+  test('erityisopetus0: näytetään eiKoulutusEroja-ilmoitus', async ({
+    page,
+  }) => {
+    await navigateToMyonteinenPaatosUOErityisopetus(page, 'erityisopetus0');
+
+    await expect(
+      page.getByText('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja'),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+    ).toBeHidden();
+  });
+
+  for (const sovellettuTilanne of ['erityisopetus1', 'erityisopetus234']) {
+    test(`${sovellettuTilanne}: polku jatkuu erot koulutuksessa -valinnoilla`, async ({
+      page,
+    }) => {
+      await navigateToMyonteinenPaatosUOErityisopetus(page, sovellettuTilanne);
+
+      await expect(
+        page.getByText('hakemus.paatos.myonteinenPaatos.uo.eiKoulutusEroja'),
+      ).toBeHidden();
+      await expect(
+        page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1'),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId('uo-suomessaSuoritettujenOpintojenHuomioiminen-radio'),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId('myonteinenPaatos-uo-muuTilannekuvaus-input'),
+      ).toBeHidden();
+    });
+  }
+
+  test('muu: näytetään tilannekuvaus ja tallennetaan se', async ({ page }) => {
+    await navigateToMyonteinenPaatosUOErityisopetus(page, 'muu');
+
+    await expect(
+      page.getByText(
+        'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.otsikko',
+      ),
+    ).toBeVisible();
+    for (const key of [
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.erot',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.lahtokohtaisetTaydennysTavat',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.ammattikokemuksenHuomioiminen',
+      'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.suomessaSuoritettujenOpintojenHuomioiminen',
+    ]) {
+      await expect(page.getByText(key, { exact: true })).toBeVisible();
+    }
+    await expect(
+      page.getByTestId('myonteinenPaatos-uo-erotKoulutuksessa-ero1'),
+    ).toBeHidden();
+    await expect(
+      page.getByTestId('uo-ammattikokemuksenHuomioiminen-radio'),
+    ).toBeHidden();
+
+    await expectRequestData(
+      page,
+      PAATOS_URL,
+      page
+        .getByTestId('myonteinenPaatos-uo-muuTilannekuvaus-input')
+        .getByRole('textbox')
+        .first()
+        .fill('Tilannekuvaus'),
+      {
+        paatosTiedot: [
+          {
+            rinnastettavatTutkinnotTaiOpinnot: [
+              {
+                myonteisenPaatoksenLisavaatimukset: {
+                  sovellettuTilanne: 'muu',
+                  muuTilannekuvaus: 'Tilannekuvaus',
                 },
               },
             ],

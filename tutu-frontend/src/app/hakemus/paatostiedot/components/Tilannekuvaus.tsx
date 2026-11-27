@@ -12,7 +12,15 @@ type TilannekuvausProps = {
   value?: string | null;
   onChange: (value: string) => void;
   testId: string;
+  kuvailuTransKeys?: string[];
 };
+
+const DEFAULT_KUVAILU_TRANSLATION_KEYS = [
+  'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.erot',
+  'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.lahtokohtaisetTaydennysTavat',
+  'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.opintojenHuomioiminen',
+  'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.taydennysTavatPaatokseen',
+];
 
 const KuvailuListItem = ({
   transKey,
@@ -31,28 +39,16 @@ export const Tilannekuvaus = ({
   value,
   onChange,
   testId,
+  kuvailuTransKeys = DEFAULT_KUVAILU_TRANSLATION_KEYS,
 }: TilannekuvausProps) => (
   <Stack padding={1}>
     <OphTypography sx={{ fontWeight: 600 }} variant={'h5'}>
       {t('hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.otsikko')}
     </OphTypography>
     <List sx={{ listStyleType: 'disc', pl: 3, py: 0 }}>
-      <KuvailuListItem
-        transKey="hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.erot"
-        t={t}
-      />
-      <KuvailuListItem
-        transKey="hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.lahtokohtaisetTaydennysTavat"
-        t={t}
-      />
-      <KuvailuListItem
-        transKey="hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.opintojenHuomioiminen"
-        t={t}
-      />
-      <KuvailuListItem
-        transKey="hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.taydennysTavatPaatokseen"
-        t={t}
-      />
+      {kuvailuTransKeys.map((transKey) => (
+        <KuvailuListItem key={transKey} transKey={transKey} t={t} />
+      ))}
     </List>
     <OphInputFormField
       multiline={true}

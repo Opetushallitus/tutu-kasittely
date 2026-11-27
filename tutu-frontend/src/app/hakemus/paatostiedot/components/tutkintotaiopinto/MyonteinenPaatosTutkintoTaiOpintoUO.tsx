@@ -25,6 +25,7 @@ import {
   shouldShowTaydentavienOpintojenAiheet,
   shouldShowTilannekuvaus,
   SOVELLETTU_TILANNE_BY_ENTITY,
+  TILANNEKUVAUS_KUVAILU_KEYS_BY_ENTITY,
   translationForEroTarkennus,
 } from '@/src/app/hakemus/paatostiedot/components/tutkintotaiopinto/tutkintoTaiOpintoUtils';
 import {
@@ -349,6 +350,9 @@ export const MyonteinenPaatosTutkintoTaiOpintoUO: React.FC<
               value={lisavaatimukset?.muuTilannekuvaus}
               onChange={(value) => updateAction({ muuTilannekuvaus: value })}
               testId={'myonteinenPaatos-uo-muuTilannekuvaus-input'}
+              kuvailuTransKeys={
+                TILANNEKUVAUS_KUVAILU_KEYS_BY_ENTITY[selectedEntity]
+              }
             />
           ) : (
             <Lisavalinnat

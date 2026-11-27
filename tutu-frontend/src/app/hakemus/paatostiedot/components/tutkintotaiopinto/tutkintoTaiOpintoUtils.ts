@@ -116,8 +116,9 @@ export const SOVELLETTU_TILANNE_BY_ENTITY: Record<
   ],
   [ResolvedEntity.erityisopetus]: [
     { value: 'erityisopetus1', tKey: 'erityisopetus', ordinal: '1' },
-    { value: 'erityisopetus2', tKey: 'erityisopetus', ordinal: '2' },
-    { value: 'erityisopetus3', tKey: 'erityisopetus', ordinal: '3' },
+    { value: 'erityisopetus234', tKey: 'erityisopetus', ordinal: '2/3/4' },
+    { value: 'erityisopetus0', tKey: 'erityisopetus', ordinal: '0' },
+    { value: MUU_SOVELLETTU_TILANNE, tKey: 'muuErityisopetus' },
   ],
   [ResolvedEntity.oppilasJaOpintoOhjaus]: [],
   [ResolvedEntity.kasvatustieteellinenAla]: [
@@ -194,10 +195,22 @@ export const EROT_KOULUTUKSESSA_BY_ENTITY: Record<
   [ResolvedEntity.muu]: undefined,
 };
 
+export const TILANNEKUVAUS_KUVAILU_KEYS_BY_ENTITY: Partial<
+  Record<ResolvedEntity, string[]>
+> = {
+  [ResolvedEntity.erityisopetus]: [
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.erot',
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.lahtokohtaisetTaydennysTavat',
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.ammattikokemuksenHuomioiminen',
+    'hakemus.paatos.paatostyyppi.kelpoisuus.uo.muu.kuvaile.suomessaSuoritettujenOpintojenHuomioiminen',
+  ],
+};
+
 const SOVELLETUT_TILANTEET_WO_EROT_BY_ENTITY: Partial<
   Record<ResolvedEntity, string[]>
 > = {
   [ResolvedEntity.opetettavaAine]: ['aine1', 'aine4'],
+  [ResolvedEntity.erityisopetus]: ['erityisopetus0'],
   [ResolvedEntity.monialaisetOpinnot]: ['monialaiset0'],
   [ResolvedEntity.ammatillisetValmiudet]: ['vaka0'],
 };
@@ -216,6 +229,7 @@ export const shouldShowLisavalinnat = (
 };
 
 const ENTITIES_WITH_MUU_TILANNEKUVAUS = [
+  ResolvedEntity.erityisopetus,
   ResolvedEntity.monialaisetOpinnot,
   ResolvedEntity.ammatillisetValmiudet,
 ];
