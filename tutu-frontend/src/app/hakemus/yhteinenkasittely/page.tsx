@@ -16,7 +16,6 @@ import { KasittelyModal } from './components/KasittelyModal';
 import { SortOrder } from '@/src/app/components/types';
 import { FullSpinner } from '@/src/components/FullSpinner';
 import { useAuthorizedUser } from '@/src/components/providers/AuthorizedUserProvider';
-import { SaveRibbon } from '@/src/components/SaveRibbon';
 import { UnsavedChangesGuard } from '@/src/components/UnsavedChangesGuard';
 import { useEditableState } from '@/src/hooks/useEditableState';
 import { useEsittelijat } from '@/src/hooks/useEsittelijat';
@@ -34,11 +33,24 @@ import {
   YhteinenKasittely,
   YkViestiTyyppi,
 } from '@/src/lib/types/yhteinenkasittely';
+import { YKKysymysDTO } from '@/src/lib/types/yhteisenKasittelynViesti';
 import { handleFetchError } from '@/src/lib/utils';
 
 function not<T>(predicate: (arg: T) => boolean) {
   return (arg: T) => !predicate(arg);
 }
+
+const findParentKasittely = (
+  kasittelyt?: YhteinenKasittely[],
+  viesti?: Viesti,
+) => {
+  if (!kasittelyt || !viesti || !viesti.parentId) {
+    return undefined;
+  }
+  return kasittelyt.find(
+    (kasittely) => kasittely.aloitusViesti.id === viesti.parentId,
+  );
+};
 
 const kayttajaLukenutViestin = (user: User | null) => (viesti: Viesti) => {
   if (!user) {
@@ -101,6 +113,9 @@ export default function YhteinenKasittelyPage() {
   const [tyopari, setTyopari] = useState<string | undefined>();
   const [kysymys, setKysymys] = useState<string>('');
   const [aihe, setAihe] = useState<string | undefined>();
+  const [muokattavaViesti, setMuokattavaViesti] = useState<
+    Viesti | undefined
+  >();
 
   const user = useAuthorizedUser();
 
@@ -122,13 +137,15 @@ export default function YhteinenKasittelyPage() {
     viestiLuettu,
     error: kasittelyError,
     updateError,
-    answerIsPending,
   } = useYhteinenKasittely(hakemusOid ?? '', sortKey);
 
   const answersFromServer = useMemo(() => {
     return (kasittelyt ?? []).reduce(
       (acc: Record<string, string>, kasittely: YhteinenKasittely) => {
         acc[kasittely.aloitusViesti.id!] = kasittely.aloitusViesti.viesti ?? '';
+        kasittely.jatkoKasittelyt?.forEach((viesti: Viesti) => {
+          acc[viesti.id!] = viesti.viesti ?? '';
+        });
         return acc;
       },
       {},
@@ -139,11 +156,8 @@ export default function YhteinenKasittelyPage() {
     editedData: answers = {} as Record<string, string>,
     hasChanges: answersHasChanges,
     updateLocal: setAnswers,
-    save,
     discard,
-  } = useEditableState(answersFromServer, (answers: Record<string, string>) => {
-    Object.keys(answers).forEach((id) => handleSendAnswer(id));
-  });
+  } = useEditableState(answersFromServer, () => {});
 
   useEffect(() => {
     handleFetchError(
@@ -221,26 +235,41 @@ export default function YhteinenKasittelyPage() {
     });
   };
 
-  const handleChange = (id: string, value: string) => {
-    setAnswers({ ...answers, [id]: value });
+  const handleChange = (
+    { id, parentId }: { id?: string; parentId?: string },
+    value: string,
+  ) => {
+    if (!id && !parentId) return;
+    const answerId = id || `answer__${parentId}`;
+    setAnswers({ ...answers, [answerId]: value });
   };
 
-  const handleOpenModal = (parent?: YhteinenKasittely) => {
+  const handleOpenModal = (parent?: YhteinenKasittely, viesti?: Viesti) => {
     setModalParent(parent);
+    setMuokattavaViesti(viesti);
+    setModalOpen(true);
+  };
+
+  const handleOpenEditModal = (viesti?: Viesti) => {
+    setModalParent(findParentKasittely(kasittelyt, viesti));
+    setMuokattavaViesti(viesti);
     setModalOpen(true);
   };
 
   const handleModalClose = () => {
     setModalParent(undefined);
+    setMuokattavaViesti(undefined);
     setModalOpen(false);
   };
 
-  const handleCreateKasittely = async () => {
+  const handleCreateKasittely = async (laheta: boolean = false) => {
     try {
-      const kasittely: Viesti = {
+      const kasittely: YKKysymysDTO = {
+        id: muokattavaViesti?.id,
         parentId: modalParent?.aloitusViesti.id,
         viesti: kysymys,
         vastaanottajaOid: tyopari,
+        laheta,
         aihe: aihe,
         tyyppi: modalParent
           ? YkViestiTyyppi.jatkokysymys
@@ -259,11 +288,18 @@ export default function YhteinenKasittelyPage() {
     }
   };
 
-  const handleSendAnswer = async (id: string, laheta: boolean = false) => {
+  const handleSendAnswer = async (
+    { id, parentId }: { id?: string; parentId?: string },
+    laheta: boolean = false,
+  ) => {
     try {
+      if (!id && !parentId) return;
+      const answerId = id || `answer__${parentId}`;
+
       vastaaKasittelyyn({
         id,
-        vastaus: answers[id] ?? '',
+        parentId,
+        vastaus: answers[answerId] ?? '',
         laheta,
         tyyppi: YkViestiTyyppi.vastaus,
       });
@@ -379,8 +415,8 @@ export default function YhteinenKasittelyPage() {
                 <Box>
                   <KasittelyList
                     kasittelyt={kasittelyt}
-                    answers={answers}
                     handleOpenModal={handleOpenModal}
+                    handleOpenEditModal={handleOpenEditModal}
                     handleChange={handleChange}
                     handleSend={handleSendAnswer}
                     expandedPanels={expandedPanels}
@@ -395,6 +431,7 @@ export default function YhteinenKasittelyPage() {
         </Stack>
       </Box>
       <KasittelyModal
+        viesti={muokattavaViesti}
         esittelijat={esittelijat}
         aiheet={aiheet}
         open={modalOpen}
@@ -404,11 +441,6 @@ export default function YhteinenKasittelyPage() {
         setTyopari={setTyopari}
         setKysymys={setKysymys}
         setAihe={setAihe}
-      />
-      <SaveRibbon
-        onSave={save}
-        isSaving={answerIsPending}
-        hasChanges={answersHasChanges}
       />
     </>
   );
